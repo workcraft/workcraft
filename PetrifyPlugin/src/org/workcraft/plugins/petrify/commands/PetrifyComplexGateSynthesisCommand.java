@@ -14,7 +14,7 @@ public class PetrifyComplexGateSynthesisCommand extends PetrifyAbstractSynthesis
 
     @Override
     public Position getPosition() {
-        return null;
+        return Position.TOP_MIDDLE;
     }
 
 }

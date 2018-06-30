@@ -49,7 +49,7 @@ public class MirrorTransitionTransformationCommand extends AbstractTransformatio
 
     @Override
     public Position getPosition() {
-        return null;
+        return Position.TOP;
     }
 
     @Override

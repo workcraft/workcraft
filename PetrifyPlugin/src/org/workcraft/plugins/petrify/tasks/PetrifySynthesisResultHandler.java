@@ -84,7 +84,7 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
             System.out.println(log);
         }
 
-        handleStgSynthesisResult(petrifyOutput);
+        handleStgSynthesisOutput(petrifyOutput);
 
         String equations = petrifyOutput.getEquation();
         if ((equations != null) && !equations.isEmpty()) {
@@ -92,9 +92,9 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
             System.out.println(equations);
         }
 
-        WorkspaceEntry result = handleVerilogSynthesisResult(petrifyOutput);
+        WorkspaceEntry result = handleVerilogSynthesisOutput(petrifyOutput);
 
-        // Report inserted CSC signals and unmapped signals AFTER importing the Verilog, so the circuit is visible
+        // Report inserted CSC signals and unmapped signals AFTER importing the Verilog, so the circuit is visible.
         checkNewSignals(petrifyOutput);
         if (technologyMapping) {
             checkUnmappedSignals(result);
@@ -111,10 +111,8 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
             signals.add(matcher.group(1));
         }
         if (!signals.isEmpty()) {
-            String signalNames = String.join(", ", signals);
-            String msg = "Petrify automatically resolved CSC conflicts by inserting new signal" +
-                         (signals.size() > 1 ? "s: " + signalNames : " '" + signalNames + "'");
-            DialogUtils.showWarning(msg);
+            String msg = "Petrify automatically resolved CSC conflicts by inserting new signal";
+            DialogUtils.showWarning(LogUtils.getTextWithRefs(msg, signals));
         }
     }
 
@@ -134,9 +132,9 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
         }
     }
 
-    private WorkspaceEntry handleStgSynthesisResult(PetrifySynthesisOutput petrifyResult) {
+    private WorkspaceEntry handleStgSynthesisOutput(PetrifySynthesisOutput petrifyOutput) {
         WorkspaceEntry dstWe = null;
-        String dstOutput = petrifyResult.getStg();
+        String dstOutput = petrifyOutput.getStg();
         if (PetrifySettings.getOpenSynthesisStg() && (dstOutput != null) && !dstOutput.isEmpty()) {
             Stg srcStg = WorkspaceUtils.getAs(we, Stg.class);
             try {
@@ -157,9 +155,9 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
         return dstWe;
     }
 
-    private WorkspaceEntry handleVerilogSynthesisResult(PetrifySynthesisOutput petrifyResult) {
+    private WorkspaceEntry handleVerilogSynthesisOutput(PetrifySynthesisOutput petrifyOutput) {
         WorkspaceEntry dstWe = null;
-        String verilogOutput = petrifyResult.getVerilog();
+        String verilogOutput = petrifyOutput.getVerilog();
         if ((verilogOutput != null) && !verilogOutput.isEmpty()) {
             LogUtils.logInfo("Petrify synthesis result in Verilog format:");
             System.out.println(verilogOutput);

@@ -60,7 +60,7 @@ public class ContractJointTransformationCommand extends AbstractTransformationCo
 
     @Override
     public Position getPosition() {
-        return Position.MIDDLE;
+        return Position.BOTTOM_MIDDLE;
     }
 
     @Override
@@ -113,7 +113,7 @@ public class ContractJointTransformationCommand extends AbstractTransformationCo
                 Node fromNode = predConnection instanceof VisualCircuitConnection ? predConnection.getFirst() : null;
                 Node toNode = succConnection instanceof VisualCircuitConnection ? succConnection.getSecond() : null;
                 try {
-                    VisualConnection newConnection = (VisualCircuitConnection) circuit.connect(fromNode, toNode);
+                    VisualConnection newConnection = circuit.connect(fromNode, toNode);
                     newConnection.mixStyle(predConnection, succConnection);
                     ConnectionHelper.addControlPoints(newConnection, locations);
                 } catch (InvalidConnectionException e) {

@@ -28,7 +28,7 @@ public class MpsatOutputPersistencyVerificationCommand extends MpsatAbstractVeri
 
     @Override
     public Position getPosition() {
-        return null;
+        return Position.TOP;
     }
 
     @Override

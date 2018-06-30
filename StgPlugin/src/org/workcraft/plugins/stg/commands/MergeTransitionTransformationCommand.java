@@ -27,7 +27,7 @@ public final class MergeTransitionTransformationCommand extends AbstractMergeTra
 
     @Override
     public Position getPosition() {
-        return null;
+        return Position.TOP;
     }
 
     @Override

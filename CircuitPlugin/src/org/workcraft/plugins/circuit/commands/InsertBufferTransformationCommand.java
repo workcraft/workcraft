@@ -58,7 +58,7 @@ public class InsertBufferTransformationCommand extends AbstractTransformationCom
 
     @Override
     public Position getPosition() {
-        return null;
+        return Position.TOP_MIDDLE;
     }
 
     @Override

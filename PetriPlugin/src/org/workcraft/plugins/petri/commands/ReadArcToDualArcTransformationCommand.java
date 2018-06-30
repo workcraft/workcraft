@@ -48,7 +48,7 @@ public class ReadArcToDualArcTransformationCommand extends AbstractTransformatio
 
     @Override
     public Position getPosition() {
-        return Position.TOP;
+        return Position.BOTTOM_MIDDLE;
     }
 
     @Override
@@ -73,7 +73,7 @@ public class ReadArcToDualArcTransformationCommand extends AbstractTransformatio
             for (Node node: nodes) {
                 transform(model, node);
             }
-            visualModel.select(new LinkedList<Node>(connections));
+            visualModel.select(new LinkedList<>(connections));
             connections.clear();
         }
     }

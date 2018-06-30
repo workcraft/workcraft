@@ -48,7 +48,7 @@ public class DirectedArcToReadArcTransformationCommand extends AbstractTransform
 
     @Override
     public Position getPosition() {
-        return Position.TOP;
+        return Position.BOTTOM_MIDDLE;
     }
 
     @Override

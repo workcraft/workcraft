@@ -14,9 +14,7 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
-import org.workcraft.plugins.petrify.commands.PetrifyAbstractSynthesisCommand;
-import org.workcraft.plugins.petrify.commands.PetrifyComplexGateSynthesisCommand;
-import org.workcraft.plugins.petrify.commands.PetrifyTechnologyMappingSynthesisCommand;
+import org.workcraft.plugins.petrify.commands.*;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
@@ -78,6 +76,42 @@ public class PetrifySynthesisCommandsTests {
         testComplexGateSynthesisCommand(workName, 7);
     }
 
+    private void testComplexGateSynthesisCommand(String workName, int expectedGateCount) {
+        try {
+            testSynthesisCommand(PetrifyComplexGateSynthesisCommand.class, workName, expectedGateCount);
+        } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void edcGeneralisedCelementSynthesis() {
+        String workName = PackageUtils.getPackagePath(getClass(), "edc.stg.work");
+        testGeneralisedCelementSynthesisCommand(workName, 7);
+    }
+
+    private void testGeneralisedCelementSynthesisCommand(String workName, int expectedGateCount) {
+        try {
+            testSynthesisCommand(PetrifyGeneralisedCelementSynthesisCommand.class, workName, expectedGateCount);
+        } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void edcStandardCelementSynthesis() {
+        String workName = PackageUtils.getPackagePath(getClass(), "edc.stg.work");
+        testStandardCelementSynthesisCommand(workName, 7);
+    }
+
+    private void testStandardCelementSynthesisCommand(String workName, int expectedGateCount) {
+        try {
+            testSynthesisCommand(PetrifyStandardCelementSynthesisCommand.class, workName, expectedGateCount);
+        } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Test
     public void bufferTechnologyMappingSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer-compact.stg.work");
@@ -106,14 +140,6 @@ public class PetrifySynthesisCommandsTests {
     public void edcTechnologyMappingSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "edc.stg.work");
         testTechnologyMappingSynthesisCommad(workName, 7);
-    }
-
-    private void testComplexGateSynthesisCommand(String workName, int expectedGateCount) {
-        try {
-            testSynthesisCommand(PetrifyComplexGateSynthesisCommand.class, workName, expectedGateCount);
-        } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
     }
 
     private void testTechnologyMappingSynthesisCommad(String workName, int expectedGateCount) {

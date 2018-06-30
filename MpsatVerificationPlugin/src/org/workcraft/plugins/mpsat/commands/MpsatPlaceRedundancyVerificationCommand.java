@@ -44,7 +44,7 @@ public class MpsatPlaceRedundancyVerificationCommand extends MpsatAbstractVerifi
 
     @Override
     public Position getPosition() {
-        return Position.TOP;
+        return Position.TOP_MIDDLE;
     }
 
     @Override

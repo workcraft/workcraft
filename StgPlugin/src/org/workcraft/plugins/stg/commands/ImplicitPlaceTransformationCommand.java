@@ -40,6 +40,11 @@ public class ImplicitPlaceTransformationCommand extends AbstractTransformationCo
     }
 
     @Override
+    public Position getPosition() {
+        return Position.MIDDLE;
+    }
+
+    @Override
     public boolean isEnabled(ModelEntry me, Node node) {
         if (node instanceof VisualStgPlace) {
             VisualModel model = me.getVisualModel();
@@ -56,11 +61,6 @@ public class ImplicitPlaceTransformationCommand extends AbstractTransformationCo
             }
         }
         return false;
-    }
-
-    @Override
-    public Position getPosition() {
-        return null;
     }
 
     @Override

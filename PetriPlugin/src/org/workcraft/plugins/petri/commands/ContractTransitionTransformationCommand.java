@@ -74,7 +74,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
 
     @Override
     public Position getPosition() {
-        return null;
+        return Position.TOP;
     }
 
     @Override

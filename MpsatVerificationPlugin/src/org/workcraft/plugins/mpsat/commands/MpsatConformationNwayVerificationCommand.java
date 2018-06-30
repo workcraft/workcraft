@@ -40,7 +40,7 @@ public class MpsatConformationNwayVerificationCommand extends AbstractVerificati
 
     @Override
     public Position getPosition() {
-        return Position.BOTTOM;
+        return Position.BOTTOM_MIDDLE;
     }
 
     @Override

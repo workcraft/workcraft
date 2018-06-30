@@ -39,7 +39,7 @@ public class MpsatCombinedVerificationCommand extends AbstractVerificationComman
 
     @Override
     public Position getPosition() {
-        return null;
+        return Position.TOP;
     }
 
     @Override

@@ -28,6 +28,9 @@ before_install:
 install:
   - ./gradlew assemble
 
+before_script:
+  - if [ $TARGET == test ]; then export DISPLAY=:0; ( Xvfb :0 -ac > /dev/null 2>&1 )& fi
+
 script:
   - ./gradlew $TARGET
   - if [ $TARGET == test ]; then ./integration-tests/run.sh; fi

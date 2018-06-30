@@ -50,7 +50,7 @@ public class MirrorSignalTransformationCommand extends AbstractTransformationCom
 
     @Override
     public Position getPosition() {
-        return null;
+        return Position.TOP;
     }
 
     @Override

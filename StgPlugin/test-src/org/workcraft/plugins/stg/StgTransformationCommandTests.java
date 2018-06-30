@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.stg.commands.*;
 import org.workcraft.util.PackageUtils;
@@ -57,11 +58,10 @@ public class StgTransformationCommandTests {
         Set<String> dstOutputs = stg.getSignalNames(Signal.Type.OUTPUT, null);
         Set<String> dstInternals = stg.getSignalNames(Signal.Type.INTERNAL, null);
 
+        framework.closeWork(we);
         Assert.assertEquals(srcInputs, dstOutputs);
         Assert.assertEquals(srcOutputs, dstInputs);
         Assert.assertEquals(srcInternals, dstInternals);
-
-        framework.closeWork(we);
     }
 
     @Test
@@ -125,11 +125,10 @@ public class StgTransformationCommandTests {
             }
         }
 
+        framework.closeWork(we);
         Assert.assertEquals(srcMinusCount, dstPlusCount);
         Assert.assertEquals(srcPlusCount, dstMinusCount);
         Assert.assertEquals(srcToggleCount, dstToggleCount);
-
-        framework.closeWork(we);
     }
 
     @Test
@@ -180,11 +179,10 @@ public class StgTransformationCommandTests {
         int impSignalTransitions = stg.getVisualSignalTransitions().size();
         int impDummyTransitions = stg.getVisualDummyTransitions().size();
 
+        framework.closeWork(we);
         Assert.assertEquals(srcPlaces + srcImplicitPlaceArcs, impPlaces + impImplicitPlaceArcs);
         Assert.assertEquals(srcSignalTransitions, impSignalTransitions);
         Assert.assertEquals(srcDummyTransitions, impDummyTransitions);
-
-        framework.closeWork(we);
     }
 
     @Test
@@ -221,13 +219,77 @@ public class StgTransformationCommandTests {
         int dstDummyTransitions = stg.getVisualDummyTransitions().size();
         int dstConnections = stg.getVisualConnections().size();
 
+        framework.closeWork(we);
         Assert.assertEquals(srcPlaces, dstPlaces);
         Assert.assertEquals(srcSignalTransitions * 2, dstSignalTransitions);
         Assert.assertEquals(srcDummyTransitions, dstDummyTransitions);
         Assert.assertEquals(srcImplicitPlaceArcs + srcSignalTransitions, dstImplicitPlaceArcs);
         Assert.assertEquals(srcConnections + srcSignalTransitions, dstConnections);
+    }
+
+    @Test
+    public void testVmeSelectAllSignalTransitionsTransformationCommand() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
+        testSelectAllSignalTransitionsTransformationCommand(workName, new String[]{"dsr+", "dtack+/1"}, 5);
+    }
+
+    private void testSelectAllSignalTransitionsTransformationCommand(String workName, String[] refs, int expCount) throws DeserialisationException {
+        final Framework framework = Framework.getInstance();
+        final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        URL url = classLoader.getResource(workName);
+
+        WorkspaceEntry we = framework.loadWork(url.getFile());
+        VisualStg stg = WorkspaceUtils.getAs(we, VisualStg.class);
+        selectVisualComponentsByMathRefs(stg, refs);
+
+        SelectAllSignalTransitionsTransformationCommand command = new SelectAllSignalTransitionsTransformationCommand();
+        command.execute(we);
+        int count = stg.getSelection().size();
 
         framework.closeWork(we);
+        Assert.assertEquals(expCount, count);
+    }
+
+    @Test
+    public void testVmeSignalToDummyTransitionTransformationCommand() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
+        testSignalToDummyTransitionTransformationCommand(workName, new String[]{"dsw+", "dtack+/1"});
+    }
+
+    private void testSignalToDummyTransitionTransformationCommand(String workName, String[] refs) throws DeserialisationException {
+        final Framework framework = Framework.getInstance();
+        final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        URL url = classLoader.getResource(workName);
+
+        WorkspaceEntry we = framework.loadWork(url.getFile());
+        VisualStg stg = WorkspaceUtils.getAs(we, VisualStg.class);
+
+        int srcSignalTransitionCount = stg.getVisualSignalTransitions().size();
+        int srcDummyTransitionCount = stg.getVisualDummyTransitions().size();
+
+        selectVisualComponentsByMathRefs(stg, refs);
+
+        int selectionCount = stg.getSelection().size();
+
+        SignalToDummyTransitionTransformationCommand command = new SignalToDummyTransitionTransformationCommand();
+        command.execute(we);
+
+        int dstSignalTransitionCount = stg.getVisualSignalTransitions().size();
+        int dstDummyTransitionCount = stg.getVisualDummyTransitions().size();
+
+        framework.closeWork(we);
+        Assert.assertEquals(srcDummyTransitionCount + selectionCount, dstDummyTransitionCount);
+        Assert.assertEquals(srcSignalTransitionCount - selectionCount, dstSignalTransitionCount);
+    }
+
+    private void selectVisualComponentsByMathRefs(VisualStg stg, String[] refs) {
+        stg.selectNone();
+        for (String ref: refs) {
+            VisualComponent t = stg.getVisualComponentByMathReference(ref, VisualComponent.class);
+            if (t != null) {
+                stg.addToSelection(t);
+            }
+        }
     }
 
 }

@@ -172,6 +172,7 @@ apply plugin: 'jacoco'
 apply plugin: 'com.github.kt3k.coveralls'
 
 def coverallsProjects = subprojects.findAll {
+    it.name == 'AtacsPlugin' ||
     it.name == 'CircuitPlugin' ||
     it.name == 'MpsatSynthesisPlugin' ||
     it.name == 'MpsatVerificationPlugin' ||

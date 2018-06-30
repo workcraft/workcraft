@@ -21,11 +21,6 @@ public class StgToPetriConversionCommand extends AbstractConversionCommand {
     }
 
     @Override
-    public Position getPosition() {
-        return null;
-    }
-
-    @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.isApplicable(we, Stg.class);
     }

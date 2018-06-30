@@ -59,7 +59,7 @@ public class SplitJointTransformationCommand extends AbstractTransformationComma
 
     @Override
     public Position getPosition() {
-        return Position.MIDDLE;
+        return Position.BOTTOM_MIDDLE;
     }
 
     public Collection<Node> collect(Model model) {

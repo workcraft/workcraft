@@ -53,7 +53,7 @@ public class DetachJointTransformationCommand extends AbstractTransformationComm
 
     @Override
     public Position getPosition() {
-        return Position.MIDDLE;
+        return Position.BOTTOM_MIDDLE;
     }
 
     @Override

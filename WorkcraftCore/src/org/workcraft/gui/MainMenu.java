@@ -438,7 +438,9 @@ public class MainMenu extends JMenuBar {
             List<List<Command>> sectionCommandsPartitions = new LinkedList<>();
             sectionCommandsPartitions.add(Commands.getUnpositionedCommands(sectionCommands));
             sectionCommandsPartitions.add(Commands.getPositionedCommands(sectionCommands, Position.TOP));
+            sectionCommandsPartitions.add(Commands.getPositionedCommands(sectionCommands, Position.TOP_MIDDLE));
             sectionCommandsPartitions.add(Commands.getPositionedCommands(sectionCommands, Position.MIDDLE));
+            sectionCommandsPartitions.add(Commands.getPositionedCommands(sectionCommands, Position.BOTTOM_MIDDLE));
             sectionCommandsPartitions.add(Commands.getPositionedCommands(sectionCommands, Position.BOTTOM));
             boolean needSeparator = false;
             for (List<Command> sectionCommandsPartition : sectionCommandsPartitions) {

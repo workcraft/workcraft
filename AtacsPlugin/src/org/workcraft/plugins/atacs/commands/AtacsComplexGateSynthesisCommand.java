@@ -14,7 +14,7 @@ public class AtacsComplexGateSynthesisCommand extends AtacsAbstractSynthesisComm
 
     @Override
     public Position getPosition() {
-        return null;
+        return Position.TOP_MIDDLE;
     }
 
 }

@@ -24,7 +24,7 @@ public class MpsatDeadlockFreenessVerificationCommand extends MpsatAbstractVerif
 
     @Override
     public Position getPosition() {
-        return null;
+        return Position.TOP;
     }
 
     @Override

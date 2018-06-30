@@ -14,7 +14,7 @@ public class AtacsGeneralisedCelementSynthesisCommand extends AtacsAbstractSynth
 
     @Override
     public Position getPosition() {
-        return Position.TOP;
+        return Position.MIDDLE;
     }
 
     @Override
