@@ -9,7 +9,6 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -21,8 +20,6 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -91,18 +88,12 @@ public class SettingsEditorDialog extends JDialog {
     }
 
     public DefaultMutableTreeNode getSectionNode(DefaultMutableTreeNode node, String section) {
-        int dotPos = section.indexOf('.');
-
-        String thisLevel, nextLevel;
-
-        if (dotPos < 0) {
-            thisLevel = section;
-            nextLevel = null;
-        } else {
-            thisLevel = section.substring(0, dotPos);
-            nextLevel = section.substring(dotPos + 1);
+        if (section == null) {
+            return node;
         }
-
+        int dotPos = section.indexOf('.');
+        String thisLevel = (dotPos < 0) ? section : section.substring(0, dotPos);
+        String nextLevel = (dotPos < 0) ? null : section.substring(dotPos + 1);
         DefaultMutableTreeNode thisLevelNode = null;
 
         for (int i = 0; i < node.getChildCount(); i++) {
@@ -160,25 +151,22 @@ public class SettingsEditorDialog extends JDialog {
         }
 
         // Sort settings by (Sections + Name) strings
-        Collections.sort(settings, new Comparator<Settings>() {
-            @Override
-            public int compare(Settings o1, Settings o2) {
-                if (o1 == o2) return 0;
-                if (o1 == null) return -1;
-                if (o2 == null) return 1;
-                String s1 = o1.getSection();
-                String s2 = o2.getSection();
-                if (s1 == null) return -1;
-                if (s2 == null) return 1;
-                if (s1.equals(s2)) {
-                    String n1 = o1.getName();
-                    String n2 = o2.getName();
-                    if (n1 == null) return -1;
-                    if (n2 == null) return 1;
-                    return n1.compareTo(n2);
-                }
-                return s1.compareTo(s2);
+        Collections.sort(settings, (o1, o2) -> {
+            if (o1 == o2) return 0;
+            if (o1 == null) return -1;
+            if (o2 == null) return 1;
+            String s1 = o1.getSection();
+            String s2 = o2.getSection();
+            if (s1 == null) return -1;
+            if (s2 == null) return 1;
+            if (s1.equals(s2)) {
+                String n1 = o1.getName();
+                String n2 = o2.getName();
+                if (n1 == null) return -1;
+                if (n2 == null) return 1;
+                return n1.compareTo(n2);
             }
+            return s1.compareTo(s2);
         });
         return settings;
     }
@@ -207,15 +195,13 @@ public class SettingsEditorDialog extends JDialog {
         sectionTree.setRootVisible(false);
         sectionTree.setShowsRootHandles(true);
 
-        sectionTree.addTreeSelectionListener(new TreeSelectionListener() {
-            public void valueChanged(TreeSelectionEvent e) {
-                Object userObject = ((DefaultMutableTreeNode) e.getPath().getLastPathComponent()).getUserObject();
-                if (userObject instanceof SettingsPageNode) {
-                    Settings page = ((SettingsPageNode) userObject).getPage();
-                    setObject(page);
-                } else {
-                    setObject(null);
-                }
+        sectionTree.addTreeSelectionListener(e -> {
+            Object userObject = ((DefaultMutableTreeNode) e.getPath().getLastPathComponent()).getUserObject();
+            if (userObject instanceof SettingsPageNode) {
+                Settings page = ((SettingsPageNode) userObject).getPage();
+                setObject(page);
+            } else {
+                setObject(null);
             }
         });
 

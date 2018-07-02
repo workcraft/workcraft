@@ -20,7 +20,7 @@ public class BuiltinTools implements Module {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
 
-        pm.registerClass(Settings.class, CommonPluginSettings.class);
+        pm.registerClass(Settings.class, CommonFavoriteSettings.class);
         pm.registerClass(Settings.class, CommonEditorSettings.class);
         pm.registerClass(Settings.class, CommonVisualSettings.class);
         pm.registerClass(Settings.class, CommonDecorationSettings.class);

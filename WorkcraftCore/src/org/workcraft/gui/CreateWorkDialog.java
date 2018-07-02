@@ -1,8 +1,6 @@
 package org.workcraft.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -10,25 +8,29 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 
 import org.workcraft.Framework;
 import org.workcraft.PluginManager;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.PluginInfo;
+import org.workcraft.plugins.shared.CommonFavoriteSettings;
 import org.workcraft.util.GUI;
 
 public class CreateWorkDialog extends JDialog {
+
+    class WorkTypeCellRenderer extends DefaultListCellRenderer {
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            if (!isSelected && (index % 2 != 0)) {
+                Color color = getBackground();
+                setBackground(Coloriser.colorise(color, Color.LIGHT_GRAY));
+                setOpaque(true);
+            }
+            return this;
+        }
+    }
 
     private static final long serialVersionUID = 1L;
     private JList workTypeList;
@@ -72,9 +74,10 @@ public class CreateWorkDialog extends JDialog {
         DefaultListModel listModel = new DefaultListModel();
         workTypeList = new JList(listModel);
         workTypeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        workTypeList.setLayoutOrientation(JList.VERTICAL_WRAP);
         workTypeList.setVisibleRowCount(0);
         workTypeList.setBorder(SizeHelper.getEmptyBorder());
+        workTypeList.setCellRenderer(new WorkTypeCellRenderer());
+        modelScroll.setViewportView(workTypeList);
 
         workTypeList.addListSelectionListener(event -> {
             if (workTypeList.getSelectedIndex() == -1) {
@@ -105,28 +108,14 @@ public class CreateWorkDialog extends JDialog {
             }
         });
 
-        final Framework framework = Framework.getInstance();
-        PluginManager pm = framework.getPluginManager();
-        final Collection<PluginInfo<? extends ModelDescriptor>> plugins = pm.getPlugins(ModelDescriptor.class);
-        ArrayList<ListElement> elements = new ArrayList<>();
-        int minLength = 10;
-        for (PluginInfo<? extends ModelDescriptor> plugin: plugins) {
-            elements.add(new ListElement(plugin.newInstance()));
-            String displayName = plugin.getSingleton().getDisplayName();
-            if ((displayName != null) && (displayName.length() > minLength)) {
-                minLength = displayName.length();
-            }
-        }
+        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
+        JCheckBox favoriteModelsCheckbox = new JCheckBox("Favorite model types only");
+        favoriteModelsCheckbox.addActionListener(event -> fillModelList(modelScroll, listModel, !favoriteModelsCheckbox.isSelected()));
+        filterPanel.add(favoriteModelsCheckbox);
+        favoriteModelsCheckbox.setSelected(CommonFavoriteSettings.getFilterFavorites());
 
-        Collections.sort(elements);
-        for (ListElement element: elements) {
-            listModel.addElement(element);
-        }
-
-        modelScroll.setViewportView(workTypeList);
-        int width = SizeHelper.getBaseFontSize() * minLength;
-        int height = SizeHelper.getListRowSize() * elements.size();
-        modelScroll.setPreferredSize(new Dimension(width, height));
+        // Update list of model types
+        fillModelList(modelScroll, listModel, !favoriteModelsCheckbox.isSelected());
 
         int hGap = SizeHelper.getLayoutHGap();
         int vGap = SizeHelper.getLayoutVGap();
@@ -141,6 +130,8 @@ public class CreateWorkDialog extends JDialog {
 
         buttonsPane.add(okButton);
         buttonsPane.add(cancelButton);
+
+        contentPane.add(filterPanel, BorderLayout.NORTH);
         contentPane.add(modelScroll, BorderLayout.CENTER);
         contentPane.add(buttonsPane, BorderLayout.SOUTH);
         getRootPane().setDefaultButton(okButton);
@@ -152,6 +143,32 @@ public class CreateWorkDialog extends JDialog {
         getRootPane().registerKeyboardAction(event -> cancel(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
+    }
+
+    private void fillModelList(JScrollPane modelScroll, DefaultListModel listModel, boolean showAll) {
+        Framework framework = Framework.getInstance();
+        PluginManager pm = framework.getPluginManager();
+        Collection<PluginInfo<? extends ModelDescriptor>> plugins = pm.getPlugins(ModelDescriptor.class);
+        ArrayList<ListElement> elements = new ArrayList<>();
+        int displayNameLength = 10;
+        for (PluginInfo<? extends ModelDescriptor> plugin: plugins) {
+            ModelDescriptor modelDescriptor = plugin.newInstance();
+            String displayName = modelDescriptor.getDisplayName();
+            displayNameLength = Math.max(displayNameLength, displayName.length());
+            if (showAll || CommonFavoriteSettings.getIsFavorite(displayName)) {
+                elements.add(new ListElement(modelDescriptor));
+            }
+        }
+
+        Collections.sort(elements);
+        listModel.clear();
+        for (ListElement element: elements) {
+            listModel.addElement(element);
+        }
+
+        int width = SizeHelper.getBaseFontSize() * displayNameLength;
+        int height = SizeHelper.getListRowSize() * plugins.size();
+        modelScroll.setPreferredSize(new Dimension(width, height));
     }
 
     private void ok() {
