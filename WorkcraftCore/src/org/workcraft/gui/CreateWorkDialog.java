@@ -76,17 +76,13 @@ public class CreateWorkDialog extends JDialog {
         workTypeList.setVisibleRowCount(0);
         workTypeList.setBorder(SizeHelper.getEmptyBorder());
 
-        workTypeList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-            @Override
-            public void valueChanged(javax.swing.event.ListSelectionEvent e) {
-                if (workTypeList.getSelectedIndex() == -1) {
-                    okButton.setEnabled(false);
-                } else {
-                    okButton.setEnabled(true);
-                }
+        workTypeList.addListSelectionListener(event -> {
+            if (workTypeList.getSelectedIndex() == -1) {
+                okButton.setEnabled(false);
+            } else {
+                okButton.setEnabled(true);
             }
-        }
-        );
+        });
 
         workTypeList.addMouseListener(new MouseListener() {
             @Override
@@ -123,7 +119,7 @@ public class CreateWorkDialog extends JDialog {
         }
 
         Collections.sort(elements);
-        for (ListElement element : elements) {
+        for (ListElement element: elements) {
             listModel.addElement(element);
         }
 

@@ -329,14 +329,14 @@ public class SelectionTool extends AbstractGraphEditorTool {
         WorkspaceEntry we = editor.getWorkspaceEntry();
         List<Command> applicableTools = new ArrayList<>();
         HashSet<Command> enabledTools = new HashSet<>();
-        for (Command tool: Commands.getApplicableCommands(we)) {
-            if (tool instanceof NodeTransformer) {
-                NodeTransformer nodeTransformer = (NodeTransformer) tool;
+        for (Command command: Commands.getApplicableVisibleCommands(we)) {
+            if (command instanceof NodeTransformer) {
+                NodeTransformer nodeTransformer = (NodeTransformer) command;
                 if (nodeTransformer.isApplicableTo(node)) {
-                    applicableTools.add(tool);
+                    applicableTools.add(command);
                     ModelEntry me = we.getModelEntry();
                     if (nodeTransformer.isEnabled(me, node)) {
-                        enabledTools.add(tool);
+                        enabledTools.add(command);
                     }
                 }
             }

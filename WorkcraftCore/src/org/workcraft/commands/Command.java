@@ -7,4 +7,8 @@ public interface Command {
     String getDisplayName();
     boolean isApplicableTo(WorkspaceEntry we);
     void run(WorkspaceEntry we);
+
+    default boolean isVisibleInMenu() {
+        return true;
+    }
 }

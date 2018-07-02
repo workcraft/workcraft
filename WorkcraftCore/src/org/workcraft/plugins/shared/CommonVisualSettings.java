@@ -27,11 +27,11 @@ public class CommonVisualSettings implements Settings {
     private static final String keyNameVisibility = prefix + ".nameVisibility";
     private static final String keyNamePositioning = prefix + ".namePositioning";
     private static final String keyNameColor = prefix + ".nameColor";
-    private static final String keyConnectionLineWidth = ".connectionLineWidth";
-    private static final String keyConnectionArrowWidth = ".connectionArrowWidth";
-    private static final String keyConnectionArrowLength = ".connectionArrowLength";
-    private static final String keyConnectionBubbleSize = ".connectionBubbleSize";
-    private static final String keyConnectionColor = ".connectionColor";
+    private static final String keyConnectionLineWidth = prefix + ".connectionLineWidth";
+    private static final String keyConnectionArrowWidth = prefix + ".connectionArrowWidth";
+    private static final String keyConnectionArrowLength = prefix + ".connectionArrowLength";
+    private static final String keyConnectionBubbleSize = prefix + ".connectionBubbleSize";
+    private static final String keyConnectionColor = prefix + ".connectionColor";
     private static final String keyUseSubscript = prefix + ".useSubscript";
 
     private static final double defaultFontSize = 10.0;
