@@ -110,7 +110,7 @@ public class SettingsEditorDialog extends JDialog {
             if (!(child.getUserObject() instanceof String)) {
                 continue;
             }
-            if (((String) child.getUserObject()).equals(thisLevel)) {
+            if (child.getUserObject().equals(thisLevel)) {
                 thisLevelNode = child;
                 break;
             }
