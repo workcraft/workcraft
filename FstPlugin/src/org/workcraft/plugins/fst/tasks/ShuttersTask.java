@@ -40,7 +40,7 @@ public class ShuttersTask implements Task<ShuttersResult>, ExternalProcessListen
         if (args.get(0).contains("ERROR")) {
             we.cancelMemento();
             ShuttersResult result = new ShuttersResult(args.get(1), args.get(2));
-            return new Result<ShuttersResult>(Outcome.FAILURE, result);
+            return new Result<>(Outcome.FAILURE, result);
         }
 
         // Running the tool through external process interface
@@ -53,7 +53,7 @@ public class ShuttersTask implements Task<ShuttersResult>, ExternalProcessListen
 
             FileUtils.deleteOnExitRecursively(tmpDir);
             we.cancelMemento();
-            return new Result<ShuttersResult>(Outcome.CANCEL);
+            return new Result<>(Outcome.CANCEL);
 
         } else {
 
@@ -66,11 +66,11 @@ public class ShuttersTask implements Task<ShuttersResult>, ExternalProcessListen
                 outcome = Outcome.FAILURE;
             }
 
-            String stdout = new String(result.getPayload().getStdout());
-            String stderr = new String(result.getPayload().getStderr());
+            String stdout = result.getPayload().getStdoutString();
+            String stderr = result.getPayload().getStderrString();
             ShuttersResult finalResult = new ShuttersResult(stderr, stdout);
 
-            return new Result<ShuttersResult>(outcome, finalResult);
+            return new Result<>(outcome, finalResult);
         }
     }
 

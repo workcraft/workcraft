@@ -107,10 +107,10 @@ public class CreateWorkDialog extends JDialog {
 
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
-        final Collection<PluginInfo<? extends ModelDescriptor>> modelDescriptors = pm.getPlugins(ModelDescriptor.class);
+        final Collection<PluginInfo<? extends ModelDescriptor>> plugins = pm.getPlugins(ModelDescriptor.class);
         ArrayList<ListElement> elements = new ArrayList<>();
         int minLength = 10;
-        for (PluginInfo<? extends ModelDescriptor> plugin : modelDescriptors) {
+        for (PluginInfo<? extends ModelDescriptor> plugin: plugins) {
             elements.add(new ListElement(plugin.newInstance()));
             String displayName = plugin.getSingleton().getDisplayName();
             if ((displayName != null) && (displayName.length() > minLength)) {

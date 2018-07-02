@@ -51,8 +51,7 @@ public class ScencoExternalToolTask implements Task<ScencoResult>, ExternalProce
                 we.cancelMemento();
                 outcome = Outcome.FAILURE;
             }
-            String stdout = new String(result.getPayload().getStdout());
-            ScencoResult finalResult = new ScencoResult(stdout, resultDirectoryPath);
+            ScencoResult finalResult = new ScencoResult(result.getPayload().getStdoutString(), resultDirectoryPath);
             return new Result<>(outcome, finalResult);
         }
     }

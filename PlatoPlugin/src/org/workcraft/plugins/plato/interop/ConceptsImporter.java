@@ -37,8 +37,8 @@ public class ConceptsImporter implements Importer {
             PlatoResultHandler monitor = new PlatoResultHandler(this);
             Result<? extends ExternalProcessOutput> result = task.run(monitor);
             if (result.getOutcome() == Outcome.SUCCESS) {
-                String output = new String(result.getPayload().getStdout());
-                if (output.startsWith(".model")) {
+                String stdout = result.getPayload().getStdoutString();
+                if (stdout.startsWith(".model")) {
                     StgImporter importer = new StgImporter();
                     ByteArrayInputStream is = new ByteArrayInputStream(result.getPayload().getStdout());
                     StgModel stg = importer.importStg(is);

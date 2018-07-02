@@ -106,8 +106,7 @@ public class MpsatSynthesisTask implements Task<MpsatSynthesisOutput> {
             // Even if the return code is 0 or 1, still test MPSat output to make sure it has completed successfully.
             boolean success = false;
             if ((returnCode == 0) || (returnCode == 1)) {
-                String stdout = new String(output.getStdout());
-                Matcher matcherSuccess = patternSuccess.matcher(stdout);
+                Matcher matcherSuccess = patternSuccess.matcher(output.getStdoutString());
                 success = matcherSuccess.find();
             }
             if (!success) {

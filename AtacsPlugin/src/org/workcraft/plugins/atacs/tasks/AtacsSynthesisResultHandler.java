@@ -160,7 +160,7 @@ public class AtacsSynthesisResultHandler extends AbstractExtendedResultHandler<A
     private void handleFailure(AtacsSynthesisOutput atacsOutput) {
         String errorMessage = "Error: ATACS synthesis failed.";
         if (atacsOutput != null) {
-            errorMessage += ERROR_CAUSE_PREFIX + atacsOutput.getStderr();
+            errorMessage += ERROR_CAUSE_PREFIX + atacsOutput.getStderrString();
         }
         DialogUtils.showError(errorMessage);
     }
