@@ -1,5 +1,15 @@
 package org.workcraft.gui;
 
+import org.workcraft.Framework;
+import org.workcraft.PluginManager;
+import org.workcraft.PluginUtils;
+import org.workcraft.dom.ModelDescriptor;
+import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.plugins.PluginInfo;
+import org.workcraft.plugins.shared.CommonFavoriteSettings;
+import org.workcraft.util.GUI;
+
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -7,16 +17,6 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-
-import javax.swing.*;
-
-import org.workcraft.Framework;
-import org.workcraft.PluginManager;
-import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.plugins.PluginInfo;
-import org.workcraft.plugins.shared.CommonFavoriteSettings;
-import org.workcraft.util.GUI;
 
 public class CreateWorkDialog extends JDialog {
 
@@ -48,7 +48,7 @@ public class CreateWorkDialog extends JDialog {
     }
 
     static class ListElement implements Comparable<ListElement> {
-        public ModelDescriptor descriptor;
+        public final ModelDescriptor descriptor;
 
         ListElement(ModelDescriptor descriptor) {
             this.descriptor = descriptor;
@@ -60,8 +60,8 @@ public class CreateWorkDialog extends JDialog {
         }
 
         @Override
-        public int compareTo(ListElement o) {
-            return toString().compareTo(o.toString());
+        public int compareTo(ListElement other) {
+            return descriptor.getDisplayName().compareTo(other.descriptor.getDisplayName());
         }
     }
 
@@ -108,8 +108,14 @@ public class CreateWorkDialog extends JDialog {
             }
         });
 
+        Collection<String> names = PluginUtils.getSortedModelDisplayNames();
+        long allCount = names.size();
+        long favoriteCount = names.stream().filter(name -> CommonFavoriteSettings.getIsFavorite(name)).count();
+
         JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
-        JCheckBox favoriteModelsCheckbox = new JCheckBox("Favorite model types only");
+        JCheckBox favoriteModelsCheckbox = new JCheckBox("Show favorite model types only (" + favoriteCount + " out of " + allCount + ")");
+        favoriteModelsCheckbox.setToolTipText("<html>These can be configured in global settings:<br>"
+                + "<i>Edit->Preferences...->Common->New work favorites</i></html>");
         favoriteModelsCheckbox.addActionListener(event -> fillModelList(modelScroll, listModel, !favoriteModelsCheckbox.isSelected()));
         filterPanel.add(favoriteModelsCheckbox);
         favoriteModelsCheckbox.setSelected(CommonFavoriteSettings.getFilterFavorites());
@@ -143,11 +149,19 @@ public class CreateWorkDialog extends JDialog {
         getRootPane().registerKeyboardAction(event -> cancel(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
+
+        // Assign number keys as shortcuts for model types (the order is 1234567890).
+        for (int i = 0; i <= 9; i++) {
+            final int index = i;
+            int keyCode = (i < 9) ? KeyEvent.VK_1 + i : KeyEvent.VK_0;
+            getRootPane().registerKeyboardAction(event -> ok(index),
+                    KeyStroke.getKeyStroke(keyCode, 0),
+                    JComponent.WHEN_IN_FOCUSED_WINDOW);
+        }
     }
 
     private void fillModelList(JScrollPane modelScroll, DefaultListModel listModel, boolean showAll) {
-        Framework framework = Framework.getInstance();
-        PluginManager pm = framework.getPluginManager();
+        PluginManager pm = Framework.getInstance().getPluginManager();
         Collection<PluginInfo<? extends ModelDescriptor>> plugins = pm.getPlugins(ModelDescriptor.class);
         ArrayList<ListElement> elements = new ArrayList<>();
         int displayNameLength = 10;
@@ -169,6 +183,13 @@ public class CreateWorkDialog extends JDialog {
         int width = SizeHelper.getBaseFontSize() * displayNameLength;
         int height = SizeHelper.getListRowSize() * plugins.size();
         modelScroll.setPreferredSize(new Dimension(width, height));
+    }
+
+    private void ok(int index) {
+        if (index < workTypeList.getModel().getSize()) {
+            workTypeList.setSelectedIndex(index);
+            ok();
+        }
     }
 
     private void ok() {

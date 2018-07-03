@@ -1,13 +1,10 @@
 package org.workcraft.plugins.shared;
 
 import org.workcraft.Config;
-import org.workcraft.Framework;
-import org.workcraft.PluginManager;
-import org.workcraft.dom.ModelDescriptor;
+import org.workcraft.PluginUtils;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
-import org.workcraft.plugins.PluginInfo;
 
 import java.util.*;
 
@@ -35,7 +32,7 @@ public class CommonFavoriteSettings implements Settings {
                 return getFilterFavorites();
             }
         });
-        for (String name: getModelNames()) {
+        for (String name: PluginUtils.getSortedModelDisplayNames()) {
             properties.add(new PropertyDeclaration<CommonFavoriteSettings, Boolean>(
                     this, "  - " + name, Boolean.class, true, false, false) {
                 @Override
@@ -50,20 +47,6 @@ public class CommonFavoriteSettings implements Settings {
         }
     }
 
-    private List<String> getModelNames() {
-        List<String> result = new ArrayList<>();
-        final Framework framework = Framework.getInstance();
-        PluginManager pm = framework.getPluginManager();
-        final Collection<PluginInfo<? extends ModelDescriptor>> plugins = pm.getPlugins(ModelDescriptor.class);
-        for (PluginInfo<? extends ModelDescriptor> plugin : plugins) {
-            String displayName = plugin.getSingleton().getDisplayName();
-            if ((displayName != null) && !displayName.isEmpty()) {
-                result.add(displayName);
-            }
-        }
-        return result;
-    }
-
     @Override
     public List<PropertyDescriptor> getDescriptors() {
         return properties;
@@ -72,7 +55,7 @@ public class CommonFavoriteSettings implements Settings {
     @Override
     public void load(Config config) {
         setFilterFavorite(config.getBoolean(keyShowAll, defaultShowAll));
-        for (String name: getModelNames()) {
+        for (String name: PluginUtils.getSortedModelDisplayNames()) {
             String key = getKey(name);
             setIsFavorite(name, config.getBoolean(key, true));
         }
@@ -81,7 +64,7 @@ public class CommonFavoriteSettings implements Settings {
     @Override
     public void save(Config config) {
         config.setBoolean(keyShowAll, getFilterFavorites());
-        for (String name: getModelNames()) {
+        for (String name: PluginUtils.getSortedModelDisplayNames()) {
             String key = getKey(name);
             config.setBoolean(key, getIsFavorite(name));
         }
