@@ -5,6 +5,7 @@ import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 
 public class DfsDescriptor implements ModelDescriptor {
+
     @Override
     public String getDisplayName() {
         return "Dataflow Structure";
@@ -19,4 +20,5 @@ public class DfsDescriptor implements ModelDescriptor {
     public VisualModelDescriptor getVisualModelDescriptor() {
         return new VisualDfsDescriptor();
     }
+
 }

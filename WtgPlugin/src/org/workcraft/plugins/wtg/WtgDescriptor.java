@@ -21,4 +21,9 @@ public class WtgDescriptor  implements ModelDescriptor {
         return new VisualWtgDescriptor();
     }
 
+    @Override
+    public Rating getRating() {
+        return Rating.EXPERIMENTAL;
+    }
+
 }

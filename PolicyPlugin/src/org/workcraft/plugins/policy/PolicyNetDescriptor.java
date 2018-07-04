@@ -5,6 +5,7 @@ import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 
 public class PolicyNetDescriptor implements ModelDescriptor {
+
     @Override
     public String getDisplayName() {
         return "Policy Net";
@@ -19,4 +20,10 @@ public class PolicyNetDescriptor implements ModelDescriptor {
     public VisualModelDescriptor getVisualModelDescriptor() {
         return new VisualPolicyNetDescriptor();
     }
+
+    @Override
+    public Rating getRating() {
+        return Rating.EXPERIMENTAL;
+    }
+
 }

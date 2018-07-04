@@ -12,8 +12,8 @@ import org.workcraft.util.GUI;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -56,7 +56,11 @@ public class CreateWorkDialog extends JDialog {
 
         @Override
         public String toString() {
-            return descriptor.getDisplayName();
+            String name = descriptor.getDisplayName();
+            if (CommonFavoriteSettings.getIsFavorite(name)) {
+                name = "<html><b>" + name + "</b></html>";
+            }
+            return name;
         }
 
         @Override
@@ -66,66 +70,31 @@ public class CreateWorkDialog extends JDialog {
     }
 
     private void initComponents() {
-        JPanel contentPane = new JPanel(new BorderLayout());
-        contentPane.setBorder(SizeHelper.getEmptyBorder());
-        setContentPane(contentPane);
-
-        JScrollPane modelScroll = new JScrollPane();
-        DefaultListModel listModel = new DefaultListModel();
-        workTypeList = new JList(listModel);
+        workTypeList = new JList(new DefaultListModel());
         workTypeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         workTypeList.setVisibleRowCount(0);
         workTypeList.setBorder(SizeHelper.getEmptyBorder());
         workTypeList.setCellRenderer(new WorkTypeCellRenderer());
-        modelScroll.setViewportView(workTypeList);
 
-        workTypeList.addListSelectionListener(event -> {
-            if (workTypeList.getSelectedIndex() == -1) {
-                okButton.setEnabled(false);
-            } else {
-                okButton.setEnabled(true);
-            }
-        });
-
-        workTypeList.addMouseListener(new MouseListener() {
+        workTypeList.addListSelectionListener(event -> okButton.setEnabled(workTypeList.getSelectedIndex() != -1));
+        workTypeList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if ((e.getClickCount() == 2) && (workTypeList.getSelectedIndex() != -1)) {
                     ok();
                 }
             }
-            @Override
-            public void mouseEntered(MouseEvent e) {
-            }
-            @Override
-            public void mouseExited(MouseEvent e) {
-            }
-            @Override
-            public void mousePressed(MouseEvent e) {
-            }
-            @Override
-            public void mouseReleased(MouseEvent e) {
-            }
         });
 
-        Collection<String> names = PluginUtils.getSortedModelDisplayNames();
-        long allCount = names.size();
-        long favoriteCount = names.stream().filter(name -> CommonFavoriteSettings.getIsFavorite(name)).count();
-
         JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
-        JCheckBox favoriteModelsCheckbox = new JCheckBox("Show favorite model types only (" + favoriteCount + " out of " + allCount + ")");
-        favoriteModelsCheckbox.setToolTipText("<html>These can be configured in global settings:<br>"
-                + "<i>Edit->Preferences...->Common->New work favorites</i></html>");
-        favoriteModelsCheckbox.addActionListener(event -> fillModelList(modelScroll, listModel, !favoriteModelsCheckbox.isSelected()));
-        filterPanel.add(favoriteModelsCheckbox);
+        JCheckBox favoriteModelsCheckbox = new JCheckBox(getFavoriteModelsCheckboxText());
+        favoriteModelsCheckbox.setToolTipText(getFavoriteModelsCheckboxTooltip());
+        favoriteModelsCheckbox.addActionListener(event -> toggleFavoriteModelsCheckbox());
         favoriteModelsCheckbox.setSelected(CommonFavoriteSettings.getFilterFavorites());
+        filterPanel.add(favoriteModelsCheckbox);
 
-        // Update list of model types
-        fillModelList(modelScroll, listModel, !favoriteModelsCheckbox.isSelected());
-
-        int hGap = SizeHelper.getLayoutHGap();
-        int vGap = SizeHelper.getLayoutVGap();
-        JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, hGap, vGap));
+        fillModelList();
+        JScrollPane modelScroll = getModelScroll();
 
         okButton = GUI.createDialogButton("OK");
         okButton.setEnabled(false);
@@ -134,14 +103,72 @@ public class CreateWorkDialog extends JDialog {
         cancelButton = GUI.createDialogButton("Cancel");
         cancelButton.addActionListener(event -> cancel());
 
+        JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
         buttonsPane.add(okButton);
         buttonsPane.add(cancelButton);
 
+        JPanel contentPane = new JPanel(new BorderLayout());
+        contentPane.setBorder(SizeHelper.getEmptyBorder());
+        setContentPane(contentPane);
         contentPane.add(filterPanel, BorderLayout.NORTH);
         contentPane.add(modelScroll, BorderLayout.CENTER);
         contentPane.add(buttonsPane, BorderLayout.SOUTH);
         getRootPane().setDefaultButton(okButton);
 
+        setKeyboardShortcuts();
+    }
+
+    private String getFavoriteModelsCheckboxTooltip() {
+        return "<html>These can be configured in global settings:<br><i>Edit->Preferences...->Common->New work favorites</i></html>";
+    }
+
+    private void fillModelList() {
+        PluginManager pm = Framework.getInstance().getPluginManager();
+        ArrayList<ListElement> elements = new ArrayList<>();
+        for (PluginInfo<? extends ModelDescriptor> plugin: pm.getPlugins(ModelDescriptor.class)) {
+            ModelDescriptor modelDescriptor = plugin.newInstance();
+            String displayName = modelDescriptor.getDisplayName();
+            if (!CommonFavoriteSettings.getFilterFavorites() || CommonFavoriteSettings.getIsFavorite(displayName)) {
+                elements.add(new ListElement(modelDescriptor));
+            }
+        }
+        Collections.sort(elements);
+        DefaultListModel listModel = (DefaultListModel) workTypeList.getModel();
+        listModel.clear();
+        for (ListElement element: elements) {
+            listModel.addElement(element);
+        }
+    }
+
+    private JScrollPane getModelScroll() {
+        int displayNameLength = 10;
+        Collection<String> sortedDisplayNames = PluginUtils.getSortedModelDisplayNames();
+        for (String displayName: sortedDisplayNames) {
+            displayNameLength = Math.max(displayNameLength, displayName.length());
+        }
+        int width = SizeHelper.getBaseFontSize() * displayNameLength;
+        int height = SizeHelper.getListRowSize() * sortedDisplayNames.size();
+
+        JScrollPane result = new JScrollPane();
+        result.setPreferredSize(new Dimension(width, height));
+        result.setViewportView(workTypeList);
+        return result;
+    }
+
+    private String getFavoriteModelsCheckboxText() {
+        Collection<String> names = PluginUtils.getSortedModelDisplayNames();
+        long allCount = names.size();
+        long favoriteCount = names.stream().filter(name -> CommonFavoriteSettings.getIsFavorite(name)).count();
+        return "<html>Filter <b>favorite</b> model types (" + favoriteCount + " out of " + allCount + ")</html>";
+    }
+
+    private void toggleFavoriteModelsCheckbox() {
+        boolean filterFavoritesState = CommonFavoriteSettings.getFilterFavorites();
+        CommonFavoriteSettings.setFilterFavorites(!filterFavoritesState);
+        fillModelList();
+    }
+
+    private void setKeyboardShortcuts() {
         getRootPane().registerKeyboardAction(event -> ok(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -158,31 +185,6 @@ public class CreateWorkDialog extends JDialog {
                     KeyStroke.getKeyStroke(keyCode, 0),
                     JComponent.WHEN_IN_FOCUSED_WINDOW);
         }
-    }
-
-    private void fillModelList(JScrollPane modelScroll, DefaultListModel listModel, boolean showAll) {
-        PluginManager pm = Framework.getInstance().getPluginManager();
-        Collection<PluginInfo<? extends ModelDescriptor>> plugins = pm.getPlugins(ModelDescriptor.class);
-        ArrayList<ListElement> elements = new ArrayList<>();
-        int displayNameLength = 10;
-        for (PluginInfo<? extends ModelDescriptor> plugin: plugins) {
-            ModelDescriptor modelDescriptor = plugin.newInstance();
-            String displayName = modelDescriptor.getDisplayName();
-            displayNameLength = Math.max(displayNameLength, displayName.length());
-            if (showAll || CommonFavoriteSettings.getIsFavorite(displayName)) {
-                elements.add(new ListElement(modelDescriptor));
-            }
-        }
-
-        Collections.sort(elements);
-        listModel.clear();
-        for (ListElement element: elements) {
-            listModel.addElement(element);
-        }
-
-        int width = SizeHelper.getBaseFontSize() * displayNameLength;
-        int height = SizeHelper.getListRowSize() * plugins.size();
-        modelScroll.setPreferredSize(new Dimension(width, height));
     }
 
     private void ok(int index) {

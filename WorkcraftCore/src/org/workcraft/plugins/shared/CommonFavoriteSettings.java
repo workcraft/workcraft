@@ -2,13 +2,17 @@ package org.workcraft.plugins.shared;
 
 import org.workcraft.Config;
 import org.workcraft.PluginUtils;
+import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class CommonFavoriteSettings implements Settings {
+
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CommonFavoriteSettings";
 
@@ -22,10 +26,11 @@ public class CommonFavoriteSettings implements Settings {
 
     public CommonFavoriteSettings() {
         properties.add(new PropertyDeclaration<CommonFavoriteSettings, Boolean>(
-                this, "Show favorite model types only in New work dialog", Boolean.class, true, false, false) {
+                this, "Filter favorite model types in New work dialog",
+                Boolean.class, true, false, false) {
             @Override
             protected void setter(CommonFavoriteSettings object, Boolean value) {
-                setFilterFavorite(value);
+                setFilterFavorites(value);
             }
             @Override
             protected Boolean getter(CommonFavoriteSettings object) {
@@ -54,10 +59,12 @@ public class CommonFavoriteSettings implements Settings {
 
     @Override
     public void load(Config config) {
-        setFilterFavorite(config.getBoolean(keyShowAll, defaultShowAll));
-        for (String name: PluginUtils.getSortedModelDisplayNames()) {
+        setFilterFavorites(config.getBoolean(keyShowAll, defaultShowAll));
+        for (ModelDescriptor descriptor: PluginUtils.getModelDescriptors()) {
+            String name = descriptor.getDisplayName();
             String key = getKey(name);
-            setIsFavorite(name, config.getBoolean(key, true));
+            boolean isFavoriteDefault = descriptor.getRating().compareTo(ModelDescriptor.Rating.NORMAL) >= 0;
+            setIsFavorite(name, config.getBoolean(key, isFavoriteDefault));
         }
     }
 
@@ -88,7 +95,7 @@ public class CommonFavoriteSettings implements Settings {
         return filterFavorites;
     }
 
-    public static void setFilterFavorite(boolean value) {
+    public static void setFilterFavorites(boolean value) {
         filterFavorites = value;
     }
 
