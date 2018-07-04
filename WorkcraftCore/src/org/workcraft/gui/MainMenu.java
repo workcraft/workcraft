@@ -416,8 +416,8 @@ public class MainMenu extends JMenuBar {
     private void createCommandsMenu(final WorkspaceEntry we) {
         removeCommandsMenu();
 
-        List<Command> applicableCommands = Commands.getApplicableCommands(we);
-        List<String> sections = Commands.getSections(applicableCommands);
+        List<Command> applicableVisibleCommands = Commands.getApplicableVisibleCommands(we);
+        List<String> sections = Commands.getSections(applicableVisibleCommands);
 
         JMenu mnCommands = new JMenu("Tools");
         mnCommandsList.clear();
@@ -434,14 +434,12 @@ public class MainMenu extends JMenuBar {
                     mnCommandsList.addFirst(mnCommands);
                 }
             }
-            List<Command> sectionCommands = Commands.getSectionCommands(section, applicableCommands);
+            List<Command> sectionCommands = Commands.getSectionCommands(section, applicableVisibleCommands);
             List<List<Command>> sectionCommandsPartitions = new LinkedList<>();
             sectionCommandsPartitions.add(Commands.getUnpositionedCommands(sectionCommands));
-            sectionCommandsPartitions.add(Commands.getPositionedCommands(sectionCommands, Position.TOP));
-            sectionCommandsPartitions.add(Commands.getPositionedCommands(sectionCommands, Position.TOP_MIDDLE));
-            sectionCommandsPartitions.add(Commands.getPositionedCommands(sectionCommands, Position.MIDDLE));
-            sectionCommandsPartitions.add(Commands.getPositionedCommands(sectionCommands, Position.BOTTOM_MIDDLE));
-            sectionCommandsPartitions.add(Commands.getPositionedCommands(sectionCommands, Position.BOTTOM));
+            for (Position position: Position.values()) {
+                sectionCommandsPartitions.add(Commands.getPositionedCommands(sectionCommands, position));
+            }
             boolean needSeparator = false;
             for (List<Command> sectionCommandsPartition : sectionCommandsPartitions) {
                 boolean isFirstItem = true;

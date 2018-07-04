@@ -29,8 +29,16 @@ public class ExternalProcessOutput {
         return stdout;
     }
 
+    public String getStdoutString() {
+        return new String(stdout);
+    }
+
     public byte[] getStderr() {
         return stderr;
+    }
+
+    public String getStderrString() {
+        return new String(stderr);
     }
 
     public byte[] getFileData(String name) {
@@ -42,7 +50,7 @@ public class ExternalProcessOutput {
     }
 
     public String getErrorsHeadAndTail(int firstCount, int lastCount) {
-        return getHeadAndTail(new String(getStderr()), firstCount, lastCount);
+        return getHeadAndTail(getStderrString(), firstCount, lastCount);
     }
 
     private String getHeadAndTail(String text, int firstCount, int lastCount) {

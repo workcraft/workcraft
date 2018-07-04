@@ -62,15 +62,15 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
                         return;
                     }
                 } else {
-                    String output = new String(result.getPayload().getStdout());
+                    String stdout = result.getPayload().getStdoutString();
                     if (result.getOutcome() == Outcome.SUCCESS) {
                         final Framework framework = Framework.getInstance();
                         final MainWindow mainWindow = framework.getMainWindow();
                         GraphEditorPanel editor = mainWindow.getEditor(we);
-                        if (output.startsWith(".model out") || output.startsWith(".inputs")) {
-                            int endOfFile = output.indexOf(".end") + 4;
-                            String info = output.substring(endOfFile).trim();
-                            output = output.substring(0, endOfFile);
+                        if (stdout.startsWith(".model out") || stdout.startsWith(".inputs")) {
+                            int endOfFile = stdout.indexOf(".end") + 4;
+                            String info = stdout.substring(endOfFile).trim();
+                            stdout = stdout.substring(0, endOfFile);
                             String[] invariants = info.split(System.getProperty("line.separator"));
 
                             if (!info.isEmpty()) {
@@ -84,9 +84,9 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
                             }
 
                             if (sender instanceof PlatoStgConversionCommand) {
-                                addStg(output, framework, editor, invariants);
+                                addStg(stdout, framework, editor, invariants);
                             } else if (sender instanceof PlatoFstConversionCommand) {
-                                addFst(output, framework, editor);
+                                addFst(stdout, framework, editor);
                             }
                             return;
 

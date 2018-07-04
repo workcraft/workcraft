@@ -104,7 +104,7 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
     }
 
     private void checkNewSignals(PetrifySynthesisOutput petrifyOutput) {
-        String errorMessage = new String(petrifyOutput.getStderr());
+        String errorMessage = petrifyOutput.getStderrString();
         List<String> signals = new ArrayList<>();
         Matcher matcher = patternAddingStateSignal.matcher(errorMessage);
         while (matcher.find()) {
@@ -228,7 +228,7 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
     private void handleFailure(PetrifySynthesisOutput petrifyOutput) {
         String errorMessage = "Error: Petrify synthesis failed.";
         if (petrifyOutput != null) {
-            errorMessage += ERROR_CAUSE_PREFIX + petrifyOutput.getStderr();
+            errorMessage += ERROR_CAUSE_PREFIX + petrifyOutput.getStderrString();
         }
         DialogUtils.showError(errorMessage);
     }

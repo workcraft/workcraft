@@ -71,6 +71,7 @@ public class AtacsSynthesisTask implements Task<AtacsSynthesisOutput>, ExternalP
             }
         }
 
+        command.add("-oq"); // Quiet mode
         command.add("-ys"); // Do circuit synthesis
         command.add("-sV"); // Output synthesis result in Verilog format
 

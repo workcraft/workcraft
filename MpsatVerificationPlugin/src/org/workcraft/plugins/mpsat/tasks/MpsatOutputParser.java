@@ -1,6 +1,5 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,27 +42,21 @@ public class MpsatOutputParser {
             "triggers: .+\\R",
             Pattern.UNIX_LINES);
 
-    public MpsatOutputParser(MpsatOutput mpsatResult) {
-        String mpsatOutput;
-        try {
-            mpsatOutput = new String(mpsatResult.getStdout(), "ISO-8859-1"); // iso-latin-1
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-
+    public MpsatOutputParser(MpsatOutput mpsatOutput) {
+        String mpsatStdout = mpsatOutput.getStdoutString();
         solutions = new LinkedList<>();
-        Matcher matcherReachability0 = patternReachability0.matcher(mpsatOutput);
+        Matcher matcherReachability0 = patternReachability0.matcher(mpsatStdout);
         while (matcherReachability0.find()) {
             MpsatSolution solution = new MpsatSolution(null, null);
             solutions.add(solution);
         }
-        Matcher matcherReachability1 = patternReachability1.matcher(mpsatOutput);
+        Matcher matcherReachability1 = patternReachability1.matcher(mpsatStdout);
         while (matcherReachability1.find()) {
             Trace trace = getTrace(matcherReachability1.group(1));
             MpsatSolution solution = new MpsatSolution(trace, null);
             solutions.add(solution);
         }
-        Matcher matcherRreachability2 = patternReachability2.matcher(mpsatOutput);
+        Matcher matcherRreachability2 = patternReachability2.matcher(mpsatStdout);
         while (matcherRreachability2.find()) {
             Trace mainTrace = getTrace(matcherRreachability2.group(1));
             Trace branchTrace = getTrace(matcherRreachability2.group(2));
@@ -72,7 +65,7 @@ public class MpsatOutputParser {
             solution.setComment(signalName);
             solutions.add(solution);
         }
-        Matcher matcherNormalcy = patternNormalcy1.matcher(mpsatOutput);
+        Matcher matcherNormalcy = patternNormalcy1.matcher(mpsatStdout);
         while (matcherNormalcy.find()) {
             Trace trace = getTrace(matcherNormalcy.group(1));
             MpsatSolution solution = new MpsatSolution(trace, null);

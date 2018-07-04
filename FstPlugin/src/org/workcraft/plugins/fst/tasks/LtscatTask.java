@@ -29,7 +29,7 @@ public class LtscatTask implements Task<LtscatResult>, ExternalProcessListener {
 
     @Override
     public Result<? extends LtscatResult> run(ProgressMonitor<? super LtscatResult> monitor) {
-        ArrayList<String> args = new ArrayList<String>();
+        ArrayList<String> args = new ArrayList<>();
 
         args.add(ProcessWindowsSettings.getPython3Command());
         args.add(scriptFile.getAbsolutePath());
@@ -43,7 +43,7 @@ public class LtscatTask implements Task<LtscatResult>, ExternalProcessListener {
         if (result.getOutcome() == Outcome.CANCEL) {
             FileUtils.deleteOnExitRecursively(tmpDir);
             we.cancelMemento();
-            return new Result<LtscatResult>(Outcome.CANCEL);
+            return new Result<>(Outcome.CANCEL);
         } else {
             final Outcome outcome;
             if (result.getPayload().getReturnCode() == 0) {
@@ -53,10 +53,10 @@ public class LtscatTask implements Task<LtscatResult>, ExternalProcessListener {
                 we.cancelMemento();
                 outcome = Outcome.FAILURE;
             }
-            String stdout = new String(result.getPayload().getStdout());
-            String stderr = new String(result.getPayload().getStderr());
+            String stdout = result.getPayload().getStdoutString();
+            String stderr = result.getPayload().getStderrString();
             LtscatResult finalResult = new LtscatResult(stderr, stdout);
-            return new Result<LtscatResult>(outcome, finalResult);
+            return new Result<>(outcome, finalResult);
         }
     }
 

@@ -14,8 +14,8 @@ public class DfsSettings implements Settings {
     private static final String prefix = "DfsSettings";
 
     private static final String keyComputedLogicColor = prefix + ".computedLogicColor";
-    private static final String keySynchronisationRegisterColor = prefix + "synchronisationRegisterColor";
-    private static final String keyTokenPalette = prefix + "tokenPalette";
+    private static final String keySynchronisationRegisterColor = prefix + ".synchronisationRegisterColor";
+    private static final String keyTokenPalette = prefix + ".tokenPalette";
 
     private static final Color defaultComputedLogicColor = new Color(153, 153, 153);
     private static final Color defaultSynchronisationRegisterColor = new Color(153, 153, 153);

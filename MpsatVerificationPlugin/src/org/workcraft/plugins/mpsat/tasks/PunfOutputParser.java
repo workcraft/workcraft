@@ -1,6 +1,5 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import java.io.UnsupportedEncodingException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,17 +47,11 @@ public class PunfOutputParser {
             "Error: the net contains (.*) transition\\(s\\) with empty preset: (.*)",
             Pattern.UNIX_LINES);
 
-    public PunfOutputParser(PunfOutput result) {
-        String punfOutput;
-        try {
-            punfOutput = new String(result.getStderr(), "ISO-8859-1"); // iso-latin-1
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-
-        Matcher matcherInconsistent = patternInconsistent.matcher(punfOutput);
-        Matcher matcherNotSafe = patternNotSafe.matcher(punfOutput);
-        Matcher matcherEmptyPreset = patternEmptyPreset.matcher(punfOutput);
+    public PunfOutputParser(PunfOutput output) {
+        String stderr = output.getStderrString();
+        Matcher matcherInconsistent = patternInconsistent.matcher(stderr);
+        Matcher matcherNotSafe = patternNotSafe.matcher(stderr);
+        Matcher matcherEmptyPreset = patternEmptyPreset.matcher(stderr);
         if (matcherInconsistent.find()) {
             String comment = "Signal '" + matcherInconsistent.group(1) + "' is inconsistent";
             Trace trace = getTrace(matcherInconsistent.group(2));

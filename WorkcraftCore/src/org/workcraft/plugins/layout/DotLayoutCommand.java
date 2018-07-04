@@ -200,14 +200,13 @@ public class DotLayoutCommand extends AbstractLayoutCommand {
             if (res.getOutcome() == Outcome.FAILURE) {
                 throw new LayoutException("Failed to execute external process:\n" + res.getCause());
             }
-            if (res.getPayload().getReturnCode() == 0) {
+            ExternalProcessOutput output = res.getPayload();
+            if (output.getReturnCode() == 0) {
                 String in = FileUtils.readAllText(layout);
                 applyLayout(in, model);
             } else {
                 throw new LayoutException("External process (dot) failed (code " +
-                    res.getPayload().getReturnCode() + ")\n\n" +
-                    new String(res.getPayload().getStdout()) + "\n\n" +
-                    new String(res.getPayload().getStderr()));
+                    output.getReturnCode() + ")\n\n" + output.getStdoutString() + "\n\n" + output.getStderrString());
             }
         } catch (IOException | ModelValidationException | SerialisationException e) {
             DialogUtils.showError(e.getMessage());

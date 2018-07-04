@@ -2,6 +2,7 @@ package org.workcraft.plugins.atacs.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractSynthesisCommand;
+import org.workcraft.plugins.atacs.AtacsSettings;
 import org.workcraft.plugins.atacs.tasks.AtacsSynthesisResultHandler;
 import org.workcraft.plugins.atacs.tasks.AtacsSynthesisTask;
 import org.workcraft.plugins.stg.*;
@@ -18,6 +19,11 @@ public abstract class AtacsAbstractSynthesisCommand extends AbstractSynthesisCom
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.isApplicable(we, StgModel.class);
+    }
+
+    @Override
+    public boolean isVisibleInMenu() {
+        return AtacsSettings.getShowInMenu();
     }
 
     @Override

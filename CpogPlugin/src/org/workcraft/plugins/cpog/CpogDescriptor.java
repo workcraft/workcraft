@@ -5,6 +5,7 @@ import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 
 public class CpogDescriptor implements ModelDescriptor {
+
     @Override
     public String getDisplayName() {
         return "Conditional Partial Order Graph";

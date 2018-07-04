@@ -13,6 +13,7 @@ public class AtacsSettings implements Settings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "Tools.atacs";
 
+    private static final String keyShowInMenu = prefix + ".showInMenu";
     private static final String keyCommand = prefix + ".command";
     private static final String keyArgs = prefix + ".args";
     private static final String keyAdvancedMode = prefix + ".advancedMode";
@@ -20,6 +21,7 @@ public class AtacsSettings implements Settings {
     private static final String keyPrintStderr = prefix + ".printStderr";
     private static final String keyOpenSynthesisResult = prefix + ".openSynthesisResult";
 
+    private static final Boolean defaultShowInMenu = false;
     private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\ATACS\\atacs.exe" : "tools/ATACS/atacs";
     private static final String defaultArgs = "";
     private static final Boolean defaultAdvancedMode = false;
@@ -27,6 +29,7 @@ public class AtacsSettings implements Settings {
     private static final Boolean defaultPrintStderr = true;
     private static final boolean defaultOpenSynthesisResult = true;
 
+    private static Boolean showInMenu = defaultShowInMenu;
     private static String command = defaultCommand;
     private static String args = defaultArgs;
     private static Boolean advancedMode = defaultAdvancedMode;
@@ -35,6 +38,16 @@ public class AtacsSettings implements Settings {
     private static boolean openSynthesisResult = defaultOpenSynthesisResult;
 
     public AtacsSettings() {
+        properties.add(new PropertyDeclaration<AtacsSettings, Boolean>(
+                this, "Activate ATACS synthesis (experimental)", Boolean.class, true, false, false) {
+            protected void setter(AtacsSettings object, Boolean value) {
+                setShowInMenu(value);
+            }
+            protected Boolean getter(AtacsSettings object) {
+                return getShowInMenu();
+            }
+        });
+
         properties.add(new PropertyDeclaration<AtacsSettings, String>(
                 this, "ATACS command", String.class, true, false, false) {
             protected void setter(AtacsSettings object, String value) {
@@ -103,6 +116,7 @@ public class AtacsSettings implements Settings {
 
     @Override
     public void load(Config config) {
+        setShowInMenu(config.getBoolean(keyShowInMenu, defaultShowInMenu));
         setCommand(config.getString(keyCommand, defaultCommand));
         setArgs(config.getString(keyArgs, defaultArgs));
         setAdvancedMode(config.getBoolean(keyAdvancedMode, defaultAdvancedMode));
@@ -113,6 +127,7 @@ public class AtacsSettings implements Settings {
 
     @Override
     public void save(Config config) {
+        config.setBoolean(keyShowInMenu, getShowInMenu());
         config.set(keyCommand, getCommand());
         config.set(keyArgs, getArgs());
         config.setBoolean(keyAdvancedMode, getAdvancedMode());
@@ -129,6 +144,14 @@ public class AtacsSettings implements Settings {
     @Override
     public String getName() {
         return "ATACS";
+    }
+
+    public static boolean getShowInMenu() {
+        return showInMenu;
+    }
+
+    public static void setShowInMenu(boolean value) {
+        showInMenu = value;
     }
 
     public static String getCommand() {

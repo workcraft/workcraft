@@ -70,7 +70,7 @@ public class PGMinerResultHandler extends BasicProgressMonitor<ExternalProcessOu
                 e.printStackTrace();
             }
         }
-        final String[] stdout = new String(output.getStdout()).split("\n");
+        final String[] stdout = output.getStdoutString().split("\n");
 
         we.captureMemento();
         try {

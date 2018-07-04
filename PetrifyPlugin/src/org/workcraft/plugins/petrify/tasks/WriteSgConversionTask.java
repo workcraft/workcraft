@@ -125,7 +125,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionOutput> {
                 if (result.getCause() != null) {
                     return Result.exception(result.getCause());
                 } else {
-                    final String errorMessages = new String(output.getStderr());
+                    final String errorMessages = output.getStderrString();
                     final Matcher matcher = hugeSgPattern.matcher(errorMessages);
                     if (matcher.find()) {
                         final HugeSgRunnable hugeSgRunnable = new HugeSgRunnable(matcher.group(1));

@@ -19,7 +19,7 @@ public class PlatoException extends Exception {
     public void handleConceptsError() {
         try {
             if (result.getOutcome() == Outcome.FAILURE) {
-                String errors = new String(result.getPayload().getStderr());
+                String errors = result.getPayload().getStderrString();
                 LogUtils.logStderr(errors);
                 if (errors.contains("<no location info>")) {
                     conceptsCodeNotFound();
@@ -29,21 +29,21 @@ public class PlatoException extends Exception {
                     cannotTranslateConceptsError(errors);
                 }
             } else {
-                String output = new String(result.getPayload().getStdout());
-                if (!output.startsWith(".model out")) {
-                    if (output.contains("Error.")) {
-                        LogUtils.logStderr(output);
-                        if (output.contains("The following signals are not declared as input, output or internal")) {
+                String stdout = result.getPayload().getStdoutString();
+                if (!stdout.startsWith(".model out")) {
+                    if (stdout.contains("Error.")) {
+                        LogUtils.logStderr(stdout);
+                        if (stdout.contains("The following signals are not declared as input, output or internal")) {
                             signalTypeNotDeclared();
                         }
-                        if (output.contains("The following signals have inconsistent inital states")) {
+                        if (stdout.contains("The following signals have inconsistent inital states")) {
                             inconsistentStates();
                         }
-                        if (output.contains("The following signals have undefined initial states")) {
+                        if (stdout.contains("The following signals have undefined initial states")) {
                             undefinedStates();
                         }
                     } else {
-                        cannotTranslateConceptsError(output);
+                        cannotTranslateConceptsError(stdout);
                     }
                 }
             }

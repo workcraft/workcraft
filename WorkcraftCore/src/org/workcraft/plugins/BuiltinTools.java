@@ -9,14 +9,7 @@ import org.workcraft.plugins.layout.DotLayoutCommand;
 import org.workcraft.plugins.layout.DotLayoutSettings;
 import org.workcraft.plugins.layout.RandomLayoutCommand;
 import org.workcraft.plugins.layout.RandomLayoutSettings;
-import org.workcraft.plugins.shared.CommonCommentSettings;
-import org.workcraft.plugins.shared.CommonDebugSettings;
-import org.workcraft.plugins.shared.CommonDecorationSettings;
-import org.workcraft.plugins.shared.CommonEditorSettings;
-import org.workcraft.plugins.shared.CommonLogSettings;
-import org.workcraft.plugins.shared.CommonSatSettings;
-import org.workcraft.plugins.shared.CommonSignalSettings;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.shared.*;
 import org.workcraft.plugins.statistics.BasicStatisticsCommand;
 import org.workcraft.plugins.transform.CopyLabelTransformationCommand;
 import org.workcraft.plugins.transform.StraightenConnectionTransformationCommand;
@@ -27,6 +20,7 @@ public class BuiltinTools implements Module {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
 
+        pm.registerClass(Settings.class, CommonFavoriteSettings.class);
         pm.registerClass(Settings.class, CommonEditorSettings.class);
         pm.registerClass(Settings.class, CommonVisualSettings.class);
         pm.registerClass(Settings.class, CommonDecorationSettings.class);

@@ -86,8 +86,8 @@ public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<M
     private WorkspaceEntry handleSynthesisOutput(MpsatSynthesisOutput mpsatOutput,
             boolean sequentialAssign, RenderType renderType) {
 
-        final String log = new String(mpsatOutput.getStdout());
-        if ((log != null) && !log.isEmpty()) {
+        final String log = mpsatOutput.getStdoutString();
+        if (!log.isEmpty()) {
             System.out.println(log);
             System.out.println();
         }

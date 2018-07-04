@@ -140,7 +140,7 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationOutp
                 }
                 ExternalProcessOutput output = result.getPayload();
                 int returnCode = output.getReturnCode();
-                String errorMessage = new String(output.getStderr());
+                String errorMessage = output.getStderrString();
                 if ((returnCode != 0) || (errorMessage.contains(">>> ERROR: Cannot solve CSC.\n"))) {
                     return Result.failure(new PetrifyTransformationOutput(output, outStg));
                 }
