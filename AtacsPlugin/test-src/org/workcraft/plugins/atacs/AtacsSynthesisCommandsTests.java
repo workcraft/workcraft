@@ -47,8 +47,20 @@ public class AtacsSynthesisCommandsTests {
     }
 
     @Test
+    public void bufferComplexGateSynthesis() {
+        String workName = PackageUtils.getPackagePath(getClass(), "buffer.stg.work");
+        testComplexGateSynthesisCommand(workName, 1);
+    }
+
+    @Test
     public void celementComplexGateSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "celement.stg.work");
+        testComplexGateSynthesisCommand(workName, 1);
+    }
+
+    @Test
+    public void dlatchComplexGateSynthesis() {
+        String workName = PackageUtils.getPackagePath(getClass(), "dlatch.stg.work");
         testComplexGateSynthesisCommand(workName, 1);
     }
 
@@ -73,8 +85,20 @@ public class AtacsSynthesisCommandsTests {
     }
 
     @Test
+    public void bufferGeneralisedCelementSynthesis() {
+        String workName = PackageUtils.getPackagePath(getClass(), "buffer.stg.work");
+        testGeneralisedCelementSynthesisCommand(workName, 1);
+    }
+
+    @Test
     public void celementGeneralisedCelementSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "celement.stg.work");
+        testGeneralisedCelementSynthesisCommand(workName, 1);
+    }
+
+    @Test
+    public void dlatchGeneralisedCelementSynthesis() {
+        String workName = PackageUtils.getPackagePath(getClass(), "dlatch.stg.work");
         testGeneralisedCelementSynthesisCommand(workName, 1);
     }
 
@@ -99,8 +123,20 @@ public class AtacsSynthesisCommandsTests {
     }
 
     @Test
+    public void bufferStandardCelementSynthesis() {
+        String workName = PackageUtils.getPackagePath(getClass(), "buffer.stg.work");
+        testStandardCelementSynthesisCommand(workName, 3);
+    }
+
+    @Test
     public void celementStandardCelementSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "celement.stg.work");
+        testStandardCelementSynthesisCommand(workName, 3);
+    }
+
+    @Test
+    public void dlatchStandardCelementSynthesis() {
+        String workName = PackageUtils.getPackagePath(getClass(), "dlatch.stg.work");
         testStandardCelementSynthesisCommand(workName, 3);
     }
 

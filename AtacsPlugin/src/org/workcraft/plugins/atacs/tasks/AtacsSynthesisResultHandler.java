@@ -158,7 +158,9 @@ public class AtacsSynthesisResultHandler extends AbstractExtendedResultHandler<A
     }
 
     private void handleFailure(AtacsSynthesisOutput atacsOutput) {
-        String errorMessage = "Error: ATACS synthesis failed.";
+        String errorMessage = "Error: ATACS synthesis failed.\n"
+                + "Please refer to the log in Output window for details.\n"
+                + "Note that ATACS requires STG to have Complete State Coding.";
         if (atacsOutput != null) {
             errorMessage += ERROR_CAUSE_PREFIX + atacsOutput.getStderrString();
         }
