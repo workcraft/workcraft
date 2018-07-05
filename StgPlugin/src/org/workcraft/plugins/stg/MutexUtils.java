@@ -178,4 +178,12 @@ public class MutexUtils {
         }
     }
 
+    public static Set<String> getMutexPlaceReferences(Stg stg) {
+        HashSet<String> result = new HashSet<>();
+        for (StgPlace place: stg.getMutexPlaces()) {
+            result.add(stg.getNodeReference(place));
+        }
+        return result;
+    }
+
 }

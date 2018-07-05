@@ -1,11 +1,5 @@
 package org.workcraft.plugins.plato.interop;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.plato.exceptions.PlatoException;
@@ -19,6 +13,11 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.ModelEntry;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class ConceptsImporter implements Importer {
 
@@ -42,7 +41,7 @@ public class ConceptsImporter implements Importer {
                     StgImporter importer = new StgImporter();
                     ByteArrayInputStream is = new ByteArrayInputStream(result.getPayload().getStdout());
                     StgModel stg = importer.importStg(is);
-                    return new ModelEntry(new StgDescriptor(), (Model) stg);
+                    return new ModelEntry(new StgDescriptor(), stg);
                 }
             }
             throw new PlatoException(result);

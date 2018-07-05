@@ -101,10 +101,10 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
         StgUtils.restoreInterfaceSignals(envStg, circuitInputSignals, circuitOutputSignals);
 
         // Check that the set of circuit input signals is a subset of STG input signals.
-        Set<String> stgInputSignals = envStg.getSignalNames(Signal.Type.INPUT, null);
-        if (!stgInputSignals.containsAll(circuitInputSignals)) {
+        Set<String> stgInputs = envStg.getSignalReferences(Signal.Type.INPUT);
+        if (!stgInputs.containsAll(circuitInputSignals)) {
             Set<String> missingInputSignals = new HashSet<>(circuitInputSignals);
-            missingInputSignals.removeAll(stgInputSignals);
+            missingInputSignals.removeAll(stgInputs);
             String msg = "Strict implementation cannot be checked for a circuit whose\n"
                     + "input signals are not specified in its environment STG.";
             msg += "\n\nThe following input signals are missing in the environemnt STG:\n"

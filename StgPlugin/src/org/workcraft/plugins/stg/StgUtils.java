@@ -155,16 +155,15 @@ public class StgUtils {
         return result;
     }
 
-    public static void restoreInterfaceSignals(Stg stg, Collection<String> inputSignalNames, Collection<String> outputSignalNames) {
-        Container container = stg.getRoot();
-        for (String signalName: stg.getSignalNames(container)) {
-            stg.setSignalType(signalName, Signal.Type.INTERNAL, container);
+    public static void restoreInterfaceSignals(Stg stg, Collection<String> inputSignals, Collection<String> outputSignals) {
+        for (String signal: stg.getSignalReferences()) {
+            stg.setSignalType(signal, Signal.Type.INTERNAL);
         }
-        for (String inputName: inputSignalNames) {
-            stg.setSignalType(inputName, Signal.Type.INPUT, container);
+        for (String inputSignal: inputSignals) {
+            stg.setSignalType(inputSignal, Signal.Type.INPUT);
         }
-        for (String outputName: outputSignalNames) {
-            stg.setSignalType(outputName, Signal.Type.OUTPUT, container);
+        for (String outputSignal: outputSignals) {
+            stg.setSignalType(outputSignal, Signal.Type.OUTPUT);
         }
     }
 

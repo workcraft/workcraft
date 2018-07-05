@@ -2,4 +2,5 @@ dependencies {
     compile project(':WorkcraftCore')
     compile project(':CircuitPlugin')
     compile project(':StgPlugin')
+    testCompile project(':CircuitPlugin').sourceSets.test.output
 }

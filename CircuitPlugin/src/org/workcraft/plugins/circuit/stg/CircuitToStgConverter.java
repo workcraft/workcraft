@@ -130,9 +130,9 @@ public class CircuitToStgConverter {
     private void convertPages() {
         NamespaceHelper.copyPageStructure(circuit, stg);
         HashMap<String, Container> refToPageMapping = NamespaceHelper.getRefToPageMapping(stg);
-        // Create pages for all multi-output circuit components (empty pages can be removed later)
+        // Create pages for environment components and multi-output components (empty pages can be removed later)
         for (VisualFunctionComponent srcComponent: circuit.getVisualFunctionComponents()) {
-            if (srcComponent.getVisualOutputs().size() > 1) {
+            if (srcComponent.getIsEnvironment() || (srcComponent.getVisualOutputs().size() > 1)) {
                 Container dstContainer = null;
                 Node srcParent = srcComponent.getParent();
                 if (srcParent instanceof VisualPage) {
@@ -155,7 +155,7 @@ public class CircuitToStgConverter {
 
     private HashSet<VisualContact> identifyDrivers() {
         HashSet<VisualContact> result = new HashSet<>();
-        for (VisualContact contact : circuit.getVisualFunctionContacts()) {
+        for (VisualContact contact: circuit.getVisualFunctionContacts()) {
             VisualContact driver = CircuitUtils.findDriver(circuit, contact);
             if (driver == null) {
                 driver = contact;
@@ -215,7 +215,7 @@ public class CircuitToStgConverter {
         TwoWayMap<VisualContact, SignalStg> result = new TwoWayMap<>();
         for (VisualContact driver: drivers) {
             VisualContact signal = CircuitUtils.findSignal(circuit, driver, true);
-            if (signal.isOutput() || signal.isPort()) {
+            if (signal.isDriver() || signal.isPort()) {
                 boolean initToOne = signal.getReferencedContact().getInitToOne();
                 String signalName = CircuitUtils.getSignalName(circuit, signal);
 

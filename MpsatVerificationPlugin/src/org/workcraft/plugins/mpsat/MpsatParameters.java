@@ -540,8 +540,8 @@ public class MpsatParameters {
     // may disappear from unfolding), therefore the conformation property cannot be checked reliably.
     public static MpsatParameters getConformationNwaySettings(
             ArrayList<Set<String>> allPlaceSets, ArrayList<Set<String>> allOutputSets) {
-        String placeStr = getNameSetsAsString(allPlaceSets);
-        String outputStr = getNameSetsAsString(allOutputSets);
+        String placeStr = getReferenceSetsAsString(allPlaceSets);
+        String outputStr = getReferenceSetsAsString(allOutputSets);
         String reachConformationNway = REACH_CONFORMATION_NWAY
                 .replace(REACH_CONFORMATION_NWAY_PLACES, placeStr)
                 .replace(REACH_CONFORMATION_NWAY_OUTPUTS, outputStr);
@@ -549,7 +549,7 @@ public class MpsatParameters {
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(), reachConformationNway, true);
     }
 
-    private static String getNameSetsAsString(ArrayList<Set<String>> allSets) {
+    private static String getReferenceSetsAsString(ArrayList<Set<String>> allSets) {
         String result = "";
         for (int i = 0; i < allSets.size(); i++) {
             Collection<String> names = allSets.get(i);

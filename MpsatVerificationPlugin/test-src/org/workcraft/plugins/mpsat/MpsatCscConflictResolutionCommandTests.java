@@ -1,9 +1,5 @@
 package org.workcraft.plugins.mpsat;
 
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -12,12 +8,16 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.mpsat.commands.MpsatCscConflictResolutionCommand;
 import org.workcraft.plugins.punf.PunfSettings;
+import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MpsatCscConflictResolutionCommandTests {
 
@@ -64,19 +64,19 @@ public class MpsatCscConflictResolutionCommandTests {
         WorkspaceEntry srcWe = framework.loadWork(url.getFile());
 
         Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
-        Set<String> srcInputs = srcStg.getSignalNames(Signal.Type.INPUT, null);
-        Set<String> srcInternals = srcStg.getSignalNames(Signal.Type.INTERNAL, null);
-        Set<String> srcOutputs = srcStg.getSignalNames(Signal.Type.OUTPUT, null);
-        Set<String> srcMutexes = getMutexNames(srcStg);
+        Set<String> srcInputs = srcStg.getSignalReferences(Signal.Type.INPUT);
+        Set<String> srcInternals = srcStg.getSignalReferences(Signal.Type.INTERNAL);
+        Set<String> srcOutputs = srcStg.getSignalReferences(Signal.Type.OUTPUT);
+        Set<String> srcMutexes = MutexUtils.getMutexPlaceReferences(srcStg);
 
         MpsatCscConflictResolutionCommand command = new MpsatCscConflictResolutionCommand();
         WorkspaceEntry dstWe = command.execute(srcWe);
 
         Stg dstStg = WorkspaceUtils.getAs(dstWe, Stg.class);
-        Set<String> dstInputs = dstStg.getSignalNames(Signal.Type.INPUT, null);
-        Set<String> dstInternals = dstStg.getSignalNames(Signal.Type.INTERNAL, null);
-        Set<String> dstOutputs = dstStg.getSignalNames(Signal.Type.OUTPUT, null);
-        Set<String> dstMutexes = getMutexNames(dstStg);
+        Set<String> dstInputs = dstStg.getSignalReferences(Signal.Type.INPUT);
+        Set<String> dstInternals = dstStg.getSignalReferences(Signal.Type.INTERNAL);
+        Set<String> dstOutputs = dstStg.getSignalReferences(Signal.Type.OUTPUT);
+        Set<String> dstMutexes = MutexUtils.getMutexPlaceReferences(dstStg);
 
         Set<String> expInternals = new HashSet<>();
         expInternals.addAll(srcInternals);
@@ -90,14 +90,6 @@ public class MpsatCscConflictResolutionCommandTests {
         Assert.assertEquals(expInternals, dstInternals);
         Assert.assertEquals(srcOutputs, dstOutputs);
         Assert.assertEquals(srcMutexes, dstMutexes);
-    }
-
-    private Set<String> getMutexNames(Stg stg) {
-        HashSet<String> result = new HashSet<>();
-        for (StgPlace place: stg.getMutexPlaces()) {
-            result.add(stg.getNodeReference(place));
-        }
-        return result;
     }
 
 }

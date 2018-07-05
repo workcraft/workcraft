@@ -88,9 +88,9 @@ public class MpsatConformationTask extends MpsatChainTask {
             }
 
             // Make sure that input signals of the device STG are also inputs in the environment STG
-            Set<String> inputSignalNames = devStg.getSignalNames(Signal.Type.INPUT, null);
-            Set<String> outputSignalNames = devStg.getSignalNames(Signal.Type.OUTPUT, null);
-            StgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
+            Set<String> inputSignals = devStg.getSignalReferences(Signal.Type.INPUT);
+            Set<String> outputSignals = devStg.getSignalReferences(Signal.Type.OUTPUT);
+            StgUtils.restoreInterfaceSignals(envStg, inputSignals, outputSignals);
             Exporter envStgExporter = ExportUtils.chooseBestExporter(pluginManager, envStg, format);
             File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + stgFileExtension);
             ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getAbsolutePath());

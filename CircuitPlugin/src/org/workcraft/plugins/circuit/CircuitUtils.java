@@ -29,7 +29,7 @@ public class CircuitUtils {
     }
 
     public static VisualContact findDriver(VisualCircuit circuit, VisualJoint joint, boolean transparentZeroDelayComponents) {
-        Contact mathDriver = findDriver((Circuit) circuit.getMathModel(), joint.getReferencedComponent(), transparentZeroDelayComponents);
+        Contact mathDriver = findDriver(circuit.getMathModel(), joint.getReferencedComponent(), transparentZeroDelayComponents);
         return circuit.getVisualComponent(mathDriver, VisualContact.class);
     }
 
@@ -38,7 +38,7 @@ public class CircuitUtils {
     }
 
     public static VisualContact findDriver(VisualCircuit circuit, VisualConnection connection, boolean transparentZeroDelayComponents) {
-        Contact mathDriver = findDriver((Circuit) circuit.getMathModel(), connection.getReferencedConnection(), transparentZeroDelayComponents);
+        Contact mathDriver = findDriver(circuit.getMathModel(), connection.getReferencedConnection(), transparentZeroDelayComponents);
         return circuit.getVisualComponent(mathDriver, VisualContact.class);
     }
 
@@ -47,7 +47,7 @@ public class CircuitUtils {
     }
 
     public static VisualContact findDriver(VisualCircuit circuit, VisualContact contact, boolean transparentZeroDelayComponents) {
-        Contact mathDriver = findDriver((Circuit) circuit.getMathModel(), contact.getReferencedContact(), transparentZeroDelayComponents);
+        Contact mathDriver = findDriver(circuit.getMathModel(), contact.getReferencedContact(), transparentZeroDelayComponents);
         return circuit.getVisualComponent(mathDriver, VisualContact.class);
     }
 
@@ -109,7 +109,7 @@ public class CircuitUtils {
     }
 
     public static Collection<VisualContact> findDriven(VisualCircuit circuit, VisualContact contact, boolean transparentZeroDelayComponents) {
-        Collection<Contact> drivenContacts = findDriven((Circuit) circuit.getMathModel(), contact.getReferencedContact(), transparentZeroDelayComponents);
+        Collection<Contact> drivenContacts = findDriven(circuit.getMathModel(), contact.getReferencedContact(), transparentZeroDelayComponents);
         return getVisualContacts(circuit, drivenContacts);
     }
 
@@ -167,7 +167,7 @@ public class CircuitUtils {
         Contact driver = findDriver(circuit, contact, transparentZeroDelayComponents);
         if (driver != null) {
             result = driver;
-            for (Contact signal : Hierarchy.getDescendantsOfType(circuit.getRoot(), Contact.class)) {
+            for (Contact signal: Hierarchy.getDescendantsOfType(circuit.getRoot(), Contact.class)) {
                 if (signal.isPort() && signal.isOutput()) {
                     if (driver == CircuitUtils.findDriver(circuit, signal, transparentZeroDelayComponents)) {
                         signal.setInitToOne(driver.getInitToOne());
@@ -181,7 +181,7 @@ public class CircuitUtils {
     }
 
     public static VisualContact findSignal(VisualCircuit circuit, VisualContact contact, boolean transparentZeroDelayComponents) {
-        Contact mathSignal = findSignal((Circuit) circuit.getMathModel(), contact.getReferencedContact(), transparentZeroDelayComponents);
+        Contact mathSignal = findSignal(circuit.getMathModel(), contact.getReferencedContact(), transparentZeroDelayComponents);
         return circuit.getVisualComponent(mathSignal, VisualContact.class);
     }
 
@@ -196,7 +196,7 @@ public class CircuitUtils {
     }
 
     public static String getSignalName(VisualCircuit circuit, VisualContact contact) {
-        return getSignalName((Circuit) circuit.getMathModel(), contact.getReferencedContact());
+        return getSignalName(circuit.getMathModel(), contact.getReferencedContact());
     }
 
     public static String getContactName(Circuit circuit, Contact contact) {
@@ -212,8 +212,6 @@ public class CircuitUtils {
             Contact outputPort = getDrivenOutputPort(circuit, contact);
             if (outputPort != null) {
                 // If a single output port is driven, then take its name.
-                //String outputPortRef = circuit.getNodeReference(outputPort);
-                //result = NamespaceHelper.hierarchicalToFlatName(outputPortRef);
                 result = circuit.getNodeReference(outputPort);
             } else {
                 // If the component has a single output, use the component name. Otherwise append the contact.
@@ -245,7 +243,7 @@ public class CircuitUtils {
     }
 
     public static Signal.Type getSignalType(VisualCircuit circuit, VisualContact contact) {
-        return getSignalType((Circuit) circuit.getMathModel(), contact.getReferencedContact());
+        return getSignalType(circuit.getMathModel(), contact.getReferencedContact());
     }
 
     public static Signal.Type getSignalType(Circuit circuit, Contact contact) {
@@ -375,7 +373,7 @@ public class CircuitUtils {
 
     public static HashSet<VisualComponent> getComponentPreset(final VisualCircuit visualCircuit, VisualComponent visualComponent) {
         HashSet<VisualComponent> result = new HashSet<>();
-        Circuit circuit = (Circuit) visualCircuit.getMathModel();
+        Circuit circuit = visualCircuit.getMathModel();
         MathNode mathComponent = visualComponent.getReferencedComponent();
         for (MathNode node: getComponentPreset(circuit, mathComponent)) {
             result.add(visualCircuit.getVisualComponent(node, VisualComponent.class));
@@ -420,7 +418,7 @@ public class CircuitUtils {
 
     public static HashSet<VisualComponent> getComponentPostset(final VisualCircuit visualCircuit, VisualComponent visualComponent) {
         HashSet<VisualComponent> result = new HashSet<>();
-        Circuit circuit = (Circuit) visualCircuit.getMathModel();
+        Circuit circuit = visualCircuit.getMathModel();
         MathNode mathComponent = visualComponent.getReferencedComponent();
         for (MathNode node: getComponentPostset(circuit, mathComponent)) {
             result.add(visualCircuit.getVisualComponent(node, VisualComponent.class));
@@ -462,7 +460,7 @@ public class CircuitUtils {
     }
 
     public static HashSet<VisualContact> getPortPostset(final VisualCircuit visualCircuit, VisualComponent visualComponent) {
-        Circuit circuit = (Circuit) visualCircuit.getMathModel();
+        Circuit circuit = visualCircuit.getMathModel();
         MathNode mathComponent = visualComponent.getReferencedComponent();
         HashSet<Contact> ports = getPortPostset(circuit, mathComponent);
         return getVisualContacts(visualCircuit, ports);

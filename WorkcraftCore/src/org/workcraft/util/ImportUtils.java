@@ -16,7 +16,7 @@ import org.workcraft.workspace.ModelEntry;
 public class ImportUtils {
 
     public static Importer chooseBestImporter(PluginProvider provider, File file) {
-        for (PluginInfo<? extends Importer> info : provider.getPlugins(Importer.class)) {
+        for (PluginInfo<? extends Importer> info: provider.getPlugins(Importer.class)) {
             Importer importer = info.getSingleton();
             Format format = importer.getFormat();
             if (FormatFileFilter.checkFileFormat(file, format)) {

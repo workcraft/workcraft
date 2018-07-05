@@ -77,9 +77,9 @@ public class CheckCircuitTask extends MpsatChainTask {
             Stg envStg = StgUtils.loadStg(envFile);
             if (envStg != null) {
                 // Make sure that input signals of the device STG are also inputs in the environment STG
-                Set<String> inputSignalNames = devStg.getSignalNames(Signal.Type.INPUT, null);
-                Set<String> outputSignalNames = devStg.getSignalNames(Signal.Type.OUTPUT, null);
-                StgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
+                Set<String> inputSignals = devStg.getSignalReferences(Signal.Type.INPUT);
+                Set<String> outputSignals = devStg.getSignalReferences(Signal.Type.OUTPUT);
+                StgUtils.restoreInterfaceSignals(envStg, inputSignals, outputSignals);
                 // Convert mutex grants into inputs in environment STG
                 for (Pair<String, String> grantPair: grantPairs) {
                     envStg.setSignalType(grantPair.getFirst(), Signal.Type.INPUT);
@@ -148,7 +148,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             File detailModFile = null;
             Result<? extends PcompOutput>  pcompModResult = null;
             if ((envStg != null) && checkConformation) {
-                Set<String> envSignalNames = envStg.getSignalNames(Signal.Type.INTERNAL, null);
+                Set<String> envSignalNames = envStg.getSignalReferences(Signal.Type.INTERNAL);
                 if (envSignalNames.isEmpty() && (sysStgFile != null)) {
                     sysModStgFile = sysStgFile;
                     detailModFile = detailFile;

@@ -94,8 +94,8 @@ public class CircuitConversionCommandTests {
 
         Stg dstStg = WorkspaceUtils.getAs(dstWe, Stg.class);
         int dstStgPlaceCount = dstStg.getPlaces().size();
-        Set<String> dstStgInputs = dstStg.getSignalNames(Signal.Type.INPUT, null);
-        Set<String> dstStgOutputs = dstStg.getSignalNames(Signal.Type.OUTPUT, null);
+        Set<String> dstStgInputs = dstStg.getSignalReferences(Signal.Type.INPUT);
+        Set<String> dstStgOutputs = dstStg.getSignalReferences(Signal.Type.OUTPUT);
 
         Assert.assertEquals(2 * srcCircuitSignalCount + extraPlaceCount, dstStgPlaceCount);
         Assert.assertEquals(srcCircuitInputs, dstStgInputs);

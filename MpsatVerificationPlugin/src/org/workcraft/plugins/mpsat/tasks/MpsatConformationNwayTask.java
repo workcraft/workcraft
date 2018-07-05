@@ -72,8 +72,8 @@ public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
                 if (stgExporter == null) {
                     throw new NoExporterException(stg, format);
                 }
-                Set<String> outputSignalNames = stg.getSignalNames(Signal.Type.OUTPUT, null);
-                allOutputSets.add(outputSignalNames);
+                Set<String> outputSignals = stg.getSignalReferences(Signal.Type.OUTPUT);
+                allOutputSets.add(outputSignals);
 
                 // Generating .g for the model
                 File stgFile = new File(directory, we.getTitle() + stgFileExtension);

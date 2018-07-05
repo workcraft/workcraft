@@ -1,10 +1,5 @@
 package org.workcraft.plugins.circuit.interop;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
@@ -21,14 +16,8 @@ import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.interop.Importer;
-import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.CircuitDescriptor;
-import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.plugins.circuit.CircuitUtils;
-import org.workcraft.plugins.circuit.Contact;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
-import org.workcraft.plugins.circuit.FunctionComponent;
-import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.expression.Expression;
 import org.workcraft.plugins.circuit.expression.ExpressionUtils;
 import org.workcraft.plugins.circuit.expression.Literal;
@@ -38,17 +27,18 @@ import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.Library;
 import org.workcraft.plugins.circuit.jj.expression.ExpressionParser;
 import org.workcraft.plugins.circuit.jj.verilog.VerilogParser;
-import org.workcraft.plugins.circuit.verilog.Assign;
-import org.workcraft.plugins.circuit.verilog.Instance;
-import org.workcraft.plugins.circuit.verilog.Module;
-import org.workcraft.plugins.circuit.verilog.Pin;
-import org.workcraft.plugins.circuit.verilog.Port;
+import org.workcraft.plugins.circuit.verilog.*;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class VerilogImporter implements Importer {
 
@@ -80,6 +70,7 @@ public class VerilogImporter implements Importer {
         public HashSet<FunctionContact> undefined = new HashSet<>();
     }
 
+    // Default constructor is required for PluginManager -- it is called via reflection.
     public VerilogImporter() {
         this(false);
     }
@@ -373,19 +364,7 @@ public class VerilogImporter implements Importer {
     }
 
     private void createPort(Circuit circuit, HashMap<String, Wire> wires, String portName, boolean isInput) {
-        LinkedList<String> portPath = NamespaceHelper.splitReference(portName);
-        if (portPath.size() == 1) {
-            createPortPrimary(circuit, wires, portName, isInput);
-        } else if (portPath.size() == 2) {
-            createPortEnvironment(circuit, wires, portName, isInput);
-        } else {
-            // Neither primary port nor environment component pin
-            throw new RuntimeException("Port '" + portName + "' cannot be imported.");
-        }
-    }
-
-    private void createPortPrimary(Circuit circuit, HashMap<String, Wire> wires, String portName, boolean isInput) {
-        FunctionContact contact = new FunctionContact();
+        FunctionContact contact = circuit.createNodeWithHierarchy(portName, circuit.getRoot(), FunctionContact.class);
         Wire wire = getOrCreateWire(portName, wires);
         if (isInput) {
             contact.setIOType(IOType.INPUT);
@@ -394,35 +373,6 @@ public class VerilogImporter implements Importer {
             contact.setIOType(IOType.OUTPUT);
             wire.sinks.add(contact);
         }
-        circuit.setName(contact, portName);
-        circuit.add(contact);
-    }
-
-    private void createPortEnvironment(Circuit circuit, HashMap<String, Wire> wires, String portName, boolean isInput) {
-        LinkedList<String> portPath = NamespaceHelper.splitReference(portName);
-        String componentName = portPath.get(0);
-        String contactName = portPath.get(1);
-        FunctionComponent component = null;
-        Node parent = circuit.getNodeByReference(componentName);
-        if (parent instanceof FunctionComponent) {
-            component = (FunctionComponent) parent;
-        } else {
-            component = new FunctionComponent();
-            circuit.add(component);
-            circuit.setName(component, componentName);
-            component.setIsEnvironment(true);
-        }
-        FunctionContact contact = new FunctionContact();
-        Wire wire = getOrCreateWire(portName, wires);
-        if (isInput) {
-            contact.setIOType(IOType.OUTPUT);
-            wire.source = contact;
-        } else {
-            contact.setIOType(IOType.INPUT);
-            wire.sinks.add(contact);
-        }
-        component.add(contact);
-        circuit.setName(contact, contactName);
     }
 
     private List<String> getPortNames(Port verilogPort) {

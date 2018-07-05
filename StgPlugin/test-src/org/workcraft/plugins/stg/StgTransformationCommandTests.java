@@ -48,15 +48,15 @@ public class StgTransformationCommandTests {
 
         WorkspaceEntry we = framework.loadWork(url.getFile());
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        Set<String> srcInputs = stg.getSignalNames(Signal.Type.INPUT, null);
-        Set<String> srcOutputs = stg.getSignalNames(Signal.Type.OUTPUT, null);
-        Set<String> srcInternals = stg.getSignalNames(Signal.Type.INTERNAL, null);
+        Set<String> srcInputs = stg.getSignalReferences(Signal.Type.INPUT);
+        Set<String> srcOutputs = stg.getSignalReferences(Signal.Type.OUTPUT);
+        Set<String> srcInternals = stg.getSignalReferences(Signal.Type.INTERNAL);
 
         MirrorSignalTransformationCommand command = new MirrorSignalTransformationCommand();
         command.execute(we);
-        Set<String> dstInputs = stg.getSignalNames(Signal.Type.INPUT, null);
-        Set<String> dstOutputs = stg.getSignalNames(Signal.Type.OUTPUT, null);
-        Set<String> dstInternals = stg.getSignalNames(Signal.Type.INTERNAL, null);
+        Set<String> dstInputs = stg.getSignalReferences(Signal.Type.INPUT);
+        Set<String> dstOutputs = stg.getSignalReferences(Signal.Type.OUTPUT);
+        Set<String> dstInternals = stg.getSignalReferences(Signal.Type.INTERNAL);
 
         framework.closeWork(we);
         Assert.assertEquals(srcInputs, dstOutputs);
