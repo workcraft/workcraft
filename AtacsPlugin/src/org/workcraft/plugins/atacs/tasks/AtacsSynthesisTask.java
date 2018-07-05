@@ -72,6 +72,7 @@ public class AtacsSynthesisTask implements Task<AtacsSynthesisOutput>, ExternalP
         }
 
         command.add("-oq"); // Quiet mode
+        command.add("-ll"); // Load LPN as Petri net (instead of Timed Event/Rule Structure, which is default semantics)
         command.add("-ys"); // Do circuit synthesis
         command.add("-sV"); // Output synthesis result in Verilog format
 
