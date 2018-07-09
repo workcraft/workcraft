@@ -57,16 +57,16 @@ public class PetrifyConversionCommandsTests {
 
         WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
         Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
-        Set<String> srcInputs = srcStg.getSignalNames(Signal.Type.INPUT, null);
-        Set<String> srcOutputs = srcStg.getSignalNames(Signal.Type.OUTPUT, null);
-        Set<String> srcInternals = srcStg.getSignalNames(Signal.Type.INTERNAL, null);
+        Set<String> srcInputs = srcStg.getSignalReferences(Signal.Type.INPUT);
+        Set<String> srcOutputs = srcStg.getSignalReferences(Signal.Type.OUTPUT);
+        Set<String> srcInternals = srcStg.getSignalReferences(Signal.Type.INTERNAL);
 
         PetrifyUntoggleConversionCommand command = new PetrifyUntoggleConversionCommand();
         WorkspaceEntry dstWe = command.execute(srcWe);
         Stg dstStg = WorkspaceUtils.getAs(dstWe, Stg.class);
-        Set<String> dstInputs = dstStg.getSignalNames(Signal.Type.INPUT, null);
-        Set<String> dstOutputs = dstStg.getSignalNames(Signal.Type.OUTPUT, null);
-        Set<String> dstInternals = dstStg.getSignalNames(Signal.Type.INTERNAL, null);
+        Set<String> dstInputs = dstStg.getSignalReferences(Signal.Type.INPUT);
+        Set<String> dstOutputs = dstStg.getSignalReferences(Signal.Type.OUTPUT);
+        Set<String> dstInternals = dstStg.getSignalReferences(Signal.Type.INTERNAL);
 
         int dstToggleCount = 0;
         for (SignalTransition dstTransition: dstStg.getSignalTransitions()) {
@@ -98,18 +98,18 @@ public class PetrifyConversionCommandsTests {
 
         WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
         Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
-        Set<String> srcInputs = srcStg.getSignalNames(Signal.Type.INPUT, null);
-        Set<String> srcOutputs = srcStg.getSignalNames(Signal.Type.OUTPUT, null);
-        Set<String> srcInternals = srcStg.getSignalNames(Signal.Type.INTERNAL, null);
+        Set<String> srcInputs = srcStg.getSignalReferences(Signal.Type.INPUT);
+        Set<String> srcOutputs = srcStg.getSignalReferences(Signal.Type.OUTPUT);
+        Set<String> srcInternals = srcStg.getSignalReferences(Signal.Type.INTERNAL);
 
         srcInternals.add("csc0");
 
         PetrifyCscConflictResolutionCommand command = new PetrifyCscConflictResolutionCommand();
         WorkspaceEntry dstWe = command.execute(srcWe);
         Stg dstStg = WorkspaceUtils.getAs(dstWe, Stg.class);
-        Set<String> dstInputs = dstStg.getSignalNames(Signal.Type.INPUT, null);
-        Set<String> dstOutputs = dstStg.getSignalNames(Signal.Type.OUTPUT, null);
-        Set<String> dstInternals = dstStg.getSignalNames(Signal.Type.INTERNAL, null);
+        Set<String> dstInputs = dstStg.getSignalReferences(Signal.Type.INPUT);
+        Set<String> dstOutputs = dstStg.getSignalReferences(Signal.Type.OUTPUT);
+        Set<String> dstInternals = dstStg.getSignalReferences(Signal.Type.INTERNAL);
 
         Assert.assertEquals(srcInputs, dstInputs);
         Assert.assertEquals(srcOutputs, dstOutputs);

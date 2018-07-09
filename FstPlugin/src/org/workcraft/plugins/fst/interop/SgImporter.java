@@ -1,7 +1,5 @@
 package org.workcraft.plugins.fst.interop;
 
-import java.io.InputStream;
-
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.interop.Importer;
@@ -11,6 +9,8 @@ import org.workcraft.plugins.fst.jj.ParseException;
 import org.workcraft.plugins.fst.jj.SgParser;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.workspace.ModelEntry;
+
+import java.io.InputStream;
 
 public class SgImporter implements Importer {
 
@@ -33,9 +33,7 @@ public class SgImporter implements Importer {
                 parser.disable_tracing();
             }
             return parser.parse();
-        } catch (FormatException e) {
-            throw new DeserialisationException(e);
-        } catch (ParseException e) {
+        } catch (FormatException | ParseException e) {
             throw new DeserialisationException(e);
         }
     }

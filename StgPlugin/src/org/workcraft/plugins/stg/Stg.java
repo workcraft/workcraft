@@ -332,7 +332,7 @@ public class Stg extends AbstractMathModel implements StgModel {
     @Override
     public String getNodeReference(NamespaceProvider provider, Node node) {
         if (node instanceof StgPlace) {
-            if (node != null && ((StgPlace) node).isImplicit()) {
+            if (((StgPlace) node).isImplicit()) {
                 Set<Node> preset = getPreset(node);
                 Set<Node> postset = getPostset(node);
                 if (!(preset.size() == 1 && postset.size() == 1)) {

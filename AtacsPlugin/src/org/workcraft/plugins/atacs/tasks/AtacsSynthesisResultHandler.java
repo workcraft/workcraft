@@ -2,7 +2,7 @@ package org.workcraft.plugins.atacs.tasks;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractLayoutCommand;
-import org.workcraft.dom.Node;
+import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
@@ -18,6 +18,7 @@ import org.workcraft.tasks.AbstractExtendedResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.DialogUtils;
+import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -115,18 +116,24 @@ public class AtacsSynthesisResultHandler extends AbstractExtendedResultHandler<A
 
     private void removePortsForExposedInternalSignals(Circuit circuit) {
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        Set<String> internalSignals = stg.getSignalReferences(Signal.Type.INTERNAL);
-        // Remove intentionally exposed mutex grants from the list of initially internal signals.
+        Set<String> outputSignals = stg.getSignalReferences(Signal.Type.OUTPUT);
+        // Add intentionally exposed mutex grants the list of output signals.
         for (Mutex mutex: mutexes) {
-            internalSignals.remove(mutex.g1.name);
-            internalSignals.remove(mutex.g2.name);
+            outputSignals.add(mutex.g1.name);
+            outputSignals.add(mutex.g2.name);
         }
         // Restore internal signals (except for MUTEX outputs).
-        for (String signal: internalSignals) {
-            Node node = circuit.getNodeByReference(signal);
-            if (node instanceof Contact) {
+        for (Contact port: circuit.getPorts()) {
+            String signal = circuit.getNodeReference(port);
+            if (port.isOutput() && !outputSignals.contains(signal)) {
                 LogUtils.logInfo("Internal signal '" + signal + "' was exposed by ATACS as an output and is restored as internal now.");
-                circuit.remove(node);
+                circuit.remove(port);
+            }
+        }
+        // Clean up empty pages
+        for (PageNode page: Hierarchy.getDescendantsOfType(circuit.getRoot(), PageNode.class)) {
+            if (page.getChildren().isEmpty()) {
+                circuit.remove(page);
             }
         }
     }

@@ -57,9 +57,9 @@ public class PetrifyStgToFstConversionCommandTests {
         WorkspaceEntry srcWe = framework.loadWork(url.getFile());
 
         Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
-        Set<String> srcInputs = srcStg.getSignalNames(Signal.Type.INPUT, null);
-        Set<String> srcInternals = srcStg.getSignalNames(Signal.Type.INTERNAL, null);
-        Set<String> srcOutputs = srcStg.getSignalNames(Signal.Type.OUTPUT, null);
+        Set<String> srcInputs = srcStg.getSignalReferences(Signal.Type.INPUT);
+        Set<String> srcInternals = srcStg.getSignalReferences(Signal.Type.INTERNAL);
+        Set<String> srcOutputs = srcStg.getSignalReferences(Signal.Type.OUTPUT);
 
         PetrifyStgToBinaryFstConversionCommand command = new PetrifyStgToBinaryFstConversionCommand();
         WorkspaceEntry dstWe = command.execute(srcWe);

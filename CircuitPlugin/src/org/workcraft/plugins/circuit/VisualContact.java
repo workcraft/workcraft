@@ -431,6 +431,14 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
         return getReferencedContact().isOutput();
     }
 
+    public boolean isPin() {
+        return getReferencedContact().isPin();
+    }
+
+    public boolean isEnvironmentPin() {
+        return getReferencedContact().isEnvironmentPin();
+    }
+
     public boolean isPort() {
         return getReferencedContact().isPort();
     }
