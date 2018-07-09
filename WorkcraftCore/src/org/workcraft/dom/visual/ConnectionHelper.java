@@ -1,27 +1,24 @@
 package org.workcraft.dom.visual;
 
+import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.connections.*;
+import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
+
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.connections.ConnectionGraphic;
-import org.workcraft.dom.visual.connections.ControlPoint;
-import org.workcraft.dom.visual.connections.PartialCurveInfo;
-import org.workcraft.dom.visual.connections.Polyline;
-import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
-
 public class ConnectionHelper {
-    private static final double SAME_ANCHOR_POINT_THRESHOLD = 0.1;
+    private static final double SAME_ANCHOR_POINT_DISTANCE_THRESHOLD = 0.1;
+    private static final double SAME_ANCHOR_POINT_GRADIENT_THRESHOLD = 0.1;
 
-    public static boolean areDifferentAnchorPoints(Point2D p1, Point2D p2) {
-        return p1.distance(p2) > SAME_ANCHOR_POINT_THRESHOLD;
+    private static boolean areDifferentAnchorPoints(Point2D p1, Point2D p2) {
+        return p1.distance(p2) > SAME_ANCHOR_POINT_DISTANCE_THRESHOLD;
     }
 
-    public static boolean canBeAnchorPoint(Point2D locationInRootSpace, VisualConnection connection) {
+    private static boolean canBeAnchorPoint(Point2D locationInRootSpace, VisualConnection connection) {
         Point2D first = connection.getFirstCenter();
         Point2D second = connection.getSecondCenter();
         return areDifferentAnchorPoints(locationInRootSpace, first) && areDifferentAnchorPoints(locationInRootSpace, second);
@@ -129,7 +126,7 @@ public class ConnectionHelper {
         Point2D nodeLocation = null;
         if (mergeNode != null) {
             nodeLocation = mergeNode.getRootSpacePosition();
-            if ((lastLocation != null) && (nodeLocation.distanceSq(lastLocation) < 0.01)) {
+            if ((lastLocation != null) && !areDifferentAnchorPoints(nodeLocation, lastLocation)) {
                 locations.removeLast();
             }
             locations.add(nodeLocation);
@@ -142,7 +139,7 @@ public class ConnectionHelper {
                 for (ControlPoint cp:  polyline.getControlPoints()) {
                     Point2D location = localToRootTransform.transform(cp.getPosition(), null);
                     locations.add(location);
-                    if ((firstLocation == null) && (nodeLocation != null) && (nodeLocation.distanceSq(location) < 0.01)) {
+                    if ((firstLocation == null) && (nodeLocation != null) && !areDifferentAnchorPoints(nodeLocation, location)) {
                         locations.removeLast();
                         firstLocation = location;
                     }
@@ -152,13 +149,17 @@ public class ConnectionHelper {
         return locations;
     }
 
+    public static void filterControlPoints(Polyline polyline) {
+        filterControlPoints(polyline, SAME_ANCHOR_POINT_DISTANCE_THRESHOLD, SAME_ANCHOR_POINT_GRADIENT_THRESHOLD);
+    }
+
     public static void filterControlPoints(Polyline polyline, double distanceThreshold, double gradientThreshold) {
         PartialCurveInfo curveInfo = polyline.getCurveInfo();
-        Point2D startPos = polyline.getPointOnCurve(curveInfo.tStart);
-        Point2D endPos = polyline.getPointOnCurve(curveInfo.tEnd);
         // Forward filtering by distance
+        Point2D startPos = polyline.getPointOnCurve(curveInfo.tStart);
         filterControlPointsByDistance(polyline, startPos, distanceThreshold, false);
         // Backward filtering by distance
+        Point2D endPos = polyline.getPointOnCurve(curveInfo.tEnd);
         filterControlPointsByDistance(polyline, endPos, distanceThreshold, true);
         // Filtering by gradient
         int i = 0;
@@ -191,7 +192,7 @@ public class ConnectionHelper {
         Point2D predPos = startPos;
         for (ControlPoint cp:  controlPoints) {
             Point2D curPos = cp.getPosition();
-            if (curPos.distanceSq(predPos) < threshold) {
+            if (curPos.distance(predPos) < threshold) {
                 polyline.remove(cp);
             } else {
                 predPos = curPos;
@@ -214,7 +215,7 @@ public class ConnectionHelper {
         List<ControlPoint> controlPoints = new LinkedList<>(polyline.getControlPoints());
         for (ControlPoint cp:  controlPoints) {
             Point2D curPos = cp.getPosition();
-            if (curPos.distanceSq(pos) < threshold) {
+            if (curPos.distance(pos) < threshold) {
                 polyline.remove(cp);
             }
         }

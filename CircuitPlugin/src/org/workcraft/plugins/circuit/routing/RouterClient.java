@@ -1,21 +1,15 @@
 package org.workcraft.plugins.circuit.routing;
 
-import java.awt.geom.Rectangle2D;
-import java.util.Map.Entry;
-
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
-import org.workcraft.plugins.circuit.routing.basic.Line;
-import org.workcraft.plugins.circuit.routing.basic.Point;
-import org.workcraft.plugins.circuit.routing.basic.PortDirection;
-import org.workcraft.plugins.circuit.routing.basic.Rectangle;
-import org.workcraft.plugins.circuit.routing.basic.RouterConnection;
-import org.workcraft.plugins.circuit.routing.basic.RouterPort;
+import org.workcraft.plugins.circuit.routing.basic.*;
 import org.workcraft.plugins.circuit.routing.impl.RouterTask;
 import org.workcraft.util.TwoWayMap;
+
+import java.awt.geom.Rectangle2D;
+import java.util.Map.Entry;
 
 /**
  * The class creates the routing task and keeps association of VisualContacts with RouterPorts.
@@ -82,7 +76,8 @@ public class RouterClient {
         default:
             assert false : "unsupported visual contact direction";
         }
-        if (!(contact.getParent() instanceof VisualComponent)) {
+
+        if (contact.isPort()) {
             converted = converted.flip();
         }
         return converted;

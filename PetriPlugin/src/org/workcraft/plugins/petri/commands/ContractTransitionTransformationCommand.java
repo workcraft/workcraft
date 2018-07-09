@@ -450,7 +450,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
     public void filterControlPoints(VisualConnection connection) {
         ConnectionGraphic grapic = connection.getGraphic();
         if (grapic instanceof Polyline) {
-            ConnectionHelper.filterControlPoints((Polyline) grapic, 0.01, 0.01);
+            ConnectionHelper.filterControlPoints((Polyline) grapic);
         }
     }
 
