@@ -35,6 +35,7 @@ public class CircuitSettings implements Settings {
     private static final String keyInactiveWireColor = prefix + ".inactiveWireColor";
     private static final String keyInitialisedGateColor = prefix + ".initialisedGateColor";
     private static final String keyConflictGateColor = prefix + ".conflictGateColor";
+    private static final String keyForcedGateColor = prefix + ".forcedGateColor";
     private static final String keyBorderWidth = prefix + ".borderWidth";
     private static final String keyWireWidth = prefix + ".wireWidth";
     private static final String keySimplifyStg = prefix + ".simplifyStg";
@@ -48,7 +49,8 @@ public class CircuitSettings implements Settings {
     private static final Color defaultActiveWireColor = new Color(1.0f, 0.0f, 0.0f);
     private static final Color defaultInactiveWireColor = new Color(0.0f, 0.0f, 1.0f);
     private static final Color defaultInitialisedGateColor = new Color(0.4f, 1.0f, 0.4f);
-    private static final Color defaultConflictGateColor = new Color(1.0f, 0.4f, 0.0f);
+    private static final Color defaultConflictGateColor = new Color(1.0f, 0.4f, 1.0f);
+    private static final Color defaultForcedGateColor = new Color(1.0f, 0.8f, 0.0f);
     private static final Double defaultBorderWidth = 0.06;
     private static final Double defaultWireWidth = 0.04;
     private static final boolean defaultSimplifyStg = true;
@@ -63,6 +65,7 @@ public class CircuitSettings implements Settings {
     private static Color inactiveWireColor = defaultInactiveWireColor;
     private static Color initialisedGateColor = defaultInitialisedGateColor;
     private static Color conflictGateColor = defaultConflictGateColor;
+    private static Color forcedGateColor = defaultForcedGateColor;
     private static Double borderWidth = defaultBorderWidth;
     private static Double wireWidth = defaultWireWidth;
     private static boolean simplifyStg = defaultSimplifyStg;
@@ -129,6 +132,16 @@ public class CircuitSettings implements Settings {
             }
             protected Color getter(CircuitSettings object) {
                 return getConflictGateColor();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, Color>(
+                this, "Forced initial state", Color.class, true, false, false) {
+            protected void setter(CircuitSettings object, Color value) {
+                setForcedGateColor(value);
+            }
+            protected Color getter(CircuitSettings object) {
+                return getForcedGateColor();
             }
         });
 
@@ -230,6 +243,7 @@ public class CircuitSettings implements Settings {
         setInactiveWireColor(config.getColor(keyInactiveWireColor, defaultInactiveWireColor));
         setInitialisedGateColor(config.getColor(keyInitialisedGateColor, defaultInitialisedGateColor));
         setConflictGateColor(config.getColor(keyConflictGateColor, defaultConflictGateColor));
+        setForcedGateColor(config.getColor(keyForcedGateColor, defaultForcedGateColor));
         setBorderWidth(config.getDouble(keyBorderWidth, defaultBorderWidth));
         setWireWidth(config.getDouble(keyWireWidth, defaultWireWidth));
         setSimplifyStg(config.getBoolean(keySimplifyStg, defaultSimplifyStg));
@@ -247,6 +261,7 @@ public class CircuitSettings implements Settings {
         config.setColor(keyInactiveWireColor, getInactiveWireColor());
         config.setColor(keyInitialisedGateColor, getInitialisedGateColor());
         config.setColor(keyConflictGateColor, getConflictGateColor());
+        config.setColor(keyForcedGateColor, getForcedGateColor());
         config.setDouble(keyBorderWidth, getBorderWidth());
         config.setDouble(keyWireWidth, getWireWidth());
         config.setBoolean(keySimplifyStg, getSimplifyStg());
@@ -302,6 +317,14 @@ public class CircuitSettings implements Settings {
 
     public static void setConflictGateColor(Color value) {
         conflictGateColor = value;
+    }
+
+    public static Color getForcedGateColor() {
+        return forcedGateColor;
+    }
+
+    public static void setForcedGateColor(Color value) {
+        forcedGateColor = value;
     }
 
     public static double getBorderWidth() {

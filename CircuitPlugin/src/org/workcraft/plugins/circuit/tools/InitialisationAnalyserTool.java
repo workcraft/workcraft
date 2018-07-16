@@ -12,7 +12,6 @@ import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
 import org.workcraft.formula.utils.BooleanUtils;
-import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.graph.tools.Decoration;
@@ -28,8 +27,10 @@ import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Set;
 
 public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
@@ -37,9 +38,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     private static final int COLUMN_COLOR = 1;
     private static final int ROW_PROPAGATED = 0;
     private static final int ROW_CONFLICT = 1;
-    private static final int ROW_FORCED_HIGH = 2;
-    private static final int ROW_FORCED_LOW = 3;
-    private static final int ROW_FORCED_MIX = 4;
+    private static final int ROW_FORCED = 2;
 
     private final HashSet<Node> initHighSet = new HashSet<>();
     private final HashSet<Node> initLowSet = new HashSet<>();
@@ -69,47 +68,43 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         @Override
         public String getColumnName(int column) {
             switch (column) {
-                case COLUMN_COLOR:
-                    return "<html><b>Color</b></html>";
-                case COLUMN_DESCRIPTION:
-                    return "<html><b>Description</b></html>";
-                default:
-                    return null;
+            case COLUMN_COLOR:
+                return "<html><b>Color</b></html>";
+            case COLUMN_DESCRIPTION:
+                return "<html><b>Description</b></html>";
+            default:
+                return null;
             }
         }
 
         @Override
         public Class<?> getColumnClass(final int col) {
             switch (col) {
-                case COLUMN_COLOR:
-                    return Color.class;
-                case COLUMN_DESCRIPTION:
-                    return String.class;
-                default:
-                    return null;
+            case COLUMN_COLOR:
+                return Color.class;
+            case COLUMN_DESCRIPTION:
+                return String.class;
+            default:
+                return null;
             }
         }
 
         @Override
         public int getRowCount() {
-            return 5;
+            return 3;
         }
 
         @Override
         public Object getValueAt(int row, int col) {
             switch (row) {
-                case ROW_PROPAGATED:
-                    return (col == COLUMN_COLOR) ? CircuitSettings.getInitialisedGateColor() : "Initialised";
-                case ROW_CONFLICT:
-                    return (col == COLUMN_COLOR) ? CircuitSettings.getConflictGateColor() : "Conflict";
-                case ROW_FORCED_HIGH:
-                    return (col == COLUMN_COLOR) ? CircuitSettings.getActiveWireColor() : "Forced high";
-                case ROW_FORCED_LOW:
-                    return (col == COLUMN_COLOR) ? CircuitSettings.getInactiveWireColor() : "Forced low";
-                case ROW_FORCED_MIX:
-                    return (col == COLUMN_COLOR) ? Coloriser.mix(CircuitSettings.getActiveWireColor(), CircuitSettings.getInactiveWireColor()) : "Forced mixed";
-                default:
-                    return null;
+            case ROW_PROPAGATED:
+                return (col == COLUMN_COLOR) ? CircuitSettings.getInitialisedGateColor() : "Initialised";
+            case ROW_CONFLICT:
+                return (col == COLUMN_COLOR) ? CircuitSettings.getConflictGateColor() : "Conflict";
+            case ROW_FORCED:
+                return (col == COLUMN_COLOR) ? CircuitSettings.getForcedGateColor() : "Forced";
+            default:
+                return null;
             }
         }
     }
@@ -167,7 +162,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         initLowSet.clear();
         initErrorSet.clear();
         Queue<Connection> queue = new LinkedList<>();
-        for (FunctionContact contact: circuit.getFunctionContacts()) {
+        for (FunctionContact contact : circuit.getFunctionContacts()) {
             if (contact.isDriver() && contact.getForcedInit()) {
                 HashSet<Node> initSet = (contact.getInitToOne()) ? initHighSet : initLowSet;
                 if (initSet.add(contact)) {
@@ -200,7 +195,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
     private void fillVariableValues(FunctionComponent component,
             LinkedList<BooleanVariable> variables, LinkedList<BooleanFormula> values) {
-        for (FunctionContact contact: component.getFunctionContacts()) {
+        for (FunctionContact contact : component.getFunctionContacts()) {
             HashSet<Node> contactInitLevelSet = chooseNodeLevelSet(contact);
             if (contactInitLevelSet != null) {
                 variables.add(contact);
@@ -216,7 +211,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
             LinkedList<BooleanVariable> variables = new LinkedList<>();
             LinkedList<BooleanFormula> values = new LinkedList<>();
             fillVariableValues(component, variables, values);
-            for (FunctionContact outputPin: component.getFunctionOutputs()) {
+            for (FunctionContact outputPin : component.getFunctionOutputs()) {
                 Set<Node> outputInitLevelSet = chooseFunctionLevelSet(outputPin, variables, values);
                 if ((outputInitLevelSet != null) && outputInitLevelSet.add(outputPin)) {
                     progress = true;
@@ -325,24 +320,13 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     private Decoration getComponentDecoration(FunctionComponent component) {
         boolean forcedInit = false;
         boolean initialised = true;
-        boolean hasForcedInitHigh = false;
-        boolean hasForcedInitLow = false;
         boolean initialisationConflict = false;
-        for (Contact outputContact: component.getOutputs()) {
+        for (Contact outputContact : component.getOutputs()) {
             forcedInit |= outputContact.getForcedInit();
-            hasForcedInitHigh |= outputContact.getForcedInit() && outputContact.getInitToOne();
-            hasForcedInitLow |= outputContact.getForcedInit() && !outputContact.getInitToOne();
             initialised &= initHighSet.contains(outputContact) || initLowSet.contains(outputContact);
             initialisationConflict |= initErrorSet.contains(outputContact);
         }
-        Collection<Color> forcedInitColors = new ArrayList<>();
-        if (hasForcedInitHigh) {
-            forcedInitColors.add(CircuitSettings.getActiveWireColor());
-        }
-        if (hasForcedInitLow) {
-            forcedInitColors.add(CircuitSettings.getInactiveWireColor());
-        }
-        final Color color = forcedInit ? Coloriser.mix(forcedInitColors)
+        final Color color = forcedInit ? CircuitSettings.getForcedGateColor()
                 : initialisationConflict ? CircuitSettings.getConflictGateColor()
                 : initialised ? CircuitSettings.getInitialisedGateColor() : null;
 
@@ -351,6 +335,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
             public Color getColorisation() {
                 return color;
             }
+
             @Override
             public Color getBackground() {
                 return color;
@@ -365,10 +350,12 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
             public Color getColorisation() {
                 return CircuitSettings.getInactiveWireColor();
             }
+
             @Override
             public Color getBackground() {
                 return initialisationConflict ? CircuitSettings.getActiveWireColor() : CircuitSettings.getInactiveWireColor();
             }
+
             @Override
             public boolean showForcedInit() {
                 return true;
@@ -383,10 +370,12 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
             public Color getColorisation() {
                 return CircuitSettings.getActiveWireColor();
             }
+
             @Override
             public Color getBackground() {
                 return initialisationConflict ? CircuitSettings.getInactiveWireColor() : CircuitSettings.getActiveWireColor();
             }
+
             @Override
             public boolean showForcedInit() {
                 return true;
