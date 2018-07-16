@@ -66,12 +66,20 @@ Start Eclipse and select `workcraft` as the current `Workspace` directory.
 Import all Workcraft projects via the `File->Import...` and selecting the
 `General->Existing Projects into Workspace` item.
 
-Create a `Java Application` runner with the following configuration:
+Check that a correct version of Java is selected in `Windows->Preferences`
+dialog under `Java->Compiler` section.
+
+To run Workcraft from within Eclipse create a `Java Application` runner
+with the following configuration:
 
   * Name: `Workcraft`
   * Project: `WorkcraftRunner`
   * Main class: `org.workcraft.Console`
   * Working directory (at Arguments tab): `${workspace_loc}`
+
+If you decide to run JUnit tests from within Eclipse, e.g. for interactive
+debugging, then you will need to change the Working directory of the test
+run configuration to `${workspace_loc}`.
 
 The default code style of eclipse uses tabs for indentation. This
 contradicts to the checkstyle that requires 4 spaces for each level of
@@ -83,9 +91,6 @@ indentation. Therefore Eclipse settings need to be modified as follows:
   changing its tab policy to `Spaces only`.
   * Save the modified profile under a new name and select it as the active
    profile.
-
-Check that a correct version of Java is selected in `Windows->Preferences`
-dialog under `Java->Compiler` section.
 
 ### Common issues
 
