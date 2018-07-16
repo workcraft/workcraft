@@ -4,5 +4,6 @@ dependencies {
     compile project(':FstPlugin')
     compile project(':StgPlugin')
     compile project(':FsmPlugin')
-    testCompile project(':CircuitPlugin').sourceSets.test.output
+
+    testCompile project(path: ':CircuitPlugin', configuration: 'testArchives')
 }
