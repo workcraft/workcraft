@@ -140,4 +140,8 @@ public class Contact extends MathNode implements BooleanVariable {
         return isOutput() == isPort();
     }
 
+    public boolean isForcedDriver() {
+        return isDriver() && getForcedInit();
+    }
+
 }

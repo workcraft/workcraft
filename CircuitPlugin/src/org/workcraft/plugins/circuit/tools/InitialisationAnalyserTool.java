@@ -17,13 +17,15 @@ import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.gui.propertyeditor.ColorCellRenderer;
+import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -34,23 +36,50 @@ import java.util.Set;
 
 public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
-    private static final int COLUMN_DESCRIPTION = 0;
-    private static final int COLUMN_COLOR = 1;
-    private static final int ROW_PROPAGATED = 0;
-    private static final int ROW_CONFLICT = 1;
-    private static final int ROW_FORCED = 2;
+    private static final int COLUMN_COLOR = 0;
+    private static final int COLUMN_DESCRIPTION = 1;
+    private static final int ROW_INIT_CONFLICT = 0;
+    private static final int ROW_INIT_FORCED = 1;
+    private static final int ROW_INIT_PROPAGATED = 2;
 
     private final HashSet<Node> initHighSet = new HashSet<>();
     private final HashSet<Node> initLowSet = new HashSet<>();
     private final HashSet<Node> initErrorSet = new HashSet<>();
 
+    private final class ColorDataRenderer implements TableCellRenderer {
+        @SuppressWarnings("serial")
+        final JLabel label = new JLabel() {
+            @Override
+            public void paint(final Graphics g) {
+                g.setColor(getBackground());
+                g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+                super.paint(g);
+            }
+        };
+
+        @Override
+        public Component getTableCellRendererComponent(final JTable table, final Object value,
+                final boolean isSelected, final boolean hasFocus, final int row, final int column) {
+            label.setText("");
+            label.setBorder(PropertyEditorTable.BORDER_RENDER);
+            label.setBackground((Color) value);
+            return label;
+        }
+    }
+
     @Override
     public JPanel getControlsPanel(final GraphEditor editor) {
         LegendTableModel legendTableModel = new LegendTableModel();
         JTable legendTable = new JTable(legendTableModel);
+        legendTable.setFocusable(false);
+        legendTable.setRowSelectionAllowed(false);
         legendTable.setRowHeight(SizeHelper.getComponentHeightFromFont(legendTable.getFont()));
-        legendTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        legendTable.setDefaultRenderer(Color.class, new ColorCellRenderer());
+        legendTable.setDefaultRenderer(Color.class, new ColorDataRenderer());
+        legendTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+
+        TableColumnModel columnModel = legendTable.getColumnModel();
+        columnModel.getColumn(COLUMN_COLOR).setPreferredWidth(100);
+        columnModel.getColumn(COLUMN_DESCRIPTION).setPreferredWidth(200);
 
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
@@ -97,12 +126,12 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         @Override
         public Object getValueAt(int row, int col) {
             switch (row) {
-            case ROW_PROPAGATED:
-                return (col == COLUMN_COLOR) ? CircuitSettings.getInitialisedGateColor() : "Initialised";
-            case ROW_CONFLICT:
-                return (col == COLUMN_COLOR) ? CircuitSettings.getConflictGateColor() : "Conflict";
-            case ROW_FORCED:
-                return (col == COLUMN_COLOR) ? CircuitSettings.getForcedGateColor() : "Forced";
+            case ROW_INIT_CONFLICT:
+                return (col == COLUMN_COLOR) ? CircuitSettings.getConflictInitGateColor() : "Conflict of initialisation";
+            case ROW_INIT_FORCED:
+                return (col == COLUMN_COLOR) ? CircuitSettings.getForcedInitGateColor() : "Forced initial state";
+            case ROW_INIT_PROPAGATED:
+                return (col == COLUMN_COLOR) ? CircuitSettings.getPropagatedInitGateColor() : "Propagated initial state";
             default:
                 return null;
             }
@@ -326,9 +355,9 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
             initialised &= initHighSet.contains(outputContact) || initLowSet.contains(outputContact);
             initialisationConflict |= initErrorSet.contains(outputContact);
         }
-        final Color color = forcedInit ? CircuitSettings.getForcedGateColor()
-                : initialisationConflict ? CircuitSettings.getConflictGateColor()
-                : initialised ? CircuitSettings.getInitialisedGateColor() : null;
+        final Color color = forcedInit ? CircuitSettings.getForcedInitGateColor()
+                : initialisationConflict ? CircuitSettings.getConflictInitGateColor()
+                : initialised ? CircuitSettings.getPropagatedInitGateColor() : null;
 
         return new Decoration() {
             @Override

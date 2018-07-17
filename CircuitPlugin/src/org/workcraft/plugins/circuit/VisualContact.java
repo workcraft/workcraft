@@ -1,33 +1,21 @@
 package org.workcraft.plugins.circuit;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Path2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.BoundingBoxHelper;
-import org.workcraft.dom.visual.CustomTouchable;
-import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.Positioning;
-import org.workcraft.dom.visual.Stylable;
-import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.*;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.observation.StateEvent;
-import org.workcraft.observation.StateObserver;
-import org.workcraft.observation.TransformChangedEvent;
-import org.workcraft.observation.TransformChangingEvent;
+import org.workcraft.observation.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.circuit.tools.StateDecoration;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
+
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 public class VisualContact extends VisualComponent implements StateObserver, CustomTouchable {
 
@@ -168,7 +156,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
                 return object.getReferencedContact().getInitToOne();
             }
             public boolean isDisabled() {
-                VisualContact contact = (VisualContact) getObject();
+                VisualContact contact = getObject();
                 return contact.isDriven();
             }
         });
@@ -182,8 +170,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
                 return object.getReferencedContact().getForcedInit();
             }
             public boolean isDisabled() {
-                VisualContact contact = (VisualContact) getObject();
-                return contact.isDriven();
+                return getObject().isDriven();
             }
         });
 
@@ -196,30 +183,20 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
                 return object.getReferencedContact().getPathBreaker();
             }
             public boolean isDisabled() {
-                VisualContact contact = (VisualContact) getObject();
-                return contact.isDriver();
+                VisualContact contact = getObject();
+                return contact.isPort() || contact.isDriver();
             }
         });
     }
 
     private Shape getShape() {
         Contact contact = getReferencedContact();
-        if ((contact != null) && contact.isPort()) {
-            return getPortShape();
-        }
-        return getContactShape();
+        return ((contact != null) && contact.isPort()) ? getPortShape() : getContactShape();
     }
 
-    private Shape getInitShape() {
+    private Shape getForcedShape() {
         Contact contact = getReferencedContact();
-        if (contact != null) {
-            if (contact.isPort()) {
-                return getPortShape();
-            } else if (contact.isDriver() && contact.getForcedInit()) {
-                return getInitialisedContactShape();
-            }
-        }
-        return getContactShape();
+        return contact.isPort() ? getPortShape() : getForcedContactShape();
     }
 
     private Shape getPortShape() {
@@ -247,7 +224,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
         return path;
     }
 
-    private Shape getInitialisedContactShape() {
+    private Shape getForcedContactShape() {
         double d = 0.5 * (size - CircuitSettings.getWireWidth());
         Path2D path = new Path2D.Double();
         path.moveTo(-d, 0);
@@ -280,11 +257,8 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
                 || (d.getColorisation() != null) || (d.getBackground() != null);
 
         if (showContact || isPort()) {
-            boolean showForcedInit = false;
-            if (d instanceof StateDecoration) {
-                showForcedInit = ((StateDecoration) d).showForcedInit();
-            }
-            Shape shape = showForcedInit ? getInitShape() : getShape();
+            boolean showForcedInit = (d instanceof StateDecoration) && ((StateDecoration) d).showForcedInit();
+            Shape shape = showForcedInit && isForcedDriver() ? getForcedShape() : getShape();
             float width = (float) CircuitSettings.getBorderWidth();
             g.setStroke(new BasicStroke(width));
             g.setColor(fillColor);
@@ -449,6 +423,10 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
 
     public boolean isDriven() {
         return getReferencedContact().isDriven();
+    }
+
+    public boolean isForcedDriver() {
+        return getReferencedContact().isForcedDriver();
     }
 
     @Override
