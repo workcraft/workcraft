@@ -1,19 +1,9 @@
 package org.workcraft.plugins.circuit.tools;
 
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
-
-import javax.swing.Icon;
-
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -27,22 +17,126 @@ import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.plugins.circuit.Contact;
-import org.workcraft.plugins.circuit.FunctionComponent;
-import org.workcraft.plugins.circuit.FunctionContact;
-import org.workcraft.plugins.circuit.VisualContact;
-import org.workcraft.plugins.circuit.VisualFunctionComponent;
-import org.workcraft.plugins.circuit.VisualFunctionContact;
+import org.workcraft.gui.propertyeditor.PropertyEditorTable;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
+
 public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
-    private HashSet<Node> initHighSet;
-    private HashSet<Node> initLowSet;
-    private HashSet<Node> initErrorSet;
+    private static final int COLUMN_COLOR = 0;
+    private static final int COLUMN_DESCRIPTION = 1;
+    private static final int ROW_INIT_CONFLICT = 0;
+    private static final int ROW_INIT_FORCED = 1;
+    private static final int ROW_INIT_PROPAGATED = 2;
+
+    private final HashSet<Node> initHighSet = new HashSet<>();
+    private final HashSet<Node> initLowSet = new HashSet<>();
+    private final HashSet<Node> initErrorSet = new HashSet<>();
+
+    private final class ColorDataRenderer implements TableCellRenderer {
+        @SuppressWarnings("serial")
+        final JLabel label = new JLabel() {
+            @Override
+            public void paint(final Graphics g) {
+                g.setColor(getBackground());
+                g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+                super.paint(g);
+            }
+        };
+
+        @Override
+        public Component getTableCellRendererComponent(final JTable table, final Object value,
+                final boolean isSelected, final boolean hasFocus, final int row, final int column) {
+            label.setText("");
+            label.setBorder(PropertyEditorTable.BORDER_RENDER);
+            label.setBackground((Color) value);
+            return label;
+        }
+    }
+
+    @Override
+    public JPanel getControlsPanel(final GraphEditor editor) {
+        LegendTableModel legendTableModel = new LegendTableModel();
+        JTable legendTable = new JTable(legendTableModel);
+        legendTable.setFocusable(false);
+        legendTable.setRowSelectionAllowed(false);
+        legendTable.setRowHeight(SizeHelper.getComponentHeightFromFont(legendTable.getFont()));
+        legendTable.setDefaultRenderer(Color.class, new ColorDataRenderer());
+        legendTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+
+        TableColumnModel columnModel = legendTable.getColumnModel();
+        columnModel.getColumn(COLUMN_COLOR).setPreferredWidth(100);
+        columnModel.getColumn(COLUMN_DESCRIPTION).setPreferredWidth(200);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(new JScrollPane(legendTable), BorderLayout.CENTER);
+        panel.setPreferredSize(new Dimension(0, 0));
+        return panel;
+    }
+
+    private final class LegendTableModel extends AbstractTableModel {
+        @Override
+        public int getColumnCount() {
+            return 2;
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            switch (column) {
+            case COLUMN_COLOR:
+                return "<html><b>Color</b></html>";
+            case COLUMN_DESCRIPTION:
+                return "<html><b>Description</b></html>";
+            default:
+                return null;
+            }
+        }
+
+        @Override
+        public Class<?> getColumnClass(final int col) {
+            switch (col) {
+            case COLUMN_COLOR:
+                return Color.class;
+            case COLUMN_DESCRIPTION:
+                return String.class;
+            default:
+                return null;
+            }
+        }
+
+        @Override
+        public int getRowCount() {
+            return 3;
+        }
+
+        @Override
+        public Object getValueAt(int row, int col) {
+            switch (row) {
+            case ROW_INIT_CONFLICT:
+                return (col == COLUMN_COLOR) ? CircuitSettings.getConflictInitGateColor() : "Conflict of initialisation";
+            case ROW_INIT_FORCED:
+                return (col == COLUMN_COLOR) ? CircuitSettings.getForcedInitGateColor() : "Forced initial state";
+            case ROW_INIT_PROPAGATED:
+                return (col == COLUMN_COLOR) ? CircuitSettings.getPropagatedInitGateColor() : "Propagated initial state";
+            default:
+                return null;
+            }
+        }
+    }
 
     @Override
     public String getLabel() {
@@ -79,9 +173,9 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     @Override
     public void deactivated(final GraphEditor editor) {
         super.deactivated(editor);
-        initHighSet = null;
-        initLowSet = null;
-        initErrorSet = null;
+        initHighSet.clear();
+        initLowSet.clear();
+        initErrorSet.clear();
     }
 
     @Override
@@ -92,21 +186,16 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         we.setCanCopy(false);
     }
 
-    @Override
-    public boolean requiresPropertyEditor() {
-        return true;
-    }
-
     private void updateState(Circuit circuit) {
-        initHighSet = new HashSet<>();
-        initLowSet = new HashSet<>();
-        initErrorSet = new HashSet<>();
+        initHighSet.clear();
+        initLowSet.clear();
+        initErrorSet.clear();
         Queue<Connection> queue = new LinkedList<>();
-        for (FunctionContact contact: circuit.getFunctionContacts()) {
+        for (FunctionContact contact : circuit.getFunctionContacts()) {
             if (contact.isDriver() && contact.getForcedInit()) {
-                HashSet<Node> init = (contact.getInitToOne()) ? initHighSet : initLowSet;
-                if (init.add(contact)) {
-                    queueConnections(circuit, contact, queue);
+                HashSet<Node> initSet = (contact.getInitToOne()) ? initHighSet : initLowSet;
+                if (initSet.add(contact)) {
+                    queue.addAll(circuit.getConnections(contact));
                 }
             }
         }
@@ -125,7 +214,8 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
                         FunctionComponent component = (FunctionComponent) parent;
                         propagateValuesToOutputs(circuit, component, queue);
                     } else {
-                        queueConnections(circuit, toNode, queue);
+                        Set<Connection> connections = circuit.getConnections(toNode);
+                        queue.addAll(connections);
                     }
                 }
             }
@@ -134,7 +224,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
     private void fillVariableValues(FunctionComponent component,
             LinkedList<BooleanVariable> variables, LinkedList<BooleanFormula> values) {
-        for (FunctionContact contact: component.getFunctionContacts()) {
+        for (FunctionContact contact : component.getFunctionContacts()) {
             HashSet<Node> contactInitLevelSet = chooseNodeLevelSet(contact);
             if (contactInitLevelSet != null) {
                 variables.add(contact);
@@ -150,22 +240,17 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
             LinkedList<BooleanVariable> variables = new LinkedList<>();
             LinkedList<BooleanFormula> values = new LinkedList<>();
             fillVariableValues(component, variables, values);
-            for (FunctionContact outputPin: component.getFunctionOutputs()) {
+            for (FunctionContact outputPin : component.getFunctionOutputs()) {
                 Set<Node> outputInitLevelSet = chooseFunctionLevelSet(outputPin, variables, values);
                 if ((outputInitLevelSet != null) && outputInitLevelSet.add(outputPin)) {
                     progress = true;
-                    if ((outputInitLevelSet == initHighSet) != outputPin.getInitToOne()) {
+                    if (!outputPin.getForcedInit() && ((outputInitLevelSet == initHighSet) != outputPin.getInitToOne())) {
                         initErrorSet.add(outputPin);
                     }
-                    queueConnections(circuit, outputPin, queue);
+                    queue.addAll(circuit.getConnections(outputPin));
                 }
             }
         }
-    }
-
-    private void queueConnections(Circuit circuit, Node node, Queue<Connection> queue) {
-        Set<Connection> connections = circuit.getConnections(node);
-        queue.addAll(connections);
     }
 
     private HashSet<Node> chooseNodeLevelSet(Node node) {
@@ -180,6 +265,9 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
     private HashSet<Node> chooseFunctionLevelSet(FunctionContact contact,
             LinkedList<BooleanVariable> variables, LinkedList<BooleanFormula> values) {
+        if (contact.getForcedInit()) {
+            return contact.getInitToOne() ? initHighSet : initLowSet;
+        }
         BooleanFormula setFunction = BooleanUtils.replaceClever(contact.getSetFunction(), variables, values);
         BooleanFormula resetFunction = BooleanUtils.replaceClever(contact.getResetFunction(), variables, values);
         if (isEvaluatedHigh(setFunction, resetFunction)) {
@@ -246,10 +334,10 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
                     if (mathNode instanceof FunctionComponent) {
                         return getComponentDecoration((FunctionComponent) mathNode);
                     }
-                    if ((initHighSet != null) && initHighSet.contains(mathNode)) {
+                    if (initHighSet.contains(mathNode)) {
                         return getHighLevelDecoration(mathNode);
                     }
-                    if ((initLowSet != null) && initLowSet.contains(mathNode)) {
+                    if (initLowSet.contains(mathNode)) {
                         return getLowLevelDecoration(mathNode);
                     }
                 }
@@ -259,21 +347,24 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private Decoration getComponentDecoration(FunctionComponent component) {
+        boolean forcedInit = false;
         boolean initialised = true;
         boolean initialisationConflict = false;
-        for (Contact outputContact: component.getOutputs()) {
-            initialised &= ((initHighSet != null) && initHighSet.contains(outputContact))
-                    || ((initLowSet != null) && initLowSet.contains(outputContact));
-            initialisationConflict |= (initErrorSet != null) && initErrorSet.contains(outputContact);
+        for (Contact outputContact : component.getOutputs()) {
+            forcedInit |= outputContact.getForcedInit();
+            initialised &= initHighSet.contains(outputContact) || initLowSet.contains(outputContact);
+            initialisationConflict |= initErrorSet.contains(outputContact);
         }
-        final Color color = initialisationConflict ? CircuitSettings.getConflictGateColor()
-                : initialised ? CircuitSettings.getInitialisedGateColor() : null;
+        final Color color = forcedInit ? CircuitSettings.getForcedInitGateColor()
+                : initialisationConflict ? CircuitSettings.getConflictInitGateColor()
+                : initialised ? CircuitSettings.getPropagatedInitGateColor() : null;
 
         return new Decoration() {
             @Override
             public Color getColorisation() {
                 return color;
             }
+
             @Override
             public Color getBackground() {
                 return color;
@@ -282,16 +373,18 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private Decoration getLowLevelDecoration(Node node) {
-        final boolean initialisationConflict = (initErrorSet != null) && initErrorSet.contains(node);
+        final boolean initialisationConflict = initErrorSet.contains(node);
         return new StateDecoration() {
             @Override
             public Color getColorisation() {
                 return CircuitSettings.getInactiveWireColor();
             }
+
             @Override
             public Color getBackground() {
                 return initialisationConflict ? CircuitSettings.getActiveWireColor() : CircuitSettings.getInactiveWireColor();
             }
+
             @Override
             public boolean showForcedInit() {
                 return true;
@@ -300,16 +393,18 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private Decoration getHighLevelDecoration(Node node) {
-        final boolean initialisationConflict = (initErrorSet != null) && initErrorSet.contains(node);
+        final boolean initialisationConflict = initErrorSet.contains(node);
         return new StateDecoration() {
             @Override
             public Color getColorisation() {
                 return CircuitSettings.getActiveWireColor();
             }
+
             @Override
             public Color getBackground() {
                 return initialisationConflict ? CircuitSettings.getInactiveWireColor() : CircuitSettings.getActiveWireColor();
             }
+
             @Override
             public boolean showForcedInit() {
                 return true;

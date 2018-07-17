@@ -182,8 +182,8 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private Decoration getContactDecoration(Contact contact) {
-        final Color color = contact.getPathBreaker() ? CircuitSettings.getInitialisedGateColor()
-                : loopSet.contains(contact) ? CircuitSettings.getConflictGateColor() : null;
+        final Color color = contact.getPathBreaker() ? CircuitSettings.getPropagatedInitGateColor()
+                : loopSet.contains(contact) ? CircuitSettings.getConflictInitGateColor() : null;
 
         return new Decoration() {
             @Override
@@ -198,8 +198,8 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private Decoration getComponentDecoration(FunctionComponent component) {
-        final Color color = component.getPathBreaker() ? CircuitSettings.getInitialisedGateColor()
-                : loopSet.contains(component) ? CircuitSettings.getConflictGateColor() : null;
+        final Color color = component.getPathBreaker() ? CircuitSettings.getPropagatedInitGateColor()
+                : loopSet.contains(component) ? CircuitSettings.getConflictInitGateColor() : null;
 
         return new Decoration() {
             @Override
