@@ -12,8 +12,6 @@ stdcCircuitWork = synthStandardCelementPetrify(stgWork);
 stdcStat = statCircuit(stdcCircuitWork);
 write(stdcStat, 'petrify-vme-stdc.circuit.stat');
 
-setConfigVar("CircuitSettings.gateLibrary", "libraries/workcraft.lib");
-setConfigVar("CircuitSettings.substitutionLibrary", "");
 tmCircuitWork = synthTechnologyMappingPetrify(stgWork);
 tmStat = statCircuit(tmCircuitWork);
 write(tmStat, 'petrify-vme-tm.circuit.stat');

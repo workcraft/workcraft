@@ -1,7 +1,7 @@
+setConfigVar("CommonDebugSettings.shortExportHeader", "true");
+
 we = load('vme-tm.circuit.work');
 
-setConfigVar("CircuitSettings.gateLibrary", "libraries/workcraft.lib");
-setConfigVar("CircuitSettings.substitutionLibrary", "");
 exportCircuitVerilog(we, 'vme-tm.circuit.v');
 
 exportSvg(we, 'vme-tm.circuit.svg');

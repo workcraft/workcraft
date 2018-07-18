@@ -35,60 +35,78 @@ public class CommonLogSettings implements Settings {
 
     public CommonLogSettings() {
         properties.add(new PropertyDeclaration<CommonLogSettings, Color>(
-                this, "Text color", Color.class, true, false, false) {
+                this, "Text color",
+                Color.class, true, false, false) {
+            @Override
             protected void setter(CommonLogSettings object, Color value) {
                 setTextColor(value);
             }
+            @Override
             protected Color getter(CommonLogSettings object) {
                 return getTextColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonLogSettings, Color>(
-                this, "Important info background", Color.class, true, false, false) {
+                this, "Important info background",
+                Color.class, true, false, false) {
+            @Override
             protected void setter(CommonLogSettings object, Color value) {
                 setInfoBackground(value);
             }
+            @Override
             protected Color getter(CommonLogSettings object) {
                 return getInfoBackground();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonLogSettings, Color>(
-                this, "Warning background", Color.class, true, false, false) {
+                this, "Warning background",
+                Color.class, true, false, false) {
+            @Override
             protected void setter(CommonLogSettings object, Color value) {
                 setWarningBackground(value);
             }
+            @Override
             protected Color getter(CommonLogSettings object) {
                 return getWarningBackground();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonLogSettings, Color>(
-                this, "Error background", Color.class, true, false, false) {
+                this, "Error background",
+                Color.class, true, false, false) {
+            @Override
             protected void setter(CommonLogSettings object, Color value) {
                 setErrorBackground(value);
             }
+            @Override
             protected Color getter(CommonLogSettings object) {
                 return getErrorBackground();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonLogSettings, Color>(
-                this, "Backend stdout background", Color.class, true, false, false) {
+                this, "Backend stdout background",
+                Color.class, true, false, false) {
+            @Override
             protected void setter(CommonLogSettings object, Color value) {
                 setStdoutBackground(value);
             }
+            @Override
             protected Color getter(CommonLogSettings object) {
                 return getStdoutBackground();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonLogSettings, Color>(
-                this, "Backend stderr background", Color.class, true, false, false) {
+                this, "Backend stderr background",
+                Color.class, true, false, false) {
+            @Override
             protected void setter(CommonLogSettings object, Color value) {
                 setStderrBackground(value);
             }
+            @Override
             protected Color getter(CommonLogSettings object) {
                 return getStderrBackground();
             }

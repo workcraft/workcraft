@@ -39,8 +39,8 @@ public class CommonVisualSettings implements Settings {
     private static final double defaultStrokeWidth = 0.1;
     private static final Color defaultBorderColor = Color.BLACK;
     private static final Color defaultFillColor = Color.WHITE;
-    private static final Double defaultPivotSize = 0.2;
-    private static final Double defaultPivotWidth = 0.02;
+    private static final double defaultPivotSize = 0.2;
+    private static final double defaultPivotWidth = 0.02;
     private static final double defaultLineSpacing = 0.3;
     private static final boolean defaultLabelVisibility = true;
     private static final Positioning defaultLabelPositioning = Positioning.TOP;
@@ -60,8 +60,8 @@ public class CommonVisualSettings implements Settings {
     private static double strokeWidth = defaultStrokeWidth;
     private static Color borderColor = defaultBorderColor;
     private static Color fillColor = defaultFillColor;
-    private static Double pivotSize = defaultPivotSize;
-    private static Double pivotWidth = defaultPivotWidth;
+    private static double pivotSize = defaultPivotSize;
+    private static double pivotWidth = defaultPivotWidth;
     private static double lineSpacing = defaultLineSpacing;
     private static boolean labelVisibility = defaultLabelVisibility;
     private static Positioning labelPositioning = defaultLabelPositioning;
@@ -415,10 +415,10 @@ public class CommonVisualSettings implements Settings {
         setPivotWidth(config.getDouble(keyPivotWidth, defaultPivotWidth));
         setLineSpacing(config.getDouble(keyLineSpacing, defaultLineSpacing));
         setLabelVisibility(config.getBoolean(keyLabelVisibility, defaultLabelVisibility));
-        setLabelPositioning(config.getTextPositioning(keyLabelPositioning, defaultLabelPositioning));
+        setLabelPositioning(config.getEnum(keyLabelPositioning, Positioning.class, defaultLabelPositioning));
         setLabelColor(config.getColor(keyLabelColor, defaultLabelColor));
         setNameVisibility(config.getBoolean(keyNameVisibility, defaultNameVisibility));
-        setNamePositioning(config.getTextPositioning(keyNamePositioning, defaultNamePositioning));
+        setNamePositioning(config.getEnum(keyNamePositioning, Positioning.class, defaultNamePositioning));
         setNameColor(config.getColor(keyNameColor, defaultNameColor));
         setConnectionLineWidth(config.getDouble(keyConnectionLineWidth, defaultConnectionLineWidth));
         setConnectionArrowWidth(config.getDouble(keyConnectionArrowWidth, defaultConnectionArrowWidth));
@@ -439,16 +439,16 @@ public class CommonVisualSettings implements Settings {
         config.setDouble(keyPivotWidth, getPivotWidth());
         config.setDouble(keyLineSpacing, getLineSpacing());
         config.setBoolean(keyLabelVisibility, getLabelVisibility());
-        config.setTextPositioning(keyLabelPositioning, getLabelPositioning());
+        config.setEnum(keyLabelPositioning, getLabelPositioning());
         config.setColor(keyLabelColor, getLabelColor());
         config.setBoolean(keyNameVisibility, getNameVisibility());
         config.setColor(keyNameColor, getNameColor());
-        config.setTextPositioning(keyNamePositioning, getNamePositioning());
+        config.setEnum(keyNamePositioning, getNamePositioning());
         config.setDouble(keyConnectionLineWidth, getConnectionLineWidth());
         config.setDouble(keyConnectionArrowWidth, getConnectionArrowWidth());
         config.setDouble(keyConnectionArrowLength, getConnectionArrowLength());
-        config.getDouble(keyConnectionBubbleSize, getConnectionBubbleSize());
-        config.getColor(keyConnectionColor, getConnectionColor());
+        config.setDouble(keyConnectionBubbleSize, getConnectionBubbleSize());
+        config.setColor(keyConnectionColor, getConnectionColor());
         config.setBoolean(keyUseSubscript, getUseSubscript());
     }
 
@@ -526,11 +526,11 @@ public class CommonVisualSettings implements Settings {
         lineSpacing = value;
     }
 
-    public static Boolean getLabelVisibility() {
+    public static boolean getLabelVisibility() {
         return labelVisibility;
     }
 
-    public static void setLabelVisibility(Boolean value) {
+    public static void setLabelVisibility(boolean value) {
         labelVisibility = value;
     }
 
@@ -550,11 +550,11 @@ public class CommonVisualSettings implements Settings {
         labelColor = value;
     }
 
-    public static Boolean getNameVisibility() {
+    public static boolean getNameVisibility() {
         return nameVisibility;
     }
 
-    public static void setNameVisibility(Boolean value) {
+    public static void setNameVisibility(boolean value) {
         nameVisibility = value;
     }
 

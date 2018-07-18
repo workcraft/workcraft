@@ -32,50 +32,65 @@ public class CommonSignalSettings implements Settings {
 
     public CommonSignalSettings() {
         properties.add(new PropertyDeclaration<CommonSignalSettings, Color>(
-                this, "Input signal color", Color.class, true, false, false) {
+                this, "Input signal color",
+                Color.class, true, false, false) {
+            @Override
             protected void setter(CommonSignalSettings object, Color value) {
                 setInputColor(value);
             }
+            @Override
             protected Color getter(CommonSignalSettings object) {
                 return getInputColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonSignalSettings, Color>(
-                this, "Output signal color", Color.class, true, false, false) {
+                this, "Output signal color",
+                Color.class, true, false, false) {
+            @Override
             protected void setter(CommonSignalSettings object, Color value) {
                 setOutputColor(value);
             }
+            @Override
             protected Color getter(CommonSignalSettings object) {
                 return getOutputColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonSignalSettings, Color>(
-                this, "Internal signal color", Color.class, true, false, false) {
+                this, "Internal signal color",
+                Color.class, true, false, false) {
+            @Override
             protected void setter(CommonSignalSettings object, Color value) {
                 setInternalColor(value);
             }
+            @Override
             protected Color getter(CommonSignalSettings object) {
                 return getInternalColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonSignalSettings, Color>(
-                this, "Dummy color", Color.class, true, false, false) {
+                this, "Dummy color",
+                Color.class, true, false, false) {
+            @Override
             protected void setter(CommonSignalSettings object, Color value) {
                 setDummyColor(value);
             }
+            @Override
             protected Color getter(CommonSignalSettings object) {
                 return getDummyColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonSignalSettings, Boolean>(
-                this, "Show signal toggle (~)", Boolean.class, true, false, false) {
+                this, "Show signal toggle (~)",
+                Boolean.class, true, false, false) {
+            @Override
             protected void setter(CommonSignalSettings object, Boolean value) {
                 setShowToggle(value);
             }
+            @Override
             protected Boolean getter(CommonSignalSettings object) {
                 return getShowToggle();
             }
@@ -147,11 +162,11 @@ public class CommonSignalSettings implements Settings {
         return dummyColor;
     }
 
-    public static Boolean getShowToggle() {
+    public static boolean getShowToggle() {
         return showToggle;
     }
 
-    public static void setShowToggle(Boolean value) {
+    public static void setShowToggle(boolean value) {
         showToggle = value;
     }
 

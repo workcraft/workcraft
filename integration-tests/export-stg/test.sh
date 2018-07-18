@@ -1,11 +1,11 @@
-./workcraft -nogui -dir:${test_dir} -exec:vme.stg.js >${log_file}
+./workcraft -nogui -noconfig -dir:${test_dir} -exec:vme.stg.js >${log_file}
 
 # Post-processing
 result_file=${test_dir}/vme.stg.txt
 function report_file_header() {
     file_name=$1
     header_size=$2
-    options=$3
+    options=${3:keep} # [keep], remove
     if [[ -e $file_name ]]; then
         header=$(head -c $header_size $file_name)
     fi
@@ -18,8 +18,8 @@ function report_file_header() {
 }
 
 rm -f ${result_file}
-report_file_header ${test_dir}/vme.stg.g 128 keep
-report_file_header ${test_dir}/vme.stg.lpn 127 keep
+report_file_header ${test_dir}/vme.stg.g 103
+report_file_header ${test_dir}/vme.stg.lpn 124
 report_file_header ${test_dir}/vme.stg.svg 155 remove
 report_file_header ${test_dir}/vme.stg.png 8 remove
 report_file_header ${test_dir}/vme.stg.pdf 9 remove

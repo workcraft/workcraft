@@ -98,7 +98,7 @@ public class DfsSettings implements Settings {
     public void save(Config config) {
         config.setColor(keyComputedLogicColor, getComputedLogicColor());
         config.setColor(keySynchronisationRegisterColor, getSynchronisationRegisterColor());
-        config.setEnum(keyTokenPalette, Palette.class, getTokenPalette());
+        config.setEnum(keyTokenPalette, getTokenPalette());
     }
 
     @Override

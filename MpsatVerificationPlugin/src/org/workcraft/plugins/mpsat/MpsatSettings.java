@@ -143,7 +143,7 @@ public class MpsatSettings implements Settings {
     @Override
     public void save(Config config) {
         config.set(keyCommand, getCommand());
-        config.setEnum(keySolutionMode, SolutionMode.class, getSolutionMode());
+        config.setEnum(keySolutionMode, getSolutionMode());
         config.set(keyArgs, getArgs());
         config.setBoolean(keyAdvancedMode, getAdvancedMode());
         config.setBoolean(keyPrintStdout, getPrintStdout());

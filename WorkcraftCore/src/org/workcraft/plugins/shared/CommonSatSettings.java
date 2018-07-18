@@ -43,30 +43,39 @@ public class CommonSatSettings implements Settings {
 
     public CommonSatSettings() {
         properties.add(new PropertyDeclaration<CommonSatSettings, SatSolver>(
-                this, "SAT solver", SatSolver.class, true, false, false) {
+                this, "SAT solver",
+                SatSolver.class, true, false, false) {
+            @Override
             protected void setter(CommonSatSettings object, SatSolver value) {
                 setSatSolver(value);
             }
+            @Override
             protected SatSolver getter(CommonSatSettings object) {
                 return getSatSolver();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonSatSettings, String>(
-                this, "Clasp solver command", String.class, true, false, false) {
+                this, "Clasp solver command",
+                String.class, true, false, false) {
+            @Override
             protected void setter(CommonSatSettings object, String value) {
                 setClaspCommand(value);
             }
+            @Override
             protected String getter(CommonSatSettings object) {
                 return getClaspCommand();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonSatSettings, String>(
-                this, "MiniSat solver command", String.class, true, false, false) {
+                this, "MiniSat solver command",
+                String.class, true, false, false) {
+            @Override
             protected void setter(CommonSatSettings object, String value) {
                 setMinisatCommand(value);
             }
+            @Override
             protected String getter(CommonSatSettings object) {
                 return getMinisatCommand();
             }
@@ -82,7 +91,7 @@ public class CommonSatSettings implements Settings {
 
     @Override
     public void save(Config config) {
-        config.setEnum(keySatSolver, SatSolver.class, getSatSolver());
+        config.setEnum(keySatSolver, getSatSolver());
         config.set(keyClaspCommand, getClaspCommand());
         config.set(keyMinisatCommand, getMinisatCommand());
     }
