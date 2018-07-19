@@ -36,60 +36,78 @@ public class CommonCommentSettings implements Settings {
 
     public CommonCommentSettings() {
         properties.add(new PropertyDeclaration<CommonCommentSettings, Double>(
-                this, "Base size (cm)", Double.class, true, false, false) {
+                this, "Base size (cm)",
+                Double.class, true, false, false) {
+            @Override
             protected void setter(CommonCommentSettings object, Double value) {
                 setBaseSize(value);
             }
+            @Override
             protected Double getter(CommonCommentSettings object) {
                 return getBaseSize();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonCommentSettings, Double>(
-                this, "Stroke width (cm)", Double.class, true, false, false) {
+                this, "Stroke width (cm)",
+                Double.class, true, false, false) {
+            @Override
             protected void setter(CommonCommentSettings object, Double value) {
                 setStrokeWidth(value);
             }
+            @Override
             protected Double getter(CommonCommentSettings object) {
                 return getStrokeWidth();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonCommentSettings, Alignment>(
-                this, "Text alignment", Alignment.class, true, false, false) {
+                this, "Text alignment",
+                Alignment.class, true, false, false) {
+            @Override
             protected void setter(CommonCommentSettings object, Alignment value) {
                 setTextAlignment(value);
             }
+            @Override
             protected Alignment getter(CommonCommentSettings object) {
                 return getTextAlignment();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonCommentSettings, Color>(
-                this, "Text color", Color.class, true, false, false) {
+                this, "Text color",
+                Color.class, true, false, false) {
+            @Override
             protected void setter(CommonCommentSettings object, Color value) {
                 setTextColor(value);
             }
+            @Override
             protected Color getter(CommonCommentSettings object) {
                 return getTextColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonCommentSettings, Color>(
-                this, "Border color", Color.class, true, false, false) {
+                this, "Border color",
+                Color.class, true, false, false) {
+            @Override
             protected void setter(CommonCommentSettings object, Color value) {
                 setBorderColor(value);
             }
+            @Override
             protected Color getter(CommonCommentSettings object) {
                 return getBorderColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonCommentSettings, Color>(
-                this, "Fill color", Color.class, true, false, false) {
+                this, "Fill color",
+                Color.class, true, false, false) {
+            @Override
             protected void setter(CommonCommentSettings object, Color value) {
                 setFillColor(value);
             }
+            @Override
             protected Color getter(CommonCommentSettings object) {
                 return getFillColor();
             }
@@ -115,7 +133,7 @@ public class CommonCommentSettings implements Settings {
     public void save(Config config) {
         config.setDouble(keyBaseSize, getBaseSize());
         config.setDouble(keyStrokeWidth, getStrokeWidth());
-        config.setEnum(keyTextAlignment, Alignment.class, getTextAlignment());
+        config.setEnum(keyTextAlignment, getTextAlignment());
         config.setColor(keyTextColor, getTextColor());
         config.setColor(keyBorderColor, getBorderColor());
         config.setColor(keyFillColor, getFillColor());

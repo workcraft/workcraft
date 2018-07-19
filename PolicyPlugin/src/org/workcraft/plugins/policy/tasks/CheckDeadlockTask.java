@@ -7,7 +7,7 @@ import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
-import org.workcraft.plugins.mpsat.MpsatSettings;
+import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatOutputParser;
@@ -34,7 +34,7 @@ public class CheckDeadlockTask extends MpsatChainTask {
 
     public CheckDeadlockTask(WorkspaceEntry we) {
         super(we, new MpsatParameters("Deadlock freeness", MpsatMode.DEADLOCK, 0,
-                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount()));
+                MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount()));
     }
 
     @Override

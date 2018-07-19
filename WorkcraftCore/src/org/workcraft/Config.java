@@ -1,13 +1,9 @@
 package org.workcraft;
 
-import java.awt.Color;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetEncoder;
-import java.util.HashMap;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -18,17 +14,19 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.workcraft.dom.visual.Positioning;
-import org.xml.sax.SAXException;
+import java.awt.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
+import java.util.HashMap;
 
 public class Config {
 
-    protected HashMap<String, HashMap<String, String>> groups = new HashMap<>();
-    protected HashMap<String, String> rootGroup = new HashMap<>();
+    private final HashMap<String, HashMap<String, String>> groups = new HashMap<>();
+    private final HashMap<String, String> rootGroup = new HashMap<>();
 
     public String get(String key) {
         String[] k = key.split("\\.", 2);
@@ -45,6 +43,10 @@ public class Config {
         }
     }
 
+    public static String toString(String value) {
+        return value;
+    }
+
     public String getString(String key, String defaultValue) {
         String s = get(key);
         if (s == null) {
@@ -55,7 +57,11 @@ public class Config {
     }
 
     public void setInt(String key, int value) {
-        set(key, Integer.toString(value));
+        set(key, toString(value));
+    }
+
+    public static String toString(int value) {
+        return Integer.toString(value);
     }
 
     public int getInt(String key, int defaultValue) {
@@ -71,10 +77,14 @@ public class Config {
         }
     }
 
-    public <T extends Enum<T>> void setEnum(String key, Class<T> enumType, T value) {
+    public <T extends Enum<T>> void setEnum(String key, T value) {
         if (value != null) {
-            set(key, value.name());
+            set(key, toString(value));
         }
+    }
+
+    public static <T extends Enum<T>> String toString(T value) {
+        return value.name();
     }
 
     public <T extends Enum<T>> T getEnum(String key, Class<T> enumType, T defaultValue) {
@@ -91,7 +101,11 @@ public class Config {
     }
 
     public void setDouble(String key, double value) {
-        set(key, Double.toString(value));
+        set(key, toString(value));
+    }
+
+    public static String toString(double value) {
+        return Double.toString(value);
     }
 
     public double getDouble(String key, double defaultValue) {
@@ -109,8 +123,12 @@ public class Config {
 
     public void setColor(String key, Color value) {
         if (value != null) {
-            set(key, String.format("#%x", value.getRGB() & 0xffffff));
+            set(key, toString(value));
         }
+    }
+
+    public static String toString(Color value) {
+        return String.format("#%x", value.getRGB() & 0xffffff);
     }
 
     public Color getColor(String key, Color defaultValue) {
@@ -127,7 +145,11 @@ public class Config {
     }
 
     public void setBoolean(String key, boolean value) {
-        set(key, Boolean.toString(value));
+        set(key, toString(value));
+    }
+
+    public static String toString(boolean value) {
+        return Boolean.toString(value);
     }
 
     public boolean getBoolean(String key, boolean defaultValue) {
@@ -139,23 +161,6 @@ public class Config {
         }
     }
 
-    public void setTextPositioning(String key, Positioning value) {
-        set(key, value.name());
-    }
-
-    public Positioning getTextPositioning(String key, Positioning defaultValue) {
-        String s = get(key);
-        if (s == null) {
-            return defaultValue;
-        }
-        try {
-            return Enum.valueOf(Positioning.class, s);
-        } catch (EnumConstantNotPresentException e) {
-            e.printStackTrace();
-            return defaultValue;
-        }
-    }
-
     public void set(String key, String value) {
         String[] k = key.split("\\.", 2);
         HashMap<String, String> group;
@@ -164,7 +169,7 @@ public class Config {
         } else {
             group = groups.get(k[0]);
             if (group == null) {
-                group = new HashMap<String, String>();
+                group = new HashMap<>();
                 groups.put(k[0], group);
             }
             group.put(k[1], value);

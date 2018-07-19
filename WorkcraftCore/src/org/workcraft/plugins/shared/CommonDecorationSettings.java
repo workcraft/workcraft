@@ -32,50 +32,65 @@ public class CommonDecorationSettings implements Settings {
 
     public CommonDecorationSettings() {
         properties.add(new PropertyDeclaration<CommonDecorationSettings, Color>(
-                this, "Highlighted component color", Color.class, true, false, false) {
+                this, "Highlighted component color",
+                Color.class, true, false, false) {
+            @Override
             protected void setter(CommonDecorationSettings object, Color value) {
                 setHighlightedComponentColor(value);
             }
+            @Override
             protected Color getter(CommonDecorationSettings object) {
                 return getHighlightedComponentColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonDecorationSettings, Color>(
-                this, "Selected component color", Color.class, true, false, false) {
+                this, "Selected component color",
+                Color.class, true, false, false) {
+            @Override
             protected void setter(CommonDecorationSettings object, Color value) {
                 setSelectedComponentColor(value);
             }
+            @Override
             protected Color getter(CommonDecorationSettings object) {
                 return getSelectedComponentColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonDecorationSettings, Color>(
-                this, "Shaded component color", Color.class, true, false, false) {
+                this, "Shaded component color",
+                Color.class, true, false, false) {
+            @Override
             protected void setter(CommonDecorationSettings object, Color value) {
                 setShadedComponentColor(value);
             }
+            @Override
             protected Color getter(CommonDecorationSettings object) {
                 return getShadedComponentColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonDecorationSettings, Color>(
-                this, "Excited component color", Color.class, true, false, false) {
+                this, "Excited component color",
+                Color.class, true, false, false) {
+            @Override
             protected void setter(CommonDecorationSettings object, Color value) {
                 setExcitedComponentColor(value);
             }
+            @Override
             protected Color getter(CommonDecorationSettings object) {
                 return getExcitedComponentColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonDecorationSettings, Color>(
-                this, "Suggested component background", Color.class, true, false, false) {
+                this, "Suggested component background",
+                Color.class, true, false, false) {
+            @Override
             protected void setter(CommonDecorationSettings object, Color value) {
                 setSuggestedComponentColor(value);
             }
+            @Override
             protected Color getter(CommonDecorationSettings object) {
                 return getSuggestedComponentColor();
             }

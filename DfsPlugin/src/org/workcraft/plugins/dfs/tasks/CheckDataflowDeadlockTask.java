@@ -9,7 +9,7 @@ import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.plugins.dfs.stg.DfsToStgConverter;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
-import org.workcraft.plugins.mpsat.MpsatSettings;
+import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatOutputParser;
@@ -34,7 +34,7 @@ public class CheckDataflowDeadlockTask extends MpsatChainTask {
 
     public CheckDataflowDeadlockTask(WorkspaceEntry we) {
         super(we, new MpsatParameters("Deadlock freeness", MpsatMode.DEADLOCK, 0,
-                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
+                MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount(),
                 null, true));
     }
 

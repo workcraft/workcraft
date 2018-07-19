@@ -1,4 +1,4 @@
-./workcraft -nogui -dir:${test_dir} -exec:mpsat-vme.js >${log_file}
+./workcraft -nogui -noconfig -dir:${test_dir} -exec:mpsat-vme.js >${log_file}
 
 # Filter out fanin/fanout statistics as it often changes on different runs
 for f in ${test_dir}/mpsat-vme-*.circuit.stat; do

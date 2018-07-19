@@ -43,7 +43,7 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
         setFocusable(false);
         setRowHeight(SizeHelper.getComponentHeightFromFont(getFont()));
 
-        propertyClasses = new HashMap<Class<?>, PropertyClass>();
+        propertyClasses = new HashMap<>();
         propertyClasses.put(int.class, new IntegerProperty());
         propertyClasses.put(Integer.class, new IntegerProperty());
         propertyClasses.put(double.class, new DoubleProperty());

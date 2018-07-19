@@ -6,7 +6,7 @@ for path in ${test_dir}/*.g; do
     args="${args} "$name
 done
 
-./workcraft -nogui -dir:${test_dir} -exec:test.js $args >${log_file}
+./workcraft -nogui -noconfig -dir:${test_dir} -exec:test.js $args >${log_file}
 
 # Clean up
 rm -f ${test_dir}/*.work

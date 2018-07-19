@@ -19,11 +19,6 @@ import org.workcraft.util.ResourceUtils;
 
 public class Console {
     static {
-        // Workaround for Java 7 bug http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7075600
-        // TODO: Remove again when switching to Java 8
-        if (System.getProperty("java.version").startsWith("1.7")) {
-            System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
-        }
         //Allows menu bar of OS X to be used instead of being in the Workcraft main window.
         if (DesktopApi.getOs().isMac()) {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
@@ -33,11 +28,11 @@ public class Console {
 
     public static void main(String[] args) {
         LinkedList<String> arglist = new LinkedList<>();
-        for (String s: args) {
+        for (String s : args) {
             arglist.push(s);
         }
 
-        for (String arg: args) {
+        for (String arg : args) {
             if (arg.equals(Info.OPTION_VERSION)) {
                 System.out.println(Info.getVersion());
                 return;
@@ -49,10 +44,15 @@ public class Console {
         }
 
         final Framework framework = Framework.getInstance();
-        boolean startGUI = true;
-        for (String arg: args) {
+        boolean startGui = true;
+        boolean useConfig = true;
+        for (String arg : args) {
             if (arg.equals(Info.OPTION_NOGUI)) {
-                startGUI = false;
+                startGui = false;
+                arglist.remove(arg);
+            }
+            if (arg.equals(Info.OPTION_NOCONFIG)) {
+                useConfig = false;
                 arglist.remove(arg);
             }
             if (arg.startsWith(Info.OPTION_DIR)) {
@@ -71,7 +71,7 @@ public class Console {
         framework.init();
         // NOTE: Scripts should run after JavaScript, plugins, config (and possibly before GUI).
         try {
-            for (String scriptName: ResourceUtils.getResources("scripts/")) {
+            for (String scriptName : ResourceUtils.getResources("scripts/")) {
                 LogUtils.logMessage("  Executing script: " + scriptName);
                 framework.execJavaScriptResource(scriptName);
             }
@@ -79,8 +79,10 @@ public class Console {
             LogUtils.logError("Cannot read script files: " + e.getMessage());
         }
         // NOTE: Config needs to be loaded before GUI.
-        framework.loadConfig();
-        if (startGUI) {
+        if (useConfig) {
+            framework.loadConfig();
+        }
+        if (startGui) {
             framework.startGUI();
         }
 
@@ -117,7 +119,9 @@ public class Console {
             if (framework.shutdownRequested()) {
                 try {
                     framework.shutdownGUI();
-                    framework.saveConfig();
+                    if (useConfig) {
+                        framework.saveConfig();
+                    }
                 } catch (OperationCancelledException e) {
                     framework.abortShutdown();
                 }

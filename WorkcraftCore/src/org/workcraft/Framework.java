@@ -1,4 +1,5 @@
 package org.workcraft;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -315,6 +316,7 @@ public final class Framework {
     public void resetConfig() {
         config = new Config();
         loadPluginsSettings();
+        savePluginsSettings();
     }
 
     public void loadConfig() {
@@ -435,7 +437,7 @@ public final class Framework {
     public String getJavaScriptHelp(String regex, boolean searchDescription) {
         ArrayList<String> result = new ArrayList<>();
         Pattern pattern = Pattern.compile(regex);
-        for (Entry<String, JavascriptItem> entry: javascriptHelp.entrySet()) {
+        for (Entry<String, JavascriptItem> entry : javascriptHelp.entrySet()) {
             String name = entry.getKey();
             JavascriptItem item = entry.getValue();
             Matcher nameMatcher = pattern.matcher(name);
@@ -521,6 +523,7 @@ public final class Framework {
 
     /**
      * Used in functions.js JavaScript wrapper.
+     *
      * @throws IOException
      */
     public void execJavaScriptFile(String path) throws IOException {
@@ -636,7 +639,7 @@ public final class Framework {
      */
     public void runCommand(WorkspaceEntry we, String className) {
         if (className != null) {
-            for (Command command: Commands.getApplicableCommands(we)) {
+            for (Command command : Commands.getApplicableCommands(we)) {
                 String commandClassName = command.getClass().getSimpleName();
                 if (className.equals(commandClassName)) {
                     Commands.run(we, command);
@@ -655,7 +658,7 @@ public final class Framework {
         } else {
             boolean found = false;
             boolean scriptable = false;
-            for (Command command: Commands.getCommands()) {
+            for (Command command : Commands.getCommands()) {
                 String commandClassName = command.getClass().getSimpleName();
                 if (!className.equals(commandClassName)) continue;
                 found = true;
@@ -720,7 +723,7 @@ public final class Framework {
                 e.printStackTrace();
             }
             // FIXME: Send notification to components, so their dimensions are updated before layout.
-            for (VisualComponent component: Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualComponent.class)) {
+            for (VisualComponent component : Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualComponent.class)) {
                 if (component instanceof StateObserver) {
                     ((StateObserver) component).notify(new ModelModifiedEvent(visualModel));
                 }
@@ -1092,7 +1095,7 @@ public final class Framework {
     }
 
     public WorkspaceEntry getWorkspaceEntry(ModelEntry me) {
-        for (WorkspaceEntry we: getWorkspace().getWorks()) {
+        for (WorkspaceEntry we : getWorkspace().getWorks()) {
             if (we.getModelEntry() == me) {
                 return we;
             }

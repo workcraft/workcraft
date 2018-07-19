@@ -1,5 +1,4 @@
-./workcraft -nogui -dir:${test_dir} -exec:vme-tm.circuit.js >${log_file}
-
+./workcraft -nogui -noconfig -dir:${test_dir} -exec:vme-tm.circuit.js >${log_file}
 
 # Post-processing
 result_file=${test_dir}/vme-tm.circuit.txt
@@ -19,7 +18,7 @@ function report_file_header() {
 }
 
 rm -f ${result_file}
-report_file_header ${test_dir}/vme-tm.circuit.v 169 keep
+report_file_header ${test_dir}/vme-tm.circuit.v 144 keep
 report_file_header ${test_dir}/vme-tm.circuit.svg 155 remove
 report_file_header ${test_dir}/vme-tm.circuit.png 8 remove
 report_file_header ${test_dir}/vme-tm.circuit.pdf 9 remove

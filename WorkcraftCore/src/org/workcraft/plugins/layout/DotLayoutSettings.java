@@ -121,7 +121,7 @@ public class DotLayoutSettings implements Settings {
     @Override
     public void save(Config config) {
         config.set(keyCommand, getCommand());
-        config.setEnum(keyRankdir, Rankdir.class, getRankdir());
+        config.setEnum(keyRankdir, getRankdir());
         config.setDouble(keyNodesep, getNodesep());
         config.setDouble(keyRanksep, getRanksep());
         config.setBoolean(keyImportConnectionsShape, getImportConnectionsShape());
