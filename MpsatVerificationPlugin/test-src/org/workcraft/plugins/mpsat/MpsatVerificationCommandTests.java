@@ -35,17 +35,17 @@ public class MpsatVerificationCommandTests {
         case LINUX:
             PcompSettings.setCommand("dist-template/linux/tools/UnfoldingTools/pcomp");
             PunfSettings.setCommand("dist-template/linux/tools/UnfoldingTools/punf");
-            MpsatSettings.setCommand("dist-template/linux/tools/UnfoldingTools/mpsat");
+            MpsatVerificationSettings.setCommand("dist-template/linux/tools/UnfoldingTools/mpsat");
             break;
         case MACOS:
             PcompSettings.setCommand("dist-template/osx/Contents/Resources/tools/UnfoldingTools/pcomp");
             PunfSettings.setCommand("dist-template/osx/Contents/Resources/tools/UnfoldingTools/punf");
-            MpsatSettings.setCommand("dist-template/osx/Contents/Resources/tools/UnfoldingTools/mpsat");
+            MpsatVerificationSettings.setCommand("dist-template/osx/Contents/Resources/tools/UnfoldingTools/mpsat");
             break;
         case WINDOWS:
             PcompSettings.setCommand("dist-template\\windows\\tools\\UnfoldingTools\\pcomp.exe");
             PunfSettings.setCommand("dist-template\\windows\\tools\\UnfoldingTools\\punf.exe");
-            MpsatSettings.setCommand("dist-template\\windows\\tools\\UnfoldingTools\\mpsat.exe");
+            MpsatVerificationSettings.setCommand("dist-template\\windows\\tools\\UnfoldingTools\\mpsat.exe");
             break;
         default:
         }

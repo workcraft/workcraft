@@ -10,7 +10,7 @@ import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.plugins.mpsat.MpsatSettings;
+import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.stg.tools.Core;
 import org.workcraft.plugins.stg.tools.EncodingConflictAnalyserTool;
 import org.workcraft.util.ColorGenerator;
@@ -70,7 +70,7 @@ final class MpsatEncodingConflictOutputHandler implements Runnable {
                 core.setColor(colorGenerator.updateColor());
                 cores.add(core);
             }
-            if (MpsatSettings.getDebugCores()) {
+            if (MpsatVerificationSettings.getDebugCores()) {
                 if (solution.getComment() == null) {
                     LogUtils.logMessage("Encoding conflict:");
                 } else {

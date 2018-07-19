@@ -1,9 +1,3 @@
-/*
- * Copyright (C) 2018 Dialog Semiconductor.
- * This computer program includes Confidential, Proprietary Information
- * of Dialog Semiconductor. All rights reserved.
- */
-
 package org.workcraft;
 
 import org.junit.Assert;
@@ -11,7 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.plugins.shared.*;
 
-public class ConfigTest {
+public class CommonSettingsTest {
 
     @BeforeClass
     public static void init() {

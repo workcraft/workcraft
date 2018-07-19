@@ -118,7 +118,7 @@ public class MpsatParameters {
                 }
                 String reachExpression = getExpression();
                 FileUtils.dumpString(reachFile, reachExpression);
-                if (MpsatSettings.getDebugReach()) {
+                if (MpsatVerificationSettings.getDebugReach()) {
                     LogUtils.logInfo("Reach expression to check");
                     LogUtils.logMessage(reachExpression);
                 }
@@ -160,7 +160,7 @@ public class MpsatParameters {
 
     public static MpsatParameters getDeadlockSettings() {
         return new MpsatParameters("Deadlock freeness", MpsatMode.DEADLOCK, 0,
-                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount());
+                MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount());
     }
 
     private static final String REACH_DEADLOCK =
@@ -168,7 +168,7 @@ public class MpsatParameters {
 
     public static MpsatParameters getDeadlockReachSettings() {
         return new MpsatParameters("Deadlock freeness", MpsatMode.REACHABILITY, 0,
-                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(), REACH_DEADLOCK, true);
+                MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount(), REACH_DEADLOCK, true);
     }
 
     private static final String REACH_DEADLOCK_WITHOUT_MAXIMAL_DUMMY =
@@ -191,7 +191,7 @@ public class MpsatParameters {
 
     public static MpsatParameters getDeadlockWithoutMaximalDummyReachSettings() {
         return new MpsatParameters("Deadlock freeness without maximal dummies", MpsatMode.REACHABILITY, 0,
-                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
+                MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount(),
                 REACH_DEADLOCK_WITHOUT_MAXIMAL_DUMMY, true);
     }
 
@@ -207,7 +207,7 @@ public class MpsatParameters {
 
     public static MpsatParameters getConsistencySettings() {
         return new MpsatParameters("Consistency", MpsatMode.STG_REACHABILITY_CONSISTENCY, 0,
-                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(), REACH_CONSISTENCY, true);
+                MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount(), REACH_CONSISTENCY, true);
     }
 
     private static final String REACH_DUMMY_CHECK =
@@ -270,7 +270,7 @@ public class MpsatParameters {
                 .replace(REACH_MUTEX_G2, mutex.g2.name);
         String propertName = "Mutex implementability for place '" + mutex.name + "'";
         return new MpsatParameters(propertName, MpsatMode.STG_REACHABILITY, 0,
-                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(), reach, true);
+                MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount(), reach, true);
     }
 
     private static final String REACH_OUTPUT_PERSISTENCY_EXCEPTIONS =
@@ -323,7 +323,7 @@ public class MpsatParameters {
         }
         String reachOutputPersistence = REACH_OUTPUT_PERSISTENCY.replace(REACH_OUTPUT_PERSISTENCY_EXCEPTIONS, str);
         return new MpsatParameters("Output persistency", MpsatMode.STG_REACHABILITY_OUTPUT_PERSISTENCY, 0,
-                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(), reachOutputPersistence, true);
+                MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount(), reachOutputPersistence, true);
     }
 
     private static final String REACH_DI_INTERFACE =
@@ -349,7 +349,7 @@ public class MpsatParameters {
 
     public static MpsatParameters getDiInterfaceSettings() {
         return new MpsatParameters("Delay insensitive interface", MpsatMode.STG_REACHABILITY, 0,
-                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(), REACH_DI_INTERFACE, true);
+                MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount(), REACH_DI_INTERFACE, true);
     }
 
     private static final String REACH_INPUT_PROPERNESS =
@@ -393,7 +393,7 @@ public class MpsatParameters {
 
     public static MpsatParameters getInputPropernessSettings() {
         return new MpsatParameters("Input properness", MpsatMode.STG_REACHABILITY, 0,
-                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(), REACH_INPUT_PROPERNESS, true);
+                MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount(), REACH_INPUT_PROPERNESS, true);
     }
 
     // Reach expression for checking conformation (this is a template, the list of places needs to be updated)
@@ -456,7 +456,7 @@ public class MpsatParameters {
         }
         String reachConformation = REACH_CONFORMATION.replace(REACH_CONFORMATION_DEV_PLACES, str);
         return new MpsatParameters("Conformation", MpsatMode.STG_REACHABILITY_CONFORMATION, 0,
-                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(), reachConformation, true);
+                MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount(), reachConformation, true);
     }
 
     // Reach expression for checking n-way conformation (this is a template, the lists of places and outputs need to be updated)
@@ -546,7 +546,7 @@ public class MpsatParameters {
                 .replace(REACH_CONFORMATION_NWAY_PLACES, placeStr)
                 .replace(REACH_CONFORMATION_NWAY_OUTPUTS, outputStr);
         return new MpsatParameters("N-way conformation", MpsatMode.STG_REACHABILITY_CONFORMATION_NWAY, 0,
-                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(), reachConformationNway, true);
+                MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount(), reachConformationNway, true);
     }
 
     private static String getReferenceSetsAsString(ArrayList<Set<String>> allSets) {
@@ -610,7 +610,7 @@ public class MpsatParameters {
             isFirstSignal = false;
         }
         return new MpsatParameters("Strict implementation", MpsatMode.STG_REACHABILITY, 0,
-                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(), reachStrictImplementation, true);
+                MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount(), reachStrictImplementation, true);
     }
 
     public static MpsatParameters getCscSettings() {
@@ -625,7 +625,7 @@ public class MpsatParameters {
 
     public static MpsatParameters getNormalcySettings() {
         return new MpsatParameters("Normalcy", MpsatMode.NORMALCY, 0,
-                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
+                MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount(),
                 null, true);
     }
 
@@ -655,7 +655,7 @@ public class MpsatParameters {
         }
         String reachPlaceRedundancy = REACH_PLACE_REDUNDANCY.replace(REACH_PLACE_REDUNDANCY_NAMES, str);
         return new MpsatParameters("Place redundancy", MpsatMode.REACHABILITY_REDUNDANCY, 0,
-                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(), reachPlaceRedundancy, true);
+                MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount(), reachPlaceRedundancy, true);
     }
 
     public static MpsatParameters getEmptyAssertionSettings() {

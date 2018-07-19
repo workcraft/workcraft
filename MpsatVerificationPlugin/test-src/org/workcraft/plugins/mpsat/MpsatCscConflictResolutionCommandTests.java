@@ -28,15 +28,15 @@ public class MpsatCscConflictResolutionCommandTests {
         switch (DesktopApi.getOs()) {
         case LINUX:
             PunfSettings.setCommand("dist-template/linux/tools/UnfoldingTools/punf");
-            MpsatSettings.setCommand("dist-template/linux/tools/UnfoldingTools/mpsat");
+            MpsatVerificationSettings.setCommand("dist-template/linux/tools/UnfoldingTools/mpsat");
             break;
         case MACOS:
             PunfSettings.setCommand("dist-template/osx/Contents/Resources/tools/UnfoldingTools/punf");
-            MpsatSettings.setCommand("dist-template/osx/Contents/Resources/tools/UnfoldingTools/mpsat");
+            MpsatVerificationSettings.setCommand("dist-template/osx/Contents/Resources/tools/UnfoldingTools/mpsat");
             break;
         case WINDOWS:
             PunfSettings.setCommand("dist-template\\windows\\tools\\UnfoldingTools\\punf.exe");
-            MpsatSettings.setCommand("dist-template\\windows\\tools\\UnfoldingTools\\mpsat.exe");
+            MpsatVerificationSettings.setCommand("dist-template\\windows\\tools\\UnfoldingTools\\mpsat.exe");
             break;
         default:
         }

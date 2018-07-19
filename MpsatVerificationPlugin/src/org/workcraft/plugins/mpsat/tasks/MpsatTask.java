@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.plugins.mpsat.MpsatSettings;
+import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
@@ -89,7 +89,7 @@ public class MpsatTask implements Task<MpsatOutput> {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
-        String toolPrefix = MpsatSettings.getCommand();
+        String toolPrefix = MpsatVerificationSettings.getCommand();
         String unfoldingFileName = unfoldingFile.getName();
         String toolSuffix = unfoldingFileName.endsWith(PunfTask.MCI_FILE_EXTENSION) ? PunfTask.LEGACY_TOOL_SUFFIX : "";
         String toolName = ToolUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
@@ -101,8 +101,8 @@ public class MpsatTask implements Task<MpsatOutput> {
         }
 
         // Extra arguments (should go before the file parameters)
-        String extraArgs = MpsatSettings.getArgs();
-        if (MpsatSettings.getAdvancedMode()) {
+        String extraArgs = MpsatVerificationSettings.getArgs();
+        if (MpsatVerificationSettings.getAdvancedMode()) {
             String tmp = DialogUtils.showInput("Additional parameters for MPSat:", extraArgs);
             if (tmp == null) {
                 return Result.cancelation();
@@ -120,8 +120,8 @@ public class MpsatTask implements Task<MpsatOutput> {
             command.add(unfoldingFile.getAbsolutePath());
         }
 
-        boolean printStdout = MpsatSettings.getPrintStdout();
-        boolean printStderr = MpsatSettings.getPrintStderr();
+        boolean printStdout = MpsatVerificationSettings.getPrintStdout();
+        boolean printStderr = MpsatVerificationSettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
         SubtaskMonitor<? super ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);

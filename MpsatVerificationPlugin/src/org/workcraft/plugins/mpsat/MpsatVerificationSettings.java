@@ -9,7 +9,7 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.mpsat.MpsatParameters.SolutionMode;
 
-public class MpsatSettings implements Settings {
+public class MpsatVerificationSettings implements Settings {
 
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "Tools.mpsatVerification";
@@ -41,83 +41,83 @@ public class MpsatSettings implements Settings {
     private static Boolean debugReach = defaultDebugReach;
     private static Boolean debugCores = defaultDebugCores;
 
-    public MpsatSettings() {
-        properties.add(new PropertyDeclaration<MpsatSettings, String>(
+    public MpsatVerificationSettings() {
+        properties.add(new PropertyDeclaration<MpsatVerificationSettings, String>(
                 this, "MPSat command for verification", String.class, true, false, false) {
-            protected void setter(MpsatSettings object, String value) {
+            protected void setter(MpsatVerificationSettings object, String value) {
                 setCommand(value);
             }
-            protected String getter(MpsatSettings object) {
+            protected String getter(MpsatVerificationSettings object) {
                 return getCommand();
             }
         });
 
-        properties.add(new PropertyDeclaration<MpsatSettings, SolutionMode>(
+        properties.add(new PropertyDeclaration<MpsatVerificationSettings, SolutionMode>(
                 this, "Solution mode", SolutionMode.class, true, false, false) {
-            protected void setter(MpsatSettings object, SolutionMode value) {
+            protected void setter(MpsatVerificationSettings object, SolutionMode value) {
                 setSolutionMode(value);
             }
-            protected SolutionMode getter(MpsatSettings object) {
+            protected SolutionMode getter(MpsatVerificationSettings object) {
                 return getSolutionMode();
             }
         });
 
-        properties.add(new PropertyDeclaration<MpsatSettings, String>(
+        properties.add(new PropertyDeclaration<MpsatVerificationSettings, String>(
                 this, "Additional parameters", String.class, true, false, false) {
-            protected void setter(MpsatSettings object, String value) {
+            protected void setter(MpsatVerificationSettings object, String value) {
                 setArgs(value);
             }
-            protected String getter(MpsatSettings object) {
+            protected String getter(MpsatVerificationSettings object) {
                 return getArgs();
             }
         });
 
-        properties.add(new PropertyDeclaration<MpsatSettings, Boolean>(
+        properties.add(new PropertyDeclaration<MpsatVerificationSettings, Boolean>(
                 this, "Edit additional parameters before every call", Boolean.class, true, false, false) {
-            protected void setter(MpsatSettings object, Boolean value) {
+            protected void setter(MpsatVerificationSettings object, Boolean value) {
                 setAdvancedMode(value);
             }
-            protected Boolean getter(MpsatSettings object) {
+            protected Boolean getter(MpsatVerificationSettings object) {
                 return getAdvancedMode();
             }
         });
 
-        properties.add(new PropertyDeclaration<MpsatSettings, Boolean>(
+        properties.add(new PropertyDeclaration<MpsatVerificationSettings, Boolean>(
                 this, "Output stdout", Boolean.class, true, false, false) {
-            protected void setter(MpsatSettings object, Boolean value) {
+            protected void setter(MpsatVerificationSettings object, Boolean value) {
                 setPrintStdout(value);
             }
-            protected Boolean getter(MpsatSettings object) {
+            protected Boolean getter(MpsatVerificationSettings object) {
                 return getPrintStdout();
             }
         });
 
-        properties.add(new PropertyDeclaration<MpsatSettings, Boolean>(
+        properties.add(new PropertyDeclaration<MpsatVerificationSettings, Boolean>(
                 this, "Output stderr", Boolean.class, true, false, false) {
-            protected void setter(MpsatSettings object, Boolean value) {
+            protected void setter(MpsatVerificationSettings object, Boolean value) {
                 setPrintStderr(value);
             }
-            protected Boolean getter(MpsatSettings object) {
+            protected Boolean getter(MpsatVerificationSettings object) {
                 return getPrintStderr();
             }
         });
 
-        properties.add(new PropertyDeclaration<MpsatSettings, Boolean>(
+        properties.add(new PropertyDeclaration<MpsatVerificationSettings, Boolean>(
                 this, "Output Reach expressions", Boolean.class, true, false, false) {
-            protected void setter(MpsatSettings object, Boolean value) {
+            protected void setter(MpsatVerificationSettings object, Boolean value) {
                 setDebugReach(value);
             }
-            protected Boolean getter(MpsatSettings object) {
+            protected Boolean getter(MpsatVerificationSettings object) {
                 return getDebugReach();
             }
         });
 
-        properties.add(new PropertyDeclaration<MpsatSettings, Boolean>(
+        properties.add(new PropertyDeclaration<MpsatVerificationSettings, Boolean>(
                 this, "Output conflict cores", Boolean.class, true, false, false) {
-            protected void setter(MpsatSettings object, Boolean value) {
+            protected void setter(MpsatVerificationSettings object, Boolean value) {
                 setDebugCores(value);
             }
-            protected Boolean getter(MpsatSettings object) {
+            protected Boolean getter(MpsatVerificationSettings object) {
                 return getDebugCores();
             }
         });

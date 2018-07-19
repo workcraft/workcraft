@@ -30,7 +30,7 @@ public class MpsatModule implements Module {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
 
-        pm.registerClass(Settings.class, MpsatSettings.class);
+        pm.registerClass(Settings.class, MpsatVerificationSettings.class);
 
         ScriptableCommandUtils.register(MpsatCscConflictResolutionCommand.class, "resolveCscConflictMpsat",
                 "resolve complete state coding conflicts with MPSat backend");
