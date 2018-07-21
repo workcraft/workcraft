@@ -6,13 +6,11 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
@@ -41,7 +39,6 @@ import org.workcraft.plugins.cpog.VisualScenarioPage;
 import org.workcraft.plugins.cpog.VisualVertex;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Geometry;
-import org.workcraft.workspace.WorkspaceEntry;
 
 public class ScencoExecutionSupport {
 
@@ -313,23 +310,20 @@ public class ScencoExecutionSupport {
                             String result = "";
                             String tmp = "";
                             for (int i = 0; i < cond.length(); i++) {
-                                char ch = cond.charAt(i);
-                                if (SPECIAL_SYMBOLS.indexOf(ch) < 0) {
+                                if (SPECIAL_SYMBOLS.indexOf(cond.charAt(i)) < 0) {
                                     tmp = "";
-                                    while ((i < cond.length()) && (SPECIAL_SYMBOLS.indexOf(ch) < 0)) {
-                                        tmp += ch;
+                                    while ((i < cond.length()) && (SPECIAL_SYMBOLS.indexOf(cond.charAt(i)) < 0)) {
+                                        tmp += cond.charAt(i);
                                         i++;
                                     }
-                                    //System.out.println("TMP: " + tmp);
                                     for (int j = tmp.length() - 1; j >= 0; j--) {
-                                        //System.out.println(j + ") " + tmp.charAt(j));
                                         result += tmp.charAt(j);
                                     }
                                     if (i < cond.length()) {
-                                        result += ch;
+                                        result += cond.charAt(i);
                                     }
                                 } else {
-                                    result += ch;
+                                    result += cond.charAt(i);
                                 }
                             }
 
@@ -345,11 +339,11 @@ public class ScencoExecutionSupport {
                             }
 
                             // Print conditions on each vertices
-                            output.print(":");
+                            output.print(":(");
                             for (int i = end.length() - 1; i >= 0; i--) {
                                 output.print(end.charAt(i));
                             }
-                            output.println(" " + vertex.getLabel());
+                            output.println(") " + vertex.getLabel());
                         }
 
                         //VisualVertex vertex = (VisualVertex) component;
@@ -400,96 +394,6 @@ public class ScencoExecutionSupport {
         return 0;
     }
 
-    // THIS FUNCTION CALLS SCENCO TOOL BY PASSING ALL THE NEEDED ARGUMENTS BY COMMAND LINE.
-    // IN ADDITION, IT PARSES THE OUTPUT OF THE TOOL INSTAINTIANING ALL THE VARIABLES NEEDED
-    // TO WORKCRAFT TO BUILD THE COMPOSITIONAL GRAPH
-    protected int callingScenco(Process process, EncoderSettings settings, ArrayList<String> parameters,
-            Double currArea, WorkspaceEntry we, int it, boolean continuous, String[] optEnc,
-            String[] optFormulaeVertices, String[] truthTableVertices, String[] optVertices,
-            String[] optSources, String[] optDests, String[] optFormulaeArcs, String[] truthTableArcs,
-            String[] arcNames) throws IOException {
-        int a = 0;
-        int v = 0;
-        //Debug Printing: launching executable
-        /*System.out.println("CALLING SCENCO: " + scencoCommand + " " + scenarioFile.getAbsolutePath() + " " +
-          "-m" + " " + effort + " " + genMode + " " + numSol + " " + customFlag + " " + customPath + " " +
-          verbose + " " + cpogSize + " " + disableFunction + " " + oldSynt + " " +
-          espressoFlag + " " + espressoCommand + " " + abcFlag + " " + abcFolder + " " + gateLibFlag + " " +
-          gatesLibrary + " " + modBitFlag + " " + modBit); */
-
-        process = new ProcessBuilder(parameters).start();
-        InputStream is = process.getInputStream();
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader br = new BufferedReader(isr);
-        String line;
-        while ((line = br.readLine()) != null) {
-            if (settings.isVerboseMode()) {
-                System.out.println(line);
-            }
-
-            // Read Optimal Encoding
-            if (line.contains("MIN: ")) {
-                StringTokenizer st2 = new StringTokenizer(line, " ");
-                int j = 0;
-                st2.nextElement();
-                while (st2.hasMoreElements()) {
-                    optEnc[j++] = (String) st2.nextElement();
-                }
-            }
-
-            // Read Optimal Formulae
-            if (line.contains(".start_formulae")) {
-                line = br.readLine();
-                while (line.contains(".end_formulae") == false) {
-                    if (settings.isVerboseMode()) {
-                        System.out.println(line);
-                    }
-                    StringTokenizer st2 = new StringTokenizer(line, ",");
-                    String el = (String) st2.nextElement();
-                    if (el.equals("V")) { //formula of a vertex
-                        optVertices[v] = (String) st2.nextElement();
-                        truthTableVertices[v] = (String) st2.nextElement();
-                        optFormulaeVertices[v++] = (String) st2.nextElement();
-                    } else {
-                        optSources[a] = (String) st2.nextElement();
-                        optDests[a] = (String) st2.nextElement();
-                        arcNames[a] = optSources[a] + "->" + optDests[a];
-                        truthTableArcs[a] = (String) st2.nextElement();
-                        optFormulaeArcs[a++] = (String) st2.nextElement();
-                    }
-                    line = br.readLine();
-                }
-
-            }
-
-            // Read statistics
-            if (line.contains(".statistics")) {
-                line = br.readLine();
-                while (line.contains(".end_statistics") == false) {
-                    System.out.println(line);
-                    line = br.readLine();
-                }
-            }
-
-            // Read errors
-            if (line.contains(".error")) {
-                line = br.readLine();
-                while (line.contains(".end_error") == false) {
-                    DialogUtils.showError(line);
-                    line = br.readLine();
-                }
-                return -1;
-
-            }
-        }
-
-        process.destroy();
-        is.close();
-        isr.close();
-        br.close();
-        return 0;
-    }
-
     // FUNCTION TO INSTANTIATE THE MAP FOR CONNECTING EACH VISUAL ELEMENT IN WORKCRAFT
     // INTO THE CORRESPONDING FORMULA. THE KEY IS REPRESENTED BY THE NAME OF THE ELEMENT,
     // FOR THE ARCS, THE NAME CORRESPOND TO NAME OF SOURCE -> NAME OF DEST
@@ -514,9 +418,12 @@ public class ScencoExecutionSupport {
     }
 
     private BooleanFormula nameToVar(String name, Variable[] vars) {
-        name = name.substring("x_".length());
-        int id = Integer.parseInt(name);
-        return vars[id];
+        for (int i = 0; i < vars.length; i++) {
+            if (vars[i].getLabel().equals(name)) {
+                return vars[i];
+            }
+        }
+        return null;
     }
 
     // Instantiating encoding into graphs
