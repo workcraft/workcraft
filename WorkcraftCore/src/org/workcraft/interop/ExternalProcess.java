@@ -150,7 +150,7 @@ public class ExternalProcess {
 
     public void cancel() {
         if (isRunning()) {
-            process.destroy();
+            process.destroyForcibly();
         }
     }
 
