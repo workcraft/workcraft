@@ -1,30 +1,21 @@
 package org.workcraft.workspace;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.util.FileUtils;
-import org.workcraft.util.LinkedTwoWayMap;
-import org.workcraft.util.LogUtils;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.XmlUtils;
+import org.workcraft.util.*;
 import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class Workspace {
     public static final String EXTERNAL_PATH = "!External";
@@ -35,8 +26,6 @@ public class Workspace {
     private final Map<Path<String>, File> permanentMounts = new HashMap<Path<String>, File>();
     private final LinkedTwoWayMap<Path<String>, WorkspaceEntry> openFiles = new LinkedTwoWayMap<>();
     private final List<WorkspaceListener> workspaceListeners = new ArrayList<>();
-
-    private final DependencyManager dependencyManager = new DependencyManager();
 
     public WorkspaceTree getTree() {
         return new WorkspaceTree(this);
@@ -290,12 +279,6 @@ public class Workspace {
         }
     }
 
-    void fireModelLoaded(WorkspaceEntry we) {
-        for (WorkspaceListener listener : workspaceListeners) {
-            listener.modelLoaded(we);
-        }
-    }
-
     void fireEntryAdded(WorkspaceEntry we) {
         changed = true;
         for (WorkspaceListener listener : workspaceListeners) {
@@ -438,14 +421,6 @@ public class Workspace {
 
     public Path<String> getPath(WorkspaceEntry entry) {
         return openFiles.getKey(entry);
-    }
-
-    public void createAssociation(Path<String> dependentFile, Path<String> masterFile) {
-        dependencyManager.createAssociation(dependentFile, masterFile);
-    }
-
-    public List<Path<String>> getAssociatedFiles(Path<String> masterFile) {
-        return dependencyManager.getAssociatedFiles(masterFile);
     }
 
 }

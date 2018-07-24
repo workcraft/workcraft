@@ -835,6 +835,7 @@ public final class Framework {
             InputStream mathData = FrameworkUtils.getMathData(bi, metaDoc);
             XMLModelDeserialiser mathDeserialiser = new XMLModelDeserialiser(getPluginManager());
             DeserialisationResult mathResult = mathDeserialiser.deserialise(mathData, null, null);
+            mathResult.model.afterDeserialisation();
             mathData.close();
 
             // load visual model (if present)
@@ -845,6 +846,7 @@ public final class Framework {
             XMLModelDeserialiser visualDeserialiser = new XMLModelDeserialiser(getPluginManager());
             DeserialisationResult visualResult = visualDeserialiser.deserialise(visualData,
                     mathResult.references, mathResult.model);
+            visualResult.model.afterDeserialisation();
 
             // load current level and selection
             if (visualResult.model instanceof VisualModel) {
@@ -944,6 +946,7 @@ public final class Framework {
             ModelSerialiser mathSerialiser = new XMLModelSerialiser(getPluginManager());
             // serialise math model
             zos.putNextEntry(new ZipEntry(MATH_MODEL_WORK_ENTRY));
+            mathModel.beforeSerialisation();
             ReferenceProducer refResolver = mathSerialiser.serialise(mathModel, zos, null);
             zos.closeEntry();
             // serialise visual model
@@ -952,6 +955,7 @@ public final class Framework {
                 visualSerialiser = new XMLModelSerialiser(getPluginManager());
 
                 zos.putNextEntry(new ZipEntry(VISUAL_MODEL_WORK_ENTRY));
+                visualModel.beforeSerialisation();
                 ReferenceProducer visualRefs = visualSerialiser.serialise(visualModel, zos, refResolver);
                 zos.closeEntry();
                 // serialise visual model selection state
