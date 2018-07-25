@@ -221,8 +221,8 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
 
     private void prepareConnections(VisualCircuit circuit) {
         circuit.selectNone();
-        // Split joints
-        SplitJointTransformationCommand splitJointsCommand = new SplitJointTransformationCommand();
+        // Dissolve joints
+        DissolveJointTransformationCommand splitJointsCommand = new DissolveJointTransformationCommand();
         Collection<Node> joints = splitJointsCommand.collect(circuit);
         splitJointsCommand.transform(circuit, joints);
         // Straighten connections

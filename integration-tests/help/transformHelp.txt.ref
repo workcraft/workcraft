@@ -1,10 +1,10 @@
 transformCircuitContractComponent(work) - transform the given Circuit 'work' by contracting selected single-input/single-output components
 transformCircuitContractJoint(work) - transform the given Circuit 'work' by contracting selected (or all) joints
 transformCircuitDetachJoint(work) - transform the given Circuit 'work' by detaching selected (or all joints)
+transformCircuitDissolveJoint(work) - transform the given Circuit 'work' by dissolving selected (or all) joints
 transformCircuitInsertBuffer(work) - transform the given Circuit 'work' by inserting buffers into selected wires
 transformCircuitPropagateInversion(work) - transform the given Circuit 'work' by propagating inversion through selected (or all) gates
 transformCircuitSplitGate(work) - transform the given Circuit 'work' by splitting selected (or all) complex gates into simple gates
-transformCircuitSplitJoint(work) - transform the given Circuit 'work' by splitting selected (or all) joints
 transformCircuitToggleBubble(work) - transform the given Circuit 'work' by toggling inversion of selected contacts and outputs of selected components
 transformCircuitToggleZeroDelay(work) - transform the given Circuit 'work' by toggling zero delay of selected inverters and buffers
 transformDfsContractComponent(work) -  transform the given DFS 'work' by contracting selected components
