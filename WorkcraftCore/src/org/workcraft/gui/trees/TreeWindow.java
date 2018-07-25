@@ -230,10 +230,6 @@ public class TreeWindow<Node> extends JPanel {
         return (Node) path.getLastPathComponent();
     }
 
-    public JTree getTreeComponent() {
-        return tree;
-    }
-
     public void setCheckBoxMode(CheckBoxMode mode) {
         this.checkBoxMode = mode;
         checkedNodes.clear();

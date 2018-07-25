@@ -1,19 +1,14 @@
 package org.workcraft.workspace;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 import org.workcraft.exceptions.NotSupportedException;
 import org.workcraft.gui.trees.TreeListener;
 import org.workcraft.gui.trees.TreeSource;
 import org.workcraft.gui.workspace.Path;
 
+import java.util.*;
+
 public class WorkspaceTree implements TreeSource<Path<String>> {
+
     private final class WorkspaceListenerWrapper implements    WorkspaceListener {
         private final TreeListener<Path<String>> listener;
 
@@ -33,11 +28,6 @@ public class WorkspaceTree implements TreeSource<Path<String>> {
 
         @Override
         public void entryRemoved(WorkspaceEntry we) {
-            listener.restructured(Path.root(getRoot()));
-        }
-
-        @Override
-        public void modelLoaded(WorkspaceEntry we) {
             listener.restructured(Path.root(getRoot()));
         }
 
@@ -89,7 +79,7 @@ public class WorkspaceTree implements TreeSource<Path<String>> {
                 res.put(name, mount.subDirs.get(name).path);
             }
         }
-        return new ArrayList<Path<String>>(res.values());
+        return new ArrayList<>(res.values());
     }
 
     @Override

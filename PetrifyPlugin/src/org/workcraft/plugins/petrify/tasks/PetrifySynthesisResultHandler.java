@@ -112,7 +112,7 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
         }
         if (!signals.isEmpty()) {
             String msg = "Petrify automatically resolved CSC conflicts by inserting new signal";
-            DialogUtils.showWarning(LogUtils.getTextWithRefs(msg, signals));
+            DialogUtils.showInfo(LogUtils.getTextWithRefs(msg, signals));
         }
     }
 

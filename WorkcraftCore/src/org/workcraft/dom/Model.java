@@ -52,4 +52,9 @@ public interface Model extends NodeContext {
 
     ModelProperties getProperties(Node node);
 
+    default void beforeSerialisation() {
+    }
+
+    default void afterDeserialisation() {
+    }
 }

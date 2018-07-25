@@ -1,12 +1,5 @@
 package org.workcraft.plugins.circuit;
 
-import java.awt.Graphics2D;
-import java.awt.geom.Point2D;
-import java.io.File;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-
 import org.workcraft.Framework;
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
@@ -18,11 +11,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.visual.AbstractVisualModel;
-import org.workcraft.dom.visual.ConnectionHelper;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
@@ -43,6 +32,13 @@ import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.io.File;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 @DisplayName("Digital Circuit")
 @ShortName("circuit")
@@ -276,7 +272,7 @@ public class VisualCircuit extends AbstractVisualModel {
         return Hierarchy.getDescendantsOfType(getRoot(), VisualContact.class, contact -> contact.isDriver());
     }
 
-    public Collection<Environment> getEnvironments() {
+    public Collection<Environment> getEnvironmentNodes() {
         return Hierarchy.getChildrenOfType(getRoot(), Environment.class);
     }
 
@@ -295,9 +291,9 @@ public class VisualCircuit extends AbstractVisualModel {
     @NoAutoSerialisation
     public File getEnvironmentFile() {
         File file = null;
-        for (Environment env: getEnvironments()) {
-            file = env.getFile();
-            File base = env.getBase();
+        for (Environment environment : getEnvironmentNodes()) {
+            file = environment.getFile();
+            File base = environment.getBase();
             if (base != null) {
                 String basePath = base.getPath().replace("\\", "/");
                 String filePath = file.getPath().replace("\\", "/");
@@ -319,28 +315,34 @@ public class VisualCircuit extends AbstractVisualModel {
     }
 
     @NoAutoSerialisation
-    public void setEnvironmentFile(File value) {
-        Collection<Environment> environments = getEnvironments();
-        File file = null;
-        if (environments.size() == 1) {
-            Environment env = environments.iterator().next();
-            file = env.getFile();
-        }
-        boolean envChanged = ((file == null) && (value != null)) || ((file != null) && !file.equals(value));
+    public void setEnvironmentFile(File file) {
+        File oldFile = getEnvironmentFile();
+        boolean envChanged = ((oldFile == null) && (file != null)) || ((oldFile != null) && !oldFile.equals(file));
         WorkspaceEntry we = getWorkspaceEntry();
         if (envChanged && (we != null)) {
             we.saveMemento();
             we.setChanged(true);
-            for (Environment env: environments) {
-                remove(env);
-            }
-            if (value != null) {
-                Environment env = new Environment();
-                env.setFile(value);
-                File base = we.getFile().getParentFile();
-                env.setBase(base);
-                add(env);
-            }
+            File base = we.getFile().getParentFile();
+            setEnvironment(file, base);
+        }
+    }
+
+    public void updateEnvironmentFile() {
+        File file = getEnvironmentFile();
+        WorkspaceEntry we = getWorkspaceEntry();
+        File base = (we == null) ? null : we.getFile().getParentFile();
+        setEnvironment(file, base);
+    }
+
+    private void setEnvironment(File file, File base) {
+        for (Environment environment : getEnvironmentNodes()) {
+            remove(environment);
+        }
+        if (file != null) {
+            Environment env = new Environment();
+            env.setFile(file);
+            env.setBase(base);
+            add(env);
         }
     }
 
@@ -359,6 +361,12 @@ public class VisualCircuit extends AbstractVisualModel {
     @Override
     public AbstractLayoutCommand getBestLayouter() {
         return new CircuitLayoutCommand();
+    }
+
+    @Override
+    public void beforeSerialisation() {
+        // Update environment file in case the base directory has changed, e.g. if the work is saved in a new location.
+        updateEnvironmentFile();
     }
 
     @Override
