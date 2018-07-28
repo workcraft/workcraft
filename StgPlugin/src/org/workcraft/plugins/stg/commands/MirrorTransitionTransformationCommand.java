@@ -1,8 +1,5 @@
 package org.workcraft.plugins.stg.commands;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.Model;
@@ -14,6 +11,9 @@ import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 public class MirrorTransitionTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
@@ -64,6 +64,14 @@ public class MirrorTransitionTransformationCommand extends AbstractTransformatio
             }
         }
         return signalTransitions;
+    }
+
+    @Override
+    public void transform(Model model, Collection<Node> nodes) {
+        super.transform(model, nodes);
+        if (model instanceof VisualStg) {
+            ((VisualStg) model).select(nodes);
+        }
     }
 
     @Override

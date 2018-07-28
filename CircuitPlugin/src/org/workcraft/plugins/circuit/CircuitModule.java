@@ -31,7 +31,7 @@ import org.workcraft.plugins.circuit.commands.DetachJointTransformationCommand;
 import org.workcraft.plugins.circuit.commands.InsertBufferTransformationCommand;
 import org.workcraft.plugins.circuit.commands.PropagateInversionTransformationCommand;
 import org.workcraft.plugins.circuit.commands.SplitGateTransformationCommand;
-import org.workcraft.plugins.circuit.commands.SplitJointTransformationCommand;
+import org.workcraft.plugins.circuit.commands.DissolveJointTransformationCommand;
 import org.workcraft.plugins.circuit.commands.ToggleBubbleTransformationCommand;
 import org.workcraft.plugins.circuit.commands.ToggleZeroDelayTransformationCommand;
 import org.workcraft.plugins.circuit.interop.GenlibImporter;
@@ -79,8 +79,8 @@ public class CircuitModule implements Module {
 
         ScriptableCommandUtils.register(ContractJointTransformationCommand.class, "transformCircuitContractJoint",
                 "transform the given Circuit 'work' by contracting selected (or all) joints");
-        ScriptableCommandUtils.register(SplitJointTransformationCommand.class, "transformCircuitSplitJoint",
-                "transform the given Circuit 'work' by splitting selected (or all) joints");
+        ScriptableCommandUtils.register(DissolveJointTransformationCommand.class, "transformCircuitDissolveJoint",
+                "transform the given Circuit 'work' by dissolving selected (or all) joints");
         ScriptableCommandUtils.register(DetachJointTransformationCommand.class, "transformCircuitDetachJoint",
                 "transform the given Circuit 'work' by detaching selected (or all joints)");
         ScriptableCommandUtils.register(ContractComponentTransformationCommand.class, "transformCircuitContractComponent",

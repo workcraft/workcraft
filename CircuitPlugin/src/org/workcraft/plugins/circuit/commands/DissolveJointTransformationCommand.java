@@ -23,16 +23,16 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class SplitJointTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
+public class DissolveJointTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
     @Override
     public String getDisplayName() {
-        return "Split joints (selected or all)";
+        return "Dissolve joints (selected or all)";
     }
 
     @Override
     public String getPopupName() {
-        return "Split joint";
+        return "Dissolve joint";
     }
 
     @Override

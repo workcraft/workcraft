@@ -10,7 +10,7 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.commands.ContractJointTransformationCommand;
 import org.workcraft.plugins.circuit.commands.DetachJointTransformationCommand;
-import org.workcraft.plugins.circuit.commands.SplitJointTransformationCommand;
+import org.workcraft.plugins.circuit.commands.DissolveJointTransformationCommand;
 import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -41,8 +41,8 @@ public class CircuitJointTransformationCommandTests {
 
         int srcForkCount = countForks(circuit);
 
-        SplitJointTransformationCommand splitCommand = new SplitJointTransformationCommand();
-        splitCommand.execute(we);
+        DissolveJointTransformationCommand command = new DissolveJointTransformationCommand();
+        command.execute(we);
 
         Assert.assertEquals(0, circuit.getJoints().size());
 
