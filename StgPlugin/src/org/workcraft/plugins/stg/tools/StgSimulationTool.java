@@ -372,6 +372,15 @@ public class StgSimulationTool extends PetriSimulationTool {
     }
 
     @Override
+    public boolean isConnectionExcited(VisualConnection connection) {
+        if (connection instanceof VisualImplicitPlaceArc) {
+            StgPlace place = ((VisualImplicitPlaceArc) connection).getImplicitPlace();
+            return (place != null) && (place.getTokens() > 0);
+        }
+        return super.isConnectionExcited(connection);
+    }
+
+    @Override
     public JPanel getControlsPanel(final GraphEditor editor) {
         if (panel == null) {
             panel = super.getControlsPanel(editor);
