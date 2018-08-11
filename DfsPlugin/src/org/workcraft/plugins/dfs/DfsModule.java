@@ -1,25 +1,12 @@
 package org.workcraft.plugins.dfs;
 
-import org.workcraft.CompatibilityManager;
-import org.workcraft.Framework;
-import org.workcraft.Module;
-import org.workcraft.PluginManager;
-import org.workcraft.Version;
+import org.workcraft.*;
 import org.workcraft.commands.Command;
 import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
-import org.workcraft.plugins.dfs.commands.DfsCombinedVerificationCommand;
-import org.workcraft.plugins.dfs.commands.DfsContractComponentTransformationCommand;
-import org.workcraft.plugins.dfs.commands.DfsDeadlockVerificationCommand;
-import org.workcraft.plugins.dfs.commands.DfsMergeComponentTransformationCommand;
-import org.workcraft.plugins.dfs.commands.DfsPersisitencyVerificationCommand;
-import org.workcraft.plugins.dfs.commands.DfsToStgConversionCommand;
-import org.workcraft.plugins.dfs.commands.WaggingGenerator2WayCommand;
-import org.workcraft.plugins.dfs.commands.WaggingGenerator3WayCommand;
-import org.workcraft.plugins.dfs.commands.WaggingGenerator4WayCommand;
-import org.workcraft.plugins.dfs.commands.WaggingGeneratorCommand;
+import org.workcraft.plugins.dfs.commands.*;
 import org.workcraft.plugins.dfs.interop.VerilogExporter;
 
 public class DfsModule implements Module {
@@ -45,9 +32,9 @@ public class DfsModule implements Module {
         ScriptableCommandUtils.register(DfsToStgConversionCommand.class, "convertDfsToStg",
                 "convert the given DFS 'work' into a new STG work");
 
-        ScriptableCommandUtils.register(DfsDeadlockVerificationCommand.class, "checkDfsDeadlockFreeness",
+        ScriptableCommandUtils.register(DfsDeadlockFreenessVerificationCommand.class, "checkDfsDeadlockFreeness",
                 "check the DFS 'work' for deadlock freeness");
-        ScriptableCommandUtils.register(DfsPersisitencyVerificationCommand.class, "checkDfsOutputPersistency",
+        ScriptableCommandUtils.register(DfsOutputPersisitencyVerificationCommand.class, "checkDfsOutputPersistency",
                 "check the DFS 'work' for output persistency");
         ScriptableCommandUtils.register(DfsCombinedVerificationCommand.class, "checkDfsCombined",
                 " combined check of the DFS 'work' for deadlock freeness and output persistency");

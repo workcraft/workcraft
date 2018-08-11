@@ -31,7 +31,7 @@ import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class CustomCheckCircuitTask extends MpsatChainTask {
+public class CircuitCustomCheckTask extends MpsatChainTask {
 
     private final MpsatParameters toolchainPreparationSettings = new MpsatParameters("Toolchain preparation of data",
             MpsatMode.UNDEFINED, 0, null, 0);
@@ -39,7 +39,7 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
     private final MpsatParameters toolchainCompletionSettings = new MpsatParameters("Toolchain completion",
             MpsatMode.UNDEFINED, 0, null, 0);
 
-    public CustomCheckCircuitTask(WorkspaceEntry we, MpsatParameters settings) {
+    public CircuitCustomCheckTask(WorkspaceEntry we, MpsatParameters settings) {
         super(we, settings);
     }
 

@@ -30,7 +30,7 @@ import org.workcraft.workspace.WorkspaceUtils;
 import java.io.File;
 import java.util.*;
 
-public class CheckCircuitTask extends MpsatChainTask {
+public class CircuitCheckTask extends MpsatChainTask {
     private final MpsatParameters toolchainPreparationSettings = MpsatParameters.getToolchainPreparationSettings();
     private final MpsatParameters toolchainCompletionSettings = MpsatParameters.getToolchainCompletionSettings();
 
@@ -38,7 +38,7 @@ public class CheckCircuitTask extends MpsatChainTask {
     private final boolean checkDeadlock;
     private final boolean checkPersistency;
 
-    public CheckCircuitTask(WorkspaceEntry we, boolean checkConformation, boolean checkDeadlock, boolean checkPersistency) {
+    public CircuitCheckTask(WorkspaceEntry we, boolean checkConformation, boolean checkDeadlock, boolean checkPersistency) {
         super(we, null);
         this.checkConformation = checkConformation;
         this.checkDeadlock = checkDeadlock;
@@ -100,7 +100,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             }
             monitor.progressUpdate(0.10);
 
-            // Generating system .g for deadlock and persistency checks (only if needed)
+            // Generating system .g for deadlock freeness and output persistency checks (only if needed)
             File sysStgFile = null;
             File detailFile = null;
             Result<? extends PcompOutput>  pcompResult = null;
@@ -192,7 +192,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             }
             monitor.progressUpdate(0.30);
 
-            // Generate unfolding for deadlock and output persistency checks (only if needed)
+            // Generate unfolding for deadlock freeness and output persistency checks (only if needed)
             File unfoldingFile = null;
             PunfTask punfTask = null;
             Result<? extends PunfOutput> punfResult = null;

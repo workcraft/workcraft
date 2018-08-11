@@ -4,7 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.tasks.CheckCircuitTask;
+import org.workcraft.plugins.circuit.tasks.CircuitCheckTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
@@ -22,7 +22,7 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
 
     @Override
     public String getDisplayName() {
-        return "Conformation, deadlock and output persistency (reuse unfolding) [MPSat]";
+        return "Conformation, deadlock freeness, and output persistency (reuse unfolding) [MPSat]";
     }
 
     @Override
@@ -87,7 +87,7 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
         }
         Framework framework = Framework.getInstance();
         TaskManager manager = framework.getTaskManager();
-        CheckCircuitTask task = new CheckCircuitTask(we, checkConformation, checkDeadlock, checkPersistency);
+        CircuitCheckTask task = new CircuitCheckTask(we, checkConformation, checkDeadlock, checkPersistency);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         MpsatChainResultHandler monitor = new MpsatChainResultHandler(we);
         manager.queue(task, description, monitor);
@@ -99,15 +99,15 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
             && CircuitVerificationUtils.checkInterfaceInitialState(we);
     }
 
+    public boolean checkConformation() {
+        return true;
+    }
+
     public boolean checkDeadlock() {
         return true;
     }
 
     public boolean checkPersistency() {
-        return true;
-    }
-
-    public boolean checkConformation() {
         return true;
     }
 

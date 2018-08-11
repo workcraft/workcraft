@@ -98,7 +98,7 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
                 SwingUtilities.invokeLater(new MpsatRedundancyOutputHandler(we, violationMpsatOutput, violationMpsatSettings));
                 break;
             case DEADLOCK:
-                SwingUtilities.invokeLater(new MpsatDeadlockOutputHandler(
+                SwingUtilities.invokeLater(new MpsatDeadlockFreenessOutputHandler(
                         we, pcompOutput, violationMpsatOutput, violationMpsatSettings));
                 break;
             case STG_REACHABILITY_CONSISTENCY:

@@ -9,7 +9,7 @@ import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.plugins.policy.commands.BundleTransitionTransformationCommand;
 import org.workcraft.plugins.policy.commands.PetriToPolicyConversionCommand;
-import org.workcraft.plugins.policy.commands.PolicyDeadlockVerificationCommand;
+import org.workcraft.plugins.policy.commands.PolicyDeadlockFreenessVerificationCommand;
 import org.workcraft.plugins.policy.commands.PolicyToPetriConversionCommand;
 import org.workcraft.plugins.policy.serialisation.BundleDeserialiser;
 import org.workcraft.plugins.policy.serialisation.BundleSerialiser;
@@ -44,7 +44,7 @@ public class PolicyNetModule implements Module {
         ScriptableCommandUtils.register(BundleTransitionTransformationCommand.class, "transformPolicyBundleTransitions",
                 "transform the given Policy net 'work' by bundling selected transition");
 
-        ScriptableCommandUtils.register(PolicyDeadlockVerificationCommand.class, "checkPolicyDeadlockFreeness",
+        ScriptableCommandUtils.register(PolicyDeadlockFreenessVerificationCommand.class, "checkPolicyDeadlockFreeness",
                 "check the Policy net 'work' for deadlock freeness");
 
         ScriptableCommandUtils.register(PolicyToPetriConversionCommand.class, "convertPolicyToPetri",

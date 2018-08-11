@@ -1,4 +1,4 @@
-checkCircuitCombined(work) - combined check of the Circuit 'work' for deadlock freeness, conformation to environment and output persistency
+checkCircuitCombined(work) - combined check of the Circuit 'work' for conformation to environment, deadlock freeness, and output persistency
 checkCircuitConformation(work) - check the Circuit 'work' for conformation to environment
 checkCircuitDeadlockFreeness(work) - check the Circuit 'work' for deadlock freeness
 checkCircuitOutputPersistency(work) - check the Circuit 'work' for output persistency
