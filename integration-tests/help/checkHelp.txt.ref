@@ -12,7 +12,7 @@ checkFsmReachability(work) - check the FSM or FST 'work' for reachability of all
 checkFsmReversibility(work) - check the FSM or FST 'work' for reversibility of all states
 checkGraphReachability(work) - check the Graph 'work' for reachability of all its nodes
 checkPolicyDeadlockFreeness(work) - check the Policy net 'work' for deadlock freeness
-checkStgCombined(work) - combined check of the STG 'work' for consistency, deadlock freeness, input properness and output persistency
+checkStgCombined(work) - combined check of the STG 'work' for consistency, deadlock freeness, input properness, output persistency, and mutex implementability
 checkStgConsistency(work) - check the STG 'work' for consistency
 checkStgCsc(work) - check the STG 'work' for complete state coding
 checkStgDeadlockFreeness(work) - check the STG (or Petri net) 'work' for deadlock freeness

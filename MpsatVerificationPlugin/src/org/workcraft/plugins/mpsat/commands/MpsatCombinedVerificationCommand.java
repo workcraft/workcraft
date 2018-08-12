@@ -24,7 +24,7 @@ public class MpsatCombinedVerificationCommand extends AbstractVerificationComman
 
     @Override
     public String getDisplayName() {
-        return "Consistency, deadlock freeness, input properness, output persistency and mutex implementability (reuse unfolding) [MPSat]";
+        return "Consistency, deadlock freeness, input properness, output persistency, and mutex implementability (reuse unfolding) [MPSat]";
     }
 
     @Override

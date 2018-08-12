@@ -1,8 +1,5 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.MpsatParameters;
@@ -14,9 +11,10 @@ import org.workcraft.util.GUI;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-class MpsatConformationNwayOutputHandler extends MpsatConformationOutputHandler {
+import java.util.ArrayList;
+import java.util.List;
 
-    private static final String TITLE = "Verification results";
+class MpsatConformationNwayOutputHandler extends MpsatConformationOutputHandler {
 
     private final ArrayList<WorkspaceEntry> wes;
 
