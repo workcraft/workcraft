@@ -66,9 +66,7 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
             if (envFile != null) {
                 messagePrefix = "Cannot read an STG model from the file:\n" + envFile.getAbsolutePath() + "\n\n";
             }
-            if (!checkConformation) {
-                DialogUtils.showWarning(messagePrefix + "The circuit will be verified without environment STG.\n");
-            } else {
+            if (checkConformation) {
                 if (!checkDeadlock && !checkPersistency) {
                     DialogUtils.showError(messagePrefix + "The circuit conformation cannot be checked without environment STG.\n");
                 } else {
@@ -96,7 +94,8 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
 
     private boolean checkPrerequisites(WorkspaceEntry we) {
         return CircuitVerificationUtils.checkCircuitHasComponents(we)
-            && CircuitVerificationUtils.checkInterfaceInitialState(we);
+            && CircuitVerificationUtils.checkInterfaceInitialState(we)
+            && CircuitVerificationUtils.checkInterfaceConstrains(we, true);
     }
 
     public boolean checkConformation() {

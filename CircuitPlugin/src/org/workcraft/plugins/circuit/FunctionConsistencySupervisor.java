@@ -19,7 +19,7 @@ public class FunctionConsistencySupervisor extends HierarchySupervisor {
     @Override
     public void handleEvent(HierarchyEvent e) {
         if (e instanceof NodesDeletingEvent) {
-            for (Node node: e.getAffectedNodes()) {
+            for (Node node : e.getAffectedNodes()) {
                 if (node instanceof Contact) {
                     // Update all set/reset functions when a contact is removed
                     final Contact contact = (Contact) node;
@@ -33,7 +33,7 @@ public class FunctionConsistencySupervisor extends HierarchySupervisor {
         final ArrayList<FunctionContact> functionContacts = new ArrayList<>(
                 Hierarchy.getChildrenOfType(getRoot(), FunctionContact.class));
 
-        for (final FunctionContact functionContact: functionContacts) {
+        for (final FunctionContact functionContact : functionContacts) {
             final BooleanFormula setFunction = BooleanUtils.replaceClever(
                     functionContact.getSetFunction(), contact, Zero.instance());
 

@@ -172,7 +172,7 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
                         }
                         break;
                     case NOT_SAFE:
-                        message += "for the unsafe net.\n\n";
+                        message += " for the unsafe net.\n\n";
                         message +=  comment + AFTER_THE_TRACE_SUFFIX;
                         message += solution + ASK_SIMULATE_SUFFIX;
                         if (DialogUtils.showConfirmError(message, TITLE, true)) {
@@ -180,7 +180,7 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
                         }
                         break;
                     case EMPTY_PRESET:
-                        message += " for the malformd net.\n\n";
+                        message += " for the malformed net.\n\n";
                         message += comment;
                         DialogUtils.showError(message, TITLE);
                         break;
