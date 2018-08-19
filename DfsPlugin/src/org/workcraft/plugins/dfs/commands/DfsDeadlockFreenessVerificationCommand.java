@@ -3,7 +3,7 @@ package org.workcraft.plugins.dfs.commands;
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.dfs.Dfs;
-import org.workcraft.plugins.dfs.tasks.CheckDataflowPersistencydTask;
+import org.workcraft.plugins.dfs.tasks.DfsDeadlockFreenessCheckTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
@@ -12,7 +12,7 @@ import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class DfsPersisitencyVerificationCommand extends AbstractVerificationCommand {
+public class DfsDeadlockFreenessVerificationCommand extends AbstractVerificationCommand {
 
     @Override
     public int getPriority() {
@@ -20,7 +20,7 @@ public class DfsPersisitencyVerificationCommand extends AbstractVerificationComm
     }
 
     public String getDisplayName() {
-        return "Output persistency [MPSat]";
+        return "Deadlock [MPSat]";
     }
 
     @Override
@@ -46,7 +46,7 @@ public class DfsPersisitencyVerificationCommand extends AbstractVerificationComm
     private MpsatChainResultHandler queueVerification(WorkspaceEntry we) {
         Framework framework = Framework.getInstance();
         TaskManager manager = framework.getTaskManager();
-        CheckDataflowPersistencydTask task = new CheckDataflowPersistencydTask(we);
+        DfsDeadlockFreenessCheckTask task = new DfsDeadlockFreenessCheckTask(we);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         MpsatChainResultHandler monitor = new MpsatChainResultHandler(we);
         manager.queue(task, description, monitor);

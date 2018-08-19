@@ -4,7 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.plugins.circuit.*;
-import org.workcraft.plugins.circuit.tasks.CheckStrictImplementationTask;
+import org.workcraft.plugins.circuit.tasks.CircuitStrictImplementationCheckTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
@@ -60,7 +60,7 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
         if (checkPrerequisites(we)) {
             Framework framework = Framework.getInstance();
             TaskManager manager = framework.getTaskManager();
-            CheckStrictImplementationTask task = new CheckStrictImplementationTask(we);
+            CircuitStrictImplementationCheckTask task = new CircuitStrictImplementationCheckTask(we);
             String description = MpsatUtils.getToolchainDescription(we.getTitle());
             monitor = new MpsatChainResultHandler(we);
             manager.queue(task, description, monitor);

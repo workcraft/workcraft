@@ -1,8 +1,15 @@
 package org.workcraft.plugins.circuit.commands;
 
+import org.jetbrains.annotations.NotNull;
+import org.workcraft.dom.references.ReferenceHelper;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.BooleanVariable;
+import org.workcraft.formula.utils.LiteralsExtractor;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
+import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.util.DialogUtils;
@@ -11,6 +18,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -28,23 +36,6 @@ public class CircuitVerificationUtils {
         if (circuit.getFunctionComponents().isEmpty()) {
             DialogUtils.showError("The circuit must have components.");
             return false;
-        }
-        return true;
-    }
-
-    public static boolean checkCircuitHasValidEnvironment(WorkspaceEntry we) {
-        VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
-        File envFile = visualCircuit.getEnvironmentFile();
-        Stg envStg = StgUtils.loadStg(envFile);
-        if (envStg == null) {
-            String msg;
-            if (envFile == null) {
-                msg = "Environment STG is missing; the circuit will be verified without it.";
-            } else {
-                msg = "Cannot read an STG model from the file:\n" + envFile.getAbsolutePath()
-                        + "\n\nThe circuit will be verified without environment STG.";
-            }
-            DialogUtils.showWarning(msg);
         }
         return true;
     }
@@ -77,6 +68,104 @@ public class CircuitVerificationUtils {
             }
         }
         return inconsistentSignals;
+    }
+
+    public static boolean checkInterfaceConstrains(WorkspaceEntry we) {
+        return checkInterfaceConstrains(we, false);
+    }
+
+    public static boolean checkInterfaceConstrains(WorkspaceEntry we, boolean skipEnvironmentCheck) {
+        VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
+        File envFile = visualCircuit.getEnvironmentFile();
+        Stg envStg = StgUtils.loadStg(envFile);
+        String msg = "";
+        if (!skipEnvironmentCheck && (envStg == null)) {
+            if (envFile == null) {
+                msg = "Environment STG is missing.";
+            } else {
+                msg = "Cannot read environment STG from the file:\n" + envFile.getAbsolutePath();
+            }
+        }
+        // Restore signal types in the environment STG
+        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
+        if (envStg != null) {
+            ArrayList<String> circuitInputSignals = ReferenceHelper.getReferenceList(circuit, circuit.getInputPorts());
+            ArrayList<String> circuitOutputSignals = ReferenceHelper.getReferenceList(circuit, circuit.getOutputPorts());
+            StgUtils.restoreInterfaceSignals(envStg, circuitInputSignals, circuitOutputSignals);
+        }
+        // Check the circuit for unconstrained inputs and unused outputs
+        Set<String> unconstrainedInputSignals = getUnconstrainedInputSignals(envStg, circuit);
+        if (!unconstrainedInputSignals.isEmpty()) {
+            if (!msg.isEmpty()) {
+                msg += "\n\n";
+            }
+            msg += LogUtils.getTextWithRefs("Unconstrained input signal", unconstrainedInputSignals);
+        }
+        // Check the circuit for unconstrained inputs and unused outputs
+        Set<String> unusedOutputSignals = getUnusedOutputSignals(envStg, circuit);
+        if (!unusedOutputSignals.isEmpty()) {
+            if (!msg.isEmpty()) {
+                msg += "\n\n";
+            }
+            msg += LogUtils.getTextWithRefs("Unused output signal", unusedOutputSignals);
+        }
+
+        if (!msg.isEmpty()) {
+            DialogUtils.showWarning(msg);
+        }
+        return true;
+    }
+
+    @NotNull
+    private static Set<String> getUnconstrainedInputSignals(Stg envStg, Circuit circuit) {
+        Set<String> result = new HashSet();
+        for (Contact contact : circuit.getInputPorts()) {
+            if (!(contact instanceof FunctionContact)) continue;
+            FunctionContact inputPort = (FunctionContact) contact;
+            BooleanFormula setFunction = inputPort.getSetFunction();
+            if (setFunction == null) {
+                String inputSignal = circuit.getNodeReference(inputPort);
+                result.add(inputSignal);
+            }
+        }
+        if (envStg != null) {
+            result.removeAll(envStg.getSignalReferences(Signal.Type.INPUT));
+        }
+        return result;
+    }
+
+    @NotNull
+    private static Set<String> getUnusedOutputSignals(Stg envStg, Circuit circuit) {
+        Set<String> result = new HashSet();
+        for (Contact contact : circuit.getOutputPorts()) {
+            String outputSignal = circuit.getNodeReference(contact);
+            result.add(outputSignal);
+        }
+        for (Contact contact : circuit.getInputPorts()) {
+            if (!(contact instanceof FunctionContact)) continue;
+            FunctionContact inputPort = (FunctionContact) contact;
+
+            HashSet<BooleanVariable> literals = new HashSet<>();
+            BooleanFormula setFunction = inputPort.getSetFunction();
+            if (setFunction != null) {
+                literals.addAll(setFunction.accept(new LiteralsExtractor()));
+            }
+            BooleanFormula resetFunction = inputPort.getResetFunction();
+            if (resetFunction != null) {
+                literals.addAll(resetFunction.accept(new LiteralsExtractor()));
+            }
+
+            for (BooleanVariable literal : literals) {
+                if (!(literal instanceof FunctionContact)) continue;
+                FunctionContact outputPort = (FunctionContact) literal;
+                String outputSignal = circuit.getNodeReference(outputPort);
+                result.remove(outputSignal);
+            }
+        }
+        if (envStg != null) {
+            result.removeAll(envStg.getSignalReferences(Signal.Type.OUTPUT));
+        }
+        return result;
     }
 
 }

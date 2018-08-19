@@ -35,10 +35,10 @@ import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class CheckStrictImplementationTask extends MpsatChainTask {
+public class CircuitStrictImplementationCheckTask extends MpsatChainTask {
     private final MpsatParameters toolchainPreparationSettings = MpsatParameters.getToolchainPreparationSettings();
 
-    public CheckStrictImplementationTask(WorkspaceEntry we) {
+    public CircuitStrictImplementationCheckTask(WorkspaceEntry we) {
         super(we, null);
     }
 

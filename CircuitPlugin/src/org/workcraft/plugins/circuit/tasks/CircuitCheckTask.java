@@ -30,7 +30,7 @@ import org.workcraft.workspace.WorkspaceUtils;
 import java.io.File;
 import java.util.*;
 
-public class CheckCircuitTask extends MpsatChainTask {
+public class CircuitCheckTask extends MpsatChainTask {
     private final MpsatParameters toolchainPreparationSettings = MpsatParameters.getToolchainPreparationSettings();
     private final MpsatParameters toolchainCompletionSettings = MpsatParameters.getToolchainCompletionSettings();
 
@@ -38,7 +38,7 @@ public class CheckCircuitTask extends MpsatChainTask {
     private final boolean checkDeadlock;
     private final boolean checkPersistency;
 
-    public CheckCircuitTask(WorkspaceEntry we, boolean checkConformation, boolean checkDeadlock, boolean checkPersistency) {
+    public CircuitCheckTask(WorkspaceEntry we, boolean checkConformation, boolean checkDeadlock, boolean checkPersistency) {
         super(we, null);
         this.checkConformation = checkConformation;
         this.checkDeadlock = checkDeadlock;
@@ -98,9 +98,9 @@ public class CheckCircuitTask extends MpsatChainTask {
                 return new Result<>(Outcome.FAILURE,
                         new MpsatChainOutput(devExportResult, null, null, null, toolchainPreparationSettings));
             }
-            monitor.progressUpdate(0.10);
+            monitor.progressUpdate(0.1);
 
-            // Generating system .g for deadlock and persistency checks (only if needed)
+            // Generating system .g for deadlock freeness and output persistency checks (only if needed)
             File sysStgFile = null;
             File detailFile = null;
             Result<? extends PcompOutput>  pcompResult = null;
@@ -141,7 +141,7 @@ public class CheckCircuitTask extends MpsatChainTask {
                 sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + stgFileExtension);
                 CircuitStgUtils.exportStg(sysStg, sysStgFile, directory, monitor);
             }
-            monitor.progressUpdate(0.20);
+            monitor.progressUpdate(0.2);
 
             // Generating system .g for conformation check (only if needed) -- should be without environment internal signals
             File sysModStgFile = null;
@@ -190,15 +190,14 @@ public class CheckCircuitTask extends MpsatChainTask {
                     CircuitStgUtils.exportStg(sysModStg, sysModStgFile, directory, monitor);
                 }
             }
-            monitor.progressUpdate(0.30);
+            monitor.progressUpdate(0.3);
 
-            // Generate unfolding for deadlock and output persistency checks (only if needed)
+            // Generate unfolding for deadlock freeness and output persistency checks (only if needed)
             File unfoldingFile = null;
-            PunfTask punfTask = null;
             Result<? extends PunfOutput> punfResult = null;
             if (checkDeadlock || checkPersistency) {
                 unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + PunfTask.PNML_FILE_EXTENSION);
-                punfTask = new PunfTask(sysStgFile, unfoldingFile, directory);
+                PunfTask punfTask = new PunfTask(sysStgFile, unfoldingFile, directory);
                 SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<>(monitor);
                 punfResult = manager.execute(punfTask, "Unfolding .g", punfMonitor);
 
@@ -210,15 +209,15 @@ public class CheckCircuitTask extends MpsatChainTask {
                             new MpsatChainOutput(devExportResult, pcompResult, punfResult, null, toolchainPreparationSettings));
                 }
             }
+
             // Generate unfolding for conformation checks (if needed)
             File unfoldingModFile = unfoldingFile;
-            PunfTask punfModTask = punfTask;
             Result<? extends PunfOutput> punfModResult = punfResult;
             if ((envStg != null) && checkConformation) {
                 if ((sysStgFile != sysModStgFile) || (unfoldingModFile == null)) {
                     String fileSuffix = (sysStgFile == null) ? "" : StgUtils.MODIFIED_FILE_SUFFIX;
                     unfoldingModFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + fileSuffix + PunfTask.PNML_FILE_EXTENSION);
-                    punfModTask = new PunfTask(sysModStgFile, unfoldingModFile, directory);
+                    PunfTask punfModTask = new PunfTask(sysModStgFile, unfoldingModFile, directory);
                     SubtaskMonitor<Object> punfModMonitor = new SubtaskMonitor<>(monitor);
                     punfModResult = manager.execute(punfModTask, "Unfolding .g", punfModMonitor);
 
@@ -231,61 +230,7 @@ public class CheckCircuitTask extends MpsatChainTask {
                     }
                 }
             }
-            monitor.progressUpdate(0.40);
-
-            // Check for deadlock (if requested)
-            if (checkDeadlock) {
-                MpsatParameters deadlockSettings = MpsatParameters.getDeadlockSettings();
-                MpsatTask mpsatDeadlockTask = new MpsatTask(deadlockSettings.getMpsatArguments(directory),
-                        unfoldingFile, directory);
-                SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
-                Result<? extends MpsatOutput> mpsatDeadlockResult = manager.execute(
-                        mpsatDeadlockTask, "Running deadlock check [MPSat]", mpsatMonitor);
-
-                if (mpsatDeadlockResult.getOutcome() != Outcome.SUCCESS) {
-                    if (mpsatDeadlockResult.getOutcome() == Outcome.CANCEL) {
-                        return new Result<>(Outcome.CANCEL);
-                    }
-                    return new Result<>(Outcome.FAILURE,
-                            new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatDeadlockResult, deadlockSettings));
-                }
-                monitor.progressUpdate(0.50);
-
-                MpsatOutputParser mpsatDeadlockParser = new MpsatOutputParser(mpsatDeadlockResult.getPayload());
-                if (!mpsatDeadlockParser.getSolutions().isEmpty()) {
-                    return new Result<>(Outcome.SUCCESS,
-                            new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatDeadlockResult, deadlockSettings,
-                                    "Circuit has a deadlock after the following trace(s):"));
-                }
-            }
-            monitor.progressUpdate(0.60);
-
-            // Check for persistency (if requested)
-            if (checkPersistency) {
-                MpsatParameters persistencySettings = MpsatParameters.getOutputPersistencySettings(grantPairs);
-                MpsatTask mpsatPersistencyTask = new MpsatTask(persistencySettings.getMpsatArguments(directory),
-                        unfoldingFile, directory, sysStgFile);
-                SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
-                Result<? extends MpsatOutput>  mpsatPersistencyResult = manager.execute(
-                        mpsatPersistencyTask, "Running output persistency check [MPSat]", mpsatMonitor);
-
-                if (mpsatPersistencyResult.getOutcome() != Outcome.SUCCESS) {
-                    if (mpsatPersistencyResult.getOutcome() == Outcome.CANCEL) {
-                        return new Result<>(Outcome.CANCEL);
-                    }
-                    return new Result<>(Outcome.FAILURE,
-                            new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatPersistencyResult, persistencySettings));
-                }
-                monitor.progressUpdate(0.70);
-
-                MpsatOutputParser mpsatPersistencyParser = new MpsatOutputParser(mpsatPersistencyResult.getPayload());
-                if (!mpsatPersistencyParser.getSolutions().isEmpty()) {
-                    return new Result<>(Outcome.SUCCESS,
-                            new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatPersistencyResult, persistencySettings,
-                                    "Circuit is not output-persistent after the following trace(s):"));
-                }
-            }
-            monitor.progressUpdate(0.80);
+            monitor.progressUpdate(0.4);
 
             // Check for conformation (only if requested and if the environment is specified)
             if ((envStg != null) && checkConformation) {
@@ -306,7 +251,7 @@ public class CheckCircuitTask extends MpsatChainTask {
                     return new Result<>(Outcome.FAILURE,
                             new MpsatChainOutput(devExportResult, pcompModResult, punfModResult, mpsatConformationResult, conformationSettings));
                 }
-                monitor.progressUpdate(0.90);
+                monitor.progressUpdate(0.5);
 
                 MpsatOutputParser mpsatConformationParser = new MpsatOutputParser(mpsatConformationResult.getPayload());
                 if (!mpsatConformationParser.getSolutions().isEmpty()) {
@@ -315,7 +260,61 @@ public class CheckCircuitTask extends MpsatChainTask {
                                     "Circuit does not conform to the environment after the following trace(s):"));
                 }
             }
-            monitor.progressUpdate(1.00);
+            monitor.progressUpdate(0.6);
+
+            // Check for deadlock (if requested)
+            if (checkDeadlock) {
+                MpsatParameters deadlockSettings = MpsatParameters.getDeadlockSettings();
+                MpsatTask mpsatDeadlockTask = new MpsatTask(deadlockSettings.getMpsatArguments(directory),
+                        unfoldingFile, directory);
+                SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
+                Result<? extends MpsatOutput> mpsatDeadlockResult = manager.execute(
+                        mpsatDeadlockTask, "Running deadlock check [MPSat]", mpsatMonitor);
+
+                if (mpsatDeadlockResult.getOutcome() != Outcome.SUCCESS) {
+                    if (mpsatDeadlockResult.getOutcome() == Outcome.CANCEL) {
+                        return new Result<>(Outcome.CANCEL);
+                    }
+                    return new Result<>(Outcome.FAILURE,
+                            new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatDeadlockResult, deadlockSettings));
+                }
+                monitor.progressUpdate(0.7);
+
+                MpsatOutputParser mpsatDeadlockParser = new MpsatOutputParser(mpsatDeadlockResult.getPayload());
+                if (!mpsatDeadlockParser.getSolutions().isEmpty()) {
+                    return new Result<>(Outcome.SUCCESS,
+                            new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatDeadlockResult, deadlockSettings,
+                                    "Circuit has a deadlock after the following trace(s):"));
+                }
+            }
+            monitor.progressUpdate(0.8);
+
+            // Check for persistency (if requested)
+            if (checkPersistency) {
+                MpsatParameters persistencySettings = MpsatParameters.getOutputPersistencySettings(grantPairs);
+                MpsatTask mpsatPersistencyTask = new MpsatTask(persistencySettings.getMpsatArguments(directory),
+                        unfoldingFile, directory, sysStgFile);
+                SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
+                Result<? extends MpsatOutput>  mpsatPersistencyResult = manager.execute(
+                        mpsatPersistencyTask, "Running output persistency check [MPSat]", mpsatMonitor);
+
+                if (mpsatPersistencyResult.getOutcome() != Outcome.SUCCESS) {
+                    if (mpsatPersistencyResult.getOutcome() == Outcome.CANCEL) {
+                        return new Result<>(Outcome.CANCEL);
+                    }
+                    return new Result<>(Outcome.FAILURE,
+                            new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatPersistencyResult, persistencySettings));
+                }
+                monitor.progressUpdate(0.9);
+
+                MpsatOutputParser mpsatPersistencyParser = new MpsatOutputParser(mpsatPersistencyResult.getPayload());
+                if (!mpsatPersistencyParser.getSolutions().isEmpty()) {
+                    return new Result<>(Outcome.SUCCESS,
+                            new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatPersistencyResult, persistencySettings,
+                                    "Circuit is not output-persistent after the following trace(s):"));
+                }
+            }
+            monitor.progressUpdate(1.0);
 
             // Success
             Result<? extends MpsatOutput>  mpsatResult = new Result<>(Outcome.SUCCESS);

@@ -36,7 +36,7 @@ public class MpsatModule implements Module {
                 "resolve complete state coding conflicts with MPSat backend");
 
         ScriptableCommandUtils.register(MpsatCombinedVerificationCommand.class, "checkStgCombined",
-                "combined check of the STG 'work' for consistency, deadlock freeness, input properness and output persistency");
+                "combined check of the STG 'work' for consistency, deadlock freeness, input properness, output persistency, and mutex implementability");
         ScriptableCommandUtils.register(MpsatConsistencyVerificationCommand.class, "checkStgConsistency",
                 "check the STG 'work' for consistency");
         ScriptableCommandUtils.register(MpsatDeadlockFreenessVerificationCommand.class, "checkStgDeadlockFreeness",

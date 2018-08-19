@@ -86,7 +86,7 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainOut
             SwingUtilities.invokeLater(new MpsatRedundancyOutputHandler(we, mpsatOutput, mpsatSettings));
             break;
         case DEADLOCK:
-            SwingUtilities.invokeLater(new MpsatDeadlockOutputHandler(we, pcompOutput, mpsatOutput, mpsatSettings));
+            SwingUtilities.invokeLater(new MpsatDeadlockFreenessOutputHandler(we, pcompOutput, mpsatOutput, mpsatSettings));
             break;
         case STG_REACHABILITY_CONSISTENCY:
             SwingUtilities.invokeLater(new MpsatConsistencyOutputHandler(we, pcompOutput, mpsatOutput, mpsatSettings));
@@ -150,7 +150,7 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainOut
                         }
                         break;
                     case NOT_SAFE:
-                        message += "for the unsafe net.\n\n";
+                        message += " for the unsafe net.\n\n";
                         message +=  comment + AFTER_THE_TRACE_SUFFIX;
                         message += solution + ASK_SIMULATE_SUFFIX;
                         if (DialogUtils.showConfirmError(message, TITLE, true)) {
@@ -158,7 +158,7 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainOut
                         }
                         break;
                     case EMPTY_PRESET:
-                        message += " for the malformd net.\n\n";
+                        message += " for the malformed net.\n\n";
                         message += comment;
                         DialogUtils.showError(message, TITLE);
                         break;

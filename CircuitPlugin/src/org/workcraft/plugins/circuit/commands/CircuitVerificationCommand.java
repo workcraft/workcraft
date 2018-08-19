@@ -4,7 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.tasks.CheckCircuitTask;
+import org.workcraft.plugins.circuit.tasks.CircuitCheckTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
@@ -22,7 +22,7 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
 
     @Override
     public String getDisplayName() {
-        return "Conformation, deadlock and output persistency (reuse unfolding) [MPSat]";
+        return "Conformation, deadlock freeness, and output persistency (reuse unfolding) [MPSat]";
     }
 
     @Override
@@ -66,9 +66,7 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
             if (envFile != null) {
                 messagePrefix = "Cannot read an STG model from the file:\n" + envFile.getAbsolutePath() + "\n\n";
             }
-            if (!checkConformation) {
-                DialogUtils.showWarning(messagePrefix + "The circuit will be verified without environment STG.\n");
-            } else {
+            if (checkConformation) {
                 if (!checkDeadlock && !checkPersistency) {
                     DialogUtils.showError(messagePrefix + "The circuit conformation cannot be checked without environment STG.\n");
                 } else {
@@ -87,7 +85,7 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
         }
         Framework framework = Framework.getInstance();
         TaskManager manager = framework.getTaskManager();
-        CheckCircuitTask task = new CheckCircuitTask(we, checkConformation, checkDeadlock, checkPersistency);
+        CircuitCheckTask task = new CircuitCheckTask(we, checkConformation, checkDeadlock, checkPersistency);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         MpsatChainResultHandler monitor = new MpsatChainResultHandler(we);
         manager.queue(task, description, monitor);
@@ -96,7 +94,12 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
 
     private boolean checkPrerequisites(WorkspaceEntry we) {
         return CircuitVerificationUtils.checkCircuitHasComponents(we)
-            && CircuitVerificationUtils.checkInterfaceInitialState(we);
+            && CircuitVerificationUtils.checkInterfaceInitialState(we)
+            && CircuitVerificationUtils.checkInterfaceConstrains(we, true);
+    }
+
+    public boolean checkConformation() {
+        return true;
     }
 
     public boolean checkDeadlock() {
@@ -104,10 +107,6 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
     }
 
     public boolean checkPersistency() {
-        return true;
-    }
-
-    public boolean checkConformation() {
         return true;
     }
 

@@ -8,7 +8,7 @@ import org.workcraft.Version;
 import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.plugins.fsm.commands.FsmContractStateTransformationCommand;
-import org.workcraft.plugins.fsm.commands.FsmDeadlockVerificationCommand;
+import org.workcraft.plugins.fsm.commands.FsmDeadlockFreenessVerificationCommand;
 import org.workcraft.plugins.fsm.commands.FsmDeterminismVerificationCommand;
 import org.workcraft.plugins.fsm.commands.FsmReachabilityVerificationCommand;
 import org.workcraft.plugins.fsm.commands.FsmReversibilityVerificationCommand;
@@ -50,7 +50,7 @@ public class FsmModule  implements Module {
         ScriptableCommandUtils.register(FsmToPetriConversionCommand.class, "convertFsmToPetri",
                 "convert the given FSM 'work' into a new Petri net work");
 
-        ScriptableCommandUtils.register(FsmDeadlockVerificationCommand.class, "checkFsmDeadlockFreeness",
+        ScriptableCommandUtils.register(FsmDeadlockFreenessVerificationCommand.class, "checkFsmDeadlockFreeness",
                 "check the FSM or FST 'work' for deadlock freeness");
         ScriptableCommandUtils.register(FsmDeterminismVerificationCommand.class, "checkFsmDeterminism",
                 "check the FSM or FST 'work' for determinism");

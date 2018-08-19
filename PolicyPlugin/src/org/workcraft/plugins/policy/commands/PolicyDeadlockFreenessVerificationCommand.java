@@ -6,13 +6,13 @@ import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
 import org.workcraft.plugins.policy.PolicyNet;
-import org.workcraft.plugins.policy.tasks.CheckDeadlockTask;
+import org.workcraft.plugins.policy.tasks.CheckDeadlockFreenessTask;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class PolicyDeadlockVerificationCommand extends AbstractVerificationCommand {
+public class PolicyDeadlockFreenessVerificationCommand extends AbstractVerificationCommand {
 
     public String getDisplayName() {
         return " Deadlock with bundels [MPSat]";
@@ -41,7 +41,7 @@ public class PolicyDeadlockVerificationCommand extends AbstractVerificationComma
     private MpsatChainResultHandler queueVerification(WorkspaceEntry we) {
         Framework framework = Framework.getInstance();
         TaskManager manager = framework.getTaskManager();
-        CheckDeadlockTask task = new CheckDeadlockTask(we);
+        CheckDeadlockFreenessTask task = new CheckDeadlockFreenessTask(we);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         MpsatChainResultHandler monitor = new MpsatChainResultHandler(we);
         manager.queue(task, description, monitor);

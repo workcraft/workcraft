@@ -30,9 +30,9 @@ import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class CheckDataflowDeadlockTask extends MpsatChainTask {
+public class DfsDeadlockFreenessCheckTask extends MpsatChainTask {
 
-    public CheckDataflowDeadlockTask(WorkspaceEntry we) {
+    public DfsDeadlockFreenessCheckTask(WorkspaceEntry we) {
         super(we, new MpsatParameters("Deadlock freeness", MpsatMode.DEADLOCK, 0,
                 MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount(),
                 null, true));

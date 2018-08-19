@@ -23,7 +23,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 class MpsatReachabilityOutputHandler implements Runnable {
 
-    private static final String TITLE = "Verification results";
+    protected static final String TITLE = "Verification results";
 
     private final WorkspaceEntry we;
     private final PcompOutput pcompOutput;
@@ -42,6 +42,10 @@ class MpsatReachabilityOutputHandler implements Runnable {
         this.pcompOutput = pcompOutput;
         this.mpsatOutput = mpsatOutput;
         this.settings = settings;
+    }
+
+    public WorkspaceEntry getWorkspaceEntry() {
+        return we;
     }
 
     public PcompOutput getPcompOutput() {
@@ -148,12 +152,12 @@ class MpsatReachabilityOutputHandler implements Runnable {
             }
         } else {
             LogUtils.logWarning(message);
-            List<MpsatSolution> processedSolutions = processSolutions(we, solutions);
+            List<MpsatSolution> processedSolutions = processSolutions(getWorkspaceEntry(), solutions);
             Framework framework = Framework.getInstance();
             if (framework.isInGuiMode()) {
                 message = extendMessage(message);
                 MpsatReachibilityDialog solutionsDialog = new MpsatReachibilityDialog(
-                        we, TITLE, message, processedSolutions);
+                        getWorkspaceEntry(), TITLE, message, processedSolutions);
                 MainWindow mainWindow = framework.getMainWindow();
                 GUI.centerToParent(solutionsDialog, mainWindow);
                 solutionsDialog.setVisible(true);

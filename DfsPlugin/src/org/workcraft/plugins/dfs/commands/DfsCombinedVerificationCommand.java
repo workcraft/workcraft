@@ -3,7 +3,7 @@ package org.workcraft.plugins.dfs.commands;
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.dfs.Dfs;
-import org.workcraft.plugins.dfs.tasks.CheckDataflowTask;
+import org.workcraft.plugins.dfs.tasks.DfsCheckTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
@@ -15,7 +15,7 @@ import org.workcraft.workspace.WorkspaceUtils;
 public class DfsCombinedVerificationCommand extends AbstractVerificationCommand {
 
     public String getDisplayName() {
-        return "Deadlock and output persistency (reuse unfolding) [MPSat]";
+        return "Deadlock freeness and output persistency (reuse unfolding) [MPSat]";
     }
 
     @Override
@@ -41,7 +41,7 @@ public class DfsCombinedVerificationCommand extends AbstractVerificationCommand 
     private MpsatChainResultHandler queueVerification(WorkspaceEntry we) {
         Framework framework = Framework.getInstance();
         TaskManager manager = framework.getTaskManager();
-        CheckDataflowTask task = new CheckDataflowTask(we);
+        DfsCheckTask task = new DfsCheckTask(we);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         MpsatChainResultHandler monitor = new MpsatChainResultHandler(we);
         manager.queue(task, description, monitor);

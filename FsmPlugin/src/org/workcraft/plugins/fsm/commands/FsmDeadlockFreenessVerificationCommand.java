@@ -19,13 +19,13 @@ import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class FsmDeadlockVerificationCommand extends AbstractVerificationCommand {
+public class FsmDeadlockFreenessVerificationCommand extends AbstractVerificationCommand {
 
     private static final String TITLE = "Verification result";
 
     @Override
     public String getDisplayName() {
-        return "Deadlock";
+        return "Deadlock freeness";
     }
 
     @Override

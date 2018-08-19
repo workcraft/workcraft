@@ -105,7 +105,7 @@ public class CircuitModule implements Module {
                 "convert the given Circuit 'work' and its environment into a new STG work");
 
         ScriptableCommandUtils.register(CircuitVerificationCommand.class, "checkCircuitCombined",
-                "combined check of the Circuit 'work' for deadlock freeness, conformation to environment and output persistency");
+                "combined check of the Circuit 'work' for conformation to environment, deadlock freeness, and output persistency");
         ScriptableCommandUtils.register(CircuitConformationVerificationCommand.class, "checkCircuitConformation",
                 "check the Circuit 'work' for conformation to environment");
         ScriptableCommandUtils.register(CircuitDeadlockFreenessVerificationCommand.class, "checkCircuitDeadlockFreeness",

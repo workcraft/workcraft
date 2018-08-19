@@ -5,7 +5,7 @@ import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.tasks.CustomCheckCircuitTask;
+import org.workcraft.plugins.circuit.tasks.CircuitCustomCheckTask;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.MpsatSettingsSerialiser;
 import org.workcraft.plugins.mpsat.commands.MpsatPropertyVerificationCommand;
@@ -57,7 +57,7 @@ public class CircuitPropertyVerificationCommand extends AbstractVerificationComm
         dialog.setVisible(true);
         if (dialog.getModalResult() == 1) {
             TaskManager manager = framework.getTaskManager();
-            CustomCheckCircuitTask task = new CustomCheckCircuitTask(we, dialog.getSettings());
+            CircuitCustomCheckTask task = new CircuitCustomCheckTask(we, dialog.getSettings());
             String description = MpsatUtils.getToolchainDescription(we.getTitle());
             MpsatChainResultHandler monitor = new MpsatChainResultHandler(we);
             manager.queue(task, description, monitor);
@@ -66,8 +66,8 @@ public class CircuitPropertyVerificationCommand extends AbstractVerificationComm
 
     private boolean checkPrerequisites(WorkspaceEntry we) {
         return CircuitVerificationUtils.checkCircuitHasComponents(we)
-            && CircuitVerificationUtils.checkCircuitHasValidEnvironment(we)
-            && CircuitVerificationUtils.checkInterfaceInitialState(we);
+            && CircuitVerificationUtils.checkInterfaceInitialState(we)
+            && CircuitVerificationUtils.checkInterfaceConstrains(we);
     }
 
 }
