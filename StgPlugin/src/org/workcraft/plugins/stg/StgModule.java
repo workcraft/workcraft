@@ -89,8 +89,8 @@ public class StgModule implements Module {
         final Framework framework = Framework.getInstance();
         final CompatibilityManager cm = framework.getCompatibilityManager();
         Version v320 = new Version(3, 2, 0, Version.Status.RELEASE);
+        Version v314 = new Version(3, 1, 4, Version.Status.RELEASE);
         Version v310 = new Version(3, 1, 0, Version.Status.RELEASE);
-        Version v314 = new Version(3, 1, 0, Version.Status.RELEASE);
 
         cm.registerMetaReplacement(v310,
                 "<descriptor class=\"org.workcraft.plugins.stg.STGModelDescriptor\"/>",
@@ -103,11 +103,6 @@ public class StgModule implements Module {
         cm.registerGlobalReplacement(v310, Stg.class.getName(), "<STGPlace>", "<StgPlace>");
 
         cm.registerGlobalReplacement(v310, Stg.class.getName(), "</STGPlace>", "</StgPlace>");
-
-        cm.registerContextualReplacement(v320, Stg.class.getName(), "SignalTransition",
-                "<property class=\"org.workcraft.plugins.stg.SignalTransition\\$Type\" enum-class=\"org.workcraft.plugins.stg.SignalTransition\\$Type\" name=\"signalType\" value=",
-                "<property class=\"org.workcraft.plugins.stg.Signal\\$Type\" enum-class=\"org.workcraft.plugins.stg.Signal\\$Type\" name=\"signalType\" value=");
-
 
         cm.registerGlobalReplacement(v310, Stg.class.getName(),
                 "<node class=\"org.workcraft.plugins.stg.STGPlace\" ref=",
@@ -124,6 +119,10 @@ public class StgModule implements Module {
         cm.registerGlobalReplacement(v314, VisualStg.class.getName(),
                 "<VisualPlace ref=\"(.*?)\">",
                 "<VisualStgPlace ref=\"$1\"/>\\n<VisualPlace>");
+
+        cm.registerContextualReplacement(v320, Stg.class.getName(), "SignalTransition",
+                "<property class=\"org.workcraft.plugins.stg.SignalTransition\\$Type\" enum-class=\"org.workcraft.plugins.stg.SignalTransition\\$Type\" name=\"signalType\" value=",
+                "<property class=\"org.workcraft.plugins.stg.Signal\\$Type\" enum-class=\"org.workcraft.plugins.stg.Signal\\$Type\" name=\"signalType\" value=");
     }
 
 }

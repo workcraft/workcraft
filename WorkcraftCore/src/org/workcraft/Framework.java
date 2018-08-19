@@ -395,17 +395,19 @@ public final class Framework {
     }
 
     public void updateJavaScript(WorkspaceEntry we) {
-        ScriptableObject jsGlobalScope = getJavaScriptGlobalScope();
-        setJavaScriptProperty(WORKSPACE_ENTRY_VARIABLE, we, jsGlobalScope, true);
+        if (we != null) {
+            ScriptableObject jsGlobalScope = getJavaScriptGlobalScope();
+            setJavaScriptProperty(WORKSPACE_ENTRY_VARIABLE, we, jsGlobalScope, true);
 
-        ModelEntry me = we.getModelEntry();
-        setJavaScriptProperty(MODEL_ENTRY_VARIABLE, me, jsGlobalScope, true);
+            ModelEntry me = we.getModelEntry();
+            setJavaScriptProperty(MODEL_ENTRY_VARIABLE, me, jsGlobalScope, true);
 
-        VisualModel visualModel = me.getVisualModel();
-        setJavaScriptProperty(VISUAL_MODEL_VARIABLE, visualModel, jsGlobalScope, true);
+            VisualModel visualModel = me.getVisualModel();
+            setJavaScriptProperty(VISUAL_MODEL_VARIABLE, visualModel, jsGlobalScope, true);
 
-        MathModel mathModel = me.getMathModel();
-        setJavaScriptProperty(MATH_MODEL_VARIABLE, mathModel, jsGlobalScope, true);
+            MathModel mathModel = me.getMathModel();
+            setJavaScriptProperty(MATH_MODEL_VARIABLE, mathModel, jsGlobalScope, true);
+        }
     }
 
     public ScriptableObject getJavaScriptGlobalScope() {
@@ -807,8 +809,12 @@ public final class Framework {
         if (FileUtils.checkAvailability(file, null, false)) {
             // Load (from *.work) or import (other extensions) work.
             if (file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
-                ByteArrayInputStream bis = compatibilityManager.process(file);
-                me = loadModel(bis);
+                try {
+                    ByteArrayInputStream bis = compatibilityManager.process(file);
+                    me = loadModel(bis);
+                } catch (OperationCancelledException e) {
+                    return null;
+                }
             } else {
                 try {
                     final PluginManager pm = getPluginManager();
