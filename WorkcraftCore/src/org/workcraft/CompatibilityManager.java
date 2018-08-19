@@ -1,13 +1,12 @@
 package org.workcraft;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.exceptions.OperationCancelledException;
+import org.workcraft.plugins.shared.CommonDebugSettings;
+import org.workcraft.util.DialogUtils;
+import org.workcraft.util.LogUtils;
+
+import java.io.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -18,27 +17,26 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.plugins.shared.CommonDebugSettings;
-import org.workcraft.util.LogUtils;
-
 public class CompatibilityManager {
     private static final Pattern versionPattern = Pattern.compile("<" + Framework.META_VERSION_WORK_ELEMENT + " " +
-                    Framework.META_VERSION_MAJOR_WORK_ATTRIBUTE + "=\"([0-9]+)\" " +
-                    Framework.META_VERSION_MINOR_WORK_ATTRIBUTE + "=\"([0-9]+)\" " +
-                    Framework.META_VERSION_REVISION_WORK_ATTRIBUTE + "=\"([0-9]+)\" " +
-                    Framework.META_VERSION_STATUS_WORK_ATTRIBUTE + "=\"(.+?)\"/>");
+            Framework.META_VERSION_MAJOR_WORK_ATTRIBUTE + "=\"([0-9]+)\" " +
+            Framework.META_VERSION_MINOR_WORK_ATTRIBUTE + "=\"([0-9]+)\" " +
+            Framework.META_VERSION_REVISION_WORK_ATTRIBUTE + "=\"([0-9]+)\" " +
+            Framework.META_VERSION_STATUS_WORK_ATTRIBUTE + "=\"(.*)\"/>");
     private static final Pattern modelNamePattern = Pattern.compile("<model class=\"(.+?)\" ref=\"\">");
     private static final Pattern classNamePattern = Pattern.compile("<([A-Z]\\S*).*>");
 
     @SuppressWarnings("serial")
-    private class Replacement extends HashMap<String, String> { }
+    private class Replacement extends HashMap<String, String> {
+    }
 
     @SuppressWarnings("serial")
-    private class ContextualReplacement extends HashMap<String, Replacement> { }
+    private class ContextualReplacement extends HashMap<String, Replacement> {
+    }
 
     @SuppressWarnings("serial")
-    private class NestedContextualReplacement extends HashMap<String, ContextualReplacement> { }
+    private class NestedContextualReplacement extends HashMap<String, ContextualReplacement> {
+    }
 
     private class ReplacementData {
         private final Replacement meta = new Replacement();
@@ -48,7 +46,8 @@ public class CompatibilityManager {
     }
 
     @SuppressWarnings("serial")
-    private class VersionedReplacementData extends HashMap<Version, ReplacementData> { }
+    private class VersionedReplacementData extends HashMap<Version, ReplacementData> {
+    }
 
     private final VersionedReplacementData versionedReplacementData = new VersionedReplacementData();
 
@@ -63,7 +62,7 @@ public class CompatibilityManager {
 
     private HashSet<ReplacementData> getApplicableData(Version version) {
         HashSet<ReplacementData> result = new HashSet<>();
-        for (Version sinceVersion: versionedReplacementData.keySet()) {
+        for (Version sinceVersion : versionedReplacementData.keySet()) {
             if ((version == null) || (version.compareTo(sinceVersion) < 0)) {
                 ReplacementData data = getReplacementData(sinceVersion);
                 result.add(data);
@@ -119,8 +118,8 @@ public class CompatibilityManager {
     }
 
     private String replaceMetaData(Version version, String line) {
-        for (ReplacementData data: getApplicableData(version)) {
-            for (Map.Entry<String, String> replacement: data.meta.entrySet()) {
+        for (ReplacementData data : getApplicableData(version)) {
+            for (Map.Entry<String, String> replacement : data.meta.entrySet()) {
                 if (line.contains(replacement.getKey())) {
                     line = replace(line, replacement, "legacy meta data");
                 }
@@ -130,8 +129,8 @@ public class CompatibilityManager {
     }
 
     private String replaceModelName(Version version, String line) {
-        for (ReplacementData data: getApplicableData(version)) {
-            for (Map.Entry<String, String> replacement: data.model.entrySet()) {
+        for (ReplacementData data : getApplicableData(version)) {
+            for (Map.Entry<String, String> replacement : data.model.entrySet()) {
                 if (line.contains(replacement.getKey())) {
                     line = replace(line, replacement, "legacy model class");
                 }
@@ -141,10 +140,10 @@ public class CompatibilityManager {
     }
 
     private String replaceGlobalEntry(Version version, String modelName, String line) {
-        for (ReplacementData data: getApplicableData(version)) {
+        for (ReplacementData data : getApplicableData(version)) {
             Replacement replacementMap = data.global.get(modelName);
             if (replacementMap != null) {
-                for (Map.Entry<String, String> replacement: replacementMap.entrySet()) {
+                for (Map.Entry<String, String> replacement : replacementMap.entrySet()) {
                     line = replace(line, replacement, "global replacement");
                 }
             }
@@ -153,12 +152,12 @@ public class CompatibilityManager {
     }
 
     private String replaceContextualEntry(Version version, String modelName, String className, String line) {
-        for (ReplacementData data: getApplicableData(version)) {
+        for (ReplacementData data : getApplicableData(version)) {
             HashMap<String, Replacement> contextualMap = data.local.get(modelName);
             if (contextualMap != null) {
                 Replacement replacementMap = contextualMap.get(className);
                 if (replacementMap != null) {
-                    for (Map.Entry<String, String> replacement: replacementMap.entrySet()) {
+                    for (Map.Entry<String, String> replacement : replacementMap.entrySet()) {
                         line = replace(line, replacement, "contextual replacement for " + className);
                     }
                 }
@@ -214,17 +213,27 @@ public class CompatibilityManager {
         }
         return result;
     }
-    public ByteArrayInputStream process(File file) throws DeserialisationException {
+
+    public ByteArrayInputStream process(File file) throws DeserialisationException, OperationCancelledException {
         ByteArrayInputStream result = null;
         try {
             ZipFile zipFile = new ZipFile(file);
-            Version version = null;
+            Version workVersion = null;
             ZipEntry metaZipEntry = zipFile.getEntry(Framework.META_WORK_ENTRY);
             if (metaZipEntry != null) {
-                version = extractVersion(zipFile.getInputStream(metaZipEntry));
+                workVersion = extractVersion(zipFile.getInputStream(metaZipEntry));
+            }
+            Version currentVersion = Info.getVersion();
+            if ((workVersion != null) && (currentVersion != null) && (currentVersion.compareTo(workVersion) < 0)) {
+                String msg = "Workcraft v" + currentVersion + " may incorrectly read a file produced by newer Workcraft v" + workVersion;
+                String msgFull = msg + ".\nProceed with loading of work file '" + file.getAbsolutePath() + "' anyway?";
+                boolean proceed = DialogUtils.showConfirmWarning(msgFull, "Open file", true);
+                if (!proceed) {
+                    throw new OperationCancelledException(msg);
+                }
             }
             FileInputStream fis = new FileInputStream(file);
-            result = process(fis, version);
+            result = process(fis, workVersion);
             zipFile.close();
         } catch (IOException e) {
             throw new DeserialisationException(e);
