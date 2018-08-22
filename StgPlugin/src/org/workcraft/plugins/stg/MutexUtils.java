@@ -128,12 +128,12 @@ public class MutexUtils {
         if ((model instanceof Stg) && (mutexes != null)) {
             Stg stg = (Stg) model;
             for (Mutex mutex: mutexes) {
-                resoreMutexPlace(stg, mutex);
+                restoreMutexPlace(stg, mutex);
             }
         }
     }
 
-    private static void resoreMutexPlace(Stg stg, Mutex mutex) {
+    private static void restoreMutexPlace(Stg stg, Mutex mutex) {
         if ((stg == null) || (mutex == null)) {
             return;
         }

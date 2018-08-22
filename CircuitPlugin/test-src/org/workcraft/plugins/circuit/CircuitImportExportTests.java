@@ -75,6 +75,13 @@ public class CircuitImportExportTests {
         testCircuitImportExport(workName, verilogName);
     }
 
+    @Test
+    public void testMutexCircuitImportExport() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "mutex.circuit.work");
+        String verilogName = PackageUtils.getPackagePath(getClass(), "mutex.circuit.v");
+        testCircuitImportExport(workName, verilogName);
+    }
+
     private void testCircuitImportExport(String workName, String verilogName) throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
