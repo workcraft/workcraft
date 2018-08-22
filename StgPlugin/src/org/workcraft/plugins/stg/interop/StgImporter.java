@@ -6,8 +6,10 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.shared.CommonDebugSettings;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.plugins.stg.jj.ParseException;
 import org.workcraft.plugins.stg.jj.StgParser;
 import org.workcraft.workspace.ModelEntry;
@@ -32,7 +34,9 @@ public class StgImporter implements Importer {
             } else {
                 parser.disable_tracing();
             }
-            return parser.parse();
+            Stg stg = parser.parse();
+            StgUtils.checkStg(stg, false);
+            return stg;
         } catch (FormatException | ParseException e) {
             throw new DeserialisationException(e);
         }

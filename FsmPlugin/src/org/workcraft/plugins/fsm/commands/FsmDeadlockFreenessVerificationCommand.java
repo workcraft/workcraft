@@ -9,6 +9,7 @@ import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SelectionHelper;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.fsm.Event;
@@ -51,11 +52,11 @@ public class FsmDeadlockFreenessVerificationCommand extends AbstractVerification
             deadlockStates.removeAll(finalDeadlockStates);
             String message = "The model has a deadlock.";
             if (!deadlockStates.isEmpty()) {
-                String stateStr = ReferenceHelper.getNodesAsString(fsm, deadlockStates, 50);
+                String stateStr = ReferenceHelper.getNodesAsString(fsm, deadlockStates, SizeHelper.getWrapLength());
                 message += "\n\nNon-final deadlock states: \n" + stateStr;
             }
             if (!finalDeadlockStates.isEmpty()) {
-                String stateStr = ReferenceHelper.getNodesAsString(fsm, finalDeadlockStates, 50);
+                String stateStr = ReferenceHelper.getNodesAsString(fsm, finalDeadlockStates, SizeHelper.getWrapLength());
                 message += "\n\nFinal deadlock states: \n" + stateStr;
             }
             message += "\n\nSelect deadlock states?\n";

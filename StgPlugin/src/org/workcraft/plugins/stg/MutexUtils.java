@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.ReferenceHelper;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.LogUtils;
@@ -37,7 +38,7 @@ public class MutexUtils {
             }
         }
         if (!problematicPlaces.isEmpty()) {
-            String problematicPlacesString = ReferenceHelper.getNodesAsString(stg, problematicPlaces, 50);
+            String problematicPlacesString = ReferenceHelper.getNodesAsString(stg, problematicPlaces, SizeHelper.getWrapLength());
             String msg = "The following mutex places may not be implementable by mutex:\n\n" +
                     problematicPlacesString + "\n\nProceed synthesis without these places anyways?";
             if (!DialogUtils.showConfirmError(msg, "Synthesis", false)) {

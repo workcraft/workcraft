@@ -9,10 +9,7 @@ import org.workcraft.plugins.mpsat.MpsatSynthesisParameters;
 import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisResultHandler;
 import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
-import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.MutexUtils;
-import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.*;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.WorkspaceEntry;
 /*
@@ -50,6 +47,9 @@ public abstract class MpsatAbstractSynthesisCommand extends AbstractSynthesisCom
     }
 
     private MpsatSynthesisResultHandler queueSynthesis(WorkspaceEntry we) {
+        if (!checkPrerequisites(we)) {
+            return null;
+        }
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         LinkedList<Mutex> mutexes = MutexUtils.getImplementableMutexes(stg);
         if (mutexes == null) {
@@ -64,6 +64,11 @@ public abstract class MpsatAbstractSynthesisCommand extends AbstractSynthesisCom
         MpsatSynthesisResultHandler monitor = new MpsatSynthesisResultHandler(task, mutexes);
         manager.queue(task, description, monitor);
         return monitor;
+    }
+
+    public boolean checkPrerequisites(WorkspaceEntry we) {
+        Stg stg = WorkspaceUtils.getAs(we, Stg.class);
+        return StgUtils.checkStg(stg, true);
     }
 
     private MpsatSynthesisParameters getSettings() {
