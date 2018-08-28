@@ -1,5 +1,8 @@
 package org.workcraft.util;
 
+import org.workcraft.dom.references.ReferenceHelper;
+import org.workcraft.dom.visual.SizeHelper;
+
 import java.util.Collection;
 
 public class LogUtils {
@@ -81,12 +84,23 @@ public class LogUtils {
     }
 
     public static String getTextWithRefs(String msg, Collection<String> refs) {
-        String str = String.join(", ", refs);
+        return getTextWithRefs(msg, refs, SizeHelper.getWrapLength());
+    }
+
+    public static String getTextWithRefs(String msg, Collection<String> refs, int len) {
         if (refs.size() == 1) {
-            msg += " '" + str + "'.";
+            msg += " '" + refs.iterator().next() + "'.";
         } else {
-            msg += "s:\n" + str;
+            msg += "s";
+            String str = String.join(", ", refs);
+            if (msg.length() + str.length() > len) {
+                msg += "\n";
+            } else {
+                msg += " ";
+            }
+            msg += ReferenceHelper.getReferencesAsString(refs, len);
         }
         return msg;
     }
+
 }

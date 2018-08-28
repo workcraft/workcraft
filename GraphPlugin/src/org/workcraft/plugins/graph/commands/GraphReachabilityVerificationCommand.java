@@ -9,6 +9,7 @@ import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SelectionHelper;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.tools.SelectionTool;
@@ -39,7 +40,7 @@ public class GraphReachabilityVerificationCommand extends AbstractVerificationCo
         if (unreachable.isEmpty()) {
             DialogUtils.showInfo("The graph does not have unreachable vertices.", TITLE);
         } else {
-            String refStr = ReferenceHelper.getNodesAsString(graph, unreachable, 50);
+            String refStr = ReferenceHelper.getNodesAsString(graph, unreachable, SizeHelper.getWrapLength());
             String msg = "The graph has unreachable vertices:\n" + refStr + "\n\nSelect unreachable vertices?";
             if (DialogUtils.showConfirmInfo(msg, TITLE, true)) {
                 final Framework framework = Framework.getInstance();

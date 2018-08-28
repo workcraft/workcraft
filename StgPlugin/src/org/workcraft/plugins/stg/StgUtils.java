@@ -14,6 +14,7 @@ import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.stg.interop.StgImporter;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 
@@ -35,7 +36,7 @@ public class StgUtils {
     public static final String XML_FILE_EXTENSION = ".xml";
 
     private static void replaceNamedTransition(Stg stg, NamedTransition oldTransition, NamedTransition newTransition) {
-        for (Node pred: stg.getPreset(oldTransition)) {
+        for (Node pred : stg.getPreset(oldTransition)) {
             try {
                 stg.connect(pred, newTransition);
             } catch (InvalidConnectionException e) {
@@ -43,7 +44,7 @@ public class StgUtils {
             }
         }
 
-        for (Node succ: stg.getPostset(oldTransition)) {
+        for (Node succ : stg.getPostset(oldTransition)) {
             try {
                 stg.connect(newTransition, succ);
             } catch (InvalidConnectionException e) {
@@ -64,7 +65,7 @@ public class StgUtils {
         newTransition.copyPosition(oldTransition);
         newTransition.copyStyle(oldTransition);
 
-        for (Node pred: stg.getPreset(oldTransition)) {
+        for (Node pred : stg.getPreset(oldTransition)) {
             try {
                 VisualConnection oldPredConnection = (VisualConnection) stg.getConnection(pred, oldTransition);
                 VisualConnection newPredConnection = null;
@@ -82,7 +83,7 @@ public class StgUtils {
             }
         }
 
-        for (Node succ: stg.getPostset(oldTransition)) {
+        for (Node succ : stg.getPostset(oldTransition)) {
             try {
                 VisualConnection oldSuccConnection = (VisualConnection) stg.getConnection(oldTransition, succ);
                 VisualConnection newSuccConnection = null;
@@ -156,19 +157,19 @@ public class StgUtils {
     }
 
     public static void restoreInterfaceSignals(Stg stg, Collection<String> inputSignals, Collection<String> outputSignals) {
-        for (String signal: stg.getSignalReferences()) {
+        for (String signal : stg.getSignalReferences()) {
             stg.setSignalType(signal, Signal.Type.INTERNAL);
         }
-        for (String inputSignal: inputSignals) {
+        for (String inputSignal : inputSignals) {
             stg.setSignalType(inputSignal, Signal.Type.INPUT);
         }
-        for (String outputSignal: outputSignals) {
+        for (String outputSignal : outputSignals) {
             stg.setSignalType(outputSignal, Signal.Type.OUTPUT);
         }
     }
 
     public static void convertInternalSignalsToDummies(Stg stg) {
-        for (SignalTransition transition: stg.getSignalTransitions(Signal.Type.INTERNAL)) {
+        for (SignalTransition transition : stg.getSignalTransitions(Signal.Type.INTERNAL)) {
             StgUtils.convertSignalToDummyTransition(stg, transition);
         }
     }
@@ -201,7 +202,7 @@ public class StgUtils {
 
     public static HashSet<SignalTransition> getEnabledSignalTransitions(StgModel stg) {
         HashSet<SignalTransition> result = new HashSet<>();
-        for (Transition transition: PetriUtils.getEnabledTransitions(stg)) {
+        for (Transition transition : PetriUtils.getEnabledTransitions(stg)) {
             if (transition instanceof SignalTransition) {
                 result.add((SignalTransition) transition);
             }
@@ -211,7 +212,7 @@ public class StgUtils {
 
     public static HashSet<String> getEnabledLocalSignals(StgModel stg) {
         HashSet<String> result = new HashSet<>();
-        for (SignalTransition transition: getEnabledSignalTransitions(stg)) {
+        for (SignalTransition transition : getEnabledSignalTransitions(stg)) {
             if ((transition.getSignalType() == Signal.Type.OUTPUT) || (transition.getSignalType() == Signal.Type.INTERNAL)) {
                 result.add(transition.getSignalName());
             }
@@ -221,7 +222,7 @@ public class StgUtils {
 
     public static HashSet<String> getEnabledSignals(StgModel stg) {
         HashSet<String> result = new HashSet<>();
-        for (SignalTransition transition: getEnabledSignalTransitions(stg)) {
+        for (SignalTransition transition : getEnabledSignalTransitions(stg)) {
             result.add(transition.getSignalName());
         }
         return result;
@@ -230,6 +231,7 @@ public class StgUtils {
     /**
      * Copy the given STG preserving the signal hierarchy and references. Note that
      * STG places are copied without their hierarchy and their names are not preserved.
+     *
      * @param stg an STG to be copied
      * @return a new STG with the same signal references
      */
@@ -237,7 +239,7 @@ public class StgUtils {
         Stg result = new Stg();
         Map<MathNode, MathNode> nodeMap = new HashMap<>();
         // Copy signal transitions with their hierarchy.
-        for (SignalTransition signalTransition: stg.getSignalTransitions()) {
+        for (SignalTransition signalTransition : stg.getSignalTransitions()) {
             String ref = stg.getNodeReference(signalTransition);
             SignalTransition newSignalTransition = result.createSignalTransition(ref, null);
             newSignalTransition.setSignalType(signalTransition.getSignalType());
@@ -245,20 +247,20 @@ public class StgUtils {
             nodeMap.put(signalTransition, newSignalTransition);
         }
         // Copy dummy transitions with their hierarchy.
-        for (DummyTransition dummyTransition: stg.getDummyTransitions()) {
+        for (DummyTransition dummyTransition : stg.getDummyTransitions()) {
             String ref = stg.getNodeReference(dummyTransition);
             DummyTransition newDummyTransition = result.createDummyTransition(ref, null);
             nodeMap.put(dummyTransition, newDummyTransition);
         }
         // Copy places WITHOUT their hierarchy -- implicit places cannot be copied (NOTE that implicit place ref in NOT C-style).
-        for (Place place: stg.getPlaces()) {
+        for (Place place : stg.getPlaces()) {
             StgPlace newPlace = result.createPlace();
             newPlace.setCapacity(place.getCapacity());
             newPlace.setTokens(place.getTokens());
             nodeMap.put(place, newPlace);
         }
         // Connect places and transitions.
-        for (Connection connection: stg.getConnections()) {
+        for (Connection connection : stg.getConnections()) {
             Node first = nodeMap.get(connection.getFirst());
             Node second = nodeMap.get(connection.getSecond());
             try {
@@ -284,7 +286,7 @@ public class StgUtils {
             visitedMarkings.add(curMarking);
             PetriUtils.setMarking(stg, curMarking);
             List<Transition> enabledTransitions = new ArrayList<>(PetriUtils.getEnabledTransitions(stg));
-            for (Transition transition: enabledTransitions) {
+            for (Transition transition : enabledTransitions) {
                 if (transition instanceof SignalTransition) {
                     SignalTransition signalTransition = (SignalTransition) transition;
                     String signalRef = stg.getSignalReference(signalTransition);
@@ -303,6 +305,58 @@ public class StgUtils {
         }
         PetriUtils.setMarking(stg, initialMarking);
         return result;
+    }
+
+    public static boolean checkStg(StgModel stg, boolean ask) {
+        String msg = "";
+        Set<String> hangingTransitions = new HashSet<>();
+        Set<String> unboundedTransitions = new HashSet<>();
+        for (Transition transition : stg.getTransitions()) {
+            if (stg.getPreset(transition).isEmpty()) {
+                String ref = stg.getNodeReference(transition);
+                if (stg.getPostset(transition).isEmpty()) {
+                    hangingTransitions.add(ref);
+                } else {
+                    unboundedTransitions.add(ref);
+                }
+            }
+        }
+        if (!hangingTransitions.isEmpty()) {
+            msg += LogUtils.getTextWithRefs("\n* Disconnected transition", hangingTransitions);
+        }
+        if (!unboundedTransitions.isEmpty()) {
+            msg += LogUtils.getTextWithRefs("\n* Empty preset transition", unboundedTransitions);
+        }
+
+        Set<String> hangingPlaces = new HashSet<>();
+        Set<String> deadPlaces = new HashSet<>();
+        for (Place place : stg.getPlaces()) {
+            if (stg.getPreset(place).isEmpty()) {
+                String ref = stg.getNodeReference(place);
+                if (stg.getPostset(place).isEmpty()) {
+                    hangingPlaces.add(ref);
+                } else if (place.getTokens() == 0) {
+                    deadPlaces.add(ref);
+                }
+            }
+        }
+        if (!hangingPlaces.isEmpty()) {
+            msg += LogUtils.getTextWithRefs("\n* Disconnected place", hangingPlaces);
+        }
+        if (!deadPlaces.isEmpty()) {
+            msg += LogUtils.getTextWithRefs("\n* Dead place", deadPlaces);
+        }
+
+        if (!msg.isEmpty()) {
+            msg = "The STG model has the following issues:" + msg;
+            if (ask) {
+                msg += "\n\n Proceed anyway?";
+                return DialogUtils.showConfirmWarning(msg, "Model validation", false);
+            } else {
+                DialogUtils.showWarning(msg);
+            }
+        }
+        return true;
     }
 
 }

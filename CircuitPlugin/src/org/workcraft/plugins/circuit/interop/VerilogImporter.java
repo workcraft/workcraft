@@ -18,6 +18,7 @@ import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
+import org.workcraft.plugins.circuit.commands.CircuitVerificationUtils;
 import org.workcraft.plugins.circuit.expression.Expression;
 import org.workcraft.plugins.circuit.expression.ExpressionUtils;
 import org.workcraft.plugins.circuit.expression.Literal;
@@ -90,7 +91,7 @@ public class VerilogImporter implements Importer {
     }
 
     public Circuit importCircuit(InputStream in) throws DeserialisationException {
-        return importCircuit(in, new LinkedList<Mutex>());
+        return importCircuit(in, new LinkedList<>());
     }
 
     public Circuit importCircuit(InputStream in, Collection<Mutex> mutexes) throws DeserialisationException {
@@ -179,6 +180,7 @@ public class VerilogImporter implements Importer {
         for (Assign assign: topModule.assigns) {
             createAssignGate(circuit, assign, wires);
         }
+        Mutex mutexModule = CircuitSettings.parseMutexData();
         Library library = null;
         for (Instance verilogInstance: topModule.instances) {
             Gate gate = createPrimitiveGate(verilogInstance);
@@ -192,6 +194,9 @@ public class VerilogImporter implements Importer {
             FunctionComponent component = null;
             if (gate != null) {
                 component = createLibraryGate(circuit, verilogInstance, wires, gate);
+            } else if (isMutexInstance(verilogInstance, mutexModule)) {
+                Mutex mutexInstance = instanceToMutex(verilogInstance, mutexModule);
+                component = createMutex(circuit, mutexInstance, mutexModule, wires);
             } else {
                 component = createBlackBox(circuit, verilogInstance, wires, modules);
             }
@@ -199,12 +204,60 @@ public class VerilogImporter implements Importer {
                 instanceComponentMap.put(verilogInstance, component);
             }
         }
-        insertMutexes(modules, mutexes, circuit, wires);
+        insertMutexes(mutexes, circuit, wires);
         createConnections(circuit, wires);
         setInitialState(circuit, wires, topModule.signalStates);
         setZeroDelayAttribute(instanceComponentMap);
         mergeGroups(circuit, topModule.groups, instanceComponentMap);
+        checkImportResult(circuit);
         return circuit;
+    }
+
+    private void checkImportResult(Circuit circuit) {
+        String msg = "";
+        if (circuit.getFunctionComponents().isEmpty()) {
+            msg += "has no components";
+        }
+        Set<String> hangingSignals = CircuitVerificationUtils.getHangingSignals(circuit);
+        if (!hangingSignals.isEmpty()) {
+            if (!msg.isEmpty()) {
+                msg += " and ";
+            }
+            msg += LogUtils.getTextWithRefs("hanging contact", hangingSignals);
+        }
+        if (!msg.isEmpty()) {
+            DialogUtils.showWarning("The imported circuit " + msg);
+        }
+    }
+
+    private boolean isMutexInstance(Instance instance, Mutex module) {
+        return (module != null) && (module.name != null) && module.name.equals(instance.moduleName);
+    }
+
+    private Mutex instanceToMutex(Instance instance, Mutex module) {
+        Signal r1 = getPinConnectedSignal(instance, module.r1.name, 0);
+        Signal g1 = getPinConnectedSignal(instance, module.g1.name, 1);
+        Signal r2 = getPinConnectedSignal(instance, module.r2.name, 2);
+        Signal g2 = getPinConnectedSignal(instance, module.g2.name, 3);
+        return new Mutex(instance.name, r1, g1, r2, g2);
+    }
+
+    private Signal getPinConnectedSignal(Instance instance, String portName, int portIndexIfNoPortName) {
+        Pin pin = null;
+        boolean useNamedConnections = true;
+        for (Pin connection : instance.connections) {
+            if (connection.name == null) {
+                useNamedConnections = false;
+                break;
+            } else if (portName.equals(connection.name)) {
+                pin = connection;
+                break;
+            }
+        }
+        if (!useNamedConnections && (portIndexIfNoPortName < instance.connections.size())) {
+            pin = instance.connections.get(portIndexIfNoPortName);
+        }
+        return pin == null ? null : new Signal(getWireName(pin), Signal.Type.INTERNAL);
     }
 
     private FunctionComponent createAssignGate(Circuit circuit, Assign assign, HashMap<String, Wire> wires) {
@@ -342,7 +395,7 @@ public class VerilogImporter implements Importer {
         Expression expression = null;
         try {
             expression = expressionParser.parseExpression();
-        } catch (org.workcraft.plugins.circuit.jj.expression.ParseException e1) {
+        } catch (org.workcraft.plugins.circuit.jj.expression.ParseException e) {
             LogUtils.logWarning("Could not parse assign expression '" + formula + "'.");
         }
         return expression;
@@ -529,20 +582,19 @@ public class VerilogImporter implements Importer {
         return component;
     }
 
-    private void insertMutexes(HashMap<String, Module> modules, Collection<Mutex> mutexes, Circuit circuit,
-            HashMap<String, Wire> wires) {
+    private void insertMutexes(Collection<Mutex> mutexes, Circuit circuit, HashMap<String, Wire> wires) {
         LinkedList<String> internalSignals = new LinkedList<>();
         if (!mutexes.isEmpty()) {
             Mutex moduleMutex = CircuitSettings.parseMutexData();
             if ((moduleMutex != null) && (moduleMutex.name != null)) {
-                for (Mutex instanceMutex: mutexes) {
+                for (Mutex instanceMutex : mutexes) {
                     if (instanceMutex.g1.type == Signal.Type.INTERNAL) {
                         internalSignals.add(instanceMutex.g1.name);
                     }
                     if (instanceMutex.g2.type == Signal.Type.INTERNAL) {
                         internalSignals.add(instanceMutex.g2.name);
                     }
-                    createMutex(circuit, instanceMutex, moduleMutex, wires, modules);
+                    createMutex(circuit, instanceMutex, moduleMutex, wires);
                     removeTemporaryOutput(circuit, wires, instanceMutex.r1);
                     removeTemporaryOutput(circuit, wires, instanceMutex.r2);
                 }
@@ -577,29 +629,28 @@ public class VerilogImporter implements Importer {
         }
     }
 
-    private FunctionComponent createMutex(Circuit circuit, Mutex instanceMutex, Mutex moduleMutex,
-            HashMap<String, Wire> wires, HashMap<String, Module> modules) {
+    private FunctionComponent createMutex(Circuit circuit, Mutex instance, Mutex module, HashMap<String, Wire> wires) {
         final FunctionComponent component = new FunctionComponent();
-        component.setModule(moduleMutex.name);
+        component.setModule(module.name);
         circuit.add(component);
         try {
-            circuit.setName(component, instanceMutex.name);
+            circuit.setName(component, instance.name);
         } catch (ArgumentException e) {
             String componentRef = circuit.getNodeReference(component);
-            LogUtils.logWarning("Cannot set name '" + instanceMutex.name + "' for component '" + componentRef + "'.");
+            LogUtils.logWarning("Cannot set name '" + instance.name + "' for component '" + componentRef + "'.");
         }
-        addMutexPin(circuit, component, moduleMutex.r1, instanceMutex.r1, wires);
-        FunctionContact g1Contact = addMutexPin(circuit, component, moduleMutex.g1, instanceMutex.g1, wires);
-        addMutexPin(circuit, component, moduleMutex.r2, instanceMutex.r2, wires);
-        FunctionContact g2Contact = addMutexPin(circuit, component, moduleMutex.g2, instanceMutex.g2, wires);
+        addMutexPin(circuit, component, module.r1, instance.r1, wires);
+        FunctionContact g1Contact = addMutexPin(circuit, component, module.g1, instance.g1, wires);
+        addMutexPin(circuit, component, module.r2, instance.r2, wires);
+        FunctionContact g2Contact = addMutexPin(circuit, component, module.g2, instance.g2, wires);
         try {
-            setMutexFunctions(circuit, component, g1Contact, moduleMutex.r1.name, moduleMutex.g2.name);
-            setMutexFunctions(circuit, component, g2Contact, moduleMutex.r2.name, moduleMutex.g1.name);
+            setMutexFunctions(circuit, component, g1Contact, module.r1.name, module.g2.name);
+            setMutexFunctions(circuit, component, g2Contact, module.r2.name, module.g1.name);
         } catch (org.workcraft.formula.jj.ParseException e) {
             throw new RuntimeException(e);
         }
-        setMutexGrant(circuit, instanceMutex.g1, wires);
-        setMutexGrant(circuit, instanceMutex.g2, wires);
+        setMutexGrant(circuit, instance.g1, wires);
+        setMutexGrant(circuit, instance.g2, wires);
         return component;
     }
 

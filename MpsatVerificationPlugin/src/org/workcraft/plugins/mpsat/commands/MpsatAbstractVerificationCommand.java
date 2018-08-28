@@ -7,9 +7,12 @@ import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
+import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public abstract class MpsatAbstractVerificationCommand extends AbstractVerificationCommand {
 
@@ -29,6 +32,9 @@ public abstract class MpsatAbstractVerificationCommand extends AbstractVerificat
     }
 
     private MpsatChainResultHandler queueVerification(WorkspaceEntry we) {
+        if (!checkPrerequisites(we)) {
+            return null;
+        }
         Framework framework = Framework.getInstance();
         TaskManager manager = framework.getTaskManager();
         MpsatParameters settings = getSettings(we);
@@ -37,6 +43,11 @@ public abstract class MpsatAbstractVerificationCommand extends AbstractVerificat
         MpsatChainResultHandler monitor = new MpsatChainResultHandler(we);
         manager.queue(task, description, monitor);
         return monitor;
+    }
+
+    public boolean checkPrerequisites(WorkspaceEntry we) {
+        Stg stg = WorkspaceUtils.getAs(we, Stg.class);
+        return StgUtils.checkStg(stg, true);
     }
 
     public abstract MpsatParameters getSettings(WorkspaceEntry we);

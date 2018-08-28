@@ -9,6 +9,7 @@ import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SelectionHelper;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.fsm.Event;
@@ -40,7 +41,7 @@ public class FsmReachabilityVerificationCommand extends AbstractVerificationComm
         if (unreachableStates.isEmpty()) {
             DialogUtils.showInfo("The model does not have unreachable states.", TITLE);
         } else {
-            String refStr = ReferenceHelper.getNodesAsString(fsm, unreachableStates, 50);
+            String refStr = ReferenceHelper.getNodesAsString(fsm, unreachableStates, SizeHelper.getWrapLength());
             String msg = "The model has unreachable state:\n" + refStr + "\n\nSelect unreachable states?\n";
             if (DialogUtils.showConfirmInfo(msg, TITLE, true)) {
                 final Framework framework = Framework.getInstance();

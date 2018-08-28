@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.references.ReferenceHelper;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.graph.GraphEditorPanel;
@@ -185,11 +186,11 @@ public class MpsatUtils {
             }
         }
         if (!problematicPlaces.isEmpty()) {
-            String problematicPlacesString = ReferenceHelper.getNodesAsString(stg, problematicPlaces, 50);
+            String problematicPlacesString = ReferenceHelper.getNodesAsString(stg, problematicPlaces, SizeHelper.getWrapLength());
             DialogUtils.showError("A mutex place must precede a pair of\n" +
                     "non-input transitions, each with a single trigger.\n\n" +
                     "Problematic places are:" +
-                    (problematicPlacesString.length() > 30 ? "\n" : " ") +
+                    (problematicPlacesString.length() > SizeHelper.getWrapLength() - 20 ? "\n" : " ") +
                     problematicPlacesString);
             return false;
         }

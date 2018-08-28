@@ -1,14 +1,10 @@
 package org.workcraft.plugins.circuit.commands;
 
-import org.jetbrains.annotations.NotNull;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.utils.LiteralsExtractor;
-import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.Contact;
-import org.workcraft.plugins.circuit.FunctionContact;
-import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
@@ -93,6 +89,14 @@ public class CircuitVerificationUtils {
             ArrayList<String> circuitOutputSignals = ReferenceHelper.getReferenceList(circuit, circuit.getOutputPorts());
             StgUtils.restoreInterfaceSignals(envStg, circuitInputSignals, circuitOutputSignals);
         }
+        // Check the circuit for hanging contacts
+        Set<String> hangingSignals = getHangingSignals(circuit);
+        if (!hangingSignals.isEmpty()) {
+            if (!msg.isEmpty()) {
+                msg += "\n\n";
+            }
+            msg += LogUtils.getTextWithRefs("Hanging contact", hangingSignals);
+        }
         // Check the circuit for unconstrained inputs and unused outputs
         Set<String> unconstrainedInputSignals = getUnconstrainedInputSignals(envStg, circuit);
         if (!unconstrainedInputSignals.isEmpty()) {
@@ -116,7 +120,23 @@ public class CircuitVerificationUtils {
         return true;
     }
 
-    @NotNull
+    public static Set<String> getHangingSignals(Circuit circuit) {
+        Set<String> hangingSignals = new HashSet<>();
+        for (FunctionContact contact : circuit.getFunctionContacts()) {
+            String signal = circuit.getNodeReference(contact);
+            if (contact.isDriver()) {
+                if (CircuitUtils.findDriven(circuit, contact, false).isEmpty()) {
+                    hangingSignals.add(signal);
+                }
+            } else {
+                if (CircuitUtils.findDriver(circuit, contact, false) == null) {
+                    hangingSignals.add(signal);
+                }
+            }
+        }
+        return hangingSignals;
+    }
+
     private static Set<String> getUnconstrainedInputSignals(Stg envStg, Circuit circuit) {
         Set<String> result = new HashSet();
         for (Contact contact : circuit.getInputPorts()) {
@@ -134,7 +154,6 @@ public class CircuitVerificationUtils {
         return result;
     }
 
-    @NotNull
     private static Set<String> getUnusedOutputSignals(Stg envStg, Circuit circuit) {
         Set<String> result = new HashSet();
         for (Contact contact : circuit.getOutputPorts()) {
