@@ -1,34 +1,16 @@
 package org.workcraft.plugins.petrify.tasks;
 
-import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.swing.SwingUtilities;
-
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractLayoutCommand;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.CircuitDescriptor;
-import org.workcraft.plugins.circuit.FunctionComponent;
-import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.VisualFunctionComponent;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.petrify.PetrifySettings;
-import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.StgDescriptor;
-import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.StgUtils;
+import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.tasks.AbstractExtendedResultHandler;
 import org.workcraft.tasks.Result;
@@ -38,6 +20,15 @@ import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import javax.swing.*;
+import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler<PetrifySynthesisOutput, WorkspaceEntry> {
 
@@ -163,7 +154,7 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
             System.out.println(verilogOutput);
         }
 
-        if (PetrifySettings.getOpenSynthesisResult() && (verilogOutput != null) && !verilogOutput.isEmpty()) {
+        if ((verilogOutput != null) && !verilogOutput.isEmpty()) {
             try {
                 ByteArrayInputStream verilogStream = new ByteArrayInputStream(verilogOutput.getBytes());
                 VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);

@@ -35,9 +35,6 @@ public class MpsatSynthesisSettingsTest {
         Assert.assertEquals(Config.toString(MpsatSynthesisSettings.getPrintStderr()),
                 framework.getConfigVar(prefix + ".printStderr", false));
 
-        Assert.assertEquals(Config.toString(MpsatSynthesisSettings.getOpenSynthesisResult()),
-                framework.getConfigVar(prefix + ".openSynthesisResult", false));
-
         Assert.assertEquals(Config.toString(MpsatSynthesisSettings.getOpenSynthesisStg()),
                 framework.getConfigVar(prefix + ".openSynthesisStg", false));
     }

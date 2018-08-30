@@ -1,11 +1,5 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import java.io.ByteArrayInputStream;
-import java.util.Collection;
-import java.util.HashSet;
-
-import javax.swing.SwingUtilities;
-
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractLayoutCommand;
 import org.workcraft.dom.visual.VisualModel;
@@ -22,11 +16,7 @@ import org.workcraft.plugins.mpsat.MpsatSynthesisMode;
 import org.workcraft.plugins.mpsat.MpsatSynthesisSettings;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
-import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.StgDescriptor;
-import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.StgUtils;
+import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.tasks.AbstractExtendedResultHandler;
 import org.workcraft.tasks.Result;
@@ -36,6 +26,11 @@ import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import javax.swing.*;
+import java.io.ByteArrayInputStream;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<MpsatSynthesisChainOutput, WorkspaceEntry> {
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
@@ -132,7 +127,7 @@ public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<M
             System.out.println();
         }
 
-        if (MpsatSynthesisSettings.getOpenSynthesisResult() && (verilogOutput != null) && (verilogOutput.length > 0)) {
+        if ((verilogOutput != null) && (verilogOutput.length > 0)) {
             try {
                 ByteArrayInputStream verilogStream = new ByteArrayInputStream(verilogOutput);
                 VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);

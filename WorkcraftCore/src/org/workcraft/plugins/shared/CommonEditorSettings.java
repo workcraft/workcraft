@@ -265,7 +265,7 @@ public class CommonEditorSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
-                this, "Open non-visual models (imported or transformed)",
+                this, "Open non-visual models (imported or converted)",
                 Boolean.class, true, false, false) {
             @Override
             protected void setter(CommonEditorSettings object, Boolean value) {
