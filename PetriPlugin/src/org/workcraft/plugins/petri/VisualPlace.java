@@ -1,16 +1,5 @@
 package org.workcraft.plugins.petri;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.event.KeyEvent;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.LinkedList;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
@@ -23,6 +12,13 @@ import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.petri.tools.PlaceDecoration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.LinkedList;
 
 @DisplayName("Place")
 @Hotkey(KeyEvent.VK_P)
@@ -99,24 +95,10 @@ public class VisualPlace extends VisualComponent {
             tokenCount = ((PlaceDecoration) d).getTokens();
             tokenColor = ((PlaceDecoration) d).getTokenColor();
         }
-        drawCapacity(r, place.getCapacity());
         drawTokens(r, tokenCount, singleTokenSize, multipleTokenSeparation, size, strokeWidth, tokenColor);
 
         drawLabelInLocalSpace(r);
         drawNameInLocalSpace(r);
-    }
-
-    public void drawCapacity(DrawRequest r, int capacity) {
-        if (capacity != 1) {
-            Graphics2D g = r.getGraphics();
-            Decoration d = r.getDecoration();
-            String capacityString = Integer.toString(capacity);
-            Font superFont = g.getFont().deriveFont((float) CommonVisualSettings.getNodeSize() / 2);
-            Rectangle2D rect = superFont.getStringBounds(capacityString, g.getFontRenderContext());
-            g.setFont(superFont);
-            g.setColor(Coloriser.colorise(getTokenColor(), d.getColorisation()));
-            g.drawString(capacityString, (float) (size / 3), (float) (size / 3 + rect.getHeight()));
-        }
     }
 
     @Override

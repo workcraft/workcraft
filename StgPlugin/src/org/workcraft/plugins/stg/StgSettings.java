@@ -33,7 +33,8 @@ public class StgSettings implements Settings {
 
     public StgSettings() {
         properties.add(new PropertyDeclaration<StgSettings, Integer>(
-                this, "Maximum number of core density map levels", Integer.class, true, false, false) {
+                this, "Maximum number of encoding core density map levels",
+                Integer.class, true, false, false) {
             protected void setter(StgSettings object, Integer value) {
                 setDensityMapLevelLimit(value);
             }
@@ -43,7 +44,8 @@ public class StgSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<StgSettings, String>(
-                this, "Signal low level suffix", String.class, true, false, false) {
+                this, "Signal low level suffix fro conversion to STG",
+                String.class, true, false, false) {
             protected void setter(StgSettings object, String value) {
                 if (value.length() < 2) {
                     signalLevelWarning();
@@ -60,7 +62,8 @@ public class StgSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<StgSettings, String>(
-                this, "Signal high level suffix", String.class, true, false, false) {
+                this, "Signal high level suffix for conversion to STG",
+                String.class, true, false, false) {
             protected void setter(StgSettings object, String value) {
                 if (value.length() < 2) {
                     signalLevelWarning();
@@ -77,7 +80,8 @@ public class StgSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<StgSettings, Boolean>(
-                this, "Group signals on conversion", Boolean.class, true, false, false) {
+                this, "Group signal places and transitions on conversion to STG",
+                Boolean.class, true, false, false) {
             protected void setter(StgSettings object, Boolean value) {
                 setGroupSignalConversion(value);
             }
@@ -88,7 +92,8 @@ public class StgSettings implements Settings {
 
 
         properties.add(new PropertyDeclaration<StgSettings, Boolean>(
-                this, "Show transition instance property", Boolean.class, true, false, false) {
+                this, "Show transition instance property",
+                Boolean.class, true, false, false) {
             protected void setter(StgSettings object, Boolean value) {
                 setShowTransitionInstance(value);
             }
