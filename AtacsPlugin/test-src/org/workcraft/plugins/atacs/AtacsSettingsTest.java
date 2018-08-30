@@ -37,9 +37,6 @@ public class AtacsSettingsTest {
 
         Assert.assertEquals(Config.toString(AtacsSettings.getPrintStderr()),
                 framework.getConfigVar(prefix + ".printStderr", false));
-
-        Assert.assertEquals(Config.toString(AtacsSettings.getOpenSynthesisResult()),
-                framework.getConfigVar(prefix + ".openSynthesisResult", false));
     }
 
 }

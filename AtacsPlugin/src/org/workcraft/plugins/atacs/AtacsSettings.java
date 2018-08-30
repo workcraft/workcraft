@@ -1,12 +1,13 @@
 package org.workcraft.plugins.atacs;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.workcraft.Config;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class AtacsSettings implements Settings {
 
@@ -19,7 +20,6 @@ public class AtacsSettings implements Settings {
     private static final String keyAdvancedMode = prefix + ".advancedMode";
     private static final String keyPrintStdout = prefix + ".printStdout";
     private static final String keyPrintStderr = prefix + ".printStderr";
-    private static final String keyOpenSynthesisResult = prefix + ".openSynthesisResult";
 
     private static final Boolean defaultShowInMenu = false;
     private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\ATACS\\atacs.exe" : "tools/ATACS/atacs";
@@ -27,7 +27,6 @@ public class AtacsSettings implements Settings {
     private static final Boolean defaultAdvancedMode = false;
     private static final Boolean defaultPrintStdout = true;
     private static final Boolean defaultPrintStderr = true;
-    private static final boolean defaultOpenSynthesisResult = true;
 
     private static Boolean showInMenu = defaultShowInMenu;
     private static String command = defaultCommand;
@@ -35,11 +34,11 @@ public class AtacsSettings implements Settings {
     private static Boolean advancedMode = defaultAdvancedMode;
     private static Boolean printStdout = defaultPrintStdout;
     private static Boolean printStderr = defaultPrintStderr;
-    private static boolean openSynthesisResult = defaultOpenSynthesisResult;
 
     public AtacsSettings() {
         properties.add(new PropertyDeclaration<AtacsSettings, Boolean>(
-                this, "Activate ATACS synthesis (experimental)", Boolean.class, true, false, false) {
+                this, "Activate ATACS synthesis (experimental)",
+                Boolean.class, true, false, false) {
             protected void setter(AtacsSettings object, Boolean value) {
                 setShowInMenu(value);
             }
@@ -49,7 +48,8 @@ public class AtacsSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<AtacsSettings, String>(
-                this, "ATACS command", String.class, true, false, false) {
+                this, "ATACS command",
+                String.class, true, false, false) {
             protected void setter(AtacsSettings object, String value) {
                 setCommand(value);
             }
@@ -59,7 +59,8 @@ public class AtacsSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<AtacsSettings, String>(
-                this, "Additional parameters", String.class, true, false, false) {
+                this, "Additional parameters",
+                String.class, true, false, false) {
             protected void setter(AtacsSettings object, String value) {
                 setArgs(value);
             }
@@ -69,7 +70,8 @@ public class AtacsSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<AtacsSettings, Boolean>(
-                this, "Edit additional parameters before every call", Boolean.class, true, false, false) {
+                this, "Edit additional parameters before every call",
+                Boolean.class, true, false, false) {
             protected void setter(AtacsSettings object, Boolean value) {
                 setAdvancedMode(value);
             }
@@ -79,7 +81,8 @@ public class AtacsSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<AtacsSettings, Boolean>(
-                this, "Output stdout", Boolean.class, true, false, false) {
+                this, "Output stdout",
+                Boolean.class, true, false, false) {
             protected void setter(AtacsSettings object, Boolean value) {
                 setPrintStdout(value);
             }
@@ -89,22 +92,13 @@ public class AtacsSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<AtacsSettings, Boolean>(
-                this, "Output stderr", Boolean.class, true, false, false) {
+                this, "Output stderr",
+                Boolean.class, true, false, false) {
             protected void setter(AtacsSettings object, Boolean value) {
                 setPrintStderr(value);
             }
             protected Boolean getter(AtacsSettings object) {
                 return getPrintStderr();
-            }
-        });
-
-        properties.add(new PropertyDeclaration<AtacsSettings, Boolean>(
-                this, "Open synthesis result as Digital Circuit", Boolean.class, true, false, false) {
-            protected void setter(AtacsSettings object, Boolean value) {
-                setOpenSynthesisResult(value);
-            }
-            protected Boolean getter(AtacsSettings object) {
-                return getOpenSynthesisResult();
             }
         });
     }
@@ -122,7 +116,6 @@ public class AtacsSettings implements Settings {
         setAdvancedMode(config.getBoolean(keyAdvancedMode, defaultAdvancedMode));
         setPrintStdout(config.getBoolean(keyPrintStdout, defaultPrintStdout));
         setPrintStderr(config.getBoolean(keyPrintStderr, defaultPrintStderr));
-        setOpenSynthesisResult(config.getBoolean(keyOpenSynthesisResult, defaultOpenSynthesisResult));
     }
 
     @Override
@@ -133,7 +126,6 @@ public class AtacsSettings implements Settings {
         config.setBoolean(keyAdvancedMode, getAdvancedMode());
         config.setBoolean(keyPrintStdout, getPrintStdout());
         config.setBoolean(keyPrintStderr, getPrintStderr());
-        config.setBoolean(keyOpenSynthesisResult, getOpenSynthesisResult());
     }
 
     @Override
@@ -192,14 +184,6 @@ public class AtacsSettings implements Settings {
 
     public static void setPrintStderr(Boolean value) {
         printStderr = value;
-    }
-
-    public static boolean getOpenSynthesisResult() {
-        return openSynthesisResult;
-    }
-
-    public static void setOpenSynthesisResult(boolean value) {
-        openSynthesisResult = value;
     }
 
 }

@@ -1,12 +1,13 @@
 package org.workcraft.plugins.petrify;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.workcraft.Config;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class PetrifySettings implements Settings {
 
@@ -21,34 +22,32 @@ public class PetrifySettings implements Settings {
     private static final String keyWriteEqn = prefix + ".writeEqn";
     private static final String keyPrintStdout = prefix + ".printStdout";
     private static final String keyPrintStderr = prefix + ".printStderr";
-    private static final String keyOpenSynthesisResult = prefix + ".openSynthesisResult";
     private static final String keyOpenSynthesisStg = prefix + ".openSynthesisStg";
 
     private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\PetrifyTools\\petrify.exe" : "tools/PetrifyTools/petrify";
     private static final String defaultArgs = "";
-    private static final Boolean defaultAdvancedMode = false;
-    private static final Boolean defaultWriteLog = true;
-    private static final Boolean defaultWriteStg = false;
-    private static final Boolean defaultWriteEqn = false;
-    private static final Boolean defaultPrintStdout = true;
-    private static final Boolean defaultPrintStderr = true;
-    private static final boolean defaultOpenSynthesisResult = true;
+    private static final boolean defaultAdvancedMode = false;
+    private static final boolean defaultWriteLog = true;
+    private static final boolean defaultWriteStg = false;
+    private static final boolean defaultWriteEqn = false;
+    private static final boolean defaultPrintStdout = true;
+    private static final boolean defaultPrintStderr = true;
     private static final boolean defaultOpenSynthesisStg = false;
 
     private static String command = defaultCommand;
     private static String args = defaultArgs;
-    private static Boolean advancedMode = defaultAdvancedMode;
-    private static Boolean writeLog = defaultWriteLog;
-    private static Boolean writeStg = defaultWriteStg;
-    private static Boolean writeEqn = defaultWriteEqn;
-    private static Boolean printStdout = defaultPrintStdout;
-    private static Boolean printStderr = defaultPrintStderr;
-    private static boolean openSynthesisResult = defaultOpenSynthesisResult;
+    private static boolean advancedMode = defaultAdvancedMode;
+    private static boolean writeLog = defaultWriteLog;
+    private static boolean writeStg = defaultWriteStg;
+    private static boolean writeEqn = defaultWriteEqn;
+    private static boolean printStdout = defaultPrintStdout;
+    private static boolean printStderr = defaultPrintStderr;
     private static boolean openSynthesisStg = defaultOpenSynthesisStg;
 
     public PetrifySettings() {
         properties.add(new PropertyDeclaration<PetrifySettings, String>(
-                this, "Petrify command", String.class, true, false, false) {
+                this, "Petrify command",
+                String.class, true, false, false) {
             protected void setter(PetrifySettings object, String value) {
                 setCommand(value);
             }
@@ -58,7 +57,8 @@ public class PetrifySettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<PetrifySettings, String>(
-                this, "Additional parameters", String.class, true, false, false) {
+                this, "Additional parameters",
+                String.class, true, false, false) {
             protected void setter(PetrifySettings object, String value) {
                 setArgs(value);
             }
@@ -68,7 +68,8 @@ public class PetrifySettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
-                this, "Edit additional parameters before every call", Boolean.class, true, false, false) {
+                this, "Edit additional parameters before every call",
+                Boolean.class, true, false, false) {
             protected void setter(PetrifySettings object, Boolean value) {
                 setAdvancedMode(value);
             }
@@ -78,7 +79,8 @@ public class PetrifySettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
-                this, "Write log file (" + PetrifyUtils.LOG_FILE_NAME + ")", Boolean.class, true, false, false) {
+                this, "Write log file (" + PetrifyUtils.LOG_FILE_NAME + ")",
+                Boolean.class, true, false, false) {
             protected void setter(PetrifySettings object, Boolean value) {
                 setWriteLog(value);
             }
@@ -88,7 +90,8 @@ public class PetrifySettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
-                this, "Write STG file (" + PetrifyUtils.STG_FILE_NAME + ")", Boolean.class, true, false, false) {
+                this, "Write STG file (" + PetrifyUtils.STG_FILE_NAME + ")",
+                Boolean.class, true, false, false) {
             protected void setter(PetrifySettings object, Boolean value) {
                 setWriteStg(value);
             }
@@ -98,7 +101,8 @@ public class PetrifySettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
-                this, "Write EQN file (" + PetrifyUtils.EQN_FILE_NAME + ")", Boolean.class, true, false, false) {
+                this, "Write EQN file (" + PetrifyUtils.EQN_FILE_NAME + ")",
+                Boolean.class, true, false, false) {
             protected void setter(PetrifySettings object, Boolean value) {
                 setWriteEqn(value);
             }
@@ -108,7 +112,8 @@ public class PetrifySettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
-                this, "Output stdout", Boolean.class, true, false, false) {
+                this, "Output stdout",
+                Boolean.class, true, false, false) {
             protected void setter(PetrifySettings object, Boolean value) {
                 setPrintStdout(value);
             }
@@ -118,7 +123,8 @@ public class PetrifySettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
-                this, "Output stderr", Boolean.class, true, false, false) {
+                this, "Output stderr",
+                Boolean.class, true, false, false) {
             protected void setter(PetrifySettings object, Boolean value) {
                 setPrintStderr(value);
             }
@@ -128,17 +134,8 @@ public class PetrifySettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
-                this, "Open synthesis result as Digital Circuit", Boolean.class, true, false, false) {
-            protected void setter(PetrifySettings object, Boolean value) {
-                setOpenSynthesisResult(value);
-            }
-            protected Boolean getter(PetrifySettings object) {
-                return getOpenSynthesisResult();
-            }
-        });
-
-        properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
-                this, "Open resulting STG if new signals are inserted", Boolean.class, true, false, false) {
+                this, "Open resulting STG if new signals are inserted",
+                Boolean.class, true, false, false) {
             protected void setter(PetrifySettings object, Boolean value) {
                 setOpenSynthesisStg(value);
             }
@@ -163,7 +160,6 @@ public class PetrifySettings implements Settings {
         setWriteEqn(config.getBoolean(keyWriteEqn, defaultWriteEqn));
         setPrintStdout(config.getBoolean(keyPrintStdout, defaultPrintStdout));
         setPrintStderr(config.getBoolean(keyPrintStderr, defaultPrintStderr));
-        setOpenSynthesisResult(config.getBoolean(keyOpenSynthesisResult, defaultOpenSynthesisResult));
         setOpenSynthesisStg(config.getBoolean(keyOpenSynthesisStg, defaultOpenSynthesisStg));
     }
 
@@ -177,7 +173,6 @@ public class PetrifySettings implements Settings {
         config.setBoolean(keyWriteEqn, getWriteEqn());
         config.setBoolean(keyPrintStdout, getPrintStdout());
         config.setBoolean(keyPrintStderr, getPrintStderr());
-        config.setBoolean(keyOpenSynthesisResult, getOpenSynthesisResult());
         config.setBoolean(keyOpenSynthesisStg, getOpenSynthesisStg());
     }
 
@@ -253,14 +248,6 @@ public class PetrifySettings implements Settings {
 
     public static void setPrintStderr(Boolean value) {
         printStderr = value;
-    }
-
-    public static boolean getOpenSynthesisResult() {
-        return openSynthesisResult;
-    }
-
-    public static void setOpenSynthesisResult(boolean value) {
-        openSynthesisResult = value;
     }
 
     public static boolean getOpenSynthesisStg() {

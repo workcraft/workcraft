@@ -7,7 +7,6 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.plugins.atacs.AtacsSettings;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
@@ -75,7 +74,7 @@ public class AtacsSynthesisResultHandler extends AbstractExtendedResultHandler<A
             System.out.println(verilogOutput);
         }
 
-        if (AtacsSettings.getOpenSynthesisResult() && (verilogOutput != null) && !verilogOutput.isEmpty()) {
+        if ((verilogOutput != null) && !verilogOutput.isEmpty()) {
             try {
                 ByteArrayInputStream verilogStream = new ByteArrayInputStream(verilogOutput.getBytes());
                 VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);

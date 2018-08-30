@@ -44,9 +44,6 @@ public class PetrifySettingsTest {
         Assert.assertEquals(Config.toString(PetrifySettings.getPrintStderr()),
                 framework.getConfigVar(prefix + ".printStderr", false));
 
-        Assert.assertEquals(Config.toString(PetrifySettings.getOpenSynthesisResult()),
-                framework.getConfigVar(prefix + ".openSynthesisResult", false));
-
         Assert.assertEquals(Config.toString(PetrifySettings.getOpenSynthesisStg()),
                 framework.getConfigVar(prefix + ".openSynthesisStg", false));
     }
