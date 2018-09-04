@@ -18,7 +18,7 @@ public class SizeHelper {
 
     private static final double FONT_SIZE = CommonVisualSettings.getFontSize();
     private static final double ICON_SCALE_THRESHOLD = 0.2;
-    private static final int WRAP_LENGTH = 80;
+    private static final int WRAP_LENGTH = 100;
 
     public static int getWrapLength() {
         return WRAP_LENGTH;

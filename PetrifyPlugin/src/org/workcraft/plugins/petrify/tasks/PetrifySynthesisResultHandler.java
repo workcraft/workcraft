@@ -10,8 +10,8 @@ import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.petrify.PetrifySettings;
-import org.workcraft.plugins.stg.*;
-import org.workcraft.plugins.stg.interop.StgImporter;
+import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.tasks.AbstractExtendedResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -19,7 +19,6 @@ import org.workcraft.util.DialogUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
 
 import javax.swing.*;
 import java.io.ByteArrayInputStream;
@@ -75,20 +74,21 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
             System.out.println(log);
         }
 
-        handleStgSynthesisOutput(petrifyOutput);
-
         String equations = petrifyOutput.getEquation();
         if ((equations != null) && !equations.isEmpty()) {
             LogUtils.logInfo("Petrify synthesis result in EQN format:");
             System.out.println(equations);
         }
 
+        // Open STG if new signals are inserted BEFORE importing the Verilog.
+        handleStgSynthesisOutput(petrifyOutput);
+
         WorkspaceEntry result = handleVerilogSynthesisOutput(petrifyOutput);
 
         // Report inserted CSC signals and unmapped signals AFTER importing the Verilog, so the circuit is visible.
         checkNewSignals(petrifyOutput);
         if (technologyMapping) {
-            checkUnmappedSignals(result);
+            CircuitUtils.checkUnmappedSignals(result);
         }
 
         return result;
@@ -96,54 +96,28 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
 
     private void checkNewSignals(PetrifySynthesisOutput petrifyOutput) {
         String errorMessage = petrifyOutput.getStderrString();
-        List<String> signals = new ArrayList<>();
-        Matcher matcher = patternAddingStateSignal.matcher(errorMessage);
-        while (matcher.find()) {
-            signals.add(matcher.group(1));
-        }
-        if (!signals.isEmpty()) {
-            String msg = "Petrify automatically resolved CSC conflicts by inserting new signal";
-            DialogUtils.showInfo(LogUtils.getTextWithRefs(msg, signals));
+        List<String> stateSignals = getMatchedSignals(errorMessage, patternAddingStateSignal);
+        if (!stateSignals.isEmpty()) {
+            String msg = LogUtils.getTextWithRefs(
+                    "CSC conflicts are automatically resolved by inserting signal", stateSignals);
+            DialogUtils.showInfo(msg);
         }
     }
 
-    private void checkUnmappedSignals(WorkspaceEntry dstWe) {
-        Circuit circuit = WorkspaceUtils.getAs(dstWe, Circuit.class);
-        List<String> signals = new ArrayList<>();
-        for (FunctionComponent component: circuit.getFunctionComponents()) {
-            if (!component.isMapped()) {
-                signals.add(circuit.getNodeReference(component));
-            }
+    private List<String> getMatchedSignals(String errorMessage, Pattern pattern) {
+        List<String> result = new ArrayList<>();
+        Matcher matcher = pattern.matcher(errorMessage);
+        while (matcher.find()) {
+            result.add(matcher.group(1));
         }
-        if (!signals.isEmpty()) {
-            String signalNames = String.join(", ", signals);
-            String msg = "Petrify did not map implementation of signal" +
-                    (signals.size() > 1 ? "s: " + signalNames : " '" + signalNames + "'");
-            DialogUtils.showWarning(msg);
-        }
+        return result;
     }
 
     private WorkspaceEntry handleStgSynthesisOutput(PetrifySynthesisOutput petrifyOutput) {
-        WorkspaceEntry dstWe = null;
-        String dstOutput = petrifyOutput.getStg();
-        if (PetrifySettings.getOpenSynthesisStg() && (dstOutput != null) && !dstOutput.isEmpty()) {
-            Stg srcStg = WorkspaceUtils.getAs(we, Stg.class);
-            try {
-                ByteArrayInputStream dstStream = new ByteArrayInputStream(dstOutput.getBytes());
-                StgModel dstStg = new StgImporter().importStg(dstStream);
-                if (StgUtils.isSameSignals(srcStg, dstStg)) {
-                    LogUtils.logInfo("No new signals are inserted in the STG");
-                } else {
-                    LogUtils.logInfo("New signals are inserted in the STG");
-                    ModelEntry dstMe = new ModelEntry(new StgDescriptor(), dstStg);
-                    Path<String> path = we.getWorkspacePath();
-                    dstWe = Framework.getInstance().createWork(dstMe, path);
-                }
-            } catch (final DeserialisationException e) {
-                throw new RuntimeException(e);
-            }
+        if (PetrifySettings.getOpenSynthesisStg()) {
+            return StgUtils.createStgIfNewSignals(we, petrifyOutput.getStg().getBytes());
         }
-        return dstWe;
+        return null;
     }
 
     private WorkspaceEntry handleVerilogSynthesisOutput(PetrifySynthesisOutput petrifyOutput) {
