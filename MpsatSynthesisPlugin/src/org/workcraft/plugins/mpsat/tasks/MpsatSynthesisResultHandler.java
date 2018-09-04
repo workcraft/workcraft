@@ -6,18 +6,15 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.CircuitDescriptor;
-import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.VisualFunctionComponent;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.mpsat.MpsatSynthesisMode;
 import org.workcraft.plugins.mpsat.MpsatSynthesisSettings;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
-import org.workcraft.plugins.stg.*;
-import org.workcraft.plugins.stg.interop.StgImporter;
+import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.tasks.AbstractExtendedResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -25,7 +22,6 @@ import org.workcraft.util.DialogUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
 
 import javax.swing.*;
 import java.io.ByteArrayInputStream;
@@ -60,16 +56,16 @@ public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<M
         WorkspaceEntry synthResult = null;
         switch (mpsatMode) {
         case COMPLEX_GATE_IMPLEMENTATION:
-            synthResult = handleSynthesisOutput(mpsatOutput, false, RenderType.GATE);
+            synthResult = handleSynthesisOutput(mpsatOutput, false, RenderType.GATE, false);
             break;
         case GENERALISED_CELEMENT_IMPLEMENTATION:
-            synthResult = handleSynthesisOutput(mpsatOutput, true, RenderType.BOX);
+            synthResult = handleSynthesisOutput(mpsatOutput, true, RenderType.BOX, false);
             break;
         case STANDARD_CELEMENT_IMPLEMENTATION:
-            synthResult = handleSynthesisOutput(mpsatOutput, true, RenderType.GATE);
+            synthResult = handleSynthesisOutput(mpsatOutput, true, RenderType.GATE, false);
             break;
         case TECH_MAPPING:
-            synthResult = handleSynthesisOutput(mpsatOutput, false, RenderType.GATE);
+            synthResult = handleSynthesisOutput(mpsatOutput, false, RenderType.GATE, true);
             break;
         default:
             DialogUtils.showWarning("MPSat synthesis mode \'" + mpsatMode.getArgument() + "\' is not (yet) supported.");
@@ -79,41 +75,32 @@ public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<M
     }
 
     private WorkspaceEntry handleSynthesisOutput(MpsatSynthesisOutput mpsatOutput,
-            boolean sequentialAssign, RenderType renderType) {
+            boolean sequentialAssign, RenderType renderType, boolean technologyMapping) {
 
         final String log = mpsatOutput.getStdoutString();
         if (!log.isEmpty()) {
             System.out.println(log);
             System.out.println();
         }
+
+        // Open STG if new signals are inserted BEFORE importing the Verilog.
         handleStgSynthesisOutput(mpsatOutput);
-        return handleVerilogSynthesisOutput(mpsatOutput, sequentialAssign, renderType);
+
+        WorkspaceEntry result = handleVerilogSynthesisOutput(mpsatOutput, sequentialAssign, renderType);
+
+        // Report unmapped signals AFTER importing the Verilog, so the circuit is visible.
+        if (technologyMapping) {
+            CircuitUtils.checkUnmappedSignals(result);
+        }
+
+        return result;
     }
 
     private WorkspaceEntry handleStgSynthesisOutput(MpsatSynthesisOutput mpsatOutput) {
-        WorkspaceEntry dstWe = null;
         if (MpsatSynthesisSettings.getOpenSynthesisStg()) {
-            byte[] dstOutput = mpsatOutput.getStgOutput();
-            if (dstOutput != null) {
-                WorkspaceEntry srcWe = task.getWorkspaceEntry();
-                Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
-                try {
-                    ByteArrayInputStream dstStream = new ByteArrayInputStream(dstOutput);
-                    StgModel dstStg = new StgImporter().importStg(dstStream);
-                    if (StgUtils.isSameSignals(srcStg, dstStg)) {
-                        LogUtils.logInfo("No new signals are inserted in the STG");
-                    } else {
-                        LogUtils.logInfo("New signals are inserted in the STG");
-                        ModelEntry dstMe = new ModelEntry(new StgDescriptor(), dstStg);
-                        Path<String> path = srcWe.getWorkspacePath();
-                        dstWe = Framework.getInstance().createWork(dstMe, path);
-                    }
-                } catch (final DeserialisationException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+            return StgUtils.createStgIfNewSignals(task.getWorkspaceEntry(), mpsatOutput.getStgOutput());
         }
-        return dstWe;
+        return null;
     }
 
     private WorkspaceEntry handleVerilogSynthesisOutput(MpsatSynthesisOutput mpsatOutput,

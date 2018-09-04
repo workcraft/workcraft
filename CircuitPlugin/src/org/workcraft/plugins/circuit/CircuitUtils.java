@@ -17,8 +17,11 @@ import org.workcraft.formula.utils.BubbledLiteralsExtractor;
 import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.stg.Signal;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 import java.util.*;
 
@@ -559,6 +562,22 @@ public class CircuitUtils {
             }
         }
         return result;
+    }
+
+    public static boolean checkUnmappedSignals(WorkspaceEntry dstWe) {
+        Circuit circuit = WorkspaceUtils.getAs(dstWe, Circuit.class);
+        List<String> signals = new ArrayList<>();
+        for (FunctionComponent component: circuit.getFunctionComponents()) {
+            if (!component.isMapped()) {
+                signals.add(circuit.getNodeReference(component));
+            }
+        }
+        if (!signals.isEmpty()) {
+            String msg = LogUtils.getTextWithRefs("Technology mapping failed to implement signal", signals);
+            DialogUtils.showWarning(msg);
+            return false;
+        }
+        return true;
     }
 
 }

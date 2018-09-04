@@ -91,7 +91,7 @@ public class LogUtils {
         if (refs.size() == 1) {
             msg += " '" + refs.iterator().next() + "'.";
         } else {
-            msg += "s";
+            msg += "s:";
             String str = String.join(", ", refs);
             if (msg.length() + str.length() > len) {
                 msg += "\n";

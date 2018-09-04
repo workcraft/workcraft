@@ -9,6 +9,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.petri.PetriUtils;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
@@ -17,7 +18,10 @@ import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -117,20 +121,6 @@ public class StgUtils {
         return signalTransition;
     }
 
-    public static VisualDummyTransition convertDummyToDummyWithouInstance(VisualStg stg, VisualDummyTransition dummyTransition) {
-        DummyTransition mathDummyTransition = dummyTransition.getReferencedTransition();
-        Stg mathStg = (Stg) stg.getMathModel();
-        VisualDummyTransition newDummyTransition;
-        if (mathStg.getInstanceNumber(mathDummyTransition) == 0) {
-            newDummyTransition = dummyTransition;
-        } else {
-            Container container = (Container) dummyTransition.getParent();
-            newDummyTransition = stg.createVisualDummyTransition(null, container);
-            replaceNamedTransition(stg, dummyTransition, newDummyTransition);
-        }
-        return newDummyTransition;
-    }
-
     // Load STG model from .work or .g file
     public static Stg loadStg(File file) {
         Stg result = null;
@@ -174,16 +164,49 @@ public class StgUtils {
         }
     }
 
-    public static boolean isSameSignals(StgModel srcStg, StgModel dstStg) {
+    public static Set<String> getNewSignals(StgModel srcStg, StgModel dstStg) {
+        Set<String> result = new HashSet<>();
+
         Set<String> srcInputs = srcStg.getSignalReferences(Signal.Type.INPUT);
-        Set<String> srcOutputs = srcStg.getSignalReferences(Signal.Type.OUTPUT);
-        Set<String> srcInternal = srcStg.getSignalReferences(Signal.Type.INTERNAL);
-
         Set<String> dstInputs = dstStg.getSignalReferences(Signal.Type.INPUT);
-        Set<String> dstOutputs = dstStg.getSignalReferences(Signal.Type.OUTPUT);
-        Set<String> dstInternal = dstStg.getSignalReferences(Signal.Type.INTERNAL);
+        dstInputs.removeAll(srcInputs);
+        result.addAll(dstInputs);
 
-        return srcInputs.equals(dstInputs) && srcOutputs.equals(dstOutputs) && srcInternal.equals(dstInternal);
+        Set<String> srcOutputs = srcStg.getSignalReferences(Signal.Type.OUTPUT);
+        Set<String> dstOutputs = dstStg.getSignalReferences(Signal.Type.OUTPUT);
+        dstOutputs.removeAll(srcOutputs);
+        result.addAll(dstOutputs);
+
+        Set<String> srcInternal = srcStg.getSignalReferences(Signal.Type.INTERNAL);
+        Set<String> dstInternal = dstStg.getSignalReferences(Signal.Type.INTERNAL);
+        dstInternal.removeAll(srcInternal);
+        result.addAll(dstInternal);
+
+        return result;
+    }
+
+    public static WorkspaceEntry createStgIfNewSignals(WorkspaceEntry srcWe, byte[] dstOutput) {
+        WorkspaceEntry dstWe = null;
+        if (dstOutput != null) {
+            Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
+            try {
+                ByteArrayInputStream dstStream = new ByteArrayInputStream(dstOutput);
+                StgModel dstStg = new StgImporter().importStg(dstStream);
+                Set<String> newSignals = getNewSignals(srcStg, dstStg);
+                if (newSignals.isEmpty()) {
+                    LogUtils.logInfo("No new signals are inserted in the STG");
+                } else {
+                    String msg = LogUtils.getTextWithRefs("STG modified by inserting new signal", newSignals);
+                    LogUtils.logInfo(msg);
+                    ModelEntry dstMe = new ModelEntry(new StgDescriptor(), dstStg);
+                    Path<String> path = srcWe.getWorkspacePath();
+                    dstWe = Framework.getInstance().createWork(dstMe, path);
+                }
+            } catch (final DeserialisationException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return dstWe;
     }
 
     public static StgModel importStg(File file) {
