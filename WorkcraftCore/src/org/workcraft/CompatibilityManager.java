@@ -111,8 +111,8 @@ public class CompatibilityManager {
         if (CommonDebugSettings.getVerboseCompatibilityManager()
                 && (message != null) && !line.equals(newline)) {
             LogUtils.logInfo("Compatibility management: " + message);
-            LogUtils.logInfo("  old: " + replacement.getKey());
-            LogUtils.logInfo("  new: " + replacement.getValue());
+            LogUtils.logInfo("  old: " + line);
+            LogUtils.logInfo("  new: " + newline);
         }
         return newline;
     }

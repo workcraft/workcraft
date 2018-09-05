@@ -6,8 +6,8 @@ import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.observation.PropertyChangedEvent;
 
 @DisplayName("Transition")
-@VisualClass(org.workcraft.plugins.dtd.VisualSignalTransition.class)
-public class SignalTransition extends SignalEvent {
+@VisualClass(VisualTransitionEvent.class)
+public class TransitionEvent extends Event {
 
     public static final String PROPERTY_DIRECTION = "Direction";
 

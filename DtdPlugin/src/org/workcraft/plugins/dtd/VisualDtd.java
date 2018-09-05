@@ -29,9 +29,9 @@ public class VisualDtd extends AbstractVisualModel {
 
     public class SignalEvent {
         public final VisualConnection beforeLevel;
-        public final VisualSignalTransition edge;
+        public final VisualTransitionEvent edge;
         public final VisualConnection afterLevel;
-        SignalEvent(VisualConnection beforeLevel, VisualSignalTransition edge, VisualConnection afterLevel) {
+        SignalEvent(VisualConnection beforeLevel, VisualTransitionEvent edge, VisualConnection afterLevel) {
             this.beforeLevel = beforeLevel;
             this.edge = edge;
             this.afterLevel = afterLevel;
@@ -44,12 +44,12 @@ public class VisualDtd extends AbstractVisualModel {
 
     public class SignalPulse {
         public final VisualConnection beforeLevel;
-        public final VisualSignalTransition leadEdge;
+        public final VisualTransitionEvent leadEdge;
         public final VisualConnection level;
-        public final VisualSignalTransition trailEdge;
+        public final VisualTransitionEvent trailEdge;
         public final VisualConnection afterLevel;
-        SignalPulse(VisualConnection beforeLevel, VisualSignalTransition leadEdge,
-                VisualConnection level, VisualSignalTransition trailEdge, VisualConnection afterLevel) {
+        SignalPulse(VisualConnection beforeLevel, VisualTransitionEvent leadEdge,
+                VisualConnection level, VisualTransitionEvent trailEdge, VisualConnection afterLevel) {
             this.beforeLevel = beforeLevel;
             this.leadEdge = leadEdge;
             this.level = level;
@@ -81,18 +81,18 @@ public class VisualDtd extends AbstractVisualModel {
             throw new InvalidConnectionException("Connection already exists.");
         }
 
-        if ((first instanceof VisualSignalTransition) && (second instanceof VisualSignalTransition)) {
-            VisualSignalTransition firstTransition = (VisualSignalTransition) first;
-            VisualSignalTransition secondTransition = (VisualSignalTransition) second;
+        if ((first instanceof VisualTransitionEvent) && (second instanceof VisualTransitionEvent)) {
+            VisualTransitionEvent firstTransition = (VisualTransitionEvent) first;
+            VisualTransitionEvent secondTransition = (VisualTransitionEvent) second;
             if (firstTransition.getX() > secondTransition.getX()) {
                 throw new InvalidConnectionException("Invalid order of transitions.");
             }
             if (firstTransition.getParent() == secondTransition.getParent()) {
-                if (firstTransition.getDirection() == SignalTransition.Direction.STABILISE) {
+                if (firstTransition.getDirection() == TransitionEvent.Direction.STABILISE) {
                     throw new InvalidConnectionException("Signal at unknown state cannot change.");
                 }
-                if ((firstTransition.getDirection() != SignalTransition.Direction.DESTABILISE)
-                        && (secondTransition.getDirection() == SignalTransition.Direction.STABILISE)) {
+                if ((firstTransition.getDirection() != TransitionEvent.Direction.DESTABILISE)
+                        && (secondTransition.getDirection() == TransitionEvent.Direction.STABILISE)) {
                     throw new InvalidConnectionException("Only unstable signal can stabilise.");
                 }
                 if (firstTransition.getDirection() == secondTransition.getDirection()) {
@@ -102,10 +102,10 @@ public class VisualDtd extends AbstractVisualModel {
             return;
         }
 
-        if ((first instanceof VisualSignalEntry) && (second instanceof VisualSignalExit)) {
-            VisualSignalEntry firstEntry = (VisualSignalEntry) first;
+        if ((first instanceof VisualEntryEvent) && (second instanceof VisualExitEvent)) {
+            VisualEntryEvent firstEntry = (VisualEntryEvent) first;
             VisualSignal firstSignal = firstEntry.getVisualSignal();
-            VisualSignalExit secondExit = (VisualSignalExit) second;
+            VisualExitEvent secondExit = (VisualExitEvent) second;
             VisualSignal secondSignal = secondExit.getVisualSignal();
             if (firstSignal != secondSignal) {
                 throw new InvalidConnectionException("Cannot relate entry and exit of different signals.");
@@ -113,10 +113,10 @@ public class VisualDtd extends AbstractVisualModel {
             return;
         }
 
-        if ((first instanceof VisualSignalEntry) && (second instanceof VisualSignalTransition)) {
-            VisualSignalEntry firstEntry = (VisualSignalEntry) first;
+        if ((first instanceof VisualEntryEvent) && (second instanceof VisualTransitionEvent)) {
+            VisualEntryEvent firstEntry = (VisualEntryEvent) first;
             VisualSignal firstSignal = firstEntry.getVisualSignal();
-            VisualSignalTransition secondTransition = (VisualSignalTransition) second;
+            VisualTransitionEvent secondTransition = (VisualTransitionEvent) second;
             VisualSignal secondSignal = secondTransition.getVisualSignal();
             if (firstSignal != secondSignal) {
                 throw new InvalidConnectionException("Cannot relate entry and transition of different signals.");
@@ -125,24 +125,24 @@ public class VisualDtd extends AbstractVisualModel {
                 throw new InvalidConnectionException("Signal at unknown state cannot change.");
             }
             if ((firstSignal.getInitialState() != Signal.State.UNSTABLE)
-                    && (secondTransition.getDirection() == SignalTransition.Direction.STABILISE)) {
+                    && (secondTransition.getDirection() == TransitionEvent.Direction.STABILISE)) {
                 throw new InvalidConnectionException("Only unstable signal can stabilise.");
             }
             if ((firstSignal.getInitialState() == Signal.State.HIGH)
-                    && (secondTransition.getDirection() == SignalTransition.Direction.RISE)) {
+                    && (secondTransition.getDirection() == TransitionEvent.Direction.RISE)) {
                 throw new InvalidConnectionException("Signal is already high.");
             }
             if ((firstSignal.getInitialState() == Signal.State.LOW)
-                    && (secondTransition.getDirection() == SignalTransition.Direction.FALL)) {
+                    && (secondTransition.getDirection() == TransitionEvent.Direction.FALL)) {
                 throw new InvalidConnectionException("Signal is already low.");
             }
             return;
         }
 
-        if ((first instanceof VisualSignalTransition) && (second instanceof VisualSignalExit)) {
-            VisualSignalTransition firstTransition = (VisualSignalTransition) first;
+        if ((first instanceof VisualTransitionEvent) && (second instanceof VisualExitEvent)) {
+            VisualTransitionEvent firstTransition = (VisualTransitionEvent) first;
             VisualSignal firstSignal = firstTransition.getVisualSignal();
-            VisualSignalExit secondExit = (VisualSignalExit) second;
+            VisualExitEvent secondExit = (VisualExitEvent) second;
             VisualSignal secondSignal = secondExit.getVisualSignal();
             if (firstSignal != secondSignal) {
                 throw new InvalidConnectionException("Cannot relate transition and exit of different signals.");
@@ -190,25 +190,25 @@ public class VisualDtd extends AbstractVisualModel {
         return Hierarchy.getChildrenOfType(container, VisualSignal.class);
     }
 
-    public Collection<VisualSignalTransition> getVisualSignalTransitions(Container container) {
+    public Collection<VisualTransitionEvent> getVisualSignalTransitions(Container container) {
         if (container == null) {
             container = getRoot();
         }
-        return Hierarchy.getDescendantsOfType(container, VisualSignalTransition.class);
+        return Hierarchy.getDescendantsOfType(container, VisualTransitionEvent.class);
     }
 
-    public Collection<VisualSignalEntry> getVisualSignalEntries(Container container) {
+    public Collection<VisualEntryEvent> getVisualSignalEntries(Container container) {
         if (container == null) {
             container = getRoot();
         }
-        return Hierarchy.getDescendantsOfType(container, VisualSignalEntry.class);
+        return Hierarchy.getDescendantsOfType(container, VisualEntryEvent.class);
     }
 
-    public Collection<VisualSignalExit> getVisualSignalExits(Container container) {
+    public Collection<VisualExitEvent> getVisualSignalExits(Container container) {
         if (container == null) {
             container = getRoot();
         }
-        return Hierarchy.getDescendantsOfType(container, VisualSignalExit.class);
+        return Hierarchy.getDescendantsOfType(container, VisualExitEvent.class);
     }
 
     public VisualSignal createVisualSignal(String name) {
@@ -225,16 +225,16 @@ public class VisualDtd extends AbstractVisualModel {
         Signal mathSignal = signal.getReferencedSignal();
         Color color = signal.getForegroundColor();
 
-        SignalEntry mathEntry = new SignalEntry();
+        EntryEvent mathEntry = new EntryEvent();
         mathSignal.add(mathEntry);
-        VisualSignalEntry entry = new VisualSignalEntry(mathEntry);
+        VisualEntryEvent entry = new VisualEntryEvent(mathEntry);
         signal.add(entry);
         entry.setPosition(new Point2D.Double(OFFSET_ENTRY, 0.0));
         entry.setForegroundColor(color);
 
-        SignalExit mathExit = new SignalExit();
+        ExitEvent mathExit = new ExitEvent();
         mathSignal.add(mathExit);
-        VisualSignalExit exit = new VisualSignalExit(mathExit);
+        VisualExitEvent exit = new VisualExitEvent(mathExit);
         signal.add(exit);
         exit.setPosition(new Point2D.Double(OFFSET_EXIT, 0.0));
         exit.setForegroundColor(color);
@@ -245,27 +245,27 @@ public class VisualDtd extends AbstractVisualModel {
         }
     }
 
-    public VisualSignalTransition createVisualTransition(VisualSignal signal, SignalTransition.Direction direction) {
+    public VisualTransitionEvent createVisualTransition(VisualSignal signal, TransitionEvent.Direction direction) {
         Signal mathSignal = signal.getReferencedSignal();
-        SignalTransition mathTransition = new SignalTransition();
+        TransitionEvent mathTransition = new TransitionEvent();
         if (direction != null) {
             mathTransition.setDirection(direction);
         }
         mathSignal.add(mathTransition);
 
-        VisualSignalTransition transition = new VisualSignalTransition(mathTransition);
+        VisualTransitionEvent transition = new VisualTransitionEvent(mathTransition);
         signal.add(transition);
         return transition;
     }
 
-    public SignalEvent appendSignalEvent(VisualSignal signal, SignalTransition.Direction direction) {
-        VisualSignalEvent event = signal.getVisualSignalEntry();
-        for (VisualSignalTransition transition: signal.getVisualTransitions()) {
+    public SignalEvent appendSignalEvent(VisualSignal signal, TransitionEvent.Direction direction) {
+        VisualEvent event = signal.getVisualSignalEntry();
+        for (VisualTransitionEvent transition: signal.getVisualTransitions()) {
             if ((event == null) || (transition.getX() > event.getX())) {
                 event = transition;
             }
         }
-        VisualSignalExit exit = signal.getVisualSignalExit();
+        VisualExitEvent exit = signal.getVisualSignalExit();
         Connection connection = getConnection(event, exit);
         if (connection != null) {
             remove(connection);
@@ -275,14 +275,14 @@ public class VisualDtd extends AbstractVisualModel {
             state = DtdUtils.getNextState(event.getReferencedSignalEvent());
             direction = DtdUtils.getNextDirection(state);
         } else {
-            if (event instanceof VisualSignalEntry) {
+            if (event instanceof VisualEntryEvent) {
                 Signal.State previousState = DtdUtils.getPreviousState(direction);
                 if (previousState != null) {
                     signal.setInitialState(previousState);
                 }
             }
         }
-        VisualSignalTransition edge = createVisualTransition(signal, direction);
+        VisualTransitionEvent edge = createVisualTransition(signal, direction);
         double x = signal.getX();
         double y = signal.getY();
         if (event != null) {
@@ -314,14 +314,14 @@ public class VisualDtd extends AbstractVisualModel {
     }
 
     public SignalPulse insertSignalPulse(VisualLevelConnection connection) {
-        VisualSignalEvent fromEvent = (VisualSignalEvent) connection.getFirst();
-        VisualSignalEvent toEvent = (VisualSignalEvent) connection.getSecond();
+        VisualEvent fromEvent = (VisualEvent) connection.getFirst();
+        VisualEvent toEvent = (VisualEvent) connection.getSecond();
         Signal.State state = DtdUtils.getNextState(fromEvent.getReferencedSignalEvent());
         VisualSignal signal = fromEvent.getVisualSignal();
-        SignalTransition.Direction leadDirection = DtdUtils.getPreviousDirection(state);
-        SignalTransition.Direction trailDirection = DtdUtils.getNextDirection(state);
-        VisualSignalTransition leadEdge = createVisualTransition(signal, leadDirection);
-        VisualSignalTransition trailEdge = createVisualTransition(signal, trailDirection);
+        TransitionEvent.Direction leadDirection = DtdUtils.getPreviousDirection(state);
+        TransitionEvent.Direction trailDirection = DtdUtils.getNextDirection(state);
+        VisualTransitionEvent leadEdge = createVisualTransition(signal, leadDirection);
+        VisualTransitionEvent trailEdge = createVisualTransition(signal, trailDirection);
 
         double y = fromEvent.getY();
         Point2D p = connection.getMiddleSegmentCenterPoint();
@@ -349,7 +349,7 @@ public class VisualDtd extends AbstractVisualModel {
     public void deleteSelection() {
         HashSet<Node> undeletableNodes = new HashSet<>();
         for (Node node: getSelection()) {
-            if ((node instanceof VisualSignalEntry) || (node instanceof VisualSignalExit)) {
+            if ((node instanceof VisualEntryEvent) || (node instanceof VisualExitEvent)) {
                 undeletableNodes.add(node);
             }
         }

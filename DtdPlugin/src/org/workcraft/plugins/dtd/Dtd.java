@@ -28,9 +28,9 @@ public class Dtd extends AbstractMathModel {
             @Override
             public String getPrefix(Node node) {
                 if (node instanceof Signal) return "x";
-                if (node instanceof SignalEntry) return Identifier.createInternal("entry");
-                if (node instanceof SignalExit) return Identifier.createInternal("exit");
-                if (node instanceof SignalTransition) return Identifier.createInternal("t");
+                if (node instanceof EntryEvent) return Identifier.createInternal("entry");
+                if (node instanceof ExitEvent) return Identifier.createInternal("exit");
+                if (node instanceof TransitionEvent) return Identifier.createInternal("t");
                 return super.getPrefix(node);
             }
         });
@@ -55,22 +55,22 @@ public class Dtd extends AbstractMathModel {
                 signal -> (signal != null) && (signal.getType() == type));
     }
 
-    public Collection<SignalTransition> getTransitions() {
-        return Hierarchy.getDescendantsOfType(getRoot(), SignalTransition.class);
+    public Collection<TransitionEvent> getTransitions() {
+        return Hierarchy.getDescendantsOfType(getRoot(), TransitionEvent.class);
     }
 
-    public Collection<SignalTransition> getTransitions(final Signal signal) {
-        return Hierarchy.getDescendantsOfType(getRoot(), SignalTransition.class,
+    public Collection<TransitionEvent> getTransitions(final Signal signal) {
+        return Hierarchy.getDescendantsOfType(getRoot(), TransitionEvent.class,
                 transition -> (transition != null) && (transition.getSignal() == signal));
     }
 
-    public Signal.State getPreviousState(SignalEvent event) {
+    public Signal.State getPreviousState(Event event) {
         Signal signal = event.getSignal();
         for (Node node: getPreset(event)) {
-            if (node instanceof SignalTransition) {
-                SignalTransition transition = (SignalTransition) node;
+            if (node instanceof TransitionEvent) {
+                TransitionEvent transition = (TransitionEvent) node;
                 if (transition.getSignal() == signal) {
-                    SignalTransition.Direction direction = transition.getDirection();
+                    TransitionEvent.Direction direction = transition.getDirection();
                     return DtdUtils.getNextState(direction);
                 }
             }
@@ -81,7 +81,7 @@ public class Dtd extends AbstractMathModel {
     @Override
     public ModelProperties getProperties(Node node) {
         ModelProperties properties = super.getProperties(node);
-        if (node instanceof SignalEvent) {
+        if (node instanceof Event) {
             properties.removeByName(NamePropertyDescriptor.PROPERTY_NAME);
         }
         return properties;

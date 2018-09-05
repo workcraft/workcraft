@@ -13,6 +13,8 @@ import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.util.Hierarchy;
 
+import java.util.Collection;
+
 @DisplayName("Finite State Transducer")
 @CustomTools(FstToolsProvider.class)
 public class VisualFst extends VisualFsm {
@@ -45,4 +47,7 @@ public class VisualFst extends VisualFsm {
         return vEvent;
     }
 
+    public Collection<VisualSignalEvent> getVisualSignalEvents() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualSignalEvent.class);
+    }
 }

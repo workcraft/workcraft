@@ -13,7 +13,7 @@ import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
-import org.workcraft.plugins.dtd.SignalTransition;
+import org.workcraft.plugins.dtd.TransitionEvent;
 import org.workcraft.plugins.dtd.VisualDtd;
 import org.workcraft.plugins.dtd.VisualLevelConnection;
 import org.workcraft.plugins.dtd.VisualSignal;
@@ -43,7 +43,7 @@ public class DtdSelectionTool extends SelectionTool {
             if (node instanceof VisualSignal) {
                 we.saveMemento();
                 VisualSignal signal = (VisualSignal) node;
-                SignalTransition.Direction direction = getDesiredDirection(e);
+                TransitionEvent.Direction direction = getDesiredDirection(e);
                 model.appendSignalEvent(signal, direction);
                 processed = true;
             } else if ((node instanceof VisualLevelConnection) && (e.getClickCount() > 1)) {
@@ -58,14 +58,14 @@ public class DtdSelectionTool extends SelectionTool {
         }
     }
 
-    private SignalTransition.Direction getDesiredDirection(GraphEditorMouseEvent e) {
+    private TransitionEvent.Direction getDesiredDirection(GraphEditorMouseEvent e) {
         switch (e.getKeyModifiers()) {
         case MouseEvent.SHIFT_DOWN_MASK:
-            return SignalTransition.Direction.RISE;
+            return TransitionEvent.Direction.RISE;
         case MouseEvent.CTRL_DOWN_MASK:
-            return SignalTransition.Direction.FALL;
+            return TransitionEvent.Direction.FALL;
         case MouseEvent.SHIFT_DOWN_MASK | MouseEvent.CTRL_DOWN_MASK:
-            return SignalTransition.Direction.DESTABILISE;
+            return TransitionEvent.Direction.DESTABILISE;
         default:
             return null;
         }

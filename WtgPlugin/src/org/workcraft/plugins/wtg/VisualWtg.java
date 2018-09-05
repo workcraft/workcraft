@@ -7,7 +7,10 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.dtd.VisualDtd;
 import org.workcraft.plugins.dtd.VisualSignal;
-import org.workcraft.plugins.dtd.VisualSignalTransition;
+import org.workcraft.plugins.dtd.VisualTransitionEvent;
+import org.workcraft.util.Hierarchy;
+
+import java.util.Collection;
 
 @DisplayName("Waveform Transition Graph")
 @CustomTools(WtgToolsProvider.class)
@@ -52,9 +55,9 @@ public class VisualWtg extends VisualDtd {
             }
             return;
         }
-        if ((first instanceof VisualSignalTransition) && (second instanceof VisualSignalTransition)) {
-            VisualSignal firstSignal = ((VisualSignalTransition) first).getVisualSignal();
-            VisualSignal secondSignal = ((VisualSignalTransition) second).getVisualSignal();
+        if ((first instanceof VisualTransitionEvent) && (second instanceof VisualTransitionEvent)) {
+            VisualSignal firstSignal = ((VisualTransitionEvent) first).getVisualSignal();
+            VisualSignal secondSignal = ((VisualTransitionEvent) second).getVisualSignal();
             Node firstWaveform = firstSignal.getParent();
             Node secondWaveform = secondSignal.getParent();
             if (firstWaveform != secondWaveform) {
@@ -62,6 +65,14 @@ public class VisualWtg extends VisualDtd {
             }
         }
         super.validateConnection(first, second);
+    }
+
+    public Collection<VisualState> getVisualStates() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualState.class);
+    }
+
+    public Collection<VisualWaveform> getVisualWaveforms() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualWaveform.class);
     }
 
 }

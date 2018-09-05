@@ -76,6 +76,14 @@ public class Stg extends AbstractMathModel implements StgModel {
         return transition;
     }
 
+    public SignalTransition createSignalTransition(String signalRef, SignalTransition.Direction direction, Container container) {
+        String ref = null;
+        if ((signalRef != null) && (direction != null)) {
+            ref = signalRef + direction.toString();
+        }
+        return createSignalTransition(ref, container);
+    }
+
     public final SignalTransition createSignalTransition(String ref, Container container) {
         return createSignalTransition(ref, container, false);
     }

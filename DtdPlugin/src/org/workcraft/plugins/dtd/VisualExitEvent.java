@@ -4,9 +4,9 @@ import java.awt.BasicStroke;
 import java.awt.Shape;
 import java.awt.geom.Path2D;
 
-public class VisualSignalExit extends VisualSignalEvent {
+public class VisualExitEvent extends VisualEvent {
 
-    public VisualSignalExit(SignalExit exit) {
+    public VisualExitEvent(ExitEvent exit) {
         super(exit);
     }
 

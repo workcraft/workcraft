@@ -1,25 +1,25 @@
 package org.workcraft.plugins.dtd;
 
-import java.awt.BasicStroke;
-import java.awt.Shape;
+import org.workcraft.annotations.DisplayName;
+import org.workcraft.annotations.Hotkey;
+import org.workcraft.annotations.SVGIcon;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.serialisation.xml.NoAutoSerialisation;
+
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Path2D;
 import java.awt.geom.Path2D.Double;
 import java.awt.geom.Rectangle2D;
 
-import org.workcraft.annotations.DisplayName;
-import org.workcraft.annotations.Hotkey;
-import org.workcraft.annotations.SVGIcon;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-
 @Hotkey(KeyEvent.VK_T)
 @DisplayName("Transition")
 @SVGIcon("images/dtd-node-transition.svg")
-public class VisualSignalTransition extends VisualSignalEvent {
+public class VisualTransitionEvent extends VisualEvent {
 
     public static final String PROPERTY_COLOR = "Color";
 
-    public VisualSignalTransition(SignalTransition transition) {
+    public VisualTransitionEvent(TransitionEvent transition) {
         super(transition);
         addPropertyDeclarations();
         renamePropertyDeclarationByName(PROPERTY_FOREGROUND_COLOR, PROPERTY_COLOR);
@@ -32,13 +32,13 @@ public class VisualSignalTransition extends VisualSignalEvent {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualSignalTransition, SignalTransition.Direction>(
-                this, SignalTransition.PROPERTY_DIRECTION, SignalTransition.Direction.class, true, true, true) {
-            protected void setter(VisualSignalTransition object, SignalTransition.Direction value) {
+        addPropertyDeclaration(new PropertyDeclaration<VisualTransitionEvent, TransitionEvent.Direction>(
+                this, TransitionEvent.PROPERTY_DIRECTION, TransitionEvent.Direction.class, true, true, true) {
+            protected void setter(VisualTransitionEvent object, TransitionEvent.Direction value) {
                 object.setDirection(value);
             }
 
-            protected SignalTransition.Direction getter(VisualSignalTransition object) {
+            protected TransitionEvent.Direction getter(VisualTransitionEvent object) {
                 return object.getDirection();
             }
         });
@@ -143,15 +143,17 @@ public class VisualSignalTransition extends VisualSignalEvent {
         return getShape().getBounds2D();
     }
 
-    public SignalTransition getReferencedTransition() {
-        return (SignalTransition) getReferencedComponent();
+    public TransitionEvent getReferencedTransition() {
+        return (TransitionEvent) getReferencedComponent();
     }
 
-    public void setDirection(SignalTransition.Direction value) {
+    @NoAutoSerialisation
+    public void setDirection(TransitionEvent.Direction value) {
         getReferencedTransition().setDirection(value);
     }
 
-    public SignalTransition.Direction getDirection() {
+    @NoAutoSerialisation
+    public TransitionEvent.Direction getDirection() {
         return getReferencedTransition().getDirection();
     }
 

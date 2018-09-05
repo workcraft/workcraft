@@ -1,11 +1,10 @@
 package org.workcraft.plugins.wtg.commands;
 
-import org.workcraft.Framework;
 import org.workcraft.commands.AbstractConversionCommand;
+import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.wtg.Wtg;
-import org.workcraft.plugins.wtg.tasks.WaverConversionTask;
-import org.workcraft.plugins.wtg.tasks.WtgToStgConversionResultHandler;
-import org.workcraft.tasks.TaskManager;
+import org.workcraft.plugins.wtg.converter.WtgToStgConverter;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -18,7 +17,7 @@ public class WtgToStgConversionCommand extends AbstractConversionCommand {
 
     @Override
     public String getDisplayName() {
-        return "Signal Transition Graph [Waver]";
+        return "Signal Transition Graph";
     }
 
     @Override
@@ -27,18 +26,11 @@ public class WtgToStgConversionCommand extends AbstractConversionCommand {
     }
 
     @Override
-    public WorkspaceEntry execute(WorkspaceEntry we) {
-        final Framework framework = Framework.getInstance();
-        final TaskManager taskManager = framework.getTaskManager();
-        final WaverConversionTask task = new WaverConversionTask(we);
-        final WtgToStgConversionResultHandler monitor = new WtgToStgConversionResultHandler(task);
-        taskManager.execute(task, "Converting to STG", monitor);
-        return monitor.waitForHandledResult();
-    }
-
-    @Override
     public ModelEntry convert(ModelEntry me) {
-        return null; // !!!
+        final Wtg wtg = me.getAs(Wtg.class);
+        final Stg stg = new Stg();
+        final WtgToStgConverter converter = new WtgToStgConverter(wtg, stg);
+        return new ModelEntry(new StgDescriptor(), converter.getDstModel());
     }
 
 }
