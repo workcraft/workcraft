@@ -4,7 +4,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 
 @DisplayName("Entry")
-@VisualClass(org.workcraft.plugins.dtd.VisualSignalEvent.class)
-public class SignalEntry extends SignalEvent {
+@VisualClass(VisualEvent.class)
+public class EntryEvent extends Event {
 
 }

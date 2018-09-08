@@ -1,9 +1,5 @@
 package org.workcraft.plugins.fst.converters;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.fsm.VisualEvent;
@@ -18,6 +14,10 @@ import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.VisualNamedTransition;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.util.Hierarchy;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class FstToStgConverter {
     private final VisualFst srcModel;
@@ -58,7 +58,7 @@ public class FstToStgConverter {
 
     private Map<VisualState, VisualPlace> convertStates() {
         Map<VisualState, VisualPlace> result = new HashMap<>();
-        for (VisualState state: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualState.class)) {
+        for (VisualState state: srcModel.getVisualStates()) {
             String name = srcModel.getMathModel().getNodeReference(state.getReferencedState());
             VisualPlace place = dstModel.createVisualPlace(name, null);
             place.copyPosition(state);
@@ -91,7 +91,7 @@ public class FstToStgConverter {
 
     private Map<VisualSignalEvent, VisualNamedTransition> convertEvents() {
         Map<VisualSignalEvent, VisualNamedTransition> result = new HashMap<>();
-        for (VisualSignalEvent signalEvent : Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualSignalEvent.class)) {
+        for (VisualSignalEvent signalEvent : srcModel.getVisualSignalEvents()) {
             VisualNamedTransition transition = null;
             Signal signal = signalEvent.getReferencedSignalEvent().getSignal();
             String name = srcModel.getMathName(signal);

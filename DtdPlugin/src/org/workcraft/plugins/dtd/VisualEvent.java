@@ -13,14 +13,14 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 
-public abstract class VisualSignalEvent extends VisualComponent implements CustomTouchable {
+public abstract class VisualEvent extends VisualComponent implements CustomTouchable {
 
-    public VisualSignalEvent(SignalEvent event) {
+    public VisualEvent(Event event) {
         super(event);
     }
 
-    public SignalEvent getReferencedSignalEvent() {
-        return (SignalEvent) getReferencedComponent();
+    public Event getReferencedSignalEvent() {
+        return (Event) getReferencedComponent();
     }
 
     @Override

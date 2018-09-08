@@ -29,12 +29,12 @@ public final class DtdStateSupervisor extends StateSupervisor {
         if (e instanceof TransformChangedEvent) {
             if (sender instanceof VisualSignal) {
                 handleSignalTransformation((VisualSignal) sender);
-            } else if (sender instanceof VisualSignalTransition) {
-                handleSignalTransitionTransformation((VisualSignalTransition) sender);
-            } else if (sender instanceof VisualSignalEntry) {
-                handleSignalEntryTransformation((VisualSignalEntry) sender);
-            } else if (sender instanceof VisualSignalExit) {
-                handleSignalExitTransformation((VisualSignalExit) sender);
+            } else if (sender instanceof VisualTransitionEvent) {
+                handleSignalTransitionTransformation((VisualTransitionEvent) sender);
+            } else if (sender instanceof VisualEntryEvent) {
+                handleSignalEntryTransformation((VisualEntryEvent) sender);
+            } else if (sender instanceof VisualExitEvent) {
+                handleSignalExitTransformation((VisualExitEvent) sender);
             }
         } else if (e instanceof PropertyChangedEvent) {
             PropertyChangedEvent pce = (PropertyChangedEvent) e;
@@ -42,8 +42,8 @@ public final class DtdStateSupervisor extends StateSupervisor {
             if ((sender instanceof Signal) && (propertyName.equals(Signal.PROPERTY_INITIAL_STATE))) {
                 VisualSignal signal = dtd.getVisualComponent((Signal) sender, VisualSignal.class);
                 handleSignalStateChange(signal);
-            } else if ((sender instanceof SignalTransition) && (propertyName.equals(SignalTransition.PROPERTY_DIRECTION))) {
-                VisualSignalTransition transtition = dtd.getVisualComponent((SignalTransition) sender, VisualSignalTransition.class);
+            } else if ((sender instanceof TransitionEvent) && (propertyName.equals(TransitionEvent.PROPERTY_DIRECTION))) {
+                VisualTransitionEvent transtition = dtd.getVisualComponent((TransitionEvent) sender, VisualTransitionEvent.class);
                 handleTransitionDirectionChange(transtition);
             }
         }
@@ -55,11 +55,11 @@ public final class DtdStateSupervisor extends StateSupervisor {
         }
     }
 
-    private void handleSignalTransitionTransformation(VisualSignalTransition transition) {
+    private void handleSignalTransitionTransformation(VisualTransitionEvent transition) {
         VisualSignal signal = transition.getVisualSignal();
         if (signal != null) {
-            VisualSignalEntry entry = signal.getVisualSignalEntry();
-            VisualSignalExit exit = signal.getVisualSignalExit();
+            VisualEntryEvent entry = signal.getVisualSignalEntry();
+            VisualExitEvent exit = signal.getVisualSignalExit();
             if ((entry != null) && (exit != null)) {
                 Rectangle2D bbEntry = entry.getBoundingBox();
                 double xMin = bbEntry.getMinX();
@@ -78,17 +78,17 @@ public final class DtdStateSupervisor extends StateSupervisor {
         }
     }
 
-    private void handleSignalEntryTransformation(VisualSignalEntry entry) {
+    private void handleSignalEntryTransformation(VisualEntryEvent entry) {
         VisualSignal signal = entry.getVisualSignal();
         if (signal != null) {
             Rectangle2D bbSignal = BoundingBoxHelper.union(signal.getNameBoundingBox(), signal.getLabelBoundingBox());
             if (bbSignal != null) {
                 double xMin = bbSignal.getMaxX();
-                VisualSignalExit exit = signal.getVisualSignalExit();
+                VisualExitEvent exit = signal.getVisualSignalExit();
                 if (exit != null) {
                     Rectangle2D bbExit = exit.getBoundingBox();
                     double xMax = bbExit.getMaxX();
-                    for (VisualSignalTransition transition: signal.getVisualTransitions()) {
+                    for (VisualTransitionEvent transition: signal.getVisualTransitions()) {
                         xMax = Math.min(xMax, transition.getBoundingBox().getMinX());
                     }
                     limitSignalEventPosition(entry, xMin, xMax);
@@ -97,14 +97,14 @@ public final class DtdStateSupervisor extends StateSupervisor {
         }
     }
 
-    private void handleSignalExitTransformation(VisualSignalExit exit) {
+    private void handleSignalExitTransformation(VisualExitEvent exit) {
         VisualSignal signal = exit.getVisualSignal();
         if (signal != null) {
-            VisualSignalEntry entry = signal.getVisualSignalEntry();
+            VisualEntryEvent entry = signal.getVisualSignalEntry();
             if (entry != null) {
                 Rectangle2D bbEntry = entry.getBoundingBox();
                 double xMin = bbEntry.getMinX();
-                for (VisualSignalTransition transition: signal.getVisualTransitions()) {
+                for (VisualTransitionEvent transition: signal.getVisualTransitions()) {
                     xMin = Math.max(xMin, transition.getBoundingBox().getMaxX());
                 }
                 double xMax = xMin + 100.0;
@@ -113,7 +113,7 @@ public final class DtdStateSupervisor extends StateSupervisor {
         }
     }
 
-    private void limitSignalEventPosition(VisualSignalEvent event, double xMin, double xMax) {
+    private void limitSignalEventPosition(VisualEvent event, double xMin, double xMax) {
         Rectangle2D bb = event.getBoundingBox();
         double x = event.getX();
         if (xMin > bb.getMinX()) {
@@ -129,7 +129,7 @@ public final class DtdStateSupervisor extends StateSupervisor {
         }
     }
 
-    private void handleTransitionDirectionChange(VisualSignalTransition transition) {
+    private void handleTransitionDirectionChange(VisualTransitionEvent transition) {
         Set<Connection> connections = new HashSet<>(dtd.getConnections(transition));
         for (Connection connection: connections) {
             if (connection instanceof VisualLevelConnection) {
@@ -145,7 +145,7 @@ public final class DtdStateSupervisor extends StateSupervisor {
     }
 
     private void handleSignalStateChange(VisualSignal signal) {
-        VisualSignalEntry entry = signal.getVisualSignalEntry();
+        VisualEntryEvent entry = signal.getVisualSignalEntry();
         Set<Connection> connections = new HashSet<>(dtd.getConnections(entry));
         for (Connection connection: connections) {
             if (connection instanceof VisualLevelConnection) {

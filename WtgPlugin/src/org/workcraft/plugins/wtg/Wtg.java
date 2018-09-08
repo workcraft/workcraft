@@ -7,11 +7,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
-import org.workcraft.plugins.dtd.Dtd;
-import org.workcraft.plugins.dtd.Signal;
-import org.workcraft.plugins.dtd.SignalEntry;
-import org.workcraft.plugins.dtd.SignalExit;
-import org.workcraft.plugins.dtd.SignalTransition;
+import org.workcraft.plugins.dtd.*;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Identifier;
@@ -27,9 +23,9 @@ public class Wtg extends Dtd {
         this(root, new HierarchicalUniqueNameReferenceManager(refs) {
             @Override
             public String getPrefix(Node node) {
-                if (node instanceof SignalEntry) return Identifier.createInternal("entry");
-                if (node instanceof SignalExit) return Identifier.createInternal("exit");
-                if (node instanceof SignalTransition) return Identifier.createInternal("t");
+                if (node instanceof EntryEvent) return Identifier.createInternal("entry");
+                if (node instanceof ExitEvent) return Identifier.createInternal("exit");
+                if (node instanceof TransitionEvent) return Identifier.createInternal("t");
                 if (node instanceof Signal) return "x";
                 if (node instanceof State) return "s";
                 if (node instanceof Waveform) return "w";
@@ -58,25 +54,32 @@ public class Wtg extends Dtd {
         return Hierarchy.getDescendantsOfType(container, Signal.class);
     }
 
-    public final Collection<SignalTransition> getTransitions(Container container) {
+    public final Collection<Event> getEvents(Container container) {
         if (container == null) {
             container = getRoot();
         }
-        return Hierarchy.getDescendantsOfType(container, SignalTransition.class);
+        return Hierarchy.getDescendantsOfType(container, Event.class);
     }
 
-    public final Collection<SignalEntry> getEntrys(Container container) {
+    public final Collection<TransitionEvent> getTransitions(Container container) {
         if (container == null) {
             container = getRoot();
         }
-        return Hierarchy.getDescendantsOfType(container, SignalEntry.class);
+        return Hierarchy.getDescendantsOfType(container, TransitionEvent.class);
     }
 
-    public final Collection<SignalExit> getExits(Container container) {
+    public final Collection<EntryEvent> getEntries(Container container) {
         if (container == null) {
             container = getRoot();
         }
-        return Hierarchy.getDescendantsOfType(container, SignalExit.class);
+        return Hierarchy.getDescendantsOfType(container, EntryEvent.class);
+    }
+
+    public final Collection<ExitEvent> getExits(Container container) {
+        if (container == null) {
+            container = getRoot();
+        }
+        return Hierarchy.getDescendantsOfType(container, ExitEvent.class);
     }
 
 }

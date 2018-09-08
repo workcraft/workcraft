@@ -1,29 +1,21 @@
 package org.workcraft.plugins.wtg.serialisation;
 
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
 import org.workcraft.Info;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.FormatException;
-import org.workcraft.plugins.dtd.DtdUtils;
-import org.workcraft.plugins.dtd.Signal;
-import org.workcraft.plugins.dtd.SignalEntry;
-import org.workcraft.plugins.dtd.SignalExit;
-import org.workcraft.plugins.dtd.SignalTransition;
+import org.workcraft.plugins.dtd.*;
 import org.workcraft.plugins.wtg.State;
 import org.workcraft.plugins.wtg.Waveform;
 import org.workcraft.plugins.wtg.Wtg;
 import org.workcraft.plugins.wtg.interop.WtgFormat;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
+
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.*;
 
 public class WtgSerialiser implements ModelSerialiser {
 
@@ -51,8 +43,8 @@ public class WtgSerialiser implements ModelSerialiser {
             for (Waveform waveform: wtg.getWaveforms()) {
                 refMap.put(waveform, wtg.getName(waveform));
                 HashMap<String, Integer> instanceCount = new HashMap<>();
-                for (SignalTransition transition: wtg.getTransitions(waveform)) {
-                    String transitionName = getSrialisedTransitionName(wtg, transition);
+                for (TransitionEvent transition: wtg.getTransitions(waveform)) {
+                    String transitionName = getSerialisedTransitionName(wtg, transition);
                     if (!instanceCount.containsKey(transitionName)) {
                         instanceCount.put(transitionName, 1);
                     } else {
@@ -65,11 +57,11 @@ public class WtgSerialiser implements ModelSerialiser {
             }
         }
 
-        private String getSrialisedTransitionName(Wtg wtg, SignalTransition transition) {
+        private String getSerialisedTransitionName(Wtg wtg, TransitionEvent transition) {
             Signal signal = transition.getSignal();
             String result = wtg.getName(signal);
             Signal.State previousState = wtg.getPreviousState(transition);
-            SignalTransition.Direction direction = transition.getDirection();
+            TransitionEvent.Direction direction = transition.getDirection();
             switch (previousState) {
             case UNSTABLE:
                 Signal.State signalState = DtdUtils.getNextState(direction);
@@ -195,11 +187,11 @@ public class WtgSerialiser implements ModelSerialiser {
     }
 
     private void writeWaveformEntry(PrintWriter out, Wtg wtg, ReferenceProducer refs, Waveform waveform) {
-        HashSet<SignalTransition> entryTransitions = new HashSet<>();
-        for (SignalEntry entry: wtg.getEntrys(waveform)) {
+        HashSet<TransitionEvent> entryTransitions = new HashSet<>();
+        for (EntryEvent entry: wtg.getEntries(waveform)) {
             for (Node node: wtg.getPostset(entry)) {
-                if ((node instanceof SignalTransition) && (wtg.getPreset(node).size() == 1)) {
-                    SignalTransition transition = (SignalTransition) node;
+                if ((node instanceof TransitionEvent) && (wtg.getPreset(node).size() == 1)) {
+                    TransitionEvent transition = (TransitionEvent) node;
                     entryTransitions.add(transition);
                 }
             }
@@ -213,11 +205,11 @@ public class WtgSerialiser implements ModelSerialiser {
     }
 
     private void writeWaveformBody(PrintWriter out, Wtg wtg, ReferenceProducer refs, Waveform waveform) {
-        for (SignalTransition transition: wtg.getTransitions(waveform)) {
-            Set<SignalTransition> succTransitions = new HashSet<>();
+        for (TransitionEvent transition: wtg.getTransitions(waveform)) {
+            Set<TransitionEvent> succTransitions = new HashSet<>();
             for (Node succNode: wtg.getPostset(transition)) {
-                if (succNode instanceof SignalTransition) {
-                    SignalTransition succTransition = (SignalTransition) succNode;
+                if (succNode instanceof TransitionEvent) {
+                    TransitionEvent succTransition = (TransitionEvent) succNode;
                     succTransitions.add(succTransition);
                 }
             }
@@ -226,11 +218,11 @@ public class WtgSerialiser implements ModelSerialiser {
     }
 
     private void writeWaveformExit(PrintWriter out, Wtg wtg, ReferenceProducer refs, Waveform waveform) {
-        HashSet<SignalTransition> exitTransitions = new HashSet<>();
-        for (SignalExit exit: wtg.getExits(waveform)) {
+        HashSet<TransitionEvent> exitTransitions = new HashSet<>();
+        for (ExitEvent exit: wtg.getExits(waveform)) {
             for (Node node: wtg.getPreset(exit)) {
-                if ((node instanceof SignalTransition) && (wtg.getPostset(node).size() == 1)) {
-                    SignalTransition transition = (SignalTransition) node;
+                if ((node instanceof TransitionEvent) && (wtg.getPostset(node).size() == 1)) {
+                    TransitionEvent transition = (TransitionEvent) node;
                     exitTransitions.add(transition);
                 }
             }
@@ -243,7 +235,7 @@ public class WtgSerialiser implements ModelSerialiser {
         }
     }
 
-    private void writeWaveformBodyLine(PrintWriter out, Wtg wtg, ReferenceProducer refs, SignalTransition transition, Set<SignalTransition> succTransitions) {
+    private void writeWaveformBodyLine(PrintWriter out, Wtg wtg, ReferenceProducer refs, TransitionEvent transition, Set<TransitionEvent> succTransitions) {
         if ((transition != null) && (succTransitions != null) && !succTransitions.isEmpty()) {
             String transitionName = refs.getReference(transition);
             out.write(transitionName);

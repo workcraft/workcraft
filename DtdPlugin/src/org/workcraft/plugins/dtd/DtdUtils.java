@@ -17,27 +17,27 @@ public class DtdUtils {
     private static final double ARROW_LENGTH = 0.2;
     private static final double CAUSALITY_ARC_OFFSET = 1.0;
 
-    public static SignalTransition.Direction getNextDirection(Signal.State state) {
+    public static TransitionEvent.Direction getNextDirection(Signal.State state) {
         switch (state) {
-        case HIGH: return SignalTransition.Direction.FALL;
-        case LOW: return SignalTransition.Direction.RISE;
-        case UNSTABLE: return SignalTransition.Direction.STABILISE;
-        case STABLE: return SignalTransition.Direction.DESTABILISE;
+        case HIGH: return TransitionEvent.Direction.FALL;
+        case LOW: return TransitionEvent.Direction.RISE;
+        case UNSTABLE: return TransitionEvent.Direction.STABILISE;
+        case STABLE: return TransitionEvent.Direction.DESTABILISE;
         default: return null;
         }
     }
 
-    public static SignalTransition.Direction getPreviousDirection(Signal.State state) {
+    public static TransitionEvent.Direction getPreviousDirection(Signal.State state) {
         switch (state) {
-        case HIGH: return SignalTransition.Direction.RISE;
-        case LOW: return SignalTransition.Direction.FALL;
-        case UNSTABLE: return SignalTransition.Direction.DESTABILISE;
-        case STABLE: return SignalTransition.Direction.STABILISE;
+        case HIGH: return TransitionEvent.Direction.RISE;
+        case LOW: return TransitionEvent.Direction.FALL;
+        case UNSTABLE: return TransitionEvent.Direction.DESTABILISE;
+        case STABLE: return TransitionEvent.Direction.STABILISE;
         default: return null;
         }
     }
 
-    public static Signal.State getNextState(SignalTransition.Direction direction) {
+    public static Signal.State getNextState(TransitionEvent.Direction direction) {
         switch (direction) {
         case RISE: return Signal.State.HIGH;
         case FALL: return Signal.State.LOW;
@@ -47,7 +47,7 @@ public class DtdUtils {
         }
     }
 
-    public static Signal.State getPreviousState(SignalTransition.Direction direction) {
+    public static Signal.State getPreviousState(TransitionEvent.Direction direction) {
         switch (direction) {
         case RISE: return Signal.State.LOW;
         case FALL: return Signal.State.HIGH;
@@ -57,13 +57,13 @@ public class DtdUtils {
         }
     }
 
-    public static Signal.State getNextState(SignalEvent event) {
-        if (event instanceof SignalEntry) {
+    public static Signal.State getNextState(Event event) {
+        if (event instanceof EntryEvent) {
             Signal signal = event.getSignal();
             return signal.getInitialState();
         }
-        if (event instanceof SignalTransition) {
-            SignalTransition transition = (SignalTransition) event;
+        if (event instanceof TransitionEvent) {
+            TransitionEvent transition = (TransitionEvent) event;
             return getNextState(transition.getDirection());
         }
         return null;
@@ -72,11 +72,11 @@ public class DtdUtils {
     public static boolean isLevelConnection(MathConnection connection) {
         boolean result = false;
         if (connection != null) {
-            MathNode c1 = (MathNode) connection.getFirst();
-            MathNode c2 = (MathNode) connection.getSecond();
-            if ((c1 instanceof SignalEvent) && (c2 instanceof SignalEvent)) {
-                Signal s1 = ((SignalEvent) c1).getSignal();
-                Signal s2 = ((SignalEvent) c2).getSignal();
+            MathNode c1 = connection.getFirst();
+            MathNode c2 = connection.getSecond();
+            if ((c1 instanceof Event) && (c2 instanceof Event)) {
+                Signal s1 = ((Event) c1).getSignal();
+                Signal s2 = ((Event) c2).getSignal();
                 result = s1 == s2;
             }
         }
@@ -95,12 +95,12 @@ public class DtdUtils {
         Polyline polyline = (Polyline) connection.getGraphic();
 
         Signal.State state = null;
-        if (v1 instanceof VisualSignalEvent) {
-            VisualSignal s1 = ((VisualSignalEvent) v1).getVisualSignal();
+        if (v1 instanceof VisualEvent) {
+            VisualSignal s1 = ((VisualEvent) v1).getVisualSignal();
             state = s1.getInitialState();
-            if (v1 instanceof VisualSignalTransition) {
-                VisualSignalTransition t1 = (VisualSignalTransition) v1;
-                SignalTransition.Direction direction = t1.getDirection();
+            if (v1 instanceof VisualTransitionEvent) {
+                VisualTransitionEvent t1 = (VisualTransitionEvent) v1;
+                TransitionEvent.Direction direction = t1.getReferencedTransition().getDirection();
                 state = getNextState(direction);
             }
         }
@@ -114,11 +114,11 @@ public class DtdUtils {
     public static boolean isEventConnection(MathConnection connection) {
         boolean result = false;
         if (connection != null) {
-            MathNode c1 = (MathNode) connection.getFirst();
-            MathNode c2 = (MathNode) connection.getSecond();
-            if ((c1 instanceof SignalEvent) && (c2 instanceof SignalEvent)) {
-                Signal s1 = ((SignalEvent) c1).getSignal();
-                Signal s2 = ((SignalEvent) c2).getSignal();
+            MathNode c1 = connection.getFirst();
+            MathNode c2 = connection.getSecond();
+            if ((c1 instanceof Event) && (c2 instanceof Event)) {
+                Signal s1 = ((Event) c1).getSignal();
+                Signal s2 = ((Event) c2).getSignal();
                 result = s1 != s2;
             }
         }

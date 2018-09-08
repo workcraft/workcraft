@@ -247,8 +247,8 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
     public Node hitCustom(Point2D point) {
         Point2D pointInLocalSpace = getParentToLocalTransform().transform(point, null);
         for (Node node : getChildren()) {
-            if (node instanceof VisualSignalEvent) {
-                VisualSignalEvent event = (VisualSignalEvent) node;
+            if (node instanceof VisualEvent) {
+                VisualEvent event = (VisualEvent) node;
                 if (event.hitTest(pointInLocalSpace)) {
                     return event;
                 }
@@ -272,29 +272,29 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
         groupImpl.removeAllObservers();
     }
 
-    public Collection<VisualSignalTransition> getVisualTransitions() {
-        HashSet<VisualSignalTransition> result = new HashSet<>();
+    public Collection<VisualTransitionEvent> getVisualTransitions() {
+        HashSet<VisualTransitionEvent> result = new HashSet<>();
         for (Node node: getChildren()) {
-            if (node instanceof VisualSignalTransition) {
-                result.add((VisualSignalTransition) node);
+            if (node instanceof VisualTransitionEvent) {
+                result.add((VisualTransitionEvent) node);
             }
         }
         return result;
     }
 
-    public VisualSignalEntry getVisualSignalEntry() {
+    public VisualEntryEvent getVisualSignalEntry() {
         for (Node node: getChildren()) {
-            if (node instanceof VisualSignalEntry) {
-                return (VisualSignalEntry) node;
+            if (node instanceof VisualEntryEvent) {
+                return (VisualEntryEvent) node;
             }
         }
         return null;
     }
 
-    public VisualSignalExit getVisualSignalExit() {
+    public VisualExitEvent getVisualSignalExit() {
         for (Node node: getChildren()) {
-            if (node instanceof VisualSignalExit) {
-                return (VisualSignalExit) node;
+            if (node instanceof VisualExitEvent) {
+                return (VisualExitEvent) node;
             }
         }
         return null;

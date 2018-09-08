@@ -4,7 +4,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 
 @DisplayName("Exit")
-@VisualClass(org.workcraft.plugins.dtd.VisualSignalExit.class)
-public class SignalExit extends SignalEvent {
+@VisualClass(VisualExitEvent.class)
+public class ExitEvent extends Event {
 
 }

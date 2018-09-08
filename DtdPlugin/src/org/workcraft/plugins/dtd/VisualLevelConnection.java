@@ -88,8 +88,8 @@ public class VisualLevelConnection extends VisualConnection {
 
     private Signal.State getState() {
         VisualNode node = getFirst();
-        if (node instanceof VisualSignalEvent) {
-            VisualSignalEvent event = (VisualSignalEvent) node;
+        if (node instanceof VisualEvent) {
+            VisualEvent event = (VisualEvent) node;
             return DtdUtils.getNextState(event.getReferencedSignalEvent());
         }
         return null;

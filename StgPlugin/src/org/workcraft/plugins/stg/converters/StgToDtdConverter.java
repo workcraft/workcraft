@@ -10,12 +10,8 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.tools.Trace;
-import org.workcraft.plugins.dtd.Dtd;
-import org.workcraft.plugins.dtd.Signal;
-import org.workcraft.plugins.dtd.VisualDtd;
+import org.workcraft.plugins.dtd.*;
 import org.workcraft.plugins.dtd.VisualDtd.SignalEvent;
-import org.workcraft.plugins.dtd.VisualSignal;
-import org.workcraft.plugins.dtd.VisualSignalExit;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.util.Pair;
@@ -53,10 +49,10 @@ public class StgToDtdConverter {
         }
     }
 
-    private org.workcraft.plugins.dtd.SignalTransition.Direction getDirection(SignalTransition.Direction direction) {
+    private TransitionEvent.Direction getDirection(SignalTransition.Direction direction) {
         switch (direction) {
-        case PLUS:  return org.workcraft.plugins.dtd.SignalTransition.Direction.RISE;
-        case MINUS: return org.workcraft.plugins.dtd.SignalTransition.Direction.FALL;
+        case PLUS:  return TransitionEvent.Direction.RISE;
+        case MINUS: return TransitionEvent.Direction.FALL;
         default:    return null;
         }
     }
@@ -106,7 +102,7 @@ public class StgToDtdConverter {
                 SignalTransition transition = (SignalTransition) node;
                 String signalRef = stg.getSignalReference(transition);
                 VisualSignal signal = signalMap.get(signalRef);
-                org.workcraft.plugins.dtd.SignalTransition.Direction direction = getDirection(transition.getDirection());
+                TransitionEvent.Direction direction = getDirection(transition.getDirection());
                 SignalEvent curEvent = dtd.appendSignalEvent(signal, direction);
                 result.put(curEvent, transition);
                 x += EVENT_OFFSET;
@@ -134,7 +130,7 @@ public class StgToDtdConverter {
     }
 
     private void alignSignalExits(double xExit) {
-        for (VisualSignalExit exit: dtd.getVisualSignalExits(null)) {
+        for (VisualExitEvent exit: dtd.getVisualSignalExits(null)) {
             if (exit.getX() < xExit) {
                 exit.setX(xExit);
             }

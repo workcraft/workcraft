@@ -44,7 +44,7 @@ public class StgSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<StgSettings, String>(
-                this, "Signal low level suffix fro conversion to STG",
+                this, "Signal low level suffix for conversion to STG",
                 String.class, true, false, false) {
             protected void setter(StgSettings object, String value) {
                 if (value.length() < 2) {
