@@ -39,7 +39,7 @@ public class FunctionComponent extends CircuitComponent {
         }
 
         private void removeContactfromFunctions(final Contact contact) {
-            for (FunctionContact fc: new ArrayList<FunctionContact>(getFunctionContacts())) {
+            for (FunctionContact fc: new ArrayList<>(getFunctionContacts())) {
                 BooleanFormula setFunction = BooleanUtils.replaceClever(fc.getSetFunction(), contact, Zero.instance());
                 fc.setSetFunction(setFunction);
                 BooleanFormula resetFunction = BooleanUtils.replaceClever(fc.getResetFunction(), contact, Zero.instance());

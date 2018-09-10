@@ -17,6 +17,7 @@ import org.workcraft.observation.PropertyChangedEvent;
 @VisualClass(org.workcraft.plugins.dtd.VisualSignal.class)
 public class Signal extends MathNode implements ObservableHierarchy, Container {
 
+    public static final String PROPERTY_NAME = "Name";
     public static final String PROPERTY_TYPE = "Type";
     public static final String PROPERTY_INITIAL_STATE = "Initial state";
 

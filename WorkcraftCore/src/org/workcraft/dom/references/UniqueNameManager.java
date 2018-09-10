@@ -1,12 +1,12 @@
 package org.workcraft.dom.references;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.util.Identifier;
 import org.workcraft.util.TwoWayMap;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class UniqueNameManager implements NameManager {
     private final Map<String, Integer> prefixCount = new HashMap<>();
