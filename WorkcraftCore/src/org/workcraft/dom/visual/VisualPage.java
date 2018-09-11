@@ -1,11 +1,5 @@
 package org.workcraft.dom.visual;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.Collection;
-
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
@@ -21,6 +15,11 @@ import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.util.Hierarchy;
 
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.Collection;
+
 public class VisualPage extends VisualComponent implements Collapsible, Container, ObservableHierarchy {
     public static final String PROPERTY_IS_COLLAPSED = "Is collapsed";
     public static final String PROPERTY_REFERENCED_MODEL = "Referenced model";
@@ -28,21 +27,7 @@ public class VisualPage extends VisualComponent implements Collapsible, Containe
     private boolean isCurrentLevelInside = false;
     private boolean isCollapsed = false;
     private boolean isExcited = false;
-    private String referencedModel = "";
     private final DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
-
-    public void setReferencedModel(String value) {
-        if (value == null) value = "";
-        if (!referencedModel.equals(value)) {
-            sendNotification(new TransformChangingEvent(this));
-            referencedModel = value;
-            sendNotification(new TransformChangedEvent(this));
-        }
-    }
-
-    public String getReferencedModel() {
-        return referencedModel;
-    }
 
     public Collection<VisualComponent> getComponents() {
         return Hierarchy.getDescendantsOfType(this, VisualComponent.class);
@@ -63,19 +48,6 @@ public class VisualPage extends VisualComponent implements Collapsible, Containe
             @Override
             protected Boolean getter(VisualPage object) {
                 return object.getIsCollapsed();
-            }
-        });
-
-        addPropertyDeclaration(new PropertyDeclaration<VisualPage, String>(
-                this, PROPERTY_REFERENCED_MODEL, String.class, true, true, true) {
-
-            @Override
-            protected void setter(VisualPage object, String value) {
-                object.setReferencedModel(value);
-            }
-            @Override
-            protected String getter(VisualPage object) {
-                return object.getReferencedModel();
             }
         });
     }

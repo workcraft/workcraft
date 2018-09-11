@@ -1,6 +1,8 @@
 package org.workcraft.plugins.wtg;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
@@ -37,6 +39,7 @@ public class Wtg extends Dtd {
     public Wtg(Container root, ReferenceManager man) {
         super(root, man);
         new InitialStateSupervisor().attach(getRoot());
+        new SignalTypeConsistencySupervisor(this).attach(getRoot());
     }
 
     public final Collection<State> getStates() {
@@ -80,6 +83,14 @@ public class Wtg extends Dtd {
             container = getRoot();
         }
         return Hierarchy.getDescendantsOfType(container, ExitEvent.class);
+    }
+
+    public Collection<String> getSignalNames() {
+        Set<String> result = new HashSet<>();
+        for (Signal signal : getSignals()) {
+            result.add(getName(signal));
+        }
+        return result;
     }
 
 }

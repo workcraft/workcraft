@@ -1,0 +1,66 @@
+package org.workcraft.plugins.wtg.propertydescriptors;
+
+import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.dtd.Signal;
+import org.workcraft.plugins.wtg.Wtg;
+
+import java.util.Map;
+
+public class SignalNamePropertyDescriptor implements PropertyDescriptor {
+    private final Wtg wtg;
+    private final String signalName;
+
+    public SignalNamePropertyDescriptor(Wtg wtg, String signalName) {
+        this.wtg = wtg;
+        this.signalName = signalName;
+    }
+
+    @Override
+    public Map<Object, String> getChoice() {
+        return null;
+    }
+
+    @Override
+    public String getName() {
+        return signalName + " name";
+    }
+
+    @Override
+    public Class<?> getType() {
+        return String.class;
+    }
+
+    @Override
+    public Object getValue() {
+        return signalName;
+    }
+
+    @Override
+    public boolean isWritable() {
+        return true;
+    }
+
+    @Override
+    public void setValue(Object value) {
+        if ((value instanceof String) && (signalName != null) && !signalName.equals(value)) {
+            for (Signal signal : wtg.getSignals()) {
+                if (!signalName.equals(wtg.getName(signal))) continue;
+                wtg.setName(signal, (String) value);
+                signal.sendNotification(new PropertyChangedEvent(signal, Signal.PROPERTY_NAME));
+            }
+
+        }
+    }
+
+    @Override
+    public boolean isCombinable() {
+        return false;
+    }
+
+    @Override
+    public boolean isTemplatable() {
+        return false;
+    }
+
+}

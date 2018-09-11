@@ -5,9 +5,12 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.dtd.VisualDtd;
 import org.workcraft.plugins.dtd.VisualSignal;
 import org.workcraft.plugins.dtd.VisualTransitionEvent;
+import org.workcraft.plugins.wtg.propertydescriptors.SignalNamePropertyDescriptor;
+import org.workcraft.plugins.wtg.propertydescriptors.SignalTypePropertyDescriptor;
 import org.workcraft.util.Hierarchy;
 
 import java.util.Collection;
@@ -73,6 +76,21 @@ public class VisualWtg extends VisualDtd {
 
     public Collection<VisualWaveform> getVisualWaveforms() {
         return Hierarchy.getDescendantsOfType(getRoot(), VisualWaveform.class);
+    }
+
+    @Override
+    public ModelProperties getProperties(Node node) {
+        ModelProperties properties = super.getProperties(node);
+        if (node == null) {
+            Wtg wtg = (Wtg) getMathModel();
+            for (String signalName : wtg.getSignalNames()) {
+                SignalNamePropertyDescriptor symbolDescriptor = new SignalNamePropertyDescriptor(wtg, signalName);
+                properties.insertOrderedByFirstWord(symbolDescriptor);
+                SignalTypePropertyDescriptor typeDescriptor = new SignalTypePropertyDescriptor(wtg, signalName);
+                properties.insertOrderedByFirstWord(typeDescriptor);
+            }
+        }
+        return properties;
     }
 
 }

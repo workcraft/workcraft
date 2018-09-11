@@ -6,10 +6,8 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.dtd.*;
 import org.workcraft.plugins.dtd.Signal;
 import org.workcraft.plugins.stg.*;
-import org.workcraft.plugins.wtg.State;
-import org.workcraft.plugins.wtg.Waveform;
-import org.workcraft.plugins.wtg.Wtg;
-import org.workcraft.plugins.wtg.WtgSettings;
+import org.workcraft.plugins.wtg.*;
+import org.workcraft.util.Pair;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,22 +20,38 @@ public class WtgToStgConverter {
     private final Stg dstModel;
 
     private final Map<State, StgPlace> stateToPlaceMap;
+    private final Map<String, UnstableSignalStg> unstableSignalToStgMap;
+    private final Map<Waveform, Pair<NamedTransition, NamedTransition>> waveformToEntryExitMap;
     private final Map<Event, NamedTransition> eventToTransitionMap;
-    private final Map<Signal, UnstableSignalStg> unstableSignalToStgMap;
 
     public WtgToStgConverter(Wtg srcModel, Stg dstModel) {
         this.srcModel = srcModel;
         this.dstModel = dstModel;
         stateToPlaceMap = convertStates();
         unstableSignalToStgMap = createSignalStatePlaces();
-        eventToTransitionMap = convertWaveforms();
+        waveformToEntryExitMap = convertWaveforms();
+        eventToTransitionMap = convertEvents();
         convertConnections();
+        convertGuards();
     }
 
-    private Map<Signal, UnstableSignalStg> createSignalStatePlaces() {
-        Map<Signal, UnstableSignalStg> result = new HashMap<>();
-        for (Signal signal: getUnstableSignals()) {
-            String signalName =  srcModel.getName(signal);
+    private Map<State, StgPlace> convertStates() {
+        Map<State, StgPlace> result = new HashMap<>();
+        for (State state: srcModel.getStates()) {
+            String name = srcModel.getName(state);
+            StgPlace place = dstModel.createPlace(name, null);
+            place.setTokens(state.isInitial() ? 1 : 0);
+            result.put(state, place);
+        }
+        return result;
+    }
+
+    private Map<String, UnstableSignalStg> createSignalStatePlaces() {
+        Map<String, UnstableSignalStg> result = new HashMap<>();
+        for (String signalName: getUnstableSignalNames()) {
+            // Only input signals can be unstable
+            org.workcraft.plugins.stg.Signal.Type signalType = org.workcraft.plugins.stg.Signal.Type.INPUT;
+
             StgPlace lowPlace = dstModel.createPlace(getLowStateName(signalName), null);
             StgPlace highPlace = dstModel.createPlace(getHighStateName(signalName), null);
             StgPlace unstablePlace = dstModel.createPlace(getUnstableStateName(signalName), null);
@@ -51,9 +65,11 @@ public class WtgToStgConverter {
 
             SignalTransition riseTransition = dstModel.createSignalTransition(signalName,
                     SignalTransition.Direction.PLUS, null);
+            riseTransition.setSignalType(signalType);
 
             SignalTransition fallTransition = dstModel.createSignalTransition(signalName,
                     SignalTransition.Direction.MINUS, null);
+            fallTransition.setSignalType(signalType);
 
             UnstableSignalStg signalStg = new UnstableSignalStg(lowPlace, highPlace,
                     fallTransition, riseTransition, stablePlace, unstablePlace);
@@ -72,142 +88,119 @@ public class WtgToStgConverter {
             } catch (InvalidConnectionException e) {
                 throw new RuntimeException(e);
             }
-            result.put(signal, signalStg);
+            result.put(signalName, signalStg);
         }
         return result;
     }
 
-    private Map<State, StgPlace> convertStates() {
-        Map<State, StgPlace> result = new HashMap<>();
-        for (State state: srcModel.getStates()) {
-            String name = srcModel.getName(state);
-            StgPlace place = dstModel.createPlace(name, null);
-            place.setTokens(state.isInitial() ? 1 : 0);
-            result.put(state, place);
-        }
-        return result;
-    }
-
-    private Map<Event, NamedTransition> convertWaveforms() {
-        Map<Event, NamedTransition> result = new HashMap<>();
+    private Set<String> getUnstableSignalNames() {
+        Set<String> result = new HashSet<>();
         for (Waveform waveform : srcModel.getWaveforms()) {
-            result.putAll(convertWaveform(waveform));
+            for (TransitionEvent srcTransition : srcModel.getTransitions(waveform)) {
+                TransitionEvent.Direction direction = srcTransition.getDirection();
+                if ((direction == TransitionEvent.Direction.DESTABILISE) || (direction == TransitionEvent.Direction.STABILISE)) {
+                    Signal signal = srcTransition.getSignal();
+                    String signalName = srcModel.getName(signal);
+                    result.add(signalName);
+                }
+            }
         }
         return result;
     }
 
-    private Map<Event, NamedTransition> convertWaveform(Waveform waveform) {
+    private Map<Waveform, Pair<NamedTransition, NamedTransition>> convertWaveforms() {
+        Map<Waveform, Pair<NamedTransition, NamedTransition>> result = new HashMap<>();
+        for (Waveform waveform : srcModel.getWaveforms()) {
+            result.put(waveform, convertWaveform(waveform));
+        }
+        return result;
+    }
+
+    private Pair<NamedTransition, NamedTransition> convertWaveform(Waveform waveform) {
         Set<Node> preset = srcModel.getPreset(waveform);
         Set<Node> postset = srcModel.getPostset(waveform);
         if ((preset.size() != 1) || (postset.size() != 1)) {
             String waveformName = srcModel.getName(waveform);
             throw new FormatException("Incorrect preset and/or postset of waveform '" + waveformName + "'");
         }
-        Map<Event, NamedTransition> result = new HashMap<>();
-        // Entry events
+        String waveformName = srcModel.getName(waveform);
+        // Waveform entry
+        DummyTransition entryTransition = null;
         Node entryNode = preset.iterator().next();
         if (entryNode instanceof State) {
             State entryState = (State) entryNode;
-            result.putAll(convertWaveformEntry(waveform, entryState));
+            StgPlace entryPlace = stateToPlaceMap.get(entryState);
+            entryTransition = dstModel.createDummyTransition(getEntryEventName(waveformName), null);
+            try {
+                dstModel.connect(entryPlace, entryTransition);
+            } catch (InvalidConnectionException e) {
+                throw new RuntimeException(e);
+            }
         }
-        // Exit events
+        // Waveform exit
+        DummyTransition exitTransition = null;
         Node exitNode = postset.iterator().next();
         if (exitNode instanceof State) {
             State exitState = (State) exitNode;
-            result.putAll(convertWaveformExit(waveform, exitState));
+            StgPlace exitPlace = stateToPlaceMap.get(exitState);
+            exitTransition = dstModel.createDummyTransition(getExitEventName(waveformName), null);
+            try {
+                dstModel.connect(exitTransition, exitPlace);
+            } catch (InvalidConnectionException e) {
+                throw new RuntimeException(e);
+            }
         }
-        // Transition events
-        result.putAll(convertWaveformTransitions(waveform));
+        return Pair.of(entryTransition, exitTransition);
+    }
+
+    private Map<Event, NamedTransition> convertEvents() {
+        Map<Event, NamedTransition> result = new HashMap<>();
+        for (Waveform waveform : srcModel.getWaveforms()) {
+            result.putAll(convertEvents(waveform));
+        }
         return result;
     }
 
-    private Map<Event, NamedTransition> convertWaveformEntry(Waveform waveform, State entryState) {
+    private Map<Event, NamedTransition> convertEvents(Waveform waveform) {
         Map<Event, NamedTransition> result = new HashMap<>();
-        StgPlace entryPlace = stateToPlaceMap.get(entryState);
-        String waveformName = srcModel.getName(waveform);
-        DummyTransition entryTransition = dstModel.createDummyTransition(getEntryEventName(waveformName), null);
-        try {
-            dstModel.connect(entryPlace, entryTransition);
-        } catch (InvalidConnectionException e) {
-            throw new RuntimeException(e);
-        }
+        // Entry events
+        result.putAll(convertEntryEvents(waveform));
+        // Exit events
+        result.putAll(convertExitEvents(waveform));
+        // Transition events
+        result.putAll(convertTransitionEvents(waveform));
+        return result;
+    }
+
+    private Map<Event, NamedTransition> convertEntryEvents(Waveform waveform) {
+        Map<Event, NamedTransition> result = new HashMap<>();
+        NamedTransition entryTransition = waveformToEntryExitMap.get(waveform).getFirst();
         for (EntryEvent entryEvent : srcModel.getEntries(waveform)) {
             result.put(entryEvent, entryTransition);
         }
         return result;
     }
 
-    private Map<Event, NamedTransition> convertWaveformExit(Waveform waveform, State exitState) {
+    private Map<Event, NamedTransition> convertExitEvents(Waveform waveform) {
         Map<Event, NamedTransition> result = new HashMap<>();
-        StgPlace exitPlace = stateToPlaceMap.get(exitState);
-        String waveformName = srcModel.getName(waveform);
-        DummyTransition exitTransition = dstModel.createDummyTransition(getExitEventName(waveformName), null);
-        try {
-            dstModel.connect(exitTransition, exitPlace);
-        } catch (InvalidConnectionException e) {
-            throw new RuntimeException(e);
-        }
+        NamedTransition exitTransition = waveformToEntryExitMap.get(waveform).getSecond();
         for (ExitEvent signalExit : srcModel.getExits(waveform)) {
             result.put(signalExit, exitTransition);
         }
         return result;
     }
 
-    private Map<Event, NamedTransition> convertWaveformTransitions(Waveform waveform) {
+    private Map<Event, NamedTransition> convertTransitionEvents(Waveform waveform) {
         Map<Event, NamedTransition> result = new HashMap<>();
         for (TransitionEvent srcTransition : srcModel.getTransitions(waveform)) {
-            Signal signal = srcTransition.getSignal();
-            String signalName = srcModel.getName(signal);
-
             TransitionEvent.Direction direction = srcTransition.getDirection();
             if (direction == TransitionEvent.Direction.DESTABILISE) {
-                // Destabilisation
-                String dummyName = getDestabiliseEventName(signalName);
-                DummyTransition dstTransition = dstModel.createDummyTransition(dummyName, null);
-                UnstableSignalStg signalStg = unstableSignalToStgMap.get(signal);
-                if (signalStg != null) {
-                    try {
-                        dstModel.connect(signalStg.stablePlace, dstTransition);
-                        dstModel.connect(dstTransition, signalStg.unstablePlace);
-                    } catch (InvalidConnectionException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                result.put(srcTransition, dstTransition);
+                result.put(srcTransition, convertDestabiliseTransitionEvent(srcTransition));
             } else if (srcModel.getPreviousState(srcTransition) == Signal.State.UNSTABLE) {
-                // Stabilisation
-                String dummyName = getStabiliseEventName(signalName);
-                DummyTransition dstTransition = dstModel.createDummyTransition(dummyName, null);
-                UnstableSignalStg signalStg = unstableSignalToStgMap.get(signal);
-                if (signalStg != null) {
-                    try {
-                        dstModel.connect(signalStg.unstablePlace, dstTransition);
-                        dstModel.connect(dstTransition, signalStg.stablePlace);
-                    } catch (InvalidConnectionException e) {
-                        throw new RuntimeException(e);
-                    }
-                    if (srcTransition.getDirection() == TransitionEvent.Direction.RISE) {
-                        // Signal is stable high
-                        try {
-                            dstModel.connect(signalStg.highPlace, dstTransition);
-                            dstModel.connect(dstTransition, signalStg.highPlace);
-                        } catch (InvalidConnectionException e) {
-                            throw new RuntimeException(e);
-                        }
-                    } else if (srcTransition.getDirection() == TransitionEvent.Direction.FALL) {
-                        // Signal is stable low
-                        try {
-                            dstModel.connect(signalStg.lowPlace, dstTransition);
-                            dstModel.connect(dstTransition, signalStg.lowPlace);
-                        } catch (InvalidConnectionException e) {
-                            throw new RuntimeException(e);
-                        }
-
-                    }
-                }
-                result.put(srcTransition, dstTransition);
+                result.put(srcTransition, convertStabiliseTransitionEvent(srcTransition));
             } else {
-                // Normal transition
+                Signal signal = srcTransition.getSignal();
+                String signalName = srcModel.getName(signal);
                 SignalTransition dstTransition = dstModel.createSignalTransition(signalName,
                         convertWtgToStgDirection(direction), null);
                 dstTransition.setSignalType(convertWtgToStgType(signal.getType()));
@@ -217,17 +210,55 @@ public class WtgToStgConverter {
         return result;
     }
 
-    private Set<Signal> getUnstableSignals() {
-        Set<Signal> result = new HashSet<>();
-        for (Waveform waveform : srcModel.getWaveforms()) {
-            for (TransitionEvent srcTransition : srcModel.getTransitions(waveform)) {
-                TransitionEvent.Direction direction = srcTransition.getDirection();
-                if ((direction == TransitionEvent.Direction.DESTABILISE) || (direction == TransitionEvent.Direction.STABILISE)) {
-                    result.add(srcTransition.getSignal());
+    private DummyTransition convertDestabiliseTransitionEvent(TransitionEvent srcTransition) {
+        Signal signal = srcTransition.getSignal();
+        String signalName = srcModel.getName(signal);
+        String dummyName = getDestabiliseEventName(signalName);
+        DummyTransition dstTransition = dstModel.createDummyTransition(dummyName, null);
+        UnstableSignalStg signalStg = unstableSignalToStgMap.get(signalName);
+        if (signalStg != null) {
+            try {
+                dstModel.connect(signalStg.stablePlace, dstTransition);
+                dstModel.connect(dstTransition, signalStg.unstablePlace);
+            } catch (InvalidConnectionException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return dstTransition;
+    }
+
+    private DummyTransition convertStabiliseTransitionEvent(TransitionEvent srcTransition) {
+        Signal signal = srcTransition.getSignal();
+        String signalName = srcModel.getName(signal);
+        String dummyName = getStabiliseEventName(signalName);
+        DummyTransition dstTransition = dstModel.createDummyTransition(dummyName, null);
+        UnstableSignalStg signalStg = unstableSignalToStgMap.get(signalName);
+        if (signalStg != null) {
+            try {
+                dstModel.connect(signalStg.unstablePlace, dstTransition);
+                dstModel.connect(dstTransition, signalStg.stablePlace);
+            } catch (InvalidConnectionException e) {
+                throw new RuntimeException(e);
+            }
+            if (srcTransition.getDirection() == TransitionEvent.Direction.RISE) {
+                // Signal is stable high
+                try {
+                    dstModel.connect(signalStg.highPlace, dstTransition);
+                    dstModel.connect(dstTransition, signalStg.highPlace);
+                } catch (InvalidConnectionException e) {
+                    throw new RuntimeException(e);
+                }
+            } else if (srcTransition.getDirection() == TransitionEvent.Direction.FALL) {
+                // Signal is stable low
+                try {
+                    dstModel.connect(signalStg.lowPlace, dstTransition);
+                    dstModel.connect(dstTransition, signalStg.lowPlace);
+                } catch (InvalidConnectionException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }
-        return result;
+        return dstTransition;
     }
 
     private SignalTransition.Direction convertWtgToStgDirection(TransitionEvent.Direction direction) {
@@ -282,6 +313,34 @@ public class WtgToStgConverter {
             }
         }
         return false;
+    }
+
+    private void convertGuards() {
+        for (Waveform waveform : srcModel.getWaveforms()) {
+            convertGuard(waveform);
+        }
+    }
+
+    private void convertGuard(Waveform waveform) {
+        NamedTransition entryTransition = waveformToEntryExitMap.get(waveform).getFirst();
+        Guard guard = waveform.getGuard();
+        for (String signalName : guard.keySet()) {
+            UnstableSignalStg signalStg = unstableSignalToStgMap.get(signalName);
+            if (signalStg == null) {
+                throw new RuntimeException("Cannot find signal '" + signalName + "' used in the guard.");
+            }
+            StgPlace place = guard.get(signalName) ? signalStg.highPlace : signalStg.lowPlace;
+            try {
+                // Read-arc from STABLE place
+                dstModel.connect(signalStg.stablePlace, entryTransition);
+                dstModel.connect(entryTransition, signalStg.stablePlace);
+                // Read-arc from HIGH or LOW place
+                dstModel.connect(place, entryTransition);
+                dstModel.connect(entryTransition, place);
+            } catch (InvalidConnectionException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private static String getLowStateName(String signalName) {

@@ -105,15 +105,11 @@ public class VisualRhoClause extends VisualComponent {
         return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
     }
 
-    public RhoClause getMathRhoClause() {
-        return (RhoClause) getReferencedComponent();
-    }
-
     public BooleanFormula getFormula() {
-        return getMathRhoClause().getFormula();
+        return ((RhoClause) getReferencedComponent()).getFormula();
     }
 
-    public void setFormula(BooleanFormula formula) {
-        getMathRhoClause().setFormula(formula);
+    public void setFormula(BooleanFormula value) {
+        ((RhoClause) getReferencedComponent()).setFormula(value);
     }
 }

@@ -1,10 +1,5 @@
 package org.workcraft.plugins.wtg;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
-import java.awt.geom.Rectangle2D;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
@@ -16,13 +11,39 @@ import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.util.Hierarchy;
 
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.Rectangle2D;
+
 @Hotkey(KeyEvent.VK_W)
 @DisplayName("Waveform")
 @SVGIcon("images/wtg-node-waveform.svg")
 public class VisualWaveform extends VisualPage {
 
+    public static final String PROPERTY_GUARD_POSITIONING = "Guard positioning";
+    public static final String PROPERTY_GUARD_COLOR = "Guard color";
+
     public VisualWaveform(Waveform waveform) {
         super(waveform);
+        renamePropertyDeclarationByName(PROPERTY_LABEL, Waveform.PROPERTY_GUARD);
+        renamePropertyDeclarationByName(PROPERTY_LABEL_COLOR, PROPERTY_GUARD_COLOR);
+        renamePropertyDeclarationByName(PROPERTY_LABEL_POSITIONING, PROPERTY_GUARD_POSITIONING);
+    }
+
+    public Waveform getReferencedWaveform() {
+        return (Waveform) getReferencedComponent();
+    }
+
+    @Override
+    public String getLabel() {
+        return getReferencedWaveform().getGuard().toString();
+    }
+
+    @Override
+    public void setLabel(String label) {
+        Guard guard = Guard.createFromString(label);
+        getReferencedWaveform().setGuard(guard);
+        super.setLabel(label);
     }
 
     @Override

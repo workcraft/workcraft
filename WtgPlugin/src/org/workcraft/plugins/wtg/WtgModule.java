@@ -8,8 +8,12 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.wtg.commands.WtgToStgConversionCommand;
 import org.workcraft.plugins.wtg.commands.WtgToStgWaverConversionCommand;
 import org.workcraft.plugins.wtg.interop.WtgExporter;
+import org.workcraft.plugins.wtg.serialisation.GuardDeserialiser;
+import org.workcraft.plugins.wtg.serialisation.GuardSerialiser;
 import org.workcraft.plugins.wtg.serialisation.WtgSerialiser;
 import org.workcraft.serialisation.ModelSerialiser;
+import org.workcraft.serialisation.xml.XMLDeserialiser;
+import org.workcraft.serialisation.xml.XMLSerialiser;
 
 public class WtgModule  implements Module {
 
@@ -32,6 +36,8 @@ public class WtgModule  implements Module {
         pm.registerClass(Settings.class, WtgSettings.class);
         pm.registerClass(Settings.class, WaverSettings.class);
         pm.registerClass(ModelSerialiser.class, WtgSerialiser.class);
+        pm.registerClass(XMLSerialiser.class, GuardSerialiser.class);
+        pm.registerClass(XMLDeserialiser.class, GuardDeserialiser.class);
 
         pm.registerClass(Exporter.class, WtgExporter.class);
 

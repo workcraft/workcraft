@@ -319,7 +319,7 @@ public class CircuitUtils {
             BooleanFormula result = null;
             VisualFunctionContact contact = circuit.getOrCreateContact(component, name, IOType.INPUT);
             if ((contact != null) && (contact.getReferencedContact() instanceof BooleanFormula)) {
-                result = (BooleanFormula) contact.getReferencedContact();
+                result = contact.getReferencedContact();
             }
             return result;
         });
@@ -333,7 +333,7 @@ public class CircuitUtils {
             BooleanFormula result = null;
             VisualFunctionContact port = circuit.getOrCreateContact(null, name, IOType.OUTPUT);
             if ((port != null) && (port.getReferencedContact() instanceof BooleanFormula)) {
-                result = (BooleanFormula) port.getReferencedContact();
+                result = port.getReferencedContact();
             }
             return result;
         });
