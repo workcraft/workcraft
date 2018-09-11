@@ -17,22 +17,24 @@ import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 import org.workcraft.plugins.circuit.*;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.GUI;
+import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.Queue;
-import java.util.Set;
 
 public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
@@ -45,6 +47,9 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     private final HashSet<Node> initHighSet = new HashSet<>();
     private final HashSet<Node> initLowSet = new HashSet<>();
     private final HashSet<Node> initErrorSet = new HashSet<>();
+    private final ArrayList<String> initForcedPins = new ArrayList<>();
+
+    private JTable forceTable;
 
     private final class ColorDataRenderer implements TableCellRenderer {
         @SuppressWarnings("serial")
@@ -78,32 +83,101 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         legendTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 
         TableColumnModel columnModel = legendTable.getColumnModel();
-        columnModel.getColumn(COLUMN_COLOR).setPreferredWidth(100);
+        columnModel.getColumn(COLUMN_COLOR).setPreferredWidth(50);
         columnModel.getColumn(COLUMN_DESCRIPTION).setPreferredWidth(200);
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-        panel.add(new JScrollPane(legendTable), BorderLayout.CENTER);
+        JPanel legendPanel = new JPanel(new BorderLayout());
+        legendPanel.setBorder(SizeHelper.getTitledBorder("Gate highlight legend"));
+        legendPanel.add(legendTable, BorderLayout.CENTER);
+
+        ForceTableModel forceTableModel = new ForceTableModel();
+        forceTable = new JTable(forceTableModel);
+        forceTable.setFocusable(false);
+        forceTable.setRowSelectionAllowed(false);
+        forceTable.setRowHeight(SizeHelper.getComponentHeightFromFont(forceTable.getFont()));
+        forceTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        forceTable.setTableHeader(null);
+
+        JPanel forcePanel = new JPanel(new BorderLayout());
+        forcePanel.setBorder(SizeHelper.getTitledBorder("Force init pins"));
+
+        JScrollPane forceScrollPane = new JScrollPane(forceTable);
+        forceScrollPane.setMinimumSize(new Dimension(1, 50));
+        forcePanel.add(forceScrollPane, BorderLayout.CENTER);
+
+        JButton toggleForceInitButton = new JButton("Toggle force init for all inputs");
+        toggleForceInitButton.addActionListener(l -> toggleForceInit(editor));
+        forcePanel.add(toggleForceInitButton, BorderLayout.SOUTH);
+
+        JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
+        namePanel.add(new JLabel("Port name:"));
+        namePanel.add(new JTextField("nrst"));
+        JPanel levelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
+        levelPanel.add(new JLabel("Active level:"));
+        JRadioButton lowRadio = new JRadioButton("low");
+        JRadioButton highRadio = new JRadioButton("high");
+        levelPanel.add(lowRadio);
+        levelPanel.add(highRadio);
+
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(lowRadio);
+        buttonGroup.add(highRadio);
+        lowRadio.setSelected(true);
+
+        JButton insertResetButton = new JButton("Insert");
+        insertResetButton.addActionListener(l -> insertReset(editor));
+
+        JPanel resetPanel = new JPanel(new WrapLayout());
+        resetPanel.setBorder(SizeHelper.getTitledBorder("Reset logic insertion"));
+        resetPanel.add(namePanel);
+        resetPanel.add(levelPanel);
+        resetPanel.add(insertResetButton);
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(legendPanel, BorderLayout.NORTH);
+        panel.add(forcePanel, BorderLayout.CENTER);
+        panel.add(resetPanel, BorderLayout.SOUTH);
         panel.setPreferredSize(new Dimension(0, 0));
         return panel;
+    }
+
+    private void toggleForceInit(GraphEditor editor) {
+        Circuit circuit = (Circuit) editor.getModel().getMathModel();
+        boolean allForceInit = true;
+        for (Contact port : circuit.getInputPorts()) {
+            if (!port.getForcedInit()) {
+                allForceInit = false;
+                break;
+            }
+        }
+        for (Contact port : circuit.getInputPorts()) {
+            port.setForcedInit(!allForceInit);
+        }
+        updateState(circuit);
+    }
+
+    private void insertReset(GraphEditor editor) {
+        Circuit circuit = (Circuit) editor.getModel().getMathModel();
+        HashSet<String> r = new HashSet<>();
+        for (Contact contact : circuit.getFunctionContacts()) {
+            if (contact.isPin() && contact.isDriver()) {
+                if (!initLowSet.contains(contact) && !initHighSet.contains(contact)) {
+                    String ref = circuit.getNodeReference(contact);
+                    r.add(ref);
+                }
+            }
+        }
+        if (!r.isEmpty()) {
+            String msg = "All gates must be correctly initialised before inserting reset.\n" +
+                    LogUtils.getTextWithRefs("Problematic signal", r);
+            DialogUtils.showError(msg);
+        }
     }
 
     private final class LegendTableModel extends AbstractTableModel {
         @Override
         public int getColumnCount() {
             return 2;
-        }
-
-        @Override
-        public String getColumnName(int column) {
-            switch (column) {
-            case COLUMN_COLOR:
-                return "<html><b>Color</b></html>";
-            case COLUMN_DESCRIPTION:
-                return "<html><b>Description</b></html>";
-            default:
-                return null;
-            }
         }
 
         @Override
@@ -135,6 +209,33 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
             default:
                 return null;
             }
+        }
+    }
+
+    private final class ForceTableModel extends AbstractTableModel {
+        @Override
+        public int getColumnCount() {
+            return 1;
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            switch (column) {
+            case COLUMN_COLOR:
+                return "<html><b>Forced pin</b></html>";
+            default:
+                return null;
+            }
+        }
+
+        @Override
+        public int getRowCount() {
+            return initForcedPins.size();
+        }
+
+        @Override
+        public Object getValueAt(int row, int col) {
+            return (row < initForcedPins.size()) ? initForcedPins.get(row) : null;
         }
     }
 
@@ -176,6 +277,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         initHighSet.clear();
         initLowSet.clear();
         initErrorSet.clear();
+        initForcedPins.clear();
     }
 
     @Override
@@ -190,15 +292,19 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         initHighSet.clear();
         initLowSet.clear();
         initErrorSet.clear();
+        initForcedPins.clear();
         Queue<Connection> queue = new LinkedList<>();
         for (FunctionContact contact : circuit.getFunctionContacts()) {
             if (contact.isDriver() && contact.getForcedInit()) {
+                String pinRef = circuit.getNodeReference(contact);
+                initForcedPins.add(pinRef);
                 HashSet<Node> initSet = (contact.getInitToOne()) ? initHighSet : initLowSet;
                 if (initSet.add(contact)) {
                     queue.addAll(circuit.getConnections(contact));
                 }
             }
         }
+        Collections.sort(initForcedPins);
         while (!queue.isEmpty()) {
             Connection connection = queue.remove();
             Node fromNode = connection.getFirst();
@@ -220,6 +326,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
                 }
             }
         }
+        forceTable.tableChanged(new TableModelEvent(forceTable.getModel()));
     }
 
     private void fillVariableValues(FunctionComponent component,
