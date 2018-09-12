@@ -894,7 +894,7 @@ public class VerilogImporter implements Importer {
             HashSet<FunctionComponent> leafComponents = new HashSet<>();
             for (FunctionComponent component: components) {
                 if (component == rootComponent) continue;
-                for (MathNode node: CircuitUtils.getComponentPostset(circuit, component)) {
+                for (MathNode node: CircuitUtilsKt.getPostsetComponents(circuit, component)) {
                     if (node != rootComponent) continue;
                     leafComponents.add(component);
                 }

@@ -27,9 +27,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumnModel;
+import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -51,87 +49,11 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
     private JTable forceTable;
 
-    private final class ColorDataRenderer implements TableCellRenderer {
-        @SuppressWarnings("serial")
-        final JLabel label = new JLabel() {
-            @Override
-            public void paint(final Graphics g) {
-                g.setColor(getBackground());
-                g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
-                super.paint(g);
-            }
-        };
-
-        @Override
-        public Component getTableCellRendererComponent(final JTable table, final Object value,
-                final boolean isSelected, final boolean hasFocus, final int row, final int column) {
-            label.setText("");
-            label.setBorder(PropertyEditorTable.BORDER_RENDER);
-            label.setBackground((Color) value);
-            return label;
-        }
-    }
-
     @Override
     public JPanel getControlsPanel(final GraphEditor editor) {
-        LegendTableModel legendTableModel = new LegendTableModel();
-        JTable legendTable = new JTable(legendTableModel);
-        legendTable.setFocusable(false);
-        legendTable.setRowSelectionAllowed(false);
-        legendTable.setRowHeight(SizeHelper.getComponentHeightFromFont(legendTable.getFont()));
-        legendTable.setDefaultRenderer(Color.class, new ColorDataRenderer());
-        legendTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-
-        TableColumnModel columnModel = legendTable.getColumnModel();
-        columnModel.getColumn(COLUMN_COLOR).setPreferredWidth(50);
-        columnModel.getColumn(COLUMN_DESCRIPTION).setPreferredWidth(200);
-
-        JPanel legendPanel = new JPanel(new BorderLayout());
-        legendPanel.setBorder(SizeHelper.getTitledBorder("Gate highlight legend"));
-        legendPanel.add(legendTable, BorderLayout.CENTER);
-
-        ForceTableModel forceTableModel = new ForceTableModel();
-        forceTable = new JTable(forceTableModel);
-        forceTable.setFocusable(false);
-        forceTable.setRowSelectionAllowed(false);
-        forceTable.setRowHeight(SizeHelper.getComponentHeightFromFont(forceTable.getFont()));
-        forceTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-        forceTable.setTableHeader(null);
-
-        JPanel forcePanel = new JPanel(new BorderLayout());
-        forcePanel.setBorder(SizeHelper.getTitledBorder("Force init pins"));
-
-        JScrollPane forceScrollPane = new JScrollPane(forceTable);
-        forceScrollPane.setMinimumSize(new Dimension(1, 50));
-        forcePanel.add(forceScrollPane, BorderLayout.CENTER);
-
-        JButton toggleForceInitButton = new JButton("Toggle force init for all inputs");
-        toggleForceInitButton.addActionListener(l -> toggleForceInit(editor));
-        forcePanel.add(toggleForceInitButton, BorderLayout.SOUTH);
-
-        JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
-        namePanel.add(new JLabel("Port name:"));
-        namePanel.add(new JTextField("nrst"));
-        JPanel levelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
-        levelPanel.add(new JLabel("Active level:"));
-        JRadioButton lowRadio = new JRadioButton("low");
-        JRadioButton highRadio = new JRadioButton("high");
-        levelPanel.add(lowRadio);
-        levelPanel.add(highRadio);
-
-        ButtonGroup buttonGroup = new ButtonGroup();
-        buttonGroup.add(lowRadio);
-        buttonGroup.add(highRadio);
-        lowRadio.setSelected(true);
-
-        JButton insertResetButton = new JButton("Insert");
-        insertResetButton.addActionListener(l -> insertReset(editor));
-
-        JPanel resetPanel = new JPanel(new WrapLayout());
-        resetPanel.setBorder(SizeHelper.getTitledBorder("Reset logic insertion"));
-        resetPanel.add(namePanel);
-        resetPanel.add(levelPanel);
-        resetPanel.add(insertResetButton);
+        JPanel legendPanel = getLegendControlsPanel(editor);
+        JPanel forcePanel = getForcedControlsPanel(editor);
+        JPanel resetPanel = getResetControlsPanel(editor);
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(legendPanel, BorderLayout.NORTH);
@@ -141,7 +63,60 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         return panel;
     }
 
-    private void toggleForceInit(GraphEditor editor) {
+    private JPanel getLegendControlsPanel(final GraphEditor editor) {
+        LegendTableModel legendTableModel = new LegendTableModel();
+        JTable legendTable = new JTable(legendTableModel);
+        legendTable.setFocusable(false);
+        legendTable.setRowSelectionAllowed(false);
+        legendTable.setRowHeight(SizeHelper.getComponentHeightFromFont(legendTable.getFont()));
+        legendTable.setDefaultRenderer(Color.class, new ColorDataRenderer());
+        legendTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        // Make the table transparent
+        legendTable.setShowGrid(false);
+        legendTable.setOpaque(false);
+        DefaultTableCellRenderer legendRenderer = (DefaultTableCellRenderer) legendTable.getDefaultRenderer(Object.class);
+        legendRenderer.setOpaque(false);
+        // Set the color cells square shape
+        TableColumnModel columnModel = legendTable.getColumnModel();
+        int colorCellSize = legendTable.getRowHeight();
+        TableColumn colorLegendColumn = columnModel.getColumn(COLUMN_COLOR);
+        colorLegendColumn.setMinWidth(colorCellSize);
+        colorLegendColumn.setMaxWidth(colorCellSize);
+
+        JPanel legendPanel = new JPanel(new BorderLayout());
+        legendPanel.setBorder(SizeHelper.getTitledBorder("Gate highlight legend"));
+        legendPanel.add(legendTable, BorderLayout.CENTER);
+        return legendPanel;
+    }
+
+    private JPanel getForcedControlsPanel(final GraphEditor editor) {
+        ForceTableModel forceTableModel = new ForceTableModel();
+        forceTable = new JTable(forceTableModel);
+        forceTable.setFocusable(false);
+        forceTable.setRowSelectionAllowed(false);
+        forceTable.setRowHeight(SizeHelper.getComponentHeightFromFont(forceTable.getFont()));
+        forceTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        forceTable.setTableHeader(null);
+        JScrollPane forceScrollPane = new JScrollPane(forceTable);
+
+        JButton toggleForceInitInputsButton = new JButton("Toggle force init for all inputs");
+        toggleForceInitInputsButton.addActionListener(l -> toggleForceInitInputs(editor));
+
+        JButton toggleForceInitLoopsButton = new JButton("Toggle force init for all self-loops");
+        toggleForceInitLoopsButton.addActionListener(l -> toggleForceInitLoops(editor));
+
+        JPanel btnPanel = new JPanel(new WrapLayout());
+        btnPanel.add(toggleForceInitInputsButton);
+        btnPanel.add(toggleForceInitLoopsButton);
+
+        JPanel forcePanel = new JPanel(new BorderLayout());
+        forcePanel.setBorder(SizeHelper.getTitledBorder("Force init pins"));
+        forcePanel.add(forceScrollPane, BorderLayout.CENTER);
+        forcePanel.add(btnPanel, BorderLayout.SOUTH);
+        return forcePanel;
+    }
+
+    private void toggleForceInitInputs(final GraphEditor editor) {
         Circuit circuit = (Circuit) editor.getModel().getMathModel();
         boolean allForceInit = true;
         for (Contact port : circuit.getInputPorts()) {
@@ -156,7 +131,66 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         updateState(circuit);
     }
 
-    private void insertReset(GraphEditor editor) {
+    private void toggleForceInitLoops(final GraphEditor editor) {
+        Circuit circuit = (Circuit) editor.getModel().getMathModel();
+        HashSet<Contact> loopContacts = getSelfLoopContacts(circuit);
+        boolean allForceInit = true;
+        for (Contact contact : loopContacts) {
+            if (!contact.getForcedInit()) {
+                allForceInit = false;
+                break;
+            }
+        }
+        for (Contact contact : loopContacts) {
+            contact.setForcedInit(!allForceInit);
+        }
+        updateState(circuit);
+    }
+
+    private HashSet<Contact> getSelfLoopContacts(Circuit circuit) {
+        HashSet<Contact> result = new HashSet<>();
+        for (CircuitComponent component : circuit.getFunctionComponents()) {
+            if ((component instanceof FunctionComponent) && ((FunctionComponent) component).getIsZeroDelay()) continue;
+            for (Contact outputContact : component.getOutputs()) {
+                for (CircuitComponent succComponent : CircuitUtilsKt.getPostsetComponents(circuit, outputContact, true)) {
+                    if (component != succComponent) continue;
+                    result.add(outputContact);
+                }
+            }
+        }
+        return result;
+    }
+
+    private JPanel getResetControlsPanel(final GraphEditor editor) {
+        JPanel resetPanel = new JPanel(new WrapLayout());
+        resetPanel.setBorder(SizeHelper.getTitledBorder("Reset logic insertion"));
+
+        JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
+        namePanel.add(new JLabel("Port name:"));
+        namePanel.add(new JTextField("nrst"));
+        resetPanel.add(namePanel);
+
+        JRadioButton lowRadio = new JRadioButton("low");
+        JRadioButton highRadio = new JRadioButton("high");
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(lowRadio);
+        buttonGroup.add(highRadio);
+        lowRadio.setSelected(true);
+
+        JPanel levelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
+        levelPanel.add(new JLabel("Active level:"));
+        levelPanel.add(lowRadio);
+        levelPanel.add(highRadio);
+        resetPanel.add(levelPanel);
+
+        JButton insertResetButton = new JButton("Insert");
+        insertResetButton.addActionListener(l -> insertReset(editor));
+        resetPanel.add(insertResetButton);
+
+        return resetPanel;
+    }
+
+    private void insertReset(final GraphEditor editor) {
         Circuit circuit = (Circuit) editor.getModel().getMathModel();
         HashSet<String> r = new HashSet<>();
         for (Contact contact : circuit.getFunctionContacts()) {
@@ -219,16 +253,6 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         }
 
         @Override
-        public String getColumnName(int column) {
-            switch (column) {
-            case COLUMN_COLOR:
-                return "<html><b>Forced pin</b></html>";
-            default:
-                return null;
-            }
-        }
-
-        @Override
         public int getRowCount() {
             return initForcedPins.size();
         }
@@ -236,6 +260,26 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         @Override
         public Object getValueAt(int row, int col) {
             return (row < initForcedPins.size()) ? initForcedPins.get(row) : null;
+        }
+    }
+
+    private final class ColorDataRenderer implements TableCellRenderer {
+        private final JLabel label = new JLabel() {
+            @Override
+            public void paint(final Graphics g) {
+                g.setColor(getBackground());
+                g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+                super.paint(g);
+            }
+        };
+
+        @Override
+        public Component getTableCellRendererComponent(final JTable table, final Object value,
+                final boolean isSelected, final boolean hasFocus, final int row, final int column) {
+            label.setText("");
+            label.setBorder(PropertyEditorTable.BORDER_RENDER);
+            label.setBackground((Color) value);
+            return label;
         }
     }
 
