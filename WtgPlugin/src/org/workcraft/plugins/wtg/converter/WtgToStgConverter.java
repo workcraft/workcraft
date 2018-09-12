@@ -48,6 +48,7 @@ public class WtgToStgConverter {
 
     private Map<String, UnstableSignalStg> createSignalStatePlaces() {
         Map<String, UnstableSignalStg> result = new HashMap<>();
+        Map<String, Signal.State> initialSignalStates = srcModel.getInitialSignalStates();
         for (String signalName: getUnstableSignalNames()) {
             // Only input signals can be unstable
             org.workcraft.plugins.stg.Signal.Type signalType = org.workcraft.plugins.stg.Signal.Type.INPUT;
@@ -57,11 +58,22 @@ public class WtgToStgConverter {
             StgPlace unstablePlace = dstModel.createPlace(getUnstableStateName(signalName), null);
             StgPlace stablePlace = dstModel.createPlace(getStableStateName(signalName), null);
 
-            // FIXME: We (provisionally) assume that unstable signals are initially in STABLE-LOW state
-            stablePlace.setTokens(1);
-            unstablePlace.setTokens(0);
-            lowPlace.setTokens(1);
-            highPlace.setTokens(0);
+            Signal.State initialSignalState = initialSignalStates.get(signalName);
+            if (initialSignalState == Signal.State.UNSTABLE) {
+                stablePlace.setTokens(0);
+                unstablePlace.setTokens(1);
+            } else {
+                stablePlace.setTokens(1);
+                unstablePlace.setTokens(0);
+            }
+            if (initialSignalState == Signal.State.HIGH) {
+                highPlace.setTokens(1);
+                lowPlace.setTokens(0);
+            } else {
+                //If the initial Signal State is unstable or stable, we default to 0. This is an arbitrary decision
+                highPlace.setTokens(0);
+                lowPlace.setTokens(1);
+            }
 
             SignalTransition riseTransition = dstModel.createSignalTransition(signalName,
                     SignalTransition.Direction.PLUS, null);
@@ -102,6 +114,12 @@ public class WtgToStgConverter {
                     Signal signal = srcTransition.getSignal();
                     String signalName = srcModel.getName(signal);
                     result.add(signalName);
+                }
+            }
+
+            for (Signal signal : srcModel.getSignals(waveform)) {
+                if (signal.getInitialState() == Signal.State.UNSTABLE) {
+                    result.add(srcModel.getName(signal));
                 }
             }
         }
