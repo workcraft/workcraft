@@ -2,6 +2,7 @@ package org.workcraft.dom.visual;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -668,6 +669,11 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     @Override
     public AbstractLayoutCommand getBestLayouter() {
         return new DotLayoutCommand();
+    }
+
+    @Override
+    public Rectangle2D getBoundingBox() {
+        return BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(getRoot(), Touchable.class));
     }
 
 }

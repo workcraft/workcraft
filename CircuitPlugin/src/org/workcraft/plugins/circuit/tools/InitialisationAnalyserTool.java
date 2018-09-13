@@ -2,24 +2,19 @@ package org.workcraft.plugins.circuit.tools;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.HitMan;
-import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.BooleanVariable;
-import org.workcraft.formula.One;
-import org.workcraft.formula.Zero;
+import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.formula.*;
 import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.GUI;
 import org.workcraft.util.LogUtils;
@@ -31,16 +26,19 @@ import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.*;
 import java.util.Queue;
 
 public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
-    private static final int COLUMN_COLOR = 0;
-    private static final int COLUMN_DESCRIPTION = 1;
-    private static final int ROW_INIT_CONFLICT = 0;
-    private static final int ROW_INIT_FORCED = 1;
-    private static final int ROW_INIT_PROPAGATED = 2;
+    private static final int LEGEND_COLUMN_COLOR = 0;
+    private static final int LEGEND_COLUMN_DESCRIPTION = 1;
+    private static final int LEGEND_ROW_INIT_UNDEFINED = 0;
+    private static final int LEGEND_ROW_INIT_CONFLICT = 1;
+    private static final int LEGEND_ROW_INIT_FORCED = 2;
+    private static final int LEGEND_ROW_INIT_PROPAGATED = 3;
 
     private final HashSet<Node> initHighSet = new HashSet<>();
     private final HashSet<Node> initLowSet = new HashSet<>();
@@ -51,14 +49,10 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
     @Override
     public JPanel getControlsPanel(final GraphEditor editor) {
-        JPanel legendPanel = getLegendControlsPanel(editor);
-        JPanel forcePanel = getForcedControlsPanel(editor);
-        JPanel resetPanel = getResetControlsPanel(editor);
-
         JPanel panel = new JPanel(new BorderLayout());
-        panel.add(legendPanel, BorderLayout.NORTH);
-        panel.add(forcePanel, BorderLayout.CENTER);
-        panel.add(resetPanel, BorderLayout.SOUTH);
+        panel.add(getLegendControlsPanel(editor), BorderLayout.NORTH);
+        panel.add(getForcedControlsPanel(editor), BorderLayout.CENTER);
+        panel.add(getResetControlsPanel(editor), BorderLayout.SOUTH);
         panel.setPreferredSize(new Dimension(0, 0));
         return panel;
     }
@@ -79,7 +73,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         // Set the color cells square shape
         TableColumnModel columnModel = legendTable.getColumnModel();
         int colorCellSize = legendTable.getRowHeight();
-        TableColumn colorLegendColumn = columnModel.getColumn(COLUMN_COLOR);
+        TableColumn colorLegendColumn = columnModel.getColumn(LEGEND_COLUMN_COLOR);
         colorLegendColumn.setMinWidth(colorCellSize);
         colorLegendColumn.setMaxWidth(colorCellSize);
 
@@ -99,15 +93,33 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         forceTable.setTableHeader(null);
         JScrollPane forceScrollPane = new JScrollPane(forceTable);
 
-        JButton toggleForceInitInputsButton = new JButton("Toggle force init for all inputs");
+        JButton toggleForceInitInputsButton = GUI.createIconButton(
+                GUI.createIconFromSVG("images/circuit-initialisation-force-input.svg"),
+                "Toggle force init for all inputs");
         toggleForceInitInputsButton.addActionListener(l -> toggleForceInitInputs(editor));
 
-        JButton toggleForceInitLoopsButton = new JButton("Toggle force init for all self-loops");
+        JButton toggleForceInitLoopsButton = GUI.createIconButton(
+                GUI.createIconFromSVG("images/circuit-initialisation-force-selfloop.svg"),
+                "Toggle force init for all self-loops");
         toggleForceInitLoopsButton.addActionListener(l -> toggleForceInitLoops(editor));
 
-        JPanel btnPanel = new JPanel(new WrapLayout());
+        JButton toggleForceInitCelementsButton = GUI.createIconButton(
+                GUI.createIconFromSVG("images/circuit-initialisation-force-celement.svg"),
+                "Toggle force init for all sequential gates");
+        toggleForceInitCelementsButton.addActionListener(l -> toggleForceInitCelements(editor));
+
+        FlowLayout flowLayout = new FlowLayout();
+        int buttonWidth = (int) Math.round(toggleForceInitInputsButton.getPreferredSize().getWidth() + flowLayout.getHgap());
+        int buttonHeight = (int) Math.round(toggleForceInitInputsButton.getPreferredSize().getHeight() + flowLayout.getVgap());
+        Dimension panelSize = new Dimension(buttonWidth * 5 + flowLayout.getHgap(), buttonHeight + flowLayout.getVgap());
+
+        JPanel btnPanel = new JPanel();
+        btnPanel.setLayout(flowLayout);
+        btnPanel.setPreferredSize(panelSize);
+        btnPanel.setMaximumSize(panelSize);
         btnPanel.add(toggleForceInitInputsButton);
         btnPanel.add(toggleForceInitLoopsButton);
+        btnPanel.add(toggleForceInitCelementsButton);
 
         JPanel forcePanel = new JPanel(new BorderLayout());
         forcePanel.setBorder(SizeHelper.getTitledBorder("Force init pins"));
@@ -129,6 +141,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
             port.setForcedInit(!allForceInit);
         }
         updateState(circuit);
+        editor.requestFocus();
     }
 
     private void toggleForceInitLoops(final GraphEditor editor) {
@@ -145,6 +158,25 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
             contact.setForcedInit(!allForceInit);
         }
         updateState(circuit);
+        editor.requestFocus();
+    }
+
+    private void toggleForceInitCelements(final GraphEditor editor) {
+        Circuit circuit = (Circuit) editor.getModel().getMathModel();
+        boolean allForceInit = true;
+        HashSet<Contact> celementContacts = new HashSet<>();
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            for (FunctionContact contact : component.getFunctionOutputs()) {
+                if ((contact.getSetFunction() == null) || (contact.getResetFunction() == null)) continue;
+                celementContacts.add(contact);
+                allForceInit &= contact.getForcedInit();
+            }
+        }
+        for (Contact contact : celementContacts) {
+            contact.setForcedInit(!allForceInit);
+        }
+        updateState(circuit);
+        editor.requestFocus();
     }
 
     private HashSet<Contact> getSelfLoopContacts(Circuit circuit) {
@@ -162,31 +194,11 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private JPanel getResetControlsPanel(final GraphEditor editor) {
-        JPanel resetPanel = new JPanel(new WrapLayout());
-        resetPanel.setBorder(SizeHelper.getTitledBorder("Reset logic insertion"));
-
-        JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
-        namePanel.add(new JLabel("Port name:"));
-        namePanel.add(new JTextField("nrst"));
-        resetPanel.add(namePanel);
-
-        JRadioButton lowRadio = new JRadioButton("low");
-        JRadioButton highRadio = new JRadioButton("high");
-        ButtonGroup buttonGroup = new ButtonGroup();
-        buttonGroup.add(lowRadio);
-        buttonGroup.add(highRadio);
-        lowRadio.setSelected(true);
-
-        JPanel levelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
-        levelPanel.add(new JLabel("Active level:"));
-        levelPanel.add(lowRadio);
-        levelPanel.add(highRadio);
-        resetPanel.add(levelPanel);
-
-        JButton insertResetButton = new JButton("Insert");
+        JButton insertResetButton = new JButton("Insert reset logic");
         insertResetButton.addActionListener(l -> insertReset(editor));
-        resetPanel.add(insertResetButton);
 
+        JPanel resetPanel = new JPanel();
+        resetPanel.add(insertResetButton);
         return resetPanel;
     }
 
@@ -205,6 +217,101 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
             String msg = "All gates must be correctly initialised before inserting reset.\n" +
                     LogUtils.getTextWithRefs("Problematic signal", r);
             DialogUtils.showError(msg);
+        } else {
+            Object[] options1 = {"Insert active-low reset", "Insert active-high reset", "Cancel"};
+            JPanel panel = new JPanel();
+            panel.add(new JLabel("Reset port name: "));
+            JTextField textField = new JTextField("nrst", 20);
+            panel.add(textField);
+
+            int result = JOptionPane.showOptionDialog(null, panel, "Reset logic",
+                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options1, null);
+            if ((result == JOptionPane.YES_OPTION) || (result == JOptionPane.NO_OPTION)) {
+                editor.getWorkspaceEntry().saveMemento();
+                insertReset(editor, textField.getText(), result == JOptionPane.YES_OPTION);
+                updateState(circuit);
+            }
+        }
+        editor.requestFocus();
+    }
+
+    private void insertReset(final GraphEditor editor, String portName, boolean activeLow) {
+        VisualCircuit circuit = (VisualCircuit) editor.getModel();
+        VisualFunctionContact resetPort = circuit.getOrCreateContact(null, portName, Contact.IOType.INPUT);
+
+        for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {
+            VisualFunctionContact resetContact = null;
+            for (VisualFunctionContact contact : component.getVisualFunctionContacts()) {
+                if (contact.isOutput() && contact.isPin() && contact.getForcedInit()) {
+                    if (resetContact == null) {
+                        resetContact = circuit.getOrCreateContact(component, portName, Contact.IOType.INPUT);
+                    }
+                    if (activeLow) {
+                        addActiveLowReset(contact, resetContact);
+                    } else {
+                        addActiveHighReset(contact, resetContact);
+                    }
+                    try {
+                        circuit.connect(resetPort, resetContact);
+                    } catch (InvalidConnectionException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
+
+        for (VisualFunctionContact contact : circuit.getVisualFunctionContacts()) {
+            if (contact.isPin() && contact.isOutput()) {
+                contact.setForcedInit(false);
+            }
+        }
+        resetPort.setInitToOne(!activeLow);
+        resetPort.setForcedInit(true);
+        resetPort.setSetFunction(activeLow ? One.instance() : Zero.instance());
+        resetPort.setResetFunction(activeLow ? Zero.instance() : One.instance());
+        Rectangle2D modelBox = circuit.getBoundingBox();
+        resetPort.setRootSpacePosition(new Point2D.Double(modelBox.getMinX(), modelBox.getMinY()));
+    }
+
+    private void addActiveLowReset(VisualFunctionContact contact, VisualFunctionContact resetContact) {
+        BooleanFormula setFunction = contact.getSetFunction();
+        BooleanFormula resetFunction = contact.getResetFunction();
+        FunctionContact resetVar = resetContact.getReferencedFunctionContact();
+        if (contact.getInitToOne()) {
+            if (setFunction != null) {
+                contact.setSetFunction(BooleanOperations.or(BooleanOperations.not(resetVar), setFunction, new CleverBooleanWorker()));
+            }
+            if (resetFunction != null) {
+                contact.setResetFunction(BooleanOperations.and(resetVar, resetFunction, new CleverBooleanWorker()));
+            }
+        } else {
+            if (setFunction != null) {
+                contact.setSetFunction(BooleanOperations.and(resetVar, setFunction, new CleverBooleanWorker()));
+            }
+            if (resetFunction != null) {
+                contact.setResetFunction(BooleanOperations.or(BooleanOperations.not(resetVar), resetFunction, new CleverBooleanWorker()));
+            }
+        }
+    }
+
+    private void addActiveHighReset(VisualFunctionContact contact, VisualFunctionContact resetContact) {
+        BooleanFormula setFunction = contact.getSetFunction();
+        BooleanFormula resetFunction = contact.getResetFunction();
+        FunctionContact resetVar = resetContact.getReferencedFunctionContact();
+        if (contact.getInitToOne()) {
+            if (setFunction != null) {
+                contact.setSetFunction(BooleanOperations.or(resetVar, setFunction, new CleverBooleanWorker()));
+            }
+            if (resetFunction != null) {
+                contact.setResetFunction(BooleanOperations.and(BooleanOperations.not(resetVar), resetFunction, new CleverBooleanWorker()));
+            }
+        } else {
+            if (setFunction != null) {
+                contact.setSetFunction(BooleanOperations.and(BooleanOperations.not(resetVar), setFunction, new CleverBooleanWorker()));
+            }
+            if (resetFunction != null) {
+                contact.setResetFunction(BooleanOperations.or(resetVar, resetFunction, new CleverBooleanWorker()));
+            }
         }
     }
 
@@ -217,9 +324,9 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         @Override
         public Class<?> getColumnClass(final int col) {
             switch (col) {
-            case COLUMN_COLOR:
+            case LEGEND_COLUMN_COLOR:
                 return Color.class;
-            case COLUMN_DESCRIPTION:
+            case LEGEND_COLUMN_DESCRIPTION:
                 return String.class;
             default:
                 return null;
@@ -228,18 +335,20 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
         @Override
         public int getRowCount() {
-            return 3;
+            return 4;
         }
 
         @Override
         public Object getValueAt(int row, int col) {
             switch (row) {
-            case ROW_INIT_CONFLICT:
-                return (col == COLUMN_COLOR) ? CircuitSettings.getConflictInitGateColor() : "Conflict of initialisation";
-            case ROW_INIT_FORCED:
-                return (col == COLUMN_COLOR) ? CircuitSettings.getForcedInitGateColor() : "Forced initial state";
-            case ROW_INIT_PROPAGATED:
-                return (col == COLUMN_COLOR) ? CircuitSettings.getPropagatedInitGateColor() : "Propagated initial state";
+            case LEGEND_ROW_INIT_UNDEFINED:
+                return (col == LEGEND_COLUMN_COLOR) ? CommonVisualSettings.getFillColor() : "Undefined initial state";
+            case LEGEND_ROW_INIT_CONFLICT:
+                return (col == LEGEND_COLUMN_COLOR) ? CircuitSettings.getConflictInitGateColor() : "Conflict of initialisation";
+            case LEGEND_ROW_INIT_FORCED:
+                return (col == LEGEND_COLUMN_COLOR) ? CircuitSettings.getForcedInitGateColor() : "Forced initial state";
+            case LEGEND_ROW_INIT_PROPAGATED:
+                return (col == LEGEND_COLUMN_COLOR) ? CircuitSettings.getPropagatedInitGateColor() : "Propagated initial state";
             default:
                 return null;
             }
