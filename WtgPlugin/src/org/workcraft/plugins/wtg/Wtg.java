@@ -97,8 +97,8 @@ public class Wtg extends Dtd {
         //BFS initialization
         int remainingSignals = getSignalNames().size();
         State initialState = getInitialState();
-        Set<Node> visitedNodes = new HashSet<Node>();
-        Queue<Node> nodesToVisit = new LinkedList<Node>();
+        Set<Node> visitedNodes = new HashSet<>();
+        Queue<Node> nodesToVisit = new LinkedList<>();
         nodesToVisit.add(initialState);
         visitedNodes.add(initialState);
         //BFS main loop
