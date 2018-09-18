@@ -91,41 +91,6 @@ public class Wtg extends Dtd {
         return result;
     }
 
-    public final Map<String, Signal.State> getInitialSignalStates() {
-        Map<String, Signal.State> result = new HashMap<>();
-
-        //BFS initialization
-        int remainingSignals = getSignalNames().size();
-        State initialState = getInitialState();
-        Set<Node> visitedNodes = new HashSet<>();
-        Queue<Node> nodesToVisit = new LinkedList<>();
-        nodesToVisit.add(initialState);
-        visitedNodes.add(initialState);
-        //BFS main loop
-        while ((!nodesToVisit.isEmpty()) && (remainingSignals > 0)) {
-            Node node = nodesToVisit.poll();
-
-            if (node instanceof Waveform) {
-                Waveform waveform = (Waveform) node;
-                for (Signal signal : getSignals(waveform)) {
-                    String signalName = getName(signal);
-                    if (!result.containsKey(signalName)) {
-                        result.put(signalName, signal.getInitialState());
-                        remainingSignals = remainingSignals - 1;
-                    }
-                }
-            }
-
-            for (Node n : getPostset(node)) {
-                if (!visitedNodes.contains(n)) {
-                    nodesToVisit.add(n);
-                    visitedNodes.add(n);
-                }
-            }
-        }
-        return result;
-    }
-
     public final State getInitialState() {
         for (State state: getStates()) {
             if (state.isInitial()) {
