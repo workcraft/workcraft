@@ -14,6 +14,7 @@ import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.Literal;
 import org.workcraft.formula.utils.BooleanUtils;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
 
 public class CircuitSignalInfo {
 

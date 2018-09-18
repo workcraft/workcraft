@@ -5,6 +5,8 @@ import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.tasks.CircuitStrictImplementationCheckTask;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
@@ -69,8 +71,8 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
     }
 
     private boolean checkPrerequisites(WorkspaceEntry we) {
-        return CircuitVerificationUtils.checkCircuitHasComponents(we)
-                && CircuitVerificationUtils.checkInterfaceInitialState(we)
+        return VerificationUtils.checkCircuitHasComponents(we)
+                && VerificationUtils.checkInterfaceInitialState(we)
                 && checkCircuitHasEnvironmentStrict(we)
                 && checkCircuitInterfaceSignals(we)
                 && checkCircuitLocalSignals(we);
@@ -92,7 +94,7 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
     }
 
     private boolean checkCircuitInterfaceSignals(WorkspaceEntry we) {
-        Stg envStg = CircuitVerificationUtils.getEnvironmentStg(we);
+        Stg envStg = VerificationUtils.getEnvironmentStg(we);
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
 
         // Make sure that input signals of the circuit are also inputs in the environment STG
@@ -116,7 +118,7 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
     }
 
     private boolean checkCircuitLocalSignals(WorkspaceEntry we) {
-        Stg envStg = CircuitVerificationUtils.getEnvironmentStg(we);
+        Stg envStg = VerificationUtils.getEnvironmentStg(we);
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
 
         // Check that the set of local signals is the same for the circuit and STG.

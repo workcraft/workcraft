@@ -523,8 +523,8 @@ public abstract class VisualComponent extends VisualTransformableNode implements
         setFillColor(Coloriser.mix(fillColors));
         setNameColor(Coloriser.mix(nameColors));
         setLabelColor(Coloriser.mix(labelColors));
-        setNamePositioning(MixUtils.vote(namePositioning, Positioning.class, Positioning.CENTER));
-        setLabelPositioning(MixUtils.vote(labelPositioning, Positioning.class, Positioning.CENTER));
+        setNamePositioning(MixUtils.vote(namePositioning, Positioning.CENTER));
+        setLabelPositioning(MixUtils.vote(labelPositioning, Positioning.CENTER));
         //setLabel(label);
     }
 

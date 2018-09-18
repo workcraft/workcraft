@@ -193,7 +193,7 @@ public class VisualState extends VisualComponent {
         }
         getReferencedState().setFinal(isFinal);
         getReferencedState().setInitial(isInitial);
-        setInitialMarkerPositioning(MixUtils.vote(initialMarkerPositioning, Positioning.class, Positioning.TOP));
+        setInitialMarkerPositioning(MixUtils.vote(initialMarkerPositioning, Positioning.TOP));
     }
 
     @Override

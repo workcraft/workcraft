@@ -30,7 +30,7 @@ import org.workcraft.formula.dnf.DnfClause;
 import org.workcraft.formula.dnf.DnfGenerator;
 import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.plugins.circuit.CircuitUtils;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitComponent;

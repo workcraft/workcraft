@@ -1,4 +1,4 @@
-package org.workcraft.plugins.circuit;
+package org.workcraft.plugins.circuit.supervisors;
 
 import java.util.ArrayList;
 
@@ -9,6 +9,9 @@ import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletingEvent;
+import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.Contact;
+import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.util.Hierarchy;
 
 public class FunctionConsistencySupervisor extends HierarchySupervisor {

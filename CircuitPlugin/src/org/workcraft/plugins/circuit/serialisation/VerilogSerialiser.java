@@ -198,11 +198,11 @@ public class VerilogSerialiser implements ModelSerialiser {
             out.println();
             out.println("    // signal values at the initial state:");
             out.print("    //");
-            for (Contact contact: drivers) {
-                String signalName = circuitInfo.getContactSignal(contact);
+            for (Contact driver: drivers) {
+                String signalName = circuitInfo.getContactSignal(driver);
                 if ((signalName != null) && !signalName.isEmpty()) {
                     out.print(" ");
-                    if (!contact.getInitToOne()) {
+                    if (!driver.getInitToOne()) {
                         out.print("!");
                     }
                     out.print(signalName);

@@ -1,8 +1,9 @@
-package org.workcraft.plugins.circuit
+package org.workcraft.plugins.circuit.utils
 
 import org.workcraft.dom.Node
 import org.workcraft.dom.math.MathConnection
 import org.workcraft.dom.math.MathNode
+import org.workcraft.plugins.circuit.*
 import java.util.*
 
 @JvmOverloads

@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 public class MixUtils {
 
-    public static <T> T vote(Collection<T> items, Class<T> type, T value) {
+    public static <T> T vote(Collection<T> items, T value) {
         HashMap<T, Integer> typeCount = new HashMap<>();
         for (T item: items) {
             int count = 0;
@@ -43,6 +43,17 @@ public class MixUtils {
         for (Point2D point: points) {
             x += point.getX();
             y += point.getY();
+        }
+        return (count > 0) ? new Point2D.Double(x / count, y / count) : null;
+    }
+
+    public static Point2D middleRootspacePosition(Collection<? extends VisualTransformableNode> nodes) {
+        double x = 0.0;
+        double y = 0.0;
+        int count = nodes.size();
+        for (VisualTransformableNode node : nodes) {
+            x += node.getRootSpaceX();
+            y += node.getRootSpaceY();
         }
         return (count > 0) ? new Point2D.Double(x / count, y / count) : null;
     }

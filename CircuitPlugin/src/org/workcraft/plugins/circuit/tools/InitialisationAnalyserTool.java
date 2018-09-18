@@ -4,7 +4,6 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
 import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -14,6 +13,8 @@ import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.circuit.utils.ResetUtils;
+import org.workcraft.plugins.circuit.utils.StructureUtilsKt;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.GUI;
@@ -26,8 +27,6 @@ import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.*;
 import java.util.Queue;
 
@@ -184,7 +183,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         for (CircuitComponent component : circuit.getFunctionComponents()) {
             if ((component instanceof FunctionComponent) && ((FunctionComponent) component).getIsZeroDelay()) continue;
             for (Contact outputContact : component.getOutputs()) {
-                for (CircuitComponent succComponent : CircuitUtilsKt.getPostsetComponents(circuit, outputContact, true)) {
+                for (CircuitComponent succComponent : StructureUtilsKt.getPostsetComponents(circuit, outputContact, true)) {
                     if (component != succComponent) continue;
                     result.add(outputContact);
                 }
@@ -221,98 +220,19 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
             Object[] options1 = {"Insert active-low reset", "Insert active-high reset", "Cancel"};
             JPanel panel = new JPanel();
             panel.add(new JLabel("Reset port name: "));
-            JTextField textField = new JTextField("nrst", 20);
+            JTextField textField = new JTextField("reset", 20);
             panel.add(textField);
 
             int result = JOptionPane.showOptionDialog(null, panel, "Reset logic",
                     JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options1, null);
             if ((result == JOptionPane.YES_OPTION) || (result == JOptionPane.NO_OPTION)) {
                 editor.getWorkspaceEntry().saveMemento();
-                insertReset(editor, textField.getText(), result == JOptionPane.YES_OPTION);
+                VisualCircuit visualCircuit = (VisualCircuit) editor.getModel();
+                ResetUtils.insertReset(visualCircuit, textField.getText(), result == JOptionPane.YES_OPTION);
                 updateState(circuit);
             }
         }
         editor.requestFocus();
-    }
-
-    private void insertReset(final GraphEditor editor, String portName, boolean activeLow) {
-        VisualCircuit circuit = (VisualCircuit) editor.getModel();
-        VisualFunctionContact resetPort = circuit.getOrCreateContact(null, portName, Contact.IOType.INPUT);
-
-        for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {
-            VisualFunctionContact resetContact = null;
-            for (VisualFunctionContact contact : component.getVisualFunctionContacts()) {
-                if (contact.isOutput() && contact.isPin() && contact.getForcedInit()) {
-                    if (resetContact == null) {
-                        resetContact = circuit.getOrCreateContact(component, portName, Contact.IOType.INPUT);
-                    }
-                    if (activeLow) {
-                        addActiveLowReset(contact, resetContact);
-                    } else {
-                        addActiveHighReset(contact, resetContact);
-                    }
-                    try {
-                        circuit.connect(resetPort, resetContact);
-                    } catch (InvalidConnectionException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        }
-
-        for (VisualFunctionContact contact : circuit.getVisualFunctionContacts()) {
-            if (contact.isPin() && contact.isOutput()) {
-                contact.setForcedInit(false);
-            }
-        }
-        resetPort.setInitToOne(!activeLow);
-        resetPort.setForcedInit(true);
-        resetPort.setSetFunction(activeLow ? One.instance() : Zero.instance());
-        resetPort.setResetFunction(activeLow ? Zero.instance() : One.instance());
-        Rectangle2D modelBox = circuit.getBoundingBox();
-        resetPort.setRootSpacePosition(new Point2D.Double(modelBox.getMinX(), modelBox.getMinY()));
-    }
-
-    private void addActiveLowReset(VisualFunctionContact contact, VisualFunctionContact resetContact) {
-        BooleanFormula setFunction = contact.getSetFunction();
-        BooleanFormula resetFunction = contact.getResetFunction();
-        FunctionContact resetVar = resetContact.getReferencedFunctionContact();
-        if (contact.getInitToOne()) {
-            if (setFunction != null) {
-                contact.setSetFunction(BooleanOperations.or(BooleanOperations.not(resetVar), setFunction, new CleverBooleanWorker()));
-            }
-            if (resetFunction != null) {
-                contact.setResetFunction(BooleanOperations.and(resetVar, resetFunction, new CleverBooleanWorker()));
-            }
-        } else {
-            if (setFunction != null) {
-                contact.setSetFunction(BooleanOperations.and(resetVar, setFunction, new CleverBooleanWorker()));
-            }
-            if (resetFunction != null) {
-                contact.setResetFunction(BooleanOperations.or(BooleanOperations.not(resetVar), resetFunction, new CleverBooleanWorker()));
-            }
-        }
-    }
-
-    private void addActiveHighReset(VisualFunctionContact contact, VisualFunctionContact resetContact) {
-        BooleanFormula setFunction = contact.getSetFunction();
-        BooleanFormula resetFunction = contact.getResetFunction();
-        FunctionContact resetVar = resetContact.getReferencedFunctionContact();
-        if (contact.getInitToOne()) {
-            if (setFunction != null) {
-                contact.setSetFunction(BooleanOperations.or(resetVar, setFunction, new CleverBooleanWorker()));
-            }
-            if (resetFunction != null) {
-                contact.setResetFunction(BooleanOperations.and(BooleanOperations.not(resetVar), resetFunction, new CleverBooleanWorker()));
-            }
-        } else {
-            if (setFunction != null) {
-                contact.setSetFunction(BooleanOperations.and(BooleanOperations.not(resetVar), setFunction, new CleverBooleanWorker()));
-            }
-            if (resetFunction != null) {
-                contact.setResetFunction(BooleanOperations.or(resetVar, resetFunction, new CleverBooleanWorker()));
-            }
-        }
     }
 
     private final class LegendTableModel extends AbstractTableModel {

@@ -1,15 +1,22 @@
-package org.workcraft.plugins.circuit;
+package org.workcraft.plugins.circuit.propertydescriptors;
 
 import java.io.File;
 import java.util.Map;
 
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.plugins.circuit.VisualCircuit;
 
 public class EnvironmentFilePropertyDescriptor implements PropertyDescriptor {
-    VisualCircuit model;
 
-    public EnvironmentFilePropertyDescriptor(VisualCircuit model) {
-        this.model = model;
+    private final VisualCircuit circuit;
+
+    public EnvironmentFilePropertyDescriptor(VisualCircuit circuit) {
+        this.circuit = circuit;
+    }
+
+    @Override
+    public String getName() {
+        return "Environment";
     }
 
     @Override
@@ -18,8 +25,8 @@ public class EnvironmentFilePropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public String getName() {
-        return "Environment";
+    public boolean isWritable() {
+        return true;
     }
 
     @Override
@@ -29,17 +36,12 @@ public class EnvironmentFilePropertyDescriptor implements PropertyDescriptor {
 
     @Override
     public Object getValue() {
-        return model.getEnvironmentFile();
+        return circuit.getEnvironmentFile();
     }
 
     @Override
     public void setValue(Object value) {
-        model.setEnvironmentFile((File) value);
-    }
-
-    @Override
-    public boolean isWritable() {
-        return true;
+        circuit.setEnvironmentFile((File) value);
     }
 
     @Override

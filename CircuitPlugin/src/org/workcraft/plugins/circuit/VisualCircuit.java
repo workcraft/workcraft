@@ -23,10 +23,14 @@ import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
+import org.workcraft.plugins.circuit.propertydescriptors.EnvironmentFilePropertyDescriptor;
+import org.workcraft.plugins.circuit.propertydescriptors.ResetFunctionPropertyDescriptor;
+import org.workcraft.plugins.circuit.propertydescriptors.SetFunctionPropertyDescriptor;
 import org.workcraft.plugins.circuit.routing.RouterClient;
 import org.workcraft.plugins.circuit.routing.RouterVisualiser;
 import org.workcraft.plugins.circuit.routing.impl.Router;
 import org.workcraft.plugins.circuit.routing.impl.RouterTask;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.ModelEntry;
@@ -376,20 +380,18 @@ public class VisualCircuit extends AbstractVisualModel {
             properties.add(new EnvironmentFilePropertyDescriptor(this));
         } else if (node instanceof VisualFunctionContact) {
             VisualFunctionContact contact = (VisualFunctionContact) node;
-            VisualContactFormulaProperties props = new VisualContactFormulaProperties(this);
-            properties.add(props.getSetProperty(contact));
-            properties.add(props.getResetProperty(contact));
+            properties.add(new SetFunctionPropertyDescriptor(this, contact));
+            properties.add(new ResetFunctionPropertyDescriptor(this, contact));
         } else if (node instanceof VisualCircuitComponent) {
             VisualCircuitComponent component = (VisualCircuitComponent) node;
             VisualContact mainOutput = component.getMainVisualOutput();
             if (mainOutput != null) {
                 if (mainOutput instanceof VisualFunctionContact) {
-                    VisualFunctionContact functionContact = (VisualFunctionContact) mainOutput;
-                    VisualContactFormulaProperties props = new VisualContactFormulaProperties(this);
-                    properties.add(props.getSetProperty(functionContact));
-                    properties.add(props.getResetProperty(functionContact));
+                    VisualFunctionContact contact = (VisualFunctionContact) mainOutput;
+                    properties.add(new SetFunctionPropertyDescriptor(this, contact));
+                    properties.add(new ResetFunctionPropertyDescriptor(this, contact));
                 }
-                for (PropertyDescriptor property: mainOutput.getDescriptors()) {
+                for (PropertyDescriptor property : mainOutput.getDescriptors()) {
                     String propertyName = property.getName();
                     if (Contact.PROPERTY_INIT_TO_ONE.equals(propertyName)
                             || Contact.PROPERTY_FORCED_INIT.equals(propertyName)) {

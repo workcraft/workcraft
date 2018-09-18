@@ -13,6 +13,7 @@ import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.circuit.utils.StructureUtilsKt;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -88,7 +89,7 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
             HashSet<CircuitComponent> componentPreset = new HashSet<>();
             for (Contact contact: component.getInputs()) {
                 if (!contact.getPathBreaker()) {
-                    HashSet<CircuitComponent> contactPreset = CircuitUtilsKt.getPresetComponents(circuit, contact);
+                    HashSet<CircuitComponent> contactPreset = StructureUtilsKt.getPresetComponents(circuit, contact);
                     componentPreset.addAll(contactPreset);
                     presets.put(contact, contactPreset);
                 }

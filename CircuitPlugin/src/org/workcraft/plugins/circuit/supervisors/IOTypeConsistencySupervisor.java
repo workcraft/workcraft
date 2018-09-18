@@ -1,9 +1,11 @@
-package org.workcraft.plugins.circuit;
+package org.workcraft.plugins.circuit.supervisors;
 
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateSupervisor;
+import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.Contact.IOType;
 
 public class IOTypeConsistencySupervisor extends StateSupervisor {

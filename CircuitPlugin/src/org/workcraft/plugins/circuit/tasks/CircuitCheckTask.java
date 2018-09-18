@@ -4,6 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.*;
 import org.workcraft.plugins.pcomp.ComponentData;

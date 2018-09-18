@@ -111,6 +111,21 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
             return (this == NORTH) || (this == SOUTH);
         }
 
+        public int getGradientX() {
+            switch (this) {
+            case WEST: return -1;
+            case EAST: return 1;
+            default: return 0;
+            }
+        }
+
+        public int getGradientY() {
+            switch (this) {
+            case NORTH: return -1;
+            case SOUTH: return 1;
+            default: return 0;
+            }
+        }
     };
 
     public static final Color inputColor = Color.RED;

@@ -18,7 +18,7 @@ import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
-import org.workcraft.plugins.circuit.commands.CircuitVerificationUtils;
+import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.plugins.circuit.expression.Expression;
 import org.workcraft.plugins.circuit.expression.ExpressionUtils;
 import org.workcraft.plugins.circuit.expression.Literal;
@@ -28,6 +28,8 @@ import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.Library;
 import org.workcraft.plugins.circuit.jj.expression.ExpressionParser;
 import org.workcraft.plugins.circuit.jj.verilog.VerilogParser;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.plugins.circuit.utils.StructureUtilsKt;
 import org.workcraft.plugins.circuit.verilog.*;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.stg.Mutex;
@@ -218,7 +220,7 @@ public class VerilogImporter implements Importer {
         if (circuit.getFunctionComponents().isEmpty()) {
             msg += "has no components";
         }
-        Set<String> hangingSignals = CircuitVerificationUtils.getHangingSignals(circuit);
+        Set<String> hangingSignals = VerificationUtils.getHangingSignals(circuit);
         if (!hangingSignals.isEmpty()) {
             if (!msg.isEmpty()) {
                 msg += " and ";
@@ -291,9 +293,9 @@ public class VerilogImporter implements Importer {
 
         if (outContact != null) {
             try {
-                BooleanFormula setFormula = CircuitUtils.parseContactFuncton(circuit, component, assignGate.setFunction);
+                BooleanFormula setFormula = CircuitUtils.parsePinFuncton(circuit, component, assignGate.setFunction);
                 outContact.setSetFunctionQuiet(setFormula);
-                BooleanFormula resetFormula = CircuitUtils.parseContactFuncton(circuit, component, assignGate.resetFunction);
+                BooleanFormula resetFormula = CircuitUtils.parsePinFuncton(circuit, component, assignGate.resetFunction);
                 outContact.setResetFunctionQuiet(resetFormula);
             } catch (org.workcraft.formula.jj.ParseException e) {
                 throw new RuntimeException(e);
@@ -657,10 +659,10 @@ public class VerilogImporter implements Importer {
     private void setMutexFunctions(Circuit circuit, final FunctionComponent component, FunctionContact grantContact,
             String reqPinName, String otherGrantPinName) throws org.workcraft.formula.jj.ParseException {
         String setString = reqPinName + " * " + otherGrantPinName + "'";
-        BooleanFormula setFormula = CircuitUtils.parseContactFuncton(circuit, component, setString);
+        BooleanFormula setFormula = CircuitUtils.parsePinFuncton(circuit, component, setString);
         grantContact.setSetFunctionQuiet(setFormula);
         String resetString = reqPinName + "'";
-        BooleanFormula resetFormula = CircuitUtils.parseContactFuncton(circuit, component, resetString);
+        BooleanFormula resetFormula = CircuitUtils.parsePinFuncton(circuit, component, resetString);
         grantContact.setResetFunctionQuiet(resetFormula);
     }
 
@@ -894,7 +896,7 @@ public class VerilogImporter implements Importer {
             HashSet<FunctionComponent> leafComponents = new HashSet<>();
             for (FunctionComponent component: components) {
                 if (component == rootComponent) continue;
-                for (MathNode node: CircuitUtilsKt.getPostsetComponents(circuit, component)) {
+                for (MathNode node: StructureUtilsKt.getPostsetComponents(circuit, component)) {
                     if (node != rootComponent) continue;
                     leafComponents.add(component);
                 }

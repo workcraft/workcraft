@@ -1,4 +1,4 @@
-package org.workcraft.plugins.circuit;
+package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
@@ -14,6 +14,7 @@ import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.utils.BubbledLiteralsExtractor;
 import org.workcraft.formula.utils.StringGenerator;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.util.DialogUtils;
@@ -276,8 +277,47 @@ public class CircuitUtils {
         return result;
     }
 
-    public static BooleanFormula parseContactFuncton(final Circuit circuit,
-            final FunctionComponent component, String function) throws ParseException {
+    public static BooleanFormula parseContactFunction(VisualCircuit circuit, VisualFunctionContact contact, String function)
+            throws ParseException {
+
+        Node parent = contact.getParent();
+        if (parent instanceof VisualFunctionComponent) {
+            VisualFunctionComponent component = (VisualFunctionComponent) parent;
+            return parsePinFuncton(circuit, component, function);
+        } else {
+            return parsePortFuncton(circuit, function);
+        }
+    }
+
+    public static BooleanFormula parsePinFuncton(VisualCircuit circuit, VisualFunctionComponent component, String function) throws ParseException {
+        if (function == null) {
+            return null;
+        }
+        return BooleanFormulaParser.parse(function, name -> {
+            BooleanFormula result = null;
+            VisualFunctionContact contact = circuit.getOrCreateContact(component, name, IOType.INPUT);
+            if ((contact != null) && (contact.getReferencedContact() instanceof BooleanFormula)) {
+                result = contact.getReferencedContact();
+            }
+            return result;
+        });
+    }
+
+    public static BooleanFormula parsePortFuncton(VisualCircuit circuit, String function) throws ParseException {
+        if (function == null) {
+            return null;
+        }
+        return BooleanFormulaParser.parse(function, name -> {
+            BooleanFormula result = null;
+            VisualFunctionContact port = circuit.getOrCreateContact(null, name, IOType.OUTPUT);
+            if ((port != null) && (port.getReferencedContact() instanceof BooleanFormula)) {
+                result = port.getReferencedContact();
+            }
+            return result;
+        });
+    }
+
+    public static BooleanFormula parsePinFuncton(Circuit circuit, FunctionComponent component, String function) throws ParseException {
         if (function == null) {
             return null;
         }
@@ -293,51 +333,6 @@ public class CircuitUtils {
         });
     }
 
-    public static BooleanFormula parsePortFuncton(final Circuit circuit, String function) throws ParseException {
-        if (function == null) {
-            return null;
-        }
-        return BooleanFormulaParser.parse(function, name -> {
-            FunctionContact port = (FunctionContact) circuit.getNodeByReference(null, name);
-            if (port == null) {
-                port = new FunctionContact();
-                port.setIOType(IOType.OUTPUT);
-                circuit.add(port);
-                circuit.setName(port, name);
-            }
-            return port;
-        });
-    }
-
-    public static BooleanFormula parseContactFuncton(final VisualCircuit circuit,
-            final VisualFunctionComponent component, String function) throws ParseException {
-        if (function == null) {
-            return null;
-        }
-        return BooleanFormulaParser.parse(function, name -> {
-            BooleanFormula result = null;
-            VisualFunctionContact contact = circuit.getOrCreateContact(component, name, IOType.INPUT);
-            if ((contact != null) && (contact.getReferencedContact() instanceof BooleanFormula)) {
-                result = contact.getReferencedContact();
-            }
-            return result;
-        });
-    }
-
-    public static BooleanFormula parsePortFuncton(final VisualCircuit circuit, String function) throws ParseException {
-        if (function == null) {
-            return null;
-        }
-        return BooleanFormulaParser.parse(function, name -> {
-            BooleanFormula result = null;
-            VisualFunctionContact port = circuit.getOrCreateContact(null, name, IOType.OUTPUT);
-            if ((port != null) && (port.getReferencedContact() instanceof BooleanFormula)) {
-                result = port.getReferencedContact();
-            }
-            return result;
-        });
-    }
-
     private static HashSet<VisualContact> getVisualContacts(final VisualCircuit visualCircuit, Collection<Contact> mathContacts) {
         HashSet<VisualContact> result = new HashSet<>();
         for (Contact mathContact: mathContacts) {
@@ -349,10 +344,10 @@ public class CircuitUtils {
         return result;
     }
 
-    public static boolean detachJoint(VisualCircuit circuit, VisualContact driver) {
+    public static VisualJoint detachJoint(VisualCircuit circuit, VisualContact driver) {
         Set<Connection> connections = new HashSet<>(circuit.getConnections(driver));
         if (!driver.isDriver() || (connections.size() <= 1)) {
-            return false;
+            return null;
         }
 
         Container container = (Container) driver.getParent();
@@ -369,18 +364,19 @@ public class CircuitUtils {
         }
 
         for (Connection connection: connections) {
-            if (!(connection instanceof VisualCircuitConnection)) continue;
-            circuit.remove(connection);
-            try {
-                Node driven = connection.getSecond();
-                VisualCircuitConnection newConnection = (VisualCircuitConnection) circuit.connect(joint, driven);
-                newConnection.copyShape((VisualCircuitConnection) connection);
-                newConnection.copyStyle((VisualCircuitConnection) connection);
-            } catch (InvalidConnectionException e) {
-                LogUtils.logWarning(e.getMessage());
+            if (connection instanceof VisualCircuitConnection) {
+                circuit.remove(connection);
+                try {
+                    Node driven = connection.getSecond();
+                    VisualCircuitConnection newConnection = (VisualCircuitConnection) circuit.connect(joint, driven);
+                    newConnection.copyShape((VisualCircuitConnection) connection);
+                    newConnection.copyStyle((VisualCircuitConnection) connection);
+                } catch (InvalidConnectionException e) {
+                    LogUtils.logWarning(e.getMessage());
+                }
             }
         }
-        return true;
+        return joint;
     }
 
     public static boolean isSelfLoop(Connection connection) {

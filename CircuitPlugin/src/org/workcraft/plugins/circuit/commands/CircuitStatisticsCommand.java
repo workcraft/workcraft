@@ -6,7 +6,7 @@ import org.workcraft.commands.AbstractStatisticsCommand;
 import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.plugins.circuit.CircuitUtils;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;

@@ -5,6 +5,7 @@ import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.tasks.CircuitCheckTask;
+import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
@@ -93,9 +94,9 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
     }
 
     private boolean checkPrerequisites(WorkspaceEntry we) {
-        return CircuitVerificationUtils.checkCircuitHasComponents(we)
-            && CircuitVerificationUtils.checkInterfaceInitialState(we)
-            && CircuitVerificationUtils.checkInterfaceConstrains(we, true);
+        return VerificationUtils.checkCircuitHasComponents(we)
+            && VerificationUtils.checkInterfaceInitialState(we)
+            && VerificationUtils.checkInterfaceConstrains(we, true);
     }
 
     public boolean checkConformation() {
