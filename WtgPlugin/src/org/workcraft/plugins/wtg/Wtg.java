@@ -1,8 +1,6 @@
 package org.workcraft.plugins.wtg;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
@@ -91,6 +89,15 @@ public class Wtg extends Dtd {
             result.add(getName(signal));
         }
         return result;
+    }
+
+    public final State getInitialState() {
+        for (State state: getStates()) {
+            if (state.isInitial()) {
+                return state;
+            }
+        }
+        return null;
     }
 
 }

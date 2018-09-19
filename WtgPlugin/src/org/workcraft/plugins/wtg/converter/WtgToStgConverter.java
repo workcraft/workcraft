@@ -10,9 +10,11 @@ import org.workcraft.plugins.wtg.*;
 import org.workcraft.util.Pair;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import static org.workcraft.plugins.wtg.commands.WtgUtils.getInitialSignalStates;
+import static org.workcraft.plugins.wtg.commands.WtgUtils.getUnstableSignalNames;
 
 public class WtgToStgConverter {
 
@@ -48,7 +50,8 @@ public class WtgToStgConverter {
 
     private Map<String, UnstableSignalStg> createSignalStatePlaces() {
         Map<String, UnstableSignalStg> result = new HashMap<>();
-        for (String signalName: getUnstableSignalNames()) {
+        Map<String, Signal.State> initialSignalStates = getInitialSignalStates(srcModel);
+        for (String signalName: getUnstableSignalNames(srcModel)) {
             // Only input signals can be unstable
             org.workcraft.plugins.stg.Signal.Type signalType = org.workcraft.plugins.stg.Signal.Type.INPUT;
 
@@ -57,11 +60,22 @@ public class WtgToStgConverter {
             StgPlace unstablePlace = dstModel.createPlace(getUnstableStateName(signalName), null);
             StgPlace stablePlace = dstModel.createPlace(getStableStateName(signalName), null);
 
-            // FIXME: We (provisionally) assume that unstable signals are initially in STABLE-LOW state
-            stablePlace.setTokens(1);
-            unstablePlace.setTokens(0);
-            lowPlace.setTokens(1);
-            highPlace.setTokens(0);
+            Signal.State initialSignalState = initialSignalStates.get(signalName);
+            if (initialSignalState == Signal.State.UNSTABLE) {
+                stablePlace.setTokens(0);
+                unstablePlace.setTokens(1);
+            } else {
+                stablePlace.setTokens(1);
+                unstablePlace.setTokens(0);
+            }
+            if (initialSignalState == Signal.State.HIGH) {
+                highPlace.setTokens(1);
+                lowPlace.setTokens(0);
+            } else {
+                //If the initial Signal State is unstable or stable, we default to 0. This is an arbitrary decision
+                highPlace.setTokens(0);
+                lowPlace.setTokens(1);
+            }
 
             SignalTransition riseTransition = dstModel.createSignalTransition(signalName,
                     SignalTransition.Direction.PLUS, null);
@@ -89,21 +103,6 @@ public class WtgToStgConverter {
                 throw new RuntimeException(e);
             }
             result.put(signalName, signalStg);
-        }
-        return result;
-    }
-
-    private Set<String> getUnstableSignalNames() {
-        Set<String> result = new HashSet<>();
-        for (Waveform waveform : srcModel.getWaveforms()) {
-            for (TransitionEvent srcTransition : srcModel.getTransitions(waveform)) {
-                TransitionEvent.Direction direction = srcTransition.getDirection();
-                if ((direction == TransitionEvent.Direction.DESTABILISE) || (direction == TransitionEvent.Direction.STABILISE)) {
-                    Signal signal = srcTransition.getSignal();
-                    String signalName = srcModel.getName(signal);
-                    result.add(signalName);
-                }
-            }
         }
         return result;
     }
@@ -343,35 +342,35 @@ public class WtgToStgConverter {
         }
     }
 
-    private static String getLowStateName(String signalName) {
+    public static String getLowStateName(String signalName) {
         return signalName + WtgSettings.getLowStateSuffix();
     }
 
-    private static String getHighStateName(String signalName) {
+    public static String getHighStateName(String signalName) {
         return signalName + WtgSettings.getHighStateSuffix();
     }
 
-    private static String getStableStateName(String signalName) {
+    public static String getStableStateName(String signalName) {
         return signalName + WtgSettings.getStableStateSuffix();
     }
 
-    private static String getUnstableStateName(String signalName) {
+    public static String getUnstableStateName(String signalName) {
         return signalName + WtgSettings.getUnstableStateSuffix();
     }
 
-    private static String getStabiliseEventName(String signalName) {
+    public static String getStabiliseEventName(String signalName) {
         return signalName + WtgSettings.getStabiliseEventSuffix();
     }
 
-    private static String getDestabiliseEventName(String signalName) {
+    public static String getDestabiliseEventName(String signalName) {
         return signalName + WtgSettings.getDestabiliseEventSuffix();
     }
 
-    private static String getEntryEventName(String signalName) {
+    public static String getEntryEventName(String signalName) {
         return signalName + WtgSettings.getEntryEventSuffix();
     }
 
-    private static String getExitEventName(String signalName) {
+    public static String getExitEventName(String signalName) {
         return signalName + WtgSettings.getExitEventSuffix();
     }
 
