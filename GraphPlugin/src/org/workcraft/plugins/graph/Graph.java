@@ -12,7 +12,7 @@ import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.plugins.graph.propertydescriptors.VertexSymbolPropertyDescriptor;
+import org.workcraft.plugins.graph.properties.VertexSymbolPropertyDescriptor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 

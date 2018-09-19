@@ -13,8 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static org.workcraft.plugins.wtg.commands.WtgUtils.getInitialSignalStates;
-import static org.workcraft.plugins.wtg.commands.WtgUtils.getUnstableSignalNames;
+import static org.workcraft.plugins.wtg.utils.WtgUtils.getInitialSignalStates;
+import static org.workcraft.plugins.wtg.utils.WtgUtils.getUnstableSignalNames;
 
 public class WtgToStgConverter {
 

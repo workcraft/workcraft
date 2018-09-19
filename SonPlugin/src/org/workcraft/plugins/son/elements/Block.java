@@ -10,9 +10,9 @@ import org.workcraft.dom.math.PageNode;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.connections.SONConnection;
-import org.workcraft.plugins.son.propertydescriptors.DurationPropertyDescriptor;
-import org.workcraft.plugins.son.propertydescriptors.EndTimePropertyDescriptor;
-import org.workcraft.plugins.son.propertydescriptors.StartTimePropertyDescriptor;
+import org.workcraft.plugins.son.properties.DurationPropertyDescriptor;
+import org.workcraft.plugins.son.properties.EndTimePropertyDescriptor;
+import org.workcraft.plugins.son.properties.StartTimePropertyDescriptor;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.util.Hierarchy;
 
