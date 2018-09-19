@@ -14,7 +14,7 @@ import java.util.*;
 import static org.workcraft.plugins.wtg.utils.WtgUtils.*;
 import static org.workcraft.plugins.wtg.converter.WtgToStgConverter.*;
 
-public class WtgVerificationUtils {
+public class VerificationUtils {
 
     public static boolean checkNameCollisions(Wtg wtg) {
         //Check collisions between signal names and the dummy transitions that will be created in a conversion to STG
@@ -42,7 +42,7 @@ public class WtgVerificationUtils {
         for (String signalName : wtg.getSignalNames()) {
             if (dummyTransitions.contains(signalName)) {
                 DialogUtils.showError("Signal " + signalName +
-                        " has a conflictive name. Please rename the signal or change conversion suffix.");
+                        " has a conflicting name. Please rename the signal or change conversion suffix.");
                 return false;
             }
         }
@@ -61,8 +61,8 @@ public class WtgVerificationUtils {
         for (State state : wtg.getStates()) {
             String stateName = wtg.getName(state);
             if (unstableSignalPlaces.contains(stateName)) {
-                DialogUtils.showError("State " + stateName +
-                        " has a conflictive name. Please rename the state or change conversion suffix.");
+                DialogUtils.showError("State '" + stateName +
+                        "' has a conflicting name. Please rename the state or change conversion suffix.");
                 return false;
             }
         }
@@ -70,21 +70,21 @@ public class WtgVerificationUtils {
         return true;
     }
 
-    public static boolean checkWtgStructure(Wtg wtg) {
-        //Checks whether signal types are consistent accross different waveforms
+    public static boolean checkStructure(Wtg wtg) {
+        //Checks whether signal types are consistent across different waveforms
         if (!checkConsistentSignalTypes(wtg)) {
             return false;
         }
         //Checks the preset and postset of every transition
-        //(i.e. not empty, connected to another transition of the same signal in pre/postset)
+        //(i.e. not empty, connected to another transition of the same signal in preset and postset)
         if (!checkTransitionsPresetPostset(wtg)) {
             return false;
         }
-        //Checks the pre/postset of the exit event is correct (i.e. postset empty, preset connected correctly)
+        //Checks the preset and postset of the exit event is correct (i.e. postset empty, preset connected correctly)
         if (!checkExitEventPresetPostset(wtg)) {
             return false;
         }
-        //Checks the pre/postset of the entry event is correct (i.e. preset empty, postset connected correctly)
+        //Checks the preset and postset of the entry event is correct (i.e. preset empty, postset connected correctly)
         if (!checkEntryEventPresetPostset(wtg)) {
             return false;
         }
@@ -158,7 +158,7 @@ public class WtgVerificationUtils {
             Signal.Type signalType = signal.getType();
             if (signalTypes.containsKey(signalName)) {
                 if (signalTypes.get(signalName) != signalType) {
-                    DialogUtils.showError("Signal " + signalName + " has different types in different waveforms.");
+                    DialogUtils.showError("Signal '" + signalName + "' has inconsistent types in different waveforms.");
                     return false;
                 }
             } else {
@@ -189,10 +189,11 @@ public class WtgVerificationUtils {
     }
 
     private static boolean checkTransitionConnections(Wtg wtg, Waveform waveform, Set<Node> connections,
-                                                       Signal signal, String connectionType) {
+            Signal signal, String connectionType) {
+        String msg = "Transition for signal '" + wtg.getName(signal) + "' in waveform '" + wtg.getName(waveform) + "' ";
         if (connections.isEmpty()) {
-            DialogUtils.showError("Transition for signal " + wtg.getName(signal) + " in waveform "
-                    + wtg.getName(waveform) + " has an empty " + connectionType + ".");
+            msg += "has an empty " + connectionType + ".";
+            DialogUtils.showError(msg);
             return false;
         }
         boolean signalInConnection = false;
@@ -200,18 +201,16 @@ public class WtgVerificationUtils {
             Event connectedTransition = (Event) node;
             if (connectedTransition.getSignal() == signal) {
                 if (signalInConnection) {
-                    DialogUtils.showError("Transition for signal " + wtg.getName(signal) + " in waveform "
-                            + wtg.getName(waveform) + " has more than one transition for the same signal in its "
-                            + connectionType + ".");
+                    msg += "has more than one transition for the same signal in its " + connectionType + ".";
+                    DialogUtils.showError(msg);
                     return false;
                 }
                 signalInConnection = true;
             }
         }
         if (!signalInConnection) {
-            DialogUtils.showError("Transition for signal " + wtg.getName(signal) + " in waveform "
-                    + wtg.getName(waveform) + " does not have a transition for the same signal in its "
-                    + connectionType + ".");
+            msg += " does not have a transition for the same signal in its " + connectionType + ".";
+            DialogUtils.showError(msg);
             return false;
         }
 
@@ -221,26 +220,26 @@ public class WtgVerificationUtils {
     public static boolean checkExitEventPresetPostset(Wtg wtg) {
         for (Waveform waveform : wtg.getWaveforms()) {
             for (ExitEvent exit : wtg.getExits(waveform)) {
-
+                String msg = "Waveform '" + wtg.getName(waveform) + "' has an exit event ";
                 if (!wtg.getPostset(exit).isEmpty()) {
-                    DialogUtils.showError("Waveform " + wtg.getName(waveform) +
-                            " has an Exit event with a non-empty postset.");
+                    msg +=  "with a non-empty postset.";
+                    DialogUtils.showError(msg);
                     return false;
                 }
                 Set<Node> preset = wtg.getPreset(exit);
                 if (preset.isEmpty()) {
-                    DialogUtils.showError("Waveform " + wtg.getName(waveform) +
-                            " has an Exit event with an empty preset.");
+                    msg += "with an empty preset.";
+                    DialogUtils.showError(msg);
                     return false;
                 }
                 if (preset.size() > 1) {
-                    DialogUtils.showError("Waveform " + wtg.getName(waveform) +
-                            " has an Exit event with more than one transition in its preset.");
+                    msg += "with more than one transition in its preset.";
+                    DialogUtils.showError(msg);
                     return false;
                 }
                 if (((Event) preset.iterator().next()).getSignal() != exit.getSignal()) {
-                    DialogUtils.showError("Waveform " + wtg.getName(waveform) +
-                            " has an Exit event connected to an event with a different signal.");
+                    msg += "connected to an event with a different signal.";
+                    DialogUtils.showError(msg);
                     return false;
                 }
             }
@@ -251,25 +250,26 @@ public class WtgVerificationUtils {
     public static boolean checkEntryEventPresetPostset(Wtg wtg) {
         for (Waveform waveform : wtg.getWaveforms()) {
             for (EntryEvent entry : wtg.getEntries(waveform)) {
+                String msg = "Waveform '" + wtg.getName(waveform) + "' has an entry event ";
                 if (!wtg.getPreset(entry).isEmpty()) {
-                    DialogUtils.showError("Waveform " + wtg.getName(waveform) +
-                            " has an Entry event with a non-empty preset.");
+                    msg += "with a non-empty preset.";
+                    DialogUtils.showError(msg);
                     return false;
                 }
                 Set<Node> postset = wtg.getPostset(entry);
                 if (postset.isEmpty()) {
-                    DialogUtils.showError("Waveform " + wtg.getName(waveform) +
-                            " has an Entry event with an empty postset.");
+                    msg += "with an empty postset.";
+                    DialogUtils.showError(msg);
                     return false;
                 }
                 if (postset.size() > 1) {
-                    DialogUtils.showError("Waveform " + wtg.getName(waveform) +
-                            " has an Entry event with more than one transition in its postset.");
+                    msg += "with more than one transition in its postset.";
+                    DialogUtils.showError(msg);
                     return false;
                 }
                 if (((Event) postset.iterator().next()).getSignal() != entry.getSignal()) {
-                    DialogUtils.showError("Waveform " + wtg.getName(waveform) +
-                            " has an Entry event connected to an event with a different signal.");
+                    msg += "connected to an event with a different signal.";
+                    DialogUtils.showError(msg);
                     return false;
                 }
             }
@@ -282,7 +282,7 @@ public class WtgVerificationUtils {
             //Check if every signal has exactly one entry event, and no other entry events exist
             Set<String> entryEventSignals = getEntryEventSignalNames(wtg, waveform);
             if (wtg.getEntries(waveform).size() > entryEventSignals.size()) {
-                DialogUtils.showError("Waveform " + wtg.getName(waveform) + " has repeated Entry events.");
+                DialogUtils.showError("Waveform '" + wtg.getName(waveform) + "' has repeated entry events.");
                 return false;
             }
             if (!checkEventsMatchSignals(wtg, waveform, entryEventSignals, "Entry")) {
@@ -292,10 +292,10 @@ public class WtgVerificationUtils {
             //Check if every signal has exactly one exit event, and no other exit events exist
             Set<String> exitEventSignals = getExitEventSignalNames(wtg, waveform);
             if (wtg.getExits(waveform).size() > exitEventSignals.size()) {
-                DialogUtils.showError("Waveform " + wtg.getName(waveform) + " has repeated Exit events.");
+                DialogUtils.showError("Waveform '" + wtg.getName(waveform) + "' has repeated exit events.");
                 return false;
             }
-            if (!checkEventsMatchSignals(wtg, waveform, exitEventSignals, "Exit")) {
+            if (!checkEventsMatchSignals(wtg, waveform, exitEventSignals, "exit")) {
                 return false;
             }
         }
@@ -306,15 +306,15 @@ public class WtgVerificationUtils {
                                                    String eventType) {
         Collection<Signal> waveformSignals = wtg.getSignals(waveform);
         if (waveformSignals.size() < eventSignals.size()) {
-            DialogUtils.showError("Waveform " + wtg.getName(waveform) +
-                    " has " + eventType + " events for unknown signals.");
+            DialogUtils.showError("Waveform '" + wtg.getName(waveform) +
+                    "' has " + eventType + " events for unknown signals.");
             return false;
         }
         for (Signal signal : waveformSignals) {
             String signalName = wtg.getName(signal);
             if (!eventSignals.contains(signalName)) {
-                DialogUtils.showError(eventType + " event missing for signal " + signalName + " in waveform " +
-                        wtg.getName(waveform) + ".");
+                DialogUtils.showError(eventType + " event missing for signal '" + signalName +
+                        "' in waveform '" + wtg.getName(waveform) + "'.");
                 return false;
             }
         }
@@ -327,9 +327,9 @@ public class WtgVerificationUtils {
                 if (entry.getSignal().getType() == Signal.Type.OUTPUT) {
                     for (Node node: wtg.getPostset(entry)) {
                         if ((isFirstTransition(wtg, node)) && (isWaveformInChoice(wtg, waveform))) {
-                            DialogUtils.showError("Output signal " + wtg.getName(entry.getSignal())
-                                    + " cannot be fired immediately after a choice, in waveform "
-                                    + wtg.getName(waveform) + ".");
+                            DialogUtils.showError("Output signal '" + wtg.getName(entry.getSignal())
+                                    + "' cannot be fired immediately after a choice, in waveform '"
+                                    + wtg.getName(waveform) + "'.");
                             return false;
                         }
                     }
@@ -360,8 +360,8 @@ public class WtgVerificationUtils {
                     Signal.State signalGuardState = (waveform.getGuard().get(signalName)) ?
                             Signal.State.HIGH : Signal.State.LOW;
                     if (signal.getInitialState() != signalGuardState) {
-                        DialogUtils.showError("The initial state for signal " + signalName + " in waveform "
-                                + wtg.getName(waveform) + " does not match the guard value.");
+                        DialogUtils.showError("The initial state for signal '" + signalName +
+                                "' in waveform '" + wtg.getName(waveform) + "' does not match the guard value.");
                         return false;
                     }
                 }
@@ -379,8 +379,8 @@ public class WtgVerificationUtils {
             }
             for (String signalGuard : waveform.getGuard().keySet()) {
                 if (!signalsUsed.contains(signalGuard)) {
-                    DialogUtils.showError("The guard from waveform " + wtg.getName(waveform) +
-                            " is defined for signal " + signalGuard + ", but that signal is not used in the waveform.");
+                    DialogUtils.showError("The guard from waveform '" + wtg.getName(waveform) +
+                            "' is defined for signal '" + signalGuard + "', but that signal is not used in the waveform.");
                     return false;
                 }
             }
@@ -409,13 +409,13 @@ public class WtgVerificationUtils {
                 if (signal.getType() == Signal.Type.OUTPUT) {
                     String signalName = wtg.getName(signal);
                     if (waveform.getGuard().containsKey(signalName)) {
-                        DialogUtils.showError("Output signal " + signalName + " cannot be in a guard.");
+                        DialogUtils.showError("Output signal '" + signalName + "' cannot be in a guard.");
                         return false;
                     }
                     if ((signal.getInitialState() == Signal.State.UNSTABLE) ||
                             (signal.getInitialState() == Signal.State.STABLE)) {
                         DialogUtils.showError("Output signal " + signalName +
-                                " has an illegal initial state in waveform " + wtg.getName(waveform) + ".");
+                                " has an illegal initial state in waveform '" + wtg.getName(waveform) + "'.");
                         return false;
                     }
                 }
@@ -427,8 +427,8 @@ public class WtgVerificationUtils {
                         (direction == TransitionEvent.Direction.STABILISE)) {
                     Signal signal = transition.getSignal();
                     if (signal.getType() == Signal.Type.OUTPUT) {
-                        DialogUtils.showError("Output signal " + wtg.getName(signal) +
-                                " has an illegal transition in waveform " + wtg.getName(waveform) + ".");
+                        DialogUtils.showError("Output signal '" + wtg.getName(signal) +
+                                "' has an illegal transition in waveform '" + wtg.getName(waveform) + "'.");
                         return false;
                     }
                 }
@@ -464,8 +464,8 @@ public class WtgVerificationUtils {
 
         int expectedGuards = (int) Math.pow(2d, guardedSignals.size());
         if (guards.size() < expectedGuards) {
-            DialogUtils.showError("There are missing waveforms in the postset of state "
-                    + wtg.getName(state) + ".");
+            DialogUtils.showError("There are missing waveforms in the postset of state '"
+                    + wtg.getName(state) + "'.");
             return false;
         }
 
@@ -473,7 +473,7 @@ public class WtgVerificationUtils {
         for (Map.Entry<String, Guard> guardEntry : guards.entrySet()) {
             Guard guard = guardEntry.getValue();
             if (guard.size() < guardedSignals.size()) {
-                DialogUtils.showError("The guard from waveform " + guardEntry.getKey() + " is missing signals.");
+                DialogUtils.showError("The guard from waveform '" + guardEntry.getKey() + "' is missing signals.");
                 return false;
             }
             List<Boolean> signalValues = new ArrayList<>();
@@ -481,8 +481,8 @@ public class WtgVerificationUtils {
                 signalValues.add(guard.get(signalName));
             }
             if (guardConditions.contains(signalValues)) {
-                DialogUtils.showError("The guard " + guard.toString() + " is repeated at state "
-                        + wtg.getName(state) + ".");
+                DialogUtils.showError("The guard '" + guard.toString() + "' is repeated at state '"
+                        + wtg.getName(state) + "'.");
                 return false;
             }
             guardConditions.add(signalValues);
@@ -554,8 +554,13 @@ public class WtgVerificationUtils {
     public static boolean checkWaveformsHaveEntryState(Wtg wtg) {
         for (Waveform waveform : wtg.getWaveforms()) {
             Set<Node> preset = wtg.getPreset(waveform);
-            if (preset.size() != 1) {
-                DialogUtils.showError("A waveform must have exactly one entry state.");
+            String name = wtg.getName(waveform);
+            if (preset.isEmpty()) {
+                DialogUtils.showError("Waveform '" + name + "' does not have an entry state.");
+                return false;
+            }
+            if (preset.size() > 1) {
+                DialogUtils.showError("Waveform '" + name + "' has several entry states.");
                 return false;
             }
         }
@@ -565,8 +570,13 @@ public class WtgVerificationUtils {
     public static boolean checkWaveformsHaveExitState(Wtg wtg) {
         for (Waveform waveform : wtg.getWaveforms()) {
             Set<Node> postset = wtg.getPostset(waveform);
-            if (postset.size() != 1) {
-                DialogUtils.showError("A waveform must have exactly one exit state.");
+            String name = wtg.getName(waveform);
+            if (postset.isEmpty()) {
+                DialogUtils.showError("Waveform '" + name + "' does not have an exit state.");
+                return false;
+            }
+            if (postset.size() > 1) {
+                DialogUtils.showError("Waveform '" + name + "' has several exit states.");
                 return false;
             }
         }
@@ -577,7 +587,7 @@ public class WtgVerificationUtils {
         for (Waveform waveform : wtg.getWaveforms()) {
             Set<Node> preset = wtg.getPreset(waveform);
             Set<Node> postset = wtg.getPostset(waveform);
-            String msg = "A waveform can only be connected to states.";
+            String msg = "Waveform '" + wtg.getName(waveform) + "' is connected to a non-state node.";
             for (Node node : preset) {
                 if (!(node instanceof State)) {
                     DialogUtils.showError(msg);
@@ -597,7 +607,7 @@ public class WtgVerificationUtils {
     public static boolean checkWaveformsNotEmpty(Wtg wtg) {
         for (Waveform waveform : wtg.getWaveforms()) {
             if (wtg.getTransitions(waveform).isEmpty()) {
-                DialogUtils.showError("Waveforms should have at least one transition.");
+                DialogUtils.showError("Waveform '" + wtg.getName(waveform) + "' is empty.");
                 return false;
             }
         }
@@ -608,7 +618,7 @@ public class WtgVerificationUtils {
         for (Signal.State signalState : getInitialSignalStates(wtg).values()) {
             if (signalState == Signal.State.STABLE) {
                 DialogUtils.showError("The initial state for a signal in a WTG can not be " +
-                        Signal.State.STABLE.toString());
+                        Signal.State.STABLE.toString() + ".");
                 return false;
             }
         }
@@ -627,10 +637,9 @@ public class WtgVerificationUtils {
                             Signal signal = dstTransition.getSignal();
                             if (signal.getType() != Signal.Type.INPUT) {
                                 String transitionName = wtg.getName(transition.getSignal()) + direction.getSymbol();
-
-                                String msg = "Transition " + transitionName + " triggers the signal ";
-                                msg = msg + wtg.getName(signal) +
-                                        ". Stabilising/destabilising transitions should only trigger inputs";
+                                String signalName = wtg.getName(signal);
+                                String msg = "Transition '" + transitionName + "' triggers the signal '" + signalName +
+                                        "'. Stabilising/destabilising transitions should only trigger inputs.";
                                 DialogUtils.showError(msg);
                                 return false;
                             }
@@ -731,4 +740,5 @@ public class WtgVerificationUtils {
         }
         return true;
     }
+
 }
