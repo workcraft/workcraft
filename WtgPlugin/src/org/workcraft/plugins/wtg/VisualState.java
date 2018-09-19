@@ -18,6 +18,7 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.wtg.decorations.StateDecoration;
 
 @Hotkey(KeyEvent.VK_Q)
 @DisplayName("State")
@@ -55,7 +56,12 @@ public class VisualState extends VisualComponent {
         g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
         g.draw(shape);
 
-        if (getReferencedState().isInitial()) {
+        if (d instanceof StateDecoration) {
+            StateDecoration sd = (StateDecoration) d;
+            if (sd.isMarked()) {
+                g.fill(getInitialMarkerShape());
+            }
+        } else if (getReferencedState().isInitial()) {
             g.fill(getInitialMarkerShape());
         }
 

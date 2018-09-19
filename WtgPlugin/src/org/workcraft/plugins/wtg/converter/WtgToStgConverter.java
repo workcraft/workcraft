@@ -382,4 +382,24 @@ public class WtgToStgConverter {
         return dstModel;
     }
 
+    public boolean isRelated(Node highLevelNode, Node node) {
+        boolean result = false;
+        if (highLevelNode instanceof Event) {
+            NamedTransition relatedTransition = getRelatedTransition((Event) highLevelNode);
+            result = node == relatedTransition;
+        } else if (highLevelNode instanceof State) {
+            StgPlace relatedPlace = getRelatedPlace((State) highLevelNode);
+            result = node == relatedPlace;
+        }
+        return result;
+    }
+
+    public StgPlace getRelatedPlace(State state) {
+        return stateToPlaceMap.get(state);
+    }
+
+    public NamedTransition getRelatedTransition(Event event) {
+        return eventToTransitionMap.get(event);
+    }
+
 }

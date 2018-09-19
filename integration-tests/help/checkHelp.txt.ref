@@ -22,3 +22,4 @@ checkStgMutexImplementability(work) - check the STG 'work' for implementability 
 checkStgNormalcy(work) - check the STG 'work' for normalcy
 checkStgOutputPersistency(work) - check the STG 'work' for output persistency
 checkStgUsc(work) - check the STG 'work' for unique state coding
+checkWtgSoundness(work) - check the given WTG 'work' for soundness and consistency
