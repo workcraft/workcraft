@@ -1,7 +1,5 @@
 package org.workcraft.plugins.circuit;
 
-import java.util.Collection;
-
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
@@ -14,10 +12,15 @@ import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.references.CircuitReferenceManager;
+import org.workcraft.plugins.circuit.supervisors.FunctionConsistencySupervisor;
+import org.workcraft.plugins.circuit.supervisors.IOTypeConsistencySupervisor;
+import org.workcraft.plugins.circuit.supervisors.ZeroDelayConsistencySupervisor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Identifier;
 import org.workcraft.util.MultiSet;
+
+import java.util.Collection;
 
 public class Circuit extends AbstractMathModel {
 
@@ -51,7 +54,6 @@ public class Circuit extends AbstractMathModel {
         });
 
         new FunctionConsistencySupervisor(this).attach(getRoot());
-        new InitStateConsistencySupervisor(this).attach(getRoot());
         new ZeroDelayConsistencySupervisor(this).attach(getRoot());
         new IOTypeConsistencySupervisor(this).attach(getRoot());
     }
@@ -61,11 +63,6 @@ public class Circuit extends AbstractMathModel {
         Container container = Hierarchy.getNearestContainer(first, second);
         if (container instanceof CircuitComponent) {
             container = (Container) container.getParent();
-        }
-        if ((first instanceof Contact) && (second instanceof Contact)) {
-            Contact firstContact = (Contact) first;
-            Contact secondContact = (Contact) second;
-            secondContact.setInitToOne(firstContact.getInitToOne());
         }
         container.add(connection);
         return connection;

@@ -1,12 +1,12 @@
 package org.workcraft.dom;
 
-import java.util.Collection;
-import java.util.Set;
-
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.util.Func;
+
+import java.util.Collection;
+import java.util.Set;
 
 public interface Model extends NodeContext {
 

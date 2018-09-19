@@ -1,11 +1,5 @@
 package org.workcraft.dom;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.ShortName;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
@@ -17,6 +11,8 @@ import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.util.Func;
 import org.workcraft.util.Identifier;
+
+import java.util.*;
 
 /**
  * A base class for all interpreted graph models.
@@ -273,10 +269,6 @@ public abstract class AbstractModel implements Model {
             result = nameManager.getDerivedName(null, candidate);
         }
         return result;
-    }
-
-    public void reparent(Container targetContainer, Model sourceModel, Collection<Node> sourceNodes) {
-        // reparent for the general model undefined?
     }
 
 }

@@ -8,7 +8,7 @@ import java.io.InputStream;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.CircuitUtils;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
@@ -43,9 +43,9 @@ public class GenlibUtils {
             LogUtils.logInfo("  Reset function: " + resetFunction);
         }
         try {
-            BooleanFormula setFormula = CircuitUtils.parseContactFuncton(circuit, component, setFunction);
+            BooleanFormula setFormula = CircuitUtils.parsePinFuncton(circuit, component, setFunction);
             contact.setSetFunctionQuiet(setFormula);
-            BooleanFormula resetFormula = CircuitUtils.parseContactFuncton(circuit, component, resetFunction);
+            BooleanFormula resetFormula = CircuitUtils.parsePinFuncton(circuit, component, resetFunction);
             contact.setResetFunctionQuiet(resetFormula);
         } catch (org.workcraft.formula.jj.ParseException e) {
             throw new RuntimeException(e);

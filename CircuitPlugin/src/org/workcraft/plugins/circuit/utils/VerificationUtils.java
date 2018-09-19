@@ -1,10 +1,13 @@
-package org.workcraft.plugins.circuit.commands;
+package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.utils.LiteralsExtractor;
-import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.Contact;
+import org.workcraft.plugins.circuit.FunctionContact;
+import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
@@ -19,7 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-public class CircuitVerificationUtils {
+public class VerificationUtils {
 
     public static Stg getEnvironmentStg(WorkspaceEntry we) {
         VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
@@ -59,7 +62,8 @@ public class CircuitVerificationUtils {
         for (Contact port : circuit.getPorts()) {
             String portRef = circuit.getNodeReference(port);
             Boolean envSignalState = envSignalStates.get(portRef);
-            if ((envSignalState != null) && (port.getInitToOne() != envSignalState)) {
+            Contact driver = CircuitUtils.findDriver(circuit, port, false);
+            if ((envSignalState != null) && (driver.getInitToOne() != envSignalState)) {
                 inconsistentSignals.add(portRef);
             }
         }

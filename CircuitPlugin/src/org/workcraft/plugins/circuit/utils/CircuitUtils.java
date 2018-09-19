@@ -1,11 +1,10 @@
-package org.workcraft.plugins.circuit;
+package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
@@ -15,6 +14,7 @@ import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.utils.BubbledLiteralsExtractor;
 import org.workcraft.formula.utils.StringGenerator;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.util.DialogUtils;
@@ -277,8 +277,47 @@ public class CircuitUtils {
         return result;
     }
 
-    public static BooleanFormula parseContactFuncton(final Circuit circuit,
-            final FunctionComponent component, String function) throws ParseException {
+    public static BooleanFormula parseContactFunction(VisualCircuit circuit, VisualFunctionContact contact, String function)
+            throws ParseException {
+
+        Node parent = contact.getParent();
+        if (parent instanceof VisualFunctionComponent) {
+            VisualFunctionComponent component = (VisualFunctionComponent) parent;
+            return parsePinFuncton(circuit, component, function);
+        } else {
+            return parsePortFuncton(circuit, function);
+        }
+    }
+
+    public static BooleanFormula parsePinFuncton(VisualCircuit circuit, VisualFunctionComponent component, String function) throws ParseException {
+        if (function == null) {
+            return null;
+        }
+        return BooleanFormulaParser.parse(function, name -> {
+            BooleanFormula result = null;
+            VisualFunctionContact contact = circuit.getOrCreateContact(component, name, IOType.INPUT);
+            if ((contact != null) && (contact.getReferencedContact() instanceof BooleanFormula)) {
+                result = contact.getReferencedContact();
+            }
+            return result;
+        });
+    }
+
+    public static BooleanFormula parsePortFuncton(VisualCircuit circuit, String function) throws ParseException {
+        if (function == null) {
+            return null;
+        }
+        return BooleanFormulaParser.parse(function, name -> {
+            BooleanFormula result = null;
+            VisualFunctionContact port = circuit.getOrCreateContact(null, name, IOType.OUTPUT);
+            if ((port != null) && (port.getReferencedContact() instanceof BooleanFormula)) {
+                result = port.getReferencedContact();
+            }
+            return result;
+        });
+    }
+
+    public static BooleanFormula parsePinFuncton(Circuit circuit, FunctionComponent component, String function) throws ParseException {
         if (function == null) {
             return null;
         }
@@ -294,181 +333,6 @@ public class CircuitUtils {
         });
     }
 
-    public static BooleanFormula parsePortFuncton(final Circuit circuit, String function) throws ParseException {
-        if (function == null) {
-            return null;
-        }
-        return BooleanFormulaParser.parse(function, name -> {
-            FunctionContact port = (FunctionContact) circuit.getNodeByReference(null, name);
-            if (port == null) {
-                port = new FunctionContact();
-                port.setIOType(IOType.OUTPUT);
-                circuit.add(port);
-                circuit.setName(port, name);
-            }
-            return port;
-        });
-    }
-
-    public static BooleanFormula parseContactFuncton(final VisualCircuit circuit,
-            final VisualFunctionComponent component, String function) throws ParseException {
-        if (function == null) {
-            return null;
-        }
-        return BooleanFormulaParser.parse(function, name -> {
-            BooleanFormula result = null;
-            VisualFunctionContact contact = circuit.getOrCreateContact(component, name, IOType.INPUT);
-            if ((contact != null) && (contact.getReferencedContact() instanceof BooleanFormula)) {
-                result = contact.getReferencedContact();
-            }
-            return result;
-        });
-    }
-
-    public static BooleanFormula parsePortFuncton(final VisualCircuit circuit, String function) throws ParseException {
-        if (function == null) {
-            return null;
-        }
-        return BooleanFormulaParser.parse(function, name -> {
-            BooleanFormula result = null;
-            VisualFunctionContact port = circuit.getOrCreateContact(null, name, IOType.OUTPUT);
-            if ((port != null) && (port.getReferencedContact() instanceof BooleanFormula)) {
-                result = port.getReferencedContact();
-            }
-            return result;
-        });
-    }
-
-    public static HashSet<CircuitComponent> getComponentPreset(final Circuit circuit, MathNode curNode) {
-        HashSet<CircuitComponent> result = new HashSet<>();
-        HashSet<Node> visited = new HashSet<>();
-        Queue<Node> queue = new LinkedList<>();
-        if (curNode instanceof CircuitComponent) {
-            CircuitComponent component = (CircuitComponent) curNode;
-            queue.addAll(component.getInputs());
-        } else {
-            queue.add(curNode);
-        }
-
-        while (!queue.isEmpty()) {
-            Node node = queue.remove();
-            if ((node != null) && !visited.contains(node)) {
-                visited.add(node);
-                if (node instanceof CircuitComponent) {
-                    result.add((CircuitComponent) node);
-                } else if (node instanceof Contact) {
-                    Contact contact = (Contact) node;
-                    if (contact.isPort() == contact.isOutput()) {
-                        queue.addAll(circuit.getPreset(node));
-                    } else {
-                        queue.add(contact.getParent());
-                    }
-                } else if (node instanceof Joint) {
-                    queue.addAll(circuit.getPreset(node));
-                } else if (node instanceof MathConnection) {
-                    MathConnection connection = (MathConnection) node;
-                    queue.add(connection.getFirst());
-                }
-            }
-        }
-        return result;
-    }
-
-    public static HashSet<VisualComponent> getComponentPreset(final VisualCircuit visualCircuit, VisualComponent visualComponent) {
-        HashSet<VisualComponent> result = new HashSet<>();
-        Circuit circuit = visualCircuit.getMathModel();
-        MathNode mathComponent = visualComponent.getReferencedComponent();
-        for (MathNode node: getComponentPreset(circuit, mathComponent)) {
-            result.add(visualCircuit.getVisualComponent(node, VisualComponent.class));
-        }
-        return result;
-    }
-
-    public static HashSet<CircuitComponent> getComponentPostset(final Circuit circuit, MathNode curNode) {
-        HashSet<CircuitComponent> result = new HashSet<>();
-        HashSet<Node> visited = new HashSet<>();
-        Queue<Node> queue = new LinkedList<>();
-        if (curNode instanceof CircuitComponent) {
-            CircuitComponent component = (CircuitComponent) curNode;
-            queue.addAll(component.getOutputs());
-        } else {
-            queue.add(curNode);
-        }
-
-        while (!queue.isEmpty()) {
-            Node node = queue.remove();
-            if ((node != null) && !visited.contains(node)) {
-                visited.add(node);
-                if (node instanceof CircuitComponent) {
-                    result.add((CircuitComponent) node);
-                } else if (node instanceof Contact) {
-                    Contact contact = (Contact) node;
-                    if (contact.isPort() == contact.isInput()) {
-                        queue.addAll(circuit.getPostset(node));
-                    } else {
-                        queue.add(contact.getParent());
-                    }
-                } else if (node instanceof Joint) {
-                    queue.addAll(circuit.getPostset(node));
-                } else if (node instanceof MathConnection) {
-                    MathConnection connection = (MathConnection) node;
-                    queue.add(connection.getSecond());
-                }
-            }
-        }
-        return result;
-    }
-
-    public static HashSet<VisualComponent> getComponentPostset(final VisualCircuit visualCircuit, VisualComponent visualComponent) {
-        HashSet<VisualComponent> result = new HashSet<>();
-        Circuit circuit = visualCircuit.getMathModel();
-        MathNode mathComponent = visualComponent.getReferencedComponent();
-        for (MathNode node: getComponentPostset(circuit, mathComponent)) {
-            result.add(visualCircuit.getVisualComponent(node, VisualComponent.class));
-        }
-        return result;
-    }
-
-    public static HashSet<Contact> getPortPostset(final Circuit circuit, MathNode curNode) {
-        HashSet<Contact> result = new HashSet<>();
-        HashSet<Node> visited = new HashSet<>();
-        Queue<Node> queue = new LinkedList<>();
-        if (curNode instanceof CircuitComponent) {
-            CircuitComponent component = (CircuitComponent) curNode;
-            queue.addAll(component.getOutputs());
-        } else {
-            queue.add(curNode);
-        }
-
-        while (!queue.isEmpty()) {
-            Node node = queue.remove();
-            if ((node != null) && !visited.contains(node)) {
-                visited.add(node);
-                if (node instanceof Contact) {
-                    Contact contact = (Contact) node;
-                    if (contact.isOutput() && contact.isPort()) {
-                        result.add(contact);
-                    } else {
-                        queue.addAll(circuit.getPostset(node));
-                    }
-                } else if (node instanceof Joint) {
-                    queue.addAll(circuit.getPostset(node));
-                } else if (node instanceof MathConnection) {
-                    MathConnection connection = (MathConnection) node;
-                    queue.add(connection.getSecond());
-                }
-            }
-        }
-        return result;
-    }
-
-    public static HashSet<VisualContact> getPortPostset(final VisualCircuit visualCircuit, VisualComponent visualComponent) {
-        Circuit circuit = visualCircuit.getMathModel();
-        MathNode mathComponent = visualComponent.getReferencedComponent();
-        HashSet<Contact> ports = getPortPostset(circuit, mathComponent);
-        return getVisualContacts(visualCircuit, ports);
-    }
-
     private static HashSet<VisualContact> getVisualContacts(final VisualCircuit visualCircuit, Collection<Contact> mathContacts) {
         HashSet<VisualContact> result = new HashSet<>();
         for (Contact mathContact: mathContacts) {
@@ -480,10 +344,10 @@ public class CircuitUtils {
         return result;
     }
 
-    public static boolean detachJoint(VisualCircuit circuit, VisualContact driver) {
+    public static VisualJoint detachJoint(VisualCircuit circuit, VisualContact driver) {
         Set<Connection> connections = new HashSet<>(circuit.getConnections(driver));
         if (!driver.isDriver() || (connections.size() <= 1)) {
-            return false;
+            return null;
         }
 
         Container container = (Container) driver.getParent();
@@ -500,18 +364,19 @@ public class CircuitUtils {
         }
 
         for (Connection connection: connections) {
-            if (!(connection instanceof VisualCircuitConnection)) continue;
-            circuit.remove(connection);
-            try {
-                Node driven = connection.getSecond();
-                VisualCircuitConnection newConnection = (VisualCircuitConnection) circuit.connect(joint, driven);
-                newConnection.copyShape((VisualCircuitConnection) connection);
-                newConnection.copyStyle((VisualCircuitConnection) connection);
-            } catch (InvalidConnectionException e) {
-                LogUtils.logWarning(e.getMessage());
+            if (connection instanceof VisualCircuitConnection) {
+                circuit.remove(connection);
+                try {
+                    Node driven = connection.getSecond();
+                    VisualCircuitConnection newConnection = (VisualCircuitConnection) circuit.connect(joint, driven);
+                    newConnection.copyShape((VisualCircuitConnection) connection);
+                    newConnection.copyStyle((VisualCircuitConnection) connection);
+                } catch (InvalidConnectionException e) {
+                    LogUtils.logWarning(e.getMessage());
+                }
             }
         }
-        return true;
+        return joint;
     }
 
     public static boolean isSelfLoop(Connection connection) {

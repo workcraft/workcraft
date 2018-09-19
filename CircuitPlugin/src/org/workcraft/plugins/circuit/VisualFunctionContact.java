@@ -81,6 +81,26 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
     }
 
     @NoAutoSerialisation
+    public void setForcedInit(boolean value) {
+        getReferencedFunctionContact().setForcedInit(value);
+    }
+
+    @NoAutoSerialisation
+    public boolean getForcedInit() {
+        return getReferencedFunctionContact().getForcedInit();
+    }
+
+    @NoAutoSerialisation
+    public void setInitToOne(boolean value) {
+        getReferencedFunctionContact().setInitToOne(value);
+    }
+
+    @NoAutoSerialisation
+    public boolean getInitToOne() {
+        return getReferencedFunctionContact().getInitToOne();
+    }
+
+    @NoAutoSerialisation
     public void setResetFunction(BooleanFormula resetFunction) {
         if (getParent() instanceof VisualFunctionComponent) {
             VisualFunctionComponent p = (VisualFunctionComponent) getParent();

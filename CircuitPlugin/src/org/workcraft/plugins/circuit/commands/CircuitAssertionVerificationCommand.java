@@ -6,6 +6,7 @@ import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.tasks.CircuitCustomCheckTask;
+import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.MpsatSettingsSerialiser;
 import org.workcraft.plugins.mpsat.commands.MpsatAssertionVerificationCommand;
@@ -65,9 +66,9 @@ public class CircuitAssertionVerificationCommand extends AbstractVerificationCom
     }
 
     private boolean checkPrerequisites(WorkspaceEntry we) {
-        return CircuitVerificationUtils.checkCircuitHasComponents(we)
-            && CircuitVerificationUtils.checkInterfaceInitialState(we)
-            && CircuitVerificationUtils.checkInterfaceConstrains(we);
+        return VerificationUtils.checkCircuitHasComponents(we)
+            && VerificationUtils.checkInterfaceInitialState(we)
+            && VerificationUtils.checkInterfaceConstrains(we);
     }
 
 }

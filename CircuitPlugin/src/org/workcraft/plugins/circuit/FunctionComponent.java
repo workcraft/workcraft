@@ -152,13 +152,7 @@ public class FunctionComponent extends CircuitComponent {
 
     public boolean isSequentialGate() {
         FunctionContact gateOutput = getGateOutput();
-        BooleanFormula setFunction = null;
-        BooleanFormula resetFunction = null;
-        if (gateOutput != null) {
-            setFunction = gateOutput.getSetFunction();
-            resetFunction = gateOutput.getResetFunction();
-        }
-        return (setFunction != null) && (resetFunction != null);
+        return (gateOutput != null) && gateOutput.isSequential();
     }
 
     public List<FunctionContact> getOrderedFunctionContacts() {

@@ -587,14 +587,14 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
                 dstHasBubble |= srcConnection.hasBubble();
             }
         }
-        setConnectionType(MixUtils.vote(connectionTypes, ConnectionType.class, ConnectionType.POLYLINE));
+        setConnectionType(MixUtils.vote(connectionTypes, ConnectionType.POLYLINE));
         setColor(Coloriser.mix(colors));
         setLineWidth(MixUtils.average(lineWidths));
         setArrow(dstHasArrow);
         setArrowLength(MixUtils.average(arrowLengths));
         setArrowWidth(MixUtils.average(arrowWidths));
         setBubble(dstHasBubble);
-        setScaleMode(MixUtils.vote(scaleModes, ScaleMode.class, ScaleMode.ADAPTIVE));
+        setScaleMode(MixUtils.vote(scaleModes, ScaleMode.ADAPTIVE));
     }
 
     @Override

@@ -2,6 +2,7 @@ package org.workcraft.dom.visual;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
 import org.workcraft.commands.AbstractLayoutCommand;
@@ -63,4 +64,5 @@ public interface VisualModel extends Model, ObservableState {
 
     Collection<Node> hitBox(Point2D p1, Point2D p2);
     AbstractLayoutCommand getBestLayouter();
+    Rectangle2D getBoundingBox();
 }

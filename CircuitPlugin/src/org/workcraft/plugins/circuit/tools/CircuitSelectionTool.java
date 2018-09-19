@@ -1,40 +1,25 @@
 package org.workcraft.plugins.circuit.tools;
 
-import java.awt.event.MouseEvent;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map.Entry;
-import java.util.Queue;
-
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.Alignment;
-import org.workcraft.dom.visual.HitMan;
-import org.workcraft.dom.visual.SelectionHelper;
-import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.editors.AbstractInplaceEditor;
 import org.workcraft.gui.graph.editors.NameInplaceEditor;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.circuit.Contact.IOType;
-import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.VisualCircuitComponent;
-import org.workcraft.plugins.circuit.VisualContact;
-import org.workcraft.plugins.circuit.VisualFunctionComponent;
-import org.workcraft.plugins.circuit.VisualJoint;
+import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.circuit.utils.ConnectionUtils;
 import org.workcraft.util.Hierarchy;
+
+import javax.swing.*;
+import java.awt.event.MouseEvent;
+import java.util.*;
 
 public class CircuitSelectionTool extends SelectionTool {
 
-    private HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap = null;
+    private HashMap<VisualConnection, VisualConnection.ScaleMode> connectionToScaleModeMap = null;
 
     @Override
     public JPopupMenu createPopupMenu(Node node, final GraphEditor editor) {
@@ -142,22 +127,12 @@ public class CircuitSelectionTool extends SelectionTool {
         VisualModel model = editor.getModel();
         Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(model.getRoot(), VisualConnection.class);
         Collection<VisualConnection> includedConnections = SelectionHelper.getIncludedConnections(model.getSelection(), connections);
-        connectionToScaleModeMap = new HashMap<VisualConnection, ScaleMode>();
-        for (VisualConnection vc: includedConnections) {
-            connectionToScaleModeMap.put(vc, vc.getScaleMode());
-            vc.setScaleMode(ScaleMode.NONE);
-        }
+        connectionToScaleModeMap = ConnectionUtils.replaceConnectionScaleMode(includedConnections, VisualConnection.ScaleMode.NONE);
     }
 
     @Override
     public void afterSelectionModification(final GraphEditor editor) {
-        if (connectionToScaleModeMap != null) {
-            for (Entry<VisualConnection, ScaleMode> entry: connectionToScaleModeMap.entrySet()) {
-                VisualConnection vc = entry.getKey();
-                ScaleMode scaleMode = entry.getValue();
-                vc.setScaleMode(scaleMode);
-            }
-        }
+        ConnectionUtils.restoreConnectionScaleMode(connectionToScaleModeMap);
         super.afterSelectionModification(editor);
     }
 

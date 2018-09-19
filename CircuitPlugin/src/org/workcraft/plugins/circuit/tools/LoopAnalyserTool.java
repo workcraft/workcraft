@@ -1,16 +1,5 @@
 package org.workcraft.plugins.circuit.tools;
 
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-
-import javax.swing.Icon;
-
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.HitMan;
@@ -23,16 +12,19 @@ import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.CircuitComponent;
-import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.plugins.circuit.CircuitUtils;
-import org.workcraft.plugins.circuit.Contact;
-import org.workcraft.plugins.circuit.FunctionComponent;
-import org.workcraft.plugins.circuit.VisualCircuitComponent;
-import org.workcraft.plugins.circuit.VisualContact;
+import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.circuit.utils.StructureUtilsKt;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class LoopAnalyserTool extends AbstractGraphEditorTool {
 
@@ -97,7 +89,7 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
             HashSet<CircuitComponent> componentPreset = new HashSet<>();
             for (Contact contact: component.getInputs()) {
                 if (!contact.getPathBreaker()) {
-                    HashSet<CircuitComponent> contactPreset = CircuitUtils.getComponentPreset(circuit, contact);
+                    HashSet<CircuitComponent> contactPreset = StructureUtilsKt.getPresetComponents(circuit, contact);
                     componentPreset.addAll(contactPreset);
                     presets.put(contact, contactPreset);
                 }

@@ -16,6 +16,8 @@ import org.workcraft.plugins.circuit.routing.basic.Point;
 import org.workcraft.plugins.circuit.routing.impl.Route;
 import org.workcraft.plugins.circuit.routing.impl.Router;
 import org.workcraft.plugins.circuit.routing.impl.RouterTask;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.plugins.circuit.utils.StructureUtilsKt;
 import org.workcraft.plugins.transform.StraightenConnectionTransformationCommand;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -178,10 +180,14 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
         return result;
     }
 
-    private HashSet<VisualComponent> getNextLayer(final VisualCircuit model, HashSet<VisualComponent> layer) {
+    private HashSet<VisualComponent> getNextLayer(final VisualCircuit circuit, HashSet<VisualComponent> layer) {
         HashSet<VisualComponent> result = new HashSet<>();
         for (VisualComponent component: layer) {
-            result.addAll(CircuitUtils.getComponentPostset(model, component));
+            for (CircuitComponent succComponent : StructureUtilsKt.getPostsetComponents(
+                    circuit.getMathModel(), component.getReferencedComponent())) {
+
+                result.add(circuit.getVisualComponent(succComponent, VisualComponent.class));
+            }
         }
         return result;
     }

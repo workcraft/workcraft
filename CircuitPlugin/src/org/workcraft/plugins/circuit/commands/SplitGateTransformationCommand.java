@@ -1,15 +1,5 @@
 package org.workcraft.plugins.circuit.commands;
 
-import java.awt.geom.Point2D;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.Stack;
-
 import org.workcraft.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.Connection;
@@ -24,27 +14,24 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.Not;
-import org.workcraft.formula.One;
-import org.workcraft.formula.Zero;
 import org.workcraft.formula.jj.ParseException;
-import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.formula.utils.StringGenerator;
-import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact.IOType;
-import org.workcraft.plugins.circuit.FunctionComponent;
-import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.VisualContact;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
-import org.workcraft.plugins.circuit.VisualFunctionComponent;
-import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.circuit.naryformula.SplitForm;
 import org.workcraft.plugins.circuit.naryformula.SplitFormGenerator;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.plugins.circuit.utils.GateUtils;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.Pair;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.awt.geom.Point2D;
+import java.util.*;
 
 public class SplitGateTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
@@ -269,10 +256,10 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
         VisualFunctionContact outputContact = circuit.getOrCreateContact(component, outputName, IOType.OUTPUT);
         try {
             String formulaString = StringGenerator.toString(function);
-            BooleanFormula setFuncton = CircuitUtils.parseContactFuncton(circuit, component, formulaString);
+            BooleanFormula setFuncton = CircuitUtils.parsePinFuncton(circuit, component, formulaString);
             outputContact.setSetFunction(setFuncton);
         } catch (ParseException e) {
-            System.err.println(e.getMessage());
+            throw new RuntimeException(e);
         }
         return outputContact;
     }
@@ -285,12 +272,12 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
                 try {
                     VisualNode fromNode = fromNodeConnection.getFirst();
                     VisualNode toNode = toNodeConnection.getFirst();
-                    VisualConnection connection = (VisualConnection) circuit.connect(fromNode, toNode);
+                    VisualConnection connection = circuit.connect(fromNode, toNode);
                     VisualConnection fromConnection = fromNodeConnection.getSecond();
                     connection.copyShape(fromConnection);
                     connection.copyStyle(fromConnection);
                 } catch (InvalidConnectionException e) {
-                    System.err.println(e.getMessage());
+                    throw new RuntimeException(e);
                 }
             }
         }
@@ -302,11 +289,11 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
                 try {
                     VisualNode toNode = toNodeConnection.getFirst();
                     VisualConnection toConnection = toNodeConnection.getSecond();
-                    VisualConnection connection = (VisualConnection) circuit.connect(fromNode, toNode);
+                    VisualConnection connection = circuit.connect(fromNode, toNode);
                     connection.copyShape(toConnection);
                     connection.copyStyle(toConnection);
                 } catch (InvalidConnectionException e) {
-                    System.err.println(e.getMessage());
+                    throw new RuntimeException(e);
                 }
             }
         }
@@ -314,24 +301,7 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
 
     private void propagateInitValues(VisualCircuit circuit, LinkedList<VisualFunctionComponent> gates) {
         for (VisualFunctionComponent gate: gates) {
-            VisualFunctionContact output = gate.getGateOutput();
-            if (output != null) {
-                LinkedList<BooleanVariable> variables = new LinkedList<>();
-                LinkedList<BooleanFormula> values = new LinkedList<>();
-                for (VisualContact input: gate.getVisualInputs()) {
-                    VisualContact driver = CircuitUtils.findDriver(circuit, input, false);
-                    if (driver != null) {
-                        BooleanVariable variable = input.getReferencedContact();
-                        variables.add(variable);
-                        boolean initToOne = driver.getReferencedContact().getInitToOne();
-                        BooleanFormula value = initToOne ? One.instance() : Zero.instance();
-                        values.add(value);
-                    }
-                }
-                BooleanFormula setFunction = BooleanUtils.replaceClever(output.getSetFunction(), variables, values);
-                boolean isOne = One.instance().equals(setFunction);
-                output.getReferencedContact().setInitToOne(isOne);
-            }
+            GateUtils.propagateInitialState(circuit, gate);
         }
     }
 
