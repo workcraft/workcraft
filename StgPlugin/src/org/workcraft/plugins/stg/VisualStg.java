@@ -1,12 +1,5 @@
 package org.workcraft.plugins.stg;
 
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-
-import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
@@ -14,29 +7,25 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.visual.AbstractVisualModel;
-import org.workcraft.dom.visual.ConnectionHelper;
-import org.workcraft.dom.visual.Replica;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
+import org.workcraft.gui.graph.tools.CommentGeneratorTool;
+import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.plugins.petri.PetriNetUtils;
-import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.petri.VisualReadArc;
-import org.workcraft.plugins.petri.VisualReplicaPlace;
-import org.workcraft.plugins.petri.VisualTransition;
+import org.workcraft.plugins.petri.*;
+import org.workcraft.plugins.petri.tools.ReadArcConnectionTool;
 import org.workcraft.plugins.stg.properties.SignalNamePropertyDescriptor;
 import org.workcraft.plugins.stg.properties.SignalTypePropertyDescriptor;
+import org.workcraft.plugins.stg.tools.*;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Pair;
 
+import java.awt.geom.Point2D;
+import java.util.*;
+
 @DisplayName("Signal Transition Graph")
-@CustomTools(StgToolsProvider.class)
 public class VisualStg extends AbstractVisualModel {
 
     public VisualStg() {
@@ -49,6 +38,7 @@ public class VisualStg extends AbstractVisualModel {
 
     public VisualStg(Stg model, VisualGroup root) {
         super(model, root);
+        setGraphEditorTools();
         if (root == null) {
             try {
                 createDefaultFlatStructure();
@@ -76,6 +66,20 @@ public class VisualStg extends AbstractVisualModel {
     private void fixReadArcs() {
         HashSet<Pair<VisualConnection, VisualConnection>> dualArcs = PetriNetUtils.getSelectedOrAllDualArcs(this);
         PetriNetUtils.convertDualArcsToReadArcs(this, dualArcs);
+    }
+
+    private void setGraphEditorTools() {
+        List<GraphEditorTool> tools = new ArrayList<>();
+        tools.add(new StgSelectionTool());
+        tools.add(new CommentGeneratorTool());
+        tools.add(new StgConnectionTool());
+        tools.add(new ReadArcConnectionTool());
+        tools.add(new StgPlaceGeneratorTool());
+        tools.add(new StgSignalTransitionGeneratorTool());
+        tools.add(new StgDummyTransitionGeneratorTool());
+        tools.add(new StgSimulationTool());
+        tools.add(new EncodingConflictAnalyserTool());
+        setGraphEditorTools(tools);
     }
 
     @Override

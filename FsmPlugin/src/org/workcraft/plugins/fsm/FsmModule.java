@@ -1,25 +1,10 @@
 package org.workcraft.plugins.fsm;
 
-import org.workcraft.CompatibilityManager;
-import org.workcraft.Framework;
-import org.workcraft.Module;
-import org.workcraft.PluginManager;
-import org.workcraft.Version;
+import org.workcraft.*;
 import org.workcraft.commands.ScriptableCommandUtils;
-import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.plugins.fsm.commands.FsmContractStateTransformationCommand;
-import org.workcraft.plugins.fsm.commands.FsmDeadlockFreenessVerificationCommand;
-import org.workcraft.plugins.fsm.commands.FsmDeterminismVerificationCommand;
-import org.workcraft.plugins.fsm.commands.FsmReachabilityVerificationCommand;
-import org.workcraft.plugins.fsm.commands.FsmReversibilityVerificationCommand;
-import org.workcraft.plugins.fsm.commands.FsmToGraphConversionCommand;
-import org.workcraft.plugins.fsm.commands.FsmToPetriConversionCommand;
-import org.workcraft.plugins.fsm.commands.GraphToFsmConversionCommand;
-import org.workcraft.plugins.fsm.commands.FsmMergeStateTransformationCommand;
+import org.workcraft.plugins.fsm.commands.*;
 import org.workcraft.plugins.fsm.serialisation.EventDeserialiser;
 import org.workcraft.plugins.fsm.serialisation.EventSerialiser;
-import org.workcraft.serialisation.xml.XMLDeserialiser;
-import org.workcraft.serialisation.xml.XMLSerialiser;
 
 public class FsmModule  implements Module {
 
@@ -38,10 +23,10 @@ public class FsmModule  implements Module {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
 
-        pm.registerClass(ModelDescriptor.class, FsmDescriptor.class);
+        pm.registerModel(FsmDescriptor.class);
 
-        pm.registerClass(XMLSerialiser.class, EventSerialiser.class);
-        pm.registerClass(XMLDeserialiser.class, EventDeserialiser.class);
+        pm.registerXmlSerialiser(EventSerialiser.class);
+        pm.registerXmlDeserialiser(EventDeserialiser.class);
 
         ScriptableCommandUtils.register(FsmToGraphConversionCommand.class, "convertFsmToGraph",
                 "convert the given FSM 'work' into a new Graph work");

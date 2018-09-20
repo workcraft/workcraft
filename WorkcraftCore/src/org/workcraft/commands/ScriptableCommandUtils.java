@@ -22,7 +22,7 @@ public class ScriptableCommandUtils {
     public static void register(Class<? extends ScriptableCommand> command, String jsName, String jsHelp) {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
-        pm.registerClass(Command.class, command);
+        pm.registerCommand(command);
         String commandName = command.getSimpleName();
         framework.registerJavaScriptFunction(
                 "function " + jsName + "(work) {\n" +

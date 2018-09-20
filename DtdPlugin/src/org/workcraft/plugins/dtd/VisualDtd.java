@@ -1,11 +1,5 @@
 package org.workcraft.plugins.dtd;
 
-import java.awt.Color;
-import java.awt.geom.Point2D;
-import java.util.Collection;
-import java.util.HashSet;
-
-import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
@@ -16,10 +10,21 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.gui.graph.tools.CommentGeneratorTool;
+import org.workcraft.gui.graph.tools.GraphEditorTool;
+import org.workcraft.plugins.dtd.tools.DtdConnectionTool;
+import org.workcraft.plugins.dtd.tools.DtdSelectionTool;
+import org.workcraft.plugins.dtd.tools.DtdSignalGeneratorTool;
 import org.workcraft.util.Hierarchy;
 
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+
 @DisplayName("Digital Timing Diagram")
-@CustomTools(DtdToolsProvider.class)
 public class VisualDtd extends AbstractVisualModel {
 
     private static final double OFFSET_ENTRY = 0.5;
@@ -68,7 +73,17 @@ public class VisualDtd extends AbstractVisualModel {
 
     public VisualDtd(Dtd model, VisualGroup root) {
         super(model, root);
+        setGraphEditorTools();
         new DtdStateSupervisor(this).attach(getRoot());
+    }
+
+    private void setGraphEditorTools() {
+        List<GraphEditorTool> tools = new ArrayList<>();
+        tools.add(new DtdSelectionTool());
+        tools.add(new CommentGeneratorTool());
+        tools.add(new DtdConnectionTool());
+        tools.add(new DtdSignalGeneratorTool());
+        setGraphEditorTools(tools);
     }
 
     @Override

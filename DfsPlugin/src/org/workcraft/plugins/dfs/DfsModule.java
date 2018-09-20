@@ -1,11 +1,7 @@
 package org.workcraft.plugins.dfs;
 
 import org.workcraft.*;
-import org.workcraft.commands.Command;
 import org.workcraft.commands.ScriptableCommandUtils;
-import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
-import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.dfs.commands.*;
 import org.workcraft.plugins.dfs.interop.VerilogExporter;
 
@@ -25,9 +21,9 @@ public class DfsModule implements Module {
     private void initPluginManager() {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
-        pm.registerClass(ModelDescriptor.class, DfsDescriptor.class);
-        pm.registerClass(Exporter.class, VerilogExporter.class);
-        pm.registerClass(Settings.class, DfsSettings.class);
+        pm.registerModel(DfsDescriptor.class);
+        pm.registerExporter(VerilogExporter.class);
+        pm.registerSettings(DfsSettings.class);
 
         ScriptableCommandUtils.register(DfsToStgConversionCommand.class, "convertDfsToStg",
                 "convert the given DFS 'work' into a new STG work");
@@ -50,7 +46,7 @@ public class DfsModule implements Module {
         ScriptableCommandUtils.register(WaggingGenerator4WayCommand.class, "transformDfsWagging4Way",
                 "transform the given DFS 'work' by applying 4-way wagging to the selected pipeline section");
         // Do not register generic WaggingGeneratorCommand as it requires user input
-        pm.registerClass(Command.class, WaggingGeneratorCommand.class);
+        pm.registerCommand(WaggingGeneratorCommand.class);
     }
 
     private void initCompatibilityManager() {

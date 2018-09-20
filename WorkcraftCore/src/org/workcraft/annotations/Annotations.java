@@ -1,6 +1,5 @@
 package org.workcraft.annotations;
 
-import org.workcraft.gui.graph.tools.CustomToolsProvider;
 import org.workcraft.gui.graph.tools.GraphEditorMouseListener;
 
 public class Annotations {
@@ -55,15 +54,6 @@ public class Annotations {
             return null;
         } else {
             return vcat.value();
-        }
-    }
-
-    public static Class<? extends CustomToolsProvider> getCustomToolsProvider(Class<?> cls) {
-        CustomTools ctb = cls.getAnnotation(CustomTools.class);
-        if (ctb == null) {
-            return null;
-        } else {
-            return ctb.value();
         }
     }
 

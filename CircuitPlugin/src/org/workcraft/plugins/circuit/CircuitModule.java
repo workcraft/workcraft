@@ -1,47 +1,14 @@
 package org.workcraft.plugins.circuit;
 
-import org.workcraft.CompatibilityManager;
-import org.workcraft.Framework;
-import org.workcraft.Module;
-import org.workcraft.PluginManager;
-import org.workcraft.Version;
-import org.workcraft.commands.Command;
+import org.workcraft.*;
 import org.workcraft.commands.ScriptableCommandUtils;
-import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
-import org.workcraft.interop.Exporter;
-import org.workcraft.interop.Importer;
-import org.workcraft.plugins.circuit.commands.CircuitAssertionVerificationCommand;
-import org.workcraft.plugins.circuit.commands.CircuitConformationVerificationCommand;
-import org.workcraft.plugins.circuit.commands.CircuitDeadlockFreenessVerificationCommand;
-import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
-import org.workcraft.plugins.circuit.commands.CircuitLayoutPlacementCommand;
-import org.workcraft.plugins.circuit.commands.CircuitLayoutRoutingCommand;
-import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
-import org.workcraft.plugins.circuit.commands.CircuitOutputPersistencyVerificationCommand;
-import org.workcraft.plugins.circuit.commands.CircuitPropertyVerificationCommand;
-import org.workcraft.plugins.circuit.commands.CircuitStatisticsCommand;
-import org.workcraft.plugins.circuit.commands.CircuitStrictImplementationVerificationCommand;
-import org.workcraft.plugins.circuit.commands.CircuitToStgConversionCommand;
-import org.workcraft.plugins.circuit.commands.CircuitToStgWithEnvironmentConversionCommand;
-import org.workcraft.plugins.circuit.commands.CircuitVerificationCommand;
-import org.workcraft.plugins.circuit.commands.ContractComponentTransformationCommand;
-import org.workcraft.plugins.circuit.commands.ContractJointTransformationCommand;
-import org.workcraft.plugins.circuit.commands.DetachJointTransformationCommand;
-import org.workcraft.plugins.circuit.commands.InsertBufferTransformationCommand;
-import org.workcraft.plugins.circuit.commands.PropagateInversionTransformationCommand;
-import org.workcraft.plugins.circuit.commands.SplitGateTransformationCommand;
-import org.workcraft.plugins.circuit.commands.DissolveJointTransformationCommand;
-import org.workcraft.plugins.circuit.commands.ToggleBubbleTransformationCommand;
-import org.workcraft.plugins.circuit.commands.ToggleZeroDelayTransformationCommand;
+import org.workcraft.plugins.circuit.commands.*;
 import org.workcraft.plugins.circuit.interop.GenlibImporter;
 import org.workcraft.plugins.circuit.interop.SdcExporter;
 import org.workcraft.plugins.circuit.interop.VerilogExporter;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.serialisation.FunctionDeserialiser;
 import org.workcraft.plugins.circuit.serialisation.FunctionSerialiser;
-import org.workcraft.serialisation.xml.XMLDeserialiser;
-import org.workcraft.serialisation.xml.XMLSerialiser;
 
 public class CircuitModule implements Module {
 
@@ -59,15 +26,15 @@ public class CircuitModule implements Module {
     private void initPluginManager() {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
-        pm.registerClass(ModelDescriptor.class, CircuitDescriptor.class);
-        pm.registerClass(XMLSerialiser.class, FunctionSerialiser.class);
-        pm.registerClass(XMLDeserialiser.class, FunctionDeserialiser.class);
-        pm.registerClass(Settings.class, CircuitSettings.class);
+        pm.registerModel(CircuitDescriptor.class);
+        pm.registerXmlSerialiser(FunctionSerialiser.class);
+        pm.registerXmlDeserialiser(FunctionDeserialiser.class);
+        pm.registerSettings(CircuitSettings.class);
 
-        pm.registerClass(Exporter.class, VerilogExporter.class);
-        pm.registerClass(Importer.class, VerilogImporter.class);
-        pm.registerClass(Importer.class, GenlibImporter.class);
-        pm.registerClass(Exporter.class, SdcExporter.class);
+        pm.registerExporter(VerilogExporter.class);
+        pm.registerImporter(VerilogImporter.class);
+        pm.registerImporter(GenlibImporter.class);
+        pm.registerExporter(SdcExporter.class);
 
         ScriptableCommandUtils.register(CircuitLayoutCommand.class, "layoutCircuit",
                 "place components and route wires of the Circuit 'work'");
@@ -75,7 +42,7 @@ public class CircuitModule implements Module {
                 "place components of the Circuit 'work'");
         ScriptableCommandUtils.register(CircuitLayoutRoutingCommand.class, "layoutCircuitRouting",
                 "route wires of the Circuit 'work'");
-        pm.registerClass(Settings.class, CircuitLayoutSettings.class);
+        pm.registerSettings(CircuitLayoutSettings.class);
 
         ScriptableCommandUtils.register(ContractJointTransformationCommand.class, "transformCircuitContractJoint",
                 "transform the given Circuit 'work' by contracting selected (or all) joints");
@@ -115,8 +82,8 @@ public class CircuitModule implements Module {
         ScriptableCommandUtils.register(CircuitStrictImplementationVerificationCommand.class, "checkCircuitStrictImplementation",
                 "check the Circuit 'work' for strict implementation of its signals according to the environment");
 
-        pm.registerClass(Command.class, CircuitPropertyVerificationCommand.class);
-        pm.registerClass(Command.class, CircuitAssertionVerificationCommand.class);
+        pm.registerCommand(CircuitPropertyVerificationCommand.class);
+        pm.registerCommand(CircuitAssertionVerificationCommand.class);
     }
 
     private void initCompatibilityManager() {

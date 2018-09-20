@@ -1,10 +1,5 @@
 package org.workcraft.dom.visual;
 
-import java.awt.Graphics2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.Collection;
-
 import org.workcraft.commands.AbstractLayoutCommand;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
@@ -16,7 +11,14 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.tools.Decorator;
+import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.observation.ObservableState;
+
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.Collection;
+import java.util.List;
 
 public interface VisualModel extends Model, ObservableState {
     void createDefaultFlatStructure() throws NodeCreationException;
@@ -65,4 +67,7 @@ public interface VisualModel extends Model, ObservableState {
     Collection<Node> hitBox(Point2D p1, Point2D p2);
     AbstractLayoutCommand getBestLayouter();
     Rectangle2D getBoundingBox();
+
+    void setGraphEditorTools(List<GraphEditorTool> tool);
+    List<GraphEditorTool> getGraphEditorTools();
 }

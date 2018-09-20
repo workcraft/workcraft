@@ -1,12 +1,7 @@
 package org.workcraft.plugins.policy;
 
-import org.workcraft.CompatibilityManager;
-import org.workcraft.Framework;
-import org.workcraft.Module;
-import org.workcraft.PluginManager;
-import org.workcraft.Version;
+import org.workcraft.*;
 import org.workcraft.commands.ScriptableCommandUtils;
-import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.plugins.policy.commands.BundleTransitionTransformationCommand;
 import org.workcraft.plugins.policy.commands.PetriToPolicyConversionCommand;
 import org.workcraft.plugins.policy.commands.PolicyDeadlockFreenessVerificationCommand;
@@ -15,8 +10,6 @@ import org.workcraft.plugins.policy.serialisation.BundleDeserialiser;
 import org.workcraft.plugins.policy.serialisation.BundleSerialiser;
 import org.workcraft.plugins.policy.serialisation.VisualLocalityDeserialiser;
 import org.workcraft.plugins.policy.serialisation.VisualLocalitySerialiser;
-import org.workcraft.serialisation.xml.XMLDeserialiser;
-import org.workcraft.serialisation.xml.XMLSerialiser;
 
 public class PolicyNetModule implements Module {
 
@@ -35,11 +28,11 @@ public class PolicyNetModule implements Module {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
 
-        pm.registerClass(ModelDescriptor.class, PolicyNetDescriptor.class);
-        pm.registerClass(XMLSerialiser.class, BundleSerialiser.class);
-        pm.registerClass(XMLDeserialiser.class, BundleDeserialiser.class);
-        pm.registerClass(XMLSerialiser.class, VisualLocalitySerialiser.class);
-        pm.registerClass(XMLDeserialiser.class, VisualLocalityDeserialiser.class);
+        pm.registerModel(PolicyNetDescriptor.class);
+        pm.registerXmlSerialiser(BundleSerialiser.class);
+        pm.registerXmlDeserialiser(BundleDeserialiser.class);
+        pm.registerXmlSerialiser(VisualLocalitySerialiser.class);
+        pm.registerXmlDeserialiser(VisualLocalityDeserialiser.class);
 
         ScriptableCommandUtils.register(BundleTransitionTransformationCommand.class, "transformPolicyBundleTransitions",
                 "transform the given Policy net 'work' by bundling selected transition");

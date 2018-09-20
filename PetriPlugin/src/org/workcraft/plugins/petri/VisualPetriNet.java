@@ -1,8 +1,5 @@
 package org.workcraft.plugins.petri;
 
-import java.util.Collection;
-
-import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -15,10 +12,16 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
+import org.workcraft.gui.graph.tools.CommentGeneratorTool;
+import org.workcraft.gui.graph.tools.GraphEditorTool;
+import org.workcraft.plugins.petri.tools.*;
 import org.workcraft.util.Hierarchy;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 @DisplayName ("Petri Net")
-@CustomTools (PetriNetToolProvider.class)
 public class VisualPetriNet extends AbstractVisualModel {
 
     public VisualPetriNet(PetriNet model) {
@@ -27,6 +30,7 @@ public class VisualPetriNet extends AbstractVisualModel {
 
     public VisualPetriNet(PetriNet model, VisualGroup root) {
         super(model, root);
+        setGraphEditorTools();
         if (root == null) {
             try {
                 createDefaultFlatStructure();
@@ -34,6 +38,18 @@ public class VisualPetriNet extends AbstractVisualModel {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private void setGraphEditorTools() {
+        List<GraphEditorTool> tools = new ArrayList<>();
+        tools.add(new PetriSelectionTool());
+        tools.add(new CommentGeneratorTool());
+        tools.add(new PetriConnectionTool());
+        tools.add(new ReadArcConnectionTool());
+        tools.add(new PetriPlaceGeneratorTool());
+        tools.add(new PetriTransitionGeneratorTool());
+        tools.add(new PetriSimulationTool());
+        setGraphEditorTools(tools);
     }
 
     public PetriNet getPetriNet() {

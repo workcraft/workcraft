@@ -3,25 +3,8 @@ package org.workcraft.plugins.mpsat;
 import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
-import org.workcraft.commands.Command;
 import org.workcraft.commands.ScriptableCommandUtils;
-import org.workcraft.gui.propertyeditor.Settings;
-import org.workcraft.plugins.mpsat.commands.MpsatAssertionVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatCombinedVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatConformationVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatConsistencyVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatCscConflictResolutionCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatCscVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatDeadlockFreenessVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatDiInterfaceVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatInputPropernessVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatMutexImplementabilityVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatNormalcyVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatConformationNwayVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatOutputPersistencyVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatPlaceRedundancyVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatPropertyVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatUscVerificationCommand;
+import org.workcraft.plugins.mpsat.commands.*;
 
 public class MpsatModule implements Module {
 
@@ -30,7 +13,7 @@ public class MpsatModule implements Module {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
 
-        pm.registerClass(Settings.class, MpsatVerificationSettings.class);
+        pm.registerSettings(MpsatVerificationSettings.class);
 
         ScriptableCommandUtils.register(MpsatCscConflictResolutionCommand.class, "resolveCscConflictMpsat",
                 "resolve complete state coding conflicts with MPSat backend");
@@ -57,12 +40,12 @@ public class MpsatModule implements Module {
                 "check the STG 'work' for implementability of its mutex places");
 
         // TODO: Need a way to pass the list of places from the JavaScript wrapper
-        pm.registerClass(Command.class, MpsatPlaceRedundancyVerificationCommand.class);
+        pm.registerCommand(MpsatPlaceRedundancyVerificationCommand.class);
         // TODO: Need a way to pass the environment file from the JavaScript wrapper
-        pm.registerClass(Command.class, MpsatConformationVerificationCommand.class);
-        pm.registerClass(Command.class, MpsatConformationNwayVerificationCommand.class);
-        pm.registerClass(Command.class, MpsatPropertyVerificationCommand.class);
-        pm.registerClass(Command.class, MpsatAssertionVerificationCommand.class);
+        pm.registerCommand(MpsatConformationVerificationCommand.class);
+        pm.registerCommand(MpsatConformationNwayVerificationCommand.class);
+        pm.registerCommand(MpsatPropertyVerificationCommand.class);
+        pm.registerCommand(MpsatAssertionVerificationCommand.class);
     }
 
     @Override

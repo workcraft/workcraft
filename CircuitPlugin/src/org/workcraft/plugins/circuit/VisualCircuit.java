@@ -1,7 +1,6 @@
 package org.workcraft.plugins.circuit;
 
 import org.workcraft.Framework;
-import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.ShortName;
 import org.workcraft.commands.AbstractLayoutCommand;
@@ -16,7 +15,9 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
+import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.Decorator;
+import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.circuit.Contact.IOType;
@@ -30,6 +31,7 @@ import org.workcraft.plugins.circuit.routing.RouterClient;
 import org.workcraft.plugins.circuit.routing.RouterVisualiser;
 import org.workcraft.plugins.circuit.routing.impl.Router;
 import org.workcraft.plugins.circuit.routing.impl.RouterTask;
+import org.workcraft.plugins.circuit.tools.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Hierarchy;
@@ -40,13 +42,11 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.io.File;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.*;
+import java.util.List;
 
 @DisplayName("Digital Circuit")
 @ShortName("circuit")
-@CustomTools(CircuitToolsProvider.class)
 public class VisualCircuit extends AbstractVisualModel {
 
     public VisualCircuit(Circuit model, VisualGroup root) {
@@ -55,11 +55,25 @@ public class VisualCircuit extends AbstractVisualModel {
 
     public VisualCircuit(Circuit model) throws VisualModelInstantiationException {
         super(model);
+        setGraphEditorTools();
         try {
             createDefaultFlatStructure();
         } catch (NodeCreationException e) {
             throw new VisualModelInstantiationException(e);
         }
+    }
+
+    private void setGraphEditorTools() {
+        List<GraphEditorTool> tools = new ArrayList<>();
+        tools.add(new CircuitSelectionTool());
+        tools.add(new CommentGeneratorTool());
+        tools.add(new CircuitConnectionTool());
+        tools.add(new FunctionComponentGeneratorTool());
+        tools.add(new ContactGeneratorTool());
+        tools.add(new CircuitSimulationTool());
+        tools.add(new InitialisationAnalyserTool());
+        tools.add(new LoopAnalyserTool());
+        setGraphEditorTools(tools);
     }
 
     @Override

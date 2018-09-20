@@ -1,22 +1,30 @@
 package org.workcraft.plugins.wtg;
 
-import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
+import org.workcraft.gui.graph.tools.CommentGeneratorTool;
+import org.workcraft.gui.graph.tools.GraphEditorTool;
+import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.dtd.VisualDtd;
 import org.workcraft.plugins.dtd.VisualSignal;
 import org.workcraft.plugins.dtd.VisualTransitionEvent;
 import org.workcraft.plugins.wtg.properties.SignalNamePropertyDescriptor;
 import org.workcraft.plugins.wtg.properties.SignalTypePropertyDescriptor;
+import org.workcraft.plugins.wtg.tools.WtgConnectionTool;
+import org.workcraft.plugins.wtg.tools.WtgSelectionTool;
+import org.workcraft.plugins.wtg.tools.WtgSignalGeneratorTool;
+import org.workcraft.plugins.wtg.tools.WtgSimulationTool;
 import org.workcraft.util.Hierarchy;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @DisplayName("Waveform Transition Graph")
-@CustomTools(WtgToolsProvider.class)
 public class VisualWtg extends VisualDtd {
 
     public VisualWtg(Wtg model) {
@@ -25,6 +33,19 @@ public class VisualWtg extends VisualDtd {
 
     public VisualWtg(Wtg model, VisualGroup root) {
         super(model, root);
+        setGraphEditorTools();
+    }
+
+    private void setGraphEditorTools() {
+        List<GraphEditorTool> tools = new ArrayList<>();
+        tools.add(new WtgSelectionTool());
+        tools.add(new CommentGeneratorTool());
+        tools.add(new WtgConnectionTool());
+        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(State.class), true));
+        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(Waveform.class), true));
+        tools.add(new WtgSignalGeneratorTool());
+        tools.add(new WtgSimulationTool());
+        setGraphEditorTools(tools);
     }
 
     @Override

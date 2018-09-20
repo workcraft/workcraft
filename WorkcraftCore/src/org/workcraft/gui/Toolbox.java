@@ -2,12 +2,10 @@ package org.workcraft.gui;
 
 import org.workcraft.Framework;
 import org.workcraft.PluginManager;
-import org.workcraft.annotations.Annotations;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.gui.graph.tools.CustomToolsProvider;
 import org.workcraft.gui.graph.tools.GraphEditorKeyListener;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.ToolProvider;
@@ -65,27 +63,16 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
 
     public Toolbox(GraphEditorPanel editor) {
         this.editor = editor;
+        final PluginManager pm = Framework.getInstance().getPluginManager();
         WorkspaceEntry we = editor.getWorkspaceEntry();
         VisualModel model = editor.getModel();
         boolean isDefault = true;
-        // Tools registered via CustomToolProvider annotation
-        Class<? extends CustomToolsProvider> customTools = Annotations.getCustomToolsProvider(model.getClass());
-        if (customTools != null) {
-            CustomToolsProvider provider = null;
-            try {
-                provider = customTools.getConstructor().newInstance();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            if (provider != null) {
-                for (GraphEditorTool tool: provider.getTools()) {
-                    addTool(tool, isDefault);
-                    isDefault = false;
-                }
-            }
+        // Tools associated with the model
+        for (GraphEditorTool tool: model.getGraphEditorTools()) {
+            addTool(tool, isDefault);
+            isDefault = false;
         }
         // Tools registered via PluginManager
-        final PluginManager pm = Framework.getInstance().getPluginManager();
         for (PluginInfo<? extends GraphEditorTool> info: pm.getPlugins(GraphEditorTool.class)) {
             GraphEditorTool tool = info.newInstance();
             if (tool.isApplicableTo(we)) {
@@ -97,7 +84,7 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
         setToolButtonSelection(selectedTool, true);
     }
 
-        private void addTool(final GraphEditorTool tool, boolean isDefault) {
+    private void addTool(final GraphEditorTool tool, boolean isDefault) {
         tools.add(tool);
         if (tool.requiresButton()) {
             JToggleButton button = createToolButton(tool);

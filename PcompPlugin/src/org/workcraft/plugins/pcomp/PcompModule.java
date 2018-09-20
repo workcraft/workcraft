@@ -3,8 +3,6 @@ package org.workcraft.plugins.pcomp;
 import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
-import org.workcraft.commands.Command;
-import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.pcomp.commands.ParallelCompositionCommand;
 
 public class PcompModule implements Module {
@@ -14,12 +12,13 @@ public class PcompModule implements Module {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
 
-        pm.registerClass(Command.class, ParallelCompositionCommand.class);
-        pm.registerClass(Settings.class, PcompSettings.class);
+        pm.registerCommand(ParallelCompositionCommand.class);
+        pm.registerSettings(PcompSettings.class);
     }
 
     @Override
     public String getDescription() {
         return "PComp parallel composition support";
     }
+
 }

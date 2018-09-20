@@ -1,35 +1,37 @@
 package org.workcraft.plugins.cpog;
 
-import java.awt.geom.Point2D;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
-import java.util.Map;
-
-import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.PageNode;
-import org.workcraft.dom.visual.AbstractVisualModel;
-import org.workcraft.dom.visual.SelectionHelper;
-import org.workcraft.dom.visual.TransformHelper;
-import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.dom.visual.VisualModelTransformer;
-import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.utils.StringGenerator;
+import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
+import org.workcraft.gui.graph.tools.CommentGeneratorTool;
+import org.workcraft.gui.graph.tools.ConnectionTool;
+import org.workcraft.gui.graph.tools.GraphEditorTool;
+import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.plugins.cpog.tools.CpogSelectionTool;
 import org.workcraft.util.Hierarchy;
 
+import java.awt.geom.Point2D;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 @DisplayName("Conditional Partial Order Graph")
-@CustomTools(CpogToolsProvider.class)
 public class VisualCpog extends AbstractVisualModel {
+
     private final class BooleanFormulaPropertyDescriptor implements PropertyDescriptor {
         private final Node node;
 
@@ -100,6 +102,7 @@ public class VisualCpog extends AbstractVisualModel {
     public VisualCpog(Cpog model, VisualGroup root) {
         super(model, root);
         this.mathModel = model;
+        setGraphEditorTools();
         if (root == null) {
             try {
                 createDefaultFlatStructure();
@@ -108,6 +111,17 @@ public class VisualCpog extends AbstractVisualModel {
             }
         }
         new ConsistencyEnforcer(this).attach(getRoot());
+    }
+
+    private void setGraphEditorTools() {
+        List<GraphEditorTool> tools = new ArrayList<>();
+        tools.add(new CpogSelectionTool());
+        tools.add(new CommentGeneratorTool());
+        tools.add(new ConnectionTool(false, true, true));
+        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(Vertex.class)));
+        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(Variable.class)));
+        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(RhoClause.class)));
+        setGraphEditorTools(tools);
     }
 
     @Override

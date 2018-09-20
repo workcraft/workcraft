@@ -1,27 +1,10 @@
 package org.workcraft.dom.visual;
 
-import java.awt.Graphics2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
-
 import org.workcraft.NodeFactory;
 import org.workcraft.annotations.MouseListeners;
 import org.workcraft.commands.AbstractLayoutCommand;
-import org.workcraft.dom.AbstractModel;
+import org.workcraft.dom.*;
 import org.workcraft.dom.Container;
-import org.workcraft.dom.DefaultHangingConnectionRemover;
-import org.workcraft.dom.DefaultMathNodeRemover;
-import org.workcraft.dom.DefaultReplicaRemover;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathModel;
@@ -32,19 +15,22 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.tools.Decorator;
+import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.TitlePropertyDescriptor;
-import org.workcraft.observation.ModelModifiedEvent;
-import org.workcraft.observation.ObservableStateImpl;
-import org.workcraft.observation.SelectionChangedEvent;
-import org.workcraft.observation.StateEvent;
-import org.workcraft.observation.StateObserver;
-import org.workcraft.observation.StateSupervisor;
+import org.workcraft.observation.*;
 import org.workcraft.plugins.layout.DotLayoutCommand;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Pair;
+
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.*;
+import java.util.List;
+import java.util.Queue;
 
 @MouseListeners ({ DefaultAnchorGenerator.class })
 public abstract class AbstractVisualModel extends AbstractModel implements VisualModel {
@@ -52,6 +38,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     private Container currentLevel;
     private final Set<Node> selection = new HashSet<>();
     private final ObservableStateImpl observableState = new ObservableStateImpl();
+    private final List<GraphEditorTool> graphEditorTools = new ArrayList<>();
 
     public AbstractVisualModel() {
         this(null, null);
@@ -85,7 +72,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
         HashMap<MathNode, VisualComponent> createdNodes = new HashMap<>();
         // Create components
         Queue<Pair<Container, Container>> containerQueue = new LinkedList<>();
-        containerQueue.add(new Pair<Container, Container>(getMathModel().getRoot(), getRoot()));
+        containerQueue.add(new Pair<>(getMathModel().getRoot(), getRoot()));
         while (!containerQueue.isEmpty()) {
             Pair<Container, Container> container = containerQueue.remove();
             Container mathContainer = container.getFirst();
@@ -668,6 +655,17 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     @Override
     public Rectangle2D getBoundingBox() {
         return BoundingBoxHelper.mergeBoundingBoxes(Hierarchy.getChildrenOfType(getRoot(), Touchable.class));
+    }
+
+    @Override
+    public final void setGraphEditorTools(List<GraphEditorTool> tools) {
+        graphEditorTools.clear();
+        graphEditorTools.addAll(tools);
+    }
+
+    @Override
+    public final List<GraphEditorTool> getGraphEditorTools() {
+        return graphEditorTools;
     }
 
 }

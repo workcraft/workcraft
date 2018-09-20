@@ -4,7 +4,6 @@ import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.commands.ScriptableCommandUtils;
-import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.mpsat.commands.MpsatComplexGateSynthesisCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatGeneralisedCelementSynthesisCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatStandardCelementSynthesisCommand;
@@ -16,7 +15,7 @@ public class MpsatSynthesisModule implements Module {
     public void init() {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
-        pm.registerClass(Settings.class, MpsatSynthesisSettings.class);
+        pm.registerSettings(MpsatSynthesisSettings.class);
 
         ScriptableCommandUtils.register(MpsatComplexGateSynthesisCommand.class, "synthComplexGateMpsat",
                 "logic synthesis of the STG 'work' into a complex gate Circuit work using MPSat backend");

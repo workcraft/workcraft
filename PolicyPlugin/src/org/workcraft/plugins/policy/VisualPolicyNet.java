@@ -1,10 +1,5 @@
 package org.workcraft.plugins.policy;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-
-import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.ShortName;
 import org.workcraft.dom.Node;
@@ -13,24 +8,31 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.gui.graph.tools.CommentGeneratorTool;
+import org.workcraft.gui.graph.tools.ConnectionTool;
+import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.observation.ModelModifiedEvent;
-import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.observation.StateEvent;
-import org.workcraft.observation.StateSupervisor;
-import org.workcraft.observation.TransformChangedEvent;
+import org.workcraft.observation.*;
 import org.workcraft.plugins.petri.VisualPetriNet;
+import org.workcraft.plugins.petri.tools.PetriPlaceGeneratorTool;
 import org.workcraft.plugins.policy.propertydescriptors.BundleColorPropertyDescriptor;
 import org.workcraft.plugins.policy.propertydescriptors.BundleNamePropertyDescriptor;
 import org.workcraft.plugins.policy.propertydescriptors.BundlesOfTransitionPropertyDescriptor;
 import org.workcraft.plugins.policy.propertydescriptors.TransitionsOfBundlePropertyDescriptor;
+import org.workcraft.plugins.policy.tools.PolicyBundledTransitionGeneratorTool;
+import org.workcraft.plugins.policy.tools.PolicySelectionTool;
+import org.workcraft.plugins.policy.tools.PolicySimulationTool;
 import org.workcraft.util.ColorGenerator;
 import org.workcraft.util.ColorUtils;
 import org.workcraft.util.Hierarchy;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+
 @DisplayName ("Policy Net")
 @ShortName("policy")
-@CustomTools (PolicyNetToolProvider.class)
 public class VisualPolicyNet extends VisualPetriNet {
     private final ColorGenerator bundleColorGenerator = new ColorGenerator(ColorUtils.getHsbPalette(
             new float[]{0.05f, 0.15f, 0.25f, 0.35f, 0.45f, 0.55f, 0.65f, 0.75f, 0.85f, 0.95f},
@@ -42,6 +44,7 @@ public class VisualPolicyNet extends VisualPetriNet {
 
     public VisualPolicyNet(PolicyNet model, VisualGroup root) {
         super(model, root == null ? new VisualLocality((Locality) model.getRoot()) : root);
+        setGraphEditorTools();
         // invalidate spanning trees of all VisualBundles when the the model is changed
         new StateSupervisor() {
             @Override
@@ -55,6 +58,17 @@ public class VisualPolicyNet extends VisualPetriNet {
                 }
             }
         }.attach(getRoot());
+    }
+
+    private void setGraphEditorTools() {
+        List<GraphEditorTool> tools = new ArrayList<>();
+        tools.add(new PolicySelectionTool());
+        tools.add(new CommentGeneratorTool());
+        tools.add(new ConnectionTool());
+        tools.add(new PetriPlaceGeneratorTool());
+        tools.add(new PolicyBundledTransitionGeneratorTool());
+        tools.add(new PolicySimulationTool());
+        setGraphEditorTools(tools);
     }
 
     public PolicyNet getPolicyNet() {

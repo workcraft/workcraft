@@ -1,26 +1,10 @@
 package org.workcraft.plugins.petri;
 
-import org.workcraft.CompatibilityManager;
-import org.workcraft.Framework;
-import org.workcraft.Module;
-import org.workcraft.PluginManager;
-import org.workcraft.Version;
+import org.workcraft.*;
 import org.workcraft.commands.ScriptableCommandUtils;
-import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.plugins.petri.commands.CollapseProxyTransformationCommand;
-import org.workcraft.plugins.petri.commands.ContractTransitionTransformationCommand;
-import org.workcraft.plugins.petri.commands.DirectedArcToReadArcTransformationCommand;
-import org.workcraft.plugins.petri.commands.DualArcToReadArcTransformationCommand;
-import org.workcraft.plugins.petri.commands.MergePlaceTransformationCommand;
-import org.workcraft.plugins.petri.commands.MergeTransitionTransformationCommand;
-import org.workcraft.plugins.petri.commands.PetriStatisticsCommand;
-import org.workcraft.plugins.petri.commands.ProxyDirectedArcPlaceTransformationCommand;
-import org.workcraft.plugins.petri.commands.ProxyReadArcPlaceTransformationCommand;
-import org.workcraft.plugins.petri.commands.ReadArcToDualArcTransformationCommand;
+import org.workcraft.plugins.petri.commands.*;
 import org.workcraft.plugins.petri.serialization.ReadArcDeserialiser;
 import org.workcraft.plugins.petri.serialization.ReadArcSerialiser;
-import org.workcraft.serialisation.xml.XMLDeserialiser;
-import org.workcraft.serialisation.xml.XMLSerialiser;
 
 public class PetriNetModule implements Module {
 
@@ -38,10 +22,10 @@ public class PetriNetModule implements Module {
     private void initPluginManager() {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
-        pm.registerClass(ModelDescriptor.class, PetriNetDescriptor.class);
+        pm.registerModel(PetriNetDescriptor.class);
 
-        pm.registerClass(XMLSerialiser.class, ReadArcSerialiser.class);
-        pm.registerClass(XMLDeserialiser.class, ReadArcDeserialiser.class);
+        pm.registerXmlSerialiser(ReadArcSerialiser.class);
+        pm.registerXmlDeserialiser(ReadArcDeserialiser.class);
 
         ScriptableCommandUtils.register(ContractTransitionTransformationCommand.class, "transformPetriContractTransition",
                 "transform the given Petri net 'work' by contracting a selected transition");

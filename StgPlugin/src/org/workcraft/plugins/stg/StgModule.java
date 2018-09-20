@@ -1,15 +1,7 @@
 package org.workcraft.plugins.stg;
 
-import org.workcraft.CompatibilityManager;
-import org.workcraft.Framework;
-import org.workcraft.Module;
-import org.workcraft.PluginManager;
-import org.workcraft.Version;
+import org.workcraft.*;
 import org.workcraft.commands.ScriptableCommandUtils;
-import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
-import org.workcraft.interop.Exporter;
-import org.workcraft.interop.Importer;
 import org.workcraft.plugins.stg.commands.*;
 import org.workcraft.plugins.stg.interop.LpnExporter;
 import org.workcraft.plugins.stg.interop.LpnImporter;
@@ -18,9 +10,6 @@ import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.plugins.stg.serialisation.AstgSerialiser;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcDeserialiser;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcSerialiser;
-import org.workcraft.serialisation.ModelSerialiser;
-import org.workcraft.serialisation.xml.XMLDeserialiser;
-import org.workcraft.serialisation.xml.XMLSerialiser;
 
 public class StgModule implements Module {
 
@@ -38,18 +27,18 @@ public class StgModule implements Module {
     private void initPluginManager() {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
-        pm.registerClass(ModelDescriptor.class, StgDescriptor.class);
-        pm.registerClass(Settings.class, StgSettings.class);
+        pm.registerModel(StgDescriptor.class);
+        pm.registerSettings(StgSettings.class);
 
-        pm.registerClass(XMLSerialiser.class, ImplicitPlaceArcSerialiser.class);
-        pm.registerClass(XMLDeserialiser.class, ImplicitPlaceArcDeserialiser.class);
-        pm.registerClass(ModelSerialiser.class, AstgSerialiser.class);
+        pm.registerXmlSerialiser(ImplicitPlaceArcSerialiser.class);
+        pm.registerXmlDeserialiser(ImplicitPlaceArcDeserialiser.class);
+        pm.registerModelSerialiser(AstgSerialiser.class);
 
-        pm.registerClass(Exporter.class, StgExporter.class);
-        pm.registerClass(Importer.class, StgImporter.class);
+        pm.registerExporter(StgExporter.class);
+        pm.registerImporter(StgImporter.class);
 
-        pm.registerClass(Exporter.class, LpnExporter.class);
-        pm.registerClass(Importer.class, LpnImporter.class);
+        pm.registerExporter(LpnExporter.class);
+        pm.registerImporter(LpnImporter.class);
 
         ScriptableCommandUtils.register(MirrorSignalTransformationCommand.class, "transformStgMirrorSignal",
                 "transform the given STG 'work' by mirroring selected (or all) signals");

@@ -4,21 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.commands.ScriptableCommandUtils;
-import org.workcraft.gui.propertyeditor.Settings;
-import org.workcraft.plugins.petrify.commands.PetrifyPetriToFsmConversionCommand;
-import org.workcraft.plugins.petrify.commands.PetrifyComplexGateSynthesisCommand;
-import org.workcraft.plugins.petrify.commands.PetrifyCscConflictResolutionCommand;
-import org.workcraft.plugins.petrify.commands.PetrifyGeneralisedCelementSynthesisCommand;
-import org.workcraft.plugins.petrify.commands.PetrifyHideConversionCommand;
-import org.workcraft.plugins.petrify.commands.PetrifyHideDummyConversionCommand;
-import org.workcraft.plugins.petrify.commands.PetrifyHideErConversionCommand;
-import org.workcraft.plugins.petrify.commands.PetrifyNetConversionCommand;
-import org.workcraft.plugins.petrify.commands.PetrifyNetErConversionCommand;
-import org.workcraft.plugins.petrify.commands.PetrifyStandardCelementSynthesisCommand;
-import org.workcraft.plugins.petrify.commands.PetrifyTechnologyMappingSynthesisCommand;
-import org.workcraft.plugins.petrify.commands.PetrifyUntoggleConversionCommand;
-import org.workcraft.plugins.petrify.commands.PetrifyStgToBinaryFstConversionCommand;
-import org.workcraft.plugins.petrify.commands.PetrifyStgToFstConversionCommand;
+import org.workcraft.plugins.petrify.commands.*;
 
 public class PetrifyModule implements Module {
 
@@ -27,7 +13,7 @@ public class PetrifyModule implements Module {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
 
-        pm.registerClass(Settings.class, PetrifySettings.class);
+        pm.registerSettings(PetrifySettings.class);
 
         ScriptableCommandUtils.register(PetrifyNetConversionCommand.class, "convertPetriSynthesis",
                 "convert the given Petri net/FSM or STG/FST 'work' into a new Petri net or STG work using net synthesis");
