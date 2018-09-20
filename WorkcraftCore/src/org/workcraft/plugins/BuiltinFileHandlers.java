@@ -5,7 +5,6 @@ import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.plugins.workspace.handlers.SystemOpen;
 import org.workcraft.plugins.workspace.handlers.WorkcraftOpen;
-import org.workcraft.workspace.FileHandler;
 
 public class BuiltinFileHandlers implements Module {
 
@@ -13,9 +12,7 @@ public class BuiltinFileHandlers implements Module {
     public void init() {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
-
-        pm.registerClass(FileHandler.class, () -> new WorkcraftOpen());
-
+        pm.registerFileHandler(() -> new WorkcraftOpen());
         pm.registerFileHandler(SystemOpen.class);
     }
 

@@ -10,7 +10,7 @@ public class PluginUtils {
 
     public static Stream<ModelDescriptor> streamModelDescriptors() {
         PluginManager pm = Framework.getInstance().getPluginManager();
-        return pm.getPlugins(ModelDescriptor.class).stream()
+        return pm.getModelDescriptorPlugins().stream()
                 .map(plugin -> plugin.getSingleton());
     }
 

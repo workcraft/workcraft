@@ -23,7 +23,7 @@ public class FsmModule  implements Module {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
 
-        pm.registerModel(FsmDescriptor.class);
+        pm.registerModelDescriptor(FsmDescriptor.class);
 
         pm.registerXmlSerialiser(EventSerialiser.class);
         pm.registerXmlDeserialiser(EventDeserialiser.class);

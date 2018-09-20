@@ -1,9 +1,5 @@
 package org.workcraft.serialisation.xml;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-
 import org.w3c.dom.Element;
 import org.workcraft.PluginProvider;
 import org.workcraft.dom.Container;
@@ -16,6 +12,10 @@ import org.workcraft.serialisation.References;
 import org.workcraft.util.ConstructorParametersMatcher;
 import org.workcraft.util.XmlUtils;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+
 public class XMLDeserialisationManager implements DeserialiserFactory, NodeInitialiser, NodeFinaliser {
 
     private final HashMap<String, XMLDeserialiser> deserialisers = new HashMap<>();
@@ -27,7 +27,7 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
     }
 
     @Override
-    public XMLDeserialiser getDeserialiserFor(String className) throws InstantiationException, IllegalAccessException {
+    public XMLDeserialiser getDeserialiserFor(String className) {
         return deserialisers.get(className);
     }
 
@@ -39,8 +39,8 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
         return state;
     }
 
-    public void processPlugins(PluginProvider manager) {
-        for (PluginInfo<? extends XMLDeserialiser> info : manager.getPlugins(XMLDeserialiser.class)) {
+    public void processPlugins(PluginProvider pp) {
+        for (PluginInfo<? extends XMLDeserialiser> info : pp.getPlugins(XMLDeserialiser.class)) {
             registerDeserialiser(info.newInstance());
         }
     }

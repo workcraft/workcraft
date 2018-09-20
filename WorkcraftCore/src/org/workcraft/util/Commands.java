@@ -1,22 +1,17 @@
 package org.workcraft.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.function.Function;
-
 import org.workcraft.Framework;
 import org.workcraft.MenuOrdering;
 import org.workcraft.MenuOrdering.Position;
+import org.workcraft.PluginManager;
 import org.workcraft.commands.Command;
 import org.workcraft.commands.ScriptableCommand;
-import org.workcraft.PluginManager;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import java.util.*;
+import java.util.function.Function;
 
 public class Commands {
 
@@ -24,7 +19,7 @@ public class Commands {
         ArrayList<Command> result = new ArrayList<>();
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
-        Collection<PluginInfo<? extends Command>> commandPlugins = pm.getPlugins(Command.class);
+        Collection<PluginInfo<? extends Command>> commandPlugins = pm.getCommandPlugins();
         for (PluginInfo<? extends Command> info: commandPlugins) {
             Command command = info.getSingleton();
             result.add(command);

@@ -22,7 +22,7 @@ public class CpogModule implements Module {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
 
-        pm.registerModel(CpogDescriptor.class);
+        pm.registerModelDescriptor(CpogDescriptor.class);
 
         pm.registerProperty(EncodingPropertyProvider.class);
 

@@ -16,7 +16,7 @@ public class DtdModule  implements Module {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
 
-        pm.registerModel(DtdDescriptor.class);
+        pm.registerModelDescriptor(DtdDescriptor.class);
     }
 
 }

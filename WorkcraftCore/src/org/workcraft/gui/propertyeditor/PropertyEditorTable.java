@@ -1,27 +1,21 @@
 package org.workcraft.gui.propertyeditor;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JTable;
-import javax.swing.border.Border;
-import javax.swing.event.ChangeEvent;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
-
 import org.workcraft.Framework;
 import org.workcraft.PluginManager;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.util.DialogUtils;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.event.ChangeEvent;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 
 @SuppressWarnings("serial")
 public class PropertyEditorTable extends JTable implements PropertyEditor {
@@ -55,8 +49,8 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
         propertyClasses.put(File.class, new FileProperty());
 
         final Framework framework = Framework.getInstance();
-        PluginManager pluginManager = framework.getPluginManager();
-        for (PluginInfo<? extends PropertyClassProvider> plugin : pluginManager.getPlugins(PropertyClassProvider.class)) {
+        PluginManager pm = framework.getPluginManager();
+        for (PluginInfo<? extends PropertyClassProvider> plugin : pm.getPropertyPlugins()) {
             PropertyClassProvider instance = plugin.newInstance();
             propertyClasses.put(instance.getPropertyType(), instance.getPropertyGui());
         }

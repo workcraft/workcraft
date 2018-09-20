@@ -8,7 +8,6 @@ import org.workcraft.plugins.wtg.commands.WtgToStgWaverConversionCommand;
 import org.workcraft.plugins.wtg.interop.WtgExporter;
 import org.workcraft.plugins.wtg.serialisation.GuardDeserialiser;
 import org.workcraft.plugins.wtg.serialisation.GuardSerialiser;
-import org.workcraft.plugins.wtg.serialisation.WtgSerialiser;
 
 public class WtgModule  implements Module {
 
@@ -27,10 +26,10 @@ public class WtgModule  implements Module {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
 
-        pm.registerModel(WtgDescriptor.class);
+        pm.registerModelDescriptor(WtgDescriptor.class);
         pm.registerSettings(WtgSettings.class);
         pm.registerSettings(WaverSettings.class);
-        pm.registerModelSerialiser(WtgSerialiser.class);
+
         pm.registerXmlSerialiser(GuardSerialiser.class);
         pm.registerXmlDeserialiser(GuardDeserialiser.class);
 

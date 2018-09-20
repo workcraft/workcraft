@@ -25,8 +25,6 @@ import java.util.List;
 
 public class PluginManager implements PluginProvider {
 
-    public static final String VERSION_STAMP = "d971444cbd86148695f3427118632aca";
-
     private final ListMap<Class<?>, PluginInfo<?>> plugins = new ListMap<>();
 
     public static class PluginInstanceHolder<T> implements PluginInfo<T> {
@@ -71,10 +69,10 @@ public class PluginManager implements PluginProvider {
         return result;
     }
 
-    private void processLegacyPlugin(Class<?> cls, LegacyPluginInfo info) throws PluginInstantiationException {
+    private void processLegacyPlugin(LegacyPluginInfo info) {
         for (String interfaceName : info.getInterfaces()) {
             try {
-                PluginInstanceHolder<Object> pih = new PluginInstanceHolder<Object>(info);
+                PluginInstanceHolder<Object> pih = new PluginInstanceHolder<>(info);
                 plugins.put(Class.forName(interfaceName), pih);
             } catch (ClassNotFoundException e) {
                 String className = info.getClassName();
@@ -103,10 +101,50 @@ public class PluginManager implements PluginProvider {
         for (Class<?> cls : classes) {
             final LegacyPluginInfo info = new LegacyPluginInfo(cls);
             pluginInfos.add(info);
-            processLegacyPlugin(cls, info);
+            processLegacyPlugin(info);
         }
 
         initModules();
+    }
+
+    public Collection<PluginInfo<? extends ModelDescriptor>> getModelDescriptorPlugins() {
+        return getPlugins(ModelDescriptor.class);
+    }
+
+    public Collection<PluginInfo<? extends Settings>> getSettingsPlugins() {
+        return getPlugins(Settings.class);
+    }
+
+    public Collection<PluginInfo<? extends Importer>> getImporterPlugins() {
+        return getPlugins(Importer.class);
+    }
+
+    public Collection<PluginInfo<? extends Exporter>> getExporterPlugins() {
+        return getPlugins(Exporter.class);
+    }
+
+    public Collection<PluginInfo<? extends XMLSerialiser>> getXmlSerialiserPlugins() {
+        return getPlugins(XMLSerialiser.class);
+    }
+
+    public Collection<PluginInfo<? extends XMLDeserialiser>> getXmlDeserialiserPlugins() {
+        return getPlugins(XMLDeserialiser.class);
+    }
+
+    public Collection<PluginInfo<? extends FileHandler>> getFileHandlerPlugins() {
+        return getPlugins(FileHandler.class);
+    }
+
+    public Collection<PluginInfo<? extends PropertyClassProvider>> getPropertyPlugins() {
+        return getPlugins(PropertyClassProvider.class);
+    }
+
+    public Collection<PluginInfo<? extends Command>> getCommandPlugins() {
+        return getPlugins(Command.class);
+    }
+
+    public Collection<PluginInfo<? extends GraphEditorTool>> getGraphEditorToolPlugins() {
+        return getPlugins(GraphEditorTool.class);
     }
 
     @SuppressWarnings("unchecked")
@@ -114,20 +152,12 @@ public class PluginManager implements PluginProvider {
         return (Collection<PluginInfo<? extends T>>) (Collection<?>) Collections.unmodifiableCollection(plugins.get(interf));
     }
 
-    public void registerModel(final Class<? extends ModelDescriptor> cls) {
+    public void registerModelDescriptor(final Class<? extends ModelDescriptor> cls) {
         registerClass(ModelDescriptor.class, cls);
     }
 
     public void registerSettings(final Class<? extends Settings> cls) {
         registerClass(Settings.class, cls);
-    }
-
-    public void registerModelSerialiser(final Class<? extends ModelSerialiser> cls) {
-        registerClass(ModelSerialiser.class, cls);
-    }
-
-    public void registerModelDeserialiser(final Class<? extends ModelDeserialiser> cls) {
-        registerClass(ModelDeserialiser.class, cls);
     }
 
     public void registerXmlSerialiser(final Class<? extends XMLSerialiser> cls) {
@@ -154,12 +184,12 @@ public class PluginManager implements PluginProvider {
         registerClass(PropertyClassProvider.class, cls);
     }
 
-    public void registerGlobalTool(final Class<? extends GraphEditorTool> cls) {
-        registerClass(GraphEditorTool.class, cls);
-    }
-
     public void registerCommand(final Class<? extends Command> cls) {
         registerClass(Command.class, cls);
+    }
+
+    public void registerGlobalTool(final Class<? extends GraphEditorTool> cls) {
+        registerClass(GraphEditorTool.class, cls);
     }
 
     private <T> void registerClass(Class<T> interf, final Class<? extends T> cls) {
@@ -180,11 +210,19 @@ public class PluginManager implements PluginProvider {
         });
     }
 
-    public void registerGlobalTool(Initialiser<? extends GraphEditorTool> initialiser) {
-        registerClass(GraphEditorTool.class, initialiser);
+    public void registerModelSerialiser(Initialiser<? extends ModelSerialiser> initialiser) {
+        registerClass(ModelSerialiser.class, initialiser);
     }
 
-    public <T> void registerClass(Class<T> interf, Initialiser<? extends T> initialiser) {
+    public void registerModelDeserialiser(Initialiser<? extends ModelDeserialiser> initialiser) {
+        registerClass(ModelDeserialiser.class, initialiser);
+    }
+
+    public void registerFileHandler(Initialiser<? extends FileHandler> initialiser) {
+        registerClass(FileHandler.class, initialiser);
+    }
+
+    private <T> void registerClass(Class<T> interf, Initialiser<? extends T> initialiser) {
         if (!interf.isInterface()) {
             throw new RuntimeException("'interf' argument must be an interface");
         }

@@ -8,7 +8,6 @@ import org.workcraft.plugins.fst.commands.FstToFsmConversionCommand;
 import org.workcraft.plugins.fst.commands.FstToStgConversionCommand;
 import org.workcraft.plugins.fst.interop.SgExporter;
 import org.workcraft.plugins.fst.interop.SgImporter;
-import org.workcraft.plugins.fst.serialisation.SgSerialiser;
 
 public class FstModule implements Module {
 
@@ -26,8 +25,8 @@ public class FstModule implements Module {
     private void initPluginManager() {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
-        pm.registerModel(FstDescriptor.class);
-        pm.registerModelSerialiser(SgSerialiser.class);
+
+        pm.registerModelDescriptor(FstDescriptor.class);
         pm.registerSettings(ProcessWindowsSettings.class);
 
         pm.registerExporter(SgExporter.class);

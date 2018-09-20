@@ -23,7 +23,7 @@ public class XmasModule implements Module {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
 
-        pm.registerModel(XmasDescriptor.class);
+        pm.registerModelDescriptor(XmasDescriptor.class);
         pm.registerSettings(XmasSettings.class);
 
         pm.registerCommand(JsonExportCommand.class);

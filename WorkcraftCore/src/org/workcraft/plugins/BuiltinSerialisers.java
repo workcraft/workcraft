@@ -6,16 +6,14 @@ import org.workcraft.PluginManager;
 import org.workcraft.plugins.serialisation.XMLModelDeserialiser;
 import org.workcraft.plugins.serialisation.XMLModelSerialiser;
 import org.workcraft.plugins.serialisation.xml.*;
-import org.workcraft.serialisation.ModelDeserialiser;
-import org.workcraft.serialisation.ModelSerialiser;
 
 public class BuiltinSerialisers implements Module {
     @Override
     public void init() {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
-        pm.registerClass(ModelDeserialiser.class, () -> new XMLModelDeserialiser(framework.getPluginManager()));
-        pm.registerClass(ModelSerialiser.class, () -> new XMLModelSerialiser(framework.getPluginManager()));
+        pm.registerModelDeserialiser(() -> new XMLModelDeserialiser(framework.getPluginManager()));
+        pm.registerModelSerialiser(() -> new XMLModelSerialiser(framework.getPluginManager()));
 
         pm.registerXmlSerialiser(AffineTransformSerialiser.class);
         pm.registerXmlSerialiser(BooleanSerialiser.class);

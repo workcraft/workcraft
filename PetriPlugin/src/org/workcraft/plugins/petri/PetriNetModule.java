@@ -22,7 +22,7 @@ public class PetriNetModule implements Module {
     private void initPluginManager() {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
-        pm.registerModel(PetriNetDescriptor.class);
+        pm.registerModelDescriptor(PetriNetDescriptor.class);
 
         pm.registerXmlSerialiser(ReadArcSerialiser.class);
         pm.registerXmlDeserialiser(ReadArcDeserialiser.class);

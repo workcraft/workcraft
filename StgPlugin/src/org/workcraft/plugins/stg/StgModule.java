@@ -7,7 +7,6 @@ import org.workcraft.plugins.stg.interop.LpnExporter;
 import org.workcraft.plugins.stg.interop.LpnImporter;
 import org.workcraft.plugins.stg.interop.StgExporter;
 import org.workcraft.plugins.stg.interop.StgImporter;
-import org.workcraft.plugins.stg.serialisation.AstgSerialiser;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcDeserialiser;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcSerialiser;
 
@@ -27,12 +26,11 @@ public class StgModule implements Module {
     private void initPluginManager() {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
-        pm.registerModel(StgDescriptor.class);
+        pm.registerModelDescriptor(StgDescriptor.class);
         pm.registerSettings(StgSettings.class);
 
         pm.registerXmlSerialiser(ImplicitPlaceArcSerialiser.class);
         pm.registerXmlDeserialiser(ImplicitPlaceArcDeserialiser.class);
-        pm.registerModelSerialiser(AstgSerialiser.class);
 
         pm.registerExporter(StgExporter.class);
         pm.registerImporter(StgImporter.class);

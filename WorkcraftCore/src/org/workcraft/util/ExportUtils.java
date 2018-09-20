@@ -1,14 +1,7 @@
 package org.workcraft.util;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.UUID;
-
-import javax.swing.JFileChooser;
-
 import org.workcraft.Framework;
-import org.workcraft.PluginProvider;
+import org.workcraft.PluginManager;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualModel;
@@ -22,14 +15,20 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Format;
 import org.workcraft.plugins.PluginInfo;
 
+import javax.swing.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.UUID;
+
 public class ExportUtils {
 
-    public static Exporter chooseBestExporter(PluginProvider provider, Model model, Format format) {
-        return chooseBestExporter(provider, model, format.getName(), format.getUuid());
+    public static Exporter chooseBestExporter(PluginManager pm, Model model, Format format) {
+        return chooseBestExporter(pm, model, format.getName(), format.getUuid());
     }
 
-    public static Exporter chooseBestExporter(PluginProvider provider, Model model, String formatName, UUID formatUuid) {
-        for (PluginInfo<? extends Exporter> info : provider.getPlugins(Exporter.class)) {
+    public static Exporter chooseBestExporter(PluginManager pm, Model model, String formatName, UUID formatUuid) {
+        for (PluginInfo<? extends Exporter> info : pm.getExporterPlugins()) {
             Exporter exporter = info.getSingleton();
             if (exporter.isCompatible(model)) {
                 Format format = exporter.getFormat();
@@ -43,9 +42,9 @@ public class ExportUtils {
         return null;
     }
 
-    public static void exportToFile(Model model, File file, Format format, PluginProvider provider)
+    public static void exportToFile(Model model, File file, Format format, PluginManager pm)
             throws IOException, ModelValidationException, SerialisationException {
-        Exporter exporter = chooseBestExporter(provider, model, format);
+        Exporter exporter = chooseBestExporter(pm, model, format);
         if (exporter == null) {
             throw new NoExporterException(model.getDisplayName(), format.getName());
         }

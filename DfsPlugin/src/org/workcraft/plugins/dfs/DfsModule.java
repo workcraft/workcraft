@@ -21,7 +21,7 @@ public class DfsModule implements Module {
     private void initPluginManager() {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
-        pm.registerModel(DfsDescriptor.class);
+        pm.registerModelDescriptor(DfsDescriptor.class);
         pm.registerExporter(VerilogExporter.class);
         pm.registerSettings(DfsSettings.class);
 

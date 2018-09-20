@@ -28,7 +28,7 @@ public class PolicyNetModule implements Module {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
 
-        pm.registerModel(PolicyNetDescriptor.class);
+        pm.registerModelDescriptor(PolicyNetDescriptor.class);
         pm.registerXmlSerialiser(BundleSerialiser.class);
         pm.registerXmlDeserialiser(BundleDeserialiser.class);
         pm.registerXmlSerialiser(VisualLocalitySerialiser.class);

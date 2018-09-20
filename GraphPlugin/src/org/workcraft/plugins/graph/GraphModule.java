@@ -21,7 +21,7 @@ public class GraphModule implements Module {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
 
-        pm.registerModel(GraphDescriptor.class);
+        pm.registerModelDescriptor(GraphDescriptor.class);
 
         pm.registerXmlSerialiser(VertexSerialiser.class);
         pm.registerXmlDeserialiser(VertexDeserialiser.class);

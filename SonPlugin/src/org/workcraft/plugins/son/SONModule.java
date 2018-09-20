@@ -19,7 +19,7 @@ public class SONModule implements Module {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
 
-        pm.registerModel(SONDescriptor.class);
+        pm.registerModelDescriptor(SONDescriptor.class);
         pm.registerSettings(SONSettings.class);
 
         pm.registerCommand(TestTool.class);

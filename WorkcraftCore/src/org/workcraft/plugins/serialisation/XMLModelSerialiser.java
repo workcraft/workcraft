@@ -1,11 +1,5 @@
 package org.workcraft.plugins.serialisation;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.UUID;
-
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.PluginProvider;
@@ -17,6 +11,11 @@ import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.serialisation.xml.XMLSerialisationManager;
 import org.workcraft.util.XmlUtils;
+
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.UUID;
 
 public class XMLModelSerialiser implements ModelSerialiser {
 

@@ -1,39 +1,5 @@
 package org.workcraft.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.DisplayMode;
-import java.awt.Font;
-import java.awt.Insets;
-import java.awt.Toolkit;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.font.FontRenderContext;
-import java.awt.geom.AffineTransform;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.JToolBar;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.plaf.MenuBarUI;
-
 import org.flexdock.docking.Dockable;
 import org.flexdock.docking.DockingConstants;
 import org.flexdock.docking.DockingManager;
@@ -80,17 +46,21 @@ import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.tasks.ExportTask;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.Commands;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.ExceptionUtils;
-import org.workcraft.util.ExportUtils;
-import org.workcraft.util.FileUtils;
-import org.workcraft.util.GUI;
-import org.workcraft.util.ImportUtils;
-import org.workcraft.util.ListMap;
-import org.workcraft.util.LogUtils;
+import org.workcraft.util.*;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import javax.swing.plaf.MenuBarUI;
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.AffineTransform;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.List;
 
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame {
@@ -1018,7 +988,7 @@ public class MainWindow extends JFrame {
     public void importFrom() {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
-        Collection<PluginInfo<? extends Importer>> importerInfo = pm.getPlugins(Importer.class);
+        Collection<PluginInfo<? extends Importer>> importerInfo = pm.getImporterPlugins();
         Importer[] importers = new Importer[importerInfo.size()];
         int cnt = 0;
         for (PluginInfo<? extends Importer> info: importerInfo) {

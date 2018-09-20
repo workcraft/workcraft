@@ -26,7 +26,7 @@ public class CircuitModule implements Module {
     private void initPluginManager() {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
-        pm.registerModel(CircuitDescriptor.class);
+        pm.registerModelDescriptor(CircuitDescriptor.class);
         pm.registerXmlSerialiser(FunctionSerialiser.class);
         pm.registerXmlDeserialiser(FunctionDeserialiser.class);
         pm.registerSettings(CircuitSettings.class);
