@@ -1,7 +1,6 @@
 package org.workcraft.dom.visual;
 
 import org.workcraft.NodeFactory;
-import org.workcraft.annotations.MouseListeners;
 import org.workcraft.commands.AbstractLayoutCommand;
 import org.workcraft.dom.*;
 import org.workcraft.dom.Container;
@@ -10,7 +9,6 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
-import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
@@ -32,7 +30,6 @@ import java.util.*;
 import java.util.List;
 import java.util.Queue;
 
-@MouseListeners ({ DefaultAnchorGenerator.class })
 public abstract class AbstractVisualModel extends AbstractModel implements VisualModel {
     private MathModel mathModel;
     private Container currentLevel;
@@ -51,7 +48,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     public AbstractVisualModel(MathModel mathModel, VisualGroup root) {
         super((root == null) ? new VisualGroup() : root);
         this.mathModel = mathModel;
-        this.currentLevel = (VisualGroup) getRoot();
+        this.currentLevel = getRoot();
         new TransformEventPropagator().attach(getRoot());
         new SelectionEventPropagator(this).attach(getRoot());
         new RemovedNodeDeselector(this).attach(getRoot());

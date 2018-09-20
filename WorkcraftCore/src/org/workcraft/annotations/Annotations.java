@@ -1,7 +1,5 @@
 package org.workcraft.annotations;
 
-import org.workcraft.gui.graph.tools.GraphEditorMouseListener;
-
 public class Annotations {
 
     public static String getDisplayName(Class<?> cls) {
@@ -54,15 +52,6 @@ public class Annotations {
             return null;
         } else {
             return vcat.value();
-        }
-    }
-
-    public static Class<? extends GraphEditorMouseListener>[] getMouseListeners(Class<?> cls) {
-        MouseListeners ml = cls.getAnnotation(MouseListeners.class);
-        if (ml == null) {
-            return null;
-        } else {
-            return ml.value();
         }
     }
 
