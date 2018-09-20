@@ -1,13 +1,13 @@
 package org.workcraft.gui.graph.generators;
 
-import javax.swing.Icon;
-
 import org.workcraft.NodeFactory;
 import org.workcraft.annotations.Annotations;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.util.GUI;
+
+import javax.swing.*;
 
 public class DefaultNodeGenerator extends AbstractNodeGenerator {
 
@@ -25,12 +25,6 @@ public class DefaultNodeGenerator extends AbstractNodeGenerator {
         String iconPath = Annotations.getSVGIconPath(vcls);
         if (iconPath != null) {
             icon = GUI.createIconFromSVG(iconPath);
-            return;
-        }
-
-        iconPath = Annotations.getIconPath(vcls);
-        if (iconPath != null) {
-            icon = GUI.createIconFromImage(iconPath);
         }
     }
 
@@ -43,7 +37,7 @@ public class DefaultNodeGenerator extends AbstractNodeGenerator {
     public MathNode createMathNode() throws NodeCreationException {
         MathNode result = null;
         if (MathNode.class.isAssignableFrom(cls)) {
-            result = (MathNode) NodeFactory.createNode(cls.asSubclass(MathNode.class));
+            result = NodeFactory.createNode(cls.asSubclass(MathNode.class));
         }
         return result;
     }

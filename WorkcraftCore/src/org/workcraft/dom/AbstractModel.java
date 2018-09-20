@@ -1,7 +1,6 @@
 package org.workcraft.dom;
 
-import org.workcraft.annotations.DisplayName;
-import org.workcraft.annotations.ShortName;
+import org.workcraft.annotations.Annotations;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.DefaultReferenceManager;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
@@ -70,32 +69,12 @@ public abstract class AbstractModel implements Model {
 
     @Override
     public String getDisplayName() {
-        DisplayName name = this.getClass().getAnnotation(DisplayName.class);
-        if (name == null) {
-            return this.getClass().getSimpleName();
-        } else {
-            return name.value();
-        }
+        return Annotations.getDisplayName(getClass());
     }
 
     @Override
     public String getShortName() {
-        ShortName name = this.getClass().getAnnotation(ShortName.class);
-        if (name != null) {
-            return name.value();
-        } else {
-            String result = "";
-            String s = getDisplayName();
-            boolean b = true;
-            for (int i = 0; i < s.length(); i++) {
-                char c = s.charAt(i);
-                if (b && !Character.isSpaceChar(c) || Character.isUpperCase(c)) {
-                    result += c;
-                }
-                b = Character.isSpaceChar(c);
-            }
-            return result;
-        }
+        return Annotations.getShortName(getClass());
     }
 
     @Override

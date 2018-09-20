@@ -1,20 +1,5 @@
 package org.workcraft.gui;
 
-import java.awt.Dimension;
-import java.awt.Insets;
-import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
-import javax.swing.SwingConstants;
-
 import org.workcraft.Framework;
 import org.workcraft.PluginManager;
 import org.workcraft.annotations.Annotations;
@@ -22,14 +7,21 @@ import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.CustomToolsProvider;
 import org.workcraft.gui.graph.tools.GraphEditorKeyListener;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
-import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.gui.graph.tools.ToolProvider;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 
 public class Toolbox implements ToolProvider, GraphEditorKeyListener {
 
@@ -75,10 +67,10 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
         this.editor = editor;
         WorkspaceEntry we = editor.getWorkspaceEntry();
         VisualModel model = editor.getModel();
+        boolean isDefault = true;
         // Tools registered via CustomToolProvider annotation
         Class<? extends CustomToolsProvider> customTools = Annotations.getCustomToolsProvider(model.getClass());
         if (customTools != null) {
-            boolean isDefault = true;
             CustomToolsProvider provider = null;
             try {
                 provider = customTools.getConstructor().newInstance();
@@ -92,25 +84,12 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
                 }
             }
         }
-        // Tools registered via DefaultCreateButtons annotation
-        for (Class<?> cls: Annotations.getDefaultCreateButtons(model.getClass())) {
-            NodeGeneratorTool tool = new NodeGeneratorTool(new DefaultNodeGenerator(cls));
-            addTool(tool, false);
-        }
-        // Tools registered via CustomToolButtons annotation
-        for (Class<? extends GraphEditorTool>  tool: Annotations.getCustomTools(model.getClass())) {
-            try {
-                addTool(tool.newInstance(), false);
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        }
         // Tools registered via PluginManager
         final PluginManager pm = Framework.getInstance().getPluginManager();
         for (PluginInfo<? extends GraphEditorTool> info: pm.getPlugins(GraphEditorTool.class)) {
             GraphEditorTool tool = info.newInstance();
             if (tool.isApplicableTo(we)) {
-                addTool(tool, false);
+                addTool(tool, isDefault);
             }
         }
         // Select default tool
@@ -118,7 +97,7 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
         setToolButtonSelection(selectedTool, true);
     }
 
-    private void addTool(final GraphEditorTool tool, boolean isDefault) {
+        private void addTool(final GraphEditorTool tool, boolean isDefault) {
         tools.add(tool);
         if (tool.requiresButton()) {
             JToggleButton button = createToolButton(tool);
@@ -209,14 +188,18 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
             selectedTool.deactivated(editor);
             setToolButtonSelection(selectedTool, false);
         }
-        ToolTracker tracker = hotkeyMap.get(tool.getHotKeyCode());
-        if (tracker != null) {
-            tracker.track(tool);
+        if (tool != null) {
+            ToolTracker tracker = hotkeyMap.get(tool.getHotKeyCode());
+            if (tracker != null) {
+                tracker.track(tool);
+            }
         }
         // Setup and activate the selected tool (before updating Property editor and Tool controls).
         selectedTool = tool;
         setToolButtonSelection(selectedTool, true);
-        selectedTool.activated(editor);
+        if (selectedTool != null) {
+            selectedTool.activated(editor);
+        }
         // Update the content of Property editor (first) and Tool controls (second).
         editor.updatePropertyView();
         editor.updateToolsView();
@@ -246,7 +229,7 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
 
     @Override
     public boolean keyPressed(GraphEditorKeyEvent event) {
-        if (selectedTool.keyPressed(event)) {
+        if ((selectedTool != null) && selectedTool.keyPressed(event)) {
             return true;
         }
         int keyCode = event.getKeyCode();
@@ -267,12 +250,12 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
 
     @Override
     public boolean keyReleased(GraphEditorKeyEvent event) {
-        return selectedTool.keyReleased(event);
+        return (selectedTool != null) && selectedTool.keyReleased(event);
     }
 
     @Override
     public boolean keyTyped(GraphEditorKeyEvent event) {
-        return selectedTool.keyTyped(event);
+        return (selectedTool != null) && selectedTool.keyTyped(event);
     }
 
     public void setToolButtonEnableness(GraphEditorTool tool, boolean state) {

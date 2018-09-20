@@ -259,10 +259,12 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         //g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 
-        getModel().draw(g2d, toolbox.getSelectedTool().getDecorator(this));
-
-        if (hasFocus()) {
-            toolbox.getSelectedTool().drawInUserSpace(this, g2d);
+        GraphEditorTool tool = toolbox.getSelectedTool();
+        if (tool != null) {
+            getModel().draw(g2d, tool.getDecorator(this));
+            if (hasFocus()) {
+                tool.drawInUserSpace(this, g2d);
+            }
         }
         g2d.setTransform(screenTransform);
 
@@ -273,14 +275,14 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         centerButton.setVisible(rulerVisibility);
 
         if (hasFocus()) {
-            toolbox.getSelectedTool().drawInScreenSpace(this, g2d);
+            if (tool != null) {
+                tool.drawInScreenSpace(this, g2d);
+            }
             g2d.setTransform(screenTransform);
-
             g2d.setStroke(borderStroke);
             g2d.setColor(CommonVisualSettings.getBorderColor());
             g2d.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
         }
-
         paintChildren(g2d);
     }
 
@@ -535,8 +537,8 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
         final PropertyEditorWindow propertyEditorWindow = mainWindow.getPropertyView();
-        GraphEditorTool selectedTool = toolbox.getSelectedTool();
-        if (!selectedTool.requiresPropertyEditor() || properties.getDescriptors().isEmpty()) {
+        GraphEditorTool tool = toolbox.getSelectedTool();
+        if ((tool == null) || !tool.requiresPropertyEditor() || properties.getDescriptors().isEmpty()) {
             propertyEditorWindow.clearObject();
         } else {
             propertyEditorWindow.setObject(propertiesWrapper(properties));
