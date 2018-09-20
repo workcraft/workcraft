@@ -8,6 +8,8 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.plugins.dtd.*;
+import org.workcraft.plugins.wtg.supervisors.InitialStateSupervisor;
+import org.workcraft.plugins.wtg.supervisors.SignalTypeConsistencySupervisor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Identifier;

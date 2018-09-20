@@ -7,8 +7,8 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.plugins.wtg.decorations.WaveformDecoration;
 import org.workcraft.util.Hierarchy;
 
 import java.awt.*;
@@ -49,8 +49,9 @@ public class VisualWaveform extends VisualPage {
     @Override
     public void draw(DrawRequest r) {
         Decoration d = r.getDecoration();
-        if (d instanceof ContainerDecoration) {
-            setIsExcited(((ContainerDecoration) d).isContainerExcited());
+        if (d instanceof WaveformDecoration) {
+            WaveformDecoration wd = (WaveformDecoration) d;
+            setIsExcited(wd.isActive());
         }
         // This is to update the rendered text for names (and labels) of group children,
         // which is necessary to calculate the bounding box before children have been drawn
@@ -68,17 +69,24 @@ public class VisualWaveform extends VisualPage {
 
     @Override
     public void drawOutline(DrawRequest r) {
-        Decoration d = r.getDecoration();
         Graphics2D g = r.getGraphics();
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
         if (bb != null) {
+            Decoration d = r.getDecoration();
             if (getIsCollapsed() && !isCurrentLevelInside()) {
                 g.setColor(Coloriser.colorise(getFillColor(), d.getColorisation()));
                 g.fill(bb);
                 g.setStroke(new BasicStroke((float) strokeWidth));
             } else {
                 float[] pattern = {0.05f, 0.05f};
-                g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
+                BasicStroke stroke = new BasicStroke(0.05f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f);
+                if (d instanceof WaveformDecoration) {
+                    WaveformDecoration wd = (WaveformDecoration) d;
+                    if (wd.isActive()) {
+                        stroke = new BasicStroke(0.05f);
+                    }
+                }
+                g.setStroke(stroke);
             }
             g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
             g.draw(bb);

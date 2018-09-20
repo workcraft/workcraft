@@ -13,8 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static org.workcraft.plugins.wtg.commands.WtgUtils.getInitialSignalStates;
-import static org.workcraft.plugins.wtg.commands.WtgUtils.getUnstableSignalNames;
+import static org.workcraft.plugins.wtg.utils.WtgUtils.getInitialSignalStates;
+import static org.workcraft.plugins.wtg.utils.WtgUtils.getUnstableSignalNames;
 
 public class WtgToStgConverter {
 
@@ -380,6 +380,26 @@ public class WtgToStgConverter {
 
     public Stg getDstModel() {
         return dstModel;
+    }
+
+    public boolean isRelated(Node highLevelNode, Node node) {
+        boolean result = false;
+        if (highLevelNode instanceof Event) {
+            NamedTransition relatedTransition = getRelatedTransition((Event) highLevelNode);
+            result = node == relatedTransition;
+        } else if (highLevelNode instanceof State) {
+            StgPlace relatedPlace = getRelatedPlace((State) highLevelNode);
+            result = node == relatedPlace;
+        }
+        return result;
+    }
+
+    public StgPlace getRelatedPlace(State state) {
+        return stateToPlaceMap.get(state);
+    }
+
+    public NamedTransition getRelatedTransition(Event event) {
+        return eventToTransitionMap.get(event);
     }
 
 }

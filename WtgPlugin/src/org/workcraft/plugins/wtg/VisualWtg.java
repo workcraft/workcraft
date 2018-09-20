@@ -9,8 +9,8 @@ import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.dtd.VisualDtd;
 import org.workcraft.plugins.dtd.VisualSignal;
 import org.workcraft.plugins.dtd.VisualTransitionEvent;
-import org.workcraft.plugins.wtg.propertydescriptors.SignalNamePropertyDescriptor;
-import org.workcraft.plugins.wtg.propertydescriptors.SignalTypePropertyDescriptor;
+import org.workcraft.plugins.wtg.properties.SignalNamePropertyDescriptor;
+import org.workcraft.plugins.wtg.properties.SignalTypePropertyDescriptor;
 import org.workcraft.util.Hierarchy;
 
 import java.util.Collection;

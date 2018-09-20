@@ -5,9 +5,9 @@ import java.awt.Color;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.plugins.son.propertydescriptors.DurationPropertyDescriptor;
-import org.workcraft.plugins.son.propertydescriptors.EndTimePropertyDescriptor;
-import org.workcraft.plugins.son.propertydescriptors.StartTimePropertyDescriptor;
+import org.workcraft.plugins.son.properties.DurationPropertyDescriptor;
+import org.workcraft.plugins.son.properties.EndTimePropertyDescriptor;
+import org.workcraft.plugins.son.properties.StartTimePropertyDescriptor;
 import org.workcraft.plugins.son.util.Interval;
 
 public class PlaceNode extends MathNode implements Time {

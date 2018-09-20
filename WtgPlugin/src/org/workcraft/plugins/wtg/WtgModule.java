@@ -5,6 +5,7 @@ import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
+import org.workcraft.plugins.wtg.commands.WtgSoundnessVerificationCommand;
 import org.workcraft.plugins.wtg.commands.WtgToStgConversionCommand;
 import org.workcraft.plugins.wtg.commands.WtgToStgWaverConversionCommand;
 import org.workcraft.plugins.wtg.interop.WtgExporter;
@@ -46,6 +47,9 @@ public class WtgModule  implements Module {
 
         ScriptableCommandUtils.register(WtgToStgWaverConversionCommand.class, "convertWtgToStgWaver",
                 "convert the given WTG 'work' into a new STG work using Waver backend");
+
+        ScriptableCommandUtils.register(WtgSoundnessVerificationCommand.class, "checkWtgSoundness",
+                "check the given WTG 'work' for soundness and consistency");
     }
 
     private void initCompatibilityManager() {

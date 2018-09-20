@@ -5,6 +5,7 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.wtg.Wtg;
 import org.workcraft.plugins.wtg.converter.WtgToStgConverter;
+import org.workcraft.plugins.wtg.utils.VerificationUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -29,8 +30,12 @@ public class WtgToStgConversionCommand extends AbstractConversionCommand {
     public ModelEntry convert(ModelEntry me) {
         final Wtg wtg = me.getAs(Wtg.class);
         final Stg stg = new Stg();
-        final WtgToStgConverter converter = new WtgToStgConverter(wtg, stg);
-        return new ModelEntry(new StgDescriptor(), converter.getDstModel());
+        ModelEntry result = null;
+        if (VerificationUtils.checkStructure(wtg) && VerificationUtils.checkNameCollisions(wtg)) {
+            final WtgToStgConverter converter = new WtgToStgConverter(wtg, stg);
+            result = new ModelEntry(new StgDescriptor(), converter.getDstModel());
+        }
+        return result;
     }
 
 }

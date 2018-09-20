@@ -1,54 +1,9 @@
 package org.workcraft.gui.graph.tools;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Graphics;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-import javax.swing.JSlider;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.Timer;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellRenderer;
-
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
-import org.workcraft.dom.visual.HitMan;
-import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -58,6 +13,21 @@ import org.workcraft.plugins.shared.CommonDecorationSettings;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
+import java.awt.datatransfer.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public abstract class SimulationTool extends AbstractGraphEditorTool implements ClipboardOwner {
     private VisualModel underlyingModel;
@@ -185,18 +155,15 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         infoPanel = new JPanel();
         infoPanel.setLayout(new BorderLayout());
         infoPanel.add(splitPane, BorderLayout.CENTER);
-        speedSlider.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                if (timer != null) {
-                    timer.stop();
-                    timer.setInitialDelay(getAnimationDelay());
-                    timer.setDelay(getAnimationDelay());
-                    timer.start();
-                }
-                updateState(editor);
-                editor.requestFocus();
+        speedSlider.addChangeListener(e -> {
+            if (timer != null) {
+                timer.stop();
+                timer.setInitialDelay(getAnimationDelay());
+                timer.setDelay(getAnimationDelay());
+                timer.start();
             }
+            updateState(editor);
+            editor.requestFocus();
         });
 
         randomButton.addActionListener(event -> {
@@ -774,18 +741,17 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
 
     @Override
     public Decorator getDecorator(final GraphEditor editor) {
-        return new Decorator() {
-            @Override
-            public Decoration getDecoration(Node node) {
-                if ((node instanceof VisualPage) || (node instanceof VisualGroup)) {
-                    return getContainerDecoration((Container) node);
-                } else if (node instanceof VisualConnection) {
-                    return getConnectionDecoration((VisualConnection) node);
-                } else if (node instanceof VisualComponent) {
-                    return getComponentDecoration((VisualComponent) node);
-                }
-                return null;
+        return node -> {
+            if ((node instanceof VisualPage) || (node instanceof VisualGroup)) {
+                return getContainerDecoration((Container) node);
             }
+            if (node instanceof VisualConnection) {
+                return getConnectionDecoration((VisualConnection) node);
+            }
+            if (node instanceof VisualComponent) {
+                return getComponentDecoration((VisualComponent) node);
+            }
+            return null;
         };
     }
 

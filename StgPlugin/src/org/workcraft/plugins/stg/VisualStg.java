@@ -30,8 +30,8 @@ import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.plugins.stg.propertydescriptors.SignalNamePropertyDescriptor;
-import org.workcraft.plugins.stg.propertydescriptors.SignalTypePropertyDescriptor;
+import org.workcraft.plugins.stg.properties.SignalNamePropertyDescriptor;
+import org.workcraft.plugins.stg.properties.SignalTypePropertyDescriptor;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Pair;
 

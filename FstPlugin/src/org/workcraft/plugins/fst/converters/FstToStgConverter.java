@@ -150,7 +150,6 @@ public class FstToStgConverter {
         return eventToTransitionMap.get(event);
     }
 
-
     public boolean isRelated(Node highLevelNode, Node node) {
         boolean result = false;
         if (highLevelNode instanceof VisualEvent) {

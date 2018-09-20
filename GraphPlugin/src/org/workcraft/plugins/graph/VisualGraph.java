@@ -16,7 +16,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.plugins.graph.propertydescriptors.SymbolPropertyDescriptor;
+import org.workcraft.plugins.graph.properties.SymbolPropertyDescriptor;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Directed Graph")

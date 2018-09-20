@@ -6,7 +6,7 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.plugins.son.propertydescriptors.ConnectionTimePropertyDescriptor;
+import org.workcraft.plugins.son.properties.ConnectionTimePropertyDescriptor;
 import org.workcraft.plugins.son.util.Interval;
 
 public class SONConnection extends MathConnection {
