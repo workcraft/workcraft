@@ -1,16 +1,5 @@
 package org.workcraft.gui.workspace;
 
-import java.awt.Component;
-import java.io.File;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-
 import org.workcraft.Framework;
 import org.workcraft.MenuOrdering.Position;
 import org.workcraft.PluginManager;
@@ -24,11 +13,14 @@ import org.workcraft.gui.trees.TreePopupProvider;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.util.Commands;
 import org.workcraft.util.DialogUtils;
-import org.workcraft.workspace.FileHandler;
-import org.workcraft.workspace.ModelEntry;
-import org.workcraft.workspace.Workspace;
-import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceTree;
+import org.workcraft.workspace.*;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 
@@ -99,7 +91,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                     }
 
                     final PluginManager pluginManager = framework.getPluginManager();
-                    for (PluginInfo<? extends FileHandler> info : pluginManager.getPlugins(FileHandler.class)) {
+                    for (PluginInfo<? extends FileHandler> info : pluginManager.getFileHandlerPlugins()) {
                         FileHandler handler = info.getSingleton();
 
                         if (!handler.accept(file)) {

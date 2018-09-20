@@ -20,7 +20,7 @@ import org.workcraft.util.MultiSet;
 public abstract class AbstractMathModel extends AbstractModel implements MathModel {
 
     public AbstractMathModel() {
-        this(null, null);
+        this(null);
     }
 
     public AbstractMathModel(Container root) {

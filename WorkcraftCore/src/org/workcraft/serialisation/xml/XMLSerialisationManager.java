@@ -1,8 +1,5 @@
 package org.workcraft.serialisation.xml;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import org.w3c.dom.Element;
 import org.workcraft.PluginProvider;
 import org.workcraft.dom.Container;
@@ -11,6 +8,9 @@ import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.util.XmlUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class XMLSerialisationManager implements SerialiserFactory, NodeSerialiser {
     private final HashMap<String, XMLSerialiser> serialisers = new HashMap<>();
@@ -21,7 +21,7 @@ public class XMLSerialisationManager implements SerialiserFactory, NodeSerialise
         serialisers.put(serialiser.getClassName(), serialiser);
     }
 
-    public XMLSerialiser getSerialiserFor(Class<?> cls) throws InstantiationException, IllegalAccessException {
+    public XMLSerialiser getSerialiserFor(Class<?> cls) {
         return serialisers.get(cls.getName());
     }
 
@@ -33,8 +33,8 @@ public class XMLSerialisationManager implements SerialiserFactory, NodeSerialise
         state = null;
     }
 
-    public void processPlugins(PluginProvider manager) {
-        for (PluginInfo<? extends XMLSerialiser> info : manager.getPlugins(XMLSerialiser.class)) {
+    public void processPlugins(PluginProvider pp) {
+        for (PluginInfo<? extends XMLSerialiser> info : pp.getPlugins(XMLSerialiser.class)) {
             final XMLSerialiser newInstance = info.newInstance();
             registerSerialiser(newInstance);
         }

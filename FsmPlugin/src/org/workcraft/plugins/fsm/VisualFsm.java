@@ -1,8 +1,5 @@
 package org.workcraft.plugins.fsm;
 
-import java.util.Collection;
-
-import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -12,13 +9,19 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
+import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
+import org.workcraft.gui.graph.tools.*;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesAddingEvent;
+import org.workcraft.plugins.fsm.tools.FsmSimulationTool;
 import org.workcraft.util.Hierarchy;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 @DisplayName("Finite State Machine")
-@CustomTools(FsmToolsProvider.class)
 public class VisualFsm extends AbstractVisualModel {
 
     public VisualFsm(Fsm model) {
@@ -27,6 +30,7 @@ public class VisualFsm extends AbstractVisualModel {
 
     public VisualFsm(Fsm model, VisualGroup root) {
         super(model, root);
+        setGraphEditorTools();
         if (root == null) {
             try {
                 createDefaultFlatStructure();
@@ -50,6 +54,16 @@ public class VisualFsm extends AbstractVisualModel {
                 }
             }
         }.attach(getRoot());
+    }
+
+    private void setGraphEditorTools() {
+        List<GraphEditorTool> tools = new ArrayList<>();
+        tools.add(new SelectionTool(true, false, true, true));
+        tools.add(new CommentGeneratorTool());
+        tools.add(new ConnectionTool(false, true, true));
+        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(State.class)));
+        tools.add(new FsmSimulationTool());
+        setGraphEditorTools(tools);
     }
 
     @Override

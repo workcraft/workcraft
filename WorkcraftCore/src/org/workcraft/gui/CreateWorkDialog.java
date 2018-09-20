@@ -125,7 +125,7 @@ public class CreateWorkDialog extends JDialog {
     private void fillModelList() {
         PluginManager pm = Framework.getInstance().getPluginManager();
         ArrayList<ListElement> elements = new ArrayList<>();
-        for (PluginInfo<? extends ModelDescriptor> plugin: pm.getPlugins(ModelDescriptor.class)) {
+        for (PluginInfo<? extends ModelDescriptor> plugin: pm.getModelDescriptorPlugins()) {
             ModelDescriptor modelDescriptor = plugin.newInstance();
             String displayName = modelDescriptor.getDisplayName();
             if (!CommonFavoriteSettings.getFilterFavorites() || CommonFavoriteSettings.getIsFavorite(displayName)) {

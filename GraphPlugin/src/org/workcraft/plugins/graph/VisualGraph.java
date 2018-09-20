@@ -1,8 +1,5 @@
 package org.workcraft.plugins.graph;
 
-import java.util.Collection;
-
-import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.ShortName;
 import org.workcraft.dom.Container;
@@ -15,13 +12,19 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
+import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
+import org.workcraft.gui.graph.tools.*;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.graph.properties.SymbolPropertyDescriptor;
+import org.workcraft.plugins.graph.tools.GraphSimulationTool;
 import org.workcraft.util.Hierarchy;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @DisplayName("Directed Graph")
 @ShortName("graph")
-@CustomTools(GraphToolsProvider.class)
 public class VisualGraph extends AbstractVisualModel {
 
     public VisualGraph(Graph model) {
@@ -30,6 +33,7 @@ public class VisualGraph extends AbstractVisualModel {
 
     public VisualGraph(Graph model, VisualGroup root) {
         super(model, root);
+        setGraphEditorTools();
         if (root == null) {
             try {
                 createDefaultFlatStructure();
@@ -37,6 +41,16 @@ public class VisualGraph extends AbstractVisualModel {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private void setGraphEditorTools() {
+        List<GraphEditorTool> tools = new ArrayList<>();
+        tools.add(new SelectionTool(true, false, true, true));
+        tools.add(new CommentGeneratorTool());
+        tools.add(new ConnectionTool(false, true, true));
+        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(Vertex.class)));
+        tools.add(new GraphSimulationTool());
+        setGraphEditorTools(tools);
     }
 
     @Override

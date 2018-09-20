@@ -1,41 +1,22 @@
 package org.workcraft.gui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.swing.AbstractAction;
-import javax.swing.InputMap;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
-
 import org.workcraft.Framework;
 import org.workcraft.MenuOrdering.Position;
 import org.workcraft.PluginManager;
 import org.workcraft.commands.Command;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.gui.actions.ActionCheckBoxMenuItem;
-import org.workcraft.gui.actions.ActionMenuItem;
-import org.workcraft.gui.actions.CommandAction;
-import org.workcraft.gui.actions.ExportAction;
-import org.workcraft.gui.actions.ToggleToolbarAction;
-import org.workcraft.gui.actions.ToggleWindowAction;
+import org.workcraft.gui.actions.*;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Format;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.util.Commands;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.util.*;
 
 @SuppressWarnings("serial")
 public class MainMenu extends JMenuBar {
@@ -325,7 +306,7 @@ public class MainMenu extends JMenuBar {
         VisualModel model = we.getModelEntry().getVisualModel();
         final Framework framework = Framework.getInstance();
         PluginManager pluginManager = framework.getPluginManager();
-        Collection<PluginInfo<? extends Exporter>> plugins = pluginManager.getPlugins(Exporter.class);
+        Collection<PluginInfo<? extends Exporter>> plugins = pluginManager.getExporterPlugins();
 
         boolean hasVisualModelExporter = false;
         for (PluginInfo<? extends Exporter> info : plugins) {

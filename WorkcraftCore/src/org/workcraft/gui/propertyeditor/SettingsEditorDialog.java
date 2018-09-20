@@ -1,30 +1,5 @@
 package org.workcraft.gui.propertyeditor;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.JTree;
-import javax.swing.KeyStroke;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
-
 import org.workcraft.Config;
 import org.workcraft.Framework;
 import org.workcraft.PluginManager;
@@ -33,6 +8,19 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.GUI;
+
+import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 public class SettingsEditorDialog extends JDialog {
     private static final String DIALOG_RESTORE_SETTINGS = "Restore settings";
@@ -127,7 +115,7 @@ public class SettingsEditorDialog extends JDialog {
     private void loadSections() {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
-        ArrayList<Settings> settings = getSortedPluginSettings(pm.getPlugins(Settings.class));
+        ArrayList<Settings> settings = getSortedPluginSettings(pm.getSettingsPlugins());
 
         // Add settings to the tree
         for (Settings s: settings) {

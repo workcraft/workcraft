@@ -1,51 +1,37 @@
 package org.workcraft.plugins.son;
 
-import java.awt.Color;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
-import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
-import org.workcraft.dom.visual.AbstractVisualModel;
-import org.workcraft.dom.visual.SelectionHelper;
-import org.workcraft.dom.visual.TransformHelper;
-import org.workcraft.dom.visual.VisualComment;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.dom.visual.VisualModelTransformer;
-import org.workcraft.dom.visual.VisualPage;
-import org.workcraft.dom.visual.VisualTransformableNode;
+import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
+import org.workcraft.gui.graph.tools.CommentGeneratorTool;
+import org.workcraft.gui.graph.tools.GraphEditorTool;
+import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
-import org.workcraft.plugins.son.elements.Block;
-import org.workcraft.plugins.son.elements.VisualBlock;
-import org.workcraft.plugins.son.elements.VisualChannelPlace;
-import org.workcraft.plugins.son.elements.VisualCondition;
-import org.workcraft.plugins.son.elements.VisualEvent;
-import org.workcraft.plugins.son.elements.VisualPlaceNode;
-import org.workcraft.plugins.son.elements.VisualTransitionNode;
+import org.workcraft.plugins.son.elements.*;
+import org.workcraft.plugins.son.elements.Event;
+import org.workcraft.plugins.son.tools.*;
 import org.workcraft.util.Hierarchy;
 
-@DisplayName ("Structured Occurrence Nets")
-@CustomTools (SONToolProvider.class)
+import javax.swing.*;
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.util.*;
+import java.util.List;
 
+@DisplayName ("Structured Occurrence Nets")
 public class VisualSON extends AbstractVisualModel {
 
     private static final String group = "Invalid Group Selection";
@@ -59,6 +45,7 @@ public class VisualSON extends AbstractVisualModel {
 
     public VisualSON(SON model, VisualGroup root) {
         super(model, root);
+        setGraphEditorTools();
     //    currentmathLevel = getCurrentLevel();
         if (root == null) {
             try {
@@ -70,6 +57,21 @@ public class VisualSON extends AbstractVisualModel {
 
         this.net = model;
         BlockConnector.blockInternalConnector(this);
+    }
+
+    private void setGraphEditorTools() {
+        List<GraphEditorTool> tools = new ArrayList<>();
+        GraphEditorTool channelPlaceTool = new NodeGeneratorTool(new DefaultNodeGenerator(ChannelPlace.class));
+        tools.add(new SONSelectionTool(channelPlaceTool));
+        tools.add(new CommentGeneratorTool());
+        tools.add(new SONConnectionTool());
+        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(Condition.class)));
+        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(Event.class)));
+        tools.add(channelPlaceTool);
+        tools.add(new SONSimulationTool());
+        tools.add(new ScenarioGeneratorTool());
+        tools.add(new TimeValueSetterTool());
+        setGraphEditorTools(tools);
     }
 
     @Override

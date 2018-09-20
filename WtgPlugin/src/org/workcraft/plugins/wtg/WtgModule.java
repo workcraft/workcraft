@@ -2,19 +2,12 @@ package org.workcraft.plugins.wtg;
 
 import org.workcraft.*;
 import org.workcraft.commands.ScriptableCommandUtils;
-import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
-import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.wtg.commands.WtgSoundnessVerificationCommand;
 import org.workcraft.plugins.wtg.commands.WtgToStgConversionCommand;
 import org.workcraft.plugins.wtg.commands.WtgToStgWaverConversionCommand;
 import org.workcraft.plugins.wtg.interop.WtgExporter;
 import org.workcraft.plugins.wtg.serialisation.GuardDeserialiser;
 import org.workcraft.plugins.wtg.serialisation.GuardSerialiser;
-import org.workcraft.plugins.wtg.serialisation.WtgSerialiser;
-import org.workcraft.serialisation.ModelSerialiser;
-import org.workcraft.serialisation.xml.XMLDeserialiser;
-import org.workcraft.serialisation.xml.XMLSerialiser;
 
 public class WtgModule  implements Module {
 
@@ -33,14 +26,14 @@ public class WtgModule  implements Module {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
 
-        pm.registerClass(ModelDescriptor.class, WtgDescriptor.class);
-        pm.registerClass(Settings.class, WtgSettings.class);
-        pm.registerClass(Settings.class, WaverSettings.class);
-        pm.registerClass(ModelSerialiser.class, WtgSerialiser.class);
-        pm.registerClass(XMLSerialiser.class, GuardSerialiser.class);
-        pm.registerClass(XMLDeserialiser.class, GuardDeserialiser.class);
+        pm.registerModelDescriptor(WtgDescriptor.class);
+        pm.registerSettings(WtgSettings.class);
+        pm.registerSettings(WaverSettings.class);
 
-        pm.registerClass(Exporter.class, WtgExporter.class);
+        pm.registerXmlSerialiser(GuardSerialiser.class);
+        pm.registerXmlDeserialiser(GuardDeserialiser.class);
+
+        pm.registerExporter(WtgExporter.class);
 
         ScriptableCommandUtils.register(WtgToStgConversionCommand.class, "convertWtgToStg",
                 "convert the given WTG 'work' into a new STG work");

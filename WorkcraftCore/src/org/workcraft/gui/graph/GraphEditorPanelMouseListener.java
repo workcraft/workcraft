@@ -71,7 +71,10 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
             final MainWindow mainWindow = framework.getMainWindow();
             mainWindow.requestFocus(editor);
         }
-        toolProvider.getSelectedTool().mouseClicked(adaptEvent(e));
+        GraphEditorTool tool = toolProvider.getSelectedTool();
+        if (tool != null) {
+            tool.mouseClicked(adaptEvent(e));
+        }
     }
 
     @Override
@@ -87,7 +90,10 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
     @Override
     public void mouseExited(MouseEvent e) {
         if (editor.hasFocus()) {
-            toolProvider.getSelectedTool().mouseExited(adaptEvent(e));
+            GraphEditorTool tool = toolProvider.getSelectedTool();
+            if (tool != null) {
+                tool.mouseExited(adaptEvent(e));
+            }
         }
     }
 

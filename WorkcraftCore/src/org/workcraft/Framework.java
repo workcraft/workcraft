@@ -302,13 +302,13 @@ public final class Framework {
     }
 
     private void loadPluginsSettings() {
-        for (PluginInfo<? extends Settings> info : pluginManager.getPlugins(Settings.class)) {
+        for (PluginInfo<? extends Settings> info : pluginManager.getSettingsPlugins()) {
             info.getSingleton().load(config);
         }
     }
 
     private void savePluginsSettings() {
-        for (PluginInfo<? extends Settings> info : pluginManager.getPlugins(Settings.class)) {
+        for (PluginInfo<? extends Settings> info : pluginManager.getSettingsPlugins()) {
             info.getSingleton().save(config);
         }
     }

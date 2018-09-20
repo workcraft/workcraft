@@ -1,18 +1,7 @@
 package org.workcraft.plugins.xmas;
 
-import org.workcraft.CompatibilityManager;
-import org.workcraft.Framework;
-import org.workcraft.Module;
-import org.workcraft.PluginManager;
-import org.workcraft.Version;
-import org.workcraft.commands.Command;
-import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
-import org.workcraft.plugins.xmas.commands.JsonExportCommand;
-import org.workcraft.plugins.xmas.commands.XmasConfigureCommand;
-import org.workcraft.plugins.xmas.commands.XmasPNetGenCommand;
-import org.workcraft.plugins.xmas.commands.XmasSyncCommand;
-import org.workcraft.plugins.xmas.commands.XmasToStgConversionCommand;
+import org.workcraft.*;
+import org.workcraft.plugins.xmas.commands.*;
 import org.workcraft.plugins.xmas.tools.XmasAnalysisTool;
 import org.workcraft.plugins.xmas.tools.XmasQueryTool;
 import org.workcraft.plugins.xmas.tools.XmasVerificationTool;
@@ -34,17 +23,17 @@ public class XmasModule implements Module {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
 
-        pm.registerClass(ModelDescriptor.class, XmasDescriptor.class);
-        pm.registerClass(Settings.class, XmasSettings.class);
+        pm.registerModelDescriptor(XmasDescriptor.class);
+        pm.registerSettings(XmasSettings.class);
 
-        pm.registerClass(Command.class, JsonExportCommand.class);
-        pm.registerClass(Command.class, XmasPNetGenCommand.class);
-        pm.registerClass(Command.class, XmasSyncCommand.class);
-        pm.registerClass(Command.class, XmasConfigureCommand.class);
-        pm.registerClass(Command.class, XmasToStgConversionCommand.class);
-        pm.registerClass(Command.class, XmasVerificationTool.class);
-        pm.registerClass(Command.class, XmasAnalysisTool.class);
-        pm.registerClass(Command.class, XmasQueryTool.class);
+        pm.registerCommand(JsonExportCommand.class);
+        pm.registerCommand(XmasPNetGenCommand.class);
+        pm.registerCommand(XmasSyncCommand.class);
+        pm.registerCommand(XmasConfigureCommand.class);
+        pm.registerCommand(XmasToStgConversionCommand.class);
+        pm.registerCommand(XmasVerificationTool.class);
+        pm.registerCommand(XmasAnalysisTool.class);
+        pm.registerCommand(XmasQueryTool.class);
     }
 
     private void initCompatibilityManager() {

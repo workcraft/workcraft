@@ -4,7 +4,6 @@ import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.commands.ScriptableCommandUtils;
-import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.atacs.commands.AtacsComplexGateSynthesisCommand;
 import org.workcraft.plugins.atacs.commands.AtacsGeneralisedCelementSynthesisCommand;
 import org.workcraft.plugins.atacs.commands.AtacsStandardCelementSynthesisCommand;
@@ -16,7 +15,7 @@ public class AtacsModule implements Module {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
 
-        pm.registerClass(Settings.class, AtacsSettings.class);
+        pm.registerSettings(AtacsSettings.class);
 
         ScriptableCommandUtils.register(AtacsComplexGateSynthesisCommand.class, "synthComplexGateAtacs",
                 "logic synthesis of the STG 'work' into a complex gate Circuit work using ATACS backend");
