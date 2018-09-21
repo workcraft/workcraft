@@ -14,7 +14,6 @@ import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
-import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
@@ -49,17 +48,18 @@ import java.util.List;
 @ShortName("circuit")
 public class VisualCircuit extends AbstractVisualModel {
 
-    public VisualCircuit(Circuit model, VisualGroup root) {
-        super(model, root);
+    public VisualCircuit(Circuit model) {
+        this(model, null);
     }
-
-    public VisualCircuit(Circuit model) throws VisualModelInstantiationException {
-        super(model);
+    public VisualCircuit(Circuit model, VisualGroup root)  {
+        super(model, root);
         setGraphEditorTools();
-        try {
-            createDefaultFlatStructure();
-        } catch (NodeCreationException e) {
-            throw new VisualModelInstantiationException(e);
+        if (root == null) {
+            try {
+                createDefaultFlatStructure();
+            } catch (NodeCreationException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
