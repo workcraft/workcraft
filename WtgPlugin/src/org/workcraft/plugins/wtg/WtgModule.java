@@ -2,6 +2,7 @@ package org.workcraft.plugins.wtg;
 
 import org.workcraft.*;
 import org.workcraft.commands.ScriptableCommandUtils;
+import org.workcraft.plugins.wtg.commands.WtgReachabilityVerificationCommand;
 import org.workcraft.plugins.wtg.commands.WtgSoundnessVerificationCommand;
 import org.workcraft.plugins.wtg.commands.WtgToStgConversionCommand;
 import org.workcraft.plugins.wtg.commands.WtgToStgWaverConversionCommand;
@@ -43,6 +44,9 @@ public class WtgModule  implements Module {
 
         ScriptableCommandUtils.register(WtgSoundnessVerificationCommand.class, "checkWtgSoundness",
                 "check the given WTG 'work' for soundness and consistency");
+
+        ScriptableCommandUtils.register(WtgReachabilityVerificationCommand.class, "checkWtgReachability",
+                "check the given WTG 'work' for reachability of nodes and transitions");
     }
 
     private void initCompatibilityManager() {

@@ -71,6 +71,10 @@ public class VerificationUtils {
     }
 
     public static boolean checkStructure(Wtg wtg) {
+        //Checks whether the WTG has defined an initial state
+        if (!checkInitialState(wtg)) {
+            return false;
+        }
         //Checks whether signal types are consistent across different waveforms
         if (!checkConsistentSignalTypes(wtg)) {
             return false;
@@ -120,10 +124,6 @@ public class VerificationUtils {
         if (!checkGuardSignalsAreStable(wtg)) {
             return false;
         }
-        //Checks whether all states and waveforms are reachable from the initial state
-        if (!checkNodeReachability(wtg)) {
-            return false;
-        }
         //Checks whether all waveforms have entry states
         if (!checkWaveformsHaveEntryState(wtg)) {
             return false;
@@ -146,6 +146,14 @@ public class VerificationUtils {
         }
         //Checks that stabilise/destabilise transitions never trigger an output
         if (!checkUnstableSignalTriggers(wtg)) {
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean checkInitialState(Wtg wtg) {
+        if (wtg.getInitialState() == null) {
+            DialogUtils.showError("The WTG does not have an initial state.");
             return false;
         }
         return true;
@@ -324,10 +332,10 @@ public class VerificationUtils {
     public static boolean checkFirstTransitionIsValid(Wtg wtg) {
         for (Waveform waveform : wtg.getWaveforms()) {
             for (EntryEvent entry : wtg.getEntries(waveform)) {
-                if (entry.getSignal().getType() == Signal.Type.OUTPUT) {
+                if (entry.getSignal().getType() != Signal.Type.INPUT) {
                     for (Node node: wtg.getPostset(entry)) {
                         if ((isFirstTransition(wtg, node)) && (isWaveformInChoice(wtg, waveform))) {
-                            DialogUtils.showError("Output signal '" + wtg.getName(entry.getSignal())
+                            DialogUtils.showError("Signal '" + wtg.getName(entry.getSignal())
                                     + "' cannot be fired immediately after a choice, in waveform '"
                                     + wtg.getName(waveform) + "'.");
                             return false;
@@ -406,15 +414,15 @@ public class VerificationUtils {
     public static boolean checkOutputsAreStable(Wtg wtg) {
         for (Waveform waveform : wtg.getWaveforms()) {
             for (Signal signal : wtg.getSignals(waveform)) {
-                if (signal.getType() == Signal.Type.OUTPUT) {
+                if (signal.getType() != Signal.Type.INPUT) {
                     String signalName = wtg.getName(signal);
                     if (waveform.getGuard().containsKey(signalName)) {
-                        DialogUtils.showError("Output signal '" + signalName + "' cannot be in a guard.");
+                        DialogUtils.showError("signal '" + signalName + "' cannot be in a guard.");
                         return false;
                     }
                     if ((signal.getInitialState() == Signal.State.UNSTABLE) ||
                             (signal.getInitialState() == Signal.State.STABLE)) {
-                        DialogUtils.showError("Output signal " + signalName +
+                        DialogUtils.showError("Signal " + signalName +
                                 " has an illegal initial state in waveform '" + wtg.getName(waveform) + "'.");
                         return false;
                     }
@@ -426,8 +434,8 @@ public class VerificationUtils {
                 if ((direction == TransitionEvent.Direction.DESTABILISE) ||
                         (direction == TransitionEvent.Direction.STABILISE)) {
                     Signal signal = transition.getSignal();
-                    if (signal.getType() == Signal.Type.OUTPUT) {
-                        DialogUtils.showError("Output signal '" + wtg.getName(signal) +
+                    if (signal.getType() != Signal.Type.INPUT) {
+                        DialogUtils.showError("Signal '" + wtg.getName(signal) +
                                 "' has an illegal transition in waveform '" + wtg.getName(waveform) + "'.");
                         return false;
                     }
@@ -494,21 +502,32 @@ public class VerificationUtils {
         for (Waveform waveform : wtg.getWaveforms()) {
             Guard guard = waveform.getGuard();
             if (!guard.isEmpty()) {
-                Node precedingState = wtg.getPreset(waveform).iterator().next();
-                if (wtg.getPreset(precedingState).isEmpty()) {
-                    return false;
-                } else {
-                    for (Node predecessorWaveform : wtg.getPreset(precedingState)) {
-                        Map<String, Signal.State> waveformFinalState = getFinalSignalStatesFromWaveform(wtg,
-                                (Waveform) predecessorWaveform);
-                        for (String signalGuarded : guard.keySet()) {
-                            if (waveformFinalState.get(signalGuarded) != Signal.State.STABLE) {
-                                return false;
-                            }
+                if (!wtg.getPreset(waveform).isEmpty()) {
+                    Node precedingState = wtg.getPreset(waveform).iterator().next();
+                    for (String signalGuarded : guard.keySet()) {
+                        Signal.State previousState = getFinalSignalStateForSignalFromNode(wtg, precedingState,
+                                signalGuarded);
+                        if (previousState != Signal.State.STABLE) {
+                            DialogUtils.showError("Signal '" + signalGuarded
+                                    + "' should be stable before reaching the state '"
+                                    + wtg.getName(precedingState) + "'.");
+                            return false;
                         }
                     }
                 }
             }
+        }
+        return true;
+    }
+
+    public static boolean checkReachability(Wtg wtg) {
+        //Checks whether all states and waveforms are reachable from the initial state
+        if (!checkNodeReachability(wtg)) {
+            return false;
+        }
+        //Checks whether all transitions for all waveforms are reachable from the entry events
+        if (!checkTransitionReachability(wtg)) {
+            return false;
         }
         return true;
     }
@@ -546,6 +565,42 @@ public class VerificationUtils {
                 }
             }
             DialogUtils.showError(msg);
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean checkTransitionReachability(Wtg wtg) {
+        for (Waveform waveform : wtg.getWaveforms()) {
+            if (!checkTransitionReachability(wtg, waveform)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean checkTransitionReachability(Wtg wtg, Waveform waveform) {
+        Set<Event> reachableTransitions = new HashSet<>();
+        int nonReachableTransitions = wtg.getTransitions(waveform).size();
+        Queue<Event> eventsToVisit = new LinkedList<>();
+        for (Event entryEvent : wtg.getEntries(waveform)) {
+            eventsToVisit.add(entryEvent);
+        }
+        //BFS
+        while (!eventsToVisit.isEmpty()) {
+            Event event = eventsToVisit.poll();
+            for (Node e : wtg.getPostset(event)) {
+                if ((!reachableTransitions.contains(e)) && (e instanceof TransitionEvent)) {
+                    TransitionEvent transition = (TransitionEvent) e;
+                    reachableTransitions.add(transition);
+                    eventsToVisit.add(transition);
+                    nonReachableTransitions = nonReachableTransitions - 1;
+                }
+            }
+        }
+
+        if (nonReachableTransitions > 0) {
+            DialogUtils.showError("There are unreachable transitions in waveform " + wtg.getName(waveform) + ".");
             return false;
         }
         return true;

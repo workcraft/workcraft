@@ -110,4 +110,32 @@ public class WtgUtils {
         }
         return result;
     }
+
+    public static Signal.State getFinalSignalStateForSignalFromNode(Wtg wtg, Node node, String signalName) {
+        //Returns the final signal state for a signal in a waveform or state.
+        //The search is propagated backwards until the first instance of the signal is found
+
+        Set<Node> visitedNodes = new HashSet<>();
+        Queue<Node> nodesToVisit = new LinkedList<>();
+        visitedNodes.add(node);
+        nodesToVisit.add(node);
+        while (!nodesToVisit.isEmpty()) {
+            Node visitingNode = nodesToVisit.poll();
+            if (visitingNode instanceof Waveform) {
+                Waveform predecesorWaveform = (Waveform) visitingNode;
+                Map<String, Signal.State> finalSignalStates = getFinalSignalStatesFromWaveform(wtg, predecesorWaveform);
+                if (finalSignalStates.containsKey(signalName)) {
+                    return finalSignalStates.get(signalName);
+                }
+            }
+
+            for (Node n : wtg.getPreset(visitingNode)) {
+                if (!visitedNodes.contains(n)) {
+                    nodesToVisit.add(n);
+                    visitedNodes.add(n);
+                }
+            }
+        }
+        return null;
+    }
 }
