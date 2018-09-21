@@ -351,15 +351,6 @@ public class VerificationUtils {
         return wtg.getPostset(wtg.getPreset(waveform).iterator().next()).size() > 1;
     }
 
-    private static boolean isFirstTransition(Wtg wtg, Node node) {
-        if (!(node instanceof ExitEvent)) {
-            return wtg.getPreset(node).size() == 1;
-        }
-        return false;
-    }
-
-
-
     public static boolean checkInitialValueForGuards(Wtg wtg) {
         for (Waveform waveform : wtg.getWaveforms()) {
             for (Signal signal : wtg.getSignals(waveform)) {
@@ -796,4 +787,75 @@ public class VerificationUtils {
         return true;
     }
 
+    public static boolean checkInputProperness(Wtg wtg) {
+        for (Waveform waveform : wtg.getWaveforms()) {
+            for (TransitionEvent transition : wtg.getTransitions(waveform)) {
+                if (transition.getSignal().getType() == Signal.Type.INTERNAL) {
+                    for (Node node : wtg.getPostset(transition)) {
+                        if (node instanceof TransitionEvent) {
+                            TransitionEvent dstTransition = (TransitionEvent) node;
+                            if (dstTransition.getSignal().getType() == Signal.Type.INPUT) {
+                                String msg = "Internal signal '" + wtg.getName(transition.getSignal())
+                                        + "' triggers input signal '"
+                                        + wtg.getName(dstTransition.getSignal()) + "'.";
+                                DialogUtils.showError(msg);
+                                return false;
+                            }
+                        } else if (node instanceof ExitEvent) {
+                            for (Node predecesor : wtg.getPreset(node)) {
+                                if (isLastTransition(wtg, predecesor) &&
+                                        isFirstTransitionInputInSuccessorWaveforms(wtg, waveform)) {
+                                    DialogUtils.showError("Internal signal '" + wtg.getName(transition.getSignal())
+                                            + "' triggers an input signal with its transition at the end of waveform '"
+                                            + wtg.getName(waveform) + "'.");
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    private static boolean isFirstTransitionInputInSuccessorWaveforms(Wtg wtg, Waveform waveform) {
+        for (Node successorState : wtg.getPostset(waveform)) {
+            for (Node successorWaveform : wtg.getPostset(successorState)) {
+                if (firstTransitionInput(wtg, (Waveform) successorWaveform)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean firstTransitionInput(Wtg wtg, Waveform waveform) {
+        for (EntryEvent entry : wtg.getEntries(waveform)) {
+            if (entry.getSignal().getType() == Signal.Type.INPUT) {
+                for (Node node: wtg.getPostset(entry)) {
+                    if (isFirstTransition(wtg, node)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean isLastTransition(Wtg wtg, Node node) {
+        if (!(node instanceof EntryEvent)) {
+            if (wtg.getPostset(node).size() == 1) {
+                return wtg.getPostset(node).iterator().next() instanceof ExitEvent;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isFirstTransition(Wtg wtg, Node node) {
+        if (!(node instanceof ExitEvent)) {
+            return wtg.getPreset(node).size() == 1;
+        }
+        return false;
+    }
 }

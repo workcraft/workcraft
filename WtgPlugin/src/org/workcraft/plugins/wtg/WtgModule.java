@@ -2,10 +2,7 @@ package org.workcraft.plugins.wtg;
 
 import org.workcraft.*;
 import org.workcraft.commands.ScriptableCommandUtils;
-import org.workcraft.plugins.wtg.commands.WtgReachabilityVerificationCommand;
-import org.workcraft.plugins.wtg.commands.WtgSoundnessVerificationCommand;
-import org.workcraft.plugins.wtg.commands.WtgToStgConversionCommand;
-import org.workcraft.plugins.wtg.commands.WtgToStgWaverConversionCommand;
+import org.workcraft.plugins.wtg.commands.*;
 import org.workcraft.plugins.wtg.interop.WtgExporter;
 import org.workcraft.plugins.wtg.serialisation.GuardDeserialiser;
 import org.workcraft.plugins.wtg.serialisation.GuardSerialiser;
@@ -47,6 +44,9 @@ public class WtgModule  implements Module {
 
         ScriptableCommandUtils.register(WtgReachabilityVerificationCommand.class, "checkWtgReachability",
                 "check the given WTG 'work' for reachability of nodes and transitions");
+
+        ScriptableCommandUtils.register(WtgInputPropernessVerificationCommand.class, "checkWtgInputProperness",
+                "check the given WTG 'work' for input properness");
     }
 
     private void initCompatibilityManager() {
