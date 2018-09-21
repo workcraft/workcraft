@@ -1,9 +1,9 @@
 include "WorkcraftRunner"
 include "WorkcraftCore"
 
-// Include all the plugins
-include rootDir.listFiles().findAll {
-        it.isDirectory() && it =~ ".*Plugin"
-    }.collect {
-        it.getName()
-    }.toArray(new java.lang.String[0])
+// Include all plugins
+rootDir.listFiles().findAll {
+    it.isDirectory() && it =~ ".*Plugin"
+}.collect {
+    include it.getName()
+}
