@@ -9,9 +9,7 @@ import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.wtg.*;
 import org.workcraft.util.Pair;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.workcraft.plugins.wtg.utils.WtgUtils.getInitialSignalStates;
 import static org.workcraft.plugins.wtg.utils.WtgUtils.getUnstableSignalNames;
@@ -204,6 +202,10 @@ public class WtgToStgConverter {
                         convertWtgToStgDirection(direction), null);
                 dstTransition.setSignalType(convertWtgToStgType(signal.getType()));
                 result.put(srcTransition, dstTransition);
+
+                if (unstableSignalToStgMap.containsKey(signalName)) {
+                    convertUnstableSignalStableTransitionEvent(srcTransition, dstTransition);
+                }
             }
         }
         return result;
@@ -260,6 +262,27 @@ public class WtgToStgConverter {
         return dstTransition;
     }
 
+    private void convertUnstableSignalStableTransitionEvent(TransitionEvent srcTransition, SignalTransition dstTransition) {
+        UnstableSignalStg signalStg = unstableSignalToStgMap.get(srcModel.getName(srcTransition.getSignal()));
+        if (srcTransition.getDirection() == TransitionEvent.Direction.RISE) {
+            // Signal goes from stable zero to stable one
+            try {
+                dstModel.connect(signalStg.lowPlace, dstTransition);
+                dstModel.connect(dstTransition, signalStg.highPlace);
+            } catch (InvalidConnectionException e) {
+                throw new RuntimeException(e);
+            }
+        } else if (srcTransition.getDirection() == TransitionEvent.Direction.FALL) {
+            // Signal goes from stable one to stable zero
+            try {
+                dstModel.connect(signalStg.highPlace, dstTransition);
+                dstModel.connect(dstTransition, signalStg.lowPlace);
+            } catch (InvalidConnectionException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     private SignalTransition.Direction convertWtgToStgDirection(TransitionEvent.Direction direction) {
         switch (direction) {
         case RISE: return SignalTransition.Direction.PLUS;
@@ -309,6 +332,48 @@ public class WtgToStgConverter {
             Set<Node> postset = srcModel.getPostset(fromNode);
             if ((postset.size() > 1) && postset.contains(toNode)) {
                 return true;
+            }
+        }
+        if ((fromNode instanceof TransitionEvent) && (toNode instanceof TransitionEvent)) {
+            if (isThereAlternativePath((TransitionEvent) fromNode, (TransitionEvent) toNode)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isThereAlternativePath(TransitionEvent fromTransition, TransitionEvent toTransition) {
+        if (srcModel.getPostset(fromTransition).size() <= 1) {
+            return false;
+        }
+        Queue<Event> toVisit = new LinkedList<>();
+        // There should be no loops, so visitedEvents should not be necessary
+        // Yet, using it prevents an infinite loop if something else fails
+        Set<Event> visitedEvents = new HashSet<>();
+        for (Node node : srcModel.getPreset(toTransition)) {
+            if (node instanceof TransitionEvent) {
+                if (node != fromTransition) {
+                    toVisit.add((Event) node);
+                    visitedEvents.add((Event) node);
+                }
+            }
+        }
+
+        while (!toVisit.isEmpty()) {
+            Event event = toVisit.poll();
+            if (event instanceof TransitionEvent) {
+                for (Node node : srcModel.getPreset(event)) {
+                    Event previousEvent = (Event) node;
+                    if (previousEvent == fromTransition) {
+                        return true;
+                    }
+                    if ((previousEvent.getSignal() != fromTransition.getSignal()) &&
+                            (!visitedEvents.contains(previousEvent))) {
+                        toVisit.add(previousEvent);
+                        visitedEvents.add(previousEvent);
+                    }
+                }
             }
         }
         return false;
