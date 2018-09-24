@@ -9,9 +9,7 @@ import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.wtg.*;
 import org.workcraft.util.Pair;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.workcraft.plugins.wtg.utils.WtgUtils.getInitialSignalStates;
 import static org.workcraft.plugins.wtg.utils.WtgUtils.getUnstableSignalNames;
@@ -334,6 +332,48 @@ public class WtgToStgConverter {
             Set<Node> postset = srcModel.getPostset(fromNode);
             if ((postset.size() > 1) && postset.contains(toNode)) {
                 return true;
+            }
+        }
+        if ((fromNode instanceof TransitionEvent) && (toNode instanceof TransitionEvent)) {
+            if (isThereAlternativePath((TransitionEvent) fromNode, (TransitionEvent) toNode)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isThereAlternativePath(TransitionEvent fromTransition, TransitionEvent toTransition) {
+        if (srcModel.getPostset(fromTransition).size() <= 1) {
+            return false;
+        }
+        Queue<Event> toVisit = new LinkedList<>();
+        // There should be no loops, so visitedEvents should not be necessary
+        // Yet, using it prevents an infinite loop if something else fails
+        Set<Event> visitedEvents = new HashSet<>();
+        for (Node node : srcModel.getPreset(toTransition)) {
+            if (node instanceof TransitionEvent) {
+                if (node != fromTransition) {
+                    toVisit.add((Event) node);
+                    visitedEvents.add((Event) node);
+                }
+            }
+        }
+
+        while (!toVisit.isEmpty()) {
+            Event event = toVisit.poll();
+            if (event instanceof TransitionEvent) {
+                for (Node node : srcModel.getPreset(event)) {
+                    Event previousEvent = (Event) node;
+                    if (previousEvent == fromTransition) {
+                        return true;
+                    }
+                    if ((previousEvent.getSignal() != fromTransition.getSignal()) &&
+                            (!visitedEvents.contains(previousEvent))) {
+                        toVisit.add(previousEvent);
+                        visitedEvents.add(previousEvent);
+                    }
+                }
             }
         }
         return false;
