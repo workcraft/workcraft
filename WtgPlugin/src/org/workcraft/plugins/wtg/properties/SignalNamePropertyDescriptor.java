@@ -3,11 +3,14 @@ package org.workcraft.plugins.wtg.properties;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.dtd.Signal;
+import org.workcraft.plugins.wtg.Guard;
+import org.workcraft.plugins.wtg.Waveform;
 import org.workcraft.plugins.wtg.Wtg;
 
 import java.util.Map;
 
 public class SignalNamePropertyDescriptor implements PropertyDescriptor {
+
     private final Wtg wtg;
     private final String signalName;
 
@@ -49,7 +52,16 @@ public class SignalNamePropertyDescriptor implements PropertyDescriptor {
                 wtg.setName(signal, (String) value);
                 signal.sendNotification(new PropertyChangedEvent(signal, Signal.PROPERTY_NAME));
             }
-
+            for (Waveform waveform : wtg.getWaveforms()) {
+                Guard guard = waveform.getGuard();
+                if (!guard.containsKey(signalName)) continue;
+                Guard newGuard = new Guard();
+                for (Map.Entry<String, Boolean> entry : guard.entrySet()) {
+                    String key = signalName.equals(entry.getKey()) ? (String) value : entry.getKey();
+                    newGuard.put(key, entry.getValue());
+                }
+                waveform.setGuard(newGuard);
+            }
         }
     }
 
