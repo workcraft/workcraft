@@ -204,6 +204,10 @@ public class WtgToStgConverter {
                         convertWtgToStgDirection(direction), null);
                 dstTransition.setSignalType(convertWtgToStgType(signal.getType()));
                 result.put(srcTransition, dstTransition);
+
+                if (unstableSignalToStgMap.containsKey(signalName)) {
+                    convertUnstableSignalStableTransitionEvent(srcTransition, dstTransition);
+                }
             }
         }
         return result;
@@ -258,6 +262,27 @@ public class WtgToStgConverter {
             }
         }
         return dstTransition;
+    }
+
+    private void convertUnstableSignalStableTransitionEvent(TransitionEvent srcTransition, SignalTransition dstTransition) {
+        UnstableSignalStg signalStg = unstableSignalToStgMap.get(srcModel.getName(srcTransition.getSignal()));
+        if (srcTransition.getDirection() == TransitionEvent.Direction.RISE) {
+            // Signal goes from stable zero to stable one
+            try {
+                dstModel.connect(signalStg.lowPlace, dstTransition);
+                dstModel.connect(dstTransition, signalStg.highPlace);
+            } catch (InvalidConnectionException e) {
+                throw new RuntimeException(e);
+            }
+        } else if (srcTransition.getDirection() == TransitionEvent.Direction.FALL) {
+            // Signal goes from stable one to stable zero
+            try {
+                dstModel.connect(signalStg.highPlace, dstTransition);
+                dstModel.connect(dstTransition, signalStg.lowPlace);
+            } catch (InvalidConnectionException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private SignalTransition.Direction convertWtgToStgDirection(TransitionEvent.Direction direction) {
