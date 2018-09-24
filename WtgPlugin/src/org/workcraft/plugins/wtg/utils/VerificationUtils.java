@@ -8,11 +8,12 @@ import org.workcraft.plugins.wtg.State;
 import org.workcraft.plugins.wtg.Waveform;
 import org.workcraft.plugins.wtg.Wtg;
 import org.workcraft.util.DialogUtils;
+import org.workcraft.util.LogUtils;
 
 import java.util.*;
 
-import static org.workcraft.plugins.wtg.utils.WtgUtils.*;
 import static org.workcraft.plugins.wtg.converter.WtgToStgConverter.*;
+import static org.workcraft.plugins.wtg.utils.WtgUtils.*;
 
 public class VerificationUtils {
 
@@ -526,7 +527,6 @@ public class VerificationUtils {
     public static boolean checkNodeReachability(Wtg wtg) {
         Set<Node> reachableNodes = new HashSet<>();
         State initialState = wtg.getInitialState();
-        int nonReachableNodes = wtg.getWaveforms().size() + wtg.getStates().size() - 1;
         Queue<Node> nodesToVisit = new LinkedList<>();
         nodesToVisit.add(initialState);
         reachableNodes.add(initialState);
@@ -537,25 +537,21 @@ public class VerificationUtils {
                 if (!reachableNodes.contains(n)) {
                     reachableNodes.add(n);
                     nodesToVisit.add(n);
-                    nonReachableNodes = nonReachableNodes - 1;
                 }
             }
         }
-
-        if (nonReachableNodes > 0) {
-            //Error handling
-            String msg = "The following nodes are unreachable:\n";
-            for (Waveform waveform : wtg.getWaveforms()) {
-                if (!reachableNodes.contains(waveform)) {
-                    msg = msg.concat("    " + wtg.getName(waveform) + "\n");
-                }
-            }
-            for (State state : wtg.getStates()) {
-                if (!reachableNodes.contains(state)) {
-                    msg = msg.concat("    " + wtg.getName(state) + "\n");
-                }
-            }
-            DialogUtils.showError(msg);
+        //Error handling
+        List<String> unreachableNodeNames = new ArrayList<>();
+        for (Waveform waveform : wtg.getWaveforms()) {
+            if (reachableNodes.contains(waveform)) continue;
+            unreachableNodeNames.add(wtg.getName(waveform));
+        }
+        for (State state : wtg.getStates()) {
+            if (reachableNodes.contains(state)) continue;
+            unreachableNodeNames.add(wtg.getName(state));
+        }
+        if (!unreachableNodeNames.isEmpty()) {
+            DialogUtils.showError(LogUtils.getTextWithRefs("Unreachable node", unreachableNodeNames));
             return false;
         }
         return true;

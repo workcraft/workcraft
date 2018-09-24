@@ -23,11 +23,10 @@ public class WtgReachabilityVerificationCommand extends AbstractVerificationComm
     @Override
     public Boolean execute(WorkspaceEntry we) {
         final Wtg wtg = WorkspaceUtils.getAs(we, Wtg.class);
-        if (!VerificationUtils.checkReachability(wtg)) {
-            DialogUtils.showInfo("The model has unreachable nodes/transitions.", TITLE);
-            return false;
+        boolean result = VerificationUtils.checkReachability(wtg);
+        if (result) {
+            DialogUtils.showInfo("All nodes and transitions are reachable.", TITLE);
         }
-        DialogUtils.showInfo("All nodes and transitions are reachable.", TITLE);
-        return true;
+        return result;
     }
 }

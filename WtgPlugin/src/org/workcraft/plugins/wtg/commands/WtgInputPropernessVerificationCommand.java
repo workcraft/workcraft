@@ -24,11 +24,11 @@ public class WtgInputPropernessVerificationCommand extends AbstractVerificationC
     @Override
     public Boolean execute(WorkspaceEntry we) {
         final Wtg wtg = WorkspaceUtils.getAs(we, Wtg.class);
-        if (VerificationUtils.checkInputProperness(wtg)) {
+        boolean result = VerificationUtils.checkInputProperness(wtg);
+        if (result) {
             DialogUtils.showInfo("The model is input proper.", TITLE);
-            return true;
         }
-        return false;
+        return result;
     }
 
 }
