@@ -1,10 +1,14 @@
 package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.visual.BoundingBoxHelper;
+import org.workcraft.dom.visual.MixUtils;
 import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.formula.*;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.BooleanOperations;
+import org.workcraft.formula.One;
+import org.workcraft.formula.Zero;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.util.Hierarchy;
 
@@ -18,88 +22,74 @@ public class ResetUtils {
 
     public static void insertReset(VisualCircuit circuit, String portName, boolean activeLow) {
         VisualFunctionContact resetPort = circuit.getOrCreateContact(null, portName, Contact.IOType.INPUT);
-
         for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {
-            boolean needsResetPin = false;
-            Collection<VisualFunctionContact> forceInitOutputContacts = new HashSet<>();
+            boolean isSimpleGate = component.isGate() && (component.getVisualInputs().size() < 3);
+            Collection<VisualFunctionContact> forceInitGateContacts = new HashSet<>();
+            Collection<VisualFunctionContact> forceInitFuncContacts = new HashSet<>();
             for (VisualFunctionContact contact : component.getVisualFunctionContacts()) {
                 if (contact.isOutput() && contact.isPin() && contact.getForcedInit()) {
-                    forceInitOutputContacts.add(contact);
-                    needsResetPin |= contact.getReferencedFunctionContact().isSequential();
+                    if (isSimpleGate || contact.getReferencedFunctionContact().isSequential()) {
+                        forceInitFuncContacts.add(contact);
+                    } else {
+                        forceInitGateContacts.add(contact);
+                    }
                 }
             }
             VisualContact resetContact = null;
-            if (needsResetPin) {
-                resetContact = circuit.getOrCreateContact(component, portName, Contact.IOType.INPUT);
+            if (!forceInitFuncContacts.isEmpty()) {
+                resetContact = circuit.getOrCreateContact(component, null, Contact.IOType.INPUT);
                 try {
                     circuit.connect(resetPort, resetContact);
                 } catch (InvalidConnectionException e) {
                     throw new RuntimeException(e);
                 }
             }
-            for (VisualFunctionContact contact : forceInitOutputContacts) {
-                if (contact.getReferencedFunctionContact().isSequential()) {
-                    insertResetFunction(contact, resetContact, activeLow);
-                    component.setLabel("");
-                } else {
-                    insertResetGate(circuit, resetPort, contact, activeLow);
-                }
+            for (VisualFunctionContact contact : forceInitFuncContacts) {
+                insertResetFunction(contact, resetContact, activeLow);
+                component.setLabel("");
+            }
+            for (VisualFunctionContact contact : forceInitGateContacts) {
+                insertResetGate(circuit, resetPort, contact, activeLow);
             }
         }
-
-        for (VisualFunctionContact contact : circuit.getVisualFunctionContacts()) {
-            if (contact.isPin() && contact.isOutput()) {
-                contact.setForcedInit(false);
-            }
-        }
-        resetPort.setInitToOne(!activeLow);
-        resetPort.setForcedInit(true);
-        resetPort.setSetFunction(activeLow ? One.instance() : Zero.instance());
-        resetPort.setResetFunction(activeLow ? Zero.instance() : One.instance());
-
-        Collection<Touchable> nodes = new HashSet<>();
-        nodes.addAll(Hierarchy.getChildrenOfType(circuit.getRoot(), VisualConnection.class));
-        nodes.addAll(Hierarchy.getChildrenOfType(circuit.getRoot(), VisualCircuitComponent.class));
-        nodes.addAll(Hierarchy.getChildrenOfType(circuit.getRoot(), VisualJoint.class));
-        Rectangle2D modelBox = BoundingBoxHelper.mergeBoundingBoxes(nodes);
-        resetPort.setRootSpacePosition(new Point2D.Double(modelBox.getMinX(), modelBox.getMinY()));
+        forceInitResetCircuit(circuit, resetPort, activeLow);
+        positionResetPort(circuit, resetPort);
     }
 
     private static void insertResetFunction(VisualFunctionContact contact, VisualContact resetContact, boolean activeLow) {
         BooleanFormula setFunction = contact.getSetFunction();
         BooleanFormula resetFunction = contact.getResetFunction();
         Contact resetVar = resetContact.getReferencedContact();
-        CleverBooleanWorker worker = new CleverBooleanWorker();
         if (activeLow) {
             if (contact.getInitToOne()) {
                 if (setFunction != null) {
-                    contact.setSetFunction(BooleanOperations.or(BooleanOperations.not(resetVar), setFunction, worker));
+                    contact.setSetFunction(BooleanOperations.or(BooleanOperations.not(resetVar), setFunction));
                 }
                 if (resetFunction != null) {
-                    contact.setResetFunction(BooleanOperations.and(resetVar, resetFunction, worker));
+                    contact.setResetFunction(BooleanOperations.and(resetVar, resetFunction));
                 }
             } else {
                 if (setFunction != null) {
-                    contact.setSetFunction(BooleanOperations.and(resetVar, setFunction, worker));
+                    contact.setSetFunction(BooleanOperations.and(resetVar, setFunction));
                 }
                 if (resetFunction != null) {
-                    contact.setResetFunction(BooleanOperations.or(BooleanOperations.not(resetVar), resetFunction, worker));
+                    contact.setResetFunction(BooleanOperations.or(BooleanOperations.not(resetVar), resetFunction));
                 }
             }
         } else {
             if (contact.getInitToOne()) {
                 if (setFunction != null) {
-                    contact.setSetFunction(BooleanOperations.or(resetVar, setFunction, worker));
+                    contact.setSetFunction(BooleanOperations.or(resetVar, setFunction));
                 }
                 if (resetFunction != null) {
-                    contact.setResetFunction(BooleanOperations.and(BooleanOperations.not(resetVar), resetFunction, worker));
+                    contact.setResetFunction(BooleanOperations.and(BooleanOperations.not(resetVar), resetFunction));
                 }
             } else {
                 if (setFunction != null) {
-                    contact.setSetFunction(BooleanOperations.and(BooleanOperations.not(resetVar), setFunction, worker));
+                    contact.setSetFunction(BooleanOperations.and(BooleanOperations.not(resetVar), setFunction));
                 }
                 if (resetFunction != null) {
-                    contact.setResetFunction(BooleanOperations.or(resetVar, resetFunction, worker));
+                    contact.setResetFunction(BooleanOperations.or(resetVar, resetFunction));
                 }
             }
         }
@@ -111,14 +101,13 @@ public class ResetUtils {
         HashMap<VisualConnection, VisualConnection.ScaleMode> connectionToScaleModeMap
                 = ConnectionUtils.replaceConnectionScaleMode(connections, VisualConnection.ScaleMode.LOCK_RELATIVELY);
 
-        SpaceUtils.makeSpaceAfterContact(circuit, contact, 4.0);
+        double gateSpace = 3.0;
+        SpaceUtils.makeSpaceAfterContact(circuit, contact, gateSpace + 1.0);
         VisualJoint joint = CircuitUtils.detachJoint(circuit, contact);
-        VisualConnection connection = (VisualConnection) circuit.getConnection(contact, joint);
-        connection.setScaleMode(VisualConnection.ScaleMode.LOCK_RELATIVELY);
-        joint.setRootSpacePosition(getOffsetContactPosition(contact, 3.0));
-
+        if (joint != null) {
+            joint.setRootSpacePosition(getOffsetContactPosition(contact, gateSpace));
+        }
         // Restore connection scale mode
-        connection.setScaleMode(VisualConnection.ScaleMode.NONE);
         ConnectionUtils.restoreConnectionScaleMode(connectionToScaleModeMap);
 
         VisualFunctionComponent resetGate = createResetGate(circuit, contact.getInitToOne(), activeLow);
@@ -136,8 +125,9 @@ public class ResetUtils {
     }
 
     private static Point2D getOffsetContactPosition(VisualContact contact, double space) {
-        double x = contact.getRootSpaceX() + space * contact.getDirection().getGradientX();
-        double y = contact.getRootSpaceY() + space * contact.getDirection().getGradientY();
+        double d = contact.isPort() ? -space : space;
+        double x = contact.getRootSpaceX() + d * contact.getDirection().getGradientX();
+        double y = contact.getRootSpaceY() + d * contact.getDirection().getGradientY();
         return new Point2D.Double(x, y);
     }
 
@@ -149,6 +139,35 @@ public class ResetUtils {
             } catch (InvalidConnectionException e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    private static void forceInitResetCircuit(VisualCircuit circuit, VisualFunctionContact resetPort, boolean activeLow) {
+        resetPort.setInitToOne(!activeLow);
+        resetPort.setForcedInit(true);
+        resetPort.setSetFunction(activeLow ? One.instance() : Zero.instance());
+        resetPort.setResetFunction(activeLow ? Zero.instance() : One.instance());
+        for (VisualFunctionContact contact : circuit.getVisualFunctionContacts()) {
+            if (contact.isPin() && contact.isOutput()) {
+                contact.setForcedInit(false);
+            }
+        }
+    }
+
+    private static void positionResetPort(VisualCircuit circuit, VisualFunctionContact resetPort) {
+        Collection<Touchable> nodes = new HashSet<>();
+        nodes.addAll(Hierarchy.getChildrenOfType(circuit.getRoot(), VisualConnection.class));
+        nodes.addAll(Hierarchy.getChildrenOfType(circuit.getRoot(), VisualCircuitComponent.class));
+        nodes.addAll(Hierarchy.getChildrenOfType(circuit.getRoot(), VisualJoint.class));
+        Rectangle2D modelBox = BoundingBoxHelper.mergeBoundingBoxes(nodes);
+
+        Collection<VisualContact> driven = CircuitUtils.findDriven(circuit, resetPort, false);
+        double y = driven.isEmpty() ? modelBox.getCenterY() : MixUtils.middleRootspacePosition(driven).getY();
+        resetPort.setRootSpacePosition(new Point2D.Double(modelBox.getMinX(), y));
+
+        VisualJoint joint = CircuitUtils.detachJoint(circuit, resetPort);
+        if (joint != null) {
+            joint.setRootSpacePosition(getOffsetContactPosition(resetPort, 0.5));
         }
     }
 
