@@ -429,8 +429,25 @@ public class CircuitUtils {
         return result;
     }
 
-    public static boolean checkUnmappedSignals(WorkspaceEntry dstWe) {
-        Circuit circuit = WorkspaceUtils.getAs(dstWe, Circuit.class);
+    public static boolean mapUnmappedBuffers(WorkspaceEntry we) {
+        boolean result = false;
+        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
+        Gate2 buf = CircuitSettings.parseBufData();
+        for (FunctionComponent component: circuit.getFunctionComponents()) {
+            if (!component.isMapped() && component.isBuffer()) {
+                Contact input = component.getFirstInput();
+                Contact output = component.getFirstOutput();
+                component.setModule(buf.name);
+                circuit.setName(input, buf.in);
+                circuit.setName(output, buf.out);
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    public static boolean checkUnmappedSignals(WorkspaceEntry we) {
+        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         List<String> signals = new ArrayList<>();
         for (FunctionComponent component: circuit.getFunctionComponents()) {
             if (!component.isMapped()) {

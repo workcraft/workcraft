@@ -6,7 +6,10 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.CircuitDescriptor;
+import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
@@ -89,6 +92,7 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
         // Report inserted CSC signals and unmapped signals AFTER importing the Verilog, so the circuit is visible.
         checkNewSignals(petrifyOutput);
         if (technologyMapping) {
+            CircuitUtils.mapUnmappedBuffers(result);
             CircuitUtils.checkUnmappedSignals(result);
         }
 
