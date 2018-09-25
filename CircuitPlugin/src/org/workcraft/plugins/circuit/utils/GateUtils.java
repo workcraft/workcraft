@@ -113,12 +113,14 @@ public class GateUtils {
     }
 
     public static VisualFunctionComponent createBufferGate(VisualCircuit circuit) {
+        Gate2 gate = CircuitSettings.parseBufData();
         VisualFunctionComponent component = circuit.createVisualComponent(new FunctionComponent(), VisualFunctionComponent.class);
+        component.setLabel(gate.name);
 
-        VisualFunctionContact inputContact = circuit.getOrCreateContact(component, "I", Contact.IOType.INPUT);
+        VisualFunctionContact inputContact = circuit.getOrCreateContact(component, gate.in, Contact.IOType.INPUT);
         inputContact.setPosition(new Point2D.Double(-1.5, 0.0));
 
-        VisualFunctionContact outputContact = circuit.getOrCreateContact(component, "O", Contact.IOType.OUTPUT);
+        VisualFunctionContact outputContact = circuit.getOrCreateContact(component, gate.out, Contact.IOType.OUTPUT);
         outputContact.setPosition(new Point2D.Double(1.5, 0.0));
         outputContact.setSetFunction(inputContact.getReferencedContact());
 
@@ -126,15 +128,17 @@ public class GateUtils {
     }
 
     public static VisualFunctionComponent createAndGate(VisualCircuit circuit) {
+        Gate3 gate = CircuitSettings.parseAndData();
         VisualFunctionComponent component = circuit.createVisualComponent(new FunctionComponent(), VisualFunctionComponent.class);
+        component.setLabel(gate.name);
 
-        VisualFunctionContact firstInputContact = circuit.getOrCreateContact(component, "A", Contact.IOType.INPUT);
+        VisualFunctionContact firstInputContact = circuit.getOrCreateContact(component, gate.in1, Contact.IOType.INPUT);
         firstInputContact.setPosition(new Point2D.Double(-1.5, -0.5));
 
-        VisualFunctionContact secondInputContact = circuit.getOrCreateContact(component, "B", Contact.IOType.INPUT);
+        VisualFunctionContact secondInputContact = circuit.getOrCreateContact(component, gate.in2, Contact.IOType.INPUT);
         secondInputContact.setPosition(new Point2D.Double(-1.5, 0.5));
 
-        VisualFunctionContact outputContact = circuit.getOrCreateContact(component, "O", Contact.IOType.OUTPUT);
+        VisualFunctionContact outputContact = circuit.getOrCreateContact(component, gate.out, Contact.IOType.OUTPUT);
         outputContact.setPosition(new Point2D.Double(1.5, 0.0));
 
         Contact firstVar = firstInputContact.getReferencedContact();
@@ -147,15 +151,17 @@ public class GateUtils {
     }
 
     public static VisualFunctionComponent createOrGate(VisualCircuit circuit) {
+        Gate3 gate = CircuitSettings.parseOrData();
         VisualFunctionComponent component = circuit.createVisualComponent(new FunctionComponent(), VisualFunctionComponent.class);
+        component.setLabel(gate.name);
 
-        VisualFunctionContact firstInputContact = circuit.getOrCreateContact(component, "A", Contact.IOType.INPUT);
+        VisualFunctionContact firstInputContact = circuit.getOrCreateContact(component, gate.in1, Contact.IOType.INPUT);
         firstInputContact.setPosition(new Point2D.Double(-1.5, -0.5));
 
-        VisualFunctionContact secondInputContact = circuit.getOrCreateContact(component, "B", Contact.IOType.INPUT);
+        VisualFunctionContact secondInputContact = circuit.getOrCreateContact(component, gate.in2, Contact.IOType.INPUT);
         secondInputContact.setPosition(new Point2D.Double(-1.5, 0.5));
 
-        VisualFunctionContact outputContact = circuit.getOrCreateContact(component, "O", Contact.IOType.OUTPUT);
+        VisualFunctionContact outputContact = circuit.getOrCreateContact(component, gate.out, Contact.IOType.OUTPUT);
         outputContact.setPosition(new Point2D.Double(1.5, 0.0));
 
         Contact firstVar = firstInputContact.getReferencedContact();
@@ -168,15 +174,17 @@ public class GateUtils {
     }
 
     public static VisualFunctionComponent createNandbGate(VisualCircuit circuit) {
+        Gate3 gate = CircuitSettings.parseNandbData();
         VisualFunctionComponent component = circuit.createVisualComponent(new FunctionComponent(), VisualFunctionComponent.class);
+        component.setLabel(gate.name);
 
-        VisualFunctionContact firstInputContact = circuit.getOrCreateContact(component, "AN", Contact.IOType.INPUT);
+        VisualFunctionContact firstInputContact = circuit.getOrCreateContact(component, gate.in1, Contact.IOType.INPUT);
         firstInputContact.setPosition(new Point2D.Double(-1.5, -0.5));
 
-        VisualFunctionContact secondInputContact = circuit.getOrCreateContact(component, "B", Contact.IOType.INPUT);
+        VisualFunctionContact secondInputContact = circuit.getOrCreateContact(component, gate.in2, Contact.IOType.INPUT);
         secondInputContact.setPosition(new Point2D.Double(-1.5, 0.5));
 
-        VisualFunctionContact outputContact = circuit.getOrCreateContact(component, "ON", Contact.IOType.OUTPUT);
+        VisualFunctionContact outputContact = circuit.getOrCreateContact(component, gate.out, Contact.IOType.OUTPUT);
         outputContact.setPosition(new Point2D.Double(1.5, 0.0));
 
         Contact firstVar = firstInputContact.getReferencedContact();
@@ -189,15 +197,17 @@ public class GateUtils {
     }
 
     public static VisualFunctionComponent createNorbGate(VisualCircuit circuit) {
+        Gate3 gate = CircuitSettings.parseNorbData();
         VisualFunctionComponent component = circuit.createVisualComponent(new FunctionComponent(), VisualFunctionComponent.class);
+        component.setLabel(gate.name);
 
-        VisualFunctionContact firstInputContact = circuit.getOrCreateContact(component, "AN", Contact.IOType.INPUT);
+        VisualFunctionContact firstInputContact = circuit.getOrCreateContact(component, gate.in1, Contact.IOType.INPUT);
         firstInputContact.setPosition(new Point2D.Double(-1.5, -0.5));
 
-        VisualFunctionContact secondInputContact = circuit.getOrCreateContact(component, "B", Contact.IOType.INPUT);
+        VisualFunctionContact secondInputContact = circuit.getOrCreateContact(component, gate.in2, Contact.IOType.INPUT);
         secondInputContact.setPosition(new Point2D.Double(-1.5, 0.5));
 
-        VisualFunctionContact outputContact = circuit.getOrCreateContact(component, "ON", Contact.IOType.OUTPUT);
+        VisualFunctionContact outputContact = circuit.getOrCreateContact(component, gate.out, Contact.IOType.OUTPUT);
         outputContact.setPosition(new Point2D.Double(1.5, 0.0));
 
         Contact firstVar = firstInputContact.getReferencedContact();

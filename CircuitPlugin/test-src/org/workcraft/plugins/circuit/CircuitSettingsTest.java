@@ -56,6 +56,21 @@ public class CircuitSettingsTest {
         Assert.assertEquals(Config.toString(CircuitSettings.getSubstitutionLibrary()),
                 framework.getConfigVar(prefix + ".substitutionLibrary", false));
 
+        Assert.assertEquals(Config.toString(CircuitSettings.getBufData()),
+                framework.getConfigVar(prefix + ".bufData", false));
+
+        Assert.assertEquals(Config.toString(CircuitSettings.getAndData()),
+                framework.getConfigVar(prefix + ".andData", false));
+
+        Assert.assertEquals(Config.toString(CircuitSettings.getOrData()),
+                framework.getConfigVar(prefix + ".orData", false));
+
+        Assert.assertEquals(Config.toString(CircuitSettings.getNandbData()),
+                framework.getConfigVar(prefix + ".nandbData", false));
+
+        Assert.assertEquals(Config.toString(CircuitSettings.getNorbData()),
+                framework.getConfigVar(prefix + ".norbData", false));
+
         Assert.assertEquals(Config.toString(CircuitSettings.getMutexData()),
                 framework.getConfigVar(prefix + ".mutexData", false));
 

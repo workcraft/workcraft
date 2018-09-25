@@ -1,19 +1,21 @@
 package org.workcraft.plugins.circuit;
 
-import java.awt.Color;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.workcraft.Config;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.plugins.circuit.utils.Gate2;
+import org.workcraft.plugins.circuit.utils.Gate3;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.util.DialogUtils;
+
+import java.awt.*;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CircuitSettings implements Settings {
 
@@ -25,6 +27,13 @@ public class CircuitSettings implements Settings {
     private static final int MUTEX_G1_GROUP = 3;
     private static final int MUTEX_R2_GROUP = 4;
     private static final int MUTEX_G2_GROUP = 5;
+
+    private static final Pattern GATE2_DATA_PATTERN = Pattern.compile("(\\w+)\\((\\w+),(\\w+)\\)");
+    private static final Pattern GATE3_DATA_PATTERN = Pattern.compile("(\\w+)\\((\\w+),(\\w+),(\\w+)\\)");
+    private static final int GATE_NAME_GROUP = 1;
+    private static final int GATE_PIN1_GROUP = 2;
+    private static final int GATE_PIN2_GROUP = 3;
+    private static final int GATE_PIN3_GROUP = 4;
 
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CircuitSettings";
@@ -41,6 +50,11 @@ public class CircuitSettings implements Settings {
     private static final String keySimplifyStg = prefix + ".simplifyStg";
     private static final String keyGateLibrary = prefix + ".gateLibrary";
     private static final String keySubstitutionLibrary = prefix + ".substitutionLibrary";
+    private static final String keyBufData = prefix + ".bufData";
+    private static final String keyAndData = prefix + ".andData";
+    private static final String keyOrData = prefix + ".orData";
+    private static final String keyNandbData = prefix + ".nandbData";
+    private static final String keyNorbData = prefix + ".norbData";
     private static final String keyMutexData = prefix + ".mutexData";
     private static final String keyBusSuffix = prefix + ".busSuffix";
 
@@ -56,6 +70,11 @@ public class CircuitSettings implements Settings {
     private static final boolean defaultSimplifyStg = true;
     private static final String defaultGateLibrary = DesktopApi.getOs().isWindows() ? "libraries\\workcraft.lib" : "libraries/workcraft.lib";
     private static final String defaultSubstitutionLibrary = "";
+    private static final String defaultBufData = "BUF (I, O)";
+    private static final String defaultAndData = "AND2 (A, B, O)";
+    private static final String defaultOrData = "OR2 (A, B, O)";
+    private static final String defaultNandbData = "NAND2B (AN, B, ON)";
+    private static final String defaultNorbData = "NOR2B (AN, B, ON)";
     private static final String defaultMutexData = "MUTEX ((r1, g1), (r2, g2))";
     private static final String defaultBusSuffix = "__$";
 
@@ -71,6 +90,11 @@ public class CircuitSettings implements Settings {
     private static boolean simplifyStg = defaultSimplifyStg;
     private static String gateLibrary = defaultGateLibrary;
     private static String substitutionLibrary = defaultSubstitutionLibrary;
+    private static String bufData = defaultBufData;
+    private static String andData = defaultAndData;
+    private static String orData = defaultOrData;
+    private static String nandbData = defaultNandbData;
+    private static String norbData = defaultNorbData;
     private static String mutexData = defaultMutexData;
     private static String busSuffix = defaultBusSuffix;
 
@@ -196,6 +220,76 @@ public class CircuitSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, String>(
+                this, "BUF name and input-output pins", String.class, true, false, false) {
+            protected void setter(CircuitSettings object, String value) {
+                if (parseGate2Data(value) != null) {
+                    setBufData(value);
+                } else {
+                    DialogUtils.showError("BUF description format is incorrect. It should be as follows:\n" + defaultBufData);
+                }
+            }
+            protected String getter(CircuitSettings object) {
+                return getBufData();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, String>(
+                this, "AND2 name and input-output pins", String.class, true, false, false) {
+            protected void setter(CircuitSettings object, String value) {
+                if (parseGate3Data(value) != null) {
+                    setAndData(value);
+                } else {
+                    DialogUtils.showError("AND2 description format is incorrect. It should be as follows:\n" + defaultAndData);
+                }
+            }
+            protected String getter(CircuitSettings object) {
+                return getAndData();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, String>(
+                this, "OR2 name and input-output pins", String.class, true, false, false) {
+            protected void setter(CircuitSettings object, String value) {
+                if (parseGate3Data(value) != null) {
+                    setOrData(value);
+                } else {
+                    DialogUtils.showError("OR2 description format is incorrect. It should be as follows:\n" + defaultOrData);
+                }
+            }
+            protected String getter(CircuitSettings object) {
+                return getOrData();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, String>(
+                this, "NAND2B name and input-output pins", String.class, true, false, false) {
+            protected void setter(CircuitSettings object, String value) {
+                if (parseGate3Data(value) != null) {
+                    setNandbData(value);
+                } else {
+                    DialogUtils.showError("NAND2B description format is incorrect. It should be as follows:\n" + defaultAndData);
+                }
+            }
+            protected String getter(CircuitSettings object) {
+                return getNandbData();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, String>(
+                this, "NOR2B-gate name and input-output pins", String.class, true, false, false) {
+            protected void setter(CircuitSettings object, String value) {
+                if (parseGate3Data(value) != null) {
+                    setNorbData(value);
+                } else {
+                    DialogUtils.showError("NOR2B description format is incorrect. It should be as follows:\n" + defaultOrData);
+                }
+            }
+            protected String getter(CircuitSettings object) {
+                return getNorbData();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, String>(
                 this, "Mutex name and request-grant pairs", String.class, true, false, false) {
             protected void setter(CircuitSettings object, String value) {
                 if (parseMutexData(value) != null) {
@@ -249,6 +343,11 @@ public class CircuitSettings implements Settings {
         setSimplifyStg(config.getBoolean(keySimplifyStg, defaultSimplifyStg));
         setGateLibrary(config.getString(keyGateLibrary, defaultGateLibrary));
         setSubstitutionLibrary(config.getString(keySubstitutionLibrary, defaultSubstitutionLibrary));
+        setBufData(config.getString(keyBufData, defaultBufData));
+        setAndData(config.getString(keyAndData, defaultAndData));
+        setOrData(config.getString(keyOrData, defaultOrData));
+        setNandbData(config.getString(keyNandbData, defaultNandbData));
+        setNorbData(config.getString(keyNorbData, defaultNorbData));
         setMutexData(config.getString(keyMutexData, defaultMutexData));
         setBusSuffix(config.getString(keyBusSuffix, defaultBusSuffix));
     }
@@ -267,6 +366,11 @@ public class CircuitSettings implements Settings {
         config.setBoolean(keySimplifyStg, getSimplifyStg());
         config.set(keyGateLibrary, getGateLibrary());
         config.set(keySubstitutionLibrary, getSubstitutionLibrary());
+        config.set(keyBufData, getBufData());
+        config.set(keyAndData, getAndData());
+        config.set(keyOrData, getOrData());
+        config.set(keyNandbData, getNandbData());
+        config.set(keyNorbData, getNorbData());
         config.set(keyMutexData, getMutexData());
         config.set(keyBusSuffix, getBusSuffix());
     }
@@ -367,6 +471,66 @@ public class CircuitSettings implements Settings {
         substitutionLibrary = value;
     }
 
+    public static String getBufData() {
+        return bufData;
+    }
+
+    public static void setBufData(String value) {
+        bufData = value;
+    }
+
+    public static Gate2 parseBufData() {
+        return parseGate2Data(getBufData());
+    }
+
+    public static String getAndData() {
+        return andData;
+    }
+
+    public static void setAndData(String value) {
+        andData = value;
+    }
+
+    public static Gate3 parseAndData() {
+        return parseGate3Data(getAndData());
+    }
+
+    public static String getOrData() {
+        return orData;
+    }
+
+    public static void setOrData(String value) {
+        orData = value;
+    }
+
+    public static Gate3 parseOrData() {
+        return parseGate3Data(getOrData());
+    }
+
+    public static String getNandbData() {
+        return nandbData;
+    }
+
+    public static void setNandbData(String value) {
+        nandbData = value;
+    }
+
+    public static Gate3 parseNandbData() {
+        return parseGate3Data(getNandbData());
+    }
+
+    public static String getNorbData() {
+        return norbData;
+    }
+
+    public static void setNorbData(String value) {
+        norbData = value;
+    }
+
+    public static Gate3 parseNorbData() {
+        return parseGate3Data(getNorbData());
+    }
+
     public static String getMutexData() {
         return mutexData;
     }
@@ -377,6 +541,39 @@ public class CircuitSettings implements Settings {
 
     public static Mutex parseMutexData() {
         return parseMutexData(getMutexData());
+    }
+
+    public static String getBusSuffix() {
+        return busSuffix;
+    }
+
+    public static void setBusSuffix(String value) {
+        busSuffix = value;
+    }
+
+    private static Gate2 parseGate2Data(String str) {
+        Gate2 result = null;
+        Matcher matcher = GATE2_DATA_PATTERN.matcher(str.replaceAll("\\s", ""));
+        if (matcher.find()) {
+            String name = matcher.group(GATE_NAME_GROUP);
+            String in = matcher.group(GATE_PIN1_GROUP);
+            String out = matcher.group(GATE_PIN2_GROUP);
+            result = new Gate2(name, in, out);
+        }
+        return result;
+    }
+
+    private static Gate3 parseGate3Data(String str) {
+        Gate3 result = null;
+        Matcher matcher = GATE3_DATA_PATTERN.matcher(str.replaceAll("\\s", ""));
+        if (matcher.find()) {
+            String name = matcher.group(GATE_NAME_GROUP);
+            String in1 = matcher.group(GATE_PIN1_GROUP);
+            String in2 = matcher.group(GATE_PIN2_GROUP);
+            String out = matcher.group(GATE_PIN3_GROUP);
+            result = new Gate3(name, in1, in2, out);
+        }
+        return result;
     }
 
     private static Mutex parseMutexData(String str) {
@@ -390,14 +587,6 @@ public class CircuitSettings implements Settings {
             result = new Mutex(matcher.group(MUTEX_NAME_GROUP), r1, g1, r2, g2);
         }
         return result;
-    }
-
-    public static String getBusSuffix() {
-        return busSuffix;
-    }
-
-    public static void setBusSuffix(String value) {
-        busSuffix = value;
     }
 
 }
