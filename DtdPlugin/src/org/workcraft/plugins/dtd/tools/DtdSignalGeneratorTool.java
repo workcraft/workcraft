@@ -8,6 +8,7 @@ import org.workcraft.dom.visual.*;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
+import org.workcraft.plugins.dtd.DtdSettings;
 import org.workcraft.plugins.dtd.Signal;
 import org.workcraft.plugins.dtd.VisualDtd;
 import org.workcraft.plugins.dtd.VisualSignal;
@@ -23,6 +24,7 @@ public class DtdSignalGeneratorTool extends NodeGeneratorTool {
                 dtd.createSignalEntryAndExit(signal);
 
                 spaceVertically(signal, dtd);
+                dtd.alignExitEventsToRightmostEvent();
 
                 return signal;
             }
@@ -34,9 +36,9 @@ public class DtdSignalGeneratorTool extends NodeGeneratorTool {
                 VisualSignal successorSignal = null;
 
                 Container container = dtd.getCurrentLevel();
-                if (container instanceof VisualPage) { //should be visualWaveform
-                    VisualPage visualWaveform = (VisualPage) container;
-                    for (VisualComponent visualComp : visualWaveform.getComponents()) {
+                if (container instanceof VisualTransformableNode) {
+                    VisualTransformableNode visualNode = (VisualTransformableNode) container;
+                    for (VisualComponent visualComp : visualNode.getComponents()) {
                         if (visualComp instanceof VisualSignal) {
                             if (visualComp == signal) continue;
                             VisualSignal visualSignal = (VisualSignal) visualComp;
@@ -55,7 +57,7 @@ public class DtdSignalGeneratorTool extends NodeGeneratorTool {
                     }
                 }
 
-                double separation = 1.0; //this should be a constant
+                double separation = DtdSettings.getVerticalSeparation();
 
                 if (predecessorSignal != null) {
                     Point2D newSignalPosition = new Point2D.Double(signal.getX(), predecessorSignal.getY() + separation);

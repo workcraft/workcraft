@@ -8,6 +8,7 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
@@ -19,9 +20,7 @@ import org.workcraft.util.Hierarchy;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
 
 @DisplayName("Digital Timing Diagram")
@@ -306,6 +305,7 @@ public class VisualDtd extends AbstractVisualModel {
         x += OFFSET_TRANSITION;
         if ((exit != null) && (x + OFFSET_TRANSITION > exit.getX())) {
             exit.setPosition(new Point2D.Double(x + OFFSET_TRANSITION, y));
+            alignExitEventsToRightmostEvent();
         }
         edge.setPosition(new Point2D.Double(x, y));
         Color color = signal.getForegroundColor();
@@ -370,6 +370,42 @@ public class VisualDtd extends AbstractVisualModel {
         }
         removeFromSelection(undeletableNodes);
         super.deleteSelection();
+    }
+
+    private Collection<VisualExitEvent> getVisualExitEventFromCurrentLevel() {
+        Collection<VisualExitEvent> result = new LinkedList<>();
+        Container container = getCurrentLevel();
+        if (container instanceof VisualTransformableNode) {
+            VisualTransformableNode visualNode = (VisualTransformableNode) container;
+            for (VisualComponent visualComp : visualNode.getComponents()) {
+                if (visualComp instanceof VisualSignal) {
+                    VisualSignal visualSignal = (VisualSignal) visualComp;
+                    result.add(visualSignal.getVisualSignalExit());
+                }
+            }
+        }
+        return result;
+    }
+
+    public void alignExitEventsToEvent(VisualExitEvent alignToEvent) {
+        for (VisualExitEvent visualExit : getVisualExitEventFromCurrentLevel()) {
+            Point2D.Double pos = new Point2D.Double(alignToEvent.getX(), visualExit.getY());
+            visualExit.setPosition(pos);
+        }
+    }
+
+    public void alignExitEventsToRightmostEvent() {
+        Collection<VisualExitEvent> visualExitEvents = getVisualExitEventFromCurrentLevel();
+        Double rightMostX = null;
+        for (VisualExitEvent visualExit : visualExitEvents) {
+            if (rightMostX == null || rightMostX < visualExit.getX()) {
+                rightMostX = visualExit.getX();
+            }
+        }
+        for (VisualExitEvent visualExit : visualExitEvents) {
+            Point2D.Double pos = new Point2D.Double(rightMostX, visualExit.getY());
+            visualExit.setPosition(pos);
+        }
     }
 
 }
