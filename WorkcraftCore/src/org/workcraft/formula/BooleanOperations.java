@@ -92,4 +92,36 @@ public class BooleanOperations {
         return worker.imply(x, y);
     }
 
+    public static BooleanFormula nanad(BooleanFormula x, BooleanFormula y) {
+        return nand(x, y, defaultWorker);
+    }
+
+    public static BooleanFormula nand(BooleanFormula x, BooleanFormula y, BooleanWorker worker) {
+        return worker.not(worker.and(x, y));
+    }
+
+    public static BooleanFormula nor(BooleanFormula x, BooleanFormula y) {
+        return nor(x, y, defaultWorker);
+    }
+
+    public static BooleanFormula nor(BooleanFormula x, BooleanFormula y, BooleanWorker worker) {
+        return worker.not(worker.or(x, y));
+    }
+
+    public static BooleanFormula nanadb(BooleanFormula x, BooleanFormula y) {
+        return nandb(x, y, defaultWorker);
+    }
+
+    public static BooleanFormula nandb(BooleanFormula x, BooleanFormula y, BooleanWorker worker) {
+        return worker.not(worker.and(worker.not(x), y));
+    }
+
+    public static BooleanFormula norb(BooleanFormula x, BooleanFormula y) {
+        return norb(x, y, defaultWorker);
+    }
+
+    public static BooleanFormula norb(BooleanFormula x, BooleanFormula y, BooleanWorker worker) {
+        return worker.not(worker.or(worker.not(x), y));
+    }
+
 }

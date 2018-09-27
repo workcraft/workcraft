@@ -53,6 +53,8 @@ public class CircuitSettings implements Settings {
     private static final String keyBufData = prefix + ".bufData";
     private static final String keyAndData = prefix + ".andData";
     private static final String keyOrData = prefix + ".orData";
+    private static final String keyNandData = prefix + ".nandData";
+    private static final String keyNorData = prefix + ".norData";
     private static final String keyNandbData = prefix + ".nandbData";
     private static final String keyNorbData = prefix + ".norbData";
     private static final String keyMutexData = prefix + ".mutexData";
@@ -73,6 +75,8 @@ public class CircuitSettings implements Settings {
     private static final String defaultBufData = "BUF (I, O)";
     private static final String defaultAndData = "AND2 (A, B, O)";
     private static final String defaultOrData = "OR2 (A, B, O)";
+    private static final String defaultNandData = "NAND2 (A, B, ON)";
+    private static final String defaultNorData = "NOR2 (A, B, ON)";
     private static final String defaultNandbData = "NAND2B (AN, B, ON)";
     private static final String defaultNorbData = "NOR2B (AN, B, ON)";
     private static final String defaultMutexData = "MUTEX ((r1, g1), (r2, g2))";
@@ -93,6 +97,8 @@ public class CircuitSettings implements Settings {
     private static String bufData = defaultBufData;
     private static String andData = defaultAndData;
     private static String orData = defaultOrData;
+    private static String nandData = defaultNandData;
+    private static String norData = defaultNorData;
     private static String nandbData = defaultNandbData;
     private static String norbData = defaultNorbData;
     private static String mutexData = defaultMutexData;
@@ -262,6 +268,34 @@ public class CircuitSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, String>(
+                this, "NAND2 name and input-output pins", String.class, true, false, false) {
+            protected void setter(CircuitSettings object, String value) {
+                if (parseGate3Data(value) != null) {
+                    setNandData(value);
+                } else {
+                    DialogUtils.showError("NAND2 description format is incorrect. It should be as follows:\n" + defaultAndData);
+                }
+            }
+            protected String getter(CircuitSettings object) {
+                return getNandData();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, String>(
+                this, "NOR2-gate name and input-output pins", String.class, true, false, false) {
+            protected void setter(CircuitSettings object, String value) {
+                if (parseGate3Data(value) != null) {
+                    setNorData(value);
+                } else {
+                    DialogUtils.showError("NOR2 description format is incorrect. It should be as follows:\n" + defaultOrData);
+                }
+            }
+            protected String getter(CircuitSettings object) {
+                return getNorData();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, String>(
                 this, "NAND2B name and input-output pins", String.class, true, false, false) {
             protected void setter(CircuitSettings object, String value) {
                 if (parseGate3Data(value) != null) {
@@ -346,6 +380,8 @@ public class CircuitSettings implements Settings {
         setBufData(config.getString(keyBufData, defaultBufData));
         setAndData(config.getString(keyAndData, defaultAndData));
         setOrData(config.getString(keyOrData, defaultOrData));
+        setNandbData(config.getString(keyNandData, defaultNandData));
+        setNorbData(config.getString(keyNorData, defaultNorData));
         setNandbData(config.getString(keyNandbData, defaultNandbData));
         setNorbData(config.getString(keyNorbData, defaultNorbData));
         setMutexData(config.getString(keyMutexData, defaultMutexData));
@@ -369,6 +405,8 @@ public class CircuitSettings implements Settings {
         config.set(keyBufData, getBufData());
         config.set(keyAndData, getAndData());
         config.set(keyOrData, getOrData());
+        config.set(keyNandData, getNandData());
+        config.set(keyNorData, getNorData());
         config.set(keyNandbData, getNandbData());
         config.set(keyNorbData, getNorbData());
         config.set(keyMutexData, getMutexData());
@@ -505,6 +543,30 @@ public class CircuitSettings implements Settings {
 
     public static Gate3 parseOrData() {
         return parseGate3Data(getOrData());
+    }
+
+    public static String getNandData() {
+        return nandData;
+    }
+
+    public static void setNandData(String value) {
+        nandData = value;
+    }
+
+    public static Gate3 parseNandData() {
+        return parseGate3Data(getNandData());
+    }
+
+    public static String getNorData() {
+        return norData;
+    }
+
+    public static void setNorData(String value) {
+        norData = value;
+    }
+
+    public static Gate3 parseNorData() {
+        return parseGate3Data(getNorData());
     }
 
     public static String getNandbData() {

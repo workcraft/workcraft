@@ -136,6 +136,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
                 break;
             }
         }
+        editor.getWorkspaceEntry().saveMemento();
         for (Contact port : circuit.getInputPorts()) {
             port.setForcedInit(!allForceInit);
         }
@@ -153,6 +154,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
                 break;
             }
         }
+        editor.getWorkspaceEntry().saveMemento();
         for (Contact contact : loopContacts) {
             contact.setForcedInit(!allForceInit);
         }
@@ -171,6 +173,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
                 allForceInit &= contact.getForcedInit();
             }
         }
+        editor.getWorkspaceEntry().saveMemento();
         for (Contact contact : celementContacts) {
             contact.setForcedInit(!allForceInit);
         }

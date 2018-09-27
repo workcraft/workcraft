@@ -5,12 +5,10 @@ import org.workcraft.dom.visual.MixUtils;
 import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.BooleanOperations;
-import org.workcraft.formula.One;
-import org.workcraft.formula.Zero;
+import org.workcraft.formula.*;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.Identifier;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -23,6 +21,18 @@ public class ResetUtils {
     public static void insertReset(VisualCircuit circuit, String portName, boolean activeLow) {
         VisualFunctionContact resetPort = circuit.getOrCreateContact(null, portName, Contact.IOType.INPUT);
         for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {
+            VisualFunctionContact gaterOutput = component.getMainVisualOutput();
+            if ((gaterOutput != null) && gaterOutput.getForcedInit()) {
+                if (component.isBuffer()) {
+                    resetBuffer(circuit, component, resetPort, activeLow);
+                    continue;
+                }
+                if (component.isInverter()) {
+                    resetInverter(circuit, component, resetPort, activeLow);
+                    continue;
+                }
+            }
+
             boolean isSimpleGate = component.isGate() && (component.getVisualInputs().size() < 3);
             Collection<VisualFunctionContact> forceInitGateContacts = new HashSet<>();
             Collection<VisualFunctionContact> forceInitFuncContacts = new HashSet<>();
@@ -54,6 +64,92 @@ public class ResetUtils {
         }
         forceInitResetCircuit(circuit, resetPort, activeLow);
         positionResetPort(circuit, resetPort);
+    }
+
+    private static void resetBuffer(VisualCircuit circuit, VisualFunctionComponent component,
+            VisualFunctionContact resetPort, boolean activeLow) {
+
+        VisualFunctionContact outputContact = component.getFirstVisualOutput();
+        boolean initToOne = outputContact.getInitToOne();
+        Gate3 gate;
+        if (activeLow) {
+            gate = initToOne ? CircuitSettings.parseNandbData() : CircuitSettings.parseAndData();
+        } else {
+            gate = initToOne ? CircuitSettings.parseOrData() : CircuitSettings.parseNorbData();
+        }
+        VisualFunctionContact inputContact = component.getFirstVisualInput();
+        // Temporary rename gate output, so there is no name clash on renaming gate input
+        circuit.setMathName(outputContact, Identifier.createInternal(gate.out));
+        circuit.setMathName(inputContact, gate.in1);
+        circuit.setMathName(outputContact, gate.out);
+        VisualFunctionContact resetContact = circuit.getOrCreateContact(component, gate.in2, Contact.IOType.INPUT);
+        try {
+            circuit.connect(resetPort, resetContact);
+        } catch (InvalidConnectionException e) {
+            throw new RuntimeException(e);
+        }
+
+        Contact firstVar = inputContact.getReferencedContact();
+        Contact secondVar = resetContact.getReferencedContact();
+        BooleanFormula func;
+        if (activeLow) {
+            if (initToOne) {
+                func = BooleanOperations.nandb(firstVar, secondVar, new CleverBooleanWorker());
+            } else {
+                func = BooleanOperations.and(firstVar, secondVar, new CleverBooleanWorker());
+            }
+        } else {
+            if (initToOne) {
+                func = BooleanOperations.or(firstVar, secondVar, new CleverBooleanWorker());
+            } else {
+                func = BooleanOperations.norb(firstVar, secondVar, new CleverBooleanWorker());
+            }
+        }
+        outputContact.setSetFunction(func);
+        component.setLabel(gate.name);
+    }
+
+    private static void resetInverter(VisualCircuit circuit, VisualFunctionComponent component,
+            VisualFunctionContact resetPort, boolean activeLow) {
+
+        VisualFunctionContact outputContact = component.getFirstVisualOutput();
+        boolean initToOne = outputContact.getInitToOne();
+        Gate3 gate;
+        if (activeLow) {
+            gate = initToOne ? CircuitSettings.parseNandData() : CircuitSettings.parseNorbData();
+        } else {
+            gate = initToOne ? CircuitSettings.parseNandbData() : CircuitSettings.parseNorData();
+        }
+        VisualFunctionContact inputContact = component.getFirstVisualInput();
+        // Temporary rename gate output, so there is no name clash on renaming gate input
+        circuit.setMathName(outputContact, Identifier.createInternal(gate.out));
+        circuit.setMathName(inputContact, gate.in2);
+        circuit.setMathName(outputContact, gate.out);
+        VisualFunctionContact resetContact = circuit.getOrCreateContact(component, gate.in1, Contact.IOType.INPUT);
+        try {
+            circuit.connect(resetPort, resetContact);
+        } catch (InvalidConnectionException e) {
+            throw new RuntimeException(e);
+        }
+
+        Contact firstVar = resetContact.getReferencedContact();
+        Contact secondVar = inputContact.getReferencedContact();
+        BooleanFormula func;
+        if (activeLow) {
+            if (initToOne) {
+                func = BooleanOperations.nand(firstVar, secondVar, new CleverBooleanWorker());
+            } else {
+                func = BooleanOperations.norb(firstVar, secondVar, new CleverBooleanWorker());
+            }
+        } else {
+            if (initToOne) {
+                func = BooleanOperations.nandb(firstVar, secondVar, new CleverBooleanWorker());
+            } else {
+                func = BooleanOperations.nor(firstVar, secondVar, new CleverBooleanWorker());
+            }
+        }
+        outputContact.setSetFunction(func);
+        component.setLabel(gate.name);
     }
 
     private static void insertResetFunction(VisualFunctionContact contact, VisualContact resetContact, boolean activeLow) {
