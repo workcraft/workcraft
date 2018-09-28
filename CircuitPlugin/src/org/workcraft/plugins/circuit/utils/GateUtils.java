@@ -189,9 +189,7 @@ public class GateUtils {
 
         Contact firstVar = firstInputContact.getReferencedContact();
         Contact secondVar = secondInputContact.getReferencedContact();
-        BooleanWorker worker = new CleverBooleanWorker();
-        BooleanFormula setFunction = BooleanOperations.not(BooleanOperations.and(BooleanOperations.not(firstVar), secondVar, worker), worker);
-        outputContact.setSetFunction(setFunction);
+        outputContact.setSetFunction(BooleanOperations.nandb(firstVar, secondVar, new CleverBooleanWorker()));
 
         return component;
     }
@@ -212,9 +210,7 @@ public class GateUtils {
 
         Contact firstVar = firstInputContact.getReferencedContact();
         Contact secondVar = secondInputContact.getReferencedContact();
-        BooleanWorker worker = new CleverBooleanWorker();
-        BooleanFormula setFunction = BooleanOperations.not(BooleanOperations.or(BooleanOperations.not(firstVar), secondVar, worker), worker);
-        outputContact.setSetFunction(setFunction);
+        outputContact.setSetFunction(BooleanOperations.norb(firstVar, secondVar, new CleverBooleanWorker()));
 
         return component;
     }

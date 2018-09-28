@@ -2,6 +2,7 @@ checkCircuitCombined(work) - combined check of the Circuit 'work' for conformati
 checkCircuitConformation(work) - check the Circuit 'work' for conformation to environment
 checkCircuitDeadlockFreeness(work) - check the Circuit 'work' for deadlock freeness
 checkCircuitOutputPersistency(work) - check the Circuit 'work' for output persistency
+checkCircuitReset(work) - check if the Circuit 'work' is correctly initialised via input ports
 checkCircuitStrictImplementation(work) - check the Circuit 'work' for strict implementation of its signals according to the environment
 checkDfsCombined(work) -  combined check of the DFS 'work' for deadlock freeness and output persistency
 checkDfsDeadlockFreeness(work) - check the DFS 'work' for deadlock freeness

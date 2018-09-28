@@ -3,14 +3,14 @@ package org.workcraft.plugins.circuit.utils;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.MixUtils;
 import org.workcraft.dom.visual.Touchable;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.BooleanOperations;
-import org.workcraft.formula.One;
-import org.workcraft.formula.Zero;
+import org.workcraft.formula.*;
 import org.workcraft.plugins.circuit.*;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.Identifier;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -20,9 +20,152 @@ import java.util.HashSet;
 
 public class ResetUtils {
 
+    public static HashSet<Contact> setForceInitInputPorts(Circuit circuit, boolean value) {
+        HashSet<Contact> result = new HashSet<>();
+        for (Contact port : circuit.getInputPorts()) {
+            if (port.getForcedInit() != value) {
+                port.setForcedInit(value);
+                result.add(port);
+            }
+        }
+        return result;
+    }
+
+    public static HashSet<Contact> toggleForceInitInputs(Circuit circuit) {
+        boolean allForceInit = true;
+        for (Contact port : circuit.getInputPorts()) {
+            if (!port.getForcedInit()) {
+                allForceInit = false;
+                break;
+            }
+        }
+        return setForceInitInputPorts(circuit, !allForceInit);
+    }
+
+    public static HashSet<Contact> setForceInitSelfLoops(Circuit circuit, boolean value) {
+        HashSet<Contact> result = new HashSet<>();
+        for (Contact contact : getSelfLoopContacts(circuit)) {
+            if (contact.getForcedInit() != value) {
+                contact.setForcedInit(value);
+                result.add(contact);
+            }
+        }
+        return result;
+    }
+
+    public static HashSet<Contact> toggleForceInitLoops(Circuit circuit) {
+        boolean allForceInit = true;
+        for (Contact contact : getSelfLoopContacts(circuit)) {
+            if (!contact.getForcedInit()) {
+                allForceInit = false;
+                break;
+            }
+        }
+        return setForceInitSelfLoops(circuit, !allForceInit);
+    }
+
+    private static HashSet<Contact> getSelfLoopContacts(Circuit circuit) {
+        HashSet<Contact> result = new HashSet<>();
+        for (CircuitComponent component : circuit.getFunctionComponents()) {
+            if ((component instanceof FunctionComponent) && ((FunctionComponent) component).getIsZeroDelay()) continue;
+            for (Contact outputContact : component.getOutputs()) {
+                for (CircuitComponent succComponent : StructureUtilsKt.getPostsetComponents(circuit, outputContact, true)) {
+                    if (component != succComponent) continue;
+                    result.add(outputContact);
+                }
+            }
+        }
+        return result;
+    }
+
+    public static HashSet<Contact> setForceInitSequentialGates(Circuit circuit, boolean value) {
+        HashSet<Contact> result = new HashSet<>();
+        for (Contact contact : getSequentialGateContacts(circuit)) {
+            if (contact.getForcedInit() != value) {
+                contact.setForcedInit(value);
+                result.add(contact);
+            }
+        }
+        return result;
+    }
+
+    public static HashSet<Contact> toggleForceInitSequentialGates(Circuit circuit) {
+        boolean allForceInit = true;
+        for (FunctionContact contact : getSequentialGateContacts(circuit)) {
+            allForceInit &= contact.getForcedInit();
+        }
+        return setForceInitSequentialGates(circuit, !allForceInit);
+    }
+
+    private static HashSet<FunctionContact> getSequentialGateContacts(Circuit circuit) {
+        HashSet<FunctionContact> result = new HashSet<>();
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            if (component.isGate()) {
+                for (FunctionContact contact : component.getFunctionOutputs()) {
+                    if ((contact.getSetFunction() == null) || (contact.getResetFunction() == null)) continue;
+                    result.add(contact);
+                }
+            }
+        }
+        return result;
+    }
+
+    public static HashSet<FunctionContact> clearRedundantForceInitPins(Circuit circuit) {
+        HashSet<FunctionContact> userForceInitContacts = new HashSet<>();
+        for (FunctionContact contact : circuit.getFunctionContacts()) {
+            if (contact.isPin() && contact.isDriver() && contact.getForcedInit()) {
+                userForceInitContacts.add(contact);
+            }
+        }
+        return clearRedundantForceInitPins(circuit, userForceInitContacts);
+    }
+
+    public static HashSet<FunctionContact> completeForceInitPins(Circuit circuit) {
+        HashSet<FunctionContact> addedForceInitContacts = new HashSet<>();
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            if (component.getIsZeroDelay()) continue;
+            for (FunctionContact contact : component.getFunctionContacts()) {
+                if (contact.isPin() && contact.isDriver() && !contact.getForcedInit()) {
+                    contact.setForcedInit(true);
+                    addedForceInitContacts.add(contact);
+                }
+            }
+        }
+        return clearRedundantForceInitPins(circuit, addedForceInitContacts);
+    }
+
+    private static HashSet<FunctionContact> clearRedundantForceInitPins(Circuit circuit, HashSet<FunctionContact> contacts) {
+        HashSet<FunctionContact> result = new HashSet<>();
+        for (FunctionContact contact : contacts) {
+            contact.setForcedInit(false);
+            InitialisationState initState = new InitialisationState(circuit);
+            if (initState.isCorrectlyInitialised(contact)) {
+                result.add(contact);
+            } else {
+                contact.setForcedInit(true);
+            }
+        }
+        return result;
+    }
+
     public static void insertReset(VisualCircuit circuit, String portName, boolean activeLow) {
-        VisualFunctionContact resetPort = circuit.getOrCreateContact(null, portName, Contact.IOType.INPUT);
+        VisualFunctionContact resetPort = getOrCreateResetPort(circuit, portName);
+        if (resetPort == null) {
+            return;
+        }
         for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {
+            VisualFunctionContact gaterOutput = component.getMainVisualOutput();
+            if ((gaterOutput != null) && gaterOutput.getForcedInit()) {
+                if (component.isBuffer()) {
+                    resetBuffer(circuit, component, resetPort, activeLow);
+                    continue;
+                }
+                if (component.isInverter()) {
+                    resetInverter(circuit, component, resetPort, activeLow);
+                    continue;
+                }
+            }
+
             boolean isSimpleGate = component.isGate() && (component.getVisualInputs().size() < 3);
             Collection<VisualFunctionContact> forceInitGateContacts = new HashSet<>();
             Collection<VisualFunctionContact> forceInitFuncContacts = new HashSet<>();
@@ -54,6 +197,115 @@ public class ResetUtils {
         }
         forceInitResetCircuit(circuit, resetPort, activeLow);
         positionResetPort(circuit, resetPort);
+    }
+
+    private static VisualFunctionContact getOrCreateResetPort(VisualCircuit circuit, String portName) {
+        VisualFunctionContact result = null;
+        VisualComponent component = circuit.getVisualComponentByMathReference(portName, VisualComponent.class);
+        if (component == null) {
+            result = circuit.getOrCreateContact(null, portName, Contact.IOType.INPUT);
+            if (result == null) {
+                DialogUtils.showError("Cannot create reset port '" + portName + "'.");
+                return null;
+            }
+        } else if (component instanceof VisualFunctionContact) {
+            result = (VisualFunctionContact) component;
+            if (result.isOutput()) {
+                DialogUtils.showError("Cannot reuse existing output port '" + portName + "' for circuit reset.");
+                return null;
+            }
+            DialogUtils.showWarning("Reusing existing input port '" + portName + "' for circuit reset.");
+        } else {
+            DialogUtils.showError("Cannot insert reset port '" + portName + "' because a component with the same name already exists.");
+            return null;
+        }
+        return result;
+    }
+
+    private static void resetBuffer(VisualCircuit circuit, VisualFunctionComponent component,
+            VisualFunctionContact resetPort, boolean activeLow) {
+
+        VisualFunctionContact outputContact = component.getFirstVisualOutput();
+        boolean initToOne = outputContact.getInitToOne();
+        Gate3 gate;
+        if (activeLow) {
+            gate = initToOne ? CircuitSettings.parseNandbData() : CircuitSettings.parseAndData();
+        } else {
+            gate = initToOne ? CircuitSettings.parseOrData() : CircuitSettings.parseNorbData();
+        }
+        VisualFunctionContact inputContact = component.getFirstVisualInput();
+        // Temporary rename gate output, so there is no name clash on renaming gate input
+        circuit.setMathName(outputContact, Identifier.createInternal(gate.out));
+        circuit.setMathName(inputContact, gate.in1);
+        circuit.setMathName(outputContact, gate.out);
+        VisualFunctionContact resetContact = circuit.getOrCreateContact(component, gate.in2, Contact.IOType.INPUT);
+        try {
+            circuit.connect(resetPort, resetContact);
+        } catch (InvalidConnectionException e) {
+            throw new RuntimeException(e);
+        }
+
+        Contact firstVar = inputContact.getReferencedContact();
+        Contact secondVar = resetContact.getReferencedContact();
+        BooleanFormula func;
+        if (activeLow) {
+            if (initToOne) {
+                func = BooleanOperations.nandb(firstVar, secondVar, new CleverBooleanWorker());
+            } else {
+                func = BooleanOperations.and(firstVar, secondVar, new CleverBooleanWorker());
+            }
+        } else {
+            if (initToOne) {
+                func = BooleanOperations.or(firstVar, secondVar, new CleverBooleanWorker());
+            } else {
+                func = BooleanOperations.norb(firstVar, secondVar, new CleverBooleanWorker());
+            }
+        }
+        outputContact.setSetFunction(func);
+        component.setLabel(gate.name);
+    }
+
+    private static void resetInverter(VisualCircuit circuit, VisualFunctionComponent component,
+            VisualFunctionContact resetPort, boolean activeLow) {
+
+        VisualFunctionContact outputContact = component.getFirstVisualOutput();
+        boolean initToOne = outputContact.getInitToOne();
+        Gate3 gate;
+        if (activeLow) {
+            gate = initToOne ? CircuitSettings.parseNandData() : CircuitSettings.parseNorbData();
+        } else {
+            gate = initToOne ? CircuitSettings.parseNandbData() : CircuitSettings.parseNorData();
+        }
+        VisualFunctionContact inputContact = component.getFirstVisualInput();
+        // Temporary rename gate output, so there is no name clash on renaming gate input
+        circuit.setMathName(outputContact, Identifier.createInternal(gate.out));
+        circuit.setMathName(inputContact, gate.in2);
+        circuit.setMathName(outputContact, gate.out);
+        VisualFunctionContact resetContact = circuit.getOrCreateContact(component, gate.in1, Contact.IOType.INPUT);
+        try {
+            circuit.connect(resetPort, resetContact);
+        } catch (InvalidConnectionException e) {
+            throw new RuntimeException(e);
+        }
+
+        Contact firstVar = resetContact.getReferencedContact();
+        Contact secondVar = inputContact.getReferencedContact();
+        BooleanFormula func;
+        if (activeLow) {
+            if (initToOne) {
+                func = BooleanOperations.nand(firstVar, secondVar, new CleverBooleanWorker());
+            } else {
+                func = BooleanOperations.norb(firstVar, secondVar, new CleverBooleanWorker());
+            }
+        } else {
+            if (initToOne) {
+                func = BooleanOperations.nandb(firstVar, secondVar, new CleverBooleanWorker());
+            } else {
+                func = BooleanOperations.nor(firstVar, secondVar, new CleverBooleanWorker());
+            }
+        }
+        outputContact.setSetFunction(func);
+        component.setLabel(gate.name);
     }
 
     private static void insertResetFunction(VisualFunctionContact contact, VisualContact resetContact, boolean activeLow) {

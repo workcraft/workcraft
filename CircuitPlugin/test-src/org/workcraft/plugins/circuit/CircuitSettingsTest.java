@@ -65,6 +65,12 @@ public class CircuitSettingsTest {
         Assert.assertEquals(Config.toString(CircuitSettings.getOrData()),
                 framework.getConfigVar(prefix + ".orData", false));
 
+        Assert.assertEquals(Config.toString(CircuitSettings.getNandData()),
+                framework.getConfigVar(prefix + ".nandData", false));
+
+        Assert.assertEquals(Config.toString(CircuitSettings.getNorData()),
+                framework.getConfigVar(prefix + ".norData", false));
+
         Assert.assertEquals(Config.toString(CircuitSettings.getNandbData()),
                 framework.getConfigVar(prefix + ".nandbData", false));
 

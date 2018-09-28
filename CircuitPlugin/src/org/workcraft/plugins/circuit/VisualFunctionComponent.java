@@ -150,6 +150,45 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         return null;
     }
 
+    @Override
+    public VisualFunctionContact getMainVisualOutput() {
+        VisualFunctionContact result = null;
+        for (VisualFunctionContact contact: getVisualFunctionContacts()) {
+            if (contact.isOutput()) {
+                if (result == null) {
+                    result = contact;
+                } else {
+                    return null;
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public VisualFunctionContact getFirstVisualInput() {
+        VisualFunctionContact result = null;
+        for (VisualFunctionContact contact: getVisualFunctionContacts()) {
+            if (contact.isInput()) {
+                result = contact;
+                break;
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public VisualFunctionContact getFirstVisualOutput() {
+        VisualFunctionContact result = null;
+        for (VisualFunctionContact contact: getVisualFunctionContacts()) {
+            if (contact.isOutput()) {
+                result = contact;
+                break;
+            }
+        }
+        return result;
+    }
+
     private ComponentRenderingResult getRenderingResult() {
         if (groupImpl == null) return null;
         if (renderingResult != null) {
