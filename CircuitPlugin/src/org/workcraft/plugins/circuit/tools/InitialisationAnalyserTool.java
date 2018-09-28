@@ -161,18 +161,18 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
     private void insertReset(final GraphEditor editor) {
         Circuit circuit = (Circuit) editor.getModel().getMathModel();
-        HashSet<String> r = new HashSet<>();
+        HashSet<String> incorrectlyInitialisedComponentRefs = new HashSet<>();
         for (FunctionContact contact : circuit.getFunctionContacts()) {
             if (contact.isPin() && contact.isDriver()) {
                 if (!initState.isCorrectlyInitialised(contact)) {
                     String ref = circuit.getNodeReference(contact);
-                    r.add(ref);
+                    incorrectlyInitialisedComponentRefs.add(ref);
                 }
             }
         }
-        if (!r.isEmpty()) {
+        if (!incorrectlyInitialisedComponentRefs.isEmpty()) {
             String msg = "All gates must be correctly initialised before inserting reset.\n" +
-                    LogUtils.getTextWithRefs("Problematic signal", r);
+                    LogUtils.getTextWithRefs("Problematic signal", incorrectlyInitialisedComponentRefs);
             DialogUtils.showError(msg);
         } else {
             Object[] options1 = {"Insert active-low reset", "Insert active-high reset", "Cancel"};

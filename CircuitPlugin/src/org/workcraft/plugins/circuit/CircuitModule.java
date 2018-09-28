@@ -82,6 +82,9 @@ public class CircuitModule implements Module {
         ScriptableCommandUtils.register(CircuitStrictImplementationVerificationCommand.class, "checkCircuitStrictImplementation",
                 "check the Circuit 'work' for strict implementation of its signals according to the environment");
 
+        pm.registerCommand(CircuitPropertyVerificationCommand.class);
+        pm.registerCommand(CircuitAssertionVerificationCommand.class);
+
         ScriptableCommandUtils.register(TagForceInitInputPortsCommand.class, "resetCircuitTagForceInitInputPorts",
                 "tag force init for all inputs in the Circuit 'work'");
         ScriptableCommandUtils.register(TagForceInitSelfLoopsCommand.class, "resetCircuitTagForceInitSelfLoops",
@@ -106,8 +109,8 @@ public class CircuitModule implements Module {
         ScriptableCommandUtils.register(CircuitResetActiveHighCommand.class, "resetCircuitInsertActiveHigh",
                 "insert active-high reset into the Circuit 'work'");
 
-        pm.registerCommand(CircuitPropertyVerificationCommand.class);
-        pm.registerCommand(CircuitAssertionVerificationCommand.class);
+        ScriptableCommandUtils.register(CircuitResetVerificationCommand.class, "checkCircuitReset",
+                "check if the Circuit 'work' is correctly initialised via input ports");
     }
 
     private void initCompatibilityManager() {
