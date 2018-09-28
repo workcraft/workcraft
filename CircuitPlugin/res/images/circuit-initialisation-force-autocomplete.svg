@@ -39,9 +39,9 @@
      inkscape:window-height="1176"
      id="namedview7"
      showgrid="true"
-     inkscape:zoom="6.8989414"
-     inkscape:cx="44.648654"
-     inkscape:cy="54.366879"
+     inkscape:zoom="5.0450266"
+     inkscape:cx="61.844519"
+     inkscape:cy="85.772231"
      inkscape:window-x="0"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
@@ -64,7 +64,7 @@
     </rdf:RDF>
   </metadata>
   <path
-     style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:5.14346409;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
+     style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
      d="m 10,24 28,0"
      id="path8065"
      inkscape:path-effect="#path-effect8067"
@@ -72,7 +72,7 @@
      inkscape:connector-curvature="0"
      sodipodi:nodetypes="cc" />
   <path
-     style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:5.14346409;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      d="m 24,10 0,28"
      id="path8065-6"
      inkscape:path-effect="#path-effect8067-3"
