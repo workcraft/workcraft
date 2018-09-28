@@ -82,6 +82,30 @@ public class CircuitModule implements Module {
         ScriptableCommandUtils.register(CircuitStrictImplementationVerificationCommand.class, "checkCircuitStrictImplementation",
                 "check the Circuit 'work' for strict implementation of its signals according to the environment");
 
+        ScriptableCommandUtils.register(TagForceInitInputPortsCommand.class, "resetCircuitTagForceInitInputPorts",
+                "tag force init for all inputs in the Circuit 'work'");
+        ScriptableCommandUtils.register(TagForceInitSelfLoopsCommand.class, "resetCircuitTagForceInitSelfLoops",
+                "tag force init for all self-loops in the Circuit 'work'");
+        ScriptableCommandUtils.register(TagForceInitSequentialGatesCommand.class, "resetCircuitTagForceInitSequentialGates",
+                "tag force init for all sequential gates in the Circuit 'work'");
+
+        ScriptableCommandUtils.register(UntagForceInitInputPortsCommand.class, "resetCircuitUntagForceInitInputPorts",
+                "untag force init for all inputs in the Circuit 'work'");
+        ScriptableCommandUtils.register(UntagForceInitSelfLoopsCommand.class, "resetCircuitUntagForceInitSelfLoops",
+                "untag force init for all self-loops in the Circuit 'work'");
+        ScriptableCommandUtils.register(UntagForceInitSequentialGatesCommand.class, "resetCircuitUntagForceInitSequentialGates",
+                "untag force init for all sequential gates in the Circuit 'work'");
+
+        ScriptableCommandUtils.register(ClearRedundantForceInitPinsCommand.class, "resetCircuitClearRedundantForceInitPins",
+                "clear redundant force init from pins of the Circuit 'work'");
+        ScriptableCommandUtils.register(CompleteForceInitPinsCommand.class, "resetCircuitCompleteForceInitPins",
+                "complete initialisation by adding force init to pins of the Circuit 'work'");
+
+        ScriptableCommandUtils.register(CircuitResetActiveLowCommand.class, "resetCircuitInsertActiveLow",
+                "insert active-low reset into the Circuit 'work'");
+        ScriptableCommandUtils.register(CircuitResetActiveHighCommand.class, "resetCircuitInsertActiveHigh",
+                "insert active-high reset into the Circuit 'work'");
+
         pm.registerCommand(CircuitPropertyVerificationCommand.class);
         pm.registerCommand(CircuitAssertionVerificationCommand.class);
     }

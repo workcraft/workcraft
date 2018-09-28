@@ -20,6 +20,134 @@ import java.util.HashSet;
 
 public class ResetUtils {
 
+    public static HashSet<Contact> setForceInitInputPorts(Circuit circuit, boolean value) {
+        HashSet<Contact> result = new HashSet<>();
+        for (Contact port : circuit.getInputPorts()) {
+            if (port.getForcedInit() != value) {
+                port.setForcedInit(value);
+                result.add(port);
+            }
+        }
+        return result;
+    }
+
+    public static HashSet<Contact> toggleForceInitInputs(Circuit circuit) {
+        boolean allForceInit = true;
+        for (Contact port : circuit.getInputPorts()) {
+            if (!port.getForcedInit()) {
+                allForceInit = false;
+                break;
+            }
+        }
+        return setForceInitInputPorts(circuit, !allForceInit);
+    }
+
+    public static HashSet<Contact> setForceInitSelfLoops(Circuit circuit, boolean value) {
+        HashSet<Contact> result = new HashSet<>();
+        for (Contact contact : getSelfLoopContacts(circuit)) {
+            if (contact.getForcedInit() != value) {
+                contact.setForcedInit(value);
+                result.add(contact);
+            }
+        }
+        return result;
+    }
+
+    public static HashSet<Contact> toggleForceInitLoops(Circuit circuit) {
+        boolean allForceInit = true;
+        for (Contact contact : getSelfLoopContacts(circuit)) {
+            if (!contact.getForcedInit()) {
+                allForceInit = false;
+                break;
+            }
+        }
+        return setForceInitSelfLoops(circuit, !allForceInit);
+    }
+
+    private static HashSet<Contact> getSelfLoopContacts(Circuit circuit) {
+        HashSet<Contact> result = new HashSet<>();
+        for (CircuitComponent component : circuit.getFunctionComponents()) {
+            if ((component instanceof FunctionComponent) && ((FunctionComponent) component).getIsZeroDelay()) continue;
+            for (Contact outputContact : component.getOutputs()) {
+                for (CircuitComponent succComponent : StructureUtilsKt.getPostsetComponents(circuit, outputContact, true)) {
+                    if (component != succComponent) continue;
+                    result.add(outputContact);
+                }
+            }
+        }
+        return result;
+    }
+
+    public static HashSet<Contact> setForceInitSequentialGates(Circuit circuit, boolean value) {
+        HashSet<Contact> result = new HashSet<>();
+        for (Contact contact : getSequentialGateContacts(circuit)) {
+            if (contact.getForcedInit() != value) {
+                contact.setForcedInit(value);
+                result.add(contact);
+            }
+        }
+        return result;
+    }
+
+    public static HashSet<Contact> toggleForceInitSequentialGates(Circuit circuit) {
+        boolean allForceInit = true;
+        for (FunctionContact contact : getSequentialGateContacts(circuit)) {
+            allForceInit &= contact.getForcedInit();
+        }
+        return setForceInitSequentialGates(circuit, !allForceInit);
+    }
+
+    private static HashSet<FunctionContact> getSequentialGateContacts(Circuit circuit) {
+        HashSet<FunctionContact> result = new HashSet<>();
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            if (component.isGate()) {
+                for (FunctionContact contact : component.getFunctionOutputs()) {
+                    if ((contact.getSetFunction() == null) || (contact.getResetFunction() == null)) continue;
+                    result.add(contact);
+                }
+            }
+        }
+        return result;
+    }
+
+    public static HashSet<FunctionContact> clearRedundantForceInitPins(Circuit circuit) {
+        HashSet<FunctionContact> userForceInitContacts = new HashSet<>();
+        for (FunctionContact contact : circuit.getFunctionContacts()) {
+            if (contact.isPin() && contact.isDriver() && contact.getForcedInit()) {
+                userForceInitContacts.add(contact);
+            }
+        }
+        return clearRedundantForceInitPins(circuit, userForceInitContacts);
+    }
+
+    public static HashSet<FunctionContact> completeForceInitPins(Circuit circuit) {
+        HashSet<FunctionContact> addedForceInitContacts = new HashSet<>();
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            if (component.getIsZeroDelay()) continue;
+            for (FunctionContact contact : component.getFunctionContacts()) {
+                if (contact.isPin() && contact.isDriver() && !contact.getForcedInit()) {
+                    contact.setForcedInit(true);
+                    addedForceInitContacts.add(contact);
+                }
+            }
+        }
+        return clearRedundantForceInitPins(circuit, addedForceInitContacts);
+    }
+
+    private static HashSet<FunctionContact> clearRedundantForceInitPins(Circuit circuit, HashSet<FunctionContact> contacts) {
+        HashSet<FunctionContact> result = new HashSet<>();
+        for (FunctionContact contact : contacts) {
+            contact.setForcedInit(false);
+            InitialisationState initState = new InitialisationState(circuit);
+            if (initState.isCorrectlyInitialised(contact)) {
+                result.add(contact);
+            } else {
+                contact.setForcedInit(true);
+            }
+        }
+        return result;
+    }
+
     public static void insertReset(VisualCircuit circuit, String portName, boolean activeLow) {
         VisualFunctionContact resetPort = getOrCreateResetPort(circuit, portName);
         if (resetPort == null) {
@@ -76,6 +204,10 @@ public class ResetUtils {
         VisualComponent component = circuit.getVisualComponentByMathReference(portName, VisualComponent.class);
         if (component == null) {
             result = circuit.getOrCreateContact(null, portName, Contact.IOType.INPUT);
+            if (result == null) {
+                DialogUtils.showError("Cannot create reset port '" + portName + "'.");
+                return null;
+            }
         } else if (component instanceof VisualFunctionContact) {
             result = (VisualFunctionContact) component;
             if (result.isOutput()) {

@@ -59,6 +59,7 @@ public class CircuitSettings implements Settings {
     private static final String keyNorbData = prefix + ".norbData";
     private static final String keyMutexData = prefix + ".mutexData";
     private static final String keyBusSuffix = prefix + ".busSuffix";
+    private static final String keyResetName = prefix + ".resetName";
 
     private static final boolean defaultShowContacts = false;
     private static final boolean defaultShowZeroDelayNames = false;
@@ -81,6 +82,7 @@ public class CircuitSettings implements Settings {
     private static final String defaultNorbData = "NOR2B (AN, B, ON)";
     private static final String defaultMutexData = "MUTEX ((r1, g1), (r2, g2))";
     private static final String defaultBusSuffix = "__$";
+    private static final String defaultResetName = "reset";
 
     private static boolean showContacts = defaultShowContacts;
     private static boolean showZeroDelayNames = defaultShowZeroDelayNames;
@@ -103,6 +105,7 @@ public class CircuitSettings implements Settings {
     private static String norbData = defaultNorbData;
     private static String mutexData = defaultMutexData;
     private static String busSuffix = defaultBusSuffix;
+    private static String resetName = defaultResetName;
 
     public CircuitSettings() {
         properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
@@ -346,6 +349,16 @@ public class CircuitSettings implements Settings {
                 return getBusSuffix();
             }
         });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, String>(
+                this, "Reset port name", String.class, true, false, false) {
+            protected void setter(CircuitSettings object, String value) {
+                setResetName(value);
+            }
+            protected String getter(CircuitSettings object) {
+                return getResetName();
+            }
+        });
     }
 
     @Override
@@ -386,6 +399,7 @@ public class CircuitSettings implements Settings {
         setNorbData(config.getString(keyNorbData, defaultNorbData));
         setMutexData(config.getString(keyMutexData, defaultMutexData));
         setBusSuffix(config.getString(keyBusSuffix, defaultBusSuffix));
+        setResetName(config.getString(keyResetName, defaultResetName));
     }
 
     @Override
@@ -411,6 +425,7 @@ public class CircuitSettings implements Settings {
         config.set(keyNorbData, getNorbData());
         config.set(keyMutexData, getMutexData());
         config.set(keyBusSuffix, getBusSuffix());
+        config.set(keyResetName, getResetName());
     }
 
     public static boolean getShowContacts() {
@@ -611,6 +626,14 @@ public class CircuitSettings implements Settings {
 
     public static void setBusSuffix(String value) {
         busSuffix = value;
+    }
+
+    public static String getResetName() {
+        return resetName;
+    }
+
+    public static void setResetName(String value) {
+        resetName = value;
     }
 
     private static Gate2 parseGate2Data(String str) {
