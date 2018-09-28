@@ -17,6 +17,7 @@ import org.workcraft.plugins.dtd.tools.DtdConnectionTool;
 import org.workcraft.plugins.dtd.tools.DtdSelectionTool;
 import org.workcraft.plugins.dtd.tools.DtdSignalGeneratorTool;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.Pair;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -85,6 +86,29 @@ public class VisualDtd extends AbstractVisualModel {
         setGraphEditorTools(tools);
     }
 
+    private boolean isTransitionReachableFromTransition(VisualTransitionEvent fromTransition, VisualTransitionEvent toTransition) {
+        Set<VisualTransitionEvent> visited = new HashSet<>();
+        Queue<VisualTransitionEvent> toVisit = new LinkedList<>();
+        visited.add(fromTransition);
+        toVisit.add(fromTransition);
+        while (!toVisit.isEmpty()) {
+            VisualTransitionEvent transitionEvent = toVisit.poll();
+            for (Node node : getPostset(transitionEvent)) {
+                if (node instanceof VisualTransitionEvent) {
+                    VisualTransitionEvent successorEvent = (VisualTransitionEvent) node;
+                    if (successorEvent == toTransition) {
+                        return true;
+                    }
+                    if (!visited.contains(successorEvent)) {
+                        visited.add(successorEvent);
+                        toVisit.add(successorEvent);
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     @Override
     public void validateConnection(Node first, Node second) throws InvalidConnectionException {
         if (first == second) {
@@ -98,8 +122,8 @@ public class VisualDtd extends AbstractVisualModel {
         if ((first instanceof VisualTransitionEvent) && (second instanceof VisualTransitionEvent)) {
             VisualTransitionEvent firstTransition = (VisualTransitionEvent) first;
             VisualTransitionEvent secondTransition = (VisualTransitionEvent) second;
-            if (firstTransition.getX() > secondTransition.getX()) {
-                throw new InvalidConnectionException("Invalid order of transitions.");
+            if (isTransitionReachableFromTransition(secondTransition, firstTransition)) {
+                throw new InvalidConnectionException("Cannot connect transitions in a loop.");
             }
             if (firstTransition.getParent() == secondTransition.getParent()) {
                 if (firstTransition.getDirection() == TransitionEvent.Direction.STABILISE) {
@@ -175,6 +199,12 @@ public class VisualDtd extends AbstractVisualModel {
         Node m1 = v1.getReferencedComponent();
         Node m2 = v2.getReferencedComponent();
 
+        if ((v1 instanceof VisualTransitionEvent) && (v2 instanceof VisualTransitionEvent)) {
+            if (v1.getX() > v2.getX() - DtdSettings.getTransitionSeparation()) {
+                shiftEvents((VisualEvent) v2, v1.getX() - v2.getX() + DtdSettings.getTransitionSeparation());
+            }
+        }
+
         if (mConnection == null) {
             mConnection = ((Dtd) getMathModel()).connect(m1, m2);
         }
@@ -195,6 +225,74 @@ public class VisualDtd extends AbstractVisualModel {
             DtdUtils.decorateVisualEventConnection(vConnection);
         }
         return vConnection;
+    }
+
+    private void shiftEvents(VisualEvent event, double shiftOffset) {
+        //If a node A is connected to a node B, the X position of A cannot be >= to that of B
+        //To go around that restriction, we first compute the dependencies between nodes
+        //(i.e. the X of B is bigger than the X of A, so B depends on A)
+        Map<VisualEvent, Integer> nodeDependencies = new HashMap<>();
+        Queue<VisualEvent> toVisit = new LinkedList<>();
+        toVisit.add(event);
+        while (!toVisit.isEmpty()) {
+            VisualEvent visitingEvent = toVisit.poll();
+            if (!(visitingEvent instanceof VisualExitEvent)) {
+                for (Node node : getPostset(visitingEvent))  {
+                    if (node instanceof VisualEvent) {
+                        VisualEvent nextEvent = (VisualEvent) node;
+                        if (nodeDependencies.containsKey(nextEvent)) {
+                            nodeDependencies.computeIfPresent(nextEvent, (k, v) -> v + 1);
+                        } else {
+                            nodeDependencies.put(nextEvent, 1);
+                            toVisit.add(nextEvent);
+                        }
+                    }
+                }
+            }
+        }
+
+        //Now we traverse the dependency tree and compute the new X that every node will be set to
+        Map<VisualEvent, Double> nodesX = new HashMap<>();
+        nodesX.put(event, event.getX() + shiftOffset);
+        toVisit.add(event);
+        while (!toVisit.isEmpty()) {
+            VisualEvent visitingEvent = toVisit.poll();
+            for (Node node : getPostset(visitingEvent))  {
+                VisualEvent nextEvent = (VisualEvent) node;
+                if (nodeDependencies.containsKey(nextEvent)) {
+                    double newX;
+                    if (nextEvent.getX() - nodesX.get(visitingEvent) > DtdSettings.getTransitionSeparation()) {
+                        //Distance to next is large enough that it is not necessary to update it
+                        newX = nextEvent.getX();
+                    } else if (nextEvent.getX() - visitingEvent.getX() < DtdSettings.getTransitionSeparation()) {
+                        //Original distance between transitions was smaller than separation, we keep it that way
+                        newX = nodesX.get(visitingEvent) + nextEvent.getX() - visitingEvent.getX();
+                    } else {
+                        //Original distance was larger than separation, so we default to separation distance
+                        newX = nodesX.get(visitingEvent) + DtdSettings.getTransitionSeparation();
+                    }
+                    nodesX.computeIfPresent(nextEvent, (k, v) -> Math.max(v, newX));
+                    nodesX.putIfAbsent(nextEvent, Math.max(nextEvent.getX(), newX));
+
+                    Integer dependencies = nodeDependencies.computeIfPresent(nextEvent, (k, v) -> v - 1);
+                    if (dependencies == 0) {
+                        toVisit.add(nextEvent);
+                    }
+                }
+            }
+        }
+
+        //Finally, we have to set the new Xs starting from right to left (larger to smaller)
+        ArrayList<Pair<VisualEvent, Double>> visualEvents = new ArrayList<>();
+        for (Map.Entry<VisualEvent, Double> eventsNewX : nodesX.entrySet()) {
+            visualEvents.add(new Pair<>(eventsNewX.getKey(), eventsNewX.getValue()));
+        }
+        visualEvents.sort((p1, p2) -> (p1.getSecond().compareTo(p2.getSecond())) * (-1));
+        for (Pair<VisualEvent, Double> visualEventPosition : visualEvents) {
+            visualEventPosition.getFirst().setX(visualEventPosition.getSecond());
+        }
+
+        alignExitEventsToRightmostEvent();
     }
 
     public Collection<VisualSignal> getVisualSignals(Container container) {

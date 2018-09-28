@@ -15,10 +15,13 @@ public class DtdSettings implements Settings {
     private static final String prefix = "DtdSettings";
 
     private static final String keyVerticalSeparation = prefix + ".verticalSeparation";
+    private static final String keyTransitionSeparation = prefix + ".transitionSeparation";
 
     private static final Double defaultVerticalSeparation = 1.0;
+    private static final Double defaultTransitionSeparation = 1.0;
 
     private static Double verticalSeparation = defaultVerticalSeparation;
+    private static Double transitionSeparation = defaultTransitionSeparation;
 
     public DtdSettings() {
         properties.add(new PropertyDeclaration<DtdSettings, Double>(
@@ -30,6 +33,18 @@ public class DtdSettings implements Settings {
 
             protected Double getter(DtdSettings object) {
                 return getVerticalSeparation();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<DtdSettings, Double>(
+                this, "Horizontal separation between transitions",
+                Double.class, true, false, false) {
+            protected void setter(DtdSettings object, Double value) {
+                setTransitionSeparationIfValid(value, DtdSettings::setTransitionSeparation);
+            }
+
+            protected Double getter(DtdSettings object) {
+                return getTransitionSeparation();
             }
         });
     }
@@ -45,6 +60,17 @@ public class DtdSettings implements Settings {
 
     }
 
+    private void setTransitionSeparationIfValid(Double value, Consumer<Double> setter) {
+        if (value.isNaN() || value.isInfinite()) {
+            DialogUtils.showError("Transition separation has to be a valid number.");
+        } else if (value < 0) {
+            DialogUtils.showError("Transition separation cannot be negative.");
+        } else {
+            setter.accept(value);
+        }
+
+    }
+
     @Override
     public List<PropertyDescriptor> getDescriptors() {
         return properties;
@@ -53,11 +79,13 @@ public class DtdSettings implements Settings {
     @Override
     public void load(Config config) {
         setVerticalSeparation(config.getDouble(keyVerticalSeparation, defaultVerticalSeparation));
+        setTransitionSeparation(config.getDouble(keyTransitionSeparation, defaultTransitionSeparation));
     }
 
     @Override
     public void save(Config config) {
         config.setDouble(keyVerticalSeparation, getVerticalSeparation());
+        config.setDouble(keyTransitionSeparation, getTransitionSeparation());
     }
 
     @Override
@@ -74,9 +102,19 @@ public class DtdSettings implements Settings {
         return verticalSeparation;
     }
 
+    public static Double getTransitionSeparation() {
+        return transitionSeparation;
+    }
+
     public static void setVerticalSeparation(Double value) {
-        if ((!value.isNaN()) && (!value.isInfinite())){
+        if ((!value.isNaN()) && (!value.isInfinite())) {
             verticalSeparation = value;
+        }
+    }
+
+    public static void setTransitionSeparation(Double value) {
+        if ((!value.isNaN()) && (!value.isInfinite())) {
+            transitionSeparation = value;
         }
     }
 }
