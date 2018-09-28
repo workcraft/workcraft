@@ -1,0 +1,12 @@
+Initialisation check: true
+Combined check: true
+Circuit analysis:
+  Component count (mapped + unmapped) -  3 (3 + 0)
+  Area of mapped components -  28.0 + MUTEX
+  Driver pin count (combinational + sequential + undefined) -  4 (2 + 2 + 0)
+  Literal count combinational / sequential (set + reset) -  4 / 6 (4 + 2)
+  Port count (input + output) -  5 (3 + 2)
+  Max fanin / fanout -  2 / 2
+  Fanin distribution [0 / 1 / 2 ...] -  0 / 0 / 3
+  Fanout distribution [0 / 1 / 2 ...] -  0 / 6 / 1
+  Isolated components / ports / pins -  0 / 0 / 0
