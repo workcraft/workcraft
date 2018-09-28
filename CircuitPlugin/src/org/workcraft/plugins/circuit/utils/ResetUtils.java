@@ -3,10 +3,12 @@ package org.workcraft.plugins.circuit.utils;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.MixUtils;
 import org.workcraft.dom.visual.Touchable;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
 import org.workcraft.plugins.circuit.*;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Identifier;
 
@@ -19,7 +21,10 @@ import java.util.HashSet;
 public class ResetUtils {
 
     public static void insertReset(VisualCircuit circuit, String portName, boolean activeLow) {
-        VisualFunctionContact resetPort = circuit.getOrCreateContact(null, portName, Contact.IOType.INPUT);
+        VisualFunctionContact resetPort = getOrCreateResetPort(circuit, portName);
+        if (resetPort == null) {
+            return;
+        }
         for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {
             VisualFunctionContact gaterOutput = component.getMainVisualOutput();
             if ((gaterOutput != null) && gaterOutput.getForcedInit()) {
@@ -64,6 +69,25 @@ public class ResetUtils {
         }
         forceInitResetCircuit(circuit, resetPort, activeLow);
         positionResetPort(circuit, resetPort);
+    }
+
+    private static VisualFunctionContact getOrCreateResetPort(VisualCircuit circuit, String portName) {
+        VisualFunctionContact result = null;
+        VisualComponent component = circuit.getVisualComponentByMathReference(portName, VisualComponent.class);
+        if (component == null) {
+            result = circuit.getOrCreateContact(null, portName, Contact.IOType.INPUT);
+        } else if (component instanceof VisualFunctionContact) {
+            result = (VisualFunctionContact) component;
+            if (result.isOutput()) {
+                DialogUtils.showError("Cannot reuse existing output port '" + portName + "' for circuit reset.");
+                return null;
+            }
+            DialogUtils.showWarning("Reusing existing input port '" + portName + "' for circuit reset.");
+        } else {
+            DialogUtils.showError("Cannot insert reset port '" + portName + "' because a component with the same name already exists.");
+            return null;
+        }
+        return result;
     }
 
     private static void resetBuffer(VisualCircuit circuit, VisualFunctionComponent component,

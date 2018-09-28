@@ -2,9 +2,15 @@ package org.workcraft.plugins.circuit.tools;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.*;
+import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.formula.*;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.BooleanVariable;
+import org.workcraft.formula.One;
+import org.workcraft.formula.Zero;
 import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
@@ -107,6 +113,16 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
                 "Toggle force init for all sequential gates");
         toggleForceInitCelementsButton.addActionListener(l -> toggleForceInitCelements(editor));
 
+        JButton clearForceInitButton = GUI.createIconButton(
+                GUI.createIconFromSVG("images/circuit-initialisation-force-autoclean.svg"),
+                "Clear redundant force init from pins");
+        clearForceInitButton.addActionListener(l -> clearForceInit(editor));
+
+        JButton completeForceInitButton = GUI.createIconButton(
+                GUI.createIconFromSVG("images/circuit-initialisation-force-autocomplete.svg"),
+                "Complete initialisation by adding force init pins");
+        completeForceInitButton.addActionListener(l -> completeForceInit(editor));
+
         FlowLayout flowLayout = new FlowLayout();
         int buttonWidth = (int) Math.round(toggleForceInitInputsButton.getPreferredSize().getWidth() + flowLayout.getHgap());
         int buttonHeight = (int) Math.round(toggleForceInitInputsButton.getPreferredSize().getHeight() + flowLayout.getVgap());
@@ -119,6 +135,8 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         btnPanel.add(toggleForceInitInputsButton);
         btnPanel.add(toggleForceInitLoopsButton);
         btnPanel.add(toggleForceInitCelementsButton);
+        btnPanel.add(clearForceInitButton);
+        btnPanel.add(completeForceInitButton);
 
         JPanel forcePanel = new JPanel(new BorderLayout());
         forcePanel.setBorder(SizeHelper.getTitledBorder("Force init pins"));
@@ -181,6 +199,65 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         editor.requestFocus();
     }
 
+    private void clearForceInit(final GraphEditor editor) {
+        editor.getWorkspaceEntry().captureMemento();
+        Circuit circuit = (Circuit) editor.getModel().getMathModel();
+        HashSet<FunctionContact> userForceInitContacts = new HashSet<>();
+        for (FunctionContact contact : circuit.getFunctionContacts()) {
+            if (contact.isPin() && contact.isDriver() && contact.getForcedInit()) {
+                userForceInitContacts.add(contact);
+            }
+        }
+        HashSet<FunctionContact> redundantForceInitContacts = clearRedundantForceInit(circuit, userForceInitContacts);
+        if (!redundantForceInitContacts.isEmpty()) {
+            editor.getWorkspaceEntry().saveMemento();
+        } else {
+            editor.getWorkspaceEntry().cancelMemento();
+            circuit = (Circuit) editor.getModel().getMathModel();
+        }
+        updateState(circuit);
+        editor.requestFocus();
+    }
+
+    private void completeForceInit(final GraphEditor editor) {
+        editor.getWorkspaceEntry().captureMemento();
+        Circuit circuit = (Circuit) editor.getModel().getMathModel();
+        HashSet<FunctionContact> addedForceInitContacts = new HashSet<>();
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            if (component.getIsZeroDelay()) continue;
+            for (FunctionContact contact : component.getFunctionContacts()) {
+                if (contact.isPin() && contact.isDriver() && !contact.getForcedInit()) {
+                    contact.setForcedInit(true);
+                    addedForceInitContacts.add(contact);
+                }
+            }
+        }
+        HashSet<FunctionContact> redundantForceInitContacts = clearRedundantForceInit(circuit, addedForceInitContacts);
+        if (addedForceInitContacts.size() > redundantForceInitContacts.size()) {
+            editor.getWorkspaceEntry().saveMemento();
+        } else {
+            editor.getWorkspaceEntry().cancelMemento();
+            circuit = (Circuit) editor.getModel().getMathModel();
+        }
+        updateState(circuit);
+        editor.requestFocus();
+    }
+
+    private HashSet<FunctionContact> clearRedundantForceInit(Circuit circuit, Set<FunctionContact> contacts) {
+        HashSet<FunctionContact> result = new HashSet<>();
+        for (FunctionContact contact : contacts) {
+            contact.setForcedInit(false);
+            updateState(circuit);
+            if (isCorrectlyInitialised(contact)) {
+                result.add(contact);
+            } else {
+                contact.setForcedInit(true);
+                updateState(circuit);
+            }
+        }
+        return result;
+    }
+
     private HashSet<Contact> getSelfLoopContacts(Circuit circuit) {
         HashSet<Contact> result = new HashSet<>();
         for (CircuitComponent component : circuit.getFunctionComponents()) {
@@ -207,9 +284,9 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     private void insertReset(final GraphEditor editor) {
         Circuit circuit = (Circuit) editor.getModel().getMathModel();
         HashSet<String> r = new HashSet<>();
-        for (Contact contact : circuit.getFunctionContacts()) {
+        for (FunctionContact contact : circuit.getFunctionContacts()) {
             if (contact.isPin() && contact.isDriver()) {
-                if (!initLowSet.contains(contact) && !initHighSet.contains(contact)) {
+                if (!isCorrectlyInitialised(contact)) {
                     String ref = circuit.getNodeReference(contact);
                     r.add(ref);
                 }
@@ -236,6 +313,10 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
             }
         }
         editor.requestFocus();
+    }
+
+    private boolean isCorrectlyInitialised(FunctionContact contact) {
+        return !initErrorSet.contains(contact) && (initLowSet.contains(contact) || initHighSet.contains(contact));
     }
 
     private final class LegendTableModel extends AbstractTableModel {
