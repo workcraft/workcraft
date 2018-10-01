@@ -1,25 +1,26 @@
 package org.workcraft.plugins.dtd.tools;
 
 import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.ConnectionHelper;
-import org.workcraft.dom.visual.HitMan;
-import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
-import org.workcraft.plugins.dtd.TransitionEvent;
-import org.workcraft.plugins.dtd.VisualDtd;
-import org.workcraft.plugins.dtd.VisualLevelConnection;
-import org.workcraft.plugins.dtd.VisualSignal;
+import org.workcraft.plugins.dtd.*;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class DtdSelectionTool extends SelectionTool {
+
+    private boolean draggingExitEvent = false;
 
     public DtdSelectionTool() {
         super(false, false, false, false);
@@ -89,11 +90,61 @@ public class DtdSelectionTool extends SelectionTool {
         }
     }
 
-
     @Override
     public String getHintText(final GraphEditor editor) {
         return "Double-click on a signal to add its transition. Hold Shift for rising edge, " +
                 DesktopApi.getMenuKeyMaskName() + " for falling edge, or both keys for unstable state.";
+    }
+
+    @Override
+    public void startDrag(GraphEditorMouseEvent e) {
+        GraphEditor editor = e.getEditor();
+        VisualModel model = editor.getModel();
+        Container container = model.getCurrentLevel();
+        if (e.getButtonModifiers() == MouseEvent.BUTTON1_DOWN_MASK) {
+            Point2D startPos = e.getStartPosition();
+            Node hitNode = HitMan.hitFirstInCurrentLevel(startPos, model);
+            if ((e.getKeyModifiers() == 0) && (hitNode instanceof VisualExitEvent) && (model instanceof VisualDtd)) {
+                VisualDtd visualDtd = (VisualDtd) model;
+                VisualTransformableNode visualNode = (VisualTransformableNode) container;
+                Collection<Node> selection = new HashSet<>();
+                selection.addAll(visualDtd.getSelection());
+                for (VisualTransformableNode component : visualNode.getComponents()) {
+                    if (component instanceof VisualSignal) {
+                        VisualExitEvent visualExit = ((VisualSignal) component).getVisualSignalExit();
+                        if (!selection.contains(visualExit)) {
+                            selection.add(visualExit);
+                        }
+                    }
+                }
+                visualDtd.select(selection);
+                super.startDrag(e);
+                draggingExitEvent = true;
+                visualDtd.alignExitEventsToEvent((VisualExitEvent) hitNode);
+                return;
+            }
+        }
+        super.startDrag(e);
+    }
+
+    @Override
+    public void mouseMoved(GraphEditorMouseEvent e) {
+        super.mouseMoved(e);
+        if (draggingExitEvent) {
+            GraphEditor editor = e.getEditor();
+            VisualModel model = editor.getModel();
+            Container container = model.getCurrentLevel();
+            if (model instanceof VisualDtd && container instanceof VisualTransformableNode) {
+                VisualDtd visualDtd = (VisualDtd) model;
+                visualDtd.alignExitEventsToRightmostEvent();
+            }
+        }
+    }
+
+    @Override
+    public void finishDrag(GraphEditorMouseEvent e) {
+        draggingExitEvent = false;
+        super.finishDrag(e);
     }
 
 }
