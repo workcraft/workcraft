@@ -1,34 +1,39 @@
 package org.workcraft.plugins.circuit.commands;
 
+import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.utils.ResetUtils;
+import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
-public class UntagForceInitSelfLoopsCommand extends CircuitAbstractInitialisationCommand {
+public class ProcessNecessaryForceInitPinsCommand extends CircuitAbstractInitialisationCommand {
 
     @Override
     public String getDisplayName() {
-        return "Untag force init for all self-loops";
+        return "Add force init to pins if necessary to complete initialisation";
     }
 
     @Override
     public Position getPosition() {
-        return Position.TOP_MIDDLE;
+        return Position.MIDDLE;
     }
 
     @Override
     public Void execute(WorkspaceEntry we) {
         we.captureMemento();
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-        HashSet<? extends Contact> changedContacts = ResetUtils.setForceInitSelfLoops(circuit, false);
+        HashSet<? extends Contact> changedContacts = ResetUtils.tagNecessaryForceInitPins(circuit);
         if (changedContacts.isEmpty()) {
             we.cancelMemento();
         } else {
             we.saveMemento();
+            ArrayList<String> refs = ReferenceHelper.getReferenceList(circuit, changedContacts);
+            LogUtils.logInfo(LogUtils.getTextWithRefs("Force init pin", refs));
         }
         return null;
     }

@@ -15,7 +15,7 @@ public class CircuitResetVerificationCommand extends AbstractVerificationCommand
 
     @Override
     public String getDisplayName() {
-        return "Initialisation via inputs";
+        return "Initialisation via primary inputs";
     }
 
     @Override

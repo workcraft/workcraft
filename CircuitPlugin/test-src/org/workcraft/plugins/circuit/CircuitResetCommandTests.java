@@ -23,13 +23,13 @@ public class CircuitResetCommandTests {
     @Test
     public void testCycleTmCircuitResetCommand() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "cycle-tm.circuit.work");
-        testCircuitResetCommand(workName, 0, -1, 0, 0, 0, 2, 1, true, true);
+        testCircuitResetCommand(workName, 2, -1, 0, 0, 0, 2, 1, true, true);
     }
 
     @Test
     public void testChargeTmCircuitResetCommand() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "charge-tm.circuit.work");
-        testCircuitResetCommand(workName, 0, 5, 8, 9, 7, 7, 6, false, true);
+        testCircuitResetCommand(workName, 5, 5, 8, 9, 7, 7, 6, false, true);
     }
 
     private void testCircuitResetCommand(String workName, int initNum, int inputNum, int loopNum, int seqNum, int clearNum,
@@ -44,28 +44,31 @@ public class CircuitResetCommandTests {
             Assert.assertEquals(initNum, getForceInitCount(we));
         }
 
+        new ClearForceInitCommand().execute(we);
+        Assert.assertEquals(0, getForceInitCount(we));
+
         if (inputNum >= 0) {
-            new TagForceInitInputPortsCommand().execute(we);
+            new ForceInitInputPortsCommand().execute(we);
             Assert.assertEquals(inputNum, getForceInitCount(we));
         }
 
         if (loopNum >= 0) {
-            new TagForceInitSelfLoopsCommand().execute(we);
+            new ForceInitSelfLoopsCommand().execute(we);
             Assert.assertEquals(loopNum, getForceInitCount(we));
         }
 
         if (seqNum >= 0) {
-            new TagForceInitSequentialGatesCommand().execute(we);
+            new ForceInitSequentialGatesCommand().execute(we);
             Assert.assertEquals(seqNum, getForceInitCount(we));
         }
 
         if (clearNum >= 0) {
-            new ClearRedundantForceInitPinsCommand().execute(we);
+            new ProcessRedundantForceInitPinsCommand().execute(we);
             Assert.assertEquals(clearNum, getForceInitCount(we));
         }
 
         if (completeNum >= 0) {
-            new CompleteForceInitPinsCommand().execute(we);
+            new ProcessNecessaryForceInitPinsCommand().execute(we);
             Assert.assertEquals(completeNum, getForceInitCount(we));
         }
 

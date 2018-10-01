@@ -20,6 +20,17 @@ import java.util.HashSet;
 
 public class ResetUtils {
 
+    public static HashSet<Contact> setForceInit(Circuit circuit, boolean value) {
+        HashSet<Contact> result = new HashSet<>();
+        for (Contact contact : circuit.getFunctionContacts()) {
+            if (contact.isDriver() && contact.getForcedInit() != value) {
+                contact.setForcedInit(value);
+                result.add(contact);
+            }
+        }
+        return result;
+    }
+
     public static HashSet<Contact> setForceInitInputPorts(Circuit circuit, boolean value) {
         HashSet<Contact> result = new HashSet<>();
         for (Contact port : circuit.getInputPorts()) {
@@ -31,7 +42,7 @@ public class ResetUtils {
         return result;
     }
 
-    public static HashSet<Contact> toggleForceInitInputs(Circuit circuit) {
+    public static HashSet<Contact> toggleForceInitInputPorts(Circuit circuit) {
         boolean allForceInit = true;
         for (Contact port : circuit.getInputPorts()) {
             if (!port.getForcedInit()) {
@@ -53,7 +64,7 @@ public class ResetUtils {
         return result;
     }
 
-    public static HashSet<Contact> toggleForceInitLoops(Circuit circuit) {
+    public static HashSet<Contact> toggleForceInitSelfLoops(Circuit circuit) {
         boolean allForceInit = true;
         for (Contact contact : getSelfLoopContacts(circuit)) {
             if (!contact.getForcedInit()) {
@@ -110,7 +121,7 @@ public class ResetUtils {
         return result;
     }
 
-    public static HashSet<FunctionContact> clearRedundantForceInitPins(Circuit circuit) {
+    public static HashSet<FunctionContact> untagRedundantForceInitPins(Circuit circuit) {
         HashSet<FunctionContact> userForceInitContacts = new HashSet<>();
         for (FunctionContact contact : circuit.getFunctionContacts()) {
             if (contact.isPin() && contact.isDriver() && contact.getForcedInit()) {
@@ -120,7 +131,7 @@ public class ResetUtils {
         return clearRedundantForceInitPins(circuit, userForceInitContacts);
     }
 
-    public static HashSet<FunctionContact> completeForceInitPins(Circuit circuit) {
+    public static HashSet<FunctionContact> tagNecessaryForceInitPins(Circuit circuit) {
         HashSet<FunctionContact> addedForceInitContacts = new HashSet<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
             if (component.getIsZeroDelay()) continue;

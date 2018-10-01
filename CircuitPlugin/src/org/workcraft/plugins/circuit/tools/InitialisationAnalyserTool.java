@@ -88,45 +88,51 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         forceTable.setTableHeader(null);
         JScrollPane forceScrollPane = new JScrollPane(forceTable);
 
-        JButton toggleForceInitInputsButton = GUI.createIconButton(
-                GUI.createIconFromSVG("images/circuit-initialisation-force-input.svg"),
-                "Toggle force init for all inputs");
-        toggleForceInitInputsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.toggleForceInitInputs(c)));
+        JButton clearAllForceInitButton = GUI.createIconButton(
+                GUI.createIconFromSVG("images/circuit-initialisation-clear_all.svg"),
+                "Clear force init for input ports and output pins");
+        clearAllForceInitButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.setForceInit(c, false)));
 
-        JButton toggleForceInitLoopsButton = GUI.createIconButton(
-                GUI.createIconFromSVG("images/circuit-initialisation-force-selfloop.svg"),
+        JButton toggleForceInitInputPortsButton = GUI.createIconButton(
+                GUI.createIconFromSVG("images/circuit-initialisation-input_port.svg"),
+                "Toggle force init for all input ports (environment responsibility)");
+        toggleForceInitInputPortsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.toggleForceInitInputPorts(c)));
+
+        JButton toggleForceInitSelfLoopsButton = GUI.createIconButton(
+                GUI.createIconFromSVG("images/circuit-initialisation-self_loop.svg"),
                 "Toggle force init for all self-loops");
-        toggleForceInitLoopsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.toggleForceInitLoops(c)));
+        toggleForceInitSelfLoopsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.toggleForceInitSelfLoops(c)));
 
-        JButton toggleForceInitCelementsButton = GUI.createIconButton(
-                GUI.createIconFromSVG("images/circuit-initialisation-force-celement.svg"),
+        JButton toggleForceInitSequentialGatesButton = GUI.createIconButton(
+                GUI.createIconFromSVG("images/circuit-initialisation-sequential_gate.svg"),
                 "Toggle force init for all sequential gates");
-        toggleForceInitCelementsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.toggleForceInitSequentialGates(c)));
+        toggleForceInitSequentialGatesButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.toggleForceInitSequentialGates(c)));
 
-        JButton clearForceInitButton = GUI.createIconButton(
-                GUI.createIconFromSVG("images/circuit-initialisation-force-autoclean.svg"),
-                "Clear redundant force init from pins");
-        clearForceInitButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.clearRedundantForceInitPins(c)));
+        JButton untagRedundantForceInitPinsButton = GUI.createIconButton(
+                GUI.createIconFromSVG("images/circuit-initialisation-untag_redundant.svg"),
+                "Remove force init from pins if redundant for initialisation");
+        untagRedundantForceInitPinsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.untagRedundantForceInitPins(c)));
 
-        JButton completeForceInitButton = GUI.createIconButton(
-                GUI.createIconFromSVG("images/circuit-initialisation-force-autocomplete.svg"),
-                "Complete initialisation by adding force init to pins");
-        completeForceInitButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.completeForceInitPins(c)));
+        JButton addNecessaryForceInitPinsButton = GUI.createIconButton(
+                GUI.createIconFromSVG("images/circuit-initialisation-tag_necessary.svg"),
+                "Add force init to pins if necessary to complete initialisation");
+        addNecessaryForceInitPinsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagNecessaryForceInitPins(c)));
 
         FlowLayout flowLayout = new FlowLayout();
-        int buttonWidth = (int) Math.round(toggleForceInitInputsButton.getPreferredSize().getWidth() + flowLayout.getHgap());
-        int buttonHeight = (int) Math.round(toggleForceInitInputsButton.getPreferredSize().getHeight() + flowLayout.getVgap());
+        int buttonWidth = (int) Math.round(toggleForceInitInputPortsButton.getPreferredSize().getWidth() + flowLayout.getHgap());
+        int buttonHeight = (int) Math.round(toggleForceInitInputPortsButton.getPreferredSize().getHeight() + flowLayout.getVgap());
         Dimension panelSize = new Dimension(buttonWidth * 5 + flowLayout.getHgap(), buttonHeight + flowLayout.getVgap());
 
         JPanel btnPanel = new JPanel();
         btnPanel.setLayout(flowLayout);
         btnPanel.setPreferredSize(panelSize);
         btnPanel.setMaximumSize(panelSize);
-        btnPanel.add(toggleForceInitInputsButton);
-        btnPanel.add(toggleForceInitLoopsButton);
-        btnPanel.add(toggleForceInitCelementsButton);
-        btnPanel.add(clearForceInitButton);
-        btnPanel.add(completeForceInitButton);
+        btnPanel.add(clearAllForceInitButton);
+        btnPanel.add(toggleForceInitInputPortsButton);
+        btnPanel.add(toggleForceInitSelfLoopsButton);
+        btnPanel.add(toggleForceInitSequentialGatesButton);
+        btnPanel.add(untagRedundantForceInitPinsButton);
+        btnPanel.add(addNecessaryForceInitPinsButton);
 
         JPanel forcePanel = new JPanel(new BorderLayout());
         forcePanel.setBorder(SizeHelper.getTitledBorder("Force init pins"));
