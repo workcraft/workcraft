@@ -82,6 +82,9 @@ public class CircuitSettingsTest {
 
         Assert.assertEquals(Config.toString(CircuitSettings.getBusSuffix()),
                 framework.getConfigVar(prefix + ".busSuffix", false));
+
+        Assert.assertEquals(Config.toString(CircuitSettings.getResetName()),
+                framework.getConfigVar(prefix + ".resetName", false));
     }
 
 }

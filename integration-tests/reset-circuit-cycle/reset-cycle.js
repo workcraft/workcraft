@@ -1,6 +1,8 @@
 work = load('cycle-tm.circuit.work');
 
-resetCircuitCompleteForceInitPins(work);
+resetCircuitClearForceInit(work);
+
+resetCircuitProcessNecessaryForceInitPins(work);
 
 resetCircuitInsertActiveHigh(work);
 
