@@ -3,12 +3,14 @@ package org.workcraft.plugins.dtd;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 import java.awt.*;
 
 public class VisualLevelConnection extends VisualConnection {
 
+    public static final String PROPERTY_STATE = "State";
 
     public VisualLevelConnection() {
         this(null, null, null);
@@ -25,6 +27,24 @@ public class VisualLevelConnection extends VisualConnection {
         removePropertyDeclarationByName(PROPERTY_CONNECTION_TYPE);
         removePropertyDeclarationByName(PROPERTY_LINE_WIDTH);
         removePropertyDeclarationByName(PROPERTY_SCALE_MODE);
+
+        addPropertyDeclaration(new PropertyDeclaration<VisualLevelConnection, Signal.State>(
+                this, PROPERTY_STATE, Signal.State.class, true, true, false) {
+            protected void setter(VisualLevelConnection level, Signal.State state) {
+                VisualEvent event = (VisualEvent) getFirst();
+                if (event instanceof VisualEntryEvent) {
+                    VisualSignal signal = event.getVisualSignal();
+                    signal.setInitialState(state);
+                } else if (event instanceof VisualTransitionEvent) {
+                    VisualTransitionEvent transition = (VisualTransitionEvent) event;
+                    transition.setDirection(DtdUtils.getPreviousDirection(state).reverse());
+                }
+            }
+            protected Signal.State getter(VisualLevelConnection level) {
+                VisualEvent fromEvent = (VisualEvent) level.getFirst();
+                return DtdUtils.getNextState(fromEvent.getReferencedSignalEvent());
+            }
+        });
     }
 
     @Override
