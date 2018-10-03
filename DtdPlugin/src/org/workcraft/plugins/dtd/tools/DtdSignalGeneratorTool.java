@@ -1,10 +1,8 @@
 package org.workcraft.plugins.dtd.tools;
 
 import org.workcraft.dom.Container;
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
@@ -30,50 +28,40 @@ public class DtdSignalGeneratorTool extends NodeGeneratorTool {
             }
 
             private void spaceVertically(VisualDtd dtd, VisualSignal signal) {
-                double yPosition = signal.getY();
-                LinkedList<VisualSignal> signalsBelow = new LinkedList<>();
-                VisualSignal predecessorSignal = null;
-                VisualSignal successorSignal = null;
-
-                Container container = dtd.getCurrentLevel();
-                if (container instanceof VisualTransformableNode) {
-                    VisualTransformableNode visualNode = (VisualTransformableNode) container;
-                    for (VisualComponent visualComp : visualNode.getComponents()) {
-                        if (visualComp instanceof VisualSignal) {
-                            if (visualComp == signal) continue;
-                            VisualSignal visualSignal = (VisualSignal) visualComp;
-                            double visualSignalY = visualSignal.getY();
-                            if (visualSignalY <= yPosition) {
-                                if ((predecessorSignal == null) || (predecessorSignal.getY() < visualSignal.getY())) {
-                                    predecessorSignal = visualSignal;
-                                }
-                            } else {
-                                signalsBelow.add(visualSignal);
-                                if ((successorSignal == null) || (successorSignal.getY() > visualSignal.getY())) {
-                                    successorSignal = visualSignal;
-                                }
-                            }
+                double y = signal.getY();
+                VisualSignal aboveSignal = null;
+                VisualSignal belowSignal = null;
+                LinkedList<VisualSignal> belowSignals = new LinkedList<>();
+                Container container = (Container) signal.getParent();
+                for (VisualSignal otherSignal : dtd.getVisualSignals(container)) {
+                    if (signal == otherSignal) continue;
+                    if (otherSignal.getY() <= y) {
+                        if ((aboveSignal == null) || (aboveSignal.getY() < otherSignal.getY())) {
+                            aboveSignal = otherSignal;
+                        }
+                    } else {
+                        belowSignals.add(otherSignal);
+                        if ((belowSignal == null) || (belowSignal.getY() > otherSignal.getY())) {
+                            belowSignal = otherSignal;
                         }
                     }
                 }
 
-                double separation = DtdSettings.getVerticalSeparation();
-
-                if (predecessorSignal != null) {
-                    Point2D newSignalPosition = new Point2D.Double(signal.getX(), predecessorSignal.getY() + separation);
-                    signal.setPosition(newSignalPosition);
-                    if (successorSignal != null) {
-                        double offset = successorSignal.getY() - (newSignalPosition.getY() + separation);
-                        for (VisualSignal visualSignal : signalsBelow) {
-                            Point2D position = new Point2D.Double(visualSignal.getX(), visualSignal.getY() - offset);
-                            visualSignal.setPosition(position);
+                Double dy = DtdSettings.getVerticalSeparation();
+                if (aboveSignal != null) {
+                    signal.setY(aboveSignal.getY() + dy);
+                    if (belowSignal != null) {
+                        double offset = belowSignal.getY() - signal.getY() - dy;
+                        System.out.println(offset);
+                        for (VisualSignal otherSignal : belowSignals) {
+                            otherSignal.setY(otherSignal.getY() - offset);
                         }
                     }
-                } else if (successorSignal != null) {
-                    Point2D newSignalPosition = new Point2D.Double(signal.getX(), successorSignal.getY() - separation);
-                    signal.setPosition(newSignalPosition);
+                } else if (belowSignal != null) {
+                    signal.setY(belowSignal.getY() - dy);
                 }
             }
         });
     }
+
 }
