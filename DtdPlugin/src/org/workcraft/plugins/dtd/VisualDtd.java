@@ -424,8 +424,8 @@ public class VisualDtd extends AbstractVisualModel {
         VisualEvent toEvent = (VisualEvent) connection.getSecond();
         Signal.State state = DtdUtils.getNextState(fromEvent.getReferencedSignalEvent());
         VisualSignal signal = fromEvent.getVisualSignal();
-        TransitionEvent.Direction leadDirection = DtdUtils.getPreviousDirection(state);
-        TransitionEvent.Direction trailDirection = DtdUtils.getNextDirection(state);
+        TransitionEvent.Direction leadDirection = DtdUtils.getPreviousDirection(state).reverse();
+        TransitionEvent.Direction trailDirection = DtdUtils.getNextDirection(state).reverse();
         VisualTransitionEvent leadEdge = createVisualTransition(signal, leadDirection);
         VisualTransitionEvent trailEdge = createVisualTransition(signal, trailDirection);
 

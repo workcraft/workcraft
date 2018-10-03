@@ -253,6 +253,12 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
                     return event;
                 }
             }
+            if (node instanceof VisualLevelConnection) {
+                VisualLevelConnection level = (VisualLevelConnection) node;
+                if (level.hitTest(pointInLocalSpace)) {
+                    return level;
+                }
+            }
         }
         return hitTest(point) ? this : null;
     }
