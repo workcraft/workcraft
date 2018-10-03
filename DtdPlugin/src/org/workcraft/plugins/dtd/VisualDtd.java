@@ -8,11 +8,11 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
+import org.workcraft.plugins.dtd.supervisors.DtdStateSupervisor;
 import org.workcraft.plugins.dtd.tools.DtdConnectionTool;
 import org.workcraft.plugins.dtd.tools.DtdSelectionTool;
 import org.workcraft.plugins.dtd.tools.DtdSignalGeneratorTool;
@@ -23,12 +23,11 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
+import java.util.Queue;
 
 @DisplayName("Digital Timing Diagram")
 public class VisualDtd extends AbstractVisualModel {
 
-    private static final double OFFSET_ENTRY = 0.5;
-    private static final double OFFSET_EXIT = 1.0;
     private static final double OFFSET_TRANSITION = 1.0;
     private static final double PULSE_WIDTH = 1.0;
 
@@ -291,8 +290,6 @@ public class VisualDtd extends AbstractVisualModel {
         for (Pair<VisualEvent, Double> visualEventPosition : visualEvents) {
             visualEventPosition.getFirst().setX(visualEventPosition.getSecond());
         }
-
-        alignExitEventsToRightmostEvent();
     }
 
     public Collection<VisualSignal> getVisualSignals(Container container) {
@@ -341,14 +338,12 @@ public class VisualDtd extends AbstractVisualModel {
         mathSignal.add(mathEntry);
         VisualEntryEvent entry = new VisualEntryEvent(mathEntry);
         signal.add(entry);
-        entry.setPosition(new Point2D.Double(OFFSET_ENTRY, 0.0));
         entry.setForegroundColor(color);
 
         ExitEvent mathExit = new ExitEvent();
         mathSignal.add(mathExit);
         VisualExitEvent exit = new VisualExitEvent(mathExit);
         signal.add(exit);
-        exit.setPosition(new Point2D.Double(OFFSET_EXIT, 0.0));
         exit.setForegroundColor(color);
         try {
             VisualConnection connection = connect(entry, exit);
@@ -382,9 +377,8 @@ public class VisualDtd extends AbstractVisualModel {
         if (connection != null) {
             remove(connection);
         }
-        Signal.State state = signal.getInitialState();
         if (direction == null) {
-            state = DtdUtils.getNextState(event.getReferencedSignalEvent());
+            Signal.State state = DtdUtils.getNextState(event.getReferencedSignalEvent());
             direction = DtdUtils.getNextDirection(state);
         } else {
             if (event instanceof VisualEntryEvent) {
@@ -401,9 +395,8 @@ public class VisualDtd extends AbstractVisualModel {
             x = event.getX();
         }
         x += OFFSET_TRANSITION;
-        if ((exit != null) && (x + OFFSET_TRANSITION > exit.getX())) {
+        if (x + OFFSET_TRANSITION > exit.getX()) {
             exit.setPosition(new Point2D.Double(x + OFFSET_TRANSITION, y));
-            alignExitEventsToRightmostEvent();
         }
         edge.setPosition(new Point2D.Double(x, y));
         Color color = signal.getForegroundColor();
@@ -468,42 +461,6 @@ public class VisualDtd extends AbstractVisualModel {
         }
         removeFromSelection(undeletableNodes);
         super.deleteSelection();
-    }
-
-    private Collection<VisualExitEvent> getVisualExitEventFromCurrentLevel() {
-        Collection<VisualExitEvent> result = new LinkedList<>();
-        Container container = getCurrentLevel();
-        if (container instanceof VisualTransformableNode) {
-            VisualTransformableNode visualNode = (VisualTransformableNode) container;
-            for (VisualComponent visualComp : visualNode.getComponents()) {
-                if (visualComp instanceof VisualSignal) {
-                    VisualSignal visualSignal = (VisualSignal) visualComp;
-                    result.add(visualSignal.getVisualSignalExit());
-                }
-            }
-        }
-        return result;
-    }
-
-    public void alignExitEventsToEvent(VisualExitEvent alignToEvent) {
-        for (VisualExitEvent visualExit : getVisualExitEventFromCurrentLevel()) {
-            Point2D.Double pos = new Point2D.Double(alignToEvent.getX(), visualExit.getY());
-            visualExit.setPosition(pos);
-        }
-    }
-
-    public void alignExitEventsToRightmostEvent() {
-        Collection<VisualExitEvent> visualExitEvents = getVisualExitEventFromCurrentLevel();
-        Double rightMostX = null;
-        for (VisualExitEvent visualExit : visualExitEvents) {
-            if (rightMostX == null || rightMostX < visualExit.getX()) {
-                rightMostX = visualExit.getX();
-            }
-        }
-        for (VisualExitEvent visualExit : visualExitEvents) {
-            Point2D.Double pos = new Point2D.Double(rightMostX, visualExit.getY());
-            visualExit.setPosition(pos);
-        }
     }
 
 }

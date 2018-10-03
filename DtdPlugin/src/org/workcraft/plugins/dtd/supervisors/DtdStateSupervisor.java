@@ -1,26 +1,60 @@
-package org.workcraft.plugins.dtd;
+package org.workcraft.plugins.dtd.supervisors;
+
+import org.workcraft.dom.Connection;
+import org.workcraft.dom.Container;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.BoundingBoxHelper;
+import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.observation.*;
+import org.workcraft.plugins.dtd.*;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.workcraft.dom.Connection;
-import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.BoundingBoxHelper;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.observation.StateEvent;
-import org.workcraft.observation.StateSupervisor;
-import org.workcraft.observation.TransformChangedEvent;
-
 public final class DtdStateSupervisor extends StateSupervisor {
+
+    private static final double OFFSET_ENTRY = 0.5;
+    private static final double OFFSET_EXIT = 1.0;
 
     private final VisualDtd dtd;
 
-    DtdStateSupervisor(VisualDtd dtd) {
+    public DtdStateSupervisor(VisualDtd dtd) {
         this.dtd = dtd;
+    }
+
+    @Override
+    public void handleHierarchyEvent(HierarchyEvent e) {
+        Object sender = e.getSender();
+        if ((sender instanceof VisualSignal) && (e instanceof NodesAddedEvent)) {
+            for (Node node: e.getAffectedNodes()) {
+                if (node instanceof VisualEntryEvent) {
+                    handleSignalEntryCreation((VisualSignal) sender, (VisualEntryEvent) node);
+                } else if (node instanceof VisualExitEvent) {
+                    handleSignalExitCreation((VisualSignal) sender, (VisualExitEvent) node);
+                }
+            }
+        }
+    }
+
+    private void handleSignalEntryCreation(VisualSignal signal, VisualEntryEvent entry) {
+        entry.setPosition(new Point2D.Double(OFFSET_ENTRY, 0.0));
+    }
+
+    private void handleSignalExitCreation(VisualSignal signal, VisualExitEvent exit) {
+        // Offset exit event to align with the furthest one
+        Container container = (Container) signal.getParent();
+        double x = OFFSET_EXIT;
+        for (VisualExitEvent otherExit : dtd.getVisualSignalExits(container)) {
+            if (otherExit.getX() > x) {
+                x = otherExit.getX();
+            }
+        }
+        if (exit.getX() != x) {
+            exit.setX(x);
+        }
     }
 
     @Override
@@ -109,6 +143,13 @@ public final class DtdStateSupervisor extends StateSupervisor {
                 }
                 double xMax = xMin + 100.0;
                 limitSignalEventPosition(exit, xMin, xMax);
+                // Align other exit events to this one
+                Container container = (Container) signal.getParent();
+                for (VisualExitEvent otherExit : dtd.getVisualSignalExits(container)) {
+                    if (exit.getX() != otherExit.getX()) {
+                        otherExit.setX(exit.getX());
+                    }
+                }
             }
         }
     }
