@@ -254,7 +254,7 @@ public class ConnectionTool extends AbstractGraphEditorTool {
         }
         currentNode = null;
         mouseLeftFirstNode = false;
-        controlPoints = new LinkedList<Point2D>();
+        controlPoints = new LinkedList<>();
         GraphEditor editor = e.getEditor();
         hideIssue(editor);
         editor.getWorkspaceEntry().setCanModify(false);
