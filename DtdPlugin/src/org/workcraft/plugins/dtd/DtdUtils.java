@@ -1,7 +1,7 @@
 package org.workcraft.plugins.dtd;
 
-import java.awt.geom.Point2D;
-
+import org.workcraft.dom.Connection;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
@@ -10,7 +10,10 @@ import org.workcraft.dom.visual.connections.BezierControlPoint;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+
+import java.awt.geom.Point2D;
 
 public class DtdUtils {
 
@@ -140,6 +143,107 @@ public class DtdUtils {
         cp[0].setRootSpacePosition(p1);
         Point2D p2 = new Point2D.Double(v2.getRootSpaceX() - CAUSALITY_ARC_OFFSET, v2.getRootSpaceY());
         cp[1].setRootSpacePosition(p2);
+    }
+
+    public static VisualLevelConnection getPredVisualLevel(VisualDtd dtd, VisualEvent event) {
+        for (Connection eventConnection : dtd.getConnections(event)) {
+            if ((eventConnection instanceof VisualLevelConnection) && (eventConnection.getSecond() == event)) {
+                return (VisualLevelConnection) eventConnection;
+            }
+        }
+        return null;
+    }
+
+    public static VisualLevelConnection getNextVisualLevel(VisualDtd dtd, VisualEvent event) {
+        for (Connection eventConnection : dtd.getConnections(event)) {
+            if ((eventConnection instanceof VisualLevelConnection) && (eventConnection.getFirst() == event)) {
+                return (VisualLevelConnection) eventConnection;
+            }
+        }
+        return null;
+    }
+
+    public static VisualEvent getPredVisualEvent(VisualDtd dtd, VisualEvent event) {
+        VisualLevelConnection predLevel = getPredVisualLevel(dtd, event);
+        if (predLevel != null) {
+            Node first = predLevel.getFirst();
+            if (first instanceof VisualEvent) {
+                return (VisualEvent) first;
+            }
+        }
+        return null;
+    }
+
+    public static VisualEvent getNextVisualEvent(VisualDtd dtd, VisualEvent event) {
+        VisualLevelConnection nextLevel = getNextVisualLevel(dtd, event);
+        if (nextLevel != null) {
+            Node second = nextLevel.getSecond();
+            if (second instanceof VisualEvent) {
+                return (VisualEvent) second;
+            }
+        }
+        return null;
+    }
+
+    public static VisualConnection removeTransitionEvent(VisualDtd dtd, VisualTransitionEvent transition) {
+        VisualEvent predEvent = DtdUtils.getPredVisualEvent(dtd, transition);
+        VisualEvent nextEvent = DtdUtils.getNextVisualEvent(dtd, transition);
+        if ((predEvent != null) && (nextEvent != null)) {
+            dtd.removeFromSelection(transition);
+            dtd.remove(transition);
+            try {
+                return dtd.connect(predEvent, nextEvent);
+            } catch (InvalidConnectionException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return null;
+    }
+
+    public static VisualConnection removePrefixTransitionEvents(VisualDtd dtd, VisualEvent endEvent, TransitionEvent.Direction stopDirection) {
+        boolean removed = false;
+        VisualEvent event = getPredVisualEvent(dtd, endEvent);
+        while (event instanceof VisualTransitionEvent) {
+            VisualTransitionEvent transition = (VisualTransitionEvent) event;
+            if (transition.getDirection() == stopDirection) break;
+            VisualEvent predEvent = getPredVisualEvent(dtd, event);
+            dtd.removeFromSelection(event);
+            dtd.remove(event);
+            event = predEvent;
+            removed = true;
+        }
+        if (event instanceof VisualEntryEvent) {
+            VisualSignal signal = event.getVisualSignal();
+            signal.setInitialState(getNextState(stopDirection));
+        }
+        if (removed) {
+            try {
+                return dtd.connect(event, endEvent);
+            } catch (InvalidConnectionException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return null;
+    }
+
+    public static VisualConnection removeSuffixTransitionEvents(VisualDtd dtd, VisualEvent startEvent) {
+        boolean removed = false;
+        VisualEvent event = getNextVisualEvent(dtd, startEvent);
+        while (event instanceof VisualTransitionEvent) {
+            VisualEvent nextEvent = getNextVisualEvent(dtd, event);
+            dtd.removeFromSelection(event);
+            dtd.remove(event);
+            event = nextEvent;
+            removed = true;
+        }
+        if (removed) {
+            try {
+                return dtd.connect(startEvent, event);
+            } catch (InvalidConnectionException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return null;
     }
 
 }

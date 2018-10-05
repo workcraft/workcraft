@@ -14,6 +14,7 @@ import org.workcraft.plugins.dtd.TransitionEvent;
 import org.workcraft.plugins.dtd.VisualDtd;
 import org.workcraft.plugins.dtd.VisualLevelConnection;
 import org.workcraft.plugins.dtd.VisualSignal;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.awt.event.MouseEvent;
@@ -43,13 +44,15 @@ public class DtdSelectionTool extends SelectionTool {
             if (node instanceof VisualSignal) {
                 we.saveMemento();
                 VisualSignal signal = (VisualSignal) node;
-                TransitionEvent.Direction direction = getDesiredDirection(e);
-                model.appendSignalEvent(signal, direction);
-                processed = true;
-            } else if ((node instanceof VisualLevelConnection) && (e.getClickCount() > 1)) {
-                we.saveMemento();
-                VisualLevelConnection connection = (VisualLevelConnection) node;
-                model.insertSignalPulse(connection);
+                try {
+                    VisualDtd.SignalEvent signalEvent = model.appendSignalEvent(signal, null);
+                    TransitionEvent.Direction direction = getDesiredDirection(e);
+                    if ((signalEvent != null) && (direction != null)) {
+                        signalEvent.edge.setDirection(direction);
+                    }
+                } catch (Throwable t) {
+                    DialogUtils.showError(t.getMessage());
+                }
                 processed = true;
             }
         }

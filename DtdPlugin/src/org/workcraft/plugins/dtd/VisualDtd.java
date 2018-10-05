@@ -46,26 +46,6 @@ public class VisualDtd extends AbstractVisualModel {
         }
     }
 
-    public class SignalPulse {
-        public final VisualConnection beforeLevel;
-        public final VisualTransitionEvent leadEdge;
-        public final VisualConnection level;
-        public final VisualTransitionEvent trailEdge;
-        public final VisualConnection afterLevel;
-        SignalPulse(VisualConnection beforeLevel, VisualTransitionEvent leadEdge,
-                VisualConnection level, VisualTransitionEvent trailEdge, VisualConnection afterLevel) {
-            this.beforeLevel = beforeLevel;
-            this.leadEdge = leadEdge;
-            this.level = level;
-            this.trailEdge = trailEdge;
-            this.afterLevel = afterLevel;
-        }
-
-        public boolean isValid() {
-            return (beforeLevel != null) && (leadEdge != null) && (level != null) && (trailEdge != null) && (afterLevel != null);
-        }
-    }
-
     public VisualDtd(Dtd model) {
         this(model, null);
     }
@@ -211,7 +191,6 @@ public class VisualDtd extends AbstractVisualModel {
         Container container = Hierarchy.getNearestContainer(v1, v2);
         VisualConnection vConnection;
         boolean isLevelConnection = DtdUtils.isLevelConnection(mConnection);
-        boolean isEventConnection = DtdUtils.isEventConnection(mConnection);
         if (isLevelConnection) {
             vConnection = new VisualLevelConnection(mConnection, v1, v2);
         } else {
@@ -220,7 +199,7 @@ public class VisualDtd extends AbstractVisualModel {
         container.add(vConnection);
         if (isLevelConnection) {
             DtdUtils.decorateVisualLevelConnection(vConnection);
-        } else if (isEventConnection) {
+        } else {
             DtdUtils.decorateVisualEventConnection(vConnection);
         }
         return vConnection;
@@ -372,6 +351,12 @@ public class VisualDtd extends AbstractVisualModel {
                 event = transition;
             }
         }
+        if ((event instanceof VisualEntryEvent) && (signal.getInitialState() == Signal.State.STABLE)) {
+            throw new RuntimeException("Signal at unknown state cannot change.");
+        }
+        if ((event instanceof VisualTransitionEvent) && (((VisualTransitionEvent) event).getDirection() == TransitionEvent.Direction.STABILISE)) {
+            throw new RuntimeException("Signal at unknown state cannot change.");
+        }
         VisualExitEvent exit = signal.getVisualSignalExit();
         Connection connection = getConnection(event, exit);
         if (connection != null) {
@@ -419,43 +404,11 @@ public class VisualDtd extends AbstractVisualModel {
         return new SignalEvent(beforeLevel, edge, afterLevel);
     }
 
-    public SignalPulse insertSignalPulse(VisualLevelConnection connection) {
-        VisualEvent fromEvent = (VisualEvent) connection.getFirst();
-        VisualEvent toEvent = (VisualEvent) connection.getSecond();
-        Signal.State state = DtdUtils.getNextState(fromEvent.getReferencedSignalEvent());
-        VisualSignal signal = fromEvent.getVisualSignal();
-        TransitionEvent.Direction leadDirection = DtdUtils.getPreviousDirection(state).reverse();
-        TransitionEvent.Direction trailDirection = DtdUtils.getNextDirection(state).reverse();
-        VisualTransitionEvent leadEdge = createVisualTransition(signal, leadDirection);
-        VisualTransitionEvent trailEdge = createVisualTransition(signal, trailDirection);
-
-        double y = fromEvent.getY();
-        Point2D p = connection.getMiddleSegmentCenterPoint();
-        double leadX = (p.getX() - PULSE_WIDTH < fromEvent.getX())
-                ? 0.5 * (p.getX() + fromEvent.getX()) : p.getX() - 0.5 * PULSE_WIDTH;
-        double trailX = (p.getX() + PULSE_WIDTH > toEvent.getX())
-                ? 0.5 * (p.getX() + toEvent.getRootSpaceX()) : p.getX() + 0.5 * PULSE_WIDTH;
-        leadEdge.setRootSpacePosition(new Point2D.Double(leadX, y));
-        trailEdge.setRootSpacePosition(new Point2D.Double(trailX, y));
-
-        remove(connection);
-        VisualConnection leadLevel = null;
-        VisualConnection midLevel = null;
-        VisualConnection trailLevel = null;
-        try {
-            leadLevel = connect(fromEvent, leadEdge);
-            midLevel = connect(leadEdge, trailEdge);
-            trailLevel = connect(trailEdge, toEvent);
-        } catch (InvalidConnectionException e) {
-        }
-        return new SignalPulse(leadLevel, leadEdge, midLevel, trailEdge, trailLevel);
-    }
-
     @Override
     public void deleteSelection() {
         HashSet<Node> undeletableNodes = new HashSet<>();
         for (Node node: getSelection()) {
-            if ((node instanceof VisualEntryEvent) || (node instanceof VisualExitEvent)) {
+            if (node instanceof VisualEvent) {
                 undeletableNodes.add(node);
             }
         }

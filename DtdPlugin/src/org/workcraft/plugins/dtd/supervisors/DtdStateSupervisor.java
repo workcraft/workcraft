@@ -3,7 +3,6 @@ package org.workcraft.plugins.dtd.supervisors;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.observation.*;
@@ -11,12 +10,10 @@ import org.workcraft.plugins.dtd.*;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.HashSet;
-import java.util.Set;
 
 public final class DtdStateSupervisor extends StateSupervisor {
 
-    private static final double OFFSET_ENTRY = 0.5;
+    private static final double OFFSET_ENTRY = 0.0;
     private static final double OFFSET_EXIT = 1.0;
 
     private final VisualDtd dtd;
@@ -28,8 +25,8 @@ public final class DtdStateSupervisor extends StateSupervisor {
     @Override
     public void handleHierarchyEvent(HierarchyEvent e) {
         Object sender = e.getSender();
-        if ((sender instanceof VisualSignal) && (e instanceof NodesAddedEvent)) {
-            for (Node node: e.getAffectedNodes()) {
+        if ((e instanceof NodesAddedEvent) && (sender instanceof VisualSignal)) {
+            for (Node node : e.getAffectedNodes()) {
                 if (node instanceof VisualEntryEvent) {
                     handleSignalEntryCreation((VisualSignal) sender, (VisualEntryEvent) node);
                 } else if (node instanceof VisualExitEvent) {
@@ -75,7 +72,7 @@ public final class DtdStateSupervisor extends StateSupervisor {
             String propertyName = pce.getPropertyName();
             if ((sender instanceof Signal) && (propertyName.equals(Signal.PROPERTY_INITIAL_STATE))) {
                 VisualSignal signal = dtd.getVisualComponent((Signal) sender, VisualSignal.class);
-                handleSignalStateChange(signal);
+                handleSignalInitialStateChange(signal);
             } else if ((sender instanceof TransitionEvent) && (propertyName.equals(TransitionEvent.PROPERTY_DIRECTION))) {
                 VisualTransitionEvent transtition = dtd.getVisualComponent((TransitionEvent) sender, VisualTransitionEvent.class);
                 handleTransitionDirectionChange(transtition);
@@ -113,21 +110,11 @@ public final class DtdStateSupervisor extends StateSupervisor {
     }
 
     private void handleSignalEntryTransformation(VisualEntryEvent entry) {
-        VisualSignal signal = entry.getVisualSignal();
-        if (signal != null) {
-            Rectangle2D bbSignal = BoundingBoxHelper.union(signal.getNameBoundingBox(), signal.getLabelBoundingBox());
-            if (bbSignal != null) {
-                double xMin = bbSignal.getMaxX();
-                VisualExitEvent exit = signal.getVisualSignalExit();
-                if (exit != null) {
-                    Rectangle2D bbExit = exit.getBoundingBox();
-                    double xMax = bbExit.getMaxX();
-                    for (VisualTransitionEvent transition: signal.getVisualTransitions()) {
-                        xMax = Math.min(xMax, transition.getBoundingBox().getMinX());
-                    }
-                    limitSignalEventPosition(entry, xMin, xMax);
-                }
-            }
+        if (entry.getX() != 0.0) {
+            entry.setX(OFFSET_ENTRY);
+        }
+        if (entry.getY() != 0.0) {
+            entry.setY(0.0);
         }
     }
 
@@ -170,32 +157,89 @@ public final class DtdStateSupervisor extends StateSupervisor {
         }
     }
 
-    private void handleTransitionDirectionChange(VisualTransitionEvent transition) {
-        Set<Connection> connections = new HashSet<>(dtd.getConnections(transition));
-        for (Connection connection: connections) {
+    private void handleSignalInitialStateChange(VisualSignal signal) {
+        VisualEntryEvent entry = signal.getVisualSignalEntry();
+        VisualEvent nextEvent = DtdUtils.getNextVisualEvent(dtd, entry);
+        boolean done = false;
+        if (nextEvent instanceof VisualTransitionEvent) {
+            VisualTransitionEvent nextTransition = (VisualTransitionEvent) nextEvent;
+            Signal.State state = signal.getInitialState();
+            if (DtdUtils.getPreviousDirection(state) == nextTransition.getDirection()) {
+                DtdUtils.removeTransitionEvent(dtd, nextTransition);
+                done = true;
+            } else if (state == Signal.State.STABLE) {
+                DtdUtils.removeSuffixTransitionEvents(dtd, entry);
+                done = true;
+            }
+        }
+        if (!done) {
+            Connection connection = dtd.getConnection(entry, nextEvent);
             if (connection instanceof VisualLevelConnection) {
-                Node first = connection.getFirst();
-                Node second = connection.getSecond();
+                dtd.removeFromSelection(connection);
                 dtd.remove(connection);
                 try {
-                    dtd.connect(first, second);
+                    dtd.connect(entry, nextEvent);
                 } catch (InvalidConnectionException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }
     }
 
-    private void handleSignalStateChange(VisualSignal signal) {
-        VisualEntryEvent entry = signal.getVisualSignalEntry();
-        Set<Connection> connections = new HashSet<>(dtd.getConnections(entry));
-        for (Connection connection: connections) {
+    private void handleTransitionDirectionChange(VisualTransitionEvent transition) {
+        boolean nextDone = false;
+        if (transition.getDirection() == TransitionEvent.Direction.STABILISE) {
+            DtdUtils.removePrefixTransitionEvents(dtd, transition, TransitionEvent.Direction.DESTABILISE);
+            DtdUtils.removeSuffixTransitionEvents(dtd, transition);
+            nextDone = true;
+        }
+        VisualEvent nextEvent = DtdUtils.getNextVisualEvent(dtd, transition);
+        if (nextEvent instanceof VisualTransitionEvent) {
+            VisualTransitionEvent nextTransition = (VisualTransitionEvent) nextEvent;
+            if (transition.getDirection() == nextTransition.getDirection()) {
+                DtdUtils.removeTransitionEvent(dtd, nextTransition);
+                nextDone = true;
+            }
+        }
+        if (!nextDone) {
+            Connection connection = dtd.getConnection(transition, nextEvent);
             if (connection instanceof VisualLevelConnection) {
-                Node first = connection.getFirst();
-                Node second = connection.getSecond();
+                dtd.removeFromSelection(connection);
                 dtd.remove(connection);
                 try {
-                    dtd.connect(first, second);
+                    dtd.connect(transition, nextEvent);
                 } catch (InvalidConnectionException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+        boolean predDone = false;
+        VisualEvent predEvent = DtdUtils.getPredVisualEvent(dtd, transition);
+        if (predEvent instanceof VisualTransitionEvent) {
+            VisualTransitionEvent predTransition = (VisualTransitionEvent) predEvent;
+            if (predTransition.getDirection() == transition.getDirection()) {
+                DtdUtils.removeTransitionEvent(dtd, transition);
+                predDone = true;
+            }
+        }
+        if (predEvent instanceof VisualEntryEvent) {
+            VisualSignal signal = transition.getVisualSignal();
+            Signal.State state = signal.getInitialState();
+            if (DtdUtils.getPreviousDirection(state) == transition.getDirection()) {
+                DtdUtils.removeTransitionEvent(dtd, transition);
+                predDone = true;
+            }
+        }
+        if (!predDone) {
+            Connection connection = dtd.getConnection(predEvent, transition);
+            if (connection instanceof VisualLevelConnection) {
+                dtd.removeFromSelection(connection);
+                dtd.remove(connection);
+                try {
+                    dtd.connect(predEvent, transition);
+                } catch (InvalidConnectionException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }
