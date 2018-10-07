@@ -16,6 +16,7 @@ import org.workcraft.plugins.dtd.supervisors.DtdStateSupervisor;
 import org.workcraft.plugins.dtd.tools.DtdConnectionTool;
 import org.workcraft.plugins.dtd.tools.DtdSelectionTool;
 import org.workcraft.plugins.dtd.tools.DtdSignalGeneratorTool;
+import org.workcraft.plugins.dtd.utils.DtdUtils;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Pair;
 
@@ -27,9 +28,6 @@ import java.util.Queue;
 
 @DisplayName("Digital Timing Diagram")
 public class VisualDtd extends AbstractVisualModel {
-
-    private static final double OFFSET_TRANSITION = 1.0;
-    private static final double PULSE_WIDTH = 1.0;
 
     public class SignalEvent {
         public final VisualConnection beforeLevel;
@@ -379,9 +377,10 @@ public class VisualDtd extends AbstractVisualModel {
         if (event != null) {
             x = event.getX();
         }
-        x += OFFSET_TRANSITION;
-        if (x + OFFSET_TRANSITION > exit.getX()) {
-            exit.setPosition(new Point2D.Double(x + OFFSET_TRANSITION, y));
+        double offset = DtdSettings.getTransitionSeparation();
+        x += offset;
+        if (x + offset > exit.getX()) {
+            exit.setPosition(new Point2D.Double(x + offset, y));
         }
         edge.setPosition(new Point2D.Double(x, y));
         Color color = signal.getForegroundColor();

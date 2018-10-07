@@ -1,20 +1,16 @@
 package org.workcraft.plugins.dtd.supervisors;
 
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.observation.*;
 import org.workcraft.plugins.dtd.*;
+import org.workcraft.plugins.dtd.utils.DtdUtils;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 public final class DtdStateSupervisor extends StateSupervisor {
-
-    private static final double OFFSET_ENTRY = 0.0;
-    private static final double OFFSET_EXIT = 1.0;
 
     private final VisualDtd dtd;
 
@@ -33,24 +29,6 @@ public final class DtdStateSupervisor extends StateSupervisor {
                     handleSignalExitCreation((VisualSignal) sender, (VisualExitEvent) node);
                 }
             }
-        }
-    }
-
-    private void handleSignalEntryCreation(VisualSignal signal, VisualEntryEvent entry) {
-        entry.setPosition(new Point2D.Double(OFFSET_ENTRY, 0.0));
-    }
-
-    private void handleSignalExitCreation(VisualSignal signal, VisualExitEvent exit) {
-        // Offset exit event to align with the furthest one
-        Container container = (Container) signal.getParent();
-        double x = OFFSET_EXIT;
-        for (VisualExitEvent otherExit : dtd.getVisualSignalExits(container)) {
-            if (otherExit.getX() > x) {
-                x = otherExit.getX();
-            }
-        }
-        if (exit.getX() != x) {
-            exit.setX(x);
         }
     }
 
@@ -77,6 +55,24 @@ public final class DtdStateSupervisor extends StateSupervisor {
                 VisualTransitionEvent transtition = dtd.getVisualComponent((TransitionEvent) sender, VisualTransitionEvent.class);
                 handleTransitionDirectionChange(transtition);
             }
+        }
+    }
+
+    private void handleSignalEntryCreation(VisualSignal signal, VisualEntryEvent entry) {
+        entry.setPosition(new Point2D.Double(0.0, 0.0));
+    }
+
+    private void handleSignalExitCreation(VisualSignal signal, VisualExitEvent exit) {
+        // Offset exit event to align with the furthest one
+        Container container = (Container) signal.getParent();
+        double x = DtdSettings.getTransitionSeparation();
+        for (VisualExitEvent otherExit : dtd.getVisualSignalExits(container)) {
+            if (otherExit.getX() > x) {
+                x = otherExit.getX();
+            }
+        }
+        if (exit.getX() != x) {
+            exit.setX(x);
         }
     }
 
@@ -111,7 +107,7 @@ public final class DtdStateSupervisor extends StateSupervisor {
 
     private void handleSignalEntryTransformation(VisualEntryEvent entry) {
         if (entry.getX() != 0.0) {
-            entry.setX(OFFSET_ENTRY);
+            entry.setX(0.0);
         }
         if (entry.getY() != 0.0) {
             entry.setY(0.0);
@@ -128,7 +124,7 @@ public final class DtdStateSupervisor extends StateSupervisor {
                 for (VisualTransitionEvent transition: signal.getVisualTransitions()) {
                     xMin = Math.max(xMin, transition.getBoundingBox().getMaxX());
                 }
-                double xMax = xMin + 100.0;
+                double xMax = xMin + 1000.0;
                 limitSignalEventPosition(exit, xMin, xMax);
                 // Align other exit events to this one
                 Container container = (Container) signal.getParent();
@@ -144,12 +140,10 @@ public final class DtdStateSupervisor extends StateSupervisor {
     private void limitSignalEventPosition(VisualEvent event, double xMin, double xMax) {
         Rectangle2D bb = event.getBoundingBox();
         double x = event.getX();
-        if (xMin > bb.getMinX()) {
-            double xOffset = event.getX() - bb.getMinX();
-            x = xMin + xOffset;
-        } else if (xMax < bb.getMaxX()) {
-            double xOffset = bb.getMaxX() - event.getX();
-            x = xMax - xOffset;
+        if (bb.getMinX() < xMin) {
+            x = xMin + event.getX() - bb.getMinX();
+        } else if (bb.getMaxX() > xMax) {
+            x = xMax - bb.getMaxX() + event.getX();
         }
         Point2D pos = new Point2D.Double(x, 0.0);
         if (pos.distance(event.getPosition()) > 0.001) {
@@ -160,88 +154,59 @@ public final class DtdStateSupervisor extends StateSupervisor {
     private void handleSignalInitialStateChange(VisualSignal signal) {
         VisualEntryEvent entry = signal.getVisualSignalEntry();
         VisualEvent nextEvent = DtdUtils.getNextVisualEvent(dtd, entry);
-        boolean done = false;
         if (nextEvent instanceof VisualTransitionEvent) {
             VisualTransitionEvent nextTransition = (VisualTransitionEvent) nextEvent;
             Signal.State state = signal.getInitialState();
             if (DtdUtils.getPreviousDirection(state) == nextTransition.getDirection()) {
-                DtdUtils.removeTransitionEvent(dtd, nextTransition);
-                done = true;
+                DtdUtils.dissolveTransitionEvent(dtd, nextTransition);
             } else if (state == Signal.State.STABLE) {
-                DtdUtils.removeSuffixTransitionEvents(dtd, entry);
-                done = true;
+                DtdUtils.dissolveSuffixTransitionEvents(dtd, entry);
+            } else {
+                DtdUtils.updateVisualLevelConnection(dtd, entry, nextEvent);
             }
-        }
-        if (!done) {
-            Connection connection = dtd.getConnection(entry, nextEvent);
-            if (connection instanceof VisualLevelConnection) {
-                dtd.removeFromSelection(connection);
-                dtd.remove(connection);
-                try {
-                    dtd.connect(entry, nextEvent);
-                } catch (InvalidConnectionException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+        } else {
+            DtdUtils.updateVisualLevelConnection(dtd, entry, nextEvent);
         }
     }
 
     private void handleTransitionDirectionChange(VisualTransitionEvent transition) {
         boolean nextDone = false;
         if (transition.getDirection() == TransitionEvent.Direction.STABILISE) {
-            DtdUtils.removePrefixTransitionEvents(dtd, transition, TransitionEvent.Direction.DESTABILISE);
-            DtdUtils.removeSuffixTransitionEvents(dtd, transition);
+            DtdUtils.dissolvePrefixTransitionEvents(dtd, transition, TransitionEvent.Direction.DESTABILISE);
+            DtdUtils.dissolveSuffixTransitionEvents(dtd, transition);
             nextDone = true;
         }
         VisualEvent nextEvent = DtdUtils.getNextVisualEvent(dtd, transition);
         if (nextEvent instanceof VisualTransitionEvent) {
             VisualTransitionEvent nextTransition = (VisualTransitionEvent) nextEvent;
             if (transition.getDirection() == nextTransition.getDirection()) {
-                DtdUtils.removeTransitionEvent(dtd, nextTransition);
+                DtdUtils.dissolveTransitionEvent(dtd, nextTransition);
                 nextDone = true;
             }
         }
         if (!nextDone) {
-            Connection connection = dtd.getConnection(transition, nextEvent);
-            if (connection instanceof VisualLevelConnection) {
-                dtd.removeFromSelection(connection);
-                dtd.remove(connection);
-                try {
-                    dtd.connect(transition, nextEvent);
-                } catch (InvalidConnectionException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+            DtdUtils.updateVisualLevelConnection(dtd, transition, nextEvent);
         }
 
-        boolean predDone = false;
-        VisualEvent predEvent = DtdUtils.getPredVisualEvent(dtd, transition);
-        if (predEvent instanceof VisualTransitionEvent) {
-            VisualTransitionEvent predTransition = (VisualTransitionEvent) predEvent;
-            if (predTransition.getDirection() == transition.getDirection()) {
-                DtdUtils.removeTransitionEvent(dtd, transition);
-                predDone = true;
+        boolean prevDone = false;
+        VisualEvent prevEvent = DtdUtils.getPrevVisualEvent(dtd, transition);
+        if (prevEvent instanceof VisualTransitionEvent) {
+            VisualTransitionEvent prevTransition = (VisualTransitionEvent) prevEvent;
+            if (prevTransition.getDirection() == transition.getDirection()) {
+                DtdUtils.dissolveTransitionEvent(dtd, transition);
+                prevDone = true;
             }
         }
-        if (predEvent instanceof VisualEntryEvent) {
+        if (prevEvent instanceof VisualEntryEvent) {
             VisualSignal signal = transition.getVisualSignal();
             Signal.State state = signal.getInitialState();
             if (DtdUtils.getPreviousDirection(state) == transition.getDirection()) {
-                DtdUtils.removeTransitionEvent(dtd, transition);
-                predDone = true;
+                DtdUtils.dissolveTransitionEvent(dtd, transition);
+                prevDone = true;
             }
         }
-        if (!predDone) {
-            Connection connection = dtd.getConnection(predEvent, transition);
-            if (connection instanceof VisualLevelConnection) {
-                dtd.removeFromSelection(connection);
-                dtd.remove(connection);
-                try {
-                    dtd.connect(predEvent, transition);
-                } catch (InvalidConnectionException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+        if (!prevDone) {
+            DtdUtils.updateVisualLevelConnection(dtd, prevEvent,  transition);
         }
     }
 

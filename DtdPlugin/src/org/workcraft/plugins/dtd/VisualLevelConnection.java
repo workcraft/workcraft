@@ -3,6 +3,7 @@ package org.workcraft.plugins.dtd;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.plugins.dtd.utils.DtdUtils;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 import java.awt.*;

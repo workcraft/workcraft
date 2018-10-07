@@ -6,6 +6,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.plugins.dtd.*;
+import org.workcraft.plugins.dtd.utils.DtdUtils;
 import org.workcraft.plugins.wtg.State;
 import org.workcraft.plugins.wtg.Waveform;
 import org.workcraft.plugins.wtg.Wtg;
