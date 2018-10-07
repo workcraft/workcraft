@@ -4,7 +4,9 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.NodeCreationException;
+import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
+import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.plugins.dtd.DtdSettings;
 import org.workcraft.plugins.dtd.Signal;
@@ -16,6 +18,8 @@ import java.util.LinkedList;
 
 public class DtdSignalGeneratorTool extends NodeGeneratorTool {
 
+    static boolean shiftKeyDown;
+
     public DtdSignalGeneratorTool() {
         super(new DefaultNodeGenerator(Signal.class) {
             @Override
@@ -24,6 +28,7 @@ public class DtdSignalGeneratorTool extends NodeGeneratorTool {
                 VisualDtd dtd = (VisualDtd) model;
                 dtd.createSignalEntryAndExit(signal);
                 spaceVertically(dtd, signal);
+                signal.setType(shiftKeyDown ? Signal.Type.INPUT : Signal.Type.OUTPUT);
                 return signal;
             }
 
@@ -62,6 +67,17 @@ public class DtdSignalGeneratorTool extends NodeGeneratorTool {
                 }
             }
         });
+    }
+
+    @Override
+    public void mousePressed(GraphEditorMouseEvent e) {
+        shiftKeyDown = e.isShiftKeyDown();
+        super.mousePressed(e);
+    }
+
+    @Override
+    public String getHintText(final GraphEditor editor) {
+        return "Click to create an output signal (hold Shift for input signal).";
     }
 
 }

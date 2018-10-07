@@ -112,11 +112,14 @@ public class DtdUtils {
         }
     }
 
-    public static void decorateVisualLevelConnection(VisualDtd dtd, VisualEvent first, VisualEvent second) {
+    public static VisualLevelConnection decorateVisualLevelConnection(VisualDtd dtd, VisualEvent first, VisualEvent second) {
+        VisualLevelConnection level = null;
         Connection connection = dtd.getConnection(first, second);
         if (connection instanceof VisualLevelConnection) {
-            decorateVisualLevelConnection((VisualLevelConnection) connection);
+            level = (VisualLevelConnection) connection;
+            decorateVisualLevelConnection(level);
         }
+        return level;
     }
 
     public static void decorateVisualEventConnection(VisualConnection connection) {
@@ -223,14 +226,15 @@ public class DtdUtils {
             event = nextEvent;
             removed = true;
         }
-        if (removed) {
+        if (!removed) {
+            return decorateVisualLevelConnection(dtd, startEvent, event);
+        } else {
             try {
                 return dtd.connect(startEvent, event);
             } catch (InvalidConnectionException e) {
                 throw new RuntimeException(e);
             }
         }
-        return null;
     }
 
 }

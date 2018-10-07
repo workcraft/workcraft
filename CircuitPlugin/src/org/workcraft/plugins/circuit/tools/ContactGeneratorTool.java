@@ -13,6 +13,7 @@ import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.util.GUI;
 
 public class ContactGeneratorTool extends NodeGeneratorTool {
+
     static boolean shiftKeyDown;
 
     public ContactGeneratorTool() {
