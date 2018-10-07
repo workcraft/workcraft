@@ -162,10 +162,10 @@ public final class DtdStateSupervisor extends StateSupervisor {
             } else if (state == Signal.State.STABLE) {
                 DtdUtils.dissolveSuffixTransitionEvents(dtd, entry);
             } else {
-                DtdUtils.updateVisualLevelConnection(dtd, entry, nextEvent);
+                DtdUtils.decorateVisualLevelConnection(dtd, entry, nextEvent);
             }
         } else {
-            DtdUtils.updateVisualLevelConnection(dtd, entry, nextEvent);
+            DtdUtils.decorateVisualLevelConnection(dtd, entry, nextEvent);
         }
     }
 
@@ -185,7 +185,7 @@ public final class DtdStateSupervisor extends StateSupervisor {
             }
         }
         if (!nextDone) {
-            DtdUtils.updateVisualLevelConnection(dtd, transition, nextEvent);
+            DtdUtils.decorateVisualLevelConnection(dtd, transition, nextEvent);
         }
 
         boolean prevDone = false;
@@ -206,7 +206,7 @@ public final class DtdStateSupervisor extends StateSupervisor {
             }
         }
         if (!prevDone) {
-            DtdUtils.updateVisualLevelConnection(dtd, prevEvent,  transition);
+            DtdUtils.decorateVisualLevelConnection(dtd, prevEvent,  transition);
         }
     }
 

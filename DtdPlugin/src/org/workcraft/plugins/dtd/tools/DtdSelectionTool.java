@@ -10,11 +10,8 @@ import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
-import org.workcraft.plugins.dtd.TransitionEvent;
-import org.workcraft.plugins.dtd.VisualDtd;
-import org.workcraft.plugins.dtd.VisualLevelConnection;
-import org.workcraft.plugins.dtd.VisualSignal;
-import org.workcraft.util.DialogUtils;
+import org.workcraft.plugins.dtd.*;
+import org.workcraft.plugins.dtd.utils.DtdUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.awt.event.MouseEvent;
@@ -34,24 +31,24 @@ public class DtdSelectionTool extends SelectionTool {
         we.setCanCopy(false);
     }
 
+    public DtdSelectionTool(boolean enableGroupping, boolean enablePaging, boolean enableFlipping, boolean enableRotating) {
+        super(enableGroupping, enablePaging, enableFlipping, enableRotating);
+    }
+
     @Override
     public void mouseClicked(GraphEditorMouseEvent e) {
         boolean processed = false;
         WorkspaceEntry we = e.getEditor().getWorkspaceEntry();
-        VisualDtd model = (VisualDtd) e.getModel();
+        VisualDtd dtd = (VisualDtd) e.getModel();
         if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() > 1)) {
-            Node node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
+            Node node = HitMan.hitFirstInCurrentLevel(e.getPosition(), dtd);
             if (node instanceof VisualSignal) {
-                we.saveMemento();
                 VisualSignal signal = (VisualSignal) node;
-                try {
-                    VisualDtd.SignalEvent signalEvent = model.appendSignalEvent(signal, null);
-                    TransitionEvent.Direction direction = getDesiredDirection(e);
-                    if ((signalEvent != null) && (direction != null)) {
-                        signalEvent.edge.setDirection(direction);
-                    }
-                } catch (Throwable t) {
-                    DialogUtils.showError(t.getMessage());
+                Signal.State state = getLastState(dtd, signal);
+                TransitionEvent.Direction direction = getDesiredDirection(state, e.getKeyModifiers());
+                if (direction != null) {
+                    we.saveMemento();
+                    dtd.appendSignalEvent(signal, direction);
                 }
                 processed = true;
             }
@@ -61,17 +58,40 @@ public class DtdSelectionTool extends SelectionTool {
         }
     }
 
-    private TransitionEvent.Direction getDesiredDirection(GraphEditorMouseEvent e) {
-        switch (e.getKeyModifiers()) {
-        case MouseEvent.SHIFT_DOWN_MASK:
-            return TransitionEvent.Direction.RISE;
-        case MouseEvent.CTRL_DOWN_MASK:
-            return TransitionEvent.Direction.FALL;
-        case MouseEvent.SHIFT_DOWN_MASK | MouseEvent.CTRL_DOWN_MASK:
-            return TransitionEvent.Direction.DESTABILISE;
-        default:
-            return null;
+    private Signal.State getLastState(VisualDtd dtd, VisualSignal signal) {
+        VisualExitEvent exit = signal.getVisualSignalExit();
+        VisualEvent event = DtdUtils.getPrevVisualEvent(dtd, exit);
+        return DtdUtils.getNextState(event.getReferencedSignalEvent());
+    }
+
+    private TransitionEvent.Direction getDesiredDirection(Signal.State state, int mask) {
+        if (state == Signal.State.UNSTABLE) {
+            switch (mask) {
+            case MouseEvent.SHIFT_DOWN_MASK:
+                return TransitionEvent.Direction.RISE;
+            case MouseEvent.CTRL_DOWN_MASK:
+                return TransitionEvent.Direction.FALL;
+            default:
+                return TransitionEvent.Direction.STABILISE;
+            }
         }
+        if (state == Signal.State.HIGH) {
+            switch (mask) {
+            case MouseEvent.SHIFT_DOWN_MASK | MouseEvent.CTRL_DOWN_MASK:
+                return TransitionEvent.Direction.DESTABILISE;
+            default:
+                return TransitionEvent.Direction.FALL;
+            }
+        }
+        if (state == Signal.State.LOW) {
+            switch (mask) {
+            case MouseEvent.SHIFT_DOWN_MASK | MouseEvent.CTRL_DOWN_MASK:
+                return TransitionEvent.Direction.DESTABILISE;
+            default:
+                return TransitionEvent.Direction.RISE;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -94,8 +114,8 @@ public class DtdSelectionTool extends SelectionTool {
 
     @Override
     public String getHintText(final GraphEditor editor) {
-        return "Double-click on a signal to add its transition. Hold Shift for rising edge, " +
-                DesktopApi.getMenuKeyMaskName() + " for falling edge, or both keys for unstable state.";
+        return "Double-click on a signal to add an event. In unstable state hold Shift to rise, " +
+                DesktopApi.getMenuKeyMaskName() + " to fall; in high/low state hold both keys to destabilise.";
     }
 
 }

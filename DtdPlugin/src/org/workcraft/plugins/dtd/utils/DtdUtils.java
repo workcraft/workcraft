@@ -93,6 +93,7 @@ public class DtdUtils {
 
         connection.setConnectionType(ConnectionType.POLYLINE);
         Polyline polyline = (Polyline) connection.getGraphic();
+        polyline.resetControlPoints();
 
         Signal.State state = null;
         if (v1 instanceof VisualEvent) {
@@ -111,18 +112,11 @@ public class DtdUtils {
         }
     }
 
-    public static boolean isEventConnection(MathConnection connection) {
-        boolean result = false;
-        if (connection != null) {
-            MathNode c1 = connection.getFirst();
-            MathNode c2 = connection.getSecond();
-            if ((c1 instanceof Event) && (c2 instanceof Event)) {
-                Signal s1 = ((Event) c1).getSignal();
-                Signal s2 = ((Event) c2).getSignal();
-                result = s1 != s2;
-            }
+    public static void decorateVisualLevelConnection(VisualDtd dtd, VisualEvent first, VisualEvent second) {
+        Connection connection = dtd.getConnection(first, second);
+        if (connection instanceof VisualLevelConnection) {
+            decorateVisualLevelConnection((VisualLevelConnection) connection);
         }
-        return result;
     }
 
     public static void decorateVisualEventConnection(VisualConnection connection) {
@@ -232,20 +226,6 @@ public class DtdUtils {
         if (removed) {
             try {
                 return dtd.connect(startEvent, event);
-            } catch (InvalidConnectionException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return null;
-    }
-
-    public static VisualConnection updateVisualLevelConnection(VisualDtd dtd, VisualEvent first, VisualEvent second) {
-        Connection connection = dtd.getConnection(first, second);
-        if (connection instanceof VisualLevelConnection) {
-            dtd.removeFromSelection(connection);
-            dtd.remove(connection);
-            try {
-                return dtd.connect(first, second);
             } catch (InvalidConnectionException e) {
                 throw new RuntimeException(e);
             }
