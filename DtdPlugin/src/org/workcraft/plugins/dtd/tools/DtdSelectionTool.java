@@ -19,6 +19,8 @@ import java.util.ArrayList;
 
 public class DtdSelectionTool extends SelectionTool {
 
+    private VisualSignal swappingSignal = null;
+
     public DtdSelectionTool() {
         super(false, false, false, false);
     }
@@ -55,6 +57,42 @@ public class DtdSelectionTool extends SelectionTool {
         }
         if (!processed) {
             super.mouseClicked(e);
+        }
+    }
+
+    @Override
+    public void startDrag(GraphEditorMouseEvent e) {
+        GraphEditor editor = e.getEditor();
+        VisualModel model = editor.getModel();
+        if (e.getButtonModifiers() == MouseEvent.BUTTON1_DOWN_MASK) {
+            Node hitNode = HitMan.hitFirstInCurrentLevel(e.getStartPosition(), model);
+            if ((swappingSignal == null) && (e.isShiftKeyDown()) && (hitNode instanceof VisualSignal) &&
+                    (model instanceof VisualDtd)) {
+                swappingSignal = (VisualSignal) hitNode;
+                beforeSelectionModification(editor);
+            }
+        }
+        super.startDrag(e);
+    }
+
+    @Override
+    public void mouseMoved(GraphEditorMouseEvent e) {
+        super.mouseMoved(e);
+        GraphEditor editor = e.getEditor();
+        VisualModel model = editor.getModel();
+        if (swappingSignal != null) {
+            if ((e.isShiftKeyDown()) && (e.getButtonModifiers() == MouseEvent.BUTTON1_DOWN_MASK)) {
+                Node node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
+                if (node instanceof VisualSignal) {
+                    VisualSignal visualSignal = (VisualSignal) node;
+                    double y = visualSignal.getY();
+                    visualSignal.setY(swappingSignal.getY());
+                    swappingSignal.setY(y);
+                }
+            } else {
+                swappingSignal = null;
+                afterSelectionModification(editor);
+            }
         }
     }
 
