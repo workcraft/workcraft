@@ -1,6 +1,7 @@
 package org.workcraft.plugins.wtg;
 
 import org.workcraft.annotations.DisplayName;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -12,6 +13,7 @@ import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.dtd.VisualDtd;
 import org.workcraft.plugins.dtd.VisualSignal;
 import org.workcraft.plugins.dtd.VisualTransitionEvent;
+import org.workcraft.plugins.wtg.properties.SignalDeclarationPropertyDescriptor;
 import org.workcraft.plugins.wtg.properties.SignalNamePropertyDescriptor;
 import org.workcraft.plugins.wtg.properties.SignalTypePropertyDescriptor;
 import org.workcraft.plugins.wtg.tools.WtgConnectionTool;
@@ -20,9 +22,7 @@ import org.workcraft.plugins.wtg.tools.WtgSignalGeneratorTool;
 import org.workcraft.plugins.wtg.tools.WtgSimulationTool;
 import org.workcraft.util.Hierarchy;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @DisplayName("Waveform Transition Graph")
 public class VisualWtg extends VisualDtd {
@@ -104,7 +104,17 @@ public class VisualWtg extends VisualDtd {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
             Wtg wtg = (Wtg) getMathModel();
+            Container container = getCurrentLevel();
+            VisualWaveform visualWaveform = null;
+            if (container instanceof VisualWaveform) {
+                visualWaveform = (VisualWaveform) container;
+            }
             for (String signalName : wtg.getSignalNames()) {
+                if (visualWaveform != null) {
+                    SignalDeclarationPropertyDescriptor declarationDescriptor = new
+                            SignalDeclarationPropertyDescriptor(this, visualWaveform, signalName);
+                    properties.insertOrderedByFirstWord(declarationDescriptor);
+                }
                 SignalNamePropertyDescriptor symbolDescriptor = new SignalNamePropertyDescriptor(wtg, signalName);
                 properties.insertOrderedByFirstWord(symbolDescriptor);
                 SignalTypePropertyDescriptor typeDescriptor = new SignalTypePropertyDescriptor(wtg, signalName);
