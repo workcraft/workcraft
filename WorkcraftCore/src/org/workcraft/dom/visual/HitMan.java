@@ -1,13 +1,7 @@
 package org.workcraft.dom.visual;
 
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-
+import net.sf.jga.algorithms.Filter;
+import net.sf.jga.fn.UnaryFunctor;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.ControlPoint;
@@ -17,8 +11,13 @@ import org.workcraft.util.Func2;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 
-import net.sf.jga.algorithms.Filter;
-import net.sf.jga.fn.UnaryFunctor;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 public class HitMan {
 
@@ -67,17 +66,18 @@ public class HitMan {
     }
 
     public static Node hitFirstChild(Point2D point, Container container) {
-        VisualTransformableNode vertex = HitMan.hitFirstChild(point, container, VisualTransformableNode.class);
-        if (vertex instanceof ControlPoint) {
-            return vertex;
+        Node node = HitMan.hitFirstChild(point, container, VisualTransformableNode.class);
+        // Top priority to connection control points
+        if (node instanceof ControlPoint) {
+            return node;
         }
         VisualConnection connection = HitMan.hitFirstChild(point, container, VisualConnection.class);
-        if ((connection != null) && (connection.getParent() == container)) {
-            if ((connection.getFirst() != vertex) && (connection.getSecond() != vertex)) {
-                return connection;
-            }
+        // Try connections in the same container not touching the hit node
+        if ((node == null) || (connection != null) && (connection.getParent() == container)
+                && (connection.getFirst() != node) && (connection.getSecond() != node)) {
+            return connection;
         }
-        return vertex;
+        return node;
     }
 
     @SuppressWarnings("unchecked")
@@ -91,7 +91,10 @@ public class HitMan {
         Iterable<Node> filteredChildren = getFilteredChildren(pointInLocalSpace, parentNode);
         for (Node childNode: filteredChildren) {
             if (filter.eval(childNode)) {
-                result =  hitBranch(pointInLocalSpace, childNode);
+                Node branchNode = hitBranch(pointInLocalSpace, childNode);
+                if (filter.eval(branchNode)) {
+                    result = branchNode;
+                }
             } else {
                 result = hitFirstChild(pointInLocalSpace, childNode, filter);
             }

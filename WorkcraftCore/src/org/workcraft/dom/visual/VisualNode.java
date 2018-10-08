@@ -1,15 +1,6 @@
 package org.workcraft.dom.visual;
 
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.Collection;
-import java.util.Collections;
-
-import javax.swing.JPopupMenu;
-
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.PopupMenuBuilder.PopupMenuSegment;
-import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
@@ -19,20 +10,16 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.Collection;
+import java.util.Collections;
+
 public abstract class VisualNode implements Properties, Node, Touchable, Stylable, ObservableState, Hidable {
     protected ObservableStateImpl observableStateImpl = new ObservableStateImpl();
     private Node parent = null;
     private boolean hidden = false;
-    private final PopupMenuBuilder popupMenuBuilder = new PopupMenuBuilder();
     private final ModelProperties properties = new ModelProperties();
-
-    protected final void addPopupMenuSegment(PopupMenuSegment segment) {
-        popupMenuBuilder.addSegment(segment);
-    }
-
-    public final JPopupMenu createPopupMenu(ScriptedActionListener actionListener) {
-        return popupMenuBuilder.build(actionListener);
-    }
 
     public void addPropertyDeclaration(PropertyDescriptor declaration) {
         properties.add(declaration);

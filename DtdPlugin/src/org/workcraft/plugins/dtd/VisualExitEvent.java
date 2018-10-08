@@ -1,7 +1,6 @@
 package org.workcraft.plugins.dtd;
 
-import java.awt.BasicStroke;
-import java.awt.Shape;
+import java.awt.*;
 import java.awt.geom.Path2D;
 
 public class VisualExitEvent extends VisualEvent {

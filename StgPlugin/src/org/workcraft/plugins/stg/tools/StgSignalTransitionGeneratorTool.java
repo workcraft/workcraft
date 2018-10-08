@@ -14,6 +14,7 @@ import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.util.GUI;
 
 public class StgSignalTransitionGeneratorTool extends NodeGeneratorTool {
+
     static boolean shiftKeyDown;
     static boolean menuKeyDown;
 

@@ -15,6 +15,7 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 
 @SuppressWarnings("serial")
@@ -147,6 +148,8 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
             try {
                 setValueAt(value, editingRow, editingColumn);
                 removeEditor();
+            } catch (ConcurrentModificationException e1) {
+                e1.printStackTrace();
             } catch (Throwable t) {
                 DialogUtils.showError(t.getMessage(), "Cannot change property");
             }

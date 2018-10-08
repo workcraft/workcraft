@@ -1,29 +1,12 @@
 package org.workcraft.plugins.dtd;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.event.KeyEvent;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Path2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.Alignment;
-import org.workcraft.dom.visual.BoundingBoxHelper;
-import org.workcraft.dom.visual.CustomTouchable;
-import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.Positioning;
-import org.workcraft.dom.visual.Touchable;
-import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.*;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.HierarchyObserver;
@@ -31,6 +14,13 @@ import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.plugins.shared.CommonSignalSettings;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Hierarchy;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.Collection;
+import java.util.HashSet;
 
 @Hotkey(KeyEvent.VK_X)
 @DisplayName("Signal")
@@ -99,34 +89,11 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
         getReferencedSignal().setInitialState(value);
     }
 
-    public Shape getShape() {
-        double h = 0.2 * size;
-        double h2 = 0.4 * h;
-        double w = 0.1 * size;
-        double w2 = 0.5 * w;
-        double s = 0.5 * size;
-        double s2 = 0.5 * s;
-        Path2D shape = new Path2D.Double();
-        // "1" symbol
-        Path2D oneShape = new Path2D.Double();
-        oneShape.moveTo(-w2, -s2 - h2 + w2);
-        oneShape.lineTo(0.0, -s2 - h2);
-        oneShape.lineTo(0.0, -s2 + h2);
-        oneShape.moveTo(-w2, -s2 + h2);
-        oneShape.lineTo(+w2, -s2 + h2);
-        shape.append(oneShape, false);
-        // "0" shape
-        Ellipse2D zeroShape = new Ellipse2D.Double(-w2, s2 - h2, w, h);
-        shape.append(zeroShape, false);
-        return shape;
-    }
-
     @Override
     public void draw(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         Color colorisation = r.getDecoration().getColorisation();
         g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-        drawLabelInLocalSpace(r);
         drawNameInLocalSpace(r);
     }
 
@@ -174,14 +141,6 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
     }
 
     @Override
-    public String getLabel() {
-        if ((getReferencedSignal() != null) && (getInitialState() != null)) {
-            return "[" + getInitialState().getSymbol() + "]";
-        }
-        return null;
-    }
-
-    @Override
     public Color getNameColor() {
         switch (getType()) {
         case INPUT:    return CommonSignalSettings.getInputColor();
@@ -189,11 +148,6 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
         case INTERNAL: return CommonSignalSettings.getInternalColor();
         default:       return CommonSignalSettings.getDummyColor();
         }
-    }
-
-    @Override
-    public Color getLabelColor() {
-        return getForegroundColor();
     }
 
     @Override
