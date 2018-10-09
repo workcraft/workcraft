@@ -1,11 +1,8 @@
 package org.workcraft.plugins.dtd.tools;
 
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.connections.ControlPoint;
-import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
@@ -15,7 +12,6 @@ import org.workcraft.plugins.dtd.utils.DtdUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 
 public class DtdSelectionTool extends SelectionTool {
 
@@ -66,10 +62,9 @@ public class DtdSelectionTool extends SelectionTool {
         VisualModel model = editor.getModel();
         if (e.getButtonModifiers() == MouseEvent.BUTTON1_DOWN_MASK) {
             Node hitNode = HitMan.hitFirstInCurrentLevel(e.getStartPosition(), model);
-            if ((swappingSignal == null) && (e.isShiftKeyDown()) && (hitNode instanceof VisualSignal) &&
-                    (model instanceof VisualDtd)) {
+            if ((swappingSignal == null) && e.isShiftKeyDown() &&
+                    (hitNode instanceof VisualSignal) && (model instanceof VisualDtd)) {
                 swappingSignal = (VisualSignal) hitNode;
-                beforeSelectionModification(editor);
             }
         }
         super.startDrag(e);
@@ -91,7 +86,6 @@ public class DtdSelectionTool extends SelectionTool {
                 }
             } else {
                 swappingSignal = null;
-                afterSelectionModification(editor);
             }
         }
     }
@@ -130,24 +124,6 @@ public class DtdSelectionTool extends SelectionTool {
             }
         }
         return null;
-    }
-
-    @Override
-    public void beforeSelectionModification(final GraphEditor editor) {
-        super.beforeSelectionModification(editor);
-        VisualModel model = editor.getModel();
-        ArrayList<Node> selection = new ArrayList<>(model.getSelection());
-        for (Node node : selection) {
-            VisualConnection connection = null;
-            if (node instanceof VisualConnection) {
-                connection = (VisualConnection) node;
-            } else if (node instanceof ControlPoint) {
-                connection = ConnectionHelper.getParentConnection((ControlPoint) node);
-            }
-            if (connection instanceof VisualLevelConnection) {
-                model.removeFromSelection(node);
-            }
-        }
     }
 
     @Override
