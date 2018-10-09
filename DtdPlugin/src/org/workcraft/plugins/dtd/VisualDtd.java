@@ -189,6 +189,7 @@ public class VisualDtd extends AbstractVisualModel {
         Container container = Hierarchy.getNearestContainer(v1, v2);
         VisualConnection vConnection;
         boolean isLevelConnection = DtdUtils.isLevelConnection(mConnection);
+        boolean isEventConnection = DtdUtils.isEventConnection(mConnection);
         if (isLevelConnection) {
             vConnection = new VisualLevelConnection(mConnection, v1, v2);
         } else {
@@ -197,7 +198,7 @@ public class VisualDtd extends AbstractVisualModel {
         container.add(vConnection);
         if (isLevelConnection) {
             DtdUtils.decorateVisualLevelConnection(vConnection);
-        } else {
+        } else if (isEventConnection) {
             DtdUtils.decorateVisualEventConnection(vConnection);
         }
         return vConnection;
