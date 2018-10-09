@@ -1,4 +1,5 @@
 package org.workcraft.plugins.wtg.properties;
+
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.exceptions.NodeCreationException;
@@ -10,32 +11,41 @@ import org.workcraft.plugins.dtd.Signal;
 import org.workcraft.plugins.dtd.VisualSignal;
 import org.workcraft.plugins.wtg.*;
 import org.workcraft.plugins.wtg.tools.WtgSignalGeneratorTool;
+
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Map;
+
 import static org.workcraft.plugins.wtg.utils.WtgUtils.getFinalSignalStatesFromWaveform;
+
 public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
+
     private final VisualWtg visualWtg;
     private final VisualWaveform visualWaveform;
     private final String signalName;
+
     public SignalDeclarationPropertyDescriptor(VisualWtg visualWtg, VisualWaveform visualWaveform, String signalName) {
         this.visualWtg = visualWtg;
         this.visualWaveform = visualWaveform;
         this.signalName = signalName;
     }
+
     @Override
     public Map<Object, String> getChoice() {
         return null;
     }
+
     @Override
     public String getName() {
         return signalName + " declared";
     }
+
     @Override
     public Class<?> getType() {
         return Boolean.class;
     }
+
     @Override
     public Object getValue() {
         Wtg wtg = (Wtg) visualWtg.getMathModel();
@@ -46,10 +56,12 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
         }
         return false;
     }
+
     @Override
     public boolean isWritable() {
         return true;
     }
+
     @Override
     public void setValue(Object value) {
         Wtg wtg = (Wtg) visualWtg.getMathModel();
@@ -80,6 +92,7 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
             }
         }
     }
+
     private Signal.State inferrInitialState() {
         Signal.State result;
         Guard guard = visualWaveform.getReferencedWaveform().getGuard();
@@ -90,6 +103,7 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
         }
         return result;
     }
+
     private Point2D newSignalPosition() {
         Point2D result = null;
         for (VisualComponent visualComponent  : visualWaveform.getComponents()) {
@@ -111,6 +125,7 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
         }
         return result;
     }
+
     private Signal.State findPreviousSignalState() {
         Wtg wtg = (Wtg) visualWtg.getMathModel();
         Waveform waveform = visualWaveform.getReferencedWaveform();
@@ -119,6 +134,9 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
             if (state instanceof State) {
                 for (Node node : wtg.getPreset(state)) {
                     if (node instanceof Waveform) {
+                        if (node == visualWaveform.getReferencedWaveform()) {
+                            continue;
+                        }
                         Map<String, Signal.State> finalStates = getFinalSignalStatesFromWaveform(wtg, (Waveform) node);
                         if (finalStates.containsKey(signalName)) {
                             if (result == null) {
@@ -133,6 +151,7 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
         }
         return result;
     }
+
     private void deleteAndSpaceVertically(Wtg wtg) {
         ArrayList<VisualSignal> visualSignals = new ArrayList<>();
         for (VisualComponent visualComponent  : visualWaveform.getComponents()) {
@@ -170,10 +189,12 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
             }
         }
     }
+
     @Override
     public boolean isCombinable() {
         return false;
     }
+
     @Override
     public boolean isTemplatable() {
         return false;

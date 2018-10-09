@@ -109,7 +109,9 @@ public class VisualWtg extends VisualDtd {
             if (container instanceof VisualWaveform) {
                 visualWaveform = (VisualWaveform) container;
             }
-            for (String signalName : wtg.getSignalNames()) {
+            LinkedList<String> signalNames = new LinkedList<>(wtg.getSignalNames());
+            signalNames.sort(Comparator.comparing(String::toString));
+            for (String signalName : signalNames) {
                 if (visualWaveform != null) {
                     SignalDeclarationPropertyDescriptor declarationDescriptor = new
                             SignalDeclarationPropertyDescriptor(this, visualWaveform, signalName);

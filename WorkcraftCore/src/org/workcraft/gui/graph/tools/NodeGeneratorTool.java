@@ -135,7 +135,7 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
                     editor.getWorkspaceEntry().saveMemento();
                     VisualModel model = e.getModel();
                     Point2D snapPosition = editor.snap(e.getPosition(), null);
-                    generateNode(model, snapPosition);
+                    lastGeneratedNode = generateNode(model, snapPosition);
                     lastGeneratedNode.copyStyle(getTemplateNode());
                 }
             } catch (NodeCreationException e1) {
