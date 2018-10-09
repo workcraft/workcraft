@@ -2,8 +2,10 @@ package org.workcraft.plugins.wtg;
 
 import org.workcraft.*;
 import org.workcraft.commands.ScriptableCommandUtils;
-import org.workcraft.plugins.wtg.commands.*;
-import org.workcraft.plugins.wtg.interop.WtgExporter;
+import org.workcraft.plugins.wtg.commands.WtgInputPropernessVerificationCommand;
+import org.workcraft.plugins.wtg.commands.WtgReachabilityVerificationCommand;
+import org.workcraft.plugins.wtg.commands.WtgSoundnessVerificationCommand;
+import org.workcraft.plugins.wtg.commands.WtgToStgConversionCommand;
 import org.workcraft.plugins.wtg.serialisation.GuardDeserialiser;
 import org.workcraft.plugins.wtg.serialisation.GuardSerialiser;
 
@@ -26,18 +28,12 @@ public class WtgModule  implements Module {
 
         pm.registerModelDescriptor(WtgDescriptor.class);
         pm.registerSettings(WtgSettings.class);
-        pm.registerSettings(WaverSettings.class);
 
         pm.registerXmlSerialiser(GuardSerialiser.class);
         pm.registerXmlDeserialiser(GuardDeserialiser.class);
 
-        pm.registerExporter(WtgExporter.class);
-
         ScriptableCommandUtils.register(WtgToStgConversionCommand.class, "convertWtgToStg",
                 "convert the given WTG 'work' into a new STG work");
-
-        ScriptableCommandUtils.register(WtgToStgWaverConversionCommand.class, "convertWtgToStgWaver",
-                "convert the given WTG 'work' into a new STG work using Waver backend");
 
         ScriptableCommandUtils.register(WtgSoundnessVerificationCommand.class, "checkWtgSoundness",
                 "check the given WTG 'work' for soundness and consistency");

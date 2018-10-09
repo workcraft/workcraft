@@ -87,6 +87,20 @@ public class DtdUtils {
         return result;
     }
 
+    public static boolean isEventConnection(MathConnection connection) {
+        boolean result = false;
+        if (connection != null) {
+            MathNode c1 = connection.getFirst();
+            MathNode c2 = connection.getSecond();
+            if ((c1 instanceof Event) && (c2 instanceof Event)) {
+                Signal s1 = ((Event) c1).getSignal();
+                Signal s2 = ((Event) c2).getSignal();
+                result = s1 != s2;
+            }
+        }
+        return result;
+    }
+
     public static void decorateVisualLevelConnection(VisualConnection connection) {
         VisualComponent v1 = (VisualComponent) connection.getFirst();
         VisualComponent v2 = (VisualComponent) connection.getSecond();

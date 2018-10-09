@@ -135,13 +135,17 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
                     editor.getWorkspaceEntry().saveMemento();
                     VisualModel model = e.getModel();
                     Point2D snapPosition = editor.snap(e.getPosition(), null);
-                    lastGeneratedNode = generator.generate(model, snapPosition);
+                    lastGeneratedNode = generateNode(model, snapPosition);
                     lastGeneratedNode.copyStyle(getTemplateNode());
                 }
             } catch (NodeCreationException e1) {
                 throw new RuntimeException(e1);
             }
         }
+    }
+
+    public VisualNode generateNode(VisualModel model, Point2D position) throws NodeCreationException {
+        return generator.generate(model, position);
     }
 
     @Override

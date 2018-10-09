@@ -1,11 +1,8 @@
 package org.workcraft.plugins.dtd.tools;
 
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.connections.ControlPoint;
-import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
@@ -15,9 +12,10 @@ import org.workcraft.plugins.dtd.utils.DtdUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 
 public class DtdSelectionTool extends SelectionTool {
+
+    private VisualSignal swappingSignal = null;
 
     public DtdSelectionTool() {
         super(false, false, false, false);
@@ -58,6 +56,40 @@ public class DtdSelectionTool extends SelectionTool {
         }
     }
 
+    @Override
+    public void startDrag(GraphEditorMouseEvent e) {
+        GraphEditor editor = e.getEditor();
+        VisualModel model = editor.getModel();
+        if (e.getButtonModifiers() == MouseEvent.BUTTON1_DOWN_MASK) {
+            Node hitNode = HitMan.hitFirstInCurrentLevel(e.getStartPosition(), model);
+            if ((swappingSignal == null) && e.isShiftKeyDown() &&
+                    (hitNode instanceof VisualSignal) && (model instanceof VisualDtd)) {
+                swappingSignal = (VisualSignal) hitNode;
+            }
+        }
+        super.startDrag(e);
+    }
+
+    @Override
+    public void mouseMoved(GraphEditorMouseEvent e) {
+        super.mouseMoved(e);
+        GraphEditor editor = e.getEditor();
+        VisualModel model = editor.getModel();
+        if (swappingSignal != null) {
+            if ((e.isShiftKeyDown()) && (e.getButtonModifiers() == MouseEvent.BUTTON1_DOWN_MASK)) {
+                Node node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
+                if (node instanceof VisualSignal) {
+                    VisualSignal visualSignal = (VisualSignal) node;
+                    double y = visualSignal.getY();
+                    visualSignal.setY(swappingSignal.getY());
+                    swappingSignal.setY(y);
+                }
+            } else {
+                swappingSignal = null;
+            }
+        }
+    }
+
     private Signal.State getLastState(VisualDtd dtd, VisualSignal signal) {
         VisualExitEvent exit = signal.getVisualSignalExit();
         VisualEvent event = DtdUtils.getPrevVisualEvent(dtd, exit);
@@ -92,24 +124,6 @@ public class DtdSelectionTool extends SelectionTool {
             }
         }
         return null;
-    }
-
-    @Override
-    public void beforeSelectionModification(final GraphEditor editor) {
-        super.beforeSelectionModification(editor);
-        VisualModel model = editor.getModel();
-        ArrayList<Node> selection = new ArrayList<>(model.getSelection());
-        for (Node node : selection) {
-            VisualConnection connection = null;
-            if (node instanceof VisualConnection) {
-                connection = (VisualConnection) node;
-            } else if (node instanceof ControlPoint) {
-                connection = ConnectionHelper.getParentConnection((ControlPoint) node);
-            }
-            if (connection instanceof VisualLevelConnection) {
-                model.removeFromSelection(node);
-            }
-        }
     }
 
     @Override

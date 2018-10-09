@@ -1,6 +1,7 @@
 package org.workcraft.plugins.wtg;
 
 import org.workcraft.annotations.DisplayName;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -12,6 +13,7 @@ import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.dtd.VisualDtd;
 import org.workcraft.plugins.dtd.VisualSignal;
 import org.workcraft.plugins.dtd.VisualTransitionEvent;
+import org.workcraft.plugins.wtg.properties.SignalDeclarationPropertyDescriptor;
 import org.workcraft.plugins.wtg.properties.SignalNamePropertyDescriptor;
 import org.workcraft.plugins.wtg.properties.SignalTypePropertyDescriptor;
 import org.workcraft.plugins.wtg.tools.WtgConnectionTool;
@@ -20,9 +22,7 @@ import org.workcraft.plugins.wtg.tools.WtgSignalGeneratorTool;
 import org.workcraft.plugins.wtg.tools.WtgSimulationTool;
 import org.workcraft.util.Hierarchy;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @DisplayName("Waveform Transition Graph")
 public class VisualWtg extends VisualDtd {
@@ -104,11 +104,19 @@ public class VisualWtg extends VisualDtd {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
             Wtg wtg = (Wtg) getMathModel();
-            for (String signalName : wtg.getSignalNames()) {
-                SignalNamePropertyDescriptor symbolDescriptor = new SignalNamePropertyDescriptor(wtg, signalName);
-                properties.insertOrderedByFirstWord(symbolDescriptor);
-                SignalTypePropertyDescriptor typeDescriptor = new SignalTypePropertyDescriptor(wtg, signalName);
-                properties.insertOrderedByFirstWord(typeDescriptor);
+            Container container = getCurrentLevel();
+            VisualWaveform waveform = null;
+            if (container instanceof VisualWaveform) {
+                waveform = (VisualWaveform) container;
+            }
+            LinkedList<String> signalNames = new LinkedList<>(wtg.getSignalNames());
+            signalNames.sort(Comparator.comparing(String::toString));
+            for (String signalName : signalNames) {
+                if (waveform != null) {
+                    properties.insertOrderedByFirstWord(new SignalDeclarationPropertyDescriptor(this, waveform, signalName));
+                }
+                properties.insertOrderedByFirstWord(new SignalNamePropertyDescriptor(wtg, signalName));
+                properties.insertOrderedByFirstWord(new SignalTypePropertyDescriptor(wtg, signalName));
             }
         }
         return properties;
