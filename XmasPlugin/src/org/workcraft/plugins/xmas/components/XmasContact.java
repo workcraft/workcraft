@@ -1,11 +1,13 @@
 package org.workcraft.plugins.xmas.components;
 
 import org.workcraft.annotations.DisplayName;
+import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 
 @DisplayName("Contact")
+@IdentifierPrefix(value = "p", isInternal = true)
 @VisualClass(org.workcraft.plugins.xmas.components.VisualXmasContact.class)
 public class XmasContact extends MathNode {
 

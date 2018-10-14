@@ -1,10 +1,12 @@
 package org.workcraft.plugins.petri;
 
+import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.observation.PropertyChangedEvent;
 
+@IdentifierPrefix("p")
 @VisualClass(org.workcraft.plugins.petri.VisualPlace.class)
 public class Place extends MathNode {
     public static final String PROPERTY_CAPACITY = "Promised capacity";

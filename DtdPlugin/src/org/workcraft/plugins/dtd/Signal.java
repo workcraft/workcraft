@@ -3,6 +3,7 @@ package org.workcraft.plugins.dtd;
 import java.util.Collection;
 
 import org.workcraft.annotations.DisplayName;
+import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
@@ -14,6 +15,7 @@ import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.PropertyChangedEvent;
 
 @DisplayName("Signal")
+@IdentifierPrefix("x")
 @VisualClass(org.workcraft.plugins.dtd.VisualSignal.class)
 public class Signal extends MathNode implements ObservableHierarchy, Container {
 

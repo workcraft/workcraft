@@ -7,7 +7,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.references.UniqueReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
@@ -80,8 +80,8 @@ public class MathGroup extends MathNode implements NamespaceProvider, Observable
         ArrayList<Node> nodesToReparent = new ArrayList<>(groupImpl.getChildren());
         Container newParent = Hierarchy.getNearestAncestor(getParent(), Container.class);
         if (manager != null) {
-            if (manager instanceof HierarchicalUniqueNameReferenceManager) {
-                HierarchicalUniqueNameReferenceManager hierManager = (HierarchicalUniqueNameReferenceManager) manager;
+            if (manager instanceof UniqueReferenceManager) {
+                UniqueReferenceManager hierManager = (UniqueReferenceManager) manager;
                 NamespaceProvider provider = hierManager.getNamespaceProvider(newParent);
                 hierManager.setNamespaceProvider(nodesToReparent, provider);
             }

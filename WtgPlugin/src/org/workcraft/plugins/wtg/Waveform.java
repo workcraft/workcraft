@@ -1,11 +1,13 @@
 package org.workcraft.plugins.wtg;
 
 import org.workcraft.annotations.DisplayName;
+import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.observation.PropertyChangedEvent;
 
 @DisplayName("Waveform")
+@IdentifierPrefix("w")
 @VisualClass(org.workcraft.plugins.wtg.VisualWaveform.class)
 public class Waveform extends PageNode {
 

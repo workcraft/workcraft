@@ -10,6 +10,7 @@ import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.*;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.util.ExportUtils;
 import org.workcraft.util.Hierarchy;
 

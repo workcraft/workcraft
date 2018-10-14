@@ -1,55 +1,28 @@
 package org.workcraft.plugins.circuit;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
+import org.workcraft.dom.Container;
+import org.workcraft.dom.DefaultGroupImpl;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.visual.*;
+import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.observation.*;
+import org.workcraft.plugins.circuit.VisualContact.Direction;
+import org.workcraft.util.Hierarchy;
+
+import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
 
-import org.workcraft.annotations.DisplayName;
-import org.workcraft.annotations.Hotkey;
-import org.workcraft.annotations.SVGIcon;
-import org.workcraft.dom.Container;
-import org.workcraft.dom.DefaultGroupImpl;
-import org.workcraft.dom.Node;
-import org.workcraft.dom.hierarchy.NamespaceHelper;
-import org.workcraft.dom.visual.BoundingBoxHelper;
-import org.workcraft.dom.visual.CustomTouchable;
-import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.Stylable;
-import org.workcraft.dom.visual.Touchable;
-import org.workcraft.dom.visual.TransformHelper;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.observation.HierarchyObserver;
-import org.workcraft.observation.ObservableHierarchy;
-import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.observation.StateEvent;
-import org.workcraft.observation.StateObserver;
-import org.workcraft.observation.TransformChangedEvent;
-import org.workcraft.plugins.circuit.VisualContact.Direction;
-import org.workcraft.util.Hierarchy;
-
-@DisplayName("Abstract Component")
-@Hotkey(KeyEvent.VK_A)
-@SVGIcon("images/circuit-node-component.svg")
 public class VisualCircuitComponent extends VisualComponent implements Container, CustomTouchable, StateObserver, ObservableHierarchy {
 
     public static final String PROPERTY_RENDER_TYPE = "Render type";

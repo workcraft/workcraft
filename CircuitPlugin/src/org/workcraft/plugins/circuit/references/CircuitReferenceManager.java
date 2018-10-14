@@ -1,19 +1,23 @@
 package org.workcraft.plugins.circuit.references;
 
 import org.workcraft.dom.Node;
-import org.workcraft.dom.hierarchy.NamespaceProvider;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.references.NameManager;
+import org.workcraft.dom.references.UniqueReferenceManager;
 import org.workcraft.plugins.circuit.CircuitComponent;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Identifier;
 
-public class CircuitReferenceManager extends HierarchicalUniqueNameReferenceManager {
+public class CircuitReferenceManager extends UniqueReferenceManager {
 
-    public CircuitReferenceManager(NamespaceProvider provider, References refs) {
+    public CircuitReferenceManager(References refs) {
         super(refs);
+    }
+
+    @Override
+    protected CircuitNameManager createNameManager() {
+        return new CircuitNameManager();
     }
 
     @Override
@@ -46,7 +50,8 @@ public class CircuitReferenceManager extends HierarchicalUniqueNameReferenceMana
                 name = nodeName;
             }
         } else if (Identifier.isNumber(name)) {
-            name = getPrefix(node) + name;
+            //???!!!
+            name = getNameManager(null).getPrefix(node) + name;
         }
         if (node instanceof Contact) {
             // propagate info to the contact itself

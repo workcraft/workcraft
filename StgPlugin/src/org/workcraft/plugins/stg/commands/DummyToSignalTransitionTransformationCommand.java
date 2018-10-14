@@ -10,7 +10,7 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.StgUtils;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;

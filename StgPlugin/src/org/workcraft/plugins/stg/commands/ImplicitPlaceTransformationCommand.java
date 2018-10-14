@@ -10,7 +10,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Replica;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.plugins.petri.PetriNetUtils;
+import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.VisualStgPlace;
 import org.workcraft.workspace.ModelEntry;

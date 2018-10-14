@@ -1,34 +1,24 @@
 package org.workcraft.plugins.cpog;
 
-import java.util.Collection;
-
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
-import org.workcraft.serialisation.References;
+import org.workcraft.plugins.cpog.observers.ConditionConsistencySupervisor;
 import org.workcraft.util.Hierarchy;
+
+import java.util.Collection;
 
 public class Cpog extends AbstractMathModel {
 
     public Cpog() {
-        this(null, null);
+        this(null);
     }
 
-    public Cpog(Container root, References refs) {
-        super(root, new HierarchicalUniqueNameReferenceManager(refs) {
-            @Override
-            public String getPrefix(Node node) {
-                if (node instanceof Vertex) return "v";
-                if (node instanceof Variable) return "var";
-                if (node instanceof RhoClause) return "rho";
-                return super.getPrefix(node);
-            }
-        });
-
+    public Cpog(Container root) {
+        super(root);
         new ConditionConsistencySupervisor(this).attach(getRoot());
     }
 

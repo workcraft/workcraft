@@ -1,8 +1,10 @@
 package org.workcraft.plugins.dfs;
 
+import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
 
+@IdentifierPrefix("c")
 @VisualClass(org.workcraft.plugins.dfs.VisualControlRegister.class)
 public class ControlRegister extends BinaryRegister {
     public static final String PROPERTY_PROBABILITY = "Probability";

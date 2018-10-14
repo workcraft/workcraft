@@ -8,7 +8,7 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.cpog.Cpog;
-import org.workcraft.plugins.cpog.PetriToCpogSettings;
+import org.workcraft.plugins.cpog.commands.PetriToCpogParameters;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.VisualVertex;
 import org.workcraft.plugins.cpog.VisualVertex.RenderType;
@@ -33,7 +33,7 @@ public class PetriToCpogConverter {
 
     /** function which performs the conversion
      * @param settings **/
-    public VisualCpog run(PetriToCpogSettings settings) {
+    public VisualCpog run(PetriToCpogParameters settings) {
 
         Untanglings untangling = new Untanglings(settings);
 

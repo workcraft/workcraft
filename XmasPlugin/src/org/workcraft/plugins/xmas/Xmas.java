@@ -1,57 +1,17 @@
 package org.workcraft.plugins.xmas;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
-import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.xmas.components.CreditComponent;
-import org.workcraft.plugins.xmas.components.ForkComponent;
-import org.workcraft.plugins.xmas.components.FunctionComponent;
-import org.workcraft.plugins.xmas.components.JoinComponent;
-import org.workcraft.plugins.xmas.components.MergeComponent;
-import org.workcraft.plugins.xmas.components.QueueComponent;
-import org.workcraft.plugins.xmas.components.SinkComponent;
-import org.workcraft.plugins.xmas.components.SourceComponent;
-import org.workcraft.plugins.xmas.components.SwitchComponent;
-import org.workcraft.plugins.xmas.components.SyncComponent;
-import org.workcraft.plugins.xmas.components.XmasConnection;
-import org.workcraft.plugins.xmas.components.XmasContact;
-import org.workcraft.serialisation.References;
+import org.workcraft.plugins.xmas.components.*;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.util.Identifier;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class Xmas extends AbstractMathModel {
-
-    public Xmas() {
-        this(new MathGroup(), (References) null);
-    }
-
-    public Xmas(Container root, References refs) {
-        super(root, new HierarchicalUniqueNameReferenceManager(refs) {
-            @Override
-            public String getPrefix(Node node) {
-                if (node instanceof SourceComponent) return "src";
-                if (node instanceof FunctionComponent) return "fun";
-                if (node instanceof QueueComponent) return "qu";
-                if (node instanceof ForkComponent) return "frk";
-                if (node instanceof JoinComponent) return "jn";
-                if (node instanceof SwitchComponent) return "sw";
-                if (node instanceof MergeComponent) return "mrg";
-                if (node instanceof SinkComponent) return "snk";
-                if (node instanceof SyncComponent) return "sync";
-                if (node instanceof XmasContact) return Identifier.createInternal("p");
-                if (node instanceof XmasConnection) return Identifier.createInternal("c");
-                return super.getPrefix(node);
-            }
-        });
-    }
 
     public MathConnection connect(Node first, Node second) throws InvalidConnectionException {
         MathConnection con = new MathConnection((MathNode) first, (MathNode) second);

@@ -17,7 +17,7 @@ import org.jbpt.petri.untangling.IProcess;
 import org.jbpt.petri.untangling.ReductionBasedRepresentativeUntangling;
 import org.jbpt.petri.untangling.SignificanceCheckType;
 import org.jbpt.petri.untangling.UntanglingSetup;
-import org.workcraft.plugins.cpog.PetriToCpogSettings;
+import org.workcraft.plugins.cpog.commands.PetriToCpogParameters;
 import org.workcraft.util.LogUtils;
 
 public class Untanglings {
@@ -29,7 +29,7 @@ public class Untanglings {
     private ReductionBasedRepresentativeUntangling untangling;
     private final ArrayList<PartialOrder> partialOrders;
 
-    public Untanglings(PetriToCpogSettings settings) {
+    public Untanglings(PetriToCpogParameters settings) {
         this.sys = new NetSystem();
         this.p = new LinkedList<Place>();
         this.t = new LinkedList<Transition>();
@@ -171,7 +171,7 @@ public class Untanglings {
 
     /** converts the set of processes that compose the *
      *  untangling into a set of partial order graph  **/
-    public ArrayList<PartialOrder> getPartialOrders(PetriToCpogSettings settings) {
+    public ArrayList<PartialOrder> getPartialOrders(PetriToCpogParameters settings) {
 
         for (IProcess<BPNode, Condition, Event, Flow, Node, Place, Transition, Marking> pi : untangling.getProcesses()) {
 

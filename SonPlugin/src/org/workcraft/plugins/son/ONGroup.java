@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
@@ -16,6 +17,7 @@ import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.util.Hierarchy;
 
+@IdentifierPrefix("g")
 @VisualClass (org.workcraft.plugins.son.VisualONGroup.class)
 public class ONGroup extends PageNode {
 

@@ -1,24 +1,18 @@
 package org.workcraft.plugins.policy;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
-import org.workcraft.observation.HierarchyEvent;
-import org.workcraft.observation.HierarchySupervisor;
-import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.plugins.petri.PetriNet;
-import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.petri.Transition;
+import org.workcraft.plugins.policy.observers.BundleConsistencySupervisor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.util.Identifier;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 
 @VisualClass(org.workcraft.plugins.policy.VisualPolicyNet.class)
 public class PolicyNet extends PetriNet implements PolicyNetModel {
@@ -28,32 +22,8 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
     }
 
     public PolicyNet(Container root, References refs) {
-        super(root, new HierarchicalUniqueNameReferenceManager(refs) {
-            @Override
-            public String getPrefix(Node node) {
-                if (node instanceof Place) return "p";
-                if (node instanceof Transition) return "t";
-                if (node instanceof Bundle) return "b";
-                if (node instanceof Locality) return Identifier.createInternal("loc");
-                return super.getPrefix(node);
-            }
-        });
-
-        // Update all bundles when a transition is removed or re-parented
-        new HierarchySupervisor() {
-            @Override
-            public void handleEvent(HierarchyEvent e) {
-                if (e instanceof NodesDeletingEvent) {
-                    for (Node node: e.getAffectedNodes()) {
-                        if (node instanceof BundledTransition) {
-                            for (Bundle b: new ArrayList<Bundle>(getBundles())) {
-                                b.remove((BundledTransition) node);
-                            }
-                        }
-                    }
-                }
-            }
-        }.attach(getRoot());
+        super(root, refs);
+        new BundleConsistencySupervisor(this).attach(getRoot());
     }
 
     @Override

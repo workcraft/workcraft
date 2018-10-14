@@ -1,43 +1,28 @@
 package org.workcraft.plugins.petri;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
-import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.MultiSet;
 
-@VisualClass (org.workcraft.plugins.petri.VisualPetriNet.class)
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 public class PetriNet extends AbstractMathModel implements PetriNetModel {
 
     public PetriNet() {
-        this(null, (References) null);
+        this(null, null);
     }
 
     public PetriNet(Container root, References refs) {
-        this(root, new HierarchicalUniqueNameReferenceManager(refs) {
-            @Override
-            public String getPrefix(Node node) {
-                if (node instanceof Place) return "p";
-                if (node instanceof Transition) return "t";
-                return super.getPrefix(node);
-            }
-        });
-    }
-
-    public PetriNet(Container root, ReferenceManager man) {
-        super(root, man);
+        super(root, refs);
     }
 
     public final Place createPlace(String name, Container container) {

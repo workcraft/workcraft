@@ -1,11 +1,13 @@
 package org.workcraft.plugins.dtd;
 
 import org.workcraft.annotations.DisplayName;
+import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.observation.PropertyChangedEvent;
 
 @DisplayName("Transition")
+@IdentifierPrefix(value = "t", isInternal = true)
 @VisualClass(VisualTransitionEvent.class)
 public class TransitionEvent extends Event {
 

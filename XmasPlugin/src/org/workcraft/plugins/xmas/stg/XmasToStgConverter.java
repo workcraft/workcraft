@@ -18,7 +18,7 @@ import org.workcraft.plugins.stg.converters.NodeStg;
 import org.workcraft.plugins.stg.converters.SignalStg;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.xmas.VisualXmas;
-import org.workcraft.plugins.xmas.XmasUtils;
+import org.workcraft.plugins.xmas.utils.XmasUtils;
 import org.workcraft.plugins.xmas.components.VisualForkComponent;
 import org.workcraft.plugins.xmas.components.VisualFunctionComponent;
 import org.workcraft.plugins.xmas.components.VisualJoinComponent;

@@ -7,7 +7,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.util.Identifier;
+import org.workcraft.dom.references.Identifier;
 
 public class NamePropertyDescriptor implements PropertyDescriptor {
     public static final String PROPERTY_NAME = "Name";

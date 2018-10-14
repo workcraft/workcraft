@@ -1,20 +1,29 @@
 package org.workcraft.dom.references;
 
+import org.workcraft.annotations.Annotations;
+import org.workcraft.dom.Connection;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.ArgumentException;
-import org.workcraft.util.Identifier;
 import org.workcraft.util.TwoWayMap;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class UniqueNameManager implements NameManager {
+
     private final Map<String, Integer> prefixCount = new HashMap<>();
     private final TwoWayMap<String, Node> nodes = new TwoWayMap<>();
 
     @Override
     public String getPrefix(Node node) {
-        return ReferenceHelper.getDefaultPrefix(node);
+        String result = Annotations.getIentifierPrefix(node.getClass());
+        if (result != null) {
+            return result;
+        }
+        if (node instanceof Connection) return Identifier.createInternal("c");
+        if (node instanceof Container) return Identifier.createInternal("group");
+        return "node";
     }
 
     @Override

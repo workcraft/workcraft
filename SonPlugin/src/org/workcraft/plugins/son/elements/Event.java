@@ -2,6 +2,7 @@ package org.workcraft.plugins.son.elements;
 
 import java.awt.Color;
 
+import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
@@ -11,6 +12,7 @@ import org.workcraft.plugins.son.properties.EndTimePropertyDescriptor;
 import org.workcraft.plugins.son.properties.StartTimePropertyDescriptor;
 import org.workcraft.plugins.son.util.Interval;
 
+@IdentifierPrefix("e")
 @VisualClass (org.workcraft.plugins.son.elements.VisualEvent.class)
 public class Event extends MathNode implements TransitionNode, Time {
 

@@ -2,6 +2,7 @@ package org.workcraft.plugins.son.connections;
 
 import java.awt.Color;
 
+import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
@@ -9,6 +10,7 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.properties.ConnectionTimePropertyDescriptor;
 import org.workcraft.plugins.son.util.Interval;
 
+@IdentifierPrefix("con")
 public class SONConnection extends MathConnection {
 
     private Interval time = new Interval(0000, 9999);

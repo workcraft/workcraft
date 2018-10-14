@@ -2,22 +2,18 @@ package org.workcraft.plugins.circuit;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
-import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
-import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.references.CircuitReferenceManager;
-import org.workcraft.plugins.circuit.supervisors.FunctionConsistencySupervisor;
-import org.workcraft.plugins.circuit.supervisors.IOTypeConsistencySupervisor;
-import org.workcraft.plugins.circuit.supervisors.ZeroDelayConsistencySupervisor;
+import org.workcraft.plugins.circuit.observers.FunctionConsistencySupervisor;
+import org.workcraft.plugins.circuit.observers.IOTypeConsistencySupervisor;
+import org.workcraft.plugins.circuit.observers.ZeroDelayConsistencySupervisor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.util.Identifier;
 import org.workcraft.util.MultiSet;
 
 import java.util.Collection;
@@ -28,31 +24,9 @@ public class Circuit extends AbstractMathModel {
         this(null, null);
     }
 
-    public Circuit(MathGroup root) {
-        this(root, null);
-    }
-
     public Circuit(Container root, References refs) {
-        super(root, new CircuitReferenceManager((NamespaceProvider) root, refs) {
-            @Override
-            public String getPrefix(Node node) {
-                if (node instanceof CircuitComponent) return "g";
-                if (node instanceof Contact) {
-                    Contact contact = (Contact) node;
-                    if (contact.getIOType() == IOType.INPUT) {
-                        if (contact.getParent() instanceof CircuitComponent) return "i";
-                        else return "in";
-                    }
-                    if (contact.getIOType() == IOType.OUTPUT) {
-                        if (contact.getParent() instanceof CircuitComponent) return "z";
-                        else return "out";
-                    }
-                }
-                if (node instanceof Joint) return Identifier.createInternal("joint");
-                return super.getPrefix(node);
-            }
-        });
-
+        super(root, new CircuitReferenceManager(refs));
+        /// ???!!!
         new FunctionConsistencySupervisor(this).attach(getRoot());
         new ZeroDelayConsistencySupervisor(this).attach(getRoot());
         new IOTypeConsistencySupervisor(this).attach(getRoot());

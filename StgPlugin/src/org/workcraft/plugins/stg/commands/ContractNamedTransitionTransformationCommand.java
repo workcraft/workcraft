@@ -9,7 +9,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathModel;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.references.UniqueReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -80,7 +80,7 @@ public class ContractNamedTransitionTransformationCommand extends ContractTransi
         Container visualContainer = (Container) Hierarchy.getCommonParent(predPlace, succPlace);
         Container mathContainer = NamespaceHelper.getMathContainer(visualModel, visualContainer);
         MathModel mathModel = visualModel.getMathModel();
-        HierarchicalUniqueNameReferenceManager refManager = (HierarchicalUniqueNameReferenceManager) mathModel.getReferenceManager();
+        UniqueReferenceManager refManager = (UniqueReferenceManager) mathModel.getReferenceManager();
         NameManager nameManagerer = refManager.getNameManager((NamespaceProvider) mathContainer);
         String predName = visualModel.getMathName(predPlace);
         String succName = visualModel.getMathName(succPlace);

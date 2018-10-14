@@ -1,12 +1,7 @@
 package org.workcraft.plugins.fst;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
-import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
@@ -23,9 +18,10 @@ import org.workcraft.plugins.fst.properties.SignalTypePropertyDescriptor;
 import org.workcraft.plugins.fst.properties.TypePropertyDescriptor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.util.Identifier;
 
-@VisualClass(org.workcraft.plugins.fst.VisualFst.class)
+import java.util.Collection;
+import java.util.LinkedList;
+
 public class Fst extends Fsm {
 
     private final class StateSupervisorExtension extends StateSupervisor {
@@ -48,16 +44,7 @@ public class Fst extends Fsm {
     }
 
     public Fst(Container root, References refs) {
-        super(root, new HierarchicalUniqueNameReferenceManager(refs) {
-            @Override
-            public String getPrefix(Node node) {
-                if (node instanceof State) return "s";
-                if (node instanceof Signal) return "x";
-                if (node instanceof Event) return Identifier.createInternal("e");
-                return super.getPrefix(node);
-            }
-        });
-
+        super(root, refs);
         new StateSupervisorExtension().attach(getRoot());
     }
 

@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.references.UniqueReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
@@ -85,8 +85,8 @@ public class CircuitSignalInfo {
             }
             if (result != null) {
                 if (NamespaceHelper.isHierarchical(result)) {
-                    HierarchicalUniqueNameReferenceManager refManager
-                            = (HierarchicalUniqueNameReferenceManager) circuit.getReferenceManager();
+                    UniqueReferenceManager refManager
+                            = (UniqueReferenceManager) circuit.getReferenceManager();
 
                     NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(circuit.getRoot());
                     NameManager nameManagerer = refManager.getNameManager(namespaceProvider);

@@ -19,7 +19,7 @@ import javax.swing.KeyStroke;
 
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.layouts.SimpleFlowLayout;
-import org.workcraft.plugins.cpog.PetriToCpogSettings;
+import org.workcraft.plugins.cpog.commands.PetriToCpogParameters;
 import org.workcraft.util.GUI;
 
 import info.clearthought.layout.TableLayout;
@@ -37,7 +37,7 @@ public class PetriToCpogDialog extends JDialog {
     private JPanel buttonPanel, settingPanel;
     protected int modalResult;
 
-    public PetriToCpogDialog(Window owner, PetriToCpogSettings settings) {
+    public PetriToCpogDialog(Window owner, PetriToCpogParameters settings) {
         super(owner, "Petri Net to CPOG conversion [Untanglings]", ModalityType.APPLICATION_MODAL);
         modalResult = 0;
 
@@ -128,7 +128,7 @@ public class PetriToCpogDialog extends JDialog {
     }
 
     /** creates panel containing the buttons for running or closing the converter **/
-    private void createButtonPanel(final PetriToCpogSettings settings) {
+    private void createButtonPanel(final PetriToCpogParameters settings) {
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
         // run the converter

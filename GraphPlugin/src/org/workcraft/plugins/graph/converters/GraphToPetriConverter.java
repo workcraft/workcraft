@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.references.UniqueReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.VisualModel;
@@ -75,7 +75,7 @@ public class GraphToPetriConverter {
 
     private Map<VisualVertex, VisualTransition> convertVertices() {
         Map<VisualVertex, VisualTransition> result = new HashMap<>();
-        HierarchicalUniqueNameReferenceManager refManager = (HierarchicalUniqueNameReferenceManager) dstModel.getPetriNet().getReferenceManager();
+        UniqueReferenceManager refManager = (UniqueReferenceManager) dstModel.getPetriNet().getReferenceManager();
         NameManager nameManagerer = refManager.getNameManager(null);
         for (VisualVertex vertex: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualVertex.class)) {
             Symbol symbol = vertex.getReferencedVertex().getSymbol();

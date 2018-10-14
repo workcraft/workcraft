@@ -21,12 +21,12 @@ import java.util.Collection;
 import java.util.List;
 
 public interface VisualModel extends Model, ObservableState {
+    MathModel getMathModel();
     void createDefaultFlatStructure() throws NodeCreationException;
     void draw(Graphics2D g, Decorator decorator);
 
     void setCurrentLevel(Container group);
     Container getCurrentLevel();
-    MathModel getMathModel();
 
     String getNodeMathReference(Node node);
     String getMathName(Node node);

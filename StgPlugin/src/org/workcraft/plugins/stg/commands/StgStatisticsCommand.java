@@ -7,7 +7,7 @@ import java.util.Set;
 import org.workcraft.commands.AbstractStatisticsCommand;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.petri.PetriNetChecker;
+import org.workcraft.plugins.petri.utils.PetriNetChecker;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.DummyTransition;

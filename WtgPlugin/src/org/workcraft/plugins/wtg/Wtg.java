@@ -1,43 +1,26 @@
 package org.workcraft.plugins.wtg;
 
-import java.util.*;
-
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
-import org.workcraft.dom.Node;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
-import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.plugins.dtd.*;
-import org.workcraft.plugins.wtg.supervisors.InitialStateSupervisor;
-import org.workcraft.plugins.wtg.supervisors.SignalTypeConsistencySupervisor;
+import org.workcraft.plugins.wtg.observers.InitialStateSupervisor;
+import org.workcraft.plugins.wtg.observers.SignalTypeConsistencySupervisor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.util.Identifier;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @VisualClass(org.workcraft.plugins.wtg.VisualWtg.class)
 public class Wtg extends Dtd {
 
     public Wtg() {
-        this(null, (References) null);
+        this(null, null);
     }
 
     public Wtg(Container root, References refs) {
-        this(root, new HierarchicalUniqueNameReferenceManager(refs) {
-            @Override
-            public String getPrefix(Node node) {
-                if (node instanceof EntryEvent) return Identifier.createInternal("entry");
-                if (node instanceof ExitEvent) return Identifier.createInternal("exit");
-                if (node instanceof TransitionEvent) return Identifier.createInternal("t");
-                if (node instanceof Signal) return "x";
-                if (node instanceof State) return "s";
-                if (node instanceof Waveform) return "w";
-                return super.getPrefix(node);
-            }
-        });
-    }
-
-    public Wtg(Container root, ReferenceManager man) {
-        super(root, man);
+        super(root, refs);
         new InitialStateSupervisor().attach(getRoot());
         new SignalTypeConsistencySupervisor(this).attach(getRoot());
     }

@@ -50,9 +50,4 @@ public class DefaultReferenceManager extends HierarchySupervisor implements Refe
         return nodes.getKey(node);
     }
 
-    @Override
-    public String getPrefix(Node node) {
-        return ReferenceHelper.getDefaultPrefix(node);
-    }
-
 }

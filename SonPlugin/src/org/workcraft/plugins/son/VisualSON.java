@@ -5,7 +5,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.references.UniqueReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -366,8 +366,8 @@ public class VisualSON extends AbstractVisualModel {
 
             // Reparenting at the level of the reference manager
             ReferenceManager refMan = getMathModel().getReferenceManager();
-            if (refMan instanceof HierarchicalUniqueNameReferenceManager) {
-                HierarchicalUniqueNameReferenceManager hierRefMan = (HierarchicalUniqueNameReferenceManager) refMan;
+            if (refMan instanceof UniqueReferenceManager) {
+                UniqueReferenceManager hierRefMan = (UniqueReferenceManager) refMan;
                 for (Node node: selectedMath) {
                     Container parent = (Container) node.getParent();
                     hierRefMan.setNamespaceProvider(Arrays.asList(node), mathGroup);
@@ -433,8 +433,8 @@ public class VisualSON extends AbstractVisualModel {
 
             // Reparenting at the level of the reference manager
             ReferenceManager refMan = getMathModel().getReferenceManager();
-            if (refMan instanceof HierarchicalUniqueNameReferenceManager) {
-                HierarchicalUniqueNameReferenceManager hierRefMan = (HierarchicalUniqueNameReferenceManager) refMan;
+            if (refMan instanceof UniqueReferenceManager) {
+                UniqueReferenceManager hierRefMan = (UniqueReferenceManager) refMan;
                 for (Node node: selectedMath) {
                     Container parent = (Container) node.getParent();
                     hierRefMan.setNamespaceProvider(Arrays.asList(node), mathBlock);

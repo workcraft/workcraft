@@ -16,6 +16,7 @@ import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.petri.*;
 import org.workcraft.plugins.petri.tools.ReadArcConnectionTool;
+import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.plugins.stg.properties.SignalNamePropertyDescriptor;
 import org.workcraft.plugins.stg.properties.SignalTypePropertyDescriptor;
 import org.workcraft.plugins.stg.tools.*;

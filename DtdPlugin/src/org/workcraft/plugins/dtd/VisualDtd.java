@@ -12,7 +12,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
-import org.workcraft.plugins.dtd.supervisors.DtdStateSupervisor;
+import org.workcraft.plugins.dtd.observers.DtdStateSupervisor;
 import org.workcraft.plugins.dtd.tools.DtdConnectionTool;
 import org.workcraft.plugins.dtd.tools.DtdSelectionTool;
 import org.workcraft.plugins.dtd.tools.DtdSignalGeneratorTool;

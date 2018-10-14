@@ -15,6 +15,7 @@ import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.plugins.petri.tools.*;
+import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.util.Hierarchy;
 
 import java.util.ArrayList;

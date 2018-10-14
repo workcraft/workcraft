@@ -1,8 +1,10 @@
 package org.workcraft.plugins.xmas.components;
 
+import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
 
+@IdentifierPrefix("sw")
 @VisualClass(org.workcraft.plugins.xmas.components.VisualSwitchComponent.class)
 public class SwitchComponent extends XmasComponent {
 

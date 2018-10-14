@@ -19,6 +19,7 @@ import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.plugins.cpog.observers.VariableConsistencySupervisor;
 import org.workcraft.plugins.cpog.tools.CpogSelectionTool;
 import org.workcraft.util.Hierarchy;
 
@@ -110,7 +111,7 @@ public class VisualCpog extends AbstractVisualModel {
                 throw new RuntimeException(e);
             }
         }
-        new ConsistencyEnforcer(this).attach(getRoot());
+        new VariableConsistencySupervisor(this).attach(getRoot());
     }
 
     private void setGraphEditorTools() {

@@ -22,6 +22,7 @@ import org.workcraft.plugins.shared.CommonSignalSettings;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.converters.SignalStg;
 import org.workcraft.plugins.stg.converters.StgToDtdConverter;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.util.ColorGenerator;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Pair;

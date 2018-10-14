@@ -1,18 +1,17 @@
 package org.workcraft.plugins.dfs;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @VisualClass (org.workcraft.plugins.dfs.VisualDfs.class)
 public class Dfs extends AbstractMathModel {
@@ -22,16 +21,7 @@ public class Dfs extends AbstractMathModel {
     }
 
     public Dfs(Container root, References refs) {
-        super(root, new HierarchicalUniqueNameReferenceManager(refs) {
-            @Override
-            public String getPrefix(Node node) {
-                if ((node instanceof Logic) || (node instanceof CounterflowLogic)) return "l";
-                if ((node instanceof Register) || (node instanceof CounterflowRegister)) return "r";
-                if (node instanceof ControlRegister) return "c";
-                if ((node instanceof PushRegister) || (node instanceof PopRegister)) return "p";
-                return super.getPrefix(node);
-            }
-        });
+        super(root, refs);
     }
 
     public MathConnection connect(Node first, Node second) {

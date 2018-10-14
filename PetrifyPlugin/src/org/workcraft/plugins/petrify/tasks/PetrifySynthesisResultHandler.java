@@ -15,7 +15,7 @@ import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderTy
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.StgUtils;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.AbstractExtendedResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;

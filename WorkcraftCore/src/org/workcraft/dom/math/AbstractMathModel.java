@@ -1,21 +1,18 @@
 package org.workcraft.dom.math;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.NodeFactory;
-import org.workcraft.dom.AbstractModel;
-import org.workcraft.dom.Container;
-import org.workcraft.dom.DefaultHangingConnectionRemover;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
+import org.workcraft.dom.*;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
+import org.workcraft.dom.references.UniqueReferenceManager;
 import org.workcraft.exceptions.NodeCreationException;
+import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.MultiSet;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 public abstract class AbstractMathModel extends AbstractModel implements MathModel {
 
@@ -24,7 +21,11 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
     }
 
     public AbstractMathModel(Container root) {
-        this(root, null);
+        this(root, (References) null);
+    }
+
+    public AbstractMathModel(Container root, References refs) {
+        this(root, new UniqueReferenceManager(refs));
     }
 
     public AbstractMathModel(Container root, ReferenceManager man) {
@@ -85,7 +86,7 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
         return createNode(null, container, type);
     }
 
-    private void setNamespaceRecursively(HierarchicalUniqueNameReferenceManager dstRefManager, Container dstContainer,
+    private void setNamespaceRecursively(UniqueReferenceManager dstRefManager, Container dstContainer,
             Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
 
         // Collect the nodes to reparent - need to assign the whole tree to new providers
@@ -101,7 +102,7 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
             dstProvider = (NamespaceProvider) dstContainer;
         }
 
-        HierarchicalUniqueNameReferenceManager srcRefManager = (HierarchicalUniqueNameReferenceManager) srcModel.getReferenceManager();
+        UniqueReferenceManager srcRefManager = (UniqueReferenceManager) srcModel.getReferenceManager();
         dstRefManager.setNamespaceProvider(nodes, srcRefManager, dstProvider);
 
         srcRoot.reparent(nodes, dstContainer);
@@ -125,9 +126,9 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
         if (srcModel == null) {
             srcModel = this;
         }
-        HierarchicalUniqueNameReferenceManager manager = null;
-        if (getReferenceManager() instanceof HierarchicalUniqueNameReferenceManager) {
-            manager = (HierarchicalUniqueNameReferenceManager) getReferenceManager();
+        UniqueReferenceManager manager = null;
+        if (getReferenceManager() instanceof UniqueReferenceManager) {
+            manager = (UniqueReferenceManager) getReferenceManager();
         }
         if (manager == null) {
             return false;

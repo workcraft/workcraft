@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.PageNode;
@@ -16,6 +17,7 @@ import org.workcraft.plugins.son.properties.StartTimePropertyDescriptor;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.util.Hierarchy;
 
+@IdentifierPrefix("b")
 @VisualClass (org.workcraft.plugins.son.elements.VisualBlock.class)
 public class Block extends PageNode implements TransitionNode, Time {
     private String label = "";

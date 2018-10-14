@@ -8,7 +8,7 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.references.UniqueReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.ExceptionDialog;
@@ -99,8 +99,8 @@ public class PetrifyTransformationResultHandler extends AbstractExtendedResultHa
         String candidateName = LabelParser.getTransitionName(srcName);
         candidateName = candidateName.replace("+", "_PLUS").replace("-", "_MINUS").replace("~", "_TOGGLE");
 
-        HierarchicalUniqueNameReferenceManager refManager
-                = (HierarchicalUniqueNameReferenceManager) dstModel.getReferenceManager();
+        UniqueReferenceManager refManager
+                = (UniqueReferenceManager) dstModel.getReferenceManager();
 
         NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(dstModel.getRoot());
         NameManager nameManagerer = refManager.getNameManager(namespaceProvider);

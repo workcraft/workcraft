@@ -1,40 +1,31 @@
 package org.workcraft.plugins.graph;
 
-import java.util.Collection;
-
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.NameManager;
-import org.workcraft.dom.references.ReferenceManager;
+import org.workcraft.dom.references.UniqueReferenceManager;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.graph.properties.VertexSymbolPropertyDescriptor;
+import org.workcraft.plugins.graph.observers.SymbolConsistencySupervisor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
+import java.util.Collection;
+
 public class Graph extends AbstractMathModel {
+
     public static final String EPSILON_SERIALISATION = "epsilon";
 
     public Graph() {
-        this(null, (References) null);
+        this(null, null);
     }
 
     public Graph(Container root, References refs) {
-        this(root, new HierarchicalUniqueNameReferenceManager(refs) {
-            @Override
-            public String getPrefix(Node node) {
-                if (node instanceof Vertex) return "v";
-                return super.getPrefix(node);
-            }
-        });
-    }
-
-    public Graph(Container root, ReferenceManager man) {
-        super(root, man);
+        super(root, refs);
         new SymbolConsistencySupervisor(this).attach(getRoot());
     }
 
@@ -76,7 +67,7 @@ public class Graph extends AbstractMathModel {
         if (srcModel == null) {
             srcModel = this;
         }
-        HierarchicalUniqueNameReferenceManager refManager = (HierarchicalUniqueNameReferenceManager) getReferenceManager();
+        UniqueReferenceManager refManager = (UniqueReferenceManager) getReferenceManager();
         NameManager nameManagerer = refManager.getNameManager(null);
         for (Node srcNode: srcChildren) {
             if (srcNode instanceof Vertex) {

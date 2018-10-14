@@ -8,9 +8,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.connections.SONConnection;
@@ -25,7 +23,6 @@ import org.workcraft.plugins.son.properties.StartTimePropertyDescriptor;
 import org.workcraft.plugins.son.util.Scenario;
 import org.workcraft.plugins.son.util.ScenarioRef;
 import org.workcraft.plugins.son.util.ScenarioSaveList;
-import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
 import javax.swing.*;
@@ -36,29 +33,6 @@ import java.util.HashSet;
 
 @VisualClass(org.workcraft.plugins.son.VisualSON.class)
 public class SON extends AbstractMathModel {
-
-    public SON() {
-        this(null, null);
-    }
-
-    public SON(Container root, References refs) {
-        super(root, new HierarchicalUniqueNameReferenceManager(refs) {
-            @Override
-            public String getPrefix(Node node) {
-                if (node instanceof Condition) return "c";
-                if (node instanceof Event) return "e";
-                if (node instanceof ChannelPlace) return "q";
-                if (node instanceof Block) return "b";
-                if (node instanceof SONConnection) return "con";
-                if (node instanceof ONGroup) return "g";
-                if (node instanceof PageNode) return "p";
-                return super.getPrefix(node);
-            }
-        });
-    }
-
-    public void validate() throws ModelValidationException {
-    }
 
     public final Condition createCondition(String name, Container container) {
         if (container == null) {

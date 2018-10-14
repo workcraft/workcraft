@@ -12,7 +12,7 @@ import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.StgUtils;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.Result;
