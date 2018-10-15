@@ -11,7 +11,6 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.*;
 import org.workcraft.plugins.dfs.tools.CycleAnalyserTool;
@@ -31,13 +30,6 @@ public class VisualDfs extends AbstractVisualModel {
     public VisualDfs(Dfs model, VisualGroup root) {
         super(model, root);
         setGraphEditorTools();
-        if (root == null) {
-            try {
-                createDefaultFlatStructure();
-            } catch (NodeCreationException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 
     private void setGraphEditorTools() {

@@ -46,7 +46,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     }
 
     public AbstractVisualModel(MathModel mathModel, VisualGroup root) {
-        super((root == null) ? new VisualGroup() : root);
+        super(root);
         this.mathModel = mathModel;
         this.currentLevel = getRoot();
         new TransformEventPropagator().attach(getRoot());
@@ -62,10 +62,18 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
                 observableState.sendNotification(new ModelModifiedEvent(AbstractVisualModel.this));
             }
         }.attach(getRoot());
+        if (generatedRoot) {
+            createDefaultStructure();
+        }
     }
 
     @Override
-    public void createDefaultFlatStructure() throws NodeCreationException {
+    public VisualGroup createDefaultRoot() {
+        return new VisualGroup();
+    }
+
+    @Override
+    public void createDefaultStructure() {
         HashMap<MathNode, VisualComponent> createdNodes = new HashMap<>();
         // Create components
         Queue<Pair<Container, Container>> containerQueue = new LinkedList<>();
@@ -78,7 +86,12 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
                 if (node instanceof MathConnection) continue;
                 if (node instanceof MathNode) {
                     MathNode mathNode = (MathNode) node;
-                    VisualComponent visualComponent = NodeFactory.createVisualComponent(mathNode);
+                    VisualComponent visualComponent = null;
+                    try {
+                        visualComponent = NodeFactory.createVisualComponent(mathNode);
+                    } catch (NodeCreationException e) {
+                        throw new RuntimeException(e);
+                    }
                     if (visualComponent != null) {
                         visualContainer.add(visualComponent);
                         createdNodes.put(mathNode, visualComponent);
@@ -102,6 +115,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
                     try {
                         connect(firstComponent, secondComponent, mathConnection);
                     } catch (InvalidConnectionException e) {
+                        throw new RuntimeException(e);
                     }
                 } else if (node instanceof MathNode) {
                     MathNode mathNode = (MathNode) node;

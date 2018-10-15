@@ -5,12 +5,11 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
-import org.workcraft.dom.references.UniqueReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
+import org.workcraft.dom.references.UniqueReferenceManager;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
@@ -36,7 +35,6 @@ public class VisualSON extends AbstractVisualModel {
 
     private static final String group = "Invalid Group Selection";
     private static final String block = "Invalid Block Selection";
-    private SON net;
     private Semantics currentConnectonSemantics;
 
     public VisualSON(SON model) {
@@ -46,16 +44,6 @@ public class VisualSON extends AbstractVisualModel {
     public VisualSON(SON model, VisualGroup root) {
         super(model, root);
         setGraphEditorTools();
-    //    currentmathLevel = getCurrentLevel();
-        if (root == null) {
-            try {
-                createDefaultFlatStructure();
-            } catch (NodeCreationException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        this.net = model;
         BlockConnector.blockInternalConnector(this);
     }
 
@@ -72,6 +60,11 @@ public class VisualSON extends AbstractVisualModel {
         tools.add(new ScenarioGeneratorTool());
         tools.add(new TimeValueSetterTool());
         setGraphEditorTools(tools);
+    }
+
+    @Override
+    public SON getMathModel() {
+        return (SON) super.getMathModel();
     }
 
     @Override
@@ -138,16 +131,16 @@ public class VisualSON extends AbstractVisualModel {
 
         //ChannelPlace
         if (first instanceof VisualChannelPlace) {
-            for (Node node : net.getPreset(((VisualChannelPlace) first).getReferencedComponent())) {
-                if (net.isInSameGroup(((VisualComponent) second).getReferencedComponent(), node)) {
+            for (Node node : getMathModel().getPreset(((VisualChannelPlace) first).getReferencedComponent())) {
+                if (getMathModel().isInSameGroup(((VisualComponent) second).getReferencedComponent(), node)) {
                     throw new InvalidConnectionException("The input and ouput nodes for a channel place belong to same group are not valid");
                 }
             }
         }
 
         if (second instanceof VisualChannelPlace) {
-            for (Node node : net.getPostset(((VisualChannelPlace) second).getReferencedComponent())) {
-                if (net.isInSameGroup(((VisualComponent) first).getReferencedComponent(), node)) {
+            for (Node node : getMathModel().getPostset(((VisualChannelPlace) second).getReferencedComponent())) {
+                if (getMathModel().isInSameGroup(((VisualComponent) first).getReferencedComponent(), node)) {
                     throw new InvalidConnectionException("The input and ouput nodes of a channel place belong to same group are not valid");
                 }
             }
@@ -229,7 +222,7 @@ public class VisualSON extends AbstractVisualModel {
             }
         }
         if (mConnection == null) {
-            mConnection = net.connect(c1.getReferencedComponent(), c2.getReferencedComponent(), semantics);
+            mConnection = getMathModel().connect(c1.getReferencedComponent(), c2.getReferencedComponent(), semantics);
         }
         VisualSONConnection ret = new VisualSONConnection((SONConnection) mConnection, c1, c2);
         Hierarchy.getNearestContainer(c1, c2).add(ret);
@@ -454,7 +447,7 @@ public class VisualSON extends AbstractVisualModel {
 
     private Collection<Node> getBlockSelection() {
         Collection<Node> result = new HashSet<>();
-        RelationAlgorithm relationAlg = new RelationAlgorithm(net);
+        RelationAlgorithm relationAlg = new RelationAlgorithm(getMathModel());
 
         final Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();

@@ -13,17 +13,26 @@ import java.util.*;
  * A base class for all interpreted graph models.
  */
 public abstract class AbstractModel implements Model {
-    private Container root;
-    private ReferenceManager mgr;
-    private String title = "";
+
+    private final Container root;
+    private final ReferenceManager mgr;
     private final NodeContextTracker nodeContextTracker = new NodeContextTracker();
+    public final boolean generatedRoot;
+
+    private String title = "";
 
     public AbstractModel(Container root) {
         this(root, null);
     }
 
     public AbstractModel(Container root, ReferenceManager man) {
-        this.root = root;
+        if (root != null) {
+            this.root = root;
+            this.generatedRoot = false;
+        } else {
+            this.root = createDefaultRoot();
+            this.generatedRoot = true;
+        }
         if (man != null) {
             this.mgr = man;
         } else {
@@ -33,9 +42,11 @@ public abstract class AbstractModel implements Model {
                 this.mgr = new DefaultReferenceManager();
             }
         }
-        this.nodeContextTracker.attach(root);
-        this.mgr.attach(root);
+        this.nodeContextTracker.attach(getRoot());
+        this.mgr.attach(getRoot());
     }
+
+    public abstract Container createDefaultRoot();
 
     @Override
     public void add(Node node) {

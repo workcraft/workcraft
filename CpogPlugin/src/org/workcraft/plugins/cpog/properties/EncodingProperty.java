@@ -1,4 +1,4 @@
-package org.workcraft.plugins.cpog.propertyeditor;
+package org.workcraft.plugins.cpog.properties;
 
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;

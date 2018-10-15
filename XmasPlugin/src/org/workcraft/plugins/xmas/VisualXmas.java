@@ -4,7 +4,6 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.ShortName;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
@@ -30,13 +29,6 @@ public class VisualXmas extends AbstractVisualModel {
     public VisualXmas(Xmas model, VisualGroup root) {
         super(model, root);
         setGraphEditorTools();
-        if (root == null) {
-            try {
-                createDefaultFlatStructure();
-            } catch (NodeCreationException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 
     private void setGraphEditorTools() {

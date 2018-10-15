@@ -8,93 +8,24 @@ import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.NodeCreationException;
-import org.workcraft.formula.jj.BooleanFormulaParser;
-import org.workcraft.formula.jj.ParseException;
-import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.ConnectionTool;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.cpog.observers.VariableConsistencySupervisor;
+import org.workcraft.plugins.cpog.properties.BooleanFormulaPropertyDescriptor;
 import org.workcraft.plugins.cpog.tools.CpogSelectionTool;
 import org.workcraft.util.Hierarchy;
 
 import java.awt.geom.Point2D;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 @DisplayName("Conditional Partial Order Graph")
 public class VisualCpog extends AbstractVisualModel {
-
-    private final class BooleanFormulaPropertyDescriptor implements PropertyDescriptor {
-        private final Node node;
-
-        private BooleanFormulaPropertyDescriptor(Node node) {
-            this.node = node;
-        }
-
-        @Override
-        public Map<Object, String> getChoice() {
-            return null;
-        }
-
-        @Override
-        public String getName() {
-            if (node instanceof VisualRhoClause) return "Function";
-            return "Condition";
-        }
-
-        @Override
-        public Class<?> getType() {
-            return String.class;
-        }
-
-        @Override
-        public Object getValue() {
-            if (node instanceof VisualRhoClause) return StringGenerator.toString(((VisualRhoClause) node).getFormula());
-            if (node instanceof VisualVertex) return StringGenerator.toString(((VisualVertex) node).getCondition());
-            return StringGenerator.toString(((VisualArc) node).getCondition());
-        }
-
-        @Override
-        public void setValue(Object value) throws InvocationTargetException {
-            try {
-                if (node instanceof VisualRhoClause) {
-                    ((VisualRhoClause) node).setFormula(BooleanFormulaParser.parse((String) value, mathModel.getVariables()));
-                } else if (node instanceof VisualArc) {
-                    ((VisualArc) node).setCondition(BooleanFormulaParser.parse((String) value, mathModel.getVariables()));
-                } else if (node instanceof VisualVertex) {
-                    ((VisualVertex) node).setCondition(BooleanFormulaParser.parse((String) value, mathModel.getVariables()));
-                }
-            } catch (ParseException e) {
-                throw new InvocationTargetException(e);
-            }
-        }
-
-        @Override
-        public boolean isWritable() {
-            return true;
-        }
-
-        @Override
-        public boolean isCombinable() {
-            return true;
-        }
-
-        @Override
-        public boolean isTemplatable() {
-            return true;
-        }
-    }
-
-    private Cpog mathModel;
 
     public VisualCpog(Cpog model) {
         this(model, null);
@@ -102,15 +33,7 @@ public class VisualCpog extends AbstractVisualModel {
 
     public VisualCpog(Cpog model, VisualGroup root) {
         super(model, root);
-        this.mathModel = model;
         setGraphEditorTools();
-        if (root == null) {
-            try {
-                createDefaultFlatStructure();
-            } catch (NodeCreationException e) {
-                throw new RuntimeException(e);
-            }
-        }
         new VariableConsistencySupervisor(this).attach(getRoot());
     }
 
@@ -123,6 +46,11 @@ public class VisualCpog extends AbstractVisualModel {
         tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(Variable.class)));
         tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(RhoClause.class)));
         setGraphEditorTools(tools);
+    }
+
+    @Override
+    public Cpog getMathModel() {
+        return (Cpog) super.getMathModel();
     }
 
     @Override
@@ -160,7 +88,7 @@ public class VisualCpog extends AbstractVisualModel {
                 u = (VisualVariable) first;
             }
             if (mConnection == null) {
-                mConnection = mathModel.connect(v.getMathVertex(), u.getMathVariable());
+                mConnection = getMathModel().connect(v.getMathVertex(), u.getMathVariable());
             }
             ret = new VisualDynamicVariableConnection((DynamicVariableConnection) mConnection, v, u);
             Hierarchy.getNearestContainer(v, u).add(ret);
@@ -169,7 +97,7 @@ public class VisualCpog extends AbstractVisualModel {
     }
 
     public VisualArc connect(VisualVertex v, VisualVertex u) {
-        Arc con = mathModel.connect(v.getMathVertex(), u.getMathVertex());
+        Arc con = getMathModel().connect(v.getMathVertex(), u.getMathVertex());
         VisualArc arc = new VisualArc(con, v, u);
         Hierarchy.getNearestContainer(v, u).add(arc);
         return arc;
@@ -233,7 +161,7 @@ public class VisualCpog extends AbstractVisualModel {
 
     public VisualVertex createVisualVertex(Container container) {
         Vertex mathVertex = new Vertex();
-        mathModel.add(mathVertex);
+        getMathModel().add(mathVertex);
 
         VisualVertex vertex = new VisualVertex(mathVertex);
         container.add(vertex);
@@ -242,7 +170,7 @@ public class VisualCpog extends AbstractVisualModel {
 
     public VisualVariable createVisualVariable() {
         Variable mathVariable = new Variable();
-        mathModel.add(mathVariable);
+        getMathModel().add(mathVariable);
 
         VisualVariable variable = new VisualVariable(mathVariable);
 
@@ -260,12 +188,8 @@ public class VisualCpog extends AbstractVisualModel {
     @Override
     public ModelProperties getProperties(Node node) {
         ModelProperties properties = super.getProperties(node);
-        if (node != null) {
-            if (node instanceof VisualRhoClause ||
-                    node instanceof VisualVertex ||
-                    node instanceof VisualArc) {
-                properties.add(new BooleanFormulaPropertyDescriptor(node));
-            }
+        if ((node instanceof VisualRhoClause) || (node instanceof VisualVertex) || (node instanceof VisualArc)) {
+            properties.add(new BooleanFormulaPropertyDescriptor(getMathModel(), node));
         }
         return properties;
     }
@@ -295,7 +219,6 @@ public class VisualCpog extends AbstractVisualModel {
             select(scenario);
         }
         return scenario;
-
     }
 
 }

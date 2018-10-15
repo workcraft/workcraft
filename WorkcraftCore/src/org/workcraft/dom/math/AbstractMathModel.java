@@ -30,8 +30,13 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
     }
 
     public AbstractMathModel(Container root, ReferenceManager man) {
-        super((root == null) ? new MathGroup() : root, man);
+        super(root, man);
         new DefaultHangingConnectionRemover(this).attach(getRoot());
+    }
+
+    @Override
+    public MathGroup createDefaultRoot() {
+        return new MathGroup();
     }
 
     @Override

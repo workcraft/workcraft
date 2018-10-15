@@ -12,7 +12,6 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
@@ -55,13 +54,6 @@ public class VisualCircuit extends AbstractVisualModel {
     public VisualCircuit(Circuit model, VisualGroup root)  {
         super(model, root);
         setGraphEditorTools();
-        if (root == null) {
-            try {
-                createDefaultFlatStructure();
-            } catch (NodeCreationException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 
     private void setGraphEditorTools() {

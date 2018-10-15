@@ -10,7 +10,6 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.propertyeditor.ModelProperties;
@@ -29,44 +28,30 @@ import java.util.*;
 @DisplayName("Signal Transition Graph")
 public class VisualStg extends AbstractVisualModel {
 
-    public VisualStg() {
-        this(new Stg(), null);
-    }
-
     public VisualStg(Stg model) {
         this(model, null);
     }
 
     public VisualStg(Stg model, VisualGroup root) {
         super(model, root);
-        if (root == null) {
-            try {
-                createDefaultFlatStructure();
-                fixReadArcs();
-                // FIXME: Implicit places should not appear in the first place.
-                fixVisibilityOfImplicitPlaces();
-            } catch (NodeCreationException e) {
-                throw new RuntimeException(e);
-            }
-        }
         setGraphEditorTools();
     }
 
-    private void fixVisibilityOfImplicitPlaces() {
-        for (VisualStgPlace vp: getVisualPlaces()) {
-            Place p = vp.getReferencedPlace();
-            if (p instanceof StgPlace) {
-                StgPlace pp = (StgPlace) p;
-                if (pp.isImplicit()) {
-                    maybeMakeImplicit(vp, false);
-                }
-            }
-        }
-    }
-
-    private void fixReadArcs() {
+    @Override
+    public void createDefaultStructure() {
+        super.createDefaultStructure();
+        // Convert dual producer-consumer arcs into read-arcs
         HashSet<Pair<VisualConnection, VisualConnection>> dualArcs = PetriNetUtils.getSelectedOrAllDualArcs(this);
         PetriNetUtils.convertDualArcsToReadArcs(this, dualArcs);
+
+        // Hide implicit places
+        // FIXME: Implicit places should not appear in the first place.
+        for (VisualStgPlace vp: getVisualPlaces()) {
+            Place place = vp.getReferencedPlace();
+            if ((place instanceof StgPlace) && ((StgPlace) place).isImplicit()) {
+                maybeMakeImplicit(vp, false);
+            }
+        }
     }
 
     private void setGraphEditorTools() {

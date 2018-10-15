@@ -7,7 +7,6 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.*;
 import org.workcraft.gui.propertyeditor.ModelProperties;
@@ -28,13 +27,6 @@ public class VisualGraph extends AbstractVisualModel {
     public VisualGraph(Graph model, VisualGroup root) {
         super(model, root);
         setGraphEditorTools();
-        if (root == null) {
-            try {
-                createDefaultFlatStructure();
-            } catch (NodeCreationException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 
     private void setGraphEditorTools() {

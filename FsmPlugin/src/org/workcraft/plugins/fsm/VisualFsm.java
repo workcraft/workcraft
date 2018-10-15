@@ -8,7 +8,6 @@ import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.*;
 import org.workcraft.observation.HierarchyEvent;
@@ -31,13 +30,6 @@ public class VisualFsm extends AbstractVisualModel {
     public VisualFsm(Fsm model, VisualGroup root) {
         super(model, root);
         setGraphEditorTools();
-        if (root == null) {
-            try {
-                createDefaultFlatStructure();
-            } catch (NodeCreationException e) {
-                throw new RuntimeException(e);
-            }
-        }
         // Make the first created state initial
         new HierarchySupervisor() {
             @Override
