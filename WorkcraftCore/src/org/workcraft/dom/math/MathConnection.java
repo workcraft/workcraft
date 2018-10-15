@@ -5,6 +5,7 @@ import org.workcraft.dom.Connection;
 
 @VisualClass(org.workcraft.dom.visual.connections.VisualConnection.class)
 public class MathConnection extends MathNode implements Connection {
+
     private MathNode first;
     private MathNode second;
 
@@ -16,21 +17,24 @@ public class MathConnection extends MathNode implements Connection {
         setDependencies(first, second);
     }
 
-    public final MathNode getFirst() {
+    public void setDependencies(MathNode first, MathNode second) {
+        this.first = first;
+        this.second = second;
+    }
+
+    @Override
+    public MathNode getFirst() {
         return first;
     }
 
-    public final MathNode getSecond() {
+    @Override
+    public MathNode getSecond() {
         return second;
-    }
-
-    public final void setDependencies(MathNode first, MathNode second) {
-        this.first = first;
-        this.second = second;
     }
 
     @Override
     public String toString() {
         return "MathConnection " + this.hashCode() + " (" + first + ", " + second + ")";
     }
+
 }

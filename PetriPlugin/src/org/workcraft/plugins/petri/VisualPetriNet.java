@@ -5,7 +5,6 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
-import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
@@ -103,24 +102,8 @@ public class VisualPetriNet extends AbstractVisualModel {
     }
 
     @Override
-    public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
-        validateConnection(first, second);
-
-        if (mConnection == null) {
-            MathNode firstRef = getMathReference(first);
-            MathNode secondRef = getMathReference(second);
-            if ((firstRef != null) && (secondRef != null)) {
-                PetriNet petriNet = (PetriNet) getMathModel();
-                mConnection = petriNet.connect(firstRef, secondRef);
-            }
-        }
-        VisualConnection connection = new VisualConnection(mConnection, (VisualNode) first, (VisualNode) second);
-        Hierarchy.getNearestContainer(first, second).add(connection);
-        return connection;
-    }
-
-    @Override
     public void validateUndirectedConnection(Node first, Node second) throws InvalidConnectionException {
+        super.validateUndirectedConnection(first, second);
         if (first == second) {
             throw new InvalidConnectionException("Self-loops are not allowed.");
         }

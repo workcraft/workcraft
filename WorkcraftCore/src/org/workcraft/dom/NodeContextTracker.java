@@ -1,17 +1,8 @@
 package org.workcraft.dom;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import org.workcraft.observation.*;
 
-import org.workcraft.observation.HierarchyEvent;
-import org.workcraft.observation.HierarchySupervisor;
-import org.workcraft.observation.NodesAddedEvent;
-import org.workcraft.observation.NodesDeletedEvent;
-import org.workcraft.observation.NodesReparentingEvent;
+import java.util.*;
 
 public class NodeContextTracker extends HierarchySupervisor implements NodeContext {
     private final HashMap<Node, LinkedHashSet<Node>> presets = new HashMap<>();
@@ -21,15 +12,15 @@ public class NodeContextTracker extends HierarchySupervisor implements NodeConte
     private void initHashes(Node n) {
         LinkedHashSet<Node> set = presets.get(n);
         if (set == null) {
-            presets.put(n, new LinkedHashSet<Node>());
+            presets.put(n, new LinkedHashSet<>());
         }
         set = postsets.get(n);
         if (set == null) {
-            postsets.put(n, new LinkedHashSet<Node>());
+            postsets.put(n, new LinkedHashSet<>());
         }
         LinkedHashSet<Connection> conSet = connections.get(n);
         if (conSet == null) {
-            connections.put(n, new LinkedHashSet<Connection>());
+            connections.put(n, new LinkedHashSet<>());
         }
     }
 

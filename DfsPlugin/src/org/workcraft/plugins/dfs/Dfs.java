@@ -1,11 +1,10 @@
 package org.workcraft.plugins.dfs;
 
-import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
-import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
@@ -13,7 +12,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-@VisualClass (org.workcraft.plugins.dfs.VisualDfs.class)
 public class Dfs extends AbstractMathModel {
 
     public Dfs() {
@@ -24,16 +22,82 @@ public class Dfs extends AbstractMathModel {
         super(root, refs);
     }
 
-    public MathConnection connect(Node first, Node second) {
-        MathConnection con = new MathConnection((MathNode) first, (MathNode) second);
-        Hierarchy.getNearestContainer(first, second).add(con);
-        return con;
+    @Override
+    public void validateConnection(MathNode first, MathNode second) throws InvalidConnectionException {
+        super.validateConnection(first, second);
+
+        if (first == second) {
+            throw new InvalidConnectionException("Self-loops are not allowed");
+        }
+        // Connection from spreadtoken logic
+        if ((first instanceof Logic) && (second instanceof CounterflowLogic)) {
+            throw new InvalidConnectionException("Invalid connection from spreadtoken logic to counterflow logic");
+        }
+        if ((first instanceof Logic) && (second instanceof CounterflowRegister)) {
+            throw new InvalidConnectionException("Invalid connection from spreadtoken logic to counterflow register");
+        }
+        // Connection from spreadtoken register
+        if ((first instanceof Register) && (second instanceof CounterflowLogic)) {
+            throw new InvalidConnectionException("Invalid connection from spreadtoken register to counterflow logic");
+        }
+        // Connection from counterflow logic
+        if ((first instanceof CounterflowLogic) && (second instanceof Logic)) {
+            throw new InvalidConnectionException("Invalid connection from counterflow logic to spreadtoken logic");
+        }
+        if ((first instanceof CounterflowLogic) && (second instanceof Register)) {
+            throw new InvalidConnectionException("Invalid connection from counterflow logic to spreadtoken register");
+        }
+        if ((first instanceof CounterflowLogic) && (second instanceof ControlRegister)) {
+            throw new InvalidConnectionException("Invalid connection from counterflow logic to control register");
+        }
+        if ((first instanceof CounterflowLogic) && (second instanceof PushRegister)) {
+            throw new InvalidConnectionException("Invalid connection from counterflow logic to push register");
+        }
+        if ((first instanceof CounterflowLogic) && (second instanceof PopRegister)) {
+            throw new InvalidConnectionException("Invalid connection from counterflow logic to pop register");
+        }
+        // Connection from counterflow register
+        if ((first instanceof CounterflowRegister) && (second instanceof Logic)) {
+            throw new InvalidConnectionException("Invalid connection from counterflow register to spreadtoken logic");
+        }
+        if ((first instanceof CounterflowRegister) && (second instanceof ControlRegister)) {
+            throw new InvalidConnectionException("Invalid connection from counterflow register to control register");
+        }
+        if ((first instanceof CounterflowRegister) && (second instanceof PushRegister)) {
+            throw new InvalidConnectionException("Invalid connection from counterflow register to push register");
+        }
+        if ((first instanceof CounterflowRegister) && (second instanceof PopRegister)) {
+            throw new InvalidConnectionException("Invalid connection from counterflow register to pop register");
+        }
+        // Connection from control register
+        if ((first instanceof ControlRegister) && (second instanceof CounterflowLogic)) {
+            throw new InvalidConnectionException("Invalid connection from control register to counterflow logic");
+        }
+        if ((first instanceof ControlRegister) && (second instanceof CounterflowRegister)) {
+            throw new InvalidConnectionException("Invalid connection from control register to counterflow register");
+        }
+        // Connection from push register
+        if ((first instanceof PushRegister) && (second instanceof CounterflowLogic)) {
+            throw new InvalidConnectionException("Invalid connection from push register to counterflow logic");
+        }
+        if ((first instanceof PushRegister) && (second instanceof CounterflowRegister)) {
+            throw new InvalidConnectionException("Invalid connection from push register to counterflow register");
+        }
+        // Connection from pop register
+        if ((first instanceof PopRegister) && (second instanceof CounterflowLogic)) {
+            throw new InvalidConnectionException("Invalid connection from pop register to counterflow logic");
+        }
+        if ((first instanceof PopRegister) && (second instanceof CounterflowRegister)) {
+            throw new InvalidConnectionException("Invalid connection from pop register to counterflow register");
+        }
     }
 
-    public ControlConnection controlConnect(Node first, Node second) {
-        ControlConnection con = new ControlConnection((MathNode) first, (MathNode) second);
-        Hierarchy.getNearestContainer(first, second).add(con);
-        return con;
+    public ControlConnection controlConnect(MathNode first, MathNode second) throws InvalidConnectionException {
+        validateConnection(first, second);
+        ControlConnection connection = new ControlConnection(first, second);
+        Container container = Hierarchy.getNearestContainer(first, second);
+        container.add(connection);
+        return connection;
     }
 
     public Collection<Logic> getLogics() {

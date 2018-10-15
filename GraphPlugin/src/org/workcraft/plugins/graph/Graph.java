@@ -4,13 +4,11 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
-import org.workcraft.dom.math.MathConnection;
-import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.references.UniqueReferenceManager;
 import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.plugins.graph.properties.VertexSymbolPropertyDescriptor;
 import org.workcraft.plugins.graph.observers.SymbolConsistencySupervisor;
+import org.workcraft.plugins.graph.properties.VertexSymbolPropertyDescriptor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
@@ -31,12 +29,6 @@ public class Graph extends AbstractMathModel {
 
     public boolean keepUnusedSymbols() {
         return false;
-    }
-
-    public MathConnection connect(Node first, Node second) {
-        MathConnection con = new MathConnection((MathNode) first, (MathNode) second);
-        Hierarchy.getNearestContainer(first, second).add(con);
-        return con;
     }
 
     public Symbol createSymbol(String name) {

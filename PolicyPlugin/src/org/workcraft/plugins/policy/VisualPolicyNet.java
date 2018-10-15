@@ -12,9 +12,9 @@ import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.ConnectionTool;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.observation.*;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.tools.PetriPlaceGeneratorTool;
+import org.workcraft.plugins.policy.observers.SpanningTreeInvalidator;
 import org.workcraft.plugins.policy.properties.BundleColorPropertyDescriptor;
 import org.workcraft.plugins.policy.properties.BundleNamePropertyDescriptor;
 import org.workcraft.plugins.policy.properties.BundlesOfTransitionPropertyDescriptor;
@@ -45,19 +45,7 @@ public class VisualPolicyNet extends VisualPetriNet {
     public VisualPolicyNet(PolicyNet model, VisualGroup root) {
         super(model, root == null ? new VisualLocality((Locality) model.getRoot()) : root);
         setGraphEditorTools();
-        // invalidate spanning trees of all VisualBundles when the the model is changed
-        new StateSupervisor() {
-            @Override
-            public void handleEvent(StateEvent e) {
-                if (e instanceof ModelModifiedEvent
-                        || e instanceof PropertyChangedEvent
-                        || e instanceof TransformChangedEvent) {
-                    for (VisualBundle b: getVisualBundles()) {
-                        b.invalidateSpanningTree();
-                    }
-                }
-            }
-        }.attach(getRoot());
+        new SpanningTreeInvalidator(this).attach(getRoot());
     }
 
     private void setGraphEditorTools() {
@@ -81,7 +69,7 @@ public class VisualPolicyNet extends VisualPetriNet {
         ArrayList<Node> refSelected = new ArrayList<>();
         for (Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
             if (node instanceof VisualTransformableNode) {
-                selected.add((VisualTransformableNode) node);
+                selected.add(node);
                 if (node instanceof VisualComponent) {
                     refSelected.add(((VisualComponent) node).getReferencedComponent());
                 } else if (node instanceof VisualLocality) {

@@ -1,11 +1,13 @@
 package org.workcraft.plugins.xmas;
 
+import org.workcraft.dom.Connection;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
-import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.xmas.components.*;
+import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
 import java.util.ArrayList;
@@ -13,10 +15,41 @@ import java.util.Collection;
 
 public class Xmas extends AbstractMathModel {
 
-    public MathConnection connect(Node first, Node second) throws InvalidConnectionException {
-        MathConnection con = new MathConnection((MathNode) first, (MathNode) second);
-        Hierarchy.getNearestContainer(first, second).add(con);
-        return con;
+    public Xmas() {
+        this(null, null);
+    }
+
+    public Xmas(Container root, References refs) {
+        super(root, refs);
+    }
+
+    @Override
+    public void validateConnection(MathNode first, MathNode second) throws InvalidConnectionException {
+        super.validateConnection(first, second);
+
+        if (!(first instanceof XmasContact) || !(second instanceof XmasContact)) {
+            throw new InvalidConnectionException("Connection is only allowed between ports");
+        }
+
+        if (((XmasContact) first).getIOType() != XmasContact.IOType.OUTPUT) {
+            throw new InvalidConnectionException("Connection is only allowed from output port");
+        }
+
+        if (((XmasContact) second).getIOType() != XmasContact.IOType.INPUT) {
+            throw new InvalidConnectionException("Connection is only allowed to input port");
+        }
+
+        for (Connection c: this.getConnections(first)) {
+            if (c.getFirst() == first) {
+                throw new InvalidConnectionException("Only one connection is allowed from port");
+            }
+        }
+
+        for (Connection c: this.getConnections(second)) {
+            if (c.getSecond() == second) {
+                throw new InvalidConnectionException("Only one connection is allowed to port");
+            }
+        }
     }
 
     public Collection<Node> getNodes() {

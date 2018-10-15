@@ -94,13 +94,13 @@ public abstract class AbstractModel implements Model {
     }
 
     @Override
-    public Set<Node> getPreset(Node component) {
-        return nodeContextTracker.getPreset(component);
+    public Set<Node> getPreset(Node node) {
+        return nodeContextTracker.getPreset(node);
     }
 
     @Override
-    public Set<Connection> getConnections(Node component) {
-        return nodeContextTracker.getConnections(component);
+    public Set<Connection> getConnections(Node node) {
+        return nodeContextTracker.getConnections(node);
     }
 
     @Override

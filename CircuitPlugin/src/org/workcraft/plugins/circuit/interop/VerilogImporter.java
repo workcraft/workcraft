@@ -1010,7 +1010,7 @@ public class VerilogImporter implements Importer {
                     }
                 }
                 if (!hasNewContact) {
-                    circuit.connect(newOutputContact, toNode);
+                    circuit.connect(newOutputContact, (MathNode) toNode);
                 }
             } catch (InvalidConnectionException e) {
             }
@@ -1021,8 +1021,9 @@ public class VerilogImporter implements Importer {
             if (oldContact == null) continue;
             for (Node fromNode: circuit.getPreset(oldContact)) {
                 try {
-                    circuit.connect(fromNode, newContact);
+                    circuit.connect((MathNode) fromNode, newContact);
                 } catch (InvalidConnectionException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }

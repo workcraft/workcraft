@@ -4,7 +4,6 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
-import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.serialisation.References;
@@ -163,17 +162,17 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
         }
     }
 
-    public MathConnection connect(Node first, Node second) throws InvalidConnectionException {
-        if (first instanceof Place && second instanceof Place) {
-            throw new InvalidConnectionException("Connections between places are not valid");
-        }
-        if (first instanceof Transition && second instanceof Transition) {
-            throw new InvalidConnectionException("Connections between transitions are not valid");
+    @Override
+    public void validateConnection(MathNode first, MathNode second) throws InvalidConnectionException {
+        super.validateConnection(first, second);
+
+        if ((first instanceof Place) && (second instanceof Place)) {
+            throw new InvalidConnectionException("Connections between places are not allowed");
         }
 
-        MathConnection con = new MathConnection((MathNode) first, (MathNode) second);
-        Hierarchy.getNearestContainer(first, second).add(con);
-        return con;
+        if ((first instanceof Transition) && (second instanceof Transition)) {
+            throw new InvalidConnectionException("Connections between transitions are not allowed");
+        }
     }
 
     @Override

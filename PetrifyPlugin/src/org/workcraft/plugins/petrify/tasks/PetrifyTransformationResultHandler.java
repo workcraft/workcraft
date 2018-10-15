@@ -1,34 +1,26 @@
 package org.workcraft.plugins.petrify.tasks;
 
-import java.util.Collection;
-import java.util.HashMap;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
-import org.workcraft.dom.references.UniqueReferenceManager;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.NameManager;
+import org.workcraft.dom.references.UniqueReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.ExceptionDialog;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.plugins.petri.PetriNet;
-import org.workcraft.plugins.petri.PetriNetDescriptor;
-import org.workcraft.plugins.petri.PetriNetModel;
-import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.stg.LabelParser;
-import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.MutexUtils;
-import org.workcraft.plugins.stg.StgDescriptor;
-import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.petri.*;
+import org.workcraft.plugins.stg.*;
 import org.workcraft.tasks.AbstractExtendedResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import java.util.Collection;
+import java.util.HashMap;
 
 public class PetrifyTransformationResultHandler extends AbstractExtendedResultHandler<PetrifyTransformationOutput, WorkspaceEntry> {
     private final WorkspaceEntry we;
@@ -66,7 +58,7 @@ public class PetrifyTransformationResultHandler extends AbstractExtendedResultHa
 
     private PetriNetModel convertStgToPetriNet(StgModel srcModel) {
         PetriNet dstModel = new PetriNet();
-        HashMap<Node, Node> nodeMap = new HashMap<>();
+        HashMap<MathNode, MathNode> nodeMap = new HashMap<>();
         for (Place place: srcModel.getPlaces()) {
             Place newPlace = dstModel.createPlace(null, null);
             if (newPlace != null) {
@@ -84,8 +76,8 @@ public class PetrifyTransformationResultHandler extends AbstractExtendedResultHa
         }
 
         for (Connection connection: srcModel.getConnections()) {
-            Node first = nodeMap.get(connection.getFirst());
-            Node second = nodeMap.get(connection.getSecond());
+            MathNode first = nodeMap.get(connection.getFirst());
+            MathNode second = nodeMap.get(connection.getSecond());
             try {
                 dstModel.connect(first, second);
             } catch (InvalidConnectionException e) {

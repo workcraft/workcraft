@@ -43,7 +43,7 @@ public class StgUtils {
     private static void replaceNamedTransition(Stg stg, NamedTransition oldTransition, NamedTransition newTransition) {
         for (Node pred : stg.getPreset(oldTransition)) {
             try {
-                stg.connect(pred, newTransition);
+                stg.connect((MathNode) pred, newTransition);
             } catch (InvalidConnectionException e) {
                 e.printStackTrace();
             }
@@ -51,7 +51,7 @@ public class StgUtils {
 
         for (Node succ : stg.getPostset(oldTransition)) {
             try {
-                stg.connect(newTransition, succ);
+                stg.connect(newTransition, (MathNode) succ);
             } catch (InvalidConnectionException e) {
                 e.printStackTrace();
             }
@@ -285,8 +285,8 @@ public class StgUtils {
         }
         // Connect places and transitions.
         for (Connection connection : stg.getConnections()) {
-            Node first = nodeMap.get(connection.getFirst());
-            Node second = nodeMap.get(connection.getSecond());
+            MathNode first = nodeMap.get(connection.getFirst());
+            MathNode second = nodeMap.get(connection.getSecond());
             try {
                 result.connect(first, second);
             } catch (InvalidConnectionException e) {

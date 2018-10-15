@@ -58,74 +58,8 @@ public class VisualDfs extends AbstractVisualModel {
     }
 
     @Override
-    public void validateConnection(Node first, Node second) throws InvalidConnectionException {
-        if (first == null || second == null) {
-            throw new InvalidConnectionException("Invalid connection");
-        }
-        if (first == second) {
-            throw new InvalidConnectionException("Self-loops are not allowed");
-        }
-        // Connection from spreadtoken logic
-        if (first instanceof VisualLogic && second instanceof VisualCounterflowLogic) {
-            throw new InvalidConnectionException("Invalid connection from spreadtoken logic to counterflow logic");
-        }
-        if (first instanceof VisualLogic && second instanceof VisualCounterflowRegister) {
-            throw new InvalidConnectionException("Invalid connection from spreadtoken logic to counterflow register");
-        }
-        // Connection from spreadtoken register
-        if (first instanceof VisualRegister && second instanceof VisualCounterflowLogic) {
-            throw new InvalidConnectionException("Invalid connection from spreadtoken register to counterflow logic");
-        }
-        // Connection from counterflow logic
-        if (first instanceof VisualCounterflowLogic && second instanceof VisualLogic) {
-            throw new InvalidConnectionException("Invalid connection from counterflow logic to spreadtoken logic");
-        }
-        if (first instanceof VisualCounterflowLogic && second instanceof VisualRegister) {
-            throw new InvalidConnectionException("Invalid connection from counterflow logic to spreadtoken register");
-        }
-        if (first instanceof VisualCounterflowLogic && second instanceof VisualControlRegister) {
-            throw new InvalidConnectionException("Invalid connection from counterflow logic to control register");
-        }
-        if (first instanceof VisualCounterflowLogic && second instanceof VisualPushRegister) {
-            throw new InvalidConnectionException("Invalid connection from counterflow logic to push register");
-        }
-        if (first instanceof VisualCounterflowLogic && second instanceof VisualPopRegister) {
-            throw new InvalidConnectionException("Invalid connection from counterflow logic to pop register");
-        }
-        // Connection from counterflow register
-        if (first instanceof VisualCounterflowRegister && second instanceof VisualLogic) {
-            throw new InvalidConnectionException("Invalid connection from counterflow register to spreadtoken logic");
-        }
-        if (first instanceof VisualCounterflowRegister && second instanceof VisualControlRegister) {
-            throw new InvalidConnectionException("Invalid connection from counterflow register to control register");
-        }
-        if (first instanceof VisualCounterflowRegister && second instanceof VisualPushRegister) {
-            throw new InvalidConnectionException("Invalid connection from counterflow register to push register");
-        }
-        if (first instanceof VisualCounterflowRegister && second instanceof VisualPopRegister) {
-            throw new InvalidConnectionException("Invalid connection from counterflow register to pop register");
-        }
-        // Connection from control register
-        if (first instanceof VisualControlRegister && second instanceof VisualCounterflowLogic) {
-            throw new InvalidConnectionException("Invalid connection from control register to counterflow logic");
-        }
-        if (first instanceof VisualControlRegister && second instanceof VisualCounterflowRegister) {
-            throw new InvalidConnectionException("Invalid connection from control register to counterflow register");
-        }
-        // Connection from push register
-        if (first instanceof VisualPushRegister && second instanceof VisualCounterflowLogic) {
-            throw new InvalidConnectionException("Invalid connection from push register to counterflow logic");
-        }
-        if (first instanceof VisualPushRegister && second instanceof VisualCounterflowRegister) {
-            throw new InvalidConnectionException("Invalid connection from push register to counterflow register");
-        }
-        // Connection from pop register
-        if (first instanceof VisualPopRegister && second instanceof VisualCounterflowLogic) {
-            throw new InvalidConnectionException("Invalid connection from pop register to counterflow logic");
-        }
-        if (first instanceof VisualPopRegister && second instanceof VisualCounterflowRegister) {
-            throw new InvalidConnectionException("Invalid connection from pop register to counterflow register");
-        }
+    public Dfs getMathModel() {
+        return (Dfs) super.getMathModel();
     }
 
     @Override
@@ -138,12 +72,12 @@ public class VisualDfs extends AbstractVisualModel {
         VisualConnection ret = null;
         if (first instanceof VisualControlRegister) {
             if (mConnection == null) {
-                mConnection = ((Dfs) getMathModel()).controlConnect(ref1, ref2);
+                mConnection = getMathModel().controlConnect(ref1, ref2);
             }
             ret = new VisualControlConnection((ControlConnection) mConnection, c1, c2);
         } else {
             if (mConnection == null) {
-                mConnection = ((Dfs) getMathModel()).connect(ref1, ref2);
+                mConnection = getMathModel().connect(ref1, ref2);
             }
             ret = new VisualConnection(mConnection, c1, c2);
         }
@@ -154,7 +88,7 @@ public class VisualDfs extends AbstractVisualModel {
     }
 
     public String getName(VisualComponent component) {
-        return ((Dfs) getMathModel()).getName(component.getReferencedComponent());
+        return getMathModel().getName(component.getReferencedComponent());
     }
 
     public Set<Node> getRPreset(Node node) {

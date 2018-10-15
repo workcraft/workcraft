@@ -6,6 +6,7 @@ import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.references.UniqueReferenceManager;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
@@ -150,6 +151,22 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
             result.add(categoryName);
         }
         return result;
+    }
+
+    @Override
+    public void validateConnection(MathNode first, MathNode second) throws InvalidConnectionException {
+        if ((first == null) || (second == null)) {
+            throw new InvalidConnectionException("Invalid connection");
+        }
+    }
+
+    @Override
+    public MathConnection connect(MathNode first, MathNode second) throws InvalidConnectionException {
+        validateConnection(first, second);
+        MathConnection connection = new MathConnection(first, second);
+        Container container = Hierarchy.getNearestContainer(first, second);
+        container.add(connection);
+        return connection;
     }
 
 }

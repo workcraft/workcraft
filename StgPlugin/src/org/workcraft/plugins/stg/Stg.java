@@ -18,16 +18,15 @@ import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
+import org.workcraft.plugins.stg.observers.SignalTypeConsistencySupervisor;
 import org.workcraft.plugins.stg.properties.DirectionPropertyDescriptor;
 import org.workcraft.plugins.stg.properties.InstancePropertyDescriptor;
 import org.workcraft.plugins.stg.properties.SignalPropertyDescriptor;
 import org.workcraft.plugins.stg.properties.TypePropertyDescriptor;
 import org.workcraft.plugins.stg.references.StgReferenceManager;
-import org.workcraft.plugins.stg.observers.SignalTypeConsistencySupervisor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.*;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -37,10 +36,6 @@ public class Stg extends AbstractMathModel implements StgModel {
 
     public Stg() {
         this(null, null);
-    }
-
-    public Stg(Container root) {
-        this(root, null);
     }
 
     public Stg(Container root, References refs) {
@@ -313,26 +308,18 @@ public class Stg extends AbstractMathModel implements StgModel {
         }
     }
 
-    public ConnectionResult connect(Node first, Node second)
+    public ImplicitPlaceConnection connect(NamedTransition first, NamedTransition second)
             throws InvalidConnectionException {
-        if ((first instanceof Transition) && (second instanceof Transition)) {
-            StgPlace p = new StgPlace();
-            p.setImplicit(true);
 
-            MathConnection con1 = new MathConnection((Transition) first, p);
-            MathConnection con2 = new MathConnection(p, (Transition) second);
+        StgPlace p = new StgPlace();
+        p.setImplicit(true);
 
-            Hierarchy.getNearestContainer(first, second).add(
-                    Arrays.asList(new Node[] {p, con1, con2 }));
+        Container container = Hierarchy.getNearestContainer(first, second);
+        container.add(p);
 
-            return new ComplexResult(p, con1, con2);
-        } else if (first instanceof Place && second instanceof Place) {
-            throw new InvalidConnectionException("Connections between places are not valid");
-        } else {
-            MathConnection con = new MathConnection((MathNode) first, (MathNode) second);
-            Hierarchy.getNearestContainer(first, second).add(con);
-            return new SimpleResult(con);
-        }
+        MathConnection con1 = connect(first, p);
+        MathConnection con2 = connect(p, second);
+        return new ImplicitPlaceConnection(p, con1, con2);
     }
 
     @Override

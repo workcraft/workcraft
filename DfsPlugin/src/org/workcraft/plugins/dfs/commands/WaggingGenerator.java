@@ -1,11 +1,5 @@
 package org.workcraft.plugins.dfs.commands;
 
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
@@ -19,24 +13,18 @@ import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.dfs.BinaryRegister.Marking;
-import org.workcraft.plugins.dfs.ControlConnection;
-import org.workcraft.plugins.dfs.ControlRegister;
+import org.workcraft.plugins.dfs.*;
 import org.workcraft.plugins.dfs.ControlRegister.SynchronisationType;
-import org.workcraft.plugins.dfs.Dfs;
-import org.workcraft.plugins.dfs.Logic;
-import org.workcraft.plugins.dfs.PopRegister;
-import org.workcraft.plugins.dfs.PushRegister;
-import org.workcraft.plugins.dfs.Register;
-import org.workcraft.plugins.dfs.VisualControlConnection;
-import org.workcraft.plugins.dfs.VisualControlRegister;
-import org.workcraft.plugins.dfs.VisualDfs;
-import org.workcraft.plugins.dfs.VisualLogic;
-import org.workcraft.plugins.dfs.VisualPopRegister;
-import org.workcraft.plugins.dfs.VisualPushRegister;
-import org.workcraft.plugins.dfs.VisualRegister;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Pair;
+
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 public class WaggingGenerator {
     private final VisualDfs dfs;
@@ -380,22 +368,30 @@ public class WaggingGenerator {
     private VisualConnection createConnection(VisualComponent first, VisualComponent second) {
         MathNode firstRef = first.getReferencedComponent();
         MathNode secondRef = second.getReferencedComponent();
-        MathConnection connectionRef = ((Dfs) dfs.getMathModel()).connect(firstRef, secondRef);
-        VisualConnection connection = new VisualConnection(connectionRef, first, second);
-        Hierarchy.getNearestContainer(first, second).add(connection);
-        return connection;
+        try {
+            MathConnection connectionRef = dfs.getMathModel().connect(firstRef, secondRef);
+            VisualConnection connection = new VisualConnection(connectionRef, first, second);
+            Hierarchy.getNearestContainer(first, second).add(connection);
+            return connection;
+        } catch (InvalidConnectionException e) {
+            throw new RuntimeException();
+        }
     }
 
     private VisualControlConnection createControlConnection(VisualComponent first, VisualComponent second, boolean inversing) {
         MathNode firstRef = first.getReferencedComponent();
         MathNode secondRef = second.getReferencedComponent();
-        ControlConnection connectionRef = ((Dfs) dfs.getMathModel()).controlConnect(firstRef, secondRef);
-        connectionRef.setInverting(inversing);
-        VisualControlConnection connection = new VisualControlConnection(connectionRef, first, second);
-        connection.setBubble(inversing);
-        connection.setScaleMode(ScaleMode.ADAPTIVE);
-        Hierarchy.getNearestContainer(first, second).add(connection);
-        return connection;
+        try {
+            ControlConnection connectionRef = dfs.getMathModel().controlConnect(firstRef, secondRef);
+            connectionRef.setInverting(inversing);
+            VisualControlConnection connection = new VisualControlConnection(connectionRef, first, second);
+            connection.setBubble(inversing);
+            connection.setScaleMode(ScaleMode.ADAPTIVE);
+            Hierarchy.getNearestContainer(first, second).add(connection);
+            return connection;
+        } catch (InvalidConnectionException e) {
+            throw new RuntimeException();
+        }
     }
 
     private void convertConnectionToPolyline(VisualConnection connection, double x1Offset, double y1Offset, double x2Offset, double y2Offset) {

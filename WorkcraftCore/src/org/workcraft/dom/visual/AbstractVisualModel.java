@@ -115,6 +115,37 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     }
 
     @Override
+    public void validateConnection(Node first, Node second) throws InvalidConnectionException {
+        if (getConnection(first, second) != null) {
+            throw new InvalidConnectionException("Connection already exists.");
+        }
+        if (!(first instanceof VisualComponent) || !(second instanceof VisualComponent)) {
+            throw new InvalidConnectionException("Invalid connection.");
+        }
+        getMathModel().validateConnection(
+                ((VisualComponent) first).getReferencedComponent(),
+                ((VisualComponent) second).getReferencedComponent());
+    }
+
+    @Override
+    public VisualConnection connect(Node first, Node second, MathConnection mConnection)
+            throws InvalidConnectionException {
+
+        validateConnection(first, second);
+        if (mConnection == null) {
+            MathNode mFirst = getMathReference(first);
+            MathNode mSecond = getMathReference(second);
+            mConnection = getMathModel().connect(mFirst, mSecond);
+        }
+        VisualNode vFirst = (VisualNode) first;
+        VisualNode vSecond = (VisualNode) second;
+        VisualConnection vConnection = new VisualConnection(mConnection, vFirst, vSecond);
+        Container container = Hierarchy.getNearestContainer(vFirst, vSecond);
+        container.add(vConnection);
+        return vConnection;
+    }
+
+    @Override
     public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
         return connect(first, second, null);
     }
@@ -126,6 +157,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
     @Override
     public VisualConnection connectUndirected(Node first, Node second) throws InvalidConnectionException {
+        validateUndirectedConnection(first, second);
         return connect(first, second, null);
     }
 

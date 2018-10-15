@@ -1,7 +1,9 @@
 package org.workcraft.plugins.wtg;
 
-import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.dtd.*;
 import org.workcraft.plugins.wtg.observers.InitialStateSupervisor;
 import org.workcraft.plugins.wtg.observers.SignalTypeConsistencySupervisor;
@@ -12,7 +14,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-@VisualClass(org.workcraft.plugins.wtg.VisualWtg.class)
 public class Wtg extends Dtd {
 
     public Wtg() {
@@ -23,6 +24,46 @@ public class Wtg extends Dtd {
         super(root, refs);
         new InitialStateSupervisor().attach(getRoot());
         new SignalTypeConsistencySupervisor(this).attach(getRoot());
+    }
+
+    @Override
+    public void validateConnection(MathNode first, MathNode second) throws InvalidConnectionException {
+        super.validateConnection(first, second);
+
+        if (first == second) {
+            throw new InvalidConnectionException("Self-loops are not allowed.");
+        }
+
+        if ((first instanceof Waveform) && (second instanceof Waveform)) {
+            throw new InvalidConnectionException("Cannot directly connect waveforms.");
+        }
+
+        if ((first instanceof State) && (second instanceof State)) {
+            throw new InvalidConnectionException("Cannot directly connect states.");
+        }
+
+        if ((first instanceof State) && (second instanceof Waveform)) {
+            if (!getPreset(second).isEmpty()) {
+                throw new InvalidConnectionException("Waveform cannot have more than one preceding state.");
+            }
+            return;
+        }
+
+        if ((first instanceof Waveform) && (second instanceof State)) {
+            if (!getPostset(first).isEmpty()) {
+                throw new InvalidConnectionException("Waveform cannot have more than one succeeding state.");
+            }
+            return;
+        }
+        if ((first instanceof TransitionEvent) && (second instanceof TransitionEvent)) {
+            Signal firstSignal = ((TransitionEvent) first).getSignal();
+            Signal secondSignal = ((TransitionEvent) second).getSignal();
+            Node firstWaveform = firstSignal.getParent();
+            Node secondWaveform = secondSignal.getParent();
+            if (firstWaveform != secondWaveform) {
+                throw new InvalidConnectionException("Cannot connect events from different waveforms.");
+            }
+        }
     }
 
     public final Collection<State> getStates() {
