@@ -9,6 +9,7 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
+import org.workcraft.dom.references.FlatReferenceManager;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
@@ -73,6 +74,11 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     }
 
     @Override
+    public FlatReferenceManager createDefaultReferenceManager() {
+        return new FlatReferenceManager();
+    }
+
+    @Override
     public void createDefaultStructure() {
         HashMap<MathNode, VisualComponent> createdNodes = new HashMap<>();
         // Create components
@@ -133,9 +139,11 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
         if (getConnection(first, second) != null) {
             throw new InvalidConnectionException("Connection already exists.");
         }
+
         if (!(first instanceof VisualComponent) || !(second instanceof VisualComponent)) {
             throw new InvalidConnectionException("Invalid connection.");
         }
+
         getMathModel().validateConnection(
                 ((VisualComponent) first).getReferencedComponent(),
                 ((VisualComponent) second).getReferencedComponent());

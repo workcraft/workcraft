@@ -5,7 +5,7 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.references.NameManager;
-import org.workcraft.dom.references.UniqueReferenceManager;
+import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.graph.observers.SymbolConsistencySupervisor;
 import org.workcraft.plugins.graph.properties.VertexSymbolPropertyDescriptor;
@@ -59,7 +59,7 @@ public class Graph extends AbstractMathModel {
         if (srcModel == null) {
             srcModel = this;
         }
-        UniqueReferenceManager refManager = (UniqueReferenceManager) getReferenceManager();
+        HierarchyReferenceManager refManager = (HierarchyReferenceManager) getReferenceManager();
         NameManager nameManagerer = refManager.getNameManager(null);
         for (Node srcNode: srcChildren) {
             if (srcNode instanceof Vertex) {

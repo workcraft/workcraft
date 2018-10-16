@@ -5,7 +5,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.references.UniqueReferenceManager;
+import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.ArgumentException;
@@ -305,8 +305,8 @@ public class VerilogImporter implements Importer {
     }
 
     private void setAssignComponentName(Circuit circuit, FunctionComponent component, String name) {
-        UniqueReferenceManager refManager
-                = (UniqueReferenceManager) circuit.getReferenceManager();
+        HierarchyReferenceManager refManager
+                = (HierarchyReferenceManager) circuit.getReferenceManager();
 
         NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(circuit.getRoot());
         NameManager nameManagerer = refManager.getNameManager(namespaceProvider);

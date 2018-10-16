@@ -8,7 +8,7 @@ import org.workcraft.observation.NodesAddedEvent;
 import org.workcraft.observation.NodesDeletedEvent;
 import org.workcraft.util.TwoWayMap;
 
-public class DefaultReferenceManager extends HierarchySupervisor implements ReferenceManager {
+public class FlatReferenceManager extends HierarchySupervisor implements ReferenceManager {
     private final IDGenerator idGenerator = new IDGenerator();
     private final TwoWayMap<String, Node> nodes = new TwoWayMap<>();
 

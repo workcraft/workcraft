@@ -13,7 +13,7 @@ import org.workcraft.util.Hierarchy;
 import java.util.Collection;
 import java.util.HashMap;
 
-public class UniqueReferenceManager extends HierarchySupervisor implements ReferenceManager {
+public class HierarchyReferenceManager extends HierarchySupervisor implements ReferenceManager {
 
     private final HashMap<NamespaceProvider, NameManager> managers = new HashMap<>();
 
@@ -22,11 +22,11 @@ public class UniqueReferenceManager extends HierarchySupervisor implements Refer
     private NamespaceProvider topProvider; // namespace provided by root
     private References refs;
 
-    public UniqueReferenceManager() {
+    public HierarchyReferenceManager() {
         this(null);
     }
 
-    public UniqueReferenceManager(References refs) {
+    public HierarchyReferenceManager(References refs) {
         this.refs = refs;
     }
 
@@ -47,7 +47,7 @@ public class UniqueReferenceManager extends HierarchySupervisor implements Refer
     }
 
     public void setNamespaceProvider(Collection<Node> nodes,
-            UniqueReferenceManager srcRefManager,
+            HierarchyReferenceManager srcRefManager,
             NamespaceProvider dstProvider) {
 
         if (dstProvider == null) {
@@ -105,7 +105,7 @@ public class UniqueReferenceManager extends HierarchySupervisor implements Refer
     }
 
     protected NameManager createNameManager() {
-        return new UniqueNameManager();
+        return new DefaultNameManager();
     }
 
     protected void setExistingReference(Node node) {

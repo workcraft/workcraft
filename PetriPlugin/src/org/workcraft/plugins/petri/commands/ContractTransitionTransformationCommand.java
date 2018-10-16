@@ -16,7 +16,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathModel;
-import org.workcraft.dom.references.UniqueReferenceManager;
+import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.Replica;
@@ -313,7 +313,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
         Container visualContainer = (Container) Hierarchy.getCommonParent(predPlace, succPlace);
         Container mathContainer = NamespaceHelper.getMathContainer(visualModel, visualContainer);
         MathModel mathModel = visualModel.getMathModel();
-        UniqueReferenceManager refManager = (UniqueReferenceManager) mathModel.getReferenceManager();
+        HierarchyReferenceManager refManager = (HierarchyReferenceManager) mathModel.getReferenceManager();
         NameManager nameManagerer = refManager.getNameManager((NamespaceProvider) mathContainer);
         String predName = visualModel.getMathName(predPlace);
         String succName = visualModel.getMathName(succPlace);

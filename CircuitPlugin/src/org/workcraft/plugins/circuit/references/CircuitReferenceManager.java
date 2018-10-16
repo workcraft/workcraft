@@ -3,13 +3,13 @@ package org.workcraft.plugins.circuit.references;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.references.NameManager;
-import org.workcraft.dom.references.UniqueReferenceManager;
+import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.plugins.circuit.CircuitComponent;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.serialisation.References;
 
-public class CircuitReferenceManager extends UniqueReferenceManager {
+public class CircuitReferenceManager extends HierarchyReferenceManager {
 
     public CircuitReferenceManager(References refs) {
         super(refs);

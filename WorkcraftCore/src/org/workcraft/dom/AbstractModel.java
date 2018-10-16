@@ -2,7 +2,10 @@ package org.workcraft.dom;
 
 import org.workcraft.annotations.Annotations;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
-import org.workcraft.dom.references.*;
+import org.workcraft.dom.references.Identifier;
+import org.workcraft.dom.references.NameManager;
+import org.workcraft.dom.references.ReferenceManager;
+import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.util.Func;
@@ -36,17 +39,11 @@ public abstract class AbstractModel implements Model {
         if (man != null) {
             this.mgr = man;
         } else {
-            if (root instanceof NamespaceProvider) {
-                this.mgr = new UniqueReferenceManager();
-            } else {
-                this.mgr = new DefaultReferenceManager();
-            }
+            this.mgr = createDefaultReferenceManager();
         }
         this.nodeContextTracker.attach(getRoot());
         this.mgr.attach(getRoot());
     }
-
-    public abstract Container createDefaultRoot();
 
     @Override
     public void add(Node node) {
@@ -233,24 +230,24 @@ public abstract class AbstractModel implements Model {
 
     @Override
     public String getName(Node node) {
-        if (mgr instanceof UniqueReferenceManager) {
-            return ((UniqueReferenceManager) mgr).getName(node);
+        if (mgr instanceof HierarchyReferenceManager) {
+            return ((HierarchyReferenceManager) mgr).getName(node);
         }
         return mgr.getNodeReference(null, node);
     }
 
     @Override
     public void setName(Node node, String name) {
-        if (mgr instanceof UniqueReferenceManager) {
-            ((UniqueReferenceManager) mgr).setName(node, name);
+        if (mgr instanceof HierarchyReferenceManager) {
+            ((HierarchyReferenceManager) mgr).setName(node, name);
         }
     }
 
     @Override
     public String getDerivedName(Node node, Container container, String candidate) {
         String result = candidate;
-        if ((mgr instanceof UniqueReferenceManager) && (container instanceof NamespaceProvider)) {
-            UniqueReferenceManager manager = (UniqueReferenceManager) mgr;
+        if ((mgr instanceof HierarchyReferenceManager) && (container instanceof NamespaceProvider)) {
+            HierarchyReferenceManager manager = (HierarchyReferenceManager) mgr;
             NameManager nameManager = manager.getNameManager((NamespaceProvider) container);
             result = nameManager.getDerivedName(null, candidate);
         }

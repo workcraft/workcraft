@@ -1,10 +1,10 @@
 package org.workcraft.plugins.circuit.references;
 
 import org.workcraft.dom.Node;
-import org.workcraft.dom.references.UniqueNameManager;
+import org.workcraft.dom.references.DefaultNameManager;
 import org.workcraft.plugins.circuit.Contact;
 
-public class CircuitNameManager extends UniqueNameManager {
+public class CircuitNameManager extends DefaultNameManager {
 
     @Override
     public String getPrefix(Node node) {

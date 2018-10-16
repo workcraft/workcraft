@@ -10,14 +10,14 @@ import org.workcraft.util.TwoWayMap;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UniqueNameManager implements NameManager {
+public class DefaultNameManager implements NameManager {
 
     private final Map<String, Integer> prefixCount = new HashMap<>();
     private final TwoWayMap<String, Node> nodes = new TwoWayMap<>();
 
     @Override
     public String getPrefix(Node node) {
-        String result = Annotations.getIentifierPrefix(node.getClass());
+        String result = Annotations.getIdentifierPrefix(node.getClass());
         if (result != null) {
             return result;
         }

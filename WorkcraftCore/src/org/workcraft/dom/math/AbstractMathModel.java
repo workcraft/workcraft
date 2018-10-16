@@ -4,8 +4,8 @@ import org.workcraft.NodeFactory;
 import org.workcraft.dom.*;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
+import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
-import org.workcraft.dom.references.UniqueReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.serialisation.References;
@@ -26,7 +26,7 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
     }
 
     public AbstractMathModel(Container root, References refs) {
-        this(root, new UniqueReferenceManager(refs));
+        this(root, new HierarchyReferenceManager(refs));
     }
 
     public AbstractMathModel(Container root, ReferenceManager man) {
@@ -37,6 +37,11 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
     @Override
     public MathGroup createDefaultRoot() {
         return new MathGroup();
+    }
+
+    @Override
+    public HierarchyReferenceManager createDefaultReferenceManager() {
+        return new HierarchyReferenceManager();
     }
 
     @Override
@@ -92,7 +97,7 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
         return createNode(null, container, type);
     }
 
-    private void setNamespaceRecursively(UniqueReferenceManager dstRefManager, Container dstContainer,
+    private void setNamespaceRecursively(HierarchyReferenceManager dstRefManager, Container dstContainer,
             Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
 
         // Collect the nodes to reparent - need to assign the whole tree to new providers
@@ -108,7 +113,7 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
             dstProvider = (NamespaceProvider) dstContainer;
         }
 
-        UniqueReferenceManager srcRefManager = (UniqueReferenceManager) srcModel.getReferenceManager();
+        HierarchyReferenceManager srcRefManager = (HierarchyReferenceManager) srcModel.getReferenceManager();
         dstRefManager.setNamespaceProvider(nodes, srcRefManager, dstProvider);
 
         srcRoot.reparent(nodes, dstContainer);
@@ -132,9 +137,9 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
         if (srcModel == null) {
             srcModel = this;
         }
-        UniqueReferenceManager manager = null;
-        if (getReferenceManager() instanceof UniqueReferenceManager) {
-            manager = (UniqueReferenceManager) getReferenceManager();
+        HierarchyReferenceManager manager = null;
+        if (getReferenceManager() instanceof HierarchyReferenceManager) {
+            manager = (HierarchyReferenceManager) getReferenceManager();
         }
         if (manager == null) {
             return false;

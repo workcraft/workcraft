@@ -14,18 +14,17 @@ public class DefaultNodeGenerator extends AbstractNodeGenerator {
     private final Class<?> cls;
     private final String displayName;
     private final int hk;
-    private Icon icon = null;
+    private final Icon icon;
 
     public DefaultNodeGenerator(Class<?> cls) {
         this.cls = cls;
         Class<?> vcls = Annotations.getVisualClass(cls);
-        this.displayName = Annotations.getDisplayName(vcls);
-        this.hk = Annotations.getHotKeyCode(vcls);
 
-        String iconPath = Annotations.getSVGIconPath(vcls);
-        if (iconPath != null) {
-            icon = GUI.createIconFromSVG(iconPath);
-        }
+        displayName = (vcls == null) ? null : Annotations.getDisplayName(vcls);
+        hk = (vcls == null) ? null : Annotations.getHotKeyCode(vcls);
+
+        String iconPath = (vcls == null) ? null : Annotations.getSVGIconPath(vcls);
+        icon = (iconPath == null) ? null : GUI.createIconFromSVG(iconPath);
     }
 
     @Override
@@ -35,11 +34,10 @@ public class DefaultNodeGenerator extends AbstractNodeGenerator {
 
     @Override
     public MathNode createMathNode() throws NodeCreationException {
-        MathNode result = null;
         if (MathNode.class.isAssignableFrom(cls)) {
-            result = NodeFactory.createNode(cls.asSubclass(MathNode.class));
+            return NodeFactory.createNode(cls.asSubclass(MathNode.class));
         }
-        return result;
+        return null;
     }
 
     @Override
@@ -56,4 +54,5 @@ public class DefaultNodeGenerator extends AbstractNodeGenerator {
     public String getLabel() {
         return displayName;
     }
+
 }

@@ -57,7 +57,7 @@ public class Annotations {
         }
     }
 
-    public static String getIentifierPrefix(Class<?> cls) {
+    public static String getIdentifierPrefix(Class<?> cls) {
         IdentifierPrefix annotation = cls.getAnnotation(IdentifierPrefix.class);
         if (annotation == null) {
             return null;

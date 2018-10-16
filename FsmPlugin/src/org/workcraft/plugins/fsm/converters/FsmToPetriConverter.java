@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.workcraft.dom.Node;
-import org.workcraft.dom.references.UniqueReferenceManager;
+import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.fsm.Fsm;
@@ -68,7 +68,7 @@ public class FsmToPetriConverter {
 
     private Map<VisualEvent, VisualTransition> convertEvents() {
         Map<VisualEvent, VisualTransition> result = new HashMap<>();
-        UniqueReferenceManager refManager = (UniqueReferenceManager) dstModel.getPetriNet().getReferenceManager();
+        HierarchyReferenceManager refManager = (HierarchyReferenceManager) dstModel.getPetriNet().getReferenceManager();
         NameManager nameManagerer = refManager.getNameManager(null);
         for (VisualEvent event : Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualEvent.class)) {
             Symbol symbol = event.getReferencedEvent().getSymbol();

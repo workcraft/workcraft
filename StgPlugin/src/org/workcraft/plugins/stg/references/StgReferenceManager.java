@@ -2,11 +2,11 @@ package org.workcraft.plugins.stg.references;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
-import org.workcraft.dom.references.UniqueReferenceManager;
+import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.serialisation.References;
 
-public class StgReferenceManager extends UniqueReferenceManager {
+public class StgReferenceManager extends HierarchyReferenceManager {
 
     public StgReferenceManager(References refs) {
         super(refs);

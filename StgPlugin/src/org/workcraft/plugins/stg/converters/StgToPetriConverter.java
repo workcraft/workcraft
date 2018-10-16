@@ -5,7 +5,7 @@ import java.util.Map;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.references.UniqueReferenceManager;
+import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualReplica;
@@ -51,8 +51,8 @@ public class StgToPetriConverter extends DefaultModelConverter<VisualStg, Visual
         String dstCandidate = LabelParser.getTransitionName(srcName);
         dstCandidate = dstCandidate.replace("+", "_PLUS").replace("-", "_MINUS").replace("~", "_TOGGLE");
 
-        UniqueReferenceManager refManager
-                = (UniqueReferenceManager) getDstModel().getPetriNet().getReferenceManager();
+        HierarchyReferenceManager refManager
+                = (HierarchyReferenceManager) getDstModel().getPetriNet().getReferenceManager();
 
         NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(container);
         NameManager nameManagerer = refManager.getNameManager(namespaceProvider);

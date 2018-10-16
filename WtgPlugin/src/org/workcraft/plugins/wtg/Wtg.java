@@ -1,5 +1,6 @@
 package org.workcraft.plugins.wtg;
 
+import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
@@ -43,17 +44,19 @@ public class Wtg extends Dtd {
         }
 
         if ((first instanceof State) && (second instanceof Waveform)) {
-            if (!getPreset(second).isEmpty()) {
-                throw new InvalidConnectionException("Waveform cannot have more than one preceding state.");
+            for (Connection connection : getConnections(second)) {
+                if ((connection.getFirst() != first) && (connection.getSecond() == second)) {
+                    throw new InvalidConnectionException("Waveform cannot have more than one preceding state.");
+                }
             }
-            return;
         }
 
         if ((first instanceof Waveform) && (second instanceof State)) {
-            if (!getPostset(first).isEmpty()) {
-                throw new InvalidConnectionException("Waveform cannot have more than one succeeding state.");
+            for (Connection connection : getConnections(second)) {
+                if ((connection.getFirst() == first) && (connection.getSecond() != second)) {
+                    throw new InvalidConnectionException("Waveform cannot have more than one succeeding state.");
+                }
             }
-            return;
         }
         if ((first instanceof TransitionEvent) && (second instanceof TransitionEvent)) {
             Signal firstSignal = ((TransitionEvent) first).getSignal();

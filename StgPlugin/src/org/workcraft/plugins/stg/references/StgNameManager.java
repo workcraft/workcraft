@@ -2,14 +2,14 @@ package org.workcraft.plugins.stg.references;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.Identifier;
-import org.workcraft.dom.references.UniqueNameManager;
+import org.workcraft.dom.references.DefaultNameManager;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.util.ListMap;
 import org.workcraft.util.Pair;
 import org.workcraft.util.Triple;
 
-public class StgNameManager extends UniqueNameManager {
+public class StgNameManager extends DefaultNameManager {
 
     private final InstanceManager instancedNameManager = new InstanceManager();
     private final ListMap<String, SignalTransition> signalTransitions = new ListMap<>();

@@ -40,6 +40,7 @@ public interface Model extends NodeContext {
 
     Container createDefaultRoot();
     Container getRoot();
+    ReferenceManager createDefaultReferenceManager();
     boolean reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren);
 
     <T> Set<T> getPreset(Node node, Class<T> type);

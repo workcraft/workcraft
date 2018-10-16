@@ -88,12 +88,18 @@ public class VisualDtd extends AbstractVisualModel {
 
     @Override
     public void validateConnection(Node first, Node second) throws InvalidConnectionException {
+        super.validateConnection(first, second);
+
         if (first == second) {
             throw new InvalidConnectionException("Self-loops are not allowed.");
         }
 
         if (getConnection(first, second) != null) {
             throw new InvalidConnectionException("Connection already exists.");
+        }
+
+        if ((first instanceof VisualSignal) || (second instanceof VisualSignal)) {
+            throw new InvalidConnectionException("Invalid connection.");
         }
 
         if ((first instanceof VisualTransitionEvent) && (second instanceof VisualTransitionEvent)) {
@@ -114,7 +120,6 @@ public class VisualDtd extends AbstractVisualModel {
                     throw new InvalidConnectionException("Cannot connect transitions of the same signal and direction.");
                 }
             }
-            return;
         }
 
         if ((first instanceof VisualEntryEvent) && (second instanceof VisualExitEvent)) {
@@ -125,7 +130,6 @@ public class VisualDtd extends AbstractVisualModel {
             if (firstSignal != secondSignal) {
                 throw new InvalidConnectionException("Cannot relate entry and exit of different signals.");
             }
-            return;
         }
 
         if ((first instanceof VisualEntryEvent) && (second instanceof VisualTransitionEvent)) {
@@ -151,7 +155,6 @@ public class VisualDtd extends AbstractVisualModel {
                     && (secondTransition.getDirection() == TransitionEvent.Direction.FALL)) {
                 throw new InvalidConnectionException("Signal is already low.");
             }
-            return;
         }
 
         if ((first instanceof VisualTransitionEvent) && (second instanceof VisualExitEvent)) {
@@ -162,9 +165,7 @@ public class VisualDtd extends AbstractVisualModel {
             if (firstSignal != secondSignal) {
                 throw new InvalidConnectionException("Cannot relate transition and exit of different signals.");
             }
-            return;
         }
-        throw new InvalidConnectionException("Invalid connection.");
     }
 
     @Override
