@@ -1,12 +1,5 @@
 package org.workcraft.plugins.plato.tasks;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import javax.swing.SwingUtilities;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
@@ -18,6 +11,7 @@ import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fst.FstDescriptor;
 import org.workcraft.plugins.fst.VisualFst;
+import org.workcraft.plugins.fst.VisualFstDescriptor;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.MpsatParameters.SolutionMode;
@@ -33,13 +27,19 @@ import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.tasks.BasicProgressMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.TaskManager;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.ImportUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import javax.swing.*;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutput> {
 
@@ -155,9 +155,9 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
         ModelEntry me = ImportUtils.importFromByteArray(new StgImporter(), output.getBytes());
         MathModel mathModel = me.getMathModel();
         StgDescriptor stgModel = new StgDescriptor();
-        VisualModelDescriptor v = stgModel.getVisualModelDescriptor();
+        VisualModelDescriptor vmd = stgModel.getVisualModelDescriptor();
         try {
-            me = new ModelEntry(me.getDescriptor(), v.create(mathModel));
+            me = new ModelEntry(me.getDescriptor(), vmd.create(mathModel));
             we = addWork(framework, we, editor, me);
             VisualStg visualStg = WorkspaceUtils.getAs(we, VisualStg.class);
             if (!((PlatoStgConversionCommand) sender).getDotLayout()) {
@@ -175,19 +175,15 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
         ModelEntry me = ImportUtils.importFromByteArray(new org.workcraft.plugins.fst.interop.SgImporter(), output.getBytes());
         MathModel mathModel = me.getMathModel();
         FstDescriptor fstModel = new FstDescriptor();
-        VisualModelDescriptor v = fstModel.getVisualModelDescriptor();
+        VisualFstDescriptor vmd = fstModel.getVisualModelDescriptor();
         try {
-            VisualFst visualFst = (VisualFst) v.create(mathModel);
+            VisualFst visualFst = vmd.create(mathModel);
             me = new ModelEntry(me.getDescriptor(), visualFst);
             visualFst.getBestLayouter().layout(visualFst);
             we = addWork(framework, we, editor, me);
         } catch (VisualModelInstantiationException e) {
             e.printStackTrace();
         }
-    }
-
-    public WorkspaceEntry getResult() {
-        return we;
     }
 
     private void runReachTest(String[] invariants) {

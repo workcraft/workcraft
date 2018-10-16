@@ -1,8 +1,6 @@
 package org.workcraft.plugins.policy;
 
 import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.dom.VisualModelDescriptor;
-import org.workcraft.dom.math.MathModel;
 
 public class PolicyNetDescriptor implements ModelDescriptor {
 
@@ -12,12 +10,12 @@ public class PolicyNetDescriptor implements ModelDescriptor {
     }
 
     @Override
-    public MathModel createMathModel() {
+    public PolicyNet createMathModel() {
         return new PolicyNet();
     }
 
     @Override
-    public VisualModelDescriptor getVisualModelDescriptor() {
+    public VisualPolicyNetDescriptor getVisualModelDescriptor() {
         return new VisualPolicyNetDescriptor();
     }
 

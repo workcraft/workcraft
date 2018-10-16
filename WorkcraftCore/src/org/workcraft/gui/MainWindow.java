@@ -746,24 +746,26 @@ public class MainWindow extends JFrame {
         dialog.setVisible(true);
         if (dialog.getModalResult() == 0) {
             throw new OperationCancelledException("Create operation cancelled by user.");
-        } else {
-            ModelDescriptor info = dialog.getSelectedModel();
-            try {
-                MathModel mathModel = info.createMathModel();
-                VisualModelDescriptor visualModelDescriptor = info.getVisualModelDescriptor();
-                if (visualModelDescriptor == null) {
-                    throw new VisualModelInstantiationException(
-                            "Visual model is not defined for '" + info.getDisplayName() + "'.");
-                }
-                VisualModel visualModel = visualModelDescriptor.create(mathModel);
-                ModelEntry me = new ModelEntry(info, visualModel);
-                final Framework framework = Framework.getInstance();
-                WorkspaceEntry we = framework.createWork(me, directory, null);
-                we.setChanged(false);
-            } catch (VisualModelInstantiationException e) {
-                e.printStackTrace();
-                DialogUtils.showError("Visual model could not be created: " + e.getMessage());
+        }
+        ModelDescriptor md = dialog.getSelectedModel();
+        if (md == null) {
+            DialogUtils.showError("Math model is not defined for '" + md.getDisplayName() + "'.");
+            return;
+        }
+        try {
+            MathModel mathModel = md.createMathModel();
+            VisualModelDescriptor vmd = md.getVisualModelDescriptor();
+            if (vmd == null) {
+                DialogUtils.showError("Visual model is not defined for '" + md.getDisplayName() + "'.");
+                return;
             }
+            VisualModel visualModel = vmd.create(mathModel);
+            ModelEntry me = new ModelEntry(md, visualModel);
+            final Framework framework = Framework.getInstance();
+            WorkspaceEntry we = framework.createWork(me, directory, null);
+            we.setChanged(false);
+        } catch (VisualModelInstantiationException e) {
+            DialogUtils.showError(e.getMessage());
         }
     }
 
