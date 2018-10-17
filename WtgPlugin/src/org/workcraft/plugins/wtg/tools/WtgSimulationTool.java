@@ -3,6 +3,7 @@ package org.workcraft.plugins.wtg.tools;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -146,9 +147,9 @@ public class WtgSimulationTool extends StgSimulationTool {
     }
 
     public Decoration getEventDecoration(VisualEvent event) {
-        Node transition = getTraceCurrentNode();
+        MathNode transition = getTraceCurrentNode();
         final boolean isExcited = getExcitedTransitionOfNode(event) != null;
-        final boolean isSuggested = isExcited && converter.isRelated(event, transition);
+        final boolean isSuggested = isExcited && converter.isRelated(event.getReferencedSignalEvent(), transition);
         return new Decoration() {
             @Override
             public Color getColorisation() {

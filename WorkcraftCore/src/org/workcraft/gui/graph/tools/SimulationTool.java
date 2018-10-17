@@ -3,6 +3,7 @@ package org.workcraft.gui.graph.tools;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
@@ -724,17 +725,17 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         updateState(editor);
     }
 
-    public Node getTraceCurrentNode() {
+    public MathNode getTraceCurrentNode() {
         String ref = null;
         if (branchTrace.canProgress()) {
             ref = branchTrace.getCurrent();
         } else if (branchTrace.isEmpty() && mainTrace.canProgress()) {
             ref = mainTrace.getCurrent();
         }
-        Node result = null;
+        MathNode result = null;
         MathModel mathModel = getUnderlyingModel().getMathModel();
         if ((mathModel != null) && (ref != null)) {
-            result = mathModel.getNodeByReference(ref);
+            result = (MathNode) mathModel.getNodeByReference(ref);
         }
         return result;
     }

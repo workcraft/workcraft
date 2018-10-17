@@ -1,16 +1,11 @@
 package org.workcraft.plugins.stg.commands;
 
-import java.awt.geom.Point2D;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-
 import org.workcraft.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.Container;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.ConnectionHelper;
+import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.utils.PetriNetUtils;
@@ -21,6 +16,11 @@ import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.awt.geom.Point2D;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 public final class InsertDummyTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
@@ -40,14 +40,14 @@ public final class InsertDummyTransformationCommand extends AbstractTransformati
     }
 
     @Override
-    public boolean isApplicableTo(Node node) {
+    public boolean isApplicableTo(VisualNode node) {
         return (node instanceof VisualImplicitPlaceArc)
                 || PetriNetUtils.isVisualConsumingArc(node)
                 || PetriNetUtils.isVisualProducingArc(node);
     }
 
     @Override
-    public boolean isEnabled(ModelEntry me, Node node) {
+    public boolean isEnabled(ModelEntry me, VisualNode node) {
         return true;
     }
 
@@ -62,8 +62,8 @@ public final class InsertDummyTransformationCommand extends AbstractTransformati
     }
 
     @Override
-    public Collection<Node> collect(Model model) {
-        Collection<Node> arcs = new HashSet<>();
+    public Collection<VisualNode> collect(VisualModel model) {
+        Collection<VisualNode> arcs = new HashSet<>();
         if (model instanceof VisualStg) {
             VisualStg stg = (VisualStg) model;
             arcs.addAll(stg.getVisualImplicitPlaceArcs());
@@ -75,7 +75,7 @@ public final class InsertDummyTransformationCommand extends AbstractTransformati
     }
 
     @Override
-    public void transform(Model model, Node node) {
+    public void transform(VisualModel model, VisualNode node) {
         if ((model instanceof VisualStg) && (node instanceof VisualConnection)) {
             VisualStg stg = (VisualStg) model;
             VisualConnection connection = (VisualConnection) node;

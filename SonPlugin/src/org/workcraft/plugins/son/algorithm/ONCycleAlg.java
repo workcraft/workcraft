@@ -1,12 +1,13 @@
 package org.workcraft.plugins.son.algorithm;
 
+import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
+import org.workcraft.plugins.son.SON;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
-
-import org.workcraft.dom.Node;
-import org.workcraft.plugins.son.SON;
 
 public class ONCycleAlg {
 
@@ -38,9 +39,9 @@ public class ONCycleAlg {
             for (int i = 0; i < nodes.size(); i++) {
                 int index = nodeIndex.get(nodes.get(i));
                 if (result[index] == null) {
-                    result[index] = new ArrayList<Integer>();
+                    result[index] = new ArrayList<>();
                 }
-                for (Node post: net.getPostset(nodes.get(index))) {
+                for (MathNode post: net.getPostset((MathNode) nodes.get(index))) {
                     if (nodes.contains(post)) {
                         result[index].add(nodeIndex.get(post));
                     }

@@ -1,5 +1,20 @@
 package org.workcraft;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.workcraft.dom.Container;
+import org.workcraft.dom.ModelDescriptor;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.serialisation.ReferenceProducer;
+import org.workcraft.serialisation.References;
+import org.workcraft.util.XmlUtils;
+import org.workcraft.workspace.Stamp;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,21 +23,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.workcraft.dom.Container;
-import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.serialisation.References;
-import org.workcraft.util.XmlUtils;
-import org.workcraft.workspace.Stamp;
-import org.xml.sax.SAXException;
 
 public class FrameworkUtils {
 
@@ -120,11 +120,11 @@ public class FrameworkUtils {
             }
             // selection
             Element selectionElement = XmlUtils.getChildElement(Framework.STATE_SELECTION_WORK_ELEMENT, stateElement);
-            Set<Node> nodes = new HashSet<>();
+            Set<VisualNode> nodes = new HashSet<>();
             for (Element nodeElement: XmlUtils.getChildElements(Framework.COMMON_NODE_WORK_ATTRIBUTE, selectionElement)) {
                 Object node = references.getObject(nodeElement.getAttribute(Framework.COMMON_REF_WORK_ATTRIBUTE));
-                if (node instanceof Node) {
-                    nodes.add((Node) node);
+                if (node instanceof VisualNode) {
+                    nodes.add((VisualNode) node);
                 }
             }
             model.addToSelection(nodes);

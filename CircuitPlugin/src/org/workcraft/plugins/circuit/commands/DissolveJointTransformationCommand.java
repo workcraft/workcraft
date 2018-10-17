@@ -1,18 +1,11 @@
 package org.workcraft.plugins.circuit.commands;
 
-import java.awt.geom.Point2D;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
-
 import org.workcraft.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
-import org.workcraft.dom.Connection;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
@@ -22,6 +15,12 @@ import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.awt.geom.Point2D;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
 
 public class DissolveJointTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
@@ -41,12 +40,12 @@ public class DissolveJointTransformationCommand extends AbstractTransformationCo
     }
 
     @Override
-    public boolean isApplicableTo(Node node) {
+    public boolean isApplicableTo(VisualNode node) {
         return node instanceof VisualJoint;
     }
 
     @Override
-    public boolean isEnabled(ModelEntry me, Node node) {
+    public boolean isEnabled(ModelEntry me, VisualNode node) {
         boolean result = false;
         if (node instanceof VisualJoint) {
             VisualModel visualModel = me.getVisualModel();
@@ -62,14 +61,14 @@ public class DissolveJointTransformationCommand extends AbstractTransformationCo
         return Position.BOTTOM_MIDDLE;
     }
 
-    public Collection<Node> collect(Model model) {
-        Collection<Node> joints = new HashSet<>();
+    public Collection<VisualNode> collect(VisualModel model) {
+        Collection<VisualNode> joints = new HashSet<>();
         if (model instanceof VisualCircuit) {
             VisualCircuit circuit = (VisualCircuit) model;
             joints.addAll(Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualJoint.class));
-            Collection<Node> selection = circuit.getSelection();
+            Collection<VisualNode> selection = circuit.getSelection();
             if (!selection.isEmpty()) {
-                HashSet<Node> selectedJoints = new HashSet<>(selection);
+                HashSet<VisualNode> selectedJoints = new HashSet<>(selection);
                 selectedJoints.retainAll(joints);
                 if (!selectedJoints.isEmpty()) {
                     joints.retainAll(selection);
@@ -80,20 +79,20 @@ public class DissolveJointTransformationCommand extends AbstractTransformationCo
     }
 
     @Override
-    public void transform(Model model, Node node) {
+    public void transform(VisualModel model, VisualNode node) {
         if ((model instanceof VisualCircuit) && (node instanceof VisualJoint)) {
             VisualCircuit circuit = (VisualCircuit) model;
             VisualJoint joint = (VisualJoint) node;
-            Set<Connection> connections = new HashSet<>(model.getConnections(node));
+            Set<VisualConnection> connections = new HashSet<>(model.getConnections(node));
             VisualCircuitConnection predConnection = null;
-            for (Connection connection: connections) {
+            for (VisualConnection connection: connections) {
                 if (!(connection instanceof VisualCircuitConnection)) continue;
                 if (connection.getSecond() == node) {
                     predConnection = (VisualCircuitConnection) connection;
                 }
             }
             if (predConnection != null) {
-                for (Connection connection: connections) {
+                for (VisualConnection connection: connections) {
                     if (!(connection instanceof VisualCircuitConnection)) continue;
                     if (connection.getFirst() == node) {
                         VisualCircuitConnection succConnection = (VisualCircuitConnection) connection;
@@ -101,8 +100,8 @@ public class DissolveJointTransformationCommand extends AbstractTransformationCo
                         LinkedList<Point2D> locations = ConnectionHelper.getMergedControlPoints(joint, predConnection, succConnection);
                         circuit.remove(succConnection);
 
-                        Node fromNode = predConnection instanceof VisualCircuitConnection ? predConnection.getFirst() : null;
-                        Node toNode = succConnection instanceof VisualCircuitConnection ? succConnection.getSecond() : null;
+                        VisualNode fromNode = predConnection instanceof VisualCircuitConnection ? predConnection.getFirst() : null;
+                        VisualNode toNode = succConnection instanceof VisualCircuitConnection ? succConnection.getSecond() : null;
                         try {
                             VisualCircuitConnection newConnection = (VisualCircuitConnection) circuit.connect(fromNode, toNode);
                             newConnection.mixStyle(predConnection, succConnection);

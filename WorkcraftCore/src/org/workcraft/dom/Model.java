@@ -8,7 +8,7 @@ import org.workcraft.util.Func;
 import java.util.Collection;
 import java.util.Set;
 
-public interface Model extends NodeContext {
+public interface Model<N extends Node, C extends Connection>  extends NodeContext<N, C> {
 
     void setTitle(String title);
     String getTitle();
@@ -41,12 +41,12 @@ public interface Model extends NodeContext {
     Container createDefaultRoot();
     Container getRoot();
     ReferenceManager createDefaultReferenceManager();
-    boolean reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren);
+    boolean reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<? extends N> srcChildren);
 
-    <T> Set<T> getPreset(Node node, Class<T> type);
-    <T> Set<T> getPostset(Node node, Class<T> type);
-    <T> Set<T> getPreset(Node node, Class<T> type, Func<Node, Boolean> through);
-    <T> Set<T> getPostset(Node node, Class<T> type, Func<Node, Boolean> through);
+    <T> Set<T> getPreset(N node, Class<T> type);
+    <T> Set<T> getPostset(N node, Class<T> type);
+    <T> Set<T> getPreset(N node, Class<T> type, Func<Node, Boolean> through);
+    <T> Set<T> getPostset(N node, Class<T> type, Func<Node, Boolean> through);
 
     void add(Node node);
     void remove(Node node);

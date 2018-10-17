@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.plugins.son.SON;
@@ -48,9 +49,9 @@ public class ReachabilityTask implements Task<VerificationResult> {
         bsonAlg = new BSONAlg(net);
         reachAlg = new ReachabilityAlg(net);
 
-        markingRefs = new ArrayList<String>();
-        causalPredecessors = new HashSet<Node>();
-        causalPredecessorRefs = new HashSet<String>();
+        markingRefs = new ArrayList<>();
+        causalPredecessors = new HashSet<>();
+        causalPredecessorRefs = new HashSet<>();
 
         if (hasConflict()) {
             JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
@@ -166,7 +167,7 @@ public class ReachabilityTask implements Task<VerificationResult> {
         for (Node t : causalPredecessors) {
             if (t instanceof TransitionNode) {
                 causalPredecessorRefs.add(net.getNodeReference(t));
-                for (Node pre : net.getPreset(t)) {
+                for (Node pre : net.getPreset((MathNode) t)) {
                     consume.add(pre);
                 }
             }

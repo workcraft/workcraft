@@ -1,6 +1,7 @@
 package org.workcraft.plugins.circuit.tools;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualComponent;
@@ -364,7 +365,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         return new Decorator() {
             @Override
             public Decoration getDecoration(Node node) {
-                Node mathNode = null;
+                MathNode mathNode = null;
                 if (node instanceof VisualComponent) {
                     mathNode = ((VisualComponent) node).getReferencedComponent();
                 } else if (node instanceof VisualConnection) {
@@ -413,7 +414,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         };
     }
 
-    private Decoration getLowLevelDecoration(Node node) {
+    private Decoration getLowLevelDecoration(MathNode node) {
         final boolean initialisationConflict = initState.isError(node);
         return new StateDecoration() {
             @Override
@@ -433,7 +434,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         };
     }
 
-    private Decoration getHighLevelDecoration(Node node) {
+    private Decoration getHighLevelDecoration(MathNode node) {
         final boolean initialisationConflict = initState.isError(node);
         return new StateDecoration() {
             @Override

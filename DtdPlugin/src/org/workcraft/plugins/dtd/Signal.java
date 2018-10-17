@@ -1,7 +1,5 @@
 package org.workcraft.plugins.dtd;
 
-import java.util.Collection;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
@@ -13,6 +11,8 @@ import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.PropertyChangedEvent;
+
+import java.util.Collection;
 
 @DisplayName("Signal")
 @IdentifierPrefix("x")
@@ -135,7 +135,7 @@ public class Signal extends MathNode implements ObservableHierarchy, Container {
     }
 
     @Override
-    public void add(Collection<Node> nodes) {
+    public void add(Collection<? extends Node> nodes) {
         groupImpl.add(nodes);
     }
 
@@ -145,17 +145,17 @@ public class Signal extends MathNode implements ObservableHierarchy, Container {
     }
 
     @Override
-    public void remove(Collection<Node> node) {
+    public void remove(Collection<? extends Node> node) {
         groupImpl.remove(node);
     }
 
     @Override
-    public void reparent(Collection<Node> nodes) {
+    public void reparent(Collection<? extends Node> nodes) {
         groupImpl.reparent(nodes);
     }
 
     @Override
-    public void reparent(Collection<Node> nodes, Container newParent) {
+    public void reparent(Collection<? extends Node> nodes, Container newParent) {
         groupImpl.reparent(nodes, newParent);
     }
 

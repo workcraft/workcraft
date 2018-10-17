@@ -1,46 +1,5 @@
 package org.workcraft.plugins.son.tools;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Graphics;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JSlider;
-import javax.swing.JTable;
-import javax.swing.JToggleButton;
-import javax.swing.ListSelectionModel;
-import javax.swing.Timer;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellRenderer;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -49,29 +8,15 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
-import org.workcraft.gui.graph.tools.ContainerDecoration;
-import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.graph.tools.Decorator;
-import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.gui.graph.tools.*;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.plugins.shared.CommonDecorationSettings;
 import org.workcraft.plugins.son.BlockConnector;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.VisualSON;
-import org.workcraft.plugins.son.algorithm.BSONAlg;
-import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
-import org.workcraft.plugins.son.algorithm.ErrorTracingAlg;
-import org.workcraft.plugins.son.algorithm.Path;
-import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
-import org.workcraft.plugins.son.algorithm.SONCycleAlg;
-import org.workcraft.plugins.son.algorithm.SimulationAlg;
-import org.workcraft.plugins.son.elements.Condition;
-import org.workcraft.plugins.son.elements.PlaceNode;
-import org.workcraft.plugins.son.elements.TransitionNode;
-import org.workcraft.plugins.son.elements.VisualBlock;
-import org.workcraft.plugins.son.elements.VisualTransitionNode;
+import org.workcraft.plugins.son.algorithm.*;
+import org.workcraft.plugins.son.elements.*;
 import org.workcraft.plugins.son.exception.InvalidStructureException;
 import org.workcraft.plugins.son.exception.UnboundedException;
 import org.workcraft.plugins.son.gui.ParallelSimDialog;
@@ -82,6 +27,21 @@ import org.workcraft.plugins.son.util.StepRef;
 import org.workcraft.plugins.son.util.Trace;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import javax.swing.Timer;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
+import java.awt.datatransfer.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.IOException;
+import java.util.*;
 
 public class SONSimulationTool extends AbstractGraphEditorTool implements ClipboardOwner {
 
@@ -754,8 +714,6 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
                 step.add((TransitionNode) node);
             }
         }
-
-        //causalPredecessors.removeAll(fireList);
 
         if (!step.isEmpty()) {
             executeEvents(editor, step);

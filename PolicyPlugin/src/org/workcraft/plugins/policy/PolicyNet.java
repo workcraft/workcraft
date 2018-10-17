@@ -4,6 +4,7 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.policy.observers.BundleConsistencySupervisor;
 import org.workcraft.serialisation.References;
@@ -67,7 +68,7 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
         return result;
     }
 
-    public Locality createLocality(ArrayList<Node> nodes, Container parent) {
+    public Locality createLocality(ArrayList<? extends MathNode> nodes, Container parent) {
         Locality locality = new Locality();
         parent.add(locality);
         parent.reparent(nodes, locality);
@@ -85,7 +86,7 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
         return locality;
     }
 
-    private void splitBundlesByLocalities(ArrayList<Node> nodes) {
+    private void splitBundlesByLocalities(ArrayList<? extends MathNode> nodes) {
         HashMap<Bundle, HashSet<BundledTransition>> subBundles = new HashMap<>();
         for (Node node: nodes) {
             if (node instanceof BundledTransition) {
@@ -93,7 +94,7 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
                 for (Bundle b: getBundlesOfTransition(t)) {
                     HashSet<BundledTransition> transitions = subBundles.get(b);
                     if (transitions == null) {
-                        transitions = new HashSet<BundledTransition>();
+                        transitions = new HashSet<>();
                         subBundles.put(b, transitions);
                     }
                     transitions.add(t);

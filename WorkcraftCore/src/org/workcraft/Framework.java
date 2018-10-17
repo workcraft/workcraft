@@ -11,11 +11,12 @@ import org.workcraft.commands.Command;
 import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
+import org.workcraft.dom.visual.NodeHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.*;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.FileFilters;
@@ -851,7 +852,7 @@ public final class Framework {
                     "Incompatible " + displayName1 + " and " + displayName2 + " model cannot be merged.");
         }
 
-        Collection<Node> children = new HashSet<>(vmodel2.getRoot().getChildren());
+        Collection<VisualNode> children = NodeHelper.filterByType(vmodel2.getRoot().getChildren(), VisualNode.class);
 
         vmodel1.selectNone();
         if (vmodel1.reparent(vmodel1.getCurrentLevel(), vmodel2, vmodel2.getRoot(), null)) {

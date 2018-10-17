@@ -4,13 +4,13 @@ import org.workcraft.observation.*;
 
 import java.util.*;
 
-public class NodeContextTracker extends HierarchySupervisor implements NodeContext {
-    private final HashMap<Node, LinkedHashSet<Node>> presets = new HashMap<>();
-    private final HashMap<Node, LinkedHashSet<Node>> postsets = new HashMap<>();
-    private final HashMap<Node, LinkedHashSet<Connection>> connections = new HashMap<>();
+public class NodeContextTracker<N extends Node, C extends Connection> extends HierarchySupervisor implements NodeContext<N, C> {
+    private final HashMap<N, LinkedHashSet<N>> presets = new HashMap<>();
+    private final HashMap<N, LinkedHashSet<N>> postsets = new HashMap<>();
+    private final HashMap<N, LinkedHashSet<C>> connections = new HashMap<>();
 
-    private void initHashes(Node n) {
-        LinkedHashSet<Node> set = presets.get(n);
+    private void initHashes(N n) {
+        LinkedHashSet<N> set = presets.get(n);
         if (set == null) {
             presets.put(n, new LinkedHashSet<>());
         }
@@ -18,7 +18,7 @@ public class NodeContextTracker extends HierarchySupervisor implements NodeConte
         if (set == null) {
             postsets.put(n, new LinkedHashSet<>());
         }
-        LinkedHashSet<Connection> conSet = connections.get(n);
+        LinkedHashSet<C> conSet = connections.get(n);
         if (conSet == null) {
             connections.put(n, new LinkedHashSet<>());
         }
@@ -31,12 +31,12 @@ public class NodeContextTracker extends HierarchySupervisor implements NodeConte
     }
 
     private void nodeAdded(Node n) {
-        initHashes(n);
+        initHashes((N) n);
 
         if (n instanceof Connection) {
-            Connection con = (Connection) n;
-            Node c1 = con.getFirst();
-            Node c2 = con.getSecond();
+            C con = (C) n;
+            N c1 = (N) con.getFirst();
+            N c2 = (N) con.getSecond();
 
             initHashes(c1);
             initHashes(c2);
@@ -53,19 +53,19 @@ public class NodeContextTracker extends HierarchySupervisor implements NodeConte
     }
 
     private void nodeRemoved(Node node) {
-        LinkedHashSet<Node> nodePostset = postsets.get(node);
+        LinkedHashSet<N> nodePostset = postsets.get(node);
         if (nodePostset != null) {
-            for (Node succNode: nodePostset) {
-                LinkedHashSet<Node> succNodePreset = presets.get(succNode);
+            for (N succNode: nodePostset) {
+                LinkedHashSet<N> succNodePreset = presets.get(succNode);
                 if (succNodePreset != null) {
                     succNodePreset.remove(node);
                 }
             }
         }
-        LinkedHashSet<Node> nodePreset = presets.get(node);
+        LinkedHashSet<N> nodePreset = presets.get(node);
         if (nodePreset != null) {
             for (Node predNode: nodePreset) {
-                LinkedHashSet<Node> predNodePostset = postsets.get(predNode);
+                LinkedHashSet<N> predNodePostset = postsets.get(predNode);
                 if (predNodePostset != null) {
                     predNodePostset.remove(node);
                 }
@@ -78,19 +78,19 @@ public class NodeContextTracker extends HierarchySupervisor implements NodeConte
             Node first = connection.getFirst();
             Node second = connection.getSecond();
 
-            LinkedHashSet<Node> firstPostset = postsets.get(first);
+            LinkedHashSet<N> firstPostset = postsets.get(first);
             if (firstPostset != null) {
                 firstPostset.remove(second);
             }
-            LinkedHashSet<Node> secondPreset = presets.get(second);
+            LinkedHashSet<N> secondPreset = presets.get(second);
             if (secondPreset != null) {
                 secondPreset.remove(first);
             }
-            LinkedHashSet<Connection> firstConnections = connections.get(first);
+            LinkedHashSet<C> firstConnections = connections.get(first);
             if (firstConnections != null) {
                 firstConnections.remove(connection);
             }
-            LinkedHashSet<Connection> secondConnections = connections.get(second);
+            LinkedHashSet<C> secondConnections = connections.get(second);
             if (secondConnections != null) {
                 secondConnections.remove(connection);
             }
@@ -105,33 +105,33 @@ public class NodeContextTracker extends HierarchySupervisor implements NodeConte
     }
 
     @Override
-    public Set<Node> getPreset(Node node) {
+    public Set<N> getPreset(N node) {
         return Collections.unmodifiableSet(presets.get(node));
     }
 
     @Override
-    public Set<Node> getPostset(Node node) {
+    public Set<N> getPostset(N node) {
         return Collections.unmodifiableSet(postsets.get(node));
     }
 
     @Override
-    public Set<Connection> getConnections(Node node) {
-        Set<Connection> ret = connections.get(node);
+    public Set<C> getConnections(N node) {
+        Set<C> ret = connections.get(node);
         if (ret == null) {
-            ret = new HashSet<Connection>();
+            ret = new HashSet<>();
         }
         return Collections.unmodifiableSet(ret);
     }
 
     @Override
-    public boolean hasConnection(Node first, Node second) {
-        LinkedHashSet<Node> firstPostset = postsets.get(first);
+    public boolean hasConnection(N first, N second) {
+        LinkedHashSet<N> firstPostset = postsets.get(first);
         return (firstPostset != null) && (firstPostset.contains(second));
     }
 
     @Override
-    public Connection getConnection(Node first, Node second) {
-        for (Connection connection : getConnections(first)) {
+    public C getConnection(N first, N second) {
+        for (C connection : getConnections(first)) {
             if ((connection.getFirst() == first) && (connection.getSecond() == second)) {
                 return connection;
             }

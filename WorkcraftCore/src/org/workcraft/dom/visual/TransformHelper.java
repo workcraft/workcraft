@@ -59,18 +59,16 @@ public class TransformHelper {
         return (double) (Math.round(x * 2)) / 2;
     }
 
-    public static Point2D getCentre(Collection<Node> nodes) {
+    public static Point2D getCentre(Collection<? extends VisualNode> nodes) {
         Rectangle2D bb = null;
-        for (Node node : nodes) {
-            if (node instanceof Touchable) {
-                Rectangle2D nodeBoundingBox = ((Touchable) node).getBoundingBox();
-                bb = BoundingBoxHelper.union(bb, nodeBoundingBox);
-            }
+        for (VisualNode node : nodes) {
+            Rectangle2D nodeBoundingBox = ((Touchable) node).getBoundingBox();
+            bb = BoundingBoxHelper.union(bb, nodeBoundingBox);
         }
         return new Point2D.Double(bb.getCenterX(), bb.getCenterY());
     }
 
-    public static Point2D getSnappedCentre(Collection<Node> nodes) {
+    public static Point2D getSnappedCentre(Collection<? extends VisualNode> nodes) {
         Point2D centre = getCentre(nodes);
         double snapX = snapP5(centre.getX());
         double snapY = snapP5(centre.getY());

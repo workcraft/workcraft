@@ -3,17 +3,17 @@ package org.workcraft.plugins.stg.utils;
 import org.workcraft.Framework;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualReadArc;
+import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.util.DialogUtils;
@@ -41,17 +41,17 @@ public class StgUtils {
     public static final String XML_FILE_EXTENSION = ".xml";
 
     private static void replaceNamedTransition(Stg stg, NamedTransition oldTransition, NamedTransition newTransition) {
-        for (Node pred : stg.getPreset(oldTransition)) {
+        for (MathNode pred : stg.getPreset(oldTransition)) {
             try {
-                stg.connect((MathNode) pred, newTransition);
+                stg.connect(pred, newTransition);
             } catch (InvalidConnectionException e) {
                 e.printStackTrace();
             }
         }
 
-        for (Node succ : stg.getPostset(oldTransition)) {
+        for (MathNode succ : stg.getPostset(oldTransition)) {
             try {
-                stg.connect(newTransition, (MathNode) succ);
+                stg.connect(newTransition, succ);
             } catch (InvalidConnectionException e) {
                 e.printStackTrace();
             }
@@ -70,9 +70,9 @@ public class StgUtils {
         newTransition.copyPosition(oldTransition);
         newTransition.copyStyle(oldTransition);
 
-        for (Node pred : stg.getPreset(oldTransition)) {
+        for (VisualNode pred : stg.getPreset(oldTransition)) {
             try {
-                VisualConnection oldPredConnection = (VisualConnection) stg.getConnection(pred, oldTransition);
+                VisualConnection oldPredConnection = stg.getConnection(pred, oldTransition);
                 VisualConnection newPredConnection = null;
                 if (oldPredConnection instanceof VisualReadArc) {
                     newPredConnection = stg.connectUndirected(pred, newTransition);
@@ -88,9 +88,9 @@ public class StgUtils {
             }
         }
 
-        for (Node succ : stg.getPostset(oldTransition)) {
+        for (VisualNode succ : stg.getPostset(oldTransition)) {
             try {
-                VisualConnection oldSuccConnection = (VisualConnection) stg.getConnection(oldTransition, succ);
+                VisualConnection oldSuccConnection = stg.getConnection(oldTransition, succ);
                 VisualConnection newSuccConnection = null;
                 if (oldSuccConnection instanceof VisualReadArc) {
                     newSuccConnection = stg.connectUndirected(newTransition, succ);

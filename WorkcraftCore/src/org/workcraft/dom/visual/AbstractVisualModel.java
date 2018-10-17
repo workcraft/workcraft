@@ -31,10 +31,10 @@ import java.util.*;
 import java.util.List;
 import java.util.Queue;
 
-public abstract class AbstractVisualModel extends AbstractModel implements VisualModel {
+public abstract class AbstractVisualModel extends AbstractModel<VisualNode, VisualConnection> implements VisualModel {
     private MathModel mathModel;
     private Container currentLevel;
-    private final Set<Node> selection = new HashSet<>();
+    private final Set<VisualNode> selection = new HashSet<>();
     private final ObservableStateImpl observableState = new ObservableStateImpl();
     private final List<GraphEditorTool> graphEditorTools = new ArrayList<>();
 
@@ -135,7 +135,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     }
 
     @Override
-    public void validateConnection(Node first, Node second) throws InvalidConnectionException {
+    public void validateConnection(VisualNode first, VisualNode second) throws InvalidConnectionException {
         if (getConnection(first, second) != null) {
             throw new InvalidConnectionException("Connection already exists.");
         }
@@ -150,7 +150,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     }
 
     @Override
-    public VisualConnection connect(Node first, Node second, MathConnection mConnection)
+    public VisualConnection connect(VisualNode first, VisualNode second, MathConnection mConnection)
             throws InvalidConnectionException {
 
         validateConnection(first, second);
@@ -159,26 +159,24 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
             MathNode mSecond = getMathReference(second);
             mConnection = getMathModel().connect(mFirst, mSecond);
         }
-        VisualNode vFirst = (VisualNode) first;
-        VisualNode vSecond = (VisualNode) second;
-        VisualConnection vConnection = new VisualConnection(mConnection, vFirst, vSecond);
-        Container container = Hierarchy.getNearestContainer(vFirst, vSecond);
+        VisualConnection vConnection = new VisualConnection(mConnection, first, second);
+        Container container = Hierarchy.getNearestContainer(first, second);
         container.add(vConnection);
         return vConnection;
     }
 
     @Override
-    public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
+    public VisualConnection connect(VisualNode first, VisualNode second) throws InvalidConnectionException {
         return connect(first, second, null);
     }
 
     @Override
-    public void validateUndirectedConnection(Node first, Node second) throws InvalidConnectionException {
+    public void validateUndirectedConnection(VisualNode first, VisualNode second) throws InvalidConnectionException {
         validateConnection(first, second);
     }
 
     @Override
-    public VisualConnection connectUndirected(Node first, Node second) throws InvalidConnectionException {
+    public VisualConnection connectUndirected(VisualNode first, VisualNode second) throws InvalidConnectionException {
         validateUndirectedConnection(first, second);
         return connect(first, second, null);
     }
@@ -279,21 +277,13 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
         DrawMan.draw(this, g, decorator, getRoot());
     }
 
-    /**
-     * Get the list of selected objects. Returned list is modifiable!
-     * @return the selection.
-     */
-    public Set<Node> selection() {
-        return selection;
-    }
-
-    private Collection<Node> saveSelection() {
-        Set<Node> prevSelection = new HashSet<>();
+    private Collection<VisualNode> saveSelection() {
+        Set<VisualNode> prevSelection = new HashSet<>();
         prevSelection.addAll(selection);
         return prevSelection;
     }
 
-    private void notifySelectionChanged(Collection<Node> prevSelection) {
+    private void notifySelectionChanged(Collection<? extends VisualNode> prevSelection) {
         sendNotification(new SelectionChangedEvent(this, prevSelection));
     }
 
@@ -305,9 +295,10 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
         if (selection.size() == getCurrentLevel().getChildren().size()) {
             return;
         }
-        Collection<Node> s = saveSelection();
+        Collection<VisualNode> s = saveSelection();
         selection.clear();
-        selection.addAll(getCurrentLevel().getChildren());
+        Collection<VisualNode> nodes = NodeHelper.filterByType(getCurrentLevel().getChildren(), VisualNode.class);
+        selection.addAll(nodes);
         notifySelectionChanged(s);
     }
 
@@ -317,7 +308,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     @Override
     public void selectNone() {
         if (!selection.isEmpty()) {
-            Collection<Node> s = saveSelection();
+            Collection<VisualNode> s = saveSelection();
             selection.clear();
             notifySelectionChanged(s);
         }
@@ -328,17 +319,18 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
      */
     @Override
     public void selectInverse() {
-        Collection<Node> s = saveSelection();
+        Collection<VisualNode> s = saveSelection();
         selection.clear();
-        for (Node node: getCurrentLevel().getChildren()) {
+        Collection<VisualNode> nodes = NodeHelper.filterByType(getCurrentLevel().getChildren(), VisualNode.class);
+        for (VisualNode node: nodes) {
             if (!s.contains(node)) {
                 selection.add(node);
             }
         }
-        notifySelectionChanged(getCurrentLevel().getChildren());
+        notifySelectionChanged(nodes);
     }
 
-    private void validateSelection(Node node) {
+    private void validateSelection(VisualNode node) {
         if (!Hierarchy.isDescendant(node, getCurrentLevel())) {
             throw new RuntimeException(
                 "Cannot select a node that is not in the current editing level ("
@@ -346,8 +338,8 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
         }
     }
 
-    private void validateSelection(Collection<Node> nodes) {
-        for (Node node : nodes) {
+    private void validateSelection(Collection<? extends VisualNode> nodes) {
+        for (VisualNode node : nodes) {
             validateSelection(node);
         }
     }
@@ -356,12 +348,12 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
         return selection.contains(node);
     }
 
-    public void select(Collection<Node> nodes) {
+    public void select(Collection<? extends VisualNode> nodes) {
         if (nodes.isEmpty()) {
             selectNone();
             return;
         }
-        Collection<Node> s = saveSelection();
+        Collection<VisualNode> s = saveSelection();
         validateSelection(nodes);
         selection.clear();
         selection.addAll(nodes);
@@ -369,11 +361,11 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     }
 
     @Override
-    public void select(Node node) {
+    public void select(VisualNode node) {
         if (selection.size() == 1 && selection.contains(node)) {
             return;
         }
-        Collection<Node> s = saveSelection();
+        Collection<VisualNode> s = saveSelection();
         validateSelection(node);
         selection.clear();
         selection.add(node);
@@ -381,19 +373,19 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     }
 
     @Override
-    public void addToSelection(Node node) {
+    public void addToSelection(VisualNode node) {
         if (selection.contains(node)) {
             return;
         }
-        Collection<Node> s = saveSelection();
+        Collection<VisualNode> s = saveSelection();
         validateSelection(node);
         selection.add(node);
         notifySelectionChanged(s);
     }
 
     @Override
-    public void addToSelection(Collection<Node> nodes) {
-        Collection<Node> s = saveSelection();
+    public void addToSelection(Collection<? extends VisualNode> nodes) {
+        Collection<VisualNode> s = saveSelection();
         validateSelection(nodes);
         selection.addAll(nodes);
         if (s.size() != selection.size()) {
@@ -402,17 +394,17 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     }
 
     @Override
-    public void removeFromSelection(Node node) {
+    public void removeFromSelection(VisualNode node) {
         if (selection.contains(node)) {
-            Collection<Node> s = saveSelection();
+            Collection<VisualNode> s = saveSelection();
             selection.remove(node);
             notifySelectionChanged(s);
         }
     }
 
     @Override
-    public void removeFromSelection(Collection<Node> nodes) {
-        Collection<Node> s = saveSelection();
+    public void removeFromSelection(Collection<? extends VisualNode> nodes) {
+        Collection<VisualNode> s = saveSelection();
         selection.removeAll(nodes);
         if (s.size() != selection.size()) {
             notifySelectionChanged(s);
@@ -500,19 +492,19 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
      * @return Returns selection ordered the same way as the objects are ordered in the currently active group.
      */
     @Override
-    public Collection<Node> getSelection() {
+    public Collection<VisualNode> getSelection() {
         return Collections.unmodifiableSet(selection);
     }
 
     @Override
-    public boolean isGroupable(Node node) {
-        return node instanceof VisualNode;
+    public boolean isGroupable(VisualNode node) {
+        return true;
     }
 
     @Override
     public VisualGroup groupSelection() {
         VisualGroup group = null;
-        Collection<Node> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
+        Collection<VisualNode> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
         if (nodes.size() >= 1) {
             group = new VisualGroup();
             getCurrentLevel().add(group);
@@ -528,7 +520,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     @Override
     public VisualPage groupPageSelection() {
         VisualPage page = null;
-        Collection<Node> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
+        Collection<VisualNode> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
         if (nodes.size() >= 1) {
             PageNode pageNode = new PageNode();
             getCurrentMathLevel().add(pageNode);
@@ -546,18 +538,18 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
     @Override
     public void ungroupSelection() {
-        ArrayList<Node> toSelect = new ArrayList<>();
-        for (Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
+        ArrayList<VisualNode> toSelect = new ArrayList<>();
+        for (VisualNode node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
             if (node instanceof VisualGroup) {
                 VisualGroup group = (VisualGroup) node;
-                ArrayList<Node> nodesToReparent = new ArrayList<>(group.getChildren());
+                Collection<VisualNode> nodesToReparent = NodeHelper.filterByType(group.getChildren(), VisualNode.class);
                 toSelect.addAll(nodesToReparent);
                 if (reparent(getCurrentLevel(), this, group, nodesToReparent)) {
                     getCurrentLevel().remove(group);
                 }
             } else if (node instanceof VisualPage) {
                 VisualPage page = (VisualPage) node;
-                ArrayList<Node> nodesToReparent = new ArrayList<>(page.getChildren());
+                Collection<VisualNode> nodesToReparent = NodeHelper.filterByType(page.getChildren(), VisualNode.class);
                 toSelect.addAll(nodesToReparent);
                 if (reparent(getCurrentLevel(), this, page, nodesToReparent)) {
                     getMathModel().remove(page.getReferencedComponent());
@@ -610,7 +602,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     }
 
     @Override
-    public Collection<Node> hitBox(Point2D p1, Point2D p2) {
+    public Collection<VisualNode> hitBox(Point2D p1, Point2D p2) {
         p1 = transformToCurrentSpace(p1);
         p2 = transformToCurrentSpace(p2);
         return HitMan.hitBox(currentLevel, p1, p2);
@@ -639,29 +631,30 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
         return properties;
     }
 
-    public Collection<Node> getMathChildren(Collection<Node> nodes) {
-        Collection<Node> ret = new HashSet<>();
+    public Collection<MathNode> getMathChildren(Collection<? extends VisualNode> nodes) {
+        Collection<MathNode> ret = new HashSet<>();
         for (Node node: nodes) {
             if ((node instanceof Dependent) && !(node instanceof Replica)) {
                 ret.addAll(((Dependent) node).getMathReferences());
             } else if (node instanceof VisualGroup) {
-                ret.addAll(getMathChildren(node.getChildren()));
+                Collection<VisualNode> children = NodeHelper.filterByType(node.getChildren(), VisualNode.class);
+                ret.addAll(getMathChildren(children));
             }
         }
         return ret;
     }
 
     @Override
-    public boolean reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
+    public boolean reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<? extends VisualNode> srcChildren) {
         if (srcModel == null) {
             srcModel = this;
         }
         if (srcChildren == null) {
-            srcChildren = srcRoot.getChildren();
+            srcChildren = NodeHelper.filterByType(srcRoot.getChildren(), VisualNode.class);
         }
 
         Container srcMathContainer = NamespaceHelper.getMathContainer((VisualModel) srcModel, srcRoot);
-        Collection<Node> srcMathChildren = getMathChildren(srcChildren);
+        Collection<MathNode> srcMathChildren = getMathChildren(srcChildren);
         MathModel srcMathModel = ((VisualModel) srcModel).getMathModel();
 
         MathModel dstMathMmodel = getMathModel();

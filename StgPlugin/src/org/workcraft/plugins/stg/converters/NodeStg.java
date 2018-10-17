@@ -1,19 +1,20 @@
 package org.workcraft.plugins.stg.converters;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 public abstract class NodeStg {
     public abstract Collection<VisualSignalTransition> getAllTransitions();
 
     public abstract Collection<VisualPlace> getAllPlaces();
 
-    public Collection<Node> getAllNodes() {
-        HashSet<Node> result = new HashSet<>();
+    public Collection<VisualNode> getAllNodes() {
+        HashSet<VisualNode> result = new HashSet<>();
         result.addAll(getAllPlaces());
         result.addAll(getAllTransitions());
         return result;

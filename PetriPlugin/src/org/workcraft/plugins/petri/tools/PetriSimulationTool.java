@@ -9,6 +9,7 @@ import java.util.Map;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
@@ -127,7 +128,7 @@ public class PetriSimulationTool extends SimulationTool {
         }
         if (isEnabledNode(transition)) {
             HashMap<Place, Integer> capacity = new HashMap<>();
-            for (Node node: petri.getPostset(transition)) {
+            for (MathNode node: petri.getPostset(transition)) {
                 if (node instanceof Place) {
                     Place place = (Place) node;
                     capacity.put(place, place.getCapacity());

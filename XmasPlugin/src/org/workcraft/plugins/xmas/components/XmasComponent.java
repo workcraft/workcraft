@@ -1,8 +1,5 @@
 package org.workcraft.plugins.xmas.components;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
@@ -11,6 +8,9 @@ import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.plugins.xmas.components.XmasContact.IOType;
 import org.workcraft.util.Hierarchy;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class XmasComponent extends MathNode implements Container, ObservableHierarchy {
 
@@ -45,7 +45,7 @@ public class XmasComponent extends MathNode implements Container, ObservableHier
     }
 
     @Override
-    public void add(Collection<Node> nodes) {
+    public void add(Collection<? extends Node> nodes) {
         groupImpl.add(nodes);
     }
 
@@ -55,17 +55,17 @@ public class XmasComponent extends MathNode implements Container, ObservableHier
     }
 
     @Override
-    public void remove(Collection<Node> node) {
+    public void remove(Collection<? extends Node> node) {
         groupImpl.remove(node);
     }
 
     @Override
-    public void reparent(Collection<Node> nodes) {
+    public void reparent(Collection<? extends Node> nodes) {
         groupImpl.reparent(nodes);
     }
 
     @Override
-    public void reparent(Collection<Node> nodes, Container newParent) {
+    public void reparent(Collection<? extends Node> nodes, Container newParent) {
         groupImpl.reparent(nodes, newParent);
     }
 

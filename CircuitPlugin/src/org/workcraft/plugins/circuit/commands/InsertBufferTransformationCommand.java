@@ -2,13 +2,12 @@ package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.plugins.circuit.utils.GateUtils;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
+import org.workcraft.plugins.circuit.utils.GateUtils;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -35,12 +34,12 @@ public class InsertBufferTransformationCommand extends AbstractTransformationCom
     }
 
     @Override
-    public boolean isApplicableTo(Node node) {
+    public boolean isApplicableTo(VisualNode node) {
         return node instanceof VisualCircuitConnection;
     }
 
     @Override
-    public boolean isEnabled(ModelEntry me, Node node) {
+    public boolean isEnabled(ModelEntry me, VisualNode node) {
         return true;
     }
 
@@ -50,18 +49,15 @@ public class InsertBufferTransformationCommand extends AbstractTransformationCom
     }
 
     @Override
-    public Collection<Node> collect(Model model) {
-        Collection<Node> result = new HashSet<>();
-        if (model instanceof VisualModel) {
-            VisualModel visualModel = (VisualModel) model;
-            result.addAll(Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualCircuitConnection.class));
-            result.retainAll(visualModel.getSelection());
-        }
+    public Collection<VisualNode> collect(VisualModel model) {
+        Collection<VisualNode> result = new HashSet<>();
+        result.addAll(Hierarchy.getDescendantsOfType(model.getRoot(), VisualCircuitConnection.class));
+        result.retainAll(model.getSelection());
         return result;
     }
 
     @Override
-    public void transform(Model model, Node node) {
+    public void transform(VisualModel model, VisualNode node) {
         if ((model instanceof VisualCircuit) && (node instanceof VisualCircuitConnection)) {
             VisualCircuit circuit = (VisualCircuit) model;
             VisualCircuitConnection connection = (VisualCircuitConnection) node;

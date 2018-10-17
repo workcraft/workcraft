@@ -1,21 +1,20 @@
 package org.workcraft.plugins.petri.commands;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
-import org.workcraft.dom.Connection;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.petri.PetriNetModel;
-import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReadArc;
+import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 public class ProxyReadArcPlaceTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
@@ -35,7 +34,7 @@ public class ProxyReadArcPlaceTransformationCommand extends AbstractTransformati
     }
 
     @Override
-    public boolean isApplicableTo(Node node) {
+    public boolean isApplicableTo(VisualNode node) {
         if (node instanceof VisualReadArc) {
             VisualReadArc readArc = (VisualReadArc) node;
             return readArc.getFirst() instanceof VisualPlace;
@@ -44,7 +43,7 @@ public class ProxyReadArcPlaceTransformationCommand extends AbstractTransformati
     }
 
     @Override
-    public boolean isEnabled(ModelEntry me, Node node) {
+    public boolean isEnabled(ModelEntry me, VisualNode node) {
         return true;
     }
 
@@ -54,24 +53,21 @@ public class ProxyReadArcPlaceTransformationCommand extends AbstractTransformati
     }
 
     @Override
-    public Collection<Node> collect(Model model) {
-        Collection<Node> readArcs = new HashSet<>();
-        if (model instanceof VisualModel) {
-            VisualModel visualModel = (VisualModel) model;
-            readArcs.addAll(PetriNetUtils.getVisualReadArcs(visualModel));
-            Collection<Node> selection = visualModel.getSelection();
-            if (!selection.isEmpty()) {
-                readArcs.retainAll(selection);
-            }
-            HashSet<VisualPlace> places = PetriNetUtils.getVisualPlaces(visualModel);
-            if (!selection.isEmpty()) {
-                places.retainAll(selection);
-            }
-            for (VisualPlace place: places) {
-                for (Connection connection: model.getConnections(place)) {
-                    if (connection instanceof VisualReadArc) {
-                        readArcs.add(connection);
-                    }
+    public Collection<VisualNode> collect(VisualModel model) {
+        Collection<VisualNode> readArcs = new HashSet<>();
+        readArcs.addAll(PetriNetUtils.getVisualReadArcs(model));
+        Collection<VisualNode> selection = model.getSelection();
+        if (!selection.isEmpty()) {
+            readArcs.retainAll(selection);
+        }
+        HashSet<VisualPlace> places = PetriNetUtils.getVisualPlaces(model);
+        if (!selection.isEmpty()) {
+            places.retainAll(selection);
+        }
+        for (VisualPlace place: places) {
+            for (VisualConnection connection: model.getConnections(place)) {
+                if (connection instanceof VisualReadArc) {
+                    readArcs.add(connection);
                 }
             }
         }
@@ -79,11 +75,10 @@ public class ProxyReadArcPlaceTransformationCommand extends AbstractTransformati
     }
 
     @Override
-    public void transform(Model model, Node node) {
-        if ((model instanceof VisualModel) && (node instanceof VisualReadArc)) {
-            VisualModel visualModel = (VisualModel) model;
+    public void transform(VisualModel model, VisualNode node) {
+        if (node instanceof VisualReadArc) {
             VisualReadArc readArc = (VisualReadArc) node;
-            PetriNetUtils.replicateConnectedPlace(visualModel, readArc);
+            PetriNetUtils.replicateConnectedPlace(model, readArc);
         }
     }
 

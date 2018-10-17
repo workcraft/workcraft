@@ -1,12 +1,8 @@
 package org.workcraft.plugins.graph.commands;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
-import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.SizeHelper;
@@ -18,6 +14,10 @@ import org.workcraft.plugins.graph.Vertex;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class GraphReachabilityVerificationCommand extends AbstractVerificationCommand {
 
@@ -66,7 +66,7 @@ public class GraphReachabilityVerificationCommand extends AbstractVerificationCo
             Vertex vertex = queue.remove();
             if (visited.contains(vertex)) continue;
             visited.add(vertex);
-            for (Node node: graph.getPostset(vertex)) {
+            for (MathNode node: graph.getPostset(vertex)) {
                 if ((node instanceof Vertex) && visited.containsAll(graph.getPreset(node))) {
                     queue.add((Vertex) node);
                 }

@@ -1,14 +1,14 @@
 package org.workcraft.plugins.petri;
 
+import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathModel;
+
 import java.util.Collection;
 
-import org.workcraft.dom.Connection;
-import org.workcraft.dom.Model;
-
-public interface PetriNetModel extends Model {
+public interface PetriNetModel extends MathModel {
     Collection<Transition> getTransitions();
     Collection<Place> getPlaces();
-    Collection<Connection> getConnections();
+    Collection<MathConnection> getConnections();
 
     boolean isEnabled(Transition t);
     void fire(Transition t);

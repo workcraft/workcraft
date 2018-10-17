@@ -1,13 +1,14 @@
 package org.workcraft.plugins.son.algorithm;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.TransitionNode;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 public class TSONAlg extends RelationAlgorithm {
 
@@ -25,15 +26,15 @@ public class TSONAlg extends RelationAlgorithm {
      */
     public Collection<Node> getBlockInputs(Block block) {
         Collection<Node> result = new HashSet<>();
-        Collection<Node> components = block.getComponents();
+        Collection<MathNode> components = block.getComponents();
 
-        for (Node node : components) {
-            for (Node pre : net.getPreset(node)) {
+        for (MathNode node : components) {
+            for (MathNode pre : net.getPreset(node)) {
                 if (!components.contains(pre)) {
                     result.add(pre);
                 }
             }
-            for (Node post : net.getPostset(node)) {
+            for (MathNode post : net.getPostset(node)) {
                 if (!components.contains(post) && net.getSONConnectionType(node, post) == Semantics.SYNCLINE) {
                     result.add(post);
                 }
@@ -48,15 +49,15 @@ public class TSONAlg extends RelationAlgorithm {
      */
     public Collection<Node> getBlockOutputs(Block block) {
         Collection<Node> result = new HashSet<>();
-        Collection<Node> components = block.getComponents();
+        Collection<MathNode> components = block.getComponents();
 
-        for (Node node: components) {
-            for (Node post : net.getPostset(node)) {
+        for (MathNode node: components) {
+            for (MathNode post : net.getPostset(node)) {
                 if (!components.contains(post)) {
                     result.add(post);
                 }
             }
-            for (Node pre : net.getPreset(node)) {
+            for (MathNode pre : net.getPreset(node)) {
                 if (!components.contains(pre) && net.getSONConnectionType(node, pre) == Semantics.SYNCLINE) {
                     result.add(pre);
                 }
@@ -71,16 +72,16 @@ public class TSONAlg extends RelationAlgorithm {
      */
     public Collection<Node> getBlockPNInputs(Block block) {
         Collection<Node> result = new HashSet<>();
-        Collection<Node> components = block.getComponents();
+        Collection<MathNode> components = block.getComponents();
 
-        for (Node node : components) {
-            for (Node pre : net.getPreset(node)) {
+        for (MathNode node : components) {
+            for (MathNode pre : net.getPreset(node)) {
                 if (!components.contains(pre) && net.getSONConnectionType(node, pre) == Semantics.PNLINE) {
                     result.add(pre);
                 }
             }
         }
-        for (Node pre : net.getPreset(block)) {
+        for (MathNode pre : net.getPreset(block)) {
             if (net.getSONConnectionType(block, pre) == Semantics.PNLINE) {
                 result.add(pre);
             }
@@ -94,16 +95,16 @@ public class TSONAlg extends RelationAlgorithm {
      */
     public Collection<Node> getBlockPNOutputs(Block block) {
         Collection<Node> result = new HashSet<>();
-        Collection<Node> components = block.getComponents();
+        Collection<MathNode> components = block.getComponents();
 
-        for (Node node : components) {
-            for (Node post : net.getPostset(node)) {
+        for (MathNode node : components) {
+            for (MathNode post : net.getPostset(node)) {
                 if (!components.contains(post) && net.getSONConnectionType(node, post) == Semantics.PNLINE) {
                     result.add(post);
                 }
             }
         }
-        for (Node post : net.getPostset(block)) {
+        for (MathNode post : net.getPostset(block)) {
             if (net.getSONConnectionType(block, post) == Semantics.PNLINE) {
                 result.add(post);
             }
@@ -117,9 +118,9 @@ public class TSONAlg extends RelationAlgorithm {
      */
     public Collection<Node> getBlockASynInputs(Block block) {
         Collection<Node> result = new HashSet<>();
-        Collection<Node> components = block.getComponents();
+        Collection<MathNode> components = block.getComponents();
 
-        for (Node node : components) {
+        for (MathNode node : components) {
             if (node instanceof TransitionNode) {
                 for (Node pre : this.getPreASynEvents((TransitionNode) node)) {
                     if (!components.contains(pre) && pre != null) {
@@ -136,9 +137,9 @@ public class TSONAlg extends RelationAlgorithm {
      */
     public Collection<Node> getBlockASynOutputs(Block block) {
         Collection<Node> result = new HashSet<>();
-        Collection<Node> components = block.getComponents();
+        Collection<MathNode> components = block.getComponents();
 
-        for (Node node : components) {
+        for (MathNode node : components) {
             if (node instanceof TransitionNode) {
                 for (Node post : this.getPostASynEvents((TransitionNode) node)) {
                     if (!components.contains(post) && post != null) {

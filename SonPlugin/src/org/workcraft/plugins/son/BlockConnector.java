@@ -1,23 +1,22 @@
 package org.workcraft.plugins.son;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.Container;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.son.connections.SONConnection;
-import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
+import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.plugins.son.elements.VisualEvent;
 import org.workcraft.plugins.son.elements.VisualPlaceNode;
 import org.workcraft.plugins.son.util.Interval;
+
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class BlockConnector {
 
@@ -33,13 +32,13 @@ public class BlockConnector {
     }
 
     private static void blockBoundingConnector(VisualBlock block, VisualSON visualNet) {
-        SON net = (SON) visualNet.getMathModel();
+        SON net = visualNet.getMathModel();
 
         Collection<VisualComponent> components = block.getComponents();
 
         for (VisualSONConnection con : visualNet.getVisualSONConnections()) {
-            Node first = con.getFirst();
-            Node second = con.getSecond();
+            VisualNode first = con.getFirst();
+            VisualNode second = con.getSecond();
 
             if (!components.contains(first) && components.contains(second)) {
                 if (first instanceof VisualPlaceNode) {
@@ -92,7 +91,7 @@ public class BlockConnector {
                         try {
                             visualNet.forceConnectionSemantics(con.getReferencedSONConnection().getSemantics());
                             visualNet.connect(block, second);
-                            VisualSONConnection newCon = visualNet.getVisualConnections((VisualComponent) block, (VisualComponent) second).iterator().next();
+                            VisualSONConnection newCon = visualNet.getVisualConnections(block, (VisualComponent) second).iterator().next();
                             newCon.setTime(con.getTime());
                         } catch (InvalidConnectionException e) {
                             e.printStackTrace();
@@ -122,7 +121,7 @@ public class BlockConnector {
     private static void connectionChecker(VisualSON visualNet) {
         final Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
-        SON net = (SON) visualNet.getMathModel();
+        SON net = visualNet.getMathModel();
 
         for (VisualBlock block : visualNet.getVisualBlocks()) {
             if (!net.getPreset(block.getReferencedComponent()).isEmpty()
@@ -138,7 +137,7 @@ public class BlockConnector {
     }
 
     private static void blockInternalConnector(VisualBlock block, VisualSON visualNet) {
-        SON net = (SON) visualNet.getMathModel();
+        SON net = visualNet.getMathModel();
 
         for (VisualPlaceNode p : visualNet.getVisualPlaceNode()) {
             String interfaceValue = p.getInterface();
@@ -252,4 +251,5 @@ public class BlockConnector {
             mathParent.remove(mathCon);
         }
     }
+
 }

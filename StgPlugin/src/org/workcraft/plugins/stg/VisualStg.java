@@ -73,7 +73,7 @@ public class VisualStg extends AbstractVisualModel {
     }
 
     @Override
-    public void validateConnection(Node first, Node second) throws InvalidConnectionException {
+    public void validateConnection(VisualNode first, VisualNode second) throws InvalidConnectionException {
         super.validateConnection(first, second);
 
         if (first == second) {
@@ -98,7 +98,7 @@ public class VisualStg extends AbstractVisualModel {
     }
 
     @Override
-    public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
+    public VisualConnection connect(VisualNode first, VisualNode second, MathConnection mConnection) throws InvalidConnectionException {
         validateConnection(first, second);
 
         VisualConnection connection = null;
@@ -153,7 +153,7 @@ public class VisualStg extends AbstractVisualModel {
     }
 
     @Override
-    public void validateUndirectedConnection(Node first, Node second) throws InvalidConnectionException {
+    public void validateUndirectedConnection(VisualNode first, VisualNode second) throws InvalidConnectionException {
         if (first == second) {
             throw new InvalidConnectionException("Self-loops are not allowed.");
         }
@@ -175,7 +175,7 @@ public class VisualStg extends AbstractVisualModel {
     }
 
     @Override
-    public VisualConnection connectUndirected(Node first, Node second) throws InvalidConnectionException {
+    public VisualConnection connectUndirected(VisualNode first, VisualNode second) throws InvalidConnectionException {
         validateUndirectedConnection(first, second);
 
         VisualNode place = null;
@@ -249,8 +249,8 @@ public class VisualStg extends AbstractVisualModel {
 
     public VisualImplicitPlaceArc maybeMakeImplicit(VisualStgPlace place, boolean preserveConnectionShape) {
         VisualImplicitPlaceArc connection = null;
-        Collection<Node> preset = getPreset(place);
-        Collection<Node> postset = getPostset(place);
+        Collection<VisualNode> preset = getPreset(place);
+        Collection<VisualNode> postset = getPostset(place);
         Collection<Replica> replicas = place.getReplicas();
         if ((preset.size() == 1) && (postset.size() == 1) && replicas.isEmpty()) {
             VisualComponent first = (VisualComponent) preset.iterator().next();
@@ -286,49 +286,45 @@ public class VisualStg extends AbstractVisualModel {
     }
 
     public VisualStgPlace createVisualPlace(String mathRef) {
-        Stg stg = (Stg) getMathModel();
-        StgPlace mathPlace = stg.createPlace(mathRef, null);
+        StgPlace mathPlace = getMathModel().createPlace(mathRef, null);
         return createVisualComponent(mathPlace, VisualStgPlace.class);
     }
 
     public VisualStgPlace createVisualPlace(String mathRef, Container container) {
-        Stg stg = (Stg) getMathModel();
-        StgPlace mathPlace = stg.createPlace(mathRef, null);
+        StgPlace mathPlace = getMathModel().createPlace(mathRef, null);
         return createVisualComponent(mathPlace, VisualStgPlace.class, container);
     }
 
     public VisualDummyTransition createVisualDummyTransition(String mathRef) {
-        Stg stg = (Stg) getMathModel();
-        DummyTransition mathTransition = stg.createDummyTransition(mathRef, null);
+        DummyTransition mathTransition = getMathModel().createDummyTransition(mathRef, null);
         return createVisualComponent(mathTransition, VisualDummyTransition.class);
     }
 
     public VisualDummyTransition createVisualDummyTransition(String mathRef, Container container) {
-        Stg stg = (Stg) getMathModel();
-        DummyTransition mathTransition = stg.createDummyTransition(mathRef, null);
+        DummyTransition mathTransition = getMathModel().createDummyTransition(mathRef, null);
         return createVisualComponent(mathTransition, VisualDummyTransition.class, container);
     }
 
     public VisualSignalTransition createVisualSignalTransition(String signalRef, Signal.Type type,
             SignalTransition.Direction direction) {
-        Stg stg = (Stg) getMathModel();
+
         String mathName = null;
         if ((signalRef != null) && (direction != null)) {
             mathName = signalRef + direction.toString();
         }
-        SignalTransition mathTransition = stg.createSignalTransition(mathName, null);
+        SignalTransition mathTransition = getMathModel().createSignalTransition(mathName, null);
         mathTransition.setSignalType(type);
         return createVisualComponent(mathTransition, VisualSignalTransition.class);
     }
 
     public VisualSignalTransition createVisualSignalTransition(String signalRef, Signal.Type type,
             SignalTransition.Direction direction, Container container) {
-        Stg stg = (Stg) getMathModel();
+
         String mathName = null;
         if ((signalRef != null) && (direction != null)) {
             mathName = signalRef + direction.toString();
         }
-        SignalTransition mathTransition = stg.createSignalTransition(mathName, null);
+        SignalTransition mathTransition = getMathModel().createSignalTransition(mathName, null);
         mathTransition.setSignalType(type);
         return createVisualComponent(mathTransition, VisualSignalTransition.class, container);
     }
@@ -405,7 +401,7 @@ public class VisualStg extends AbstractVisualModel {
     public ModelProperties getProperties(Node node) {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
-            Stg stg = (Stg) getMathModel();
+            Stg stg = getMathModel();
             for (Signal.Type type : Signal.Type.values()) {
                 Container container = NamespaceHelper.getMathContainer(this, getCurrentLevel());
                 for (final String signalName : stg.getSignalNames(type, container)) {

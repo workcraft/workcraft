@@ -1,6 +1,5 @@
 package org.workcraft.plugins.circuit.tools;
 
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -22,7 +21,7 @@ public class CircuitSelectionTool extends SelectionTool {
     private HashMap<VisualConnection, VisualConnection.ScaleMode> connectionToScaleModeMap = null;
 
     @Override
-    public JPopupMenu createPopupMenu(Node node, final GraphEditor editor) {
+    public JPopupMenu createPopupMenu(VisualNode node, final GraphEditor editor) {
         JPopupMenu popup = super.createPopupMenu(node, editor);
         if (node instanceof VisualFunctionComponent) {
             final VisualFunctionComponent component = (VisualFunctionComponent) node;
@@ -69,7 +68,7 @@ public class CircuitSelectionTool extends SelectionTool {
         if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() > 1)) {
             GraphEditor editor = e.getEditor();
             final VisualModel model = editor.getModel();
-            Node node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
+            VisualNode node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
             if (node instanceof VisualContact) {
                 final VisualContact contact = (VisualContact) node;
                 if (contact.isPort()) {
@@ -85,9 +84,9 @@ public class CircuitSelectionTool extends SelectionTool {
     }
 
     @Override
-    public Collection<Node> getNodeWithAdjacentConnections(VisualModel model, Node node) {
-        HashSet<Node> result = new HashSet<>();
-        Queue<Node> queue = new LinkedList<>();
+    public Collection<VisualNode> getNodeWithAdjacentConnections(VisualModel model, VisualNode node) {
+        HashSet<VisualNode> result = new HashSet<>();
+        Queue<VisualNode> queue = new LinkedList<>();
         queue.add(node);
         while (!queue.isEmpty()) {
             node = queue.remove();

@@ -1,9 +1,5 @@
 package org.workcraft.plugins.policy.tools;
 
-import java.awt.Color;
-import java.awt.event.MouseEvent;
-import java.util.Collection;
-
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
@@ -25,6 +21,10 @@ import org.workcraft.plugins.policy.PolicyNet;
 import org.workcraft.plugins.policy.VisualBundledTransition;
 import org.workcraft.plugins.policy.VisualPolicyNet;
 import org.workcraft.plugins.shared.CommonDecorationSettings;
+
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.util.Collection;
 
 public class PolicySimulationTool extends PetriSimulationTool {
     private PolicyToPetriConverter converter;

@@ -1,7 +1,6 @@
 package org.workcraft.plugins.dfs;
 
 import org.workcraft.dom.Container;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -128,15 +127,15 @@ public class Dfs extends AbstractMathModel {
         return Hierarchy.getDescendantsOfType(getRoot(), PopRegister.class);
     }
 
-    public Collection<Node> getAllLogics() {
-        Set<Node> result = new HashSet<>();
+    public Collection<MathNode> getAllLogics() {
+        Set<MathNode> result = new HashSet<>();
         result.addAll(getLogics());
         result.addAll(getCounterflowLogics());
         return result;
     }
 
-    public Collection<Node> getAllRegisters() {
-        Set<Node> result = new HashSet<>();
+    public Collection<MathNode> getAllRegisters() {
+        Set<MathNode> result = new HashSet<>();
         result.addAll(getRegisters());
         result.addAll(getCounterflowRegisters());
         result.addAll(getControlRegisters());
@@ -145,15 +144,15 @@ public class Dfs extends AbstractMathModel {
         return result;
     }
 
-    public Collection<Node> getAllNodes() {
-        Set<Node> result = new HashSet<>();
+    public Collection<MathNode> getAllNodes() {
+        Set<MathNode> result = new HashSet<>();
         result.addAll(getAllLogics());
         result.addAll(getAllRegisters());
         return result;
     }
 
-    public Set<Node> getRPreset(Node node) {
-        Set<Node> result = new HashSet<>();
+    public Set<MathNode> getRPreset(MathNode node) {
+        Set<MathNode> result = new HashSet<>();
         result.addAll(getRPreset(node, Register.class));
         result.addAll(getRPreset(node, CounterflowRegister.class));
         result.addAll(getRPreset(node, ControlRegister.class));
@@ -162,8 +161,8 @@ public class Dfs extends AbstractMathModel {
         return result;
     }
 
-    public Set<Node> getRPostset(Node node) {
-        Set<Node> result = new HashSet<>();
+    public Set<MathNode> getRPostset(MathNode node) {
+        Set<MathNode> result = new HashSet<>();
         result.addAll(getRPostset(node, Register.class));
         result.addAll(getRPostset(node, CounterflowRegister.class));
         result.addAll(getRPostset(node, ControlRegister.class));
@@ -172,11 +171,11 @@ public class Dfs extends AbstractMathModel {
         return result;
     }
 
-    public <T> Set<T> getRPreset(Node node, Class<T> type) {
+    public <T> Set<T> getRPreset(MathNode node, Class<T> type) {
         return getPreset(node, type, arg -> (arg instanceof Logic) || (arg instanceof CounterflowLogic));
     }
 
-    public <T> Set<T> getRPostset(Node node, Class<T> type) {
+    public <T> Set<T> getRPostset(MathNode node, Class<T> type) {
         return getPostset(node, type, arg -> (arg instanceof Logic) || (arg instanceof CounterflowLogic));
     }
 

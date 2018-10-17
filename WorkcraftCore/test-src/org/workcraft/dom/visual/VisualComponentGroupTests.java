@@ -1,11 +1,5 @@
 package org.workcraft.dom.visual;
 
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.dom.Node;
@@ -13,6 +7,12 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnectionProperties;
 import org.workcraft.observation.TransformEvent;
 import org.workcraft.observation.TransformObserver;
+
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 public class VisualComponentGroupTests {
     class MockTransformObservingNode implements Node, TransformObserver {
@@ -170,7 +170,7 @@ public class VisualComponentGroupTests {
         Assert.assertEquals(node1, HitMan.hitFirstChild(new Point2D.Double(11.5, 16.5), root));
         Assert.assertEquals(null, HitMan.hitFirstChild(new Point2D.Double(13.5, 15.5), root));
 
-        Iterable<Node> unGroup = node1.unGroup();
+        Iterable<VisualNode> unGroup = node1.unGroup();
         ArrayList<Node> list = new ArrayList<>();
         for (Node node: unGroup) {
             list.add(node);

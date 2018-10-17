@@ -19,7 +19,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.List;
 
-public interface VisualModel extends Model, ObservableState {
+public interface VisualModel extends Model<VisualNode, VisualConnection>, ObservableState {
     void createDefaultStructure();
     MathModel getMathModel();
     void draw(Graphics2D g, Decorator decorator);
@@ -31,12 +31,12 @@ public interface VisualModel extends Model, ObservableState {
     String getMathName(Node node);
     void setMathName(Node node, String name);
 
-    void validateConnection(Node first, Node second) throws InvalidConnectionException;
-    VisualConnection connect(Node first, Node second) throws InvalidConnectionException;
-    VisualConnection connect(Node first, Node second, MathConnection connection) throws InvalidConnectionException;
+    void validateConnection(VisualNode first, VisualNode second) throws InvalidConnectionException;
+    VisualConnection connect(VisualNode first, VisualNode second) throws InvalidConnectionException;
+    VisualConnection connect(VisualNode first, VisualNode second, MathConnection connection) throws InvalidConnectionException;
 
-    void validateUndirectedConnection(Node first, Node second) throws InvalidConnectionException;
-    VisualConnection connectUndirected(Node first, Node second) throws InvalidConnectionException;
+    void validateUndirectedConnection(VisualNode first, VisualNode second) throws InvalidConnectionException;
+    VisualConnection connectUndirected(VisualNode first, VisualNode second) throws InvalidConnectionException;
 
     <T extends VisualComponent> T createVisualComponent(MathNode refNode, Class<T> type, Container container);
     <T extends VisualComponent> T createVisualComponent(MathNode refNode, Class<T> type);
@@ -48,22 +48,22 @@ public interface VisualModel extends Model, ObservableState {
     void selectAll();
     void selectNone();
     void selectInverse();
-    void select(Node node);
-    void select(Collection<Node> nodes);
-    void addToSelection(Node node);
-    void addToSelection(Collection<Node> nodes);
-    void removeFromSelection(Node node);
-    void removeFromSelection(Collection<Node> nodes);
+    void select(VisualNode node);
+    void select(Collection<? extends VisualNode> nodes);
+    void addToSelection(VisualNode node);
+    void addToSelection(Collection<? extends VisualNode> nodes);
+    void removeFromSelection(VisualNode node);
+    void removeFromSelection(Collection<? extends VisualNode> nodes);
     void deleteSelection();
 
-    Collection<Node> getSelection();
+    Collection<VisualNode> getSelection();
 
-    boolean isGroupable(Node node);
+    boolean isGroupable(VisualNode node);
     VisualGroup groupSelection();
     VisualPage groupPageSelection();
     void ungroupSelection();
 
-    Collection<Node> hitBox(Point2D p1, Point2D p2);
+    Collection<VisualNode> hitBox(Point2D p1, Point2D p2);
     AbstractLayoutCommand getBestLayouter();
     Rectangle2D getBoundingBox();
 

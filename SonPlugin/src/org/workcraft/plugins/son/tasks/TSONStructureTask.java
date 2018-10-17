@@ -1,9 +1,5 @@
 package org.workcraft.plugins.son.tasks;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
@@ -11,6 +7,10 @@ import org.workcraft.plugins.son.algorithm.ONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.TSONAlg;
 import org.workcraft.plugins.son.elements.Block;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class TSONStructureTask extends AbstractStructuralVerification {
 

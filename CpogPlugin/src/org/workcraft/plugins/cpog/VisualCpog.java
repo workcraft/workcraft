@@ -54,7 +54,7 @@ public class VisualCpog extends AbstractVisualModel {
     }
 
     @Override
-    public void validateConnection(Node first, Node second) throws InvalidConnectionException {
+    public void validateConnection(VisualNode first, VisualNode second) throws InvalidConnectionException {
         if (first instanceof VisualVariable && !getPreset(first).isEmpty()) {
             throw new InvalidConnectionException("Variables do not support multiple connections.");
         }
@@ -70,7 +70,7 @@ public class VisualCpog extends AbstractVisualModel {
     }
 
     @Override
-    public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
+    public VisualConnection connect(VisualNode first, VisualNode second, MathConnection mConnection) throws InvalidConnectionException {
         validateConnection(first, second);
         VisualConnection ret = null;
         if ((first instanceof VisualVertex) && (second instanceof VisualVertex)) {
@@ -104,7 +104,7 @@ public class VisualCpog extends AbstractVisualModel {
     }
 
     @Override
-    public boolean isGroupable(Node node) {
+    public boolean isGroupable(VisualNode node) {
         return (node instanceof VisualVertex) || (node instanceof VisualVariable);
     }
 
@@ -115,7 +115,7 @@ public class VisualCpog extends AbstractVisualModel {
 
     public VisualScenario groupSelection(String graphName) {
         VisualScenario scenario = null;
-        Collection<Node> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
+        Collection<VisualNode> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
         if (nodes.size() >= 1) {
             scenario = new VisualScenario();
             if (graphName != null) {
@@ -194,7 +194,7 @@ public class VisualCpog extends AbstractVisualModel {
         return properties;
     }
 
-    public void removeWithoutNotify(Node node) {
+    public void removeWithoutNotify(VisualNode node) {
         if (node.getParent() instanceof VisualPage) {
             ((VisualPage) node.getParent()).removeWithoutNotify(node);
         } else if (node.getParent() instanceof VisualGroup) {
@@ -205,7 +205,7 @@ public class VisualCpog extends AbstractVisualModel {
     public VisualScenarioPage groupScenarioPageSelection(String graphName) {
         VisualScenarioPage scenario = null;
         PageNode pageNode = new PageNode();
-        Collection<Node> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
+        Collection<VisualNode> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
         if (nodes.size() >= 1) {
             scenario = new VisualScenarioPage(pageNode);
             if (graphName != null) {

@@ -1,19 +1,12 @@
 package org.workcraft.plugins.stg.commands;
 
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-
 import org.workcraft.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.MixUtils;
 import org.workcraft.dom.visual.TransformHelper;
+import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.VisualReadArc;
@@ -29,11 +22,17 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+
 public class ExpandHandshakeTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
     private static final String SUFFIX_REQ = "_req";
     private static final String SUFFIX_ACK = "_ack";
-    private HashSet<Node> expandedNodes = null;
+    private HashSet<VisualNode> expandedNodes = null;
     private Pair<String, String> suffixPair = null;
 
     @Override
@@ -52,12 +51,12 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
     }
 
     @Override
-    public boolean isApplicableTo(Node node) {
+    public boolean isApplicableTo(VisualNode node) {
         return node instanceof VisualSignalTransition;
     }
 
     @Override
-    public boolean isEnabled(ModelEntry me, Node node) {
+    public boolean isEnabled(ModelEntry me, VisualNode node) {
         return true;
     }
 
@@ -67,8 +66,8 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
     }
 
     @Override
-    public Collection<Node> collect(Model model) {
-        Collection<Node> signalTransitions = new HashSet<>();
+    public Collection<VisualNode> collect(VisualModel model) {
+        Collection<VisualNode> signalTransitions = new HashSet<>();
         if (model instanceof VisualStg) {
             VisualStg stg = (VisualStg) model;
             signalTransitions.addAll(stg.getVisualSignalTransitions());
@@ -78,13 +77,13 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
     }
 
     @Override
-    public void transform(Model model, Collection<Node> nodes) {
+    public void transform(VisualModel model, Collection<? extends VisualNode> nodes) {
         if (model instanceof VisualStg) {
             VisualStg stg = (VisualStg) model;
             expandedNodes = new HashSet<>();
             suffixPair = getSufixes();
             if (suffixPair != null) {
-                for (Node node: nodes) {
+                for (VisualNode node: nodes) {
                     transform(model, node);
                 }
                 stg.select(expandedNodes);
@@ -95,7 +94,7 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
     }
 
     @Override
-    public void transform(Model model, Node node) {
+    public void transform(VisualModel model, VisualNode node) {
         if ((model instanceof VisualStg) && (node instanceof VisualSignalTransition)) {
             VisualStg stg = (VisualStg) model;
             VisualSignalTransition transition = (VisualSignalTransition) node;
@@ -116,9 +115,9 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
             VisualConnection midConnection = null;
             try {
                 midConnection = stg.connect(reqTransition, ackTransition);
-                for (Connection connection: stg.getConnections(transition)) {
-                    Node predNode = connection.getFirst();
-                    Node succNode = connection.getSecond();
+                for (VisualConnection connection: stg.getConnections(transition)) {
+                    VisualNode predNode = connection.getFirst();
+                    VisualNode succNode = connection.getSecond();
                     if (connection instanceof VisualReadArc) {
                         String predRef = stg.getNodeMathReference(predNode);
                         String succRef = stg.getNodeMathReference(succNode);
@@ -127,13 +126,13 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
                     }
                     if (transition == succNode) {
                         VisualConnection predConnection = stg.connect(predNode, reqTransition);
-                        predConnection.copyShape((VisualConnection) connection);
-                        predConnection.copyStyle((VisualConnection) connection);
+                        predConnection.copyShape(connection);
+                        predConnection.copyStyle(connection);
                     }
                     if (transition == predNode) {
                         VisualConnection succConnection = stg.connect(ackTransition, succNode);
-                        succConnection.copyStyle((VisualConnection) connection);
-                        succConnection.copyShape((VisualConnection) connection);
+                        succConnection.copyStyle(connection);
+                        succConnection.copyShape(connection);
                     }
                 }
             } catch (InvalidConnectionException e) {
@@ -152,20 +151,17 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
     private Pair<Point2D, Point2D> getReqAckPositions(VisualStg stg, VisualSignalTransition transition) {
         LinkedList<Point2D> predPoints = new LinkedList<>();
         LinkedList<Point2D> succPoints = new LinkedList<>();
-        for (Connection connection: stg.getConnections(transition)) {
-            if (connection instanceof VisualConnection) {
-                VisualConnection visualConnection = (VisualConnection) connection;
-                AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(visualConnection);
-                if (connection.getFirst() == transition) {
-                    Point2D posInLocalSpace = visualConnection.getPointOnConnection(1.0 / 3.0);
-                    Point2D posInRootSpace = localToRootTransform.transform(posInLocalSpace, null);
-                    succPoints.add(posInRootSpace);
-                }
-                if (connection.getSecond() == transition) {
-                    Point2D posInLocalSpace = visualConnection.getPointOnConnection(2.0 / 3.0);
-                    Point2D posInRootSpace = localToRootTransform.transform(posInLocalSpace, null);
-                    predPoints.add(posInRootSpace);
-                }
+        for (VisualConnection connection: stg.getConnections(transition)) {
+            AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(connection);
+            if (connection.getFirst() == transition) {
+                Point2D posInLocalSpace = connection.getPointOnConnection(1.0 / 3.0);
+                Point2D posInRootSpace = localToRootTransform.transform(posInLocalSpace, null);
+                succPoints.add(posInRootSpace);
+            }
+            if (connection.getSecond() == transition) {
+                Point2D posInLocalSpace = connection.getPointOnConnection(2.0 / 3.0);
+                Point2D posInRootSpace = localToRootTransform.transform(posInLocalSpace, null);
+                predPoints.add(posInRootSpace);
             }
         }
         Point2D pos = transition.getRootSpacePosition();

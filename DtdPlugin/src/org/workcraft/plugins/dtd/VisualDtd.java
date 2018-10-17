@@ -8,6 +8,7 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
@@ -87,7 +88,7 @@ public class VisualDtd extends AbstractVisualModel {
     }
 
     @Override
-    public void validateConnection(Node first, Node second) throws InvalidConnectionException {
+    public void validateConnection(VisualNode first, VisualNode second) throws InvalidConnectionException {
         super.validateConnection(first, second);
 
         if (first == second) {
@@ -169,7 +170,7 @@ public class VisualDtd extends AbstractVisualModel {
     }
 
     @Override
-    public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
+    public VisualConnection connect(VisualNode first, VisualNode second, MathConnection mConnection) throws InvalidConnectionException {
         validateConnection(first, second);
 
         VisualComponent v1 = (VisualComponent) first;
@@ -407,8 +408,8 @@ public class VisualDtd extends AbstractVisualModel {
 
     @Override
     public void deleteSelection() {
-        HashSet<Node> undeletableNodes = new HashSet<>();
-        for (Node node: getSelection()) {
+        HashSet<VisualNode> undeletableNodes = new HashSet<>();
+        for (VisualNode node: getSelection()) {
             if (node instanceof VisualEvent) {
                 undeletableNodes.add(node);
             }

@@ -1,22 +1,20 @@
 package org.workcraft.plugins.stg.commands;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-
 import org.workcraft.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 public class DummyToSignalTransitionTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
@@ -38,12 +36,12 @@ public class DummyToSignalTransitionTransformationCommand extends AbstractTransf
     }
 
     @Override
-    public boolean isApplicableTo(Node node) {
+    public boolean isApplicableTo(VisualNode node) {
         return node instanceof VisualDummyTransition;
     }
 
     @Override
-    public boolean isEnabled(ModelEntry me, Node node) {
+    public boolean isEnabled(ModelEntry me, VisualNode node) {
         return true;
     }
 
@@ -58,8 +56,8 @@ public class DummyToSignalTransitionTransformationCommand extends AbstractTransf
     }
 
     @Override
-    public Collection<Node> collect(Model model) {
-        Collection<Node> dummyTransitions = new HashSet<>();
+    public Collection<VisualNode> collect(VisualModel model) {
+        Collection<VisualNode> dummyTransitions = new HashSet<>();
         if (model instanceof VisualStg) {
             VisualStg stg = (VisualStg) model;
             dummyTransitions.addAll(stg.getVisualDummyTransitions());
@@ -69,20 +67,17 @@ public class DummyToSignalTransitionTransformationCommand extends AbstractTransf
     }
 
     @Override
-    public void transform(Model model, Collection<Node> nodes) {
-        if (model instanceof VisualModel) {
-            VisualModel visualModel = (VisualModel) model;
-            signalTransitions = new HashSet<>(nodes.size());
-            for (Node node: nodes) {
-                transform(model, node);
-            }
-            visualModel.select(new LinkedList<>(signalTransitions));
-            signalTransitions = null;
+    public void transform(VisualModel model, Collection<? extends VisualNode> nodes) {
+        signalTransitions = new HashSet<>(nodes.size());
+        for (VisualNode node: nodes) {
+            transform(model, node);
         }
+        model.select(signalTransitions);
+        signalTransitions = null;
     }
 
     @Override
-    public void transform(Model model, Node node) {
+    public void transform(VisualModel model, VisualNode node) {
         if ((model instanceof VisualStg) && (node instanceof VisualDummyTransition)) {
             VisualStg stg = (VisualStg) model;
             VisualDummyTransition dummyTransition = (VisualDummyTransition) node;

@@ -1,33 +1,26 @@
 package org.workcraft.plugins.circuit.commands;
 
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-
 import org.workcraft.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
-import org.workcraft.dom.Connection;
-import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
-import org.workcraft.plugins.circuit.Contact;
-import org.workcraft.plugins.circuit.FunctionComponent;
-import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.VisualCircuitComponent;
-import org.workcraft.plugins.circuit.VisualCircuitConnection;
-import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 public class ContractComponentTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
@@ -47,12 +40,12 @@ public class ContractComponentTransformationCommand extends AbstractTransformati
     }
 
     @Override
-    public boolean isApplicableTo(Node node) {
+    public boolean isApplicableTo(VisualNode node) {
         return node instanceof VisualCircuitComponent;
     }
 
     @Override
-    public boolean isEnabled(ModelEntry me, Node node) {
+    public boolean isEnabled(ModelEntry me, VisualNode node) {
         boolean result = false;
         if (node instanceof VisualCircuitComponent) {
             VisualCircuitComponent component = (VisualCircuitComponent) node;
@@ -67,18 +60,15 @@ public class ContractComponentTransformationCommand extends AbstractTransformati
     }
 
     @Override
-    public Collection<Node> collect(Model model) {
-        Collection<Node> components = new HashSet<>();
-        if (model instanceof VisualModel) {
-            VisualModel visualModel = (VisualModel) model;
-            components.addAll(Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualCircuitComponent.class));
-            components.retainAll(visualModel.getSelection());
-        }
+    public Collection<VisualNode> collect(VisualModel model) {
+        Collection<VisualNode> components = new HashSet<>();
+        components.addAll(Hierarchy.getDescendantsOfType(model.getRoot(), VisualCircuitComponent.class));
+        components.retainAll(model.getSelection());
         return components;
     }
 
     @Override
-    public void transform(Model model, Node node) {
+    public void transform(VisualModel model, VisualNode node) {
         if ((model instanceof VisualCircuit) && (node instanceof VisualCircuitComponent)) {
             VisualCircuit circuit = (VisualCircuit) model;
             VisualCircuitComponent component = (VisualCircuitComponent) node;
@@ -108,7 +98,7 @@ public class ContractComponentTransformationCommand extends AbstractTransformati
         VisualContact outputContact = component.getFirstVisualOutput();
 
         // Input and output ports
-        Circuit mathCircuit = (Circuit) circuit.getMathModel();
+        Circuit mathCircuit = circuit.getMathModel();
         Contact driver = CircuitUtils.findDriver(mathCircuit, inputContact.getReferencedComponent(), true);
         HashSet<Contact> drivenSet = new HashSet<>();
         drivenSet.addAll(CircuitUtils.findDriven(mathCircuit, driver, true));
@@ -155,16 +145,16 @@ public class ContractComponentTransformationCommand extends AbstractTransformati
     }
 
     private void connectContacts(VisualCircuit circuit, VisualContact inputContact, VisualContact outputContact) {
-        for (Connection inputConnection: circuit.getConnections(inputContact)) {
-            Node fromNode = inputConnection.getFirst();
-            for (Connection outputConnection: new ArrayList<>(circuit.getConnections(outputContact))) {
-                Node toNode = outputConnection.getSecond();
-                LinkedList<Point2D> locations = ConnectionHelper.getMergedControlPoints((VisualContact) outputContact,
-                        (VisualConnection) inputConnection, (VisualConnection) outputConnection);
+        for (VisualConnection inputConnection: circuit.getConnections(inputContact)) {
+            VisualNode fromNode = inputConnection.getFirst();
+            for (VisualConnection outputConnection: new ArrayList<>(circuit.getConnections(outputContact))) {
+                VisualNode toNode = outputConnection.getSecond();
+                LinkedList<Point2D> locations = ConnectionHelper.getMergedControlPoints(outputContact,
+                        inputConnection, outputConnection);
                 circuit.remove(outputConnection);
                 try {
-                    VisualConnection newConnection = (VisualCircuitConnection) circuit.connect(fromNode, toNode);
-                    newConnection.mixStyle((VisualConnection) inputConnection, (VisualConnection) outputConnection);
+                    VisualConnection newConnection = circuit.connect(fromNode, toNode);
+                    newConnection.mixStyle(inputConnection, outputConnection);
                     ConnectionHelper.addControlPoints(newConnection, locations);
                 } catch (InvalidConnectionException e) {
                     LogUtils.logWarning(e.getMessage());

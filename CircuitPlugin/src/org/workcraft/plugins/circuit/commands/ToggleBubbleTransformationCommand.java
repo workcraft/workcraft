@@ -1,28 +1,23 @@
 package org.workcraft.plugins.circuit.commands;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-
 import org.workcraft.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
-import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanOperations;
 import org.workcraft.formula.utils.BooleanUtils;
-import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.Contact;
-import org.workcraft.plugins.circuit.FunctionComponent;
-import org.workcraft.plugins.circuit.FunctionContact;
-import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.VisualFunctionComponent;
-import org.workcraft.plugins.circuit.VisualFunctionContact;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 public class ToggleBubbleTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
@@ -42,14 +37,14 @@ public class ToggleBubbleTransformationCommand extends AbstractTransformationCom
     }
 
     @Override
-    public boolean isApplicableTo(Node node) {
+    public boolean isApplicableTo(VisualNode node) {
         return (node instanceof VisualFunctionComponent)
                 || ((node instanceof VisualFunctionContact)
                 && (node.getParent() instanceof VisualFunctionComponent));
     }
 
     @Override
-    public boolean isEnabled(ModelEntry me, Node node) {
+    public boolean isEnabled(ModelEntry me, VisualNode node) {
         boolean result = false;
         if (node instanceof VisualFunctionComponent) {
             VisualFunctionComponent component = (VisualFunctionComponent) node;
@@ -92,8 +87,8 @@ public class ToggleBubbleTransformationCommand extends AbstractTransformationCom
     }
 
     @Override
-    public Collection<Node> collect(Model model) {
-        Collection<Node> contacts = new HashSet<>();
+    public Collection<VisualNode> collect(VisualModel model) {
+        Collection<VisualNode> contacts = new HashSet<>();
         if (model instanceof VisualCircuit) {
             VisualCircuit circuit = (VisualCircuit) model;
             contacts.addAll(Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualFunctionContact.class));
@@ -110,9 +105,8 @@ public class ToggleBubbleTransformationCommand extends AbstractTransformationCom
     }
 
     @Override
-    public void transform(Model model, Node node) {
+    public void transform(VisualModel model, VisualNode node) {
         if ((model instanceof VisualCircuit) && (node instanceof VisualFunctionContact)) {
-            Circuit circuit = (Circuit) ((VisualCircuit) model).getMathModel();
             FunctionContact contact = ((VisualFunctionContact) node).getReferencedFunctionContact();
             if (contact.isOutput()) {
                 BooleanFormula setFunction = contact.getSetFunction();
@@ -141,7 +135,7 @@ public class ToggleBubbleTransformationCommand extends AbstractTransformationCom
                 VisualFunctionComponent component = (VisualFunctionComponent) parent;
                 String label = component.getLabel();
                 if (!label.isEmpty()) {
-                    String ref = circuit.getNodeReference(node);
+                    String ref = model.getNodeMathReference(node);
                     LogUtils.logWarning("Label '" + label + "' is removed from component '" + ref + "'.");
                     component.setLabel("");
                 }

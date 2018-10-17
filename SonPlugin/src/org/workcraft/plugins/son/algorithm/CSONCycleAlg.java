@@ -1,16 +1,13 @@
 package org.workcraft.plugins.son.algorithm;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.TransitionNode;
+
+import java.util.*;
 
 public class CSONCycleAlg extends ONCycleAlg {
 
@@ -42,11 +39,12 @@ public class CSONCycleAlg extends ONCycleAlg {
                 if (result[index] == null) {
                     result[index] = new ArrayList<Integer>();
                 }
-                for (Node post: net.getPostset(nodes.get(index))) {
+                MathNode node = (MathNode) nodes.get(index);
+                for (MathNode post: net.getPostset(node)) {
                     if (nodes.contains(post)) {
                         result[index].add(nodeIndex.get(post));
                         //reverse direction for synchronous connection
-                        if (net.getSONConnectionType(nodes.get(index), post) == Semantics.SYNCLINE) {
+                        if (net.getSONConnectionType(node, post) == Semantics.SYNCLINE) {
                             int index2 = nodeIndex.get(post);
                             if (result[index2] == null) {
                                 result[index2] = new ArrayList<Integer>();

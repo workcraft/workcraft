@@ -2,7 +2,6 @@ package org.workcraft.plugins.dfs;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.ShortName;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
@@ -55,7 +54,7 @@ public class VisualDfs extends AbstractVisualModel {
     }
 
     @Override
-    public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
+    public VisualConnection connect(VisualNode first, VisualNode second, MathConnection mConnection) throws InvalidConnectionException {
         validateConnection(first, second);
         VisualComponent c1 = (VisualComponent) first;
         VisualComponent c2 = (VisualComponent) second;
@@ -83,8 +82,8 @@ public class VisualDfs extends AbstractVisualModel {
         return getMathModel().getName(component.getReferencedComponent());
     }
 
-    public Set<Node> getRPreset(Node node) {
-        Set<Node> result = new HashSet<>();
+    public Set<VisualNode> getRPreset(VisualNode node) {
+        Set<VisualNode> result = new HashSet<>();
         result.addAll(getRPreset(node, VisualRegister.class));
         result.addAll(getRPreset(node, VisualCounterflowRegister.class));
         result.addAll(getRPreset(node, VisualControlRegister.class));
@@ -93,8 +92,8 @@ public class VisualDfs extends AbstractVisualModel {
         return result;
     }
 
-    public Set<Node> getRPostset(Node node) {
-        Set<Node> result = new HashSet<>();
+    public Set<VisualNode> getRPostset(VisualNode node) {
+        Set<VisualNode> result = new HashSet<>();
         result.addAll(getRPostset(node, VisualRegister.class));
         result.addAll(getRPostset(node, VisualCounterflowRegister.class));
         result.addAll(getRPostset(node, VisualControlRegister.class));
@@ -103,11 +102,11 @@ public class VisualDfs extends AbstractVisualModel {
         return result;
     }
 
-    public <T> Set<T> getRPreset(Node node, Class<T> type) {
+    public <T> Set<T> getRPreset(VisualNode node, Class<T> type) {
         return getPreset(node, type, arg -> (arg instanceof VisualLogic) || (arg instanceof VisualCounterflowLogic));
     }
 
-    public <T> Set<T> getRPostset(Node node, Class<T> type) {
+    public <T> Set<T> getRPostset(VisualNode node, Class<T> type) {
         return getPostset(node, type, arg -> (arg instanceof VisualLogic) || (arg instanceof VisualCounterflowLogic));
     }
 

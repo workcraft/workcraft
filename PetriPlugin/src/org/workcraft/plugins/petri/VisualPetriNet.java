@@ -2,7 +2,6 @@ package org.workcraft.plugins.petri;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
@@ -71,7 +70,7 @@ public class VisualPetriNet extends AbstractVisualModel {
     }
 
     @Override
-    public void validateConnection(Node first, Node second) throws InvalidConnectionException {
+    public void validateConnection(VisualNode first, VisualNode second) throws InvalidConnectionException {
         if (first == second) {
             throw new InvalidConnectionException("Self-loops are not allowed.");
         }
@@ -94,7 +93,7 @@ public class VisualPetriNet extends AbstractVisualModel {
     }
 
     @Override
-    public void validateUndirectedConnection(Node first, Node second) throws InvalidConnectionException {
+    public void validateUndirectedConnection(VisualNode first, VisualNode second) throws InvalidConnectionException {
         super.validateUndirectedConnection(first, second);
         if (first == second) {
             throw new InvalidConnectionException("Self-loops are not allowed.");
@@ -117,7 +116,7 @@ public class VisualPetriNet extends AbstractVisualModel {
     }
 
     @Override
-    public VisualConnection connectUndirected(Node first, Node second) throws InvalidConnectionException {
+    public VisualConnection connectUndirected(VisualNode first, VisualNode second) throws InvalidConnectionException {
         validateUndirectedConnection(first, second);
 
         VisualNode place = null;

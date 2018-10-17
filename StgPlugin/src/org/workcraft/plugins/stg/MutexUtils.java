@@ -1,19 +1,15 @@
 package org.workcraft.plugins.stg;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Set;
-
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.Pair;
+
+import java.util.*;
 
 public class MutexUtils {
 
@@ -63,12 +59,12 @@ public class MutexUtils {
         String name = stg.getNodeReference(place);
         Signal r1, g1;
         Signal r2, g2;
-        Set<Node> preset = stg.getPreset(place);
-        Set<Node> postset = stg.getPostset(place);
+        Set<MathNode> preset = stg.getPreset(place);
+        Set<MathNode> postset = stg.getPostset(place);
         if ((preset.size() != 2) || (postset.size() != 2)) {
             return null;
         }
-        Iterator<Node> postsetIterator = postset.iterator();
+        Iterator<MathNode> postsetIterator = postset.iterator();
         Node succ1 = postsetIterator.next();
         Node succ2 = postsetIterator.next();
         if (!(succ1 instanceof SignalTransition) || !(succ2 instanceof SignalTransition)) {
@@ -99,11 +95,11 @@ public class MutexUtils {
 
     private static Set<SignalTransition> getTriggers(Stg stg, SignalTransition transition, StgPlace skipPlace) {
         HashSet<SignalTransition> result = new HashSet<>();
-        for (Node predPlace: stg.getPreset(transition)) {
+        for (MathNode predPlace: stg.getPreset(transition)) {
             if (!(predPlace instanceof StgPlace) || (predPlace == skipPlace)) {
                 continue;
             }
-            for (Node predTransition: stg.getPreset(predPlace)) {
+            for (MathNode predTransition: stg.getPreset(predPlace)) {
                 if (!(predTransition instanceof SignalTransition) || stg.getPreset(predTransition).contains(predPlace)) {
                     continue;
                 }

@@ -5,8 +5,9 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
-import org.workcraft.dom.references.ReferenceManager;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.HierarchyReferenceManager;
+import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -68,7 +69,7 @@ public class VisualSON extends AbstractVisualModel {
     }
 
     @Override
-    public void validateConnection(Node first, Node second) throws InvalidConnectionException {
+    public void validateConnection(VisualNode first, VisualNode second) throws InvalidConnectionException {
         if ((first instanceof VisualCondition) && (second instanceof VisualCondition) && (currentConnectonSemantics == Semantics.PNLINE)) {
             throw new InvalidConnectionException("Connections between conditions are not valid(PN Connection)");
         }
@@ -131,7 +132,7 @@ public class VisualSON extends AbstractVisualModel {
 
         //ChannelPlace
         if (first instanceof VisualChannelPlace) {
-            for (Node node : getMathModel().getPreset(((VisualChannelPlace) first).getReferencedComponent())) {
+            for (MathNode node : getMathModel().getPreset(((VisualChannelPlace) first).getReferencedComponent())) {
                 if (getMathModel().isInSameGroup(((VisualComponent) second).getReferencedComponent(), node)) {
                     throw new InvalidConnectionException("The input and ouput nodes for a channel place belong to same group are not valid");
                 }
@@ -139,7 +140,7 @@ public class VisualSON extends AbstractVisualModel {
         }
 
         if (second instanceof VisualChannelPlace) {
-            for (Node node : getMathModel().getPostset(((VisualChannelPlace) second).getReferencedComponent())) {
+            for (MathNode node : getMathModel().getPostset(((VisualChannelPlace) second).getReferencedComponent())) {
                 if (getMathModel().isInSameGroup(((VisualComponent) first).getReferencedComponent(), node)) {
                     throw new InvalidConnectionException("The input and ouput nodes of a channel place belong to same group are not valid");
                 }
@@ -156,7 +157,7 @@ public class VisualSON extends AbstractVisualModel {
         }
     }
 
-    private boolean isGrouped(Node node) {
+    private boolean isGrouped(VisualNode node) {
         for (VisualONGroup group : getVisualONGroups()) {
             if (group.getVisualComponents().contains(node)) {
                 return true;
@@ -165,7 +166,7 @@ public class VisualSON extends AbstractVisualModel {
         return false;
     }
 
-    private boolean isInSameGroup(Node first, Node second) {
+    private boolean isInSameGroup(VisualNode first, VisualNode second) {
         for (VisualONGroup group : getVisualONGroups()) {
             if (group.getVisualComponents().contains(first) && group.getVisualComponents().contains(second)) {
                 return true;
@@ -174,7 +175,7 @@ public class VisualSON extends AbstractVisualModel {
         return false;
     }
 
-    private boolean isInBlock(Node node) {
+    private boolean isInBlock(VisualNode node) {
         for (VisualBlock block : getVisualBlocks()) {
             if (block.getComponents().contains(node)) {
                 return true;
@@ -183,11 +184,11 @@ public class VisualSON extends AbstractVisualModel {
         return false;
     }
 
-    private boolean hasInputBhv(Node first) {
+    private boolean hasInputBhv(VisualNode first) {
         if (first instanceof VisualCondition) {
             for (VisualSONConnection con : getVisualConnections((VisualCondition) first)) {
                 if (con.getSemantics() == Semantics.BHVLINE) {
-                    if (con.getSecond() == ((VisualCondition) first)) {
+                    if (con.getSecond() == first) {
                         return true;
                     }
                 }
@@ -200,7 +201,7 @@ public class VisualSON extends AbstractVisualModel {
         if (second instanceof VisualCondition) {
             for (VisualSONConnection con : getVisualConnections((VisualCondition) second)) {
                 if (con.getSemantics() == Semantics.BHVLINE) {
-                    if (con.getFirst() == ((VisualCondition) second)) {
+                    if (con.getFirst() == second) {
                         return true;
                     }
                 }
@@ -210,7 +211,7 @@ public class VisualSON extends AbstractVisualModel {
     }
 
     @Override
-    public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
+    public VisualConnection connect(VisualNode first, VisualNode second, MathConnection mConnection) throws InvalidConnectionException {
         validateConnection(first, second);
         VisualComponent c1 = (VisualComponent) first;
         VisualComponent c2 = (VisualComponent) second;
@@ -230,14 +231,14 @@ public class VisualSON extends AbstractVisualModel {
         return ret;
     }
 
-    public VisualConnection connect(Node first, Node second, Semantics semantics) throws InvalidConnectionException {
+    public VisualConnection connect(VisualNode first, VisualNode second, Semantics semantics) throws InvalidConnectionException {
         forceConnectionSemantics(semantics);
         return connect(first, second);
     }
 
-    private Collection<Node> getGroupableSelection() {
-        Collection<Node> result = new HashSet<>();
-        Collection<Node> selection = new HashSet<>();
+    private Collection<VisualNode> getGroupableSelection() {
+        Collection<VisualNode> result = new HashSet<>();
+        Collection<VisualNode> selection = new HashSet<>();
         boolean validate = false;
 
         final Framework framework = Framework.getInstance();
@@ -250,17 +251,17 @@ public class VisualSON extends AbstractVisualModel {
             return result;
         }
 
-        for (Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
+        for (VisualNode node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
             if (node instanceof VisualPage) {
                 selection.addAll(Hierarchy.getDescendantsOfType(node, VisualComponent.class));
             }
             if (node instanceof VisualTransformableNode) {
-                selection.add((VisualTransformableNode) node);
+                selection.add(node);
             }
         }
 
         if (isPure(selection)) {
-            for (Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
+            for (VisualNode node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
                 if (node instanceof VisualTransformableNode) {
                     if (!(node instanceof VisualChannelPlace) && !(node instanceof VisualONGroup)) {
                         result.add(node);
@@ -279,11 +280,11 @@ public class VisualSON extends AbstractVisualModel {
             return result;
         }
 
-        for (Node node : result) {
+        for (VisualNode node : result) {
             if (node instanceof VisualCondition) {
                 validate = true;
             }
-            if (node instanceof VisualPage && !Hierarchy.getDescendantsOfType(node, VisualCondition.class).isEmpty()) {
+            if ((node instanceof VisualPage) && !Hierarchy.getDescendantsOfType(node, VisualCondition.class).isEmpty()) {
                 validate = true;
             }
         }
@@ -298,7 +299,7 @@ public class VisualSON extends AbstractVisualModel {
 
     }
 
-    private boolean isPure(Collection<Node> nodes) {
+    private boolean isPure(Collection<? extends VisualNode> nodes) {
         for (VisualSONConnection connect : getVisualSONConnections()) {
             if (nodes.contains(connect.getFirst()) && !(connect.getFirst() instanceof VisualChannelPlace)
                     && !nodes.contains(connect.getSecond()) && !(connect.getSecond() instanceof VisualChannelPlace)) {
@@ -314,7 +315,7 @@ public class VisualSON extends AbstractVisualModel {
     }
 
     public VisualGroup groupSelection() {
-        Collection<Node> selected = getGroupableSelection();
+        Collection<VisualNode> selected = getGroupableSelection();
 
         if (selected.size() > 0) {
 
@@ -335,7 +336,7 @@ public class VisualSON extends AbstractVisualModel {
             }
             currentMathLevel.add(mathGroup);
 
-            ArrayList<Node> connectionsToGroup = new ArrayList<>();
+            ArrayList<VisualNode> connectionsToGroup = new ArrayList<>();
             for (VisualConnection connection : Hierarchy.getChildrenOfType(currentLevel, VisualConnection.class)) {
                 if (Hierarchy.isDescendant(connection.getFirst(), group) &&
                         Hierarchy.isDescendant(connection.getSecond(), group)) {
@@ -345,13 +346,13 @@ public class VisualSON extends AbstractVisualModel {
             currentLevel.reparent(connectionsToGroup, group);
 
             // Reparenting for the math model nodes
-            ArrayList<Node> selectedMath = new ArrayList<>();
-            for (Node node : selected) {
+            ArrayList<MathNode> selectedMath = new ArrayList<>();
+            for (VisualNode node : selected) {
                 if (node instanceof VisualComponent) {
                     selectedMath.add(((VisualComponent) node).getReferencedComponent());
                 }
             }
-            for (Node node : connectionsToGroup) {
+            for (VisualNode node : connectionsToGroup) {
                 if (node instanceof VisualConnection) {
                     selectedMath.add(((VisualConnection) node).getReferencedConnection());
                 }
@@ -361,7 +362,7 @@ public class VisualSON extends AbstractVisualModel {
             ReferenceManager refMan = getMathModel().getReferenceManager();
             if (refMan instanceof HierarchyReferenceManager) {
                 HierarchyReferenceManager hierRefMan = (HierarchyReferenceManager) refMan;
-                for (Node node: selectedMath) {
+                for (MathNode node: selectedMath) {
                     Container parent = (Container) node.getParent();
                     hierRefMan.setNamespaceProvider(Arrays.asList(node), mathGroup);
                     parent.reparent(Arrays.asList(node), mathGroup);
@@ -381,7 +382,7 @@ public class VisualSON extends AbstractVisualModel {
 
     //Block
     public void groupBlockSelection() {
-        Collection<Node> selected = getBlockSelection();
+        Collection<VisualNode> selected = getBlockSelection();
 
         if (selected.size() > 1) {
 
@@ -445,8 +446,8 @@ public class VisualSON extends AbstractVisualModel {
         }
     }
 
-    private Collection<Node> getBlockSelection() {
-        Collection<Node> result = new HashSet<>();
+    private Collection<VisualNode> getBlockSelection() {
+        Collection<VisualNode> result = new HashSet<>();
         RelationAlgorithm relationAlg = new RelationAlgorithm(getMathModel());
 
         final Framework framework = Framework.getInstance();
@@ -454,7 +455,7 @@ public class VisualSON extends AbstractVisualModel {
 
         int errorType = 0;
 
-        for (Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
+        for (VisualNode node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
             if ((node instanceof VisualCondition) || (node instanceof VisualEvent)) {
                 if (relationAlg.isFinal(((VisualComponent) node).getReferencedComponent())
                         || relationAlg.isInitial(((VisualComponent) node).getReferencedComponent())) {

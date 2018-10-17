@@ -3,10 +3,8 @@ package org.workcraft.plugins.policy;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.ShortName;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.SelectionHelper;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.dom.visual.VisualTransformableNode;
+import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.ConnectionTool;
@@ -65,9 +63,9 @@ public class VisualPolicyNet extends VisualPetriNet {
 
     @Override
     public VisualGroup groupSelection() {
-        ArrayList<Node> selected = new ArrayList<>();
-        ArrayList<Node> refSelected = new ArrayList<>();
-        for (Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
+        ArrayList<VisualNode> selected = new ArrayList<>();
+        ArrayList<MathNode> refSelected = new ArrayList<>();
+        for (VisualNode node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
             if (node instanceof VisualTransformableNode) {
                 selected.add(node);
                 if (node instanceof VisualComponent) {
@@ -84,7 +82,7 @@ public class VisualPolicyNet extends VisualPetriNet {
             curLocality.add(newLocality);
             curLocality.reparent(selected, newLocality);
 
-            ArrayList<Node> connectionsToLocality = new ArrayList<>();
+            ArrayList<VisualNode> connectionsToLocality = new ArrayList<>();
             for (VisualConnection connection : Hierarchy.getChildrenOfType(curLocality, VisualConnection.class)) {
                 if (Hierarchy.isDescendant(connection.getFirst(), newLocality) && Hierarchy.isDescendant(connection.getSecond(), newLocality)) {
                     connectionsToLocality.add(connection);
@@ -99,22 +97,22 @@ public class VisualPolicyNet extends VisualPetriNet {
     @Override
     public void ungroupSelection() {
         int count = 0;
-        for (Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
+        for (VisualNode node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
             if (node instanceof VisualLocality) {
                 count++;
             }
         }
         if (count == 1) {
-            ArrayList<Node> toSelect = new ArrayList<>();
-            Collection<Node> mathNodes = new ArrayList<>();
-            for (Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
+            ArrayList<VisualNode> toSelect = new ArrayList<>();
+            Collection<MathNode> mathNodes = new ArrayList<>();
+            for (VisualNode node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
                 if (node instanceof VisualLocality) {
                     VisualLocality locality = (VisualLocality) node;
-                    for (Node subNode : locality.unGroup()) {
+                    for (VisualNode subNode : locality.unGroup()) {
                         toSelect.add(subNode);
                     }
                     for (Node child : locality.getLocality().getChildren()) {
-                        mathNodes.add(child);
+                        mathNodes.add((MathNode) child);
                     }
                     locality.getLocality().reparent(mathNodes, ((VisualLocality) getCurrentLevel()).getLocality());
                     getMathModel().remove(locality.getLocality());

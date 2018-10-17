@@ -75,7 +75,7 @@ public class VisualCircuit extends AbstractVisualModel {
     }
 
     @Override
-    public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
+    public VisualConnection connect(VisualNode first, VisualNode second, MathConnection mConnection) throws InvalidConnectionException {
         validateConnection(first, second);
         if (first instanceof VisualConnection) {
             VisualConnection connection = (VisualConnection) first;

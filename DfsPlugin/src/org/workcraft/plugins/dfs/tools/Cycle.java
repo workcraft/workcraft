@@ -1,22 +1,10 @@
 package org.workcraft.plugins.dfs.tools;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
-
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.plugins.dfs.BinaryRegister;
-import org.workcraft.plugins.dfs.MathDelayNode;
-import org.workcraft.plugins.dfs.VisualBinaryRegister;
-import org.workcraft.plugins.dfs.VisualControlRegister;
-import org.workcraft.plugins.dfs.VisualDelayComponent;
-import org.workcraft.plugins.dfs.VisualDfs;
-import org.workcraft.plugins.dfs.VisualPopRegister;
-import org.workcraft.plugins.dfs.VisualPushRegister;
-import org.workcraft.plugins.dfs.VisualRegister;
+import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.plugins.dfs.*;
+
+import java.util.*;
 
 public class Cycle implements Comparable<Cycle> {
     // Right arrow symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
@@ -76,16 +64,16 @@ public class Cycle implements Comparable<Cycle> {
         return result;
     }
 
-    public Set<VisualPushRegister> getPushPreset(Node node) {
+    public Set<VisualPushRegister> getPushPreset(VisualNode node) {
         HashSet<VisualPushRegister> result = new HashSet<>();
-        HashSet<Node> visited = new HashSet<>();
-        Queue<Node> queue = new LinkedList<>();
+        HashSet<VisualNode> visited = new HashSet<>();
+        Queue<VisualNode> queue = new LinkedList<>();
         queue.add(node);
         while (!queue.isEmpty()) {
-            Node cur = queue.remove();
+            VisualNode cur = queue.remove();
             if (visited.contains(cur) || !components.contains(cur)) continue;
             visited.add(cur);
-            for (Node pred: dfs.getPreset(cur)) {
+            for (VisualNode pred: dfs.getPreset(cur)) {
                 if (!(pred instanceof VisualComponent)) continue;
                 if (pred instanceof VisualPushRegister) {
                     result.add((VisualPushRegister) pred);

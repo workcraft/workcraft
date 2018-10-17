@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
@@ -47,18 +48,19 @@ public class BSONCycleAlg extends ONCycleAlg {
                 int index = nodeIndex.get(nodes.get(i));
 
                 if (result[index] == null) {
-                    result[index] = new ArrayList<Integer>();
+                    result[index] = new ArrayList<>();
                 }
 
-                for (Node post: net.getPostset(nodes.get(index))) {
-                    if (nodes.contains(post) && net.getSONConnectionType(nodes.get(index), post) != Semantics.BHVLINE) {
+                MathNode node = (MathNode) nodes.get(index);
+                for (MathNode post: net.getPostset(node)) {
+                    if (nodes.contains(post) && net.getSONConnectionType(node, post) != Semantics.BHVLINE) {
                         result[index].add(nodeIndex.get(post));
 
                         //reverse direction for synchronous connection
-                        if (net.getSONConnectionType(nodes.get(index), post) == Semantics.SYNCLINE) {
+                        if (net.getSONConnectionType(node, post) == Semantics.SYNCLINE) {
                             int index2 = nodeIndex.get(post);
                             if (result[index2] == null) {
-                                result[index2] = new ArrayList<Integer>();
+                                result[index2] = new ArrayList<>();
                             }
                             result[index2].add(index);
                         }
@@ -85,7 +87,7 @@ public class BSONCycleAlg extends ONCycleAlg {
                     TransitionNode v1 = v[1];
                     int index = nodeIndex.get(v0);
                     if (result[index] == null) {
-                        result[index] = new ArrayList<Integer>();
+                        result[index] = new ArrayList<>();
                     }
                     result[index].add(nodeIndex.get(v1));
                 }

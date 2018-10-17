@@ -28,45 +28,43 @@ public class HitMan {
      * @param p2  The bottom-right corner of the rectangle
      * @return    The collection of nodes fitting completely inside the rectangle
      */
-    public static Collection<Node> hitBox(Container container, Point2D p1, Point2D p2) {
+    public static Collection<VisualNode> hitBox(Container container, Point2D p1, Point2D p2) {
         if (container instanceof Movable) {
             AffineTransform toLocal = Geometry.optimisticInverse(((Movable) container).getTransform());
             toLocal.transform(p1, p1);
             toLocal.transform(p2, p2);
         }
-        LinkedList<Node> result = new LinkedList<>();
+        LinkedList<VisualNode> result = new LinkedList<>();
         Rectangle2D rect = new Rectangle2D.Double(
                 Math.min(p1.getX(), p2.getX()),
                 Math.min(p1.getY(), p2.getY()),
                 Math.abs(p1.getX() - p2.getX()),
                 Math.abs(p1.getY() - p2.getY()));
 
-        for (Touchable node: Hierarchy.getChildrenOfType(container, Touchable.class)) {
-            if ((node instanceof Hidable) && ((Hidable) node).isHidden()) {
-                continue;
-            }
+        for (VisualNode node: Hierarchy.getChildrenOfType(container, VisualNode.class)) {
+            if (node.isHidden()) continue;
             if (p1.getX() <= p2.getX()) {
                 if (TouchableHelper.insideRectangle(node, rect)) {
-                    result.add((Node) node);
+                    result.add(node);
                 }
             } else {
                 if (TouchableHelper.touchesRectangle(node, rect)) {
-                    result.add((Node) node);
+                    result.add(node);
                 }
             }
         }
         return result;
     }
 
-    public static Node hitFirstInCurrentLevel(Point2D point, VisualModel model) {
+    public static VisualNode hitFirstInCurrentLevel(Point2D point, VisualModel model) {
         Container currentLevel = model.getCurrentLevel();
         AffineTransform at = TransformHelper.getTransform(model.getRoot(), currentLevel);
         Point2D pointInLocalSpace = at.transform(point, null);
         return hitFirstChild(pointInLocalSpace, currentLevel);
     }
 
-    public static Node hitFirstChild(Point2D point, Container container) {
-        Node node = HitMan.hitFirstChild(point, container, VisualTransformableNode.class);
+    public static VisualNode hitFirstChild(Point2D point, Container container) {
+        VisualNode node = HitMan.hitFirstChild(point, container, VisualTransformableNode.class);
         // Top priority to connection control points
         if (node instanceof ControlPoint) {
             return node;

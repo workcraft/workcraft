@@ -1,5 +1,15 @@
 package org.workcraft.plugins.interop;
 
+import org.workcraft.dom.Model;
+import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.exceptions.ModelValidationException;
+import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.interop.Exporter;
+import org.workcraft.plugins.layout.DotLayoutSettings;
+import org.workcraft.util.Hierarchy;
+
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -8,16 +18,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.exceptions.ModelValidationException;
-import org.workcraft.exceptions.SerialisationException;
-import org.workcraft.interop.Exporter;
-import org.workcraft.plugins.layout.DotLayoutSettings;
-import org.workcraft.util.Hierarchy;
 
 public class DotExporter implements Exporter {
 
@@ -77,8 +77,8 @@ public class DotExporter implements Exporter {
             Rectangle2D bb = component.getBoundingBoxInLocalSpace();
             if ((id != null) && (bb != null)) {
                 List<String> destinations = new ArrayList<>();
-                Set<Node> postset = visualModel.getPostset(component);
-                for (Node target : postset) {
+                Set<VisualNode> postset = visualModel.getPostset(component);
+                for (VisualNode target : postset) {
                     String targetId = visualModel.getNodeReference(target);
                     if (targetId != null) {
                         destinations.add(targetId);

@@ -1,6 +1,23 @@
 package org.workcraft.workspace;
 
-import java.awt.Toolkit;
+import org.workcraft.Framework;
+import org.workcraft.dom.Container;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualModelTransformer;
+import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.gui.FileFilters;
+import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.MainWindowActions;
+import org.workcraft.gui.workspace.Path;
+import org.workcraft.observation.*;
+import org.workcraft.plugins.shared.CommonDebugSettings;
+import org.workcraft.plugins.shared.CommonEditorSettings;
+import org.workcraft.util.DialogUtils;
+import org.workcraft.util.Hierarchy;
+
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.io.BufferedReader;
@@ -13,28 +30,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import org.workcraft.Framework;
-import org.workcraft.dom.Container;
-import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualModelTransformer;
-import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.gui.FileFilters;
-import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.MainWindowActions;
-import org.workcraft.gui.workspace.Path;
-import org.workcraft.observation.ModelModifiedEvent;
-import org.workcraft.observation.ObservableState;
-import org.workcraft.observation.ObservableStateImpl;
-import org.workcraft.observation.SelectionChangedEvent;
-import org.workcraft.observation.StateEvent;
-import org.workcraft.observation.StateObserver;
-import org.workcraft.plugins.shared.CommonDebugSettings;
-import org.workcraft.plugins.shared.CommonEditorSettings;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.Hierarchy;
 
 public class WorkspaceEntry implements ObservableState {
     private ModelEntry modelEntry = null;
@@ -347,16 +342,17 @@ public class WorkspaceEntry implements ObservableState {
             captureMemento();
             // Remember the current level, selected nodes, and then jump to the root level.
             Container currentLevel = model.getCurrentLevel();
-            Collection<Node> selectedNodes = new HashSet<>(model.getSelection());
+            Collection<VisualNode> selectedNodes = new HashSet<>(model.getSelection());
             model.setCurrentLevel(model.getRoot());
             // Starting from the root, delete irrelevant containers and ungroup the containers of the selected nodes.
             for (Node container: Hierarchy.getPath(currentLevel)) {
-                if (container == model.getRoot()) continue;
-                model.select(container);
-                model.selectInverse();
-                model.deleteSelection();
-                model.select(container);
-                model.ungroupSelection();
+                if ((container != model.getRoot()) && (container instanceof VisualNode)) {
+                    model.select((VisualNode) container);
+                    model.selectInverse();
+                    model.deleteSelection();
+                    model.select((VisualNode) container);
+                    model.ungroupSelection();
+                }
             }
             // Now the selected nodes should be at the root level; delete everything except the selected nodes.
             model.select(selectedNodes);

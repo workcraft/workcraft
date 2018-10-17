@@ -1,12 +1,8 @@
 package org.workcraft.plugins.son.elements;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
-import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
@@ -16,6 +12,10 @@ import org.workcraft.plugins.son.properties.EndTimePropertyDescriptor;
 import org.workcraft.plugins.son.properties.StartTimePropertyDescriptor;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.util.Hierarchy;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 @IdentifierPrefix("b")
 @VisualClass (org.workcraft.plugins.son.elements.VisualBlock.class)
@@ -31,8 +31,8 @@ public class Block extends PageNode implements TransitionNode, Time {
 
     private Color durationColor = Color.BLACK;
 
-    public Collection<Node> getComponents() {
-        ArrayList<Node> result = new ArrayList<>();
+    public Collection<MathNode> getComponents() {
+        ArrayList<MathNode> result = new ArrayList<>();
         result.addAll(getConditions());
         result.addAll(getEvents());
         return result;

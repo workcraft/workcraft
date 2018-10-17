@@ -1,13 +1,13 @@
 package org.workcraft.plugins.policy;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 public class VisualLocality extends VisualGroup {
     private Locality refLocality;
@@ -32,7 +32,7 @@ public class VisualLocality extends VisualGroup {
     }
 
     @Override
-    public void add(Collection<Node> nodes) {
+    public void add(Collection<? extends Node> nodes) {
         for (Node node : nodes) {
             this.add(node);
         }
@@ -51,7 +51,7 @@ public class VisualLocality extends VisualGroup {
         }
     }
 
-    private Collection<Node> filterRefNodesByLocality(Collection<Node> nodes, Locality locality) {
+    private Collection<Node> filterRefNodesByLocality(Collection<? extends Node> nodes, Locality locality) {
         Collection<Node> result = new ArrayList<>();
         for (Node node: nodes) {
             Node refNode = null;
@@ -68,7 +68,7 @@ public class VisualLocality extends VisualGroup {
     }
 
     @Override
-    public void reparent(Collection<Node> nodes, Container newParent) {
+    public void reparent(Collection<? extends Node> nodes, Container newParent) {
         if (newParent instanceof VisualLocality) {
             VisualLocality newLocality = (VisualLocality) newParent;
             refLocality.reparent(filterRefNodesByLocality(nodes, refLocality), newLocality.getLocality());
@@ -77,7 +77,7 @@ public class VisualLocality extends VisualGroup {
     }
 
     @Override
-    public void reparent(Collection<Node> nodes) {
+    public void reparent(Collection<? extends Node> nodes) {
         refLocality.reparent(filterRefNodesByLocality(nodes, null));
         super.reparent(nodes);
     }

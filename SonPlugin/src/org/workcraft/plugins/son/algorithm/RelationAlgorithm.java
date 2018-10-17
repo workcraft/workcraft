@@ -1,17 +1,18 @@
 package org.workcraft.plugins.son.algorithm;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.TransitionNode;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 
 public class RelationAlgorithm {
 
@@ -180,11 +181,11 @@ public class RelationAlgorithm {
      */
     public Collection<Condition> getPrePNCondition(Condition c) {
         Collection<Condition> result = new ArrayList<>();
-        for (Node pre : net.getPreset(c)) {
+        for (MathNode pre : net.getPreset(c)) {
             if (pre instanceof TransitionNode) {
-                if (net.getSONConnectionType(c, pre) == Semantics.PNLINE) {
-                    for (Node n2 : net.getPreset(pre)) {
-                        if ((n2 instanceof Condition) && net.getSONConnectionType(pre, n2) == Semantics.PNLINE) {
+                if (net.getSONConnectionType(c, (MathNode) pre) == Semantics.PNLINE) {
+                    for (MathNode n2 : net.getPreset((MathNode) pre)) {
+                        if ((n2 instanceof Condition) && net.getSONConnectionType((MathNode) pre, n2) == Semantics.PNLINE) {
                             result.add((Condition) n2);
                         }
                     }
@@ -200,10 +201,10 @@ public class RelationAlgorithm {
      */
     public Collection<Condition> getPostPNCondition(Condition c) {
         Collection<Condition> result = new ArrayList<>();
-        for (Node post : net.getPostset(c)) {
+        for (MathNode post : net.getPostset(c)) {
             if (post instanceof TransitionNode) {
                 if (net.getSONConnectionType(c, post) == Semantics.PNLINE) {
-                    for (Node n2 : net.getPostset(post)) {
+                    for (MathNode n2 : net.getPostset(post)) {
                         if ((n2 instanceof Condition) && net.getSONConnectionType(post, n2) == Semantics.PNLINE) {
                             result.add((Condition) n2);
                         }
@@ -221,11 +222,9 @@ public class RelationAlgorithm {
      */
     public Collection<TransitionNode> getPreAsynEvents(TransitionNode e) {
         Collection<TransitionNode> result = new ArrayList<>();
-        for (Node pre : net.getPreset(e)) {
-            if ((pre instanceof ChannelPlace) && net.getSONConnectionType(pre, e) == Semantics.ASYNLINE) {
-
-                Iterator<Node> it = net.getPreset(pre).iterator();
-
+        for (MathNode pre : net.getPreset((MathNode) e)) {
+            if ((pre instanceof ChannelPlace) && net.getSONConnectionType(pre, (MathNode) e) == Semantics.ASYNLINE) {
+                Iterator<MathNode> it = net.getPreset(pre).iterator();
                 while (it.hasNext()) {
                     result.add((TransitionNode) it.next());
                 }
@@ -240,11 +239,9 @@ public class RelationAlgorithm {
      */
     public Collection<TransitionNode> getPostAsynEvents(TransitionNode e) {
         Collection<TransitionNode> result = new ArrayList<>();
-        for (Node post : net.getPostset(e)) {
-            if ((post instanceof ChannelPlace) && net.getSONConnectionType(post, e) == Semantics.ASYNLINE) {
-
-                Iterator<Node> it = net.getPostset(post).iterator();
-
+        for (MathNode post : net.getPostset((MathNode) e)) {
+            if ((post instanceof ChannelPlace) && net.getSONConnectionType(post, (MathNode) e) == Semantics.ASYNLINE) {
+                Iterator<MathNode> it = net.getPostset(post).iterator();
                 while (it.hasNext()) {
                     result.add((TransitionNode) it.next());
                 }
@@ -260,27 +257,22 @@ public class RelationAlgorithm {
     public Collection<TransitionNode> getPreASynEvents(TransitionNode e) {
         Collection<TransitionNode> result = new ArrayList<>();
 
-        for (Node pre : net.getPreset(e)) {
+        for (MathNode pre : net.getPreset((MathNode) e)) {
             if (pre instanceof ChannelPlace) {
-
-                Iterator<Node> it = net.getPreset(pre).iterator();
-
+                Iterator<MathNode> it = net.getPreset(pre).iterator();
                 while (it.hasNext()) {
                     result.add((TransitionNode) it.next());
                 }
             }
         }
-        for (Node post : net.getPostset(e)) {
-            if ((post instanceof ChannelPlace) && net.getSONConnectionType(post, e) == Semantics.SYNCLINE) {
-
-                Iterator<Node> it = net.getPostset(post).iterator();
-
+        for (MathNode post : net.getPostset((MathNode) e)) {
+            if ((post instanceof ChannelPlace) && net.getSONConnectionType(post, (MathNode) e) == Semantics.SYNCLINE) {
+                Iterator<MathNode> it = net.getPostset(post).iterator();
                 while (it.hasNext()) {
                     result.add((TransitionNode) it.next());
                 }
             }
         }
-
         return result;
     }
 
@@ -288,30 +280,24 @@ public class RelationAlgorithm {
      * get all asynchronous and synchronous(Communication-SON) post-event for a
      * given event or block
      */
-    public Collection<TransitionNode> getPostASynEvents(TransitionNode node) {
+    public Collection<TransitionNode> getPostASynEvents(TransitionNode e) {
         Collection<TransitionNode> result = new ArrayList<>();
-
-        for (Node post : net.getPostset(node)) {
+        for (MathNode post : net.getPostset((MathNode) e)) {
             if (post instanceof ChannelPlace) {
-
-                Iterator<Node> it = net.getPostset(post).iterator();
-
+                Iterator<MathNode> it = net.getPostset(post).iterator();
                 while (it.hasNext()) {
                     result.add((TransitionNode) it.next());
                 }
             }
         }
-        for (Node pre : net.getPreset(node)) {
-            if (pre instanceof ChannelPlace && net.getSONConnectionType(pre, node) == Semantics.SYNCLINE) {
-
-                Iterator<Node> it = net.getPreset(pre).iterator();
-
+        for (MathNode pre : net.getPreset((MathNode) e)) {
+            if (pre instanceof ChannelPlace && net.getSONConnectionType(pre, (MathNode) e) == Semantics.SYNCLINE) {
+                Iterator<MathNode> it = net.getPreset(pre).iterator();
                 while (it.hasNext()) {
                     result.add((TransitionNode) it.next());
                 }
             }
         }
-
         return result;
     }
 
@@ -320,16 +306,14 @@ public class RelationAlgorithm {
      */
     public Collection<Condition> getPREset(TransitionNode e) {
         Collection<Condition> result = new ArrayList<>();
-        for (Node n : net.getPreset(e)) {
-            if (n instanceof Condition) {
-                result.add((Condition) n);
+        for (MathNode pre : net.getPreset((MathNode) e)) {
+            if (pre instanceof Condition) {
+                result.add((Condition) pre);
             }
-            if (n instanceof ChannelPlace) {
-
-                Iterator<Node> it = net.getPreset(n).iterator();
-
+            if (pre instanceof ChannelPlace) {
+                Iterator<MathNode> it = net.getPreset(pre).iterator();
                 while (it.hasNext()) {
-                    for (Node preCondition : net.getPreset((TransitionNode) it.next())) {
+                    for (MathNode preCondition : net.getPreset(it.next())) {
                         if (preCondition instanceof Condition) {
                             result.add((Condition) preCondition);
                         }
@@ -338,13 +322,11 @@ public class RelationAlgorithm {
             }
         }
 
-        for (Node n : net.getPostset(e)) {
-            if (n instanceof ChannelPlace && net.getSONConnectionType(e, n) == Semantics.SYNCLINE) {
-
-                Iterator<Node> it = net.getPostset(n).iterator();
-
+        for (MathNode post : net.getPostset((MathNode) e)) {
+            if (post instanceof ChannelPlace && net.getSONConnectionType((MathNode) e, post) == Semantics.SYNCLINE) {
+                Iterator<MathNode> it = net.getPostset(post).iterator();
                 while (it.hasNext()) {
-                    for (Node preCondition : net.getPreset((TransitionNode) it.next())) {
+                    for (Node preCondition : net.getPreset(it.next())) {
                         if (preCondition instanceof Condition) {
                             result.add((Condition) preCondition);
                         }
@@ -362,16 +344,14 @@ public class RelationAlgorithm {
     public Collection<Condition> getPOSTset(TransitionNode e) {
         Collection<Condition> result = new ArrayList<>();
 
-        for (Node n : net.getPostset(e)) {
-            if (n instanceof Condition) {
-                result.add((Condition) n);
+        for (MathNode post : net.getPostset((MathNode) e)) {
+            if (post instanceof Condition) {
+                result.add((Condition) post);
             }
-            if (n instanceof ChannelPlace) {
-
-                Iterator<Node> it = net.getPostset(n).iterator();
-
+            if (post instanceof ChannelPlace) {
+                Iterator<MathNode> it = net.getPostset(post).iterator();
                 while (it.hasNext()) {
-                    for (Node postCondition : net.getPostset((TransitionNode) it.next())) {
+                    for (Node postCondition : net.getPostset(it.next())) {
                         if (postCondition instanceof Condition) {
                             result.add((Condition) postCondition);
                         }
@@ -380,11 +360,9 @@ public class RelationAlgorithm {
             }
         }
 
-        for (Node n : net.getPreset(e)) {
-            if ((n instanceof ChannelPlace) && net.getSONConnectionType(e, n) == Semantics.SYNCLINE) {
-
-                Iterator<Node> it = net.getPreset(n).iterator();
-
+        for (MathNode pre : net.getPreset((MathNode) e)) {
+            if ((pre instanceof ChannelPlace) && net.getSONConnectionType((MathNode) e, pre) == Semantics.SYNCLINE) {
+                Iterator<MathNode> it = net.getPreset(pre).iterator();
                 while (it.hasNext()) {
                     for (Node postCondition : net.getPostset(it.next())) {
                         if (postCondition instanceof Condition) {
@@ -403,8 +381,8 @@ public class RelationAlgorithm {
      */
     public Collection<Node> getPrePNSet(Node node) {
         Collection<Node> result = new ArrayList<>();
-        for (Node n : net.getPreset(node)) {
-            if (net.getSONConnectionType(node, n) == Semantics.PNLINE) {
+        for (MathNode n : net.getPreset((MathNode) node)) {
+            if (net.getSONConnectionType((MathNode) node, n) == Semantics.PNLINE) {
                 result.add(n);
             }
         }
@@ -416,8 +394,8 @@ public class RelationAlgorithm {
      */
     public Collection<Node> getPostPNSet(Node node) {
         Collection<Node> result = new ArrayList<>();
-        for (Node n : net.getPostset(node)) {
-            if (net.getSONConnectionType(node, n) == Semantics.PNLINE) {
+        for (MathNode n : net.getPostset((MathNode) node)) {
+            if (net.getSONConnectionType((MathNode) node, n) == Semantics.PNLINE) {
                 result.add(n);
             }
         }
@@ -429,7 +407,7 @@ public class RelationAlgorithm {
      */
     public Collection<Condition> getPostBhvSet(Condition c) {
         Collection<Condition> result = new ArrayList<>();
-        for (Node n : net.getPostset(c)) {
+        for (MathNode n : net.getPostset(c)) {
             if (net.getSONConnectionType(c, n) == Semantics.BHVLINE) {
                 result.add((Condition) n);
             }
@@ -442,7 +420,7 @@ public class RelationAlgorithm {
      */
     public Collection<Condition> getPreBhvSet(Condition c) {
         Collection<Condition> result = new ArrayList<>();
-        for (Node n : net.getPreset(c)) {
+        for (MathNode n : net.getPreset(c)) {
             if (net.getSONConnectionType(c, n) == Semantics.BHVLINE) {
                 result.add((Condition) n);
             }
@@ -453,7 +431,7 @@ public class RelationAlgorithm {
     public Collection<Node> getPreset(Collection<Node> nodes) {
         Collection<Node> result = new HashSet<>();
         for (Node node : nodes) {
-            for (Node pre : net.getPreset(node)) {
+            for (MathNode pre : net.getPreset((MathNode) node)) {
                 if (!nodes.contains(pre)) {
                     result.add(pre);
                 }

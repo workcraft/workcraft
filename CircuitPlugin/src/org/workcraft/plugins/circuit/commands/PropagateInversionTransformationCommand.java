@@ -1,33 +1,22 @@
 package org.workcraft.plugins.circuit.commands;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.workcraft.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.utils.BooleanUtils;
-import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
-import org.workcraft.plugins.circuit.Contact;
-import org.workcraft.plugins.circuit.FunctionComponent;
-import org.workcraft.plugins.circuit.FunctionContact;
-import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.VisualFunctionComponent;
-import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PropagateInversionTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
@@ -51,12 +40,12 @@ public class PropagateInversionTransformationCommand extends AbstractTransformat
     }
 
     @Override
-    public boolean isApplicableTo(Node node) {
+    public boolean isApplicableTo(VisualNode node) {
         return (node instanceof VisualFunctionComponent) && ((VisualFunctionComponent) node).isGate();
     }
 
     @Override
-    public boolean isEnabled(ModelEntry me, Node node) {
+    public boolean isEnabled(ModelEntry me, VisualNode node) {
         return true;
     }
 
@@ -66,12 +55,12 @@ public class PropagateInversionTransformationCommand extends AbstractTransformat
     }
 
     @Override
-    public Collection<Node> collect(Model model) {
-        Collection<Node> components = new HashSet<>();
+    public Collection<VisualNode> collect(VisualModel model) {
+        Collection<VisualNode> components = new HashSet<>();
         if (model instanceof VisualCircuit) {
             VisualCircuit circuit = (VisualCircuit) model;
             components.addAll(Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualFunctionComponent.class));
-            Collection<Node> selection = circuit.getSelection();
+            Collection<VisualNode> selection = circuit.getSelection();
             if (!selection.isEmpty()) {
                 components.retainAll(selection);
             }
@@ -80,7 +69,7 @@ public class PropagateInversionTransformationCommand extends AbstractTransformat
     }
 
     @Override
-    public void transform(Model model, Node node) {
+    public void transform(VisualModel model, VisualNode node) {
         if ((model instanceof VisualCircuit) && (node instanceof VisualFunctionComponent)) {
             VisualCircuit circuit = (VisualCircuit) model;
             VisualFunctionComponent component = (VisualFunctionComponent) node;

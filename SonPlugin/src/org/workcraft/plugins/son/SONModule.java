@@ -2,7 +2,6 @@ package org.workcraft.plugins.son;
 
 import org.workcraft.*;
 import org.workcraft.plugins.son.commands.*;
-import org.workcraft.plugins.son.tools.TestTool;
 
 public class SONModule implements Module {
 
@@ -22,7 +21,6 @@ public class SONModule implements Module {
         pm.registerModelDescriptor(SONDescriptor.class);
         pm.registerSettings(SONSettings.class);
 
-        pm.registerCommand(TestTool.class);
         // Verification
         pm.registerCommand(StructurePropertyCheckerCommand.class);
         pm.registerCommand(ReachabilityCommand.class);

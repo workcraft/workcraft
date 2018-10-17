@@ -1,10 +1,10 @@
 package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.Container;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.MixUtils;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
@@ -28,7 +28,7 @@ public class GateUtils {
         circuit.reparent(container, circuit, circuit.getRoot(), Arrays.asList(component));
 
         LinkedList<VisualComponent> succComponents = new LinkedList<>();
-        for (Node succNode : circuit.getPostset(predContact)) {
+        for (VisualNode succNode : circuit.getPostset(predContact)) {
             if (succNode instanceof VisualComponent) {
                 succComponents.add((VisualComponent) succNode);
             }
@@ -65,8 +65,8 @@ public class GateUtils {
     public static void insertGateWithin(VisualCircuit circuit, VisualCircuitComponent component,
             VisualCircuitConnection connection) {
 
-        Node fromNode = connection.getFirst();
-        Node toNode = connection.getSecond();
+        VisualNode fromNode = connection.getFirst();
+        VisualNode toNode = connection.getSecond();
         Container container = Hierarchy.getNearestContainer(fromNode, toNode);
         // Step up in the hierarchy for a self-loop
         if (container instanceof VisualCircuitComponent) {

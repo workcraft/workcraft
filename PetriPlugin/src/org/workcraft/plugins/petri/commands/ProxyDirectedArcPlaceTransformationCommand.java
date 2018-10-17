@@ -1,20 +1,20 @@
 package org.workcraft.plugins.petri.commands;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
-import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.petri.PetriNetModel;
-import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 public class ProxyDirectedArcPlaceTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
@@ -34,7 +34,7 @@ public class ProxyDirectedArcPlaceTransformationCommand extends AbstractTransfor
     }
 
     @Override
-    public boolean isApplicableTo(Node node) {
+    public boolean isApplicableTo(VisualNode node) {
         boolean result = false;
         if (node instanceof VisualConnection) {
             VisualConnection connection = (VisualConnection) node;
@@ -50,7 +50,7 @@ public class ProxyDirectedArcPlaceTransformationCommand extends AbstractTransfor
     }
 
     @Override
-    public boolean isEnabled(ModelEntry me, Node node) {
+    public boolean isEnabled(ModelEntry me, VisualNode node) {
         return true;
     }
 
@@ -60,23 +60,19 @@ public class ProxyDirectedArcPlaceTransformationCommand extends AbstractTransfor
     }
 
     @Override
-    public Collection<Node> collect(Model model) {
-        Collection<Node> connections = new HashSet<>();
-        if (model instanceof VisualModel) {
-            VisualModel visualModel = (VisualModel) model;
-            connections.addAll(PetriNetUtils.getVisualProducingArcs(visualModel));
-            connections.addAll(PetriNetUtils.getVisualConsumingArcs(visualModel));
-            connections.retainAll(visualModel.getSelection());
-        }
+    public Collection<VisualNode> collect(VisualModel model) {
+        Collection<VisualNode> connections = new HashSet<>();
+        connections.addAll(PetriNetUtils.getVisualProducingArcs(model));
+        connections.addAll(PetriNetUtils.getVisualConsumingArcs(model));
+        connections.retainAll(model.getSelection());
         return connections;
     }
 
     @Override
-    public void transform(Model model, Node node) {
-        if ((model instanceof VisualModel) && (node instanceof VisualConnection)) {
-            VisualModel visualModel = (VisualModel) model;
+    public void transform(VisualModel model, VisualNode node) {
+        if (node instanceof VisualConnection) {
             VisualConnection connection = (VisualConnection) node;
-            PetriNetUtils.replicateConnectedPlace(visualModel, connection);
+            PetriNetUtils.replicateConnectedPlace(model, connection);
         }
     }
 

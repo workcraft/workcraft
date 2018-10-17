@@ -15,7 +15,7 @@ import org.workcraft.util.MultiSet;
 import java.util.Collection;
 import java.util.HashSet;
 
-public abstract class AbstractMathModel extends AbstractModel implements MathModel {
+public abstract class AbstractMathModel extends AbstractModel<MathNode, MathConnection> implements MathModel {
 
     public AbstractMathModel() {
         this(null);
@@ -98,7 +98,7 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
     }
 
     private void setNamespaceRecursively(HierarchyReferenceManager dstRefManager, Container dstContainer,
-            Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
+            Model srcModel, Container srcRoot, Collection<? extends MathNode> srcChildren) {
 
         // Collect the nodes to reparent - need to assign the whole tree to new providers
         Collection<Node> nodes = null;
@@ -133,7 +133,7 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
     }
 
     @Override
-    public boolean reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
+    public boolean reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<? extends MathNode> srcChildren) {
         if (srcModel == null) {
             srcModel = this;
         }

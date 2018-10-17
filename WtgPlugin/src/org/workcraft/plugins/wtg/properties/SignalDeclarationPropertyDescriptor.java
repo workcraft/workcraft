@@ -1,6 +1,6 @@
 package org.workcraft.plugins.wtg.properties;
 
-import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
@@ -130,9 +130,9 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
         Wtg wtg = (Wtg) visualWtg.getMathModel();
         Waveform waveform = visualWaveform.getReferencedWaveform();
         Signal.State result = null;
-        for (Node state : wtg.getPreset(waveform)) {
+        for (MathNode state : wtg.getPreset(waveform)) {
             if (state instanceof State) {
-                for (Node node : wtg.getPreset(state)) {
+                for (MathNode node : wtg.getPreset(state)) {
                     if (node instanceof Waveform) {
                         if (node == visualWaveform.getReferencedWaveform()) {
                             continue;

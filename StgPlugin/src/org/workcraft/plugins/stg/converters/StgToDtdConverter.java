@@ -1,20 +1,21 @@
 package org.workcraft.plugins.stg.converters;
 
-import java.awt.Color;
-import java.awt.geom.Point2D;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.tools.Trace;
 import org.workcraft.plugins.dtd.*;
 import org.workcraft.plugins.dtd.VisualDtd.SignalEvent;
-import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.util.Pair;
+
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 public class StgToDtdConverter {
     private static final double SIGNAL_OFFSET = 1.0;
@@ -78,7 +79,7 @@ public class StgToDtdConverter {
         HashMap<Node, HashSet<SignalEvent>> causeMap = new HashMap<>();
         double x = EVENT_OFFSET;
         for (String transitionRef: trace) {
-            Node node = stg.getNodeByReference(transitionRef);
+            MathNode node = (MathNode) stg.getNodeByReference(transitionRef);
             if (node == null) continue;
             boolean skip = true;
             if (node instanceof SignalTransition) {
@@ -95,7 +96,7 @@ public class StgToDtdConverter {
                         causeMap.remove(pred);
                     }
                 }
-                for (Node succ: stg.getPostset(node)) {
+                for (MathNode succ: stg.getPostset(node)) {
                     causeMap.put(succ, propagatedCauses);
                 }
             } else if (node instanceof SignalTransition) {

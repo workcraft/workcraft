@@ -1,18 +1,18 @@
 package org.workcraft.plugins.petri.commands;
 
+import org.workcraft.commands.AbstractStatisticsCommand;
+import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathNode;
+import org.workcraft.plugins.petri.PetriNet;
+import org.workcraft.plugins.petri.Place;
+import org.workcraft.plugins.petri.Transition;
+import org.workcraft.plugins.petri.utils.PetriNetChecker;
+import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.workcraft.commands.AbstractStatisticsCommand;
-import org.workcraft.dom.Connection;
-import org.workcraft.dom.Node;
-import org.workcraft.plugins.petri.PetriNet;
-import org.workcraft.plugins.petri.utils.PetriNetChecker;
-import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.petri.Transition;
-import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
 
 public class PetriStatisticsCommand extends AbstractStatisticsCommand {
 
@@ -32,11 +32,11 @@ public class PetriStatisticsCommand extends AbstractStatisticsCommand {
 
         Collection<Transition> transitions = petri.getTransitions();
         Collection<Place> places = petri.getPlaces();
-        Collection<Connection> connections = petri.getConnections();
+        Collection<MathConnection> connections = petri.getConnections();
 
         int producingArcCount = 0;
         int consumingArcCount = 0;
-        for (Connection connection: connections) {
+        for (MathConnection connection: connections) {
             if (connection.getFirst() instanceof Transition) {
                 producingArcCount++;
             }
@@ -54,8 +54,8 @@ public class PetriStatisticsCommand extends AbstractStatisticsCommand {
         int maxTransitionFanout = 0;
         int selfLoopCount = 0;
         for (Transition transition: transitions) {
-            Set<Node> transitionPreset = petri.getPreset(transition);
-            Set<Node> transitionPostset = petri.getPostset(transition);
+            Set<MathNode> transitionPreset = petri.getPreset(transition);
+            Set<MathNode> transitionPostset = petri.getPostset(transition);
             if (transitionPreset.size() > 1) {
                 joinCount++;
             }
@@ -77,7 +77,7 @@ public class PetriStatisticsCommand extends AbstractStatisticsCommand {
             if (transitionPostset.size() > maxTransitionFanout) {
                 maxTransitionFanout = transitionPostset.size();
             }
-            HashSet<Node> loopset = new HashSet<>(transitionPreset);
+            HashSet<MathNode> loopset = new HashSet<>(transitionPreset);
             loopset.retainAll(transitionPostset);
             selfLoopCount += loopset.size();
         }
@@ -92,8 +92,8 @@ public class PetriStatisticsCommand extends AbstractStatisticsCommand {
         int tokenCount = 0;
         int markedCount = 0;
         for (Place place: places) {
-            Set<Node> placePreset = petri.getPreset(place);
-            Set<Node> placePostset = petri.getPostset(place);
+            Set<MathNode> placePreset = petri.getPreset(place);
+            Set<MathNode> placePostset = petri.getPostset(place);
             if (placePreset.size() > 1) {
                 mergeCount++;
             }

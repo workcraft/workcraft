@@ -1,26 +1,7 @@
 package org.workcraft.plugins.son.tools;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-
-import javax.swing.Box;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JToggleButton;
-
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
@@ -37,14 +18,18 @@ import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.exception.InvalidStructureException;
 import org.workcraft.plugins.son.gui.SONGUI;
 import org.workcraft.plugins.son.gui.ScenarioTable;
-import org.workcraft.plugins.son.util.MarkingRef;
-import org.workcraft.plugins.son.util.Scenario;
-import org.workcraft.plugins.son.util.ScenarioRef;
-import org.workcraft.plugins.son.util.ScenarioSaveList;
-import org.workcraft.plugins.son.util.Step;
-import org.workcraft.plugins.son.util.StepRef;
+import org.workcraft.plugins.son.util.*;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class ScenarioGeneratorTool extends SONSimulationTool {
 
@@ -357,8 +342,8 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
     //get channel places in a synchronous step.
     private Collection<ChannelPlace> getSyncChannelPlaces(Step step) {
         HashSet<ChannelPlace> result = new HashSet<>();
-        for (TransitionNode e :step) {
-            for (SONConnection con : net.getSONConnections(e)) {
+        for (TransitionNode e : step) {
+            for (SONConnection con : net.getSONConnections((MathNode) e)) {
                 if (con.getSemantics() == Semantics.ASYNLINE || con.getSemantics() == Semantics.SYNCLINE) {
                     if (con.getFirst() == e) {
                         result.add((ChannelPlace) con.getSecond());

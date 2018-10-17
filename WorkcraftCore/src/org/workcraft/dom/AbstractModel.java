@@ -2,10 +2,10 @@ package org.workcraft.dom;
 
 import org.workcraft.annotations.Annotations;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
+import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.references.ReferenceManager;
-import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.util.Func;
@@ -15,11 +15,11 @@ import java.util.*;
 /**
  * A base class for all interpreted graph models.
  */
-public abstract class AbstractModel implements Model {
+public abstract class AbstractModel<N extends Node, C extends Connection>  implements Model<N, C> {
 
     private final Container root;
     private final ReferenceManager mgr;
-    private final NodeContextTracker nodeContextTracker = new NodeContextTracker();
+    private final NodeContextTracker<N, C> nodeContextTracker = new NodeContextTracker<>();
     public final boolean generatedRoot;
 
     private String title = "";
@@ -97,34 +97,34 @@ public abstract class AbstractModel implements Model {
     }
 
     @Override
-    public Set<Node> getPostset(Node component) {
-        return nodeContextTracker.getPostset(component);
+    public Set<N> getPostset(N node) {
+        return nodeContextTracker.getPostset(node);
     }
 
     @Override
-    public Set<Node> getPreset(Node node) {
+    public Set<N> getPreset(N node) {
         return nodeContextTracker.getPreset(node);
     }
 
     @Override
-    public Set<Connection> getConnections(Node node) {
+    public Set<C> getConnections(N node) {
         return nodeContextTracker.getConnections(node);
     }
 
     @Override
-    public boolean hasConnection(Node first, Node second) {
+    public boolean hasConnection(N first, N second) {
         return nodeContextTracker.hasConnection(first, second);
     }
 
     @Override
-    public Connection getConnection(Node first, Node second) {
+    public C getConnection(N first, N second) {
         return nodeContextTracker.getConnection(first, second);
     }
 
     @Override
-    public <T> Set<T> getPreset(Node node, Class<T> type) {
+    public <T> Set<T> getPreset(N node, Class<T> type) {
         Set<T> result = new HashSet<>();
-        for (Node pred: getPreset(node)) {
+        for (N pred: getPreset(node)) {
             try {
                 result.add(type.cast(pred));
             } catch (ClassCastException e) {
@@ -134,7 +134,7 @@ public abstract class AbstractModel implements Model {
     }
 
     @Override
-    public <T> Set<T> getPostset(Node node, Class<T> type) {
+    public <T> Set<T> getPostset(N node, Class<T> type) {
         Set<T> result = new HashSet<>();
         for (Node pred: getPostset(node)) {
             try {
@@ -146,16 +146,16 @@ public abstract class AbstractModel implements Model {
     }
 
     @Override
-    public <T> Set<T> getPreset(Node node, Class<T> type, Func<Node, Boolean> through) {
+    public <T> Set<T> getPreset(N node, Class<T> type, Func<Node, Boolean> through) {
         Set<T> result = new HashSet<>();
-        Set<Node> visited = new HashSet<>();
-        Queue<Node> queue = new LinkedList<>();
+        Set<N> visited = new HashSet<>();
+        Queue<N> queue = new LinkedList<>();
         queue.add(node);
         while (!queue.isEmpty()) {
-            Node cur = queue.remove();
+            N cur = queue.remove();
             if (visited.contains(cur)) continue;
             visited.add(cur);
-            for (Node pred: getPreset(cur)) {
+            for (N pred : getPreset(cur)) {
                 try {
                     result.add(type.cast(pred));
                 } catch (ClassCastException e) {
@@ -169,16 +169,16 @@ public abstract class AbstractModel implements Model {
     }
 
     @Override
-    public <T> Set<T> getPostset(Node node, Class<T> type, Func<Node, Boolean> through) {
+    public <T> Set<T> getPostset(N node, Class<T> type, Func<Node, Boolean> through) {
         Set<T> result = new HashSet<>();
-        Set<Node> visited = new HashSet<>();
-        Queue<Node> queue = new LinkedList<>();
+        Set<N> visited = new HashSet<>();
+        Queue<N> queue = new LinkedList<>();
         queue.add(node);
         while (!queue.isEmpty()) {
-            Node cur = queue.remove();
+            N cur = queue.remove();
             if (visited.contains(cur)) continue;
             visited.add(cur);
-            for (Node succ: getPostset(cur)) {
+            for (N succ: getPostset(cur)) {
                 try {
                     result.add(type.cast(succ));
                 } catch (ClassCastException e) {

@@ -1,25 +1,11 @@
 package org.workcraft.plugins.circuit.stg;
 
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.PageNode;
-import org.workcraft.dom.visual.BoundingBoxHelper;
-import org.workcraft.dom.visual.Positioning;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.dom.visual.*;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanOperations;
@@ -29,15 +15,8 @@ import org.workcraft.formula.dnf.Dnf;
 import org.workcraft.formula.dnf.DnfClause;
 import org.workcraft.formula.dnf.DnfGenerator;
 import org.workcraft.formula.utils.StringGenerator;
-import org.workcraft.plugins.circuit.CircuitSettings;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
-import org.workcraft.plugins.circuit.Contact;
-import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.VisualCircuitComponent;
-import org.workcraft.plugins.circuit.VisualCircuitConnection;
-import org.workcraft.plugins.circuit.VisualContact;
-import org.workcraft.plugins.circuit.VisualFunctionComponent;
-import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.*;
@@ -46,6 +25,10 @@ import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Pair;
 import org.workcraft.util.TwoWayMap;
+
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.*;
 
 public class CircuitToStgConverter {
 
@@ -199,12 +182,12 @@ public class CircuitToStgConverter {
                 }
             }
         }
-        for (Connection connection: circuit.getConnections(node)) {
+        for (VisualConnection connection: circuit.getConnections(node)) {
             if ((connection.getFirst() == node) && (connection instanceof VisualCircuitConnection)) {
-                result.put((VisualCircuitConnection) connection, driverAndInversion);
-                Node succNode = connection.getSecond();
-                if (!result.containsKey(succNode) && (succNode instanceof VisualNode)) {
-                    result.putAll(propagateDriverInversion((VisualNode) succNode, driverAndInversion));
+                result.put(connection, driverAndInversion);
+                VisualNode succNode = connection.getSecond();
+                if (!result.containsKey(succNode)) {
+                    result.putAll(propagateDriverInversion(succNode, driverAndInversion));
                 }
             }
         }
@@ -362,7 +345,7 @@ public class CircuitToStgConverter {
                     }
                 }
                 if (zeroPlace == null) {
-                    Connection connection = stg.getConnection(minusTransition, plusTransition);
+                    VisualConnection connection = stg.getConnection(minusTransition, plusTransition);
                     if (connection instanceof VisualImplicitPlaceArc) {
                         VisualImplicitPlaceArc implicitPlace = (VisualImplicitPlaceArc) connection;
                         zeroPlace = stg.makeExplicit(implicitPlace);
@@ -371,7 +354,7 @@ public class CircuitToStgConverter {
                     }
                 }
                 if (onePlace == null) {
-                    Connection connection = stg.getConnection(plusTransition, minusTransition);
+                    VisualConnection connection = stg.getConnection(plusTransition, minusTransition);
                     if (connection instanceof VisualImplicitPlaceArc) {
                         VisualImplicitPlaceArc implicitPlace = (VisualImplicitPlaceArc) connection;
                         onePlace = stg.makeExplicit(implicitPlace);
@@ -444,10 +427,10 @@ public class CircuitToStgConverter {
             if (result.contains(t1)) continue;
             for (VisualSignalTransition t2: transitions) {
                 if (t1 == t2) continue;
-                Set<Node> preset1 = stg.getPreset(t1);
-                Set<Node> postset1 = stg.getPostset(t1);
-                Set<Node> preset2 = stg.getPreset(t2);
-                Set<Node> postset2 = stg.getPostset(t2);
+                Set<VisualNode> preset1 = stg.getPreset(t1);
+                Set<VisualNode> postset1 = stg.getPostset(t1);
+                Set<VisualNode> preset2 = stg.getPreset(t2);
+                Set<VisualNode> postset2 = stg.getPostset(t2);
                 if (preset1.equals(preset2) && postset1.equals(postset2)) {
                     result.add(t2);
                 }
@@ -561,7 +544,7 @@ public class CircuitToStgConverter {
             for (VisualContact driver: drivers) {
                 SignalStg signalStg = driverToStgMap.getValue(driver);
                 if (signalStg != null) {
-                    Collection<Node> nodes = signalStg.getAllNodes();
+                    Collection<VisualNode> nodes = signalStg.getAllNodes();
                     Container container = Hierarchy.getNearestContainer(nodes);
                     stg.setCurrentLevel(container);
                     stg.select(nodes);

@@ -1,27 +1,22 @@
 package org.workcraft.plugins.dfs.serialisation;
 
+import org.workcraft.Info;
+import org.workcraft.dom.Model;
+import org.workcraft.dom.math.MathNode;
+import org.workcraft.exceptions.ArgumentException;
+import org.workcraft.plugins.dfs.*;
+import org.workcraft.plugins.dfs.interop.VerilogFormat;
+import org.workcraft.serialisation.ModelSerialiser;
+import org.workcraft.serialisation.ReferenceProducer;
+import org.workcraft.util.LogUtils;
+import org.workcraft.util.Pair;
+
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-
-import org.workcraft.Info;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
-import org.workcraft.exceptions.ArgumentException;
-import org.workcraft.plugins.dfs.ControlRegister;
-import org.workcraft.plugins.dfs.CounterflowRegister;
-import org.workcraft.plugins.dfs.Dfs;
-import org.workcraft.plugins.dfs.PopRegister;
-import org.workcraft.plugins.dfs.PushRegister;
-import org.workcraft.plugins.dfs.Register;
-import org.workcraft.plugins.dfs.interop.VerilogFormat;
-import org.workcraft.serialisation.ModelSerialiser;
-import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.util.LogUtils;
-import org.workcraft.util.Pair;
 
 public class VerilogSerialiser implements ModelSerialiser {
 
@@ -84,7 +79,7 @@ public class VerilogSerialiser implements ModelSerialiser {
             LogUtils.logWarning("The top module does not have a name. Exporting as '" + topName + "' module.");
         }
         ArrayList<Pair<String, Boolean>> ports = new ArrayList<>();
-        for (Node node: dfs.getAllNodes()) {
+        for (MathNode node: dfs.getAllNodes()) {
             String ref = dfs.getNodeReference(node);
             if (dfs.getPreset(node).isEmpty()) {
                 ports.add(new Pair<>(PREFIX_IN + ref, false));
@@ -93,7 +88,7 @@ public class VerilogSerialiser implements ModelSerialiser {
                 ports.add(new Pair<>(PREFIX_OUT + ref, true));
             }
         }
-        for (Node node: dfs.getAllRegisters()) {
+        for (MathNode node: dfs.getAllRegisters()) {
             String ref = dfs.getNodeReference(node);
             if (dfs.getRPreset(node).isEmpty()) {
                 ports.add(new Pair<>(PREFIX_RI + ref, false));
@@ -129,22 +124,22 @@ public class VerilogSerialiser implements ModelSerialiser {
     }
 
     private void writeInstances(PrintWriter out, Dfs dfs) {
-        HashSet<Node> logicNodes = new HashSet<>();
+        HashSet<MathNode> logicNodes = new HashSet<>();
         logicNodes.addAll(dfs.getLogics());
         logicNodes.addAll(dfs.getCounterflowLogics());
-        for (Node node: logicNodes) {
+        for (MathNode node: logicNodes) {
             writeInstance(out, dfs, node);
         }
-        for (Node node: dfs.getAllRegisters()) {
+        for (MathNode node: dfs.getAllRegisters()) {
             writeInstance(out, dfs, node);
             writeCelementPred(out, dfs, node);
             writeCelementSucc(out, dfs, node);
         }
     }
 
-    private void writeInstance(PrintWriter out, Dfs dfs, Node node) {
-        Set<Node> preset = dfs.getPreset(node);
-        Set<Node> postset = dfs.getPostset(node);
+    private void writeInstance(PrintWriter out, Dfs dfs, MathNode node) {
+        Set<MathNode> preset = dfs.getPreset(node);
+        Set<MathNode> postset = dfs.getPostset(node);
         String ref = dfs.getNodeReference(node);
         String instanceName = PREFIX_INST + ref;
         String className = node.getClass().getSimpleName().toUpperCase();
@@ -160,7 +155,7 @@ public class VerilogSerialiser implements ModelSerialiser {
             writeContact(out, inContactName, inWireName, isFirstContact);
             isFirstContact = false;
         }
-        for (Node predNode: preset) {
+        for (MathNode predNode: preset) {
             String predRef = dfs.getNodeReference(predNode);
             String inWireName = PREFIX_WIRE + predRef + SEPARATOR + ref;
             String inContactName = NAME_IN + inIndex++;
@@ -174,7 +169,7 @@ public class VerilogSerialiser implements ModelSerialiser {
             writeContact(out, outContactName, outWireName, isFirstContact);
             isFirstContact = false;
         }
-        for (Node succNode: postset) {
+        for (MathNode succNode: postset) {
             String succRef = dfs.getNodeReference(succNode);
             String outWireName = PREFIX_WIRE + ref + SEPARATOR + succRef;
             String outContactName = NAME_OUT + outIndex++;
@@ -202,15 +197,15 @@ public class VerilogSerialiser implements ModelSerialiser {
         out.write("." + contactName + "(" + wireName + ")");
     }
 
-    private void writeCelementPred(PrintWriter out, Dfs dfs, Node node) {
+    private void writeCelementPred(PrintWriter out, Dfs dfs, MathNode node) {
         ArrayList<String> inWireNames = new ArrayList<>();
-        Set<Node> rPreset = dfs.getRPreset(node);
+        Set<MathNode> rPreset = dfs.getRPreset(node);
         if (rPreset.isEmpty()) {
             String ref = dfs.getNodeReference(node);
             String inWireName = PREFIX_RI + ref;
             inWireNames.add(inWireName);
         }
-        for (Node predNode: rPreset) {
+        for (MathNode predNode: rPreset) {
             String predRef = dfs.getNodeReference(predNode);
             String inWireName = PREFIX_WIRE + PREFIX_RO + predRef;
             inWireNames.add(inWireName);
@@ -221,15 +216,15 @@ public class VerilogSerialiser implements ModelSerialiser {
         writeCelement(out, instanceName, inWireNames, outWireName);
     }
 
-    private void writeCelementSucc(PrintWriter out, Dfs dfs, Node node) {
+    private void writeCelementSucc(PrintWriter out, Dfs dfs, MathNode node) {
         ArrayList<String> inWireNames = new ArrayList<>();
-        Set<Node> rPostset = dfs.getRPostset(node);
+        Set<MathNode> rPostset = dfs.getRPostset(node);
         if (rPostset.isEmpty()) {
             String ref = dfs.getNodeReference(node);
             String inWireName = PREFIX_AO + ref;
             inWireNames.add(inWireName);
         }
-        for (Node succNode: rPostset) {
+        for (MathNode succNode: rPostset) {
             String succRef = dfs.getNodeReference(succNode);
             String inWireName = PREFIX_WIRE + PREFIX_AI + succRef;
             inWireNames.add(inWireName);

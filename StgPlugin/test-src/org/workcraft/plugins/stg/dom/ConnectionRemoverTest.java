@@ -1,15 +1,16 @@
 package org.workcraft.plugins.stg.dom;
 
-import java.util.LinkedList;
-
 import org.junit.Test;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Dependent;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualStg;
+
+import java.util.LinkedList;
 
 public class ConnectionRemoverTest {
 
@@ -30,15 +31,17 @@ public class ConnectionRemoverTest {
 
         VisualStg vstg = new VisualStg(stg);
 
-        LinkedList<Node> toDelete = new LinkedList<>();
-        LinkedList<Node> toDeleteThen = new LinkedList<>();
+        LinkedList<VisualNode> toDelete = new LinkedList<>();
+        LinkedList<VisualNode> toDeleteThen = new LinkedList<>();
 
         for (Node n : vstg.getRoot().getChildren()) {
-            Dependent dn = (Dependent) n;
-            if (!dn.getMathReferences().contains(t1)) {
-                toDelete.add(n);
-            } else {
-                toDeleteThen.add(n);
+            if ((n instanceof Dependent) && (n instanceof VisualNode)) {
+                Dependent dn = (Dependent) n;
+                if (!dn.getMathReferences().contains(t1)) {
+                    toDelete.add((VisualNode) n);
+                } else {
+                    toDeleteThen.add((VisualNode) n);
+                }
             }
         }
 

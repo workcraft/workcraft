@@ -1,9 +1,9 @@
 package org.workcraft.plugins.petri;
 
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
+import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.serialisation.References;
@@ -59,8 +59,8 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
     }
 
     @Override
-    public final Collection<Connection> getConnections() {
-        return Hierarchy.getDescendantsOfType(getRoot(), Connection.class);
+    public final Collection<MathConnection> getConnections() {
+        return Hierarchy.getDescendantsOfType(getRoot(), MathConnection.class);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
     public static final boolean isUnfireEnabled(PetriNetModel net, Transition t) {
         // gather number of connections for each post-place
         Map<Place, Integer> map = new HashMap<>();
-        for (Connection c: net.getConnections(t)) {
+        for (MathConnection c: net.getConnections(t)) {
             if (c.getFirst() == t) {
                 if (map.containsKey(c.getSecond())) {
                     map.put((Place) c.getSecond(), map.get(c.getSecond()) + 1);
@@ -96,7 +96,7 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
     public static final boolean isEnabled(PetriNetModel net, Transition t) {
         // gather number of connections for each pre-place
         Map<Place, Integer> map = new HashMap<>();
-        for (Connection c: net.getConnections(t)) {
+        for (MathConnection c: net.getConnections(t)) {
             if (c.getSecond() == t) {
                 Place p = (Place) c.getFirst();
                 if (map.containsKey(p)) {
@@ -130,13 +130,13 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
         // (the transition must be "unfireble")
 
         // first consume tokens and then produce tokens (to avoid extra capacity)
-        for (Connection c : net.getConnections(t)) {
+        for (MathConnection c : net.getConnections(t)) {
             if (t == c.getFirst()) {
                 Place to = (Place) c.getSecond();
                 to.setTokens(to.getTokens() - 1);
             }
         }
-        for (Connection c : net.getConnections(t)) {
+        for (MathConnection c : net.getConnections(t)) {
             if (t == c.getSecond()) {
                 Place from = (Place) c.getFirst();
                 from.setTokens(from.getTokens() + 1);
@@ -147,13 +147,13 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
     public static final void fire(PetriNetModel net, Transition t) {
         if (net.isEnabled(t)) {
             // first consume tokens and then produce tokens (to avoid extra capacity)
-            for (Connection c : net.getConnections(t)) {
+            for (MathConnection c : net.getConnections(t)) {
                 if (t == c.getSecond()) {
                     Place from = (Place) c.getFirst();
                     from.setTokens(from.getTokens() - 1);
                 }
             }
-            for (Connection c : net.getConnections(t)) {
+            for (MathConnection c : net.getConnections(t)) {
                 if (t == c.getFirst()) {
                     Place to = (Place) c.getSecond();
                     to.setTokens(to.getTokens() + 1);

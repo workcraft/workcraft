@@ -569,7 +569,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
     }
 
     @Override
-    public void add(Collection<Node> nodes) {
+    public void add(Collection<? extends Node> nodes) {
         groupImpl.add(nodes);
         for (Node node : nodes) {
             if (node instanceof VisualContact) {
@@ -579,19 +579,19 @@ public class VisualCircuitComponent extends VisualComponent implements Container
     }
 
     @Override
-    public void remove(Collection<Node> nodes) {
+    public void remove(Collection<? extends Node> nodes) {
         for (Node n : nodes) {
             remove(n);
         }
     }
 
     @Override
-    public void reparent(Collection<Node> nodes, Container newParent) {
+    public void reparent(Collection<? extends Node> nodes, Container newParent) {
         groupImpl.reparent(nodes, newParent);
     }
 
     @Override
-    public void reparent(Collection<Node> nodes) {
+    public void reparent(Collection<? extends Node> nodes) {
         groupImpl.reparent(nodes);
     }
 

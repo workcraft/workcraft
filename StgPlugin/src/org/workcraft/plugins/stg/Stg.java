@@ -1,7 +1,6 @@
 package org.workcraft.plugins.stg;
 
 import org.workcraft.annotations.VisualClass;
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
@@ -127,8 +126,8 @@ public class Stg extends AbstractMathModel implements StgModel {
     }
 
     @Override
-    public final Collection<Connection> getConnections() {
-        return Hierarchy.getDescendantsOfType(getRoot(), Connection.class);
+    public final Collection<MathConnection> getConnections() {
+        return Hierarchy.getDescendantsOfType(getRoot(), MathConnection.class);
     }
 
     @Override
@@ -325,9 +324,10 @@ public class Stg extends AbstractMathModel implements StgModel {
     @Override
     public String getNodeReference(NamespaceProvider provider, Node node) {
         if (node instanceof StgPlace) {
-            if (((StgPlace) node).isImplicit()) {
-                Set<Node> preset = getPreset(node);
-                Set<Node> postset = getPostset(node);
+            StgPlace place = (StgPlace) node;
+            if (place.isImplicit()) {
+                Set<MathNode> preset = getPreset(place);
+                Set<MathNode> postset = getPostset(place);
                 if (!(preset.size() == 1 && postset.size() == 1)) {
                     throw new RuntimeException("An implicit place must have one transition in its preset and one transition in its postset.");
                 }
@@ -343,13 +343,13 @@ public class Stg extends AbstractMathModel implements StgModel {
     public Node getNodeByReference(NamespaceProvider provider, String reference) {
         Pair<String, String> implicitPlaceTransitions = LabelParser.parseImplicitPlaceReference(reference);
         if (implicitPlaceTransitions != null) {
-            Node t1 = getReferenceManager().getNodeByReference(provider, implicitPlaceTransitions.getFirst());
-
-            Node t2 = getReferenceManager().getNodeByReference(provider, implicitPlaceTransitions.getSecond());
-            if ((t1 != null) && (t2 != null)) {
-                Set<Node> implicitPlaceCandidates = SetUtils.intersection(getPreset(t2), getPostset(t1));
-
-                for (Node node: implicitPlaceCandidates) {
+            Node predNode = getReferenceManager().getNodeByReference(provider, implicitPlaceTransitions.getFirst());
+            Node succNode = getReferenceManager().getNodeByReference(provider, implicitPlaceTransitions.getSecond());
+            if ((predNode instanceof Transition) && (succNode instanceof  Transition)) {
+                Set<MathNode> preset = getPreset((Transition) predNode);
+                Set<MathNode> postset = getPostset((Transition) succNode);
+                Set<MathNode> implicitPlaceCandidates = SetUtils.intersection(preset, postset);
+                for (MathNode node: implicitPlaceCandidates) {
                     if ((node instanceof StgPlace) && ((StgPlace) node).isImplicit()) {
                         return node;
                     }
@@ -423,7 +423,7 @@ public class Stg extends AbstractMathModel implements StgModel {
     }
 
     @Override
-    public boolean reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
+    public boolean reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<? extends MathNode> srcChildren) {
         if (srcModel == null) {
             srcModel = this;
         }
@@ -437,7 +437,7 @@ public class Stg extends AbstractMathModel implements StgModel {
             dstProvider = getReferenceManager().getNamespaceProvider(dstContainer);
         }
         NameManager dstNameManager = getReferenceManager().getNameManager(dstProvider);
-        for (Node srcChild: srcChildren) {
+        for (MathNode srcChild: srcChildren) {
             if (srcChild instanceof SignalTransition) {
                 SignalTransition srcTransition = (SignalTransition) srcChild;
                 String signalName = srcTransition.getSignalName();

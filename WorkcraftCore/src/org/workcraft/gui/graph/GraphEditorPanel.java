@@ -1,60 +1,14 @@
 package org.workcraft.gui.graph;
 
-import java.awt.BasicStroke;
-import java.awt.BorderLayout;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.RenderingHints;
-import java.awt.Stroke;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
-
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.BoundingBoxHelper;
-import org.workcraft.dom.visual.Dependent;
-import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.dom.visual.Touchable;
-import org.workcraft.dom.visual.TransformHelper;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
-import org.workcraft.gui.DesktopApi;
-import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.MainWindowActions;
-import org.workcraft.gui.Overlay;
-import org.workcraft.gui.PropertyEditorWindow;
-import org.workcraft.gui.ToolControlsWindow;
-import org.workcraft.gui.Toolbox;
+import org.workcraft.gui.*;
 import org.workcraft.gui.actions.ActionButton;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
@@ -67,6 +21,16 @@ import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import javax.swing.Timer;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 public class GraphEditorPanel extends JPanel implements StateObserver, GraphEditor {
 
@@ -475,7 +439,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         return properties;
     }
 
-    private ModelProperties getSelectionProperties(Collection<Node> nodes) {
+    private ModelProperties getSelectionProperties(Collection<? extends VisualNode> nodes) {
         ModelProperties allProperties = new ModelProperties();
         for (Node node: nodes) {
             Properties nodeProperties = getNodeProperties(node);
@@ -519,7 +483,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             title += " [" + TITLE_SUFFIX_TEMPLATE + "]";
         } else {
             final VisualModel model = getModel();
-            final Collection<Node> selection = model.getSelection();
+            final Collection<? extends VisualNode> selection = model.getSelection();
             if (selection.size() == 0) {
                 properties = getModelProperties();
                 title += " [" + TITLE_SUFFIX_MODEL + "]";

@@ -25,7 +25,7 @@ public class VisualModelTests {
         }
 
         @Override
-        public boolean reparent(Container targetContainer, Model sourceModel, Container sourceRoot, Collection<Node> sourceChildren) {
+        public boolean reparent(Container targetContainer, Model sourceModel, Container sourceRoot, Collection<? extends MathNode> sourceChildren) {
             return true;
         }
 
@@ -52,11 +52,11 @@ public class VisualModelTests {
         }
 
         @Override
-        public void validateConnection(Node first, Node second) throws InvalidConnectionException {
+        public void validateConnection(VisualNode first, VisualNode second) throws InvalidConnectionException {
         }
 
         @Override
-        public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
+        public VisualConnection connect(VisualNode first, VisualNode second, MathConnection mConnection) throws InvalidConnectionException {
             return null;
         }
     }
@@ -561,7 +561,7 @@ public class VisualModelTests {
         Assert.assertEquals(0, boxHitTest(model, new Rectangle2D.Double(-0.01, 4.99, 1.02, 1.02)).size());
     }
 
-    private Collection<Node> boxHitTest(VisualModel model, Rectangle2D.Double rect) {
+    private Collection<VisualNode> boxHitTest(VisualModel model, Rectangle2D.Double rect) {
         Point2D.Double p1 = new Point2D.Double(rect.getMinX(), rect.getMinY());
         Point2D.Double p2 = new Point2D.Double(rect.getMaxX(), rect.getMaxY());
         return model.hitBox(p1, p2);
