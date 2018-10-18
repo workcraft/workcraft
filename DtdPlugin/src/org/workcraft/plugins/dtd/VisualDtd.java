@@ -367,13 +367,6 @@ public class VisualDtd extends AbstractVisualModel {
         if (direction == null) {
             Signal.State state = DtdUtils.getNextState(event.getReferencedSignalEvent());
             direction = DtdUtils.getNextDirection(state);
-        } else {
-            if (event instanceof VisualEntryEvent) {
-                Signal.State previousState = DtdUtils.getPreviousState(direction);
-                if (previousState != null) {
-                    signal.setInitialState(previousState);
-                }
-            }
         }
         VisualTransitionEvent edge = createVisualTransition(signal, direction);
         double x = signal.getX();
