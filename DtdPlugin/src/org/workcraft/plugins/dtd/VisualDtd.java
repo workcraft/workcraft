@@ -5,6 +5,7 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
@@ -175,8 +176,8 @@ public class VisualDtd extends AbstractVisualModel {
 
         VisualComponent v1 = (VisualComponent) first;
         VisualComponent v2 = (VisualComponent) second;
-        Node m1 = v1.getReferencedComponent();
-        Node m2 = v2.getReferencedComponent();
+        MathNode m1 = v1.getReferencedComponent();
+        MathNode m2 = v2.getReferencedComponent();
 
         if ((v1 instanceof VisualTransitionEvent) && (v2 instanceof VisualTransitionEvent)) {
             if (v1.getX() > v2.getX() - DtdSettings.getTransitionSeparation()) {

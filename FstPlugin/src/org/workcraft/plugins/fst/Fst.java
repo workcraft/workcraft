@@ -5,13 +5,11 @@ import org.workcraft.dom.Node;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.observation.StateEvent;
-import org.workcraft.observation.StateSupervisor;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.Symbol;
+import org.workcraft.plugins.fst.observers.SignalConsistencySupervisor;
 import org.workcraft.plugins.fst.properties.DirectionPropertyDescriptor;
 import org.workcraft.plugins.fst.properties.EventSignalPropertyDescriptor;
 import org.workcraft.plugins.fst.properties.SignalTypePropertyDescriptor;
@@ -24,28 +22,13 @@ import java.util.LinkedList;
 
 public class Fst extends Fsm {
 
-    private final class StateSupervisorExtension extends StateSupervisor {
-        @Override
-        public void handleEvent(StateEvent e) {
-            if (e instanceof PropertyChangedEvent) {
-                PropertyChangedEvent pce = (PropertyChangedEvent) e;
-                Object sender = e.getSender();
-                if ((sender instanceof Signal) && pce.getPropertyName().equals(Signal.PROPERTY_TYPE)) {
-                    for (Event event: getEvents((Signal) sender)) {
-                        event.sendNotification(new PropertyChangedEvent(event, Signal.PROPERTY_TYPE));
-                    }
-                }
-            }
-        }
-    }
-
     public Fst() {
         this(null, null);
     }
 
     public Fst(Container root, References refs) {
         super(root, refs);
-        new StateSupervisorExtension().attach(getRoot());
+        new SignalConsistencySupervisor(this).attach(getRoot());
     }
 
     @Override

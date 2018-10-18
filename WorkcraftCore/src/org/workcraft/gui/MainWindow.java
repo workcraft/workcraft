@@ -900,7 +900,7 @@ public class MainWindow extends JFrame {
                 pushRecentFile(file.getPath(), true);
                 setLastDirectory(file);
             } catch (DeserialisationException e) {
-                DialogUtils.showError("A problem was encountered while trying to load '" + file.getPath() + "'.");
+                DialogUtils.showError("A problem was encountered while trying to load '" + file.getPath() + "'.\n" + e.getMessage());
                 ExceptionUtils.printCause(e);
             }
         }
@@ -932,7 +932,7 @@ public class MainWindow extends JFrame {
                 WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
                 framework.mergeWork(we, file);
             } catch (DeserialisationException e) {
-                DialogUtils.showError("A problem was encountered while trying to merge '" + file.getPath() + "'.");
+                DialogUtils.showError("A problem was encountered while trying to merge '" + file.getPath() + "'.\n" + e.getMessage());
                 ExceptionUtils.printCause(e);
             }
         }

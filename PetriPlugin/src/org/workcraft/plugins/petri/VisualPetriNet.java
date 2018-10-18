@@ -122,11 +122,11 @@ public class VisualPetriNet extends AbstractVisualModel {
         VisualNode place = null;
         VisualNode transition = null;
         if (first instanceof VisualTransition) {
-            place = (VisualNode) second;
-            transition = (VisualNode) first;
+            place = second;
+            transition = first;
         } else if (second instanceof VisualTransition) {
-            place = (VisualNode) first;
-            transition = (VisualNode) second;
+            place = first;
+            transition = second;
         }
         VisualConnection connection = null;
         if ((place != null) && (transition != null)) {

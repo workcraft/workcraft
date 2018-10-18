@@ -23,6 +23,7 @@ import org.workcraft.plugins.son.properties.StartTimePropertyDescriptor;
 import org.workcraft.plugins.son.util.Scenario;
 import org.workcraft.plugins.son.util.ScenarioRef;
 import org.workcraft.plugins.son.util.ScenarioSaveList;
+import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
 import javax.swing.*;
@@ -33,6 +34,14 @@ import java.util.HashSet;
 
 @VisualClass(org.workcraft.plugins.son.VisualSON.class)
 public class SON extends AbstractMathModel {
+
+    public SON() {
+        this(null, null);
+    }
+
+    public SON(Container root, References refs) {
+        super(root, refs);
+    }
 
     public final Condition createCondition(String name, Container container) {
         if (container == null) {
@@ -51,7 +60,7 @@ public class SON extends AbstractMathModel {
             throw new InvalidConnectionException("Duplicate Connections" + getNodeReference(first) + " " + getNodeReference(second));
         }
 
-        SONConnection con = new SONConnection((MathNode) first, (MathNode) second, semantics);
+        SONConnection con = new SONConnection(first, second, semantics);
         Hierarchy.getNearestContainer(first, second).add(con);
 
         return con;
@@ -566,4 +575,5 @@ public class SON extends AbstractMathModel {
 
         return properties;
     }
+
 }

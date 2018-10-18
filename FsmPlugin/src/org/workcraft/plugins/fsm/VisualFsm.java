@@ -10,9 +10,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.*;
-import org.workcraft.observation.HierarchyEvent;
-import org.workcraft.observation.HierarchySupervisor;
-import org.workcraft.observation.NodesAddingEvent;
+import org.workcraft.plugins.fsm.observers.FirstStateSupervisor;
 import org.workcraft.plugins.fsm.tools.FsmSimulationTool;
 import org.workcraft.util.Hierarchy;
 
@@ -30,22 +28,7 @@ public class VisualFsm extends AbstractVisualModel {
     public VisualFsm(Fsm model, VisualGroup root) {
         super(model, root);
         setGraphEditorTools();
-        // Make the first created state initial
-        new HierarchySupervisor() {
-            @Override
-            public void handleEvent(HierarchyEvent e) {
-                if (e instanceof NodesAddingEvent) {
-                    Collection<VisualState> existingStates = Hierarchy.getChildrenOfType(getRoot(), VisualState.class);
-                    if (existingStates.isEmpty()) {
-                        Collection<VisualState> newStates = Hierarchy.filterNodesByType(e.getAffectedNodes(), VisualState.class);
-                        if (!newStates.isEmpty()) {
-                            VisualState state = newStates.iterator().next();
-                            state.getReferencedState().setInitial(true);
-                        }
-                    }
-                }
-            }
-        }.attach(getRoot());
+        new FirstStateSupervisor().attach(getRoot());
     }
 
     private void setGraphEditorTools() {

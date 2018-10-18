@@ -19,12 +19,17 @@ import java.util.HashSet;
 public class PolicyNet extends PetriNet implements PolicyNetModel {
 
     public PolicyNet() {
-        this(new Locality(), null);
+        this(null, null);
     }
 
     public PolicyNet(Container root, References refs) {
         super(root, refs);
         new BundleConsistencySupervisor(this).attach(getRoot());
+    }
+
+    @Override
+    public Locality createDefaultRoot() {
+        return new Locality();
     }
 
     @Override

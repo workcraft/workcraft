@@ -3,10 +3,10 @@ package org.workcraft.plugins.cpog;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
-import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.plugins.cpog.observers.ConditionConsistencySupervisor;
+import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
 import java.util.Collection;
@@ -14,11 +14,11 @@ import java.util.Collection;
 public class Cpog extends AbstractMathModel {
 
     public Cpog() {
-        this(null);
+        this(null, null);
     }
 
-    public Cpog(Container root) {
-        super(root);
+    public Cpog(Container root, References refs) {
+        super(root, refs);
         new ConditionConsistencySupervisor(this).attach(getRoot());
     }
 
@@ -28,7 +28,7 @@ public class Cpog extends AbstractMathModel {
         return con;
     }
 
-    public DynamicVariableConnection connect(Vertex first, Variable second) throws InvalidConnectionException {
+    public DynamicVariableConnection connect(Vertex first, Variable second) {
         DynamicVariableConnection con = new DynamicVariableConnection(first, second);
         getRoot().add(con);
         return con;

@@ -64,4 +64,5 @@ public class VisualFst extends VisualFsm {
     public Collection<VisualSignalEvent> getVisualSignalEvents() {
         return Hierarchy.getDescendantsOfType(getRoot(), VisualSignalEvent.class);
     }
+
 }

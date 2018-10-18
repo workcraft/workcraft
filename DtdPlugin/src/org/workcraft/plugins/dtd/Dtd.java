@@ -4,8 +4,6 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
-import org.workcraft.dom.math.MathConnection;
-import org.workcraft.dom.math.MathNode;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.plugins.dtd.utils.DtdUtils;
@@ -23,12 +21,6 @@ public class Dtd extends AbstractMathModel {
 
     public Dtd(Container root, References refs) {
         super(root, refs);
-    }
-
-    public MathConnection connect(Node first, Node second) {
-        MathConnection con = new MathConnection((MathNode) first, (MathNode) second);
-        Hierarchy.getNearestContainer(first, second).add(con);
-        return con;
     }
 
     public Collection<Signal> getSignals() {
