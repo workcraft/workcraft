@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.ASONAlg;
@@ -57,13 +58,13 @@ public class ONStructureTask extends AbstractStructuralVerification {
 
         for (ONGroup group : groups) {
 
-            Collection<Node> task1, task2;
+            Collection<MathNode> task1, task2;
             Collection<Path> cycleResult;
 
             // group info
             infoMsg("Initialising selected groups and components...");
 
-            Collection<Node> groupComponents = group.getComponents();
+            Collection<MathNode> groupComponents = group.getComponents();
             infoMsg("Group name : ", group);
             infoMsg("Conditions = " + group.getConditions().size() + ".\n" + "Events = " + group.getEvents().size()
                     + ".\n" + "Collapsed Blocks = " + group.getCollapsedBlocks().size() + ".");
@@ -138,9 +139,9 @@ public class ONStructureTask extends AbstractStructuralVerification {
         }
     }
 
-    private Collection<Node> iniStateTask(Collection<Node> groupNodes) {
-        ArrayList<Node> result = new ArrayList<>();
-        for (Node node : groupNodes) {
+    private Collection<MathNode> iniStateTask(Collection<MathNode> groupNodes) {
+        ArrayList<MathNode> result = new ArrayList<>();
+        for (MathNode node : groupNodes) {
             if (node instanceof TransitionNode) {
                 if (getRelationAlg().isInitial(node)) {
                     result.add(node);
@@ -150,9 +151,9 @@ public class ONStructureTask extends AbstractStructuralVerification {
         return result;
     }
 
-    private Collection<Node> finalStateTask(Collection<Node> groupNodes) {
-        ArrayList<Node> result = new ArrayList<>();
-        for (Node node : groupNodes) {
+    private Collection<MathNode> finalStateTask(Collection<MathNode> groupNodes) {
+        ArrayList<MathNode> result = new ArrayList<>();
+        for (MathNode node : groupNodes) {
             if (node instanceof TransitionNode) {
                 if (getRelationAlg().isFinal(node)) {
                     result.add(node);

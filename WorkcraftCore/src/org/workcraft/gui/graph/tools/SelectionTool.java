@@ -67,12 +67,12 @@ public class SelectionTool extends AbstractGraphEditorTool {
     private Set<Point2D> snaps = new HashSet<>();
     private final DefaultAnchorGenerator anchorGenerator = new DefaultAnchorGenerator();
 
-    private final LinkedHashSet<Node> selected = new LinkedHashSet<>();
+    private final LinkedHashSet<VisualNode> selected = new LinkedHashSet<>();
     private SelectionMode selectionMode = SelectionMode.NONE;
     private Rectangle2D selectionBox = null;
 
-    private Node currentNode = null;
-    private Collection<Node> currentNodes = null;
+    private VisualNode currentNode = null;
+    private Collection<VisualNode> currentNodes = null;
 
     private boolean enableGroupping = true;
     private boolean enablePaging = true;
@@ -253,7 +253,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
         GraphEditor editor = e.getEditor();
         Point2D position = e.getPosition();
         if (e.getButton() == MouseEvent.BUTTON1) {
-            Node node = HitMan.hitFirstInCurrentLevel(position, model);
+            VisualNode node = HitMan.hitFirstInCurrentLevel(position, model);
             if (node == null) {
                 if (e.getClickCount() > 1) {
                     if (model.getCurrentLevel() instanceof VisualGroup) {
@@ -297,9 +297,9 @@ public class SelectionTool extends AbstractGraphEditorTool {
                         return;
                     }
                 } else {
-                    Collection<Node> nodes = e.isExtendKeyDown()
+                    Collection<VisualNode> nodes = e.isExtendKeyDown()
                             ? getNodeWithAdjacentConnections(model, node)
-                            : Arrays.asList(new Node[] {node});
+                            : Arrays.asList(new VisualNode[] {node});
                     if (e.isShiftKeyDown()) {
                         model.addToSelection(nodes);
                     } else if (e.isMenuKeyDown()) {
@@ -313,18 +313,18 @@ public class SelectionTool extends AbstractGraphEditorTool {
         }
     }
 
-    public Collection<Node> getNodeWithAdjacentConnections(VisualModel model, Node node) {
-        ArrayList<Node> result = new ArrayList<>();
+    public Collection<VisualNode> getNodeWithAdjacentConnections(VisualModel model, VisualNode node) {
+        ArrayList<VisualNode> result = new ArrayList<>();
         result.add(node);
         result.addAll(model.getConnections(node));
         return result;
     }
 
     public VisualNode hitTestPopup(VisualModel model, Point2D position) {
-        return (VisualNode) HitMan.hitFirstInCurrentLevel(position, model);
+        return HitMan.hitFirstInCurrentLevel(position, model);
     }
 
-    public JPopupMenu createPopupMenu(Node node, final GraphEditor editor) {
+    public JPopupMenu createPopupMenu(VisualNode node, final GraphEditor editor) {
         JPopupMenu popup = null;
         WorkspaceEntry we = editor.getWorkspaceEntry();
         List<Command> applicableTools = new ArrayList<>();
@@ -375,12 +375,12 @@ public class SelectionTool extends AbstractGraphEditorTool {
             selectionBox = getSelectionRect(e.getStartPosition(), e.getPosition());
             editor.repaint();
         } else {
-            Node node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
+            VisualNode node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
             if (currentNode != node) {
                 currentNode = node;
                 currentNodes = e.isExtendKeyDown()
                         ? getNodeWithAdjacentConnections(model, node)
-                        : Arrays.asList(new Node[] {node});
+                        : Arrays.asList(new VisualNode[] {node});
                 editor.repaint();
             }
         }
@@ -566,7 +566,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
     @Override
     public boolean keyReleased(GraphEditorKeyEvent e) {
         if (!e.isExtendKeyDown()) {
-            currentNodes = Arrays.asList(new Node[] {currentNode});
+            currentNodes = Arrays.asList(new VisualNode[] {currentNode});
             e.getEditor().repaint();
         }
         return super.keyReleased(e);
@@ -631,7 +631,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
 
     protected void changeLevelDown(final GraphEditor editor) {
         VisualModel model = editor.getModel();
-        Collection<Node> selection = model.getSelection();
+        Collection<VisualNode> selection = model.getSelection();
         if (selection.size() == 1) {
             Node node = selection.iterator().next();
             if (node instanceof Container) {
@@ -648,10 +648,10 @@ public class SelectionTool extends AbstractGraphEditorTool {
         VisualModel model = editor.getModel();
         Container level = model.getCurrentLevel();
         Container parent = Hierarchy.getNearestAncestor(level.getParent(), Container.class);
-        if (parent != null) {
+        if ((parent != null) && (level instanceof VisualNode)) {
             editor.getWorkspaceEntry().saveMemento();
             model.setCurrentLevel(parent);
-            model.addToSelection(level);
+            model.addToSelection((VisualNode) level);
             currentNode = null;
             currentNodes = null;
             editor.repaint();

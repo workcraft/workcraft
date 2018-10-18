@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection;
@@ -61,7 +62,7 @@ public class BSONAlg extends RelationAlgorithm {
      * check if a given group is line like. i.e., post/pre set of each node < 1.
      */
     public boolean isLineLikeGroup(ONGroup group) {
-        for (Node node : group.getComponents()) {
+        for (MathNode node : group.getComponents()) {
             if (net.getPostset(node).size() > 1 && group.containsAll(net.getPostset(node))) {
                 return false;
             }
@@ -74,7 +75,6 @@ public class BSONAlg extends RelationAlgorithm {
 
     /**
      * get phases collection for a given upper-level condition
-     * @throws InvalidPhaseException
      */
     public Collection<Phase> getPhases(Condition c, Map<ONGroup, List<Marking>> allMarkings) {
 
@@ -261,7 +261,7 @@ public class BSONAlg extends RelationAlgorithm {
             node = stack.pop();
             visit.add(node);
 
-            if (net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE)) {
+            if (net.getOutputSONConnectionTypes((MathNode) node).contains(Semantics.BHVLINE)) {
                 result.addAll(getPostBhvSet((Condition) node));
             } else {
                 Collection<Node> postSet = getPostPNSet(node);
@@ -288,7 +288,7 @@ public class BSONAlg extends RelationAlgorithm {
             node = stack.pop();
             visit.add(node);
 
-            if (net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE)) {
+            if (net.getOutputSONConnectionTypes((MathNode) node).contains(Semantics.BHVLINE)) {
                 result.addAll(getPostBhvSet((Condition) node));
             } else {
                 Collection<Node> preSet = getPrePNSet(node);
@@ -344,8 +344,8 @@ public class BSONAlg extends RelationAlgorithm {
      */
     public boolean isUpperCondition(Node node) {
         if ((node instanceof Condition)
-                && !(net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE))
-                && (net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE))) {
+                && !(net.getOutputSONConnectionTypes((MathNode) node).contains(Semantics.BHVLINE))
+                && (net.getInputSONConnectionTypes((MathNode) node).contains(Semantics.BHVLINE))) {
             return true;
         }
 
@@ -415,10 +415,10 @@ public class BSONAlg extends RelationAlgorithm {
             boolean isInput = false;
             boolean isOutput = false;
             for (Node node : group.getComponents()) {
-                if (net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE)) {
+                if (net.getInputSONConnectionTypes((MathNode) node).contains(Semantics.BHVLINE)) {
                     isInput = true;
                 }
-                if (net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE)) {
+                if (net.getOutputSONConnectionTypes((MathNode) node).contains(Semantics.BHVLINE)) {
                     isOutput = true;
                 }
             }
@@ -440,10 +440,10 @@ public class BSONAlg extends RelationAlgorithm {
             boolean isOutput = false;
             if (this.isLineLikeGroup(group)) {
                 for (Node node : group.getComponents()) {
-                    if (net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE)) {
+                    if (net.getInputSONConnectionTypes((MathNode) node).contains(Semantics.BHVLINE)) {
                         isInput = true;
                     }
-                    if (net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE)) {
+                    if (net.getOutputSONConnectionTypes((MathNode) node).contains(Semantics.BHVLINE)) {
                         isOutput = true;
                     }
                 }

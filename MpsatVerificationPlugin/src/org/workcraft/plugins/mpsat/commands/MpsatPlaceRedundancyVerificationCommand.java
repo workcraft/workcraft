@@ -1,11 +1,8 @@
 package org.workcraft.plugins.mpsat.commands;
 
-import java.util.HashSet;
-
 import org.workcraft.NodeTransformer;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.VisualPlace;
@@ -14,6 +11,8 @@ import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.util.HashSet;
 
 public class MpsatPlaceRedundancyVerificationCommand extends MpsatAbstractVerificationCommand implements NodeTransformer {
 
@@ -33,12 +32,12 @@ public class MpsatPlaceRedundancyVerificationCommand extends MpsatAbstractVerifi
     }
 
     @Override
-    public boolean isApplicableTo(Node node) {
+    public boolean isApplicableTo(VisualNode node) {
         return (node instanceof VisualPlace) || (node instanceof VisualImplicitPlaceArc);
     }
 
     @Override
-    public boolean isEnabled(ModelEntry me, Node node) {
+    public boolean isEnabled(ModelEntry me, VisualNode node) {
         return true;
     }
 
@@ -65,7 +64,7 @@ public class MpsatPlaceRedundancyVerificationCommand extends MpsatAbstractVerifi
     private HashSet<String> getSelectedPlaces(WorkspaceEntry we) {
         VisualModel model = we.getModelEntry().getVisualModel();
         HashSet<String> placeNames = new HashSet<>();
-        for (Node node: model.getSelection()) {
+        for (VisualNode node: model.getSelection()) {
             if ((node instanceof VisualPlace) || (node instanceof VisualImplicitPlaceArc)) {
                 String placeName = model.getNodeMathReference(node);
                 if (placeName != null) {
@@ -77,7 +76,7 @@ public class MpsatPlaceRedundancyVerificationCommand extends MpsatAbstractVerifi
     }
 
     @Override
-    public void transform(Model model, Node node) {
+    public void transform(VisualModel model, VisualNode node) {
         // No transformation applied.
     }
 

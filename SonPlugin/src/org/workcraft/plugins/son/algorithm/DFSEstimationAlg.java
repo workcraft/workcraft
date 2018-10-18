@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.elements.PlaceNode;
@@ -184,7 +185,7 @@ public class DFSEstimationAlg extends TimeAlg {
         if (b[0]) {
             Interval s = ((Time) n).getStartTime();
             Collection<SONConnection> inputs = null;
-            inputs = net.getInputPNConnections(n);
+            inputs = net.getInputPNConnections((MathNode) n);
 
             for (SONConnection con : inputs) {
                 con.setTime(s);
@@ -201,7 +202,7 @@ public class DFSEstimationAlg extends TimeAlg {
         if (b[2]) {
             Interval e = ((Time) n).getEndTime();
             Collection<SONConnection> outputs = null;
-            outputs = net.getOutputPNConnections(n);
+            outputs = net.getOutputPNConnections((MathNode) n);
 
             for (SONConnection con : outputs) {
                 con.setTime(e);

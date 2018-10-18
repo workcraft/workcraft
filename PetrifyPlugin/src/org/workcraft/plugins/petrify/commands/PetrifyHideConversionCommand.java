@@ -6,7 +6,7 @@ import java.util.HashSet;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.plugins.petri.PetriNetUtils;
+import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petrify.tasks.PetrifyTransformationResultHandler;
 import org.workcraft.plugins.petrify.tasks.PetrifyTransformationTask;

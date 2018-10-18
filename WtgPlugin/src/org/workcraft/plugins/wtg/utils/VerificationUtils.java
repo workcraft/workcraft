@@ -1,6 +1,6 @@
 package org.workcraft.plugins.wtg.utils;
 
-import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.plugins.dtd.*;
 import org.workcraft.plugins.wtg.Guard;
@@ -181,13 +181,13 @@ public class VerificationUtils {
         for (Waveform waveform : wtg.getWaveforms()) {
             for (TransitionEvent transition : wtg.getTransitions(waveform)) {
                 Signal signal = transition.getSignal();
-                Set<Node> preset = wtg.getPreset(transition);
+                Set<MathNode> preset = wtg.getPreset(transition);
                 //Every transition has exactly one transition for "signal" in its preset
                 if (!checkTransitionConnections(wtg, waveform, preset, signal, "preset")) {
                     return false;
                 }
                 //Every transition has exactly one transition for "signal" in its postset
-                Set<Node> postset = wtg.getPostset(transition);
+                Set<MathNode> postset = wtg.getPostset(transition);
                 if (!checkTransitionConnections(wtg, waveform, postset, signal, "postset")) {
                     return false;
                 }
@@ -197,7 +197,7 @@ public class VerificationUtils {
         return true;
     }
 
-    private static boolean checkTransitionConnections(Wtg wtg, Waveform waveform, Set<Node> connections,
+    private static boolean checkTransitionConnections(Wtg wtg, Waveform waveform, Set<? extends MathNode> connections,
             Signal signal, String connectionType) {
         String msg = "Transition for signal '" + wtg.getName(signal) + "' in waveform '" + wtg.getName(waveform) + "' ";
         if (connections.isEmpty()) {
@@ -206,7 +206,7 @@ public class VerificationUtils {
             return false;
         }
         boolean signalInConnection = false;
-        for (Node node : connections) {
+        for (MathNode node : connections) {
             Event connectedTransition = (Event) node;
             if (connectedTransition.getSignal() == signal) {
                 if (signalInConnection) {
@@ -235,7 +235,7 @@ public class VerificationUtils {
                     DialogUtils.showError(msg);
                     return false;
                 }
-                Set<Node> preset = wtg.getPreset(exit);
+                Set<MathNode> preset = wtg.getPreset(exit);
                 if (preset.isEmpty()) {
                     msg += "with an empty preset.";
                     DialogUtils.showError(msg);
@@ -265,7 +265,7 @@ public class VerificationUtils {
                     DialogUtils.showError(msg);
                     return false;
                 }
-                Set<Node> postset = wtg.getPostset(entry);
+                Set<MathNode> postset = wtg.getPostset(entry);
                 if (postset.isEmpty()) {
                     msg += "with an empty postset.";
                     DialogUtils.showError(msg);
@@ -334,7 +334,7 @@ public class VerificationUtils {
         for (Waveform waveform : wtg.getWaveforms()) {
             for (EntryEvent entry : wtg.getEntries(waveform)) {
                 if (entry.getSignal().getType() != Signal.Type.INPUT) {
-                    for (Node node: wtg.getPostset(entry)) {
+                    for (MathNode node: wtg.getPostset(entry)) {
                         if ((isFirstTransition(wtg, node)) && (isWaveformInChoice(wtg, waveform))) {
                             DialogUtils.showError("Signal '" + wtg.getName(entry.getSignal())
                                     + "' cannot be fired immediately after a choice, in waveform '"
@@ -391,7 +391,7 @@ public class VerificationUtils {
 
     public static boolean checkInitialStateHasNoGuard(Wtg wtg) {
         State initialState = wtg.getInitialState();
-        for (Node node : wtg.getPostset(initialState)) {
+        for (MathNode node : wtg.getPostset(initialState)) {
             if (node instanceof Waveform) {
                 Waveform waveform = (Waveform) node;
                 if (!waveform.getGuard().isEmpty()) {
@@ -495,7 +495,7 @@ public class VerificationUtils {
             Guard guard = waveform.getGuard();
             if (!guard.isEmpty()) {
                 if (!wtg.getPreset(waveform).isEmpty()) {
-                    Node precedingState = wtg.getPreset(waveform).iterator().next();
+                    MathNode precedingState = wtg.getPreset(waveform).iterator().next();
                     for (String signalGuarded : guard.keySet()) {
                         Signal.State previousState = getFinalSignalStateForSignalFromNode(wtg, precedingState,
                                 signalGuarded);
@@ -525,15 +525,15 @@ public class VerificationUtils {
     }
 
     public static boolean checkNodeReachability(Wtg wtg) {
-        Set<Node> reachableNodes = new HashSet<>();
+        Set<MathNode> reachableNodes = new HashSet<>();
         State initialState = wtg.getInitialState();
-        Queue<Node> nodesToVisit = new LinkedList<>();
+        Queue<MathNode> nodesToVisit = new LinkedList<>();
         nodesToVisit.add(initialState);
         reachableNodes.add(initialState);
         //BFS
         while (!nodesToVisit.isEmpty()) {
-            Node node = nodesToVisit.poll();
-            for (Node n : wtg.getPostset(node)) {
+            MathNode node = nodesToVisit.poll();
+            for (MathNode n : wtg.getPostset(node)) {
                 if (!reachableNodes.contains(n)) {
                     reachableNodes.add(n);
                     nodesToVisit.add(n);
@@ -576,7 +576,7 @@ public class VerificationUtils {
         //BFS
         while (!eventsToVisit.isEmpty()) {
             Event event = eventsToVisit.poll();
-            for (Node e : wtg.getPostset(event)) {
+            for (MathNode e : wtg.getPostset(event)) {
                 if ((!reachableTransitions.contains(e)) && (e instanceof TransitionEvent)) {
                     TransitionEvent transition = (TransitionEvent) e;
                     reachableTransitions.add(transition);
@@ -595,7 +595,7 @@ public class VerificationUtils {
 
     public static boolean checkWaveformsHaveEntryState(Wtg wtg) {
         for (Waveform waveform : wtg.getWaveforms()) {
-            Set<Node> preset = wtg.getPreset(waveform);
+            Set<MathNode> preset = wtg.getPreset(waveform);
             String name = wtg.getName(waveform);
             if (preset.isEmpty()) {
                 DialogUtils.showError("Waveform '" + name + "' does not have an entry state.");
@@ -611,7 +611,7 @@ public class VerificationUtils {
 
     public static boolean checkWaveformsHaveExitState(Wtg wtg) {
         for (Waveform waveform : wtg.getWaveforms()) {
-            Set<Node> postset = wtg.getPostset(waveform);
+            Set<MathNode> postset = wtg.getPostset(waveform);
             String name = wtg.getName(waveform);
             if (postset.isEmpty()) {
                 DialogUtils.showError("Waveform '" + name + "' does not have an exit state.");
@@ -627,16 +627,16 @@ public class VerificationUtils {
 
     public static boolean checkWaveformsOnlyConnectToStates(Wtg wtg) {
         for (Waveform waveform : wtg.getWaveforms()) {
-            Set<Node> preset = wtg.getPreset(waveform);
-            Set<Node> postset = wtg.getPostset(waveform);
+            Set<MathNode> preset = wtg.getPreset(waveform);
+            Set<MathNode> postset = wtg.getPostset(waveform);
             String msg = "Waveform '" + wtg.getName(waveform) + "' is connected to a non-state node.";
-            for (Node node : preset) {
+            for (MathNode node : preset) {
                 if (!(node instanceof State)) {
                     DialogUtils.showError(msg);
                     return false;
                 }
             }
-            for (Node node : postset) {
+            for (MathNode node : postset) {
                 if (!(node instanceof State)) {
                     DialogUtils.showError(msg);
                     return false;
@@ -673,7 +673,7 @@ public class VerificationUtils {
                 TransitionEvent.Direction direction = transition.getDirection();
                 if ((wtg.getPreviousState(transition) == Signal.State.UNSTABLE) ||
                         (direction == TransitionEvent.Direction.DESTABILISE)) {
-                    for (Node node : wtg.getPostset(transition)) {
+                    for (MathNode node : wtg.getPostset(transition)) {
                         if (node instanceof TransitionEvent) {
                             TransitionEvent dstTransition = (TransitionEvent) node;
                             Signal signal = dstTransition.getSignal();
@@ -697,17 +697,17 @@ public class VerificationUtils {
         Map<String, Signal.State> initialSignalStates = getInitialSignalStates(wtg);
         State initialState = wtg.getInitialState();
         Map<State, Map<String, Signal.State>> signalStates = new HashMap<>();
-        Queue<Node> nodesToVisit = new LinkedList<>();
+        Queue<MathNode> nodesToVisit = new LinkedList<>();
         nodesToVisit.add(initialState);
         signalStates.put(initialState, initialSignalStates);
         while (!nodesToVisit.isEmpty()) {
-            Node node = nodesToVisit.poll();
+            MathNode node = nodesToVisit.poll();
 
             if (node instanceof State) {
                 nodesToVisit.addAll(wtg.getPostset(node));
             } else if (node instanceof Waveform) {
                 Waveform waveform = (Waveform) node;
-                Node predecessorNode = wtg.getPreset(waveform).iterator().next();
+                MathNode predecessorNode = wtg.getPreset(waveform).iterator().next();
                 if (predecessorNode instanceof State) {
                     if ((!checkConsistency(wtg, waveform)) ||
                             (!checkInitialSignalStateConsistency(wtg, waveform, signalStates.get(predecessorNode)))) {
@@ -719,7 +719,7 @@ public class VerificationUtils {
 
                 Map<String, Signal.State> finalWaveformSignalState = new HashMap<>(signalStates.get(predecessorNode));
                 finalWaveformSignalState.putAll(getFinalSignalStatesFromWaveform(wtg, waveform));
-                Node successorNode = wtg.getPostset(waveform).iterator().next();
+                MathNode successorNode = wtg.getPostset(waveform).iterator().next();
                 if (successorNode instanceof State) {
                     if (signalStates.containsKey(successorNode)) {
                         if (!signalStates.get(successorNode).equals(finalWaveformSignalState)) {
@@ -787,7 +787,7 @@ public class VerificationUtils {
         for (Waveform waveform : wtg.getWaveforms()) {
             for (TransitionEvent transition : wtg.getTransitions(waveform)) {
                 if (transition.getSignal().getType() == Signal.Type.INTERNAL) {
-                    for (Node node : wtg.getPostset(transition)) {
+                    for (MathNode node : wtg.getPostset(transition)) {
                         if (node instanceof TransitionEvent) {
                             TransitionEvent dstTransition = (TransitionEvent) node;
                             if (dstTransition.getSignal().getType() == Signal.Type.INPUT) {
@@ -798,7 +798,7 @@ public class VerificationUtils {
                                 return false;
                             }
                         } else if (node instanceof ExitEvent) {
-                            for (Node predecesor : wtg.getPreset(node)) {
+                            for (MathNode predecesor : wtg.getPreset(node)) {
                                 if (isLastTransition(wtg, predecesor) &&
                                         isFirstTransitionInputInSuccessorWaveforms(wtg, waveform)) {
                                     DialogUtils.showError("Internal signal '" + wtg.getName(transition.getSignal())
@@ -816,8 +816,8 @@ public class VerificationUtils {
     }
 
     private static boolean isFirstTransitionInputInSuccessorWaveforms(Wtg wtg, Waveform waveform) {
-        for (Node successorState : wtg.getPostset(waveform)) {
-            for (Node successorWaveform : wtg.getPostset(successorState)) {
+        for (MathNode successorState : wtg.getPostset(waveform)) {
+            for (MathNode successorWaveform : wtg.getPostset(successorState)) {
                 if (firstTransitionInput(wtg, (Waveform) successorWaveform)) {
                     return true;
                 }
@@ -829,7 +829,7 @@ public class VerificationUtils {
     private static boolean firstTransitionInput(Wtg wtg, Waveform waveform) {
         for (EntryEvent entry : wtg.getEntries(waveform)) {
             if (entry.getSignal().getType() == Signal.Type.INPUT) {
-                for (Node node: wtg.getPostset(entry)) {
+                for (MathNode node: wtg.getPostset(entry)) {
                     if (isFirstTransition(wtg, node)) {
                         return true;
                     }
@@ -839,7 +839,7 @@ public class VerificationUtils {
         return false;
     }
 
-    private static boolean isLastTransition(Wtg wtg, Node node) {
+    private static boolean isLastTransition(Wtg wtg, MathNode node) {
         if (!(node instanceof EntryEvent)) {
             if (wtg.getPostset(node).size() == 1) {
                 return wtg.getPostset(node).iterator().next() instanceof ExitEvent;
@@ -848,7 +848,7 @@ public class VerificationUtils {
         return false;
     }
 
-    private static boolean isFirstTransition(Wtg wtg, Node node) {
+    private static boolean isFirstTransition(Wtg wtg, MathNode node) {
         if (!(node instanceof ExitEvent)) {
             return wtg.getPreset(node).size() == 1;
         }

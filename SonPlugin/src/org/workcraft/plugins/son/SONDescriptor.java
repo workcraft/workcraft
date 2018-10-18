@@ -1,8 +1,6 @@
 package org.workcraft.plugins.son;
 
 import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.dom.VisualModelDescriptor;
-import org.workcraft.dom.math.MathModel;
 
 public class SONDescriptor implements ModelDescriptor {
 
@@ -12,12 +10,12 @@ public class SONDescriptor implements ModelDescriptor {
     }
 
     @Override
-    public MathModel createMathModel() {
+    public SON createMathModel() {
         return new SON();
     }
 
     @Override
-    public VisualModelDescriptor getVisualModelDescriptor() {
+    public VisualSONDescriptor getVisualModelDescriptor() {
         return new VisualSONDescriptor();
     }
 

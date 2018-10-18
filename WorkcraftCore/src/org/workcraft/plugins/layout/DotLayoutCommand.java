@@ -16,6 +16,7 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.Polyline;
@@ -127,7 +128,7 @@ public class DotLayoutCommand extends AbstractLayoutCommand {
                     if (DotLayoutSettings.getImportConnectionsShape()) {
                         Node comp1 = model.getNodeByReference(from);
                         Node comp2 = model.getNodeByReference(to);
-                        Set<Connection> connections = model.getConnections(comp1);
+                        Set<VisualConnection> connections = model.getConnections((VisualNode) comp1);
                         Connection con = null;
                         for (Connection c : connections) {
                             if (c.getSecond() == comp2) {

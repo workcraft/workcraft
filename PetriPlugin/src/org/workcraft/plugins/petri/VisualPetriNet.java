@@ -2,19 +2,17 @@ package org.workcraft.plugins.petri;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
-import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.plugins.petri.tools.*;
+import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.util.Hierarchy;
 
 import java.util.ArrayList;
@@ -31,13 +29,6 @@ public class VisualPetriNet extends AbstractVisualModel {
     public VisualPetriNet(PetriNet model, VisualGroup root) {
         super(model, root);
         setGraphEditorTools();
-        if (root == null) {
-            try {
-                createDefaultFlatStructure();
-            } catch (NodeCreationException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 
     private void setGraphEditorTools() {
@@ -79,7 +70,7 @@ public class VisualPetriNet extends AbstractVisualModel {
     }
 
     @Override
-    public void validateConnection(Node first, Node second) throws InvalidConnectionException {
+    public void validateConnection(VisualNode first, VisualNode second) throws InvalidConnectionException {
         if (first == second) {
             throw new InvalidConnectionException("Self-loops are not allowed.");
         }
@@ -102,24 +93,8 @@ public class VisualPetriNet extends AbstractVisualModel {
     }
 
     @Override
-    public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
-        validateConnection(first, second);
-
-        if (mConnection == null) {
-            MathNode firstRef = getMathReference(first);
-            MathNode secondRef = getMathReference(second);
-            if ((firstRef != null) && (secondRef != null)) {
-                PetriNet petriNet = (PetriNet) getMathModel();
-                mConnection = petriNet.connect(firstRef, secondRef);
-            }
-        }
-        VisualConnection connection = new VisualConnection(mConnection, (VisualNode) first, (VisualNode) second);
-        Hierarchy.getNearestContainer(first, second).add(connection);
-        return connection;
-    }
-
-    @Override
-    public void validateUndirectedConnection(Node first, Node second) throws InvalidConnectionException {
+    public void validateUndirectedConnection(VisualNode first, VisualNode second) throws InvalidConnectionException {
+        super.validateUndirectedConnection(first, second);
         if (first == second) {
             throw new InvalidConnectionException("Self-loops are not allowed.");
         }
@@ -141,17 +116,17 @@ public class VisualPetriNet extends AbstractVisualModel {
     }
 
     @Override
-    public VisualConnection connectUndirected(Node first, Node second) throws InvalidConnectionException {
+    public VisualConnection connectUndirected(VisualNode first, VisualNode second) throws InvalidConnectionException {
         validateUndirectedConnection(first, second);
 
         VisualNode place = null;
         VisualNode transition = null;
         if (first instanceof VisualTransition) {
-            place = (VisualNode) second;
-            transition = (VisualNode) first;
+            place = second;
+            transition = first;
         } else if (second instanceof VisualTransition) {
-            place = (VisualNode) first;
-            transition = (VisualNode) second;
+            place = first;
+            transition = second;
         }
         VisualConnection connection = null;
         if ((place != null) && (transition != null)) {

@@ -1,20 +1,18 @@
 package org.workcraft.plugins.petri.commands;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-
 import org.workcraft.commands.AbstractTransformationCommand;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.petri.PetriNetModel;
-import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.VisualReadArc;
+import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.util.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 public class DualArcToReadArcTransformationCommand extends AbstractTransformationCommand {
 
@@ -40,22 +38,22 @@ public class DualArcToReadArcTransformationCommand extends AbstractTransformatio
         if (!dualArcs.isEmpty()) {
             we.saveMemento();
             HashSet<VisualReadArc> readArcs = PetriNetUtils.convertDualArcsToReadArcs(model, dualArcs);
-            model.select(new LinkedList<Node>(readArcs));
+            model.select(readArcs);
         }
         return null;
     }
 
     @Override
-    public Collection<Node> collect(Model model) {
+    public Collection<VisualNode> collect(VisualModel model) {
         return new HashSet<>();
     }
 
     @Override
-    public void transform(Model model, Collection<Node> nodes) {
+    public void transform(VisualModel model, Collection<? extends VisualNode> nodes) {
     }
 
     @Override
-    public void transform(Model model, Node node) {
+    public void transform(VisualModel model, VisualNode node) {
     }
 
 }

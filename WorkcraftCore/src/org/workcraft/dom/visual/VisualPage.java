@@ -135,12 +135,12 @@ public class VisualPage extends VisualComponent implements Collapsible, Containe
     }
 
     @Override
-    public void add(Collection<Node> nodes) {
+    public void add(Collection<? extends Node> nodes) {
         groupImpl.add(nodes);
     }
 
     @Override
-    public void remove(Collection<Node> nodes) {
+    public void remove(Collection<? extends Node> nodes) {
         groupImpl.remove(nodes);
     }
 
@@ -148,12 +148,12 @@ public class VisualPage extends VisualComponent implements Collapsible, Containe
         groupImpl.removeWithoutNotify(node);
     }
     @Override
-    public void reparent(Collection<Node> nodes, Container newParent) {
+    public void reparent(Collection<? extends Node> nodes, Container newParent) {
         groupImpl.reparent(nodes, newParent);
     }
 
     @Override
-    public void reparent(Collection<Node> nodes) {
+    public void reparent(Collection<? extends Node> nodes) {
         groupImpl.reparent(nodes);
     }
 

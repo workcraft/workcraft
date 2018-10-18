@@ -1,23 +1,20 @@
 package org.workcraft.plugins.policy.tools;
 
-import java.awt.geom.Point2D;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.plugins.policy.Bundle;
-import org.workcraft.plugins.policy.VisualBundle;
-import org.workcraft.plugins.policy.VisualBundledTransition;
-import org.workcraft.plugins.policy.VisualLocality;
-import org.workcraft.plugins.policy.VisualPolicyNet;
+import org.workcraft.plugins.policy.*;
 import org.workcraft.util.Hierarchy;
+
+import java.awt.geom.Point2D;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 public class PolicyToPetriConverter {
     private final VisualPolicyNet policyNet;
@@ -97,7 +94,7 @@ public class PolicyToPetriConverter {
 
     private void groupLocalities() {
         for (VisualLocality locality : Hierarchy.getDescendantsOfType(policyNet.getRoot(), VisualLocality.class)) {
-            HashSet<Node> nodes = new HashSet<>();
+            HashSet<VisualNode> nodes = new HashSet<>();
             for (Node node: locality.getChildren()) {
                 if (node instanceof VisualBundledTransition) {
                     VisualTransition t = transitionMap.get(node);
@@ -127,7 +124,7 @@ public class PolicyToPetriConverter {
         for (VisualBundledTransition transition : Hierarchy.getDescendantsOfType(policyNet.getRoot(), VisualBundledTransition.class)) {
             VisualTransition newTransition = transitionMap.get(transition);
             if (newTransition != null) {
-                for (Node node: policyNet.getPreset(transition)) {
+                for (VisualNode node: policyNet.getPreset(transition)) {
                     if (node instanceof VisualPlace) {
                         VisualPlace newPlace = placeMap.get(node);
                         if (newPlace != null) {
@@ -135,7 +132,7 @@ public class PolicyToPetriConverter {
                         }
                     }
                 }
-                for (Node node: policyNet.getPostset(transition)) {
+                for (VisualNode node: policyNet.getPostset(transition)) {
                     if (node instanceof VisualPlace) {
                         VisualPlace newPlace = placeMap.get(node);
                         if (newPlace != null) {

@@ -20,8 +20,11 @@ import java.util.List;
 import java.util.LinkedList;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.plugins.stg.NamedTransition;
+import org.workcraft.plugins.stg.ImplicitPlaceConnection;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.util.EnumUtils;
 import org.workcraft.util.LogUtils;
@@ -112,11 +115,13 @@ public class StgParser {
 
     private void createArc(Node first, Node second) {
         try {
-            ConnectionResult result = stg.connect(first, second);
-            StgPlace implicitPlace = result.getImplicitPlace();
-            if (implicitPlace != null) {
+            if ((first instanceof NamedTransition) && (second instanceof NamedTransition)) {
+                ImplicitPlaceConnection connection = stg.connect((NamedTransition) first, (NamedTransition) second);
+                StgPlace implicitPlace = connection.getImplicitPlace();
                 implicitPlaces.put(Pair.of(first, second), implicitPlace);
                 implicitPlace.setImplicit(true);
+            } else {
+                stg.connect((MathNode) first, (MathNode) second);
             }
         } catch (InvalidConnectionException e) {
             throw new FormatException("Cannot create arc from '" + stg.getNodeReference(first)

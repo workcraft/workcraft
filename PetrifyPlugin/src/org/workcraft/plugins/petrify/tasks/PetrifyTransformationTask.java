@@ -18,7 +18,7 @@ import org.workcraft.interop.Format;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fst.interop.SgFormat;
 import org.workcraft.plugins.petri.PetriNetModel;
-import org.workcraft.plugins.petri.PetriNetUtils;
+import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.petrify.PetrifyUtils;

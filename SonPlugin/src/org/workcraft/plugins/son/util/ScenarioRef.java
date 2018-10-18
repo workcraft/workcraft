@@ -1,10 +1,7 @@
 package org.workcraft.plugins.son.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.elements.ChannelPlace;
@@ -12,6 +9,10 @@ import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.exception.IncompatibleScenarioException;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 
 @SuppressWarnings("serial")
 public class ScenarioRef extends ArrayList<String> {
@@ -98,7 +99,7 @@ public class ScenarioRef extends ArrayList<String> {
         Collection<SONConnection> result = new HashSet<>();
         Collection<Node> nodes = getNodes(net);
         for (Node node : nodes) {
-            Collection<SONConnection> connections = net.getSONConnections(node);
+            Collection<SONConnection> connections = net.getSONConnections((MathNode) node);
             for (SONConnection con : connections) {
                 if (con.getFirst() != node && nodes.contains(con.getFirst())) {
                     result.add(con);

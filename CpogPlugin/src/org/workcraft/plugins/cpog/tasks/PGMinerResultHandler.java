@@ -1,11 +1,6 @@
 package org.workcraft.plugins.cpog.tasks;
 
-import java.lang.reflect.InvocationTargetException;
-
-import javax.swing.SwingUtilities;
-
 import org.workcraft.Framework;
-import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.Toolbox;
@@ -13,6 +8,7 @@ import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.cpog.CpogDescriptor;
 import org.workcraft.plugins.cpog.VisualCpog;
+import org.workcraft.plugins.cpog.VisualCpogDescriptor;
 import org.workcraft.plugins.cpog.tools.CpogSelectionTool;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.BasicProgressMonitor;
@@ -21,6 +17,9 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import java.lang.reflect.InvocationTargetException;
 
 public class PGMinerResultHandler extends BasicProgressMonitor<ExternalProcessOutput> {
 
@@ -56,18 +55,14 @@ public class PGMinerResultHandler extends BasicProgressMonitor<ExternalProcessOu
         if (createNewWindow) {
             final CpogDescriptor cpogModel = new CpogDescriptor();
             final MathModel mathModel = cpogModel.createMathModel();
-            final VisualModelDescriptor v = cpogModel.getVisualModelDescriptor();
+            final VisualCpogDescriptor vmd = cpogModel.getVisualModelDescriptor();
             try {
-                if (v == null) {
-                    throw new VisualModelInstantiationException(
-                            "visual model is not defined for '" + cpogModel.getDisplayName() + "'.");
-                }
-                visualCpog = (VisualCpog) v.create(mathModel);
+                visualCpog = vmd.create(mathModel);
                 final ModelEntry me = new ModelEntry(cpogModel, visualCpog);
                 final Path<String> path = we.getWorkspacePath();
                 weResult = framework.createWork(me, path);
             } catch (final VisualModelInstantiationException e) {
-                e.printStackTrace();
+                DialogUtils.showError(e.getMessage());
             }
         }
         final String[] stdout = output.getStdoutString().split("\n");

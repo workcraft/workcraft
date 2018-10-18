@@ -1,5 +1,8 @@
 package org.workcraft.dom.visual;
 
+import org.workcraft.dom.visual.connections.ControlPoint;
+import org.workcraft.dom.visual.connections.VisualConnection;
+
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -7,17 +10,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.connections.ControlPoint;
-import org.workcraft.dom.visual.connections.VisualConnection;
-
 public class VisualModelTransformer {
 
-    private static void transformNodes(Collection<Node> nodes, AffineTransform t) {
+    private static void transformNodes(Collection<? extends VisualNode> nodes, AffineTransform t) {
         assert nodes != null;
         // Control points may move while the nodes are repositioned, therefore this two-step transformation.
         HashMap<ControlPoint, Point2D> controlPointPositions = new HashMap<>();
-        for (Node node: nodes) {
+        for (VisualNode node: nodes) {
             if (node instanceof VisualConnection) {
                 VisualConnection vc = (VisualConnection) node;
                 for (ControlPoint cp: vc.getGraphic().getControlPoints()) {
@@ -26,7 +25,7 @@ public class VisualModelTransformer {
             }
         }
         // First reposition vertices.
-        for (Node node: nodes) {
+        for (VisualNode node: nodes) {
             if (node instanceof VisualTransformableNode) {
                 VisualTransformableNode vn = (VisualTransformableNode) node;
                 Point2D pos = vn.getPosition();
@@ -38,7 +37,8 @@ public class VisualModelTransformer {
 
                     AffineTransform t3 = AffineTransform.getTranslateInstance(-t2.getTranslateX(), -t2.getTranslateY());
                     t3.concatenate(t2);
-                    transformNodes(vn.getChildren(), t3);
+                    Collection children = NodeHelper.filterByType(vn.getChildren(), VisualNode.class);
+                    transformNodes(children, t3);
 
                     t.transform(pos, pos);
                     vn.setPosition(pos);
@@ -49,7 +49,7 @@ public class VisualModelTransformer {
             }
         }
         // Then reposition control points, using their stored initial positions.
-        for (Node node: nodes) {
+        for (VisualNode node: nodes) {
             if (node instanceof VisualConnection) {
                 VisualConnection vc = (VisualConnection) node;
                 for (ControlPoint cp: vc.getGraphic().getControlPoints()) {
@@ -61,7 +61,7 @@ public class VisualModelTransformer {
         }
     }
 
-    public static void translateNodes(Collection<Node> nodes, double tx, double ty) {
+    public static void translateNodes(Collection<? extends VisualNode> nodes, double tx, double ty) {
         AffineTransform t = AffineTransform.getTranslateInstance(tx, ty);
         transformNodes(nodes, t);
     }
@@ -110,9 +110,9 @@ public class VisualModelTransformer {
         return bb1;
     }
 
-    private static Rectangle2D getNodesCoordinateBox(Collection<Node> nodes) {
+    private static Rectangle2D getNodesCoordinateBox(Collection<? extends VisualNode> nodes) {
         Rectangle2D selectionBB = null;
-        for (Node vn: nodes) {
+        for (VisualNode vn: nodes) {
             if (vn instanceof VisualTransformableNode) {
                 Point2D pos = ((VisualTransformableNode) vn).getPosition();
                 selectionBB = bbUnion(selectionBB, pos);
@@ -121,9 +121,9 @@ public class VisualModelTransformer {
         return selectionBB;
     }
 
-    public static HashMap<VisualTransformableNode, Point2D> getRootSpacePositions(Collection<Node> nodes) {
+    public static HashMap<VisualTransformableNode, Point2D> getRootSpacePositions(Collection<? extends VisualNode> nodes) {
         HashMap<VisualTransformableNode, Point2D> componentToPositionMap = new HashMap<>();
-        for (Node node: nodes) {
+        for (VisualNode node: nodes) {
             if (node instanceof VisualTransformableNode) {
                 VisualTransformableNode component = (VisualTransformableNode) node;
                 Point2D position = component.getRootSpacePosition();

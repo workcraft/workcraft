@@ -1,27 +1,23 @@
 package org.workcraft.plugins.son.algorithm;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.son.SON;
-import org.workcraft.plugins.son.exception.AlternativeStructureException;
-import org.workcraft.plugins.son.exception.SyncCycleException;
-import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
-import org.workcraft.plugins.son.util.Interval;
-import org.workcraft.plugins.son.util.ScenarioRef;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.Time;
+import org.workcraft.plugins.son.exception.AlternativeStructureException;
+import org.workcraft.plugins.son.exception.SyncCycleException;
 import org.workcraft.plugins.son.exception.TimeEstimationException;
 import org.workcraft.plugins.son.exception.TimeOutOfBoundsException;
+import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
+import org.workcraft.plugins.son.util.Interval;
+import org.workcraft.plugins.son.util.ScenarioRef;
+
+import java.util.*;
 
 public class BFSEntireEstimationAlg extends DFSEstimationAlg {
 
@@ -49,8 +45,7 @@ public class BFSEntireEstimationAlg extends DFSEstimationAlg {
     }
 
     // assign specified value from connections to nodes
-    public void initializeSuperIni(Node n) {
-
+    public void initializeSuperIni(MathNode n) {
         for (SONConnection con : net.getOutputPNConnections(n)) {
             if (con.getTime().isSpecified()) {
                 Node first = con.getFirst();

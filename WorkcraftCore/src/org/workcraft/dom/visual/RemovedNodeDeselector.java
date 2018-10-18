@@ -4,6 +4,8 @@ import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletedEvent;
 
+import java.util.Collection;
+
 public class RemovedNodeDeselector extends HierarchySupervisor {
     private final VisualModel visualModel;
 
@@ -14,7 +16,8 @@ public class RemovedNodeDeselector extends HierarchySupervisor {
     @Override
     public void handleEvent(HierarchyEvent e) {
         if (e instanceof NodesDeletedEvent) {
-            visualModel.removeFromSelection(e.getAffectedNodes());
+            Collection<VisualNode> nodes = NodeHelper.filterByType(e.getAffectedNodes(), VisualNode.class);
+            visualModel.removeFromSelection(nodes);
         }
     }
 }

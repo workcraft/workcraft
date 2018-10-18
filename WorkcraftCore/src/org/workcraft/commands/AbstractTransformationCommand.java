@@ -1,14 +1,13 @@
 package org.workcraft.commands;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.MenuOrdering;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 public abstract class AbstractTransformationCommand implements ScriptableCommand<Void>, MenuOrdering {
 
@@ -30,7 +29,7 @@ public abstract class AbstractTransformationCommand implements ScriptableCommand
     @Override
     public Void execute(WorkspaceEntry we) {
         VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
-        Collection<Node> nodes = collect(visualModel);
+        Collection<? extends VisualNode> nodes = collect(visualModel);
         if (!nodes.isEmpty()) {
             we.saveMemento();
             transform(visualModel, nodes);
@@ -38,25 +37,17 @@ public abstract class AbstractTransformationCommand implements ScriptableCommand
         return null;
     }
 
-    public Collection<Node> collect(Model model) {
-        Collection<Node> result = new HashSet<>();
-        if (model instanceof VisualModel) {
-            VisualModel visualModel = (VisualModel) model;
-            result.addAll(visualModel.getSelection());
-        }
-        return result;
+    public Collection<VisualNode> collect(VisualModel model) {
+        return new HashSet<>(model.getSelection());
     }
 
-    public void transform(Model model, Collection<Node> nodes) {
-        if (model instanceof VisualModel) {
-            VisualModel visualModel = (VisualModel) model;
-            for (Node node: nodes) {
-                transform(model, node);
-            }
-            visualModel.selectNone();
+    public void transform(VisualModel model, Collection<? extends VisualNode> nodes) {
+        for (VisualNode node: nodes) {
+            transform(model, node);
         }
+        model.selectNone();
     }
 
-    public abstract void transform(Model model, Node node);
+    public abstract void transform(VisualModel model, VisualNode node);
 
 }

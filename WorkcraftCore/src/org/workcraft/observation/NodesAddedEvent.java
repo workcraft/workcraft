@@ -9,14 +9,14 @@ public class NodesAddedEvent implements HierarchyEvent {
     private final Node parentNode;
     private final Collection<Node> affectedNodes;
 
-    public NodesAddedEvent(Node parentNode, Collection<Node> affectedNodes) {
+    public NodesAddedEvent(Node parentNode, Collection<? extends Node> affectedNodes) {
         this.parentNode = parentNode;
-        this.affectedNodes = affectedNodes;
+        this.affectedNodes = (Collection<Node>) affectedNodes;
     }
 
     public NodesAddedEvent(Node parentNode, Node affectedNode) {
         this.parentNode = parentNode;
-        this.affectedNodes = new ArrayList<Node>();
+        this.affectedNodes = new ArrayList<>();
         affectedNodes.add(affectedNode);
     }
 

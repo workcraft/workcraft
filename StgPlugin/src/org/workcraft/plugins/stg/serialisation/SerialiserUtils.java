@@ -3,6 +3,8 @@ package org.workcraft.plugins.stg.serialisation;
 import org.workcraft.Info;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathModel;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.FormatException;
@@ -10,6 +12,7 @@ import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.*;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.util.ExportUtils;
 import org.workcraft.util.Hierarchy;
 
@@ -188,16 +191,16 @@ public class SerialiserUtils {
         return result;
     }
 
-    private static void writeMarking(PrintWriter out, Model model, Collection<Place> places, boolean needInstanceNumbers) {
+    private static void writeMarking(PrintWriter out, MathModel model, Collection<? extends Place> places, boolean needInstanceNumbers) {
         ArrayList<String> markingEntries = new ArrayList<>();
         for (Place p: places) {
             final int tokens = p.getTokens();
             final String reference;
             if (p instanceof StgPlace) {
                 if (((StgPlace) p).isImplicit()) {
-                    Node predNode = model.getPreset(p).iterator().next();
+                    MathNode predNode = model.getPreset(p).iterator().next();
                     String predRef = getReference(model, predNode, needInstanceNumbers);
-                    Node succNode = model.getPostset(p).iterator().next();
+                    MathNode succNode = model.getPostset(p).iterator().next();
                     String succRef = getReference(model, succNode, needInstanceNumbers);
                     reference = "<" + predRef + "," + succRef + ">";
                 } else {

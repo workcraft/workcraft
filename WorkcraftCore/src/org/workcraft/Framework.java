@@ -1,44 +1,9 @@
 package org.workcraft;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import javax.swing.SwingUtilities;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextAction;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.ImporterTopLevel;
-import org.mozilla.javascript.JavaScriptException;
-import org.mozilla.javascript.NativeJavaObject;
-import org.mozilla.javascript.Script;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.commands.AbstractLayoutCommand;
@@ -46,18 +11,13 @@ import org.workcraft.commands.Command;
 import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
+import org.workcraft.dom.visual.NodeHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.exceptions.LayoutException;
-import org.workcraft.exceptions.ModelValidationException;
-import org.workcraft.exceptions.OperationCancelledException;
-import org.workcraft.exceptions.PluginInstantiationException;
-import org.workcraft.exceptions.SerialisationException;
-import org.workcraft.exceptions.VisualModelInstantiationException;
+import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.exceptions.*;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.MainWindow;
@@ -79,21 +39,20 @@ import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.tasks.ExtendedTaskManager;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.Commands;
-import org.workcraft.util.DataAccumulator;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.ExportUtils;
-import org.workcraft.util.FileUtils;
-import org.workcraft.util.Hierarchy;
-import org.workcraft.util.ImportUtils;
-import org.workcraft.util.LogUtils;
-import org.workcraft.util.XmlUtils;
-import org.workcraft.workspace.Memento;
-import org.workcraft.workspace.ModelEntry;
-import org.workcraft.workspace.Stamp;
-import org.workcraft.workspace.Workspace;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.util.*;
+import org.workcraft.workspace.*;
 import org.xml.sax.SAXException;
+
+import javax.swing.*;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public final class Framework {
 
@@ -711,18 +670,21 @@ public final class Framework {
         if (visualModel != null) {
             visualModel.selectNone();
         } else {
-            ModelDescriptor descriptor = me.getDescriptor();
-            VisualModelDescriptor vmd = descriptor.getVisualModelDescriptor();
+            ModelDescriptor md = me.getDescriptor();
+            if (md == null) {
+                DialogUtils.showError("Math model is not defined for '" + md.getDisplayName() + "'.");
+                return result;
+            }
+            VisualModelDescriptor vmd = md.getVisualModelDescriptor();
             if (vmd == null) {
-                DialogUtils.showError("A visual model could not be created because '"
-                        + descriptor.getDisplayName() + "' does not have visual model support.");
+                DialogUtils.showError("Visual model is not defined for '" + md.getDisplayName() + "'.");
+                return result;
             }
             try {
                 visualModel = vmd.create(me.getMathModel());
-                result = new ModelEntry(descriptor, visualModel);
+                result = new ModelEntry(md, visualModel);
             } catch (VisualModelInstantiationException e) {
-                DialogUtils.showError("A visual model could not be created for the selected model.");
-                e.printStackTrace();
+                DialogUtils.showError(e.getMessage());
             }
             // FIXME: Send notification to components, so their dimensions are updated before layout.
             for (VisualComponent component : Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualComponent.class)) {
@@ -890,7 +852,7 @@ public final class Framework {
                     "Incompatible " + displayName1 + " and " + displayName2 + " model cannot be merged.");
         }
 
-        Collection<Node> children = new HashSet<>(vmodel2.getRoot().getChildren());
+        Collection<VisualNode> children = NodeHelper.filterByType(vmodel2.getRoot().getChildren(), VisualNode.class);
 
         vmodel1.selectNone();
         if (vmodel1.reparent(vmodel1.getCurrentLevel(), vmodel2, vmodel2.getRoot(), null)) {

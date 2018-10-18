@@ -1,11 +1,11 @@
 package org.workcraft.plugins.circuit.interop;
 
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
+import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.ArgumentException;
@@ -18,7 +18,6 @@ import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
-import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.plugins.circuit.expression.Expression;
 import org.workcraft.plugins.circuit.expression.ExpressionUtils;
 import org.workcraft.plugins.circuit.expression.Literal;
@@ -30,6 +29,7 @@ import org.workcraft.plugins.circuit.jj.expression.ExpressionParser;
 import org.workcraft.plugins.circuit.jj.verilog.VerilogParser;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.StructureUtilsKt;
+import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.plugins.circuit.verilog.*;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.stg.Mutex;
@@ -305,8 +305,8 @@ public class VerilogImporter implements Importer {
     }
 
     private void setAssignComponentName(Circuit circuit, FunctionComponent component, String name) {
-        HierarchicalUniqueNameReferenceManager refManager
-                = (HierarchicalUniqueNameReferenceManager) circuit.getReferenceManager();
+        HierarchyReferenceManager refManager
+                = (HierarchyReferenceManager) circuit.getReferenceManager();
 
         NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(circuit.getRoot());
         NameManager nameManagerer = refManager.getNameManager(namespaceProvider);
@@ -934,7 +934,7 @@ public class VerilogImporter implements Importer {
                 FunctionContact leafOutputContact = getOutputContact(circuit, leafComponent);
                 List<Contact> leafInputContacts = new LinkedList<>(leafComponent.getInputs());
 
-                Set<Node> oldContacts = circuit.getPostset(leafOutputContact);
+                Set<MathNode> oldContacts = circuit.getPostset(leafOutputContact);
                 if (oldContacts.contains(rootInputContact)) {
                     List<BooleanFormula> replacementContacts = new LinkedList<>();
                     for (Contact leafInputContact: leafInputContacts) {
@@ -996,9 +996,9 @@ public class VerilogImporter implements Importer {
 
         FunctionContact oldOutputContact = getOutputContact(circuit, oldComponent);
         FunctionContact newOutputContact = getOutputContact(circuit, newComponent);
-        for (Connection oldConnection: new HashSet<>(circuit.getConnections(oldOutputContact))) {
+        for (MathConnection oldConnection: new HashSet<>(circuit.getConnections(oldOutputContact))) {
             if (oldConnection.getFirst() != oldOutputContact) continue;
-            Node toNode = oldConnection.getSecond();
+            MathNode toNode = oldConnection.getSecond();
             circuit.remove(oldConnection);
             try {
                 boolean hasNewContact = false;
@@ -1010,7 +1010,7 @@ public class VerilogImporter implements Importer {
                     }
                 }
                 if (!hasNewContact) {
-                    circuit.connect(newOutputContact, toNode);
+                    circuit.connect(newOutputContact, (MathNode) toNode);
                 }
             } catch (InvalidConnectionException e) {
             }
@@ -1019,10 +1019,11 @@ public class VerilogImporter implements Importer {
             if (newContact.isOutput()) continue;
             Contact oldContact = newToOldContactMap.get(newContact);
             if (oldContact == null) continue;
-            for (Node fromNode: circuit.getPreset(oldContact)) {
+            for (MathNode fromNode: circuit.getPreset(oldContact)) {
                 try {
-                    circuit.connect(fromNode, newContact);
+                    circuit.connect((MathNode) fromNode, newContact);
                 } catch (InvalidConnectionException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }

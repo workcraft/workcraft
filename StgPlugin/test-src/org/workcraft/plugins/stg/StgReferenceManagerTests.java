@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.observation.NodesAddedEvent;
+import org.workcraft.plugins.stg.references.StgReferenceManager;
 
 public class StgReferenceManagerTests {
 

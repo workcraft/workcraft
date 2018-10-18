@@ -1,14 +1,13 @@
 package org.workcraft.dom;
 
-import java.util.Collection;
-import java.util.HashSet;
-
+import net.sf.jga.fn.UnaryFunctor;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.util.Hierarchy;
 
-import net.sf.jga.fn.UnaryFunctor;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class DefaultHangingConnectionRemover extends HierarchySupervisor {
     private final NodeContext nct;
@@ -55,9 +54,12 @@ public class DefaultHangingConnectionRemover extends HierarchySupervisor {
 
     public void findHangingConnections(Node node, HashSet<Connection> hangingConnections, UnaryFunctor<Connection, Boolean> hanging) {
         // need only to remove those connections that are not already being deleted
-        for (Connection con : nct.getConnections(node)) {
-            if (hanging.fn(con)) {
-                hangingConnections.add(con);
+        for (Object o : nct.getConnections(node)) {
+            if (o instanceof Connection) {
+                Connection connection = (Connection) o;
+                if (hanging.fn(connection)) {
+                    hangingConnections.add(connection);
+                }
             }
         }
         for (Node nn : node.getChildren()) {

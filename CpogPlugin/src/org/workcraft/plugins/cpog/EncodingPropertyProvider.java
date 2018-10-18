@@ -2,7 +2,7 @@ package org.workcraft.plugins.cpog;
 
 import org.workcraft.gui.propertyeditor.PropertyClass;
 import org.workcraft.gui.propertyeditor.PropertyClassProvider;
-import org.workcraft.plugins.cpog.propertyeditor.EncodingProperty;
+import org.workcraft.plugins.cpog.properties.EncodingProperty;
 
 public class EncodingPropertyProvider implements PropertyClassProvider {
 

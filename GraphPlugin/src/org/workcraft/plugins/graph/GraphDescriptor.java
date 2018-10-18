@@ -1,8 +1,6 @@
 package org.workcraft.plugins.graph;
 
 import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.dom.VisualModelDescriptor;
-import org.workcraft.dom.math.MathModel;
 
 public class GraphDescriptor implements ModelDescriptor {
 
@@ -12,12 +10,12 @@ public class GraphDescriptor implements ModelDescriptor {
     }
 
     @Override
-    public MathModel createMathModel() {
+    public Graph createMathModel() {
         return new Graph();
     }
 
     @Override
-    public VisualModelDescriptor getVisualModelDescriptor() {
+    public VisualGraphDescriptor getVisualModelDescriptor() {
         return new VisualGraphDescriptor();
     }
 

@@ -1,14 +1,7 @@
 package org.workcraft.plugins.son.algorithm;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Stack;
-
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
@@ -19,6 +12,8 @@ import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.exception.UnboundedException;
 import org.workcraft.plugins.son.util.Phase;
 import org.workcraft.plugins.son.util.Step;
+
+import java.util.*;
 
 public class SimulationAlg extends RelationAlgorithm {
 
@@ -181,11 +176,11 @@ public class SimulationAlg extends RelationAlgorithm {
     }
 
     private boolean isONEnabled(TransitionNode e) {
-        if (net.getPreset(e).isEmpty()) {
+        if (net.getPreset((MathNode) e).isEmpty()) {
             return false;
         }
 
-        for (Node n : net.getPreset(e)) {
+        for (MathNode n : net.getPreset((MathNode) e)) {
             if (n instanceof Condition) {
                 if (!((Condition) n).isMarked()) {
                     return false;
@@ -272,10 +267,10 @@ public class SimulationAlg extends RelationAlgorithm {
                 visit.add(e);
 
                 TransitionNode e2 = null;
-                for (Node pre : net.getPreset(e)) {
+                for (MathNode pre : net.getPreset((MathNode) e)) {
                     if (pre instanceof ChannelPlace) {
                         if (!((ChannelPlace) pre).isMarked()) {
-                            for (Node pre2 : net.getPreset(pre)) {
+                            for (MathNode pre2 : net.getPreset(pre)) {
                                 if (visit.contains(pre2)) {
                                     continue;
                                 } else if (!result.contains(pre2) || del.contains(pre2)) {
@@ -311,11 +306,11 @@ public class SimulationAlg extends RelationAlgorithm {
 
     //reverse simulation
     private boolean isRevONEnabled(TransitionNode e) {
-        if (net.getPostset(e).isEmpty()) {
+        if (net.getPostset((MathNode) e).isEmpty()) {
             return false;
         }
 
-        for (Node n : net.getPostset(e)) {
+        for (Node n : net.getPostset((MathNode) e)) {
             if (n instanceof Condition) {
                 if (!((Condition) n).isMarked()) {
                     return false;
@@ -389,10 +384,10 @@ public class SimulationAlg extends RelationAlgorithm {
                 visit.add(e);
 
                 TransitionNode e2 = null;
-                for (Node post : net.getPostset(e)) {
+                for (MathNode post : net.getPostset((MathNode) e)) {
                     if (post instanceof ChannelPlace) {
                         if (!((ChannelPlace) post).isMarked()) {
-                            for (Node post2 : net.getPostset(post)) {
+                            for (MathNode post2 : net.getPostset(post)) {
                                 if (visit.contains(post2)) {
                                     continue;
                                 } else if (!result.contains(post2) || del.contains(post2)) {
@@ -441,11 +436,10 @@ public class SimulationAlg extends RelationAlgorithm {
      * @throws UnboundedException
      */
     private void fire(Step step, Map<Condition, Collection<Phase>> phases) throws UnboundedException {
-
         //marking for ON and CSON
         for (TransitionNode e : step) {
-            for (Node post : net.getPostset(e)) {
-                if ((post instanceof PlaceNode) && net.getSONConnectionType(e, post) != Semantics.SYNCLINE) {
+            for (MathNode post : net.getPostset((MathNode) e)) {
+                if ((post instanceof PlaceNode) && net.getSONConnectionType((MathNode) e, post) != Semantics.SYNCLINE) {
                     if (((PlaceNode) post).isMarked()) {
                         throw new UnboundedException(net.getNodeReference(post), post);
                     } else {
@@ -456,8 +450,8 @@ public class SimulationAlg extends RelationAlgorithm {
         }
 
         for (TransitionNode e : step) {
-            for (Node pre : net.getPreset(e)) {
-                if ((pre instanceof PlaceNode) && net.getSONConnectionType(e, pre) != Semantics.SYNCLINE) {
+            for (MathNode pre : net.getPreset((MathNode) e)) {
+                if ((pre instanceof PlaceNode) && net.getSONConnectionType((MathNode) e, pre) != Semantics.SYNCLINE) {
                     ((PlaceNode) pre).setMarked(false);
                 }
             }
@@ -465,7 +459,7 @@ public class SimulationAlg extends RelationAlgorithm {
 
         for (TransitionNode e : step) {
             //marking for BSON
-            for (Node pre : net.getPreset(e)) {
+            for (MathNode pre : net.getPreset((MathNode) e)) {
                 //if e is upper event, remove marking for maximal phase of pre{e}.
                 if (bsonAlg.isUpperCondition(pre)) {
                     Condition c = (Condition) pre;
@@ -485,7 +479,7 @@ public class SimulationAlg extends RelationAlgorithm {
                 }
             }
 
-            for (Node post : net.getPostset(e)) {
+            for (MathNode post : net.getPostset((MathNode) e)) {
                 //if e is upper event, set marking for every minimal phase of post{e}.
                 if (bsonAlg.isUpperCondition(post)) {
                     Condition c = (Condition) post;
@@ -508,8 +502,8 @@ public class SimulationAlg extends RelationAlgorithm {
 
         //marking for ON and CSON
         for (TransitionNode e : step) {
-            for (Node pre : net.getPreset(e)) {
-                if ((pre instanceof PlaceNode) && net.getSONConnectionType(e, pre) != Semantics.SYNCLINE) {
+            for (MathNode pre : net.getPreset((MathNode) e)) {
+                if ((pre instanceof PlaceNode) && net.getSONConnectionType((MathNode) e, pre) != Semantics.SYNCLINE) {
                     if (((PlaceNode) pre).isMarked()) {
                         throw new UnboundedException(net.getNodeReference(pre), pre);
                     } else {
@@ -520,8 +514,8 @@ public class SimulationAlg extends RelationAlgorithm {
         }
 
         for (TransitionNode e : step) {
-            for (Node post : net.getPostset(e)) {
-                if ((post instanceof PlaceNode) && net.getSONConnectionType(e, post) != Semantics.SYNCLINE) {
+            for (MathNode post : net.getPostset((MathNode) e)) {
+                if ((post instanceof PlaceNode) && net.getSONConnectionType((MathNode) e, post) != Semantics.SYNCLINE) {
                     ((PlaceNode) post).setMarked(false);
                 }
             }
@@ -529,7 +523,7 @@ public class SimulationAlg extends RelationAlgorithm {
 
         for (TransitionNode e : step) {
             //marking for BSON
-            for (Node post : net.getPostset(e)) {
+            for (MathNode post : net.getPostset((MathNode) e)) {
                 //if e is upper event, remove marking for maximal phase of pre{e}.
                 if (bsonAlg.isUpperCondition(post)) {
                     Condition c = (Condition) post;
@@ -549,7 +543,7 @@ public class SimulationAlg extends RelationAlgorithm {
                 }
             }
 
-            for (Node pre : net.getPreset(e)) {
+            for (MathNode pre : net.getPreset((MathNode) e)) {
                 //if e is upper event, set marking for every minimal phase of post{e}.
                 if (bsonAlg.isUpperCondition(pre)) {
                     Condition c = (Condition) pre;
@@ -563,4 +557,5 @@ public class SimulationAlg extends RelationAlgorithm {
             }
         }
     }
+
 }

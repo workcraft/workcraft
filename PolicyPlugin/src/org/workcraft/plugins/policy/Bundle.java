@@ -5,9 +5,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 
+@IdentifierPrefix("b")
 public class Bundle extends MathNode {
     public static final String PROPERTY_ADDED = "added";
     public static final String PROPERTY_REMOVED = "removed";

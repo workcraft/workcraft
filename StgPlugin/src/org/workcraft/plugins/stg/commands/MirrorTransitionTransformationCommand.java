@@ -2,8 +2,8 @@ package org.workcraft.plugins.stg.commands;
 
 import org.workcraft.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualSignalTransition;
@@ -33,7 +33,7 @@ public class MirrorTransitionTransformationCommand extends AbstractTransformatio
     }
 
     @Override
-    public boolean isApplicableTo(Node node) {
+    public boolean isApplicableTo(VisualNode node) {
         if (node instanceof VisualSignalTransition) {
             VisualSignalTransition signalTransition = (VisualSignalTransition) node;
             SignalTransition.Direction direction = signalTransition.getDirection();
@@ -43,7 +43,7 @@ public class MirrorTransitionTransformationCommand extends AbstractTransformatio
     }
 
     @Override
-    public boolean isEnabled(ModelEntry me, Node node) {
+    public boolean isEnabled(ModelEntry me, VisualNode node) {
         return true;
     }
 
@@ -53,12 +53,12 @@ public class MirrorTransitionTransformationCommand extends AbstractTransformatio
     }
 
     @Override
-    public Collection<Node> collect(Model model) {
-        Collection<Node> signalTransitions = new HashSet<>();
+    public Collection<VisualNode> collect(VisualModel model) {
+        Collection<VisualNode> signalTransitions = new HashSet<>();
         if (model instanceof VisualStg) {
             VisualStg stg = (VisualStg) model;
             signalTransitions.addAll(stg.getVisualSignalTransitions());
-            Collection<Node> selection = stg.getSelection();
+            Collection<VisualNode> selection = stg.getSelection();
             if (!selection.isEmpty()) {
                 signalTransitions.retainAll(selection);
             }
@@ -67,18 +67,16 @@ public class MirrorTransitionTransformationCommand extends AbstractTransformatio
     }
 
     @Override
-    public void transform(Model model, Collection<Node> nodes) {
+    public void transform(VisualModel model, Collection<? extends VisualNode> nodes) {
         super.transform(model, nodes);
-        if (model instanceof VisualStg) {
-            ((VisualStg) model).select(nodes);
-        }
+        model.select(nodes);
     }
 
     @Override
-    public void transform(Model model, Node node) {
+    public void transform(VisualModel model, VisualNode node) {
         if ((model instanceof VisualStg) && (node instanceof VisualSignalTransition)) {
             VisualStg visualStg = (VisualStg) model;
-            Stg stg = (Stg) visualStg.getMathModel();
+            Stg stg = visualStg.getMathModel();
             VisualSignalTransition visualTransition = (VisualSignalTransition) node;
             SignalTransition transition = visualTransition.getReferencedTransition();
             SignalTransition.Direction direction = visualTransition.getDirection();

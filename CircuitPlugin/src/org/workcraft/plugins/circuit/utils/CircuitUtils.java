@@ -5,6 +5,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
@@ -56,8 +57,8 @@ public class CircuitUtils {
 
     public static Contact findDriver(Circuit circuit, MathNode curNode, boolean transparentZeroDelayComponents) {
         Contact result = null;
-        HashSet<Node> visited = new HashSet<>();
-        Queue<Node> queue = new LinkedList<>();
+        HashSet<MathNode> visited = new HashSet<>();
+        Queue<MathNode> queue = new LinkedList<>();
         if (curNode instanceof MathConnection) {
             queue.add(((MathConnection) curNode).getFirst());
         } else {
@@ -68,7 +69,7 @@ public class CircuitUtils {
                 throw new RuntimeException("Found more than one potential driver for '"
                         + circuit.getNodeReference(curNode) + "'!");
             }
-            Node node = queue.remove();
+            MathNode node = queue.remove();
             if (visited.contains(node)) {
                 continue;
             }
@@ -118,15 +119,15 @@ public class CircuitUtils {
 
     public static Collection<Contact> findDriven(Circuit circuit, MathNode curNode, boolean transparentZeroDelayComponents) {
         Set<Contact> result = new HashSet<>();
-        HashSet<Node> visited = new HashSet<>();
-        Queue<Node> queue = new LinkedList<>();
+        HashSet<MathNode> visited = new HashSet<>();
+        Queue<MathNode> queue = new LinkedList<>();
         if (curNode instanceof MathConnection) {
             queue.add(((MathConnection) curNode).getSecond());
         } else {
             queue.add(curNode);
         }
         while (!queue.isEmpty()) {
-            Node node = queue.remove();
+            MathNode node = queue.remove();
             if (visited.contains(node)) {
                 continue;
             }
@@ -290,7 +291,7 @@ public class CircuitUtils {
     }
 
     public static BooleanFormula parsePinFuncton(VisualCircuit circuit, VisualFunctionComponent component, String function) throws ParseException {
-        if (function == null) {
+        if ((function == null) || function.isEmpty()) {
             return null;
         }
         return BooleanFormulaParser.parse(function, name -> {
@@ -304,7 +305,7 @@ public class CircuitUtils {
     }
 
     public static BooleanFormula parsePortFuncton(VisualCircuit circuit, String function) throws ParseException {
-        if (function == null) {
+        if ((function == null) || function.isEmpty()) {
             return null;
         }
         return BooleanFormulaParser.parse(function, name -> {
@@ -318,7 +319,7 @@ public class CircuitUtils {
     }
 
     public static BooleanFormula parsePinFuncton(Circuit circuit, FunctionComponent component, String function) throws ParseException {
-        if (function == null) {
+        if ((function == null) || function.isEmpty()) {
             return null;
         }
         return BooleanFormulaParser.parse(function, name -> {
@@ -345,7 +346,7 @@ public class CircuitUtils {
     }
 
     public static VisualJoint detachJoint(VisualCircuit circuit, VisualContact driver) {
-        Set<Connection> connections = new HashSet<>(circuit.getConnections(driver));
+        Set<VisualConnection> connections = new HashSet<>(circuit.getConnections(driver));
         if (!driver.isDriver() || (connections.size() <= 1)) {
             return null;
         }
@@ -363,14 +364,14 @@ public class CircuitUtils {
             LogUtils.logWarning(e.getMessage());
         }
 
-        for (Connection connection: connections) {
+        for (VisualConnection connection: connections) {
             if (connection instanceof VisualCircuitConnection) {
                 circuit.remove(connection);
                 try {
-                    Node driven = connection.getSecond();
-                    VisualCircuitConnection newConnection = (VisualCircuitConnection) circuit.connect(joint, driven);
-                    newConnection.copyShape((VisualCircuitConnection) connection);
-                    newConnection.copyStyle((VisualCircuitConnection) connection);
+                    VisualNode driven = connection.getSecond();
+                    VisualConnection newConnection = circuit.connect(joint, driven);
+                    newConnection.copyShape(connection);
+                    newConnection.copyStyle(connection);
                 } catch (InvalidConnectionException e) {
                     LogUtils.logWarning(e.getMessage());
                 }

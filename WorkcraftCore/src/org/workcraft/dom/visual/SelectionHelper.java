@@ -1,35 +1,33 @@
 package org.workcraft.dom.visual;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.util.Hierarchy;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 public class SelectionHelper {
 
-    public static Collection<Node> getOrderedCurrentLevelSelection(VisualModel model) {
-        HashSet<Node> result = new HashSet<>();
-        Collection<Node> selection = model.getSelection();
+    public static Collection<VisualNode> getOrderedCurrentLevelSelection(VisualModel model) {
+        HashSet<VisualNode> result = new HashSet<>();
+        Collection<? extends VisualNode> selection = model.getSelection();
         Container currentLevel = model.getCurrentLevel();
         for (Node node : currentLevel.getChildren()) {
-            if (selection.contains(node)) {
-                result.add(node);
+            if ((node instanceof VisualNode) && selection.contains(node)) {
+                result.add((VisualNode) node);
             }
         }
         return result;
     }
 
-    public static Collection<Node> getRecursivelyIncludedNodes(Collection<Node> nodes) {
-        HashSet<Node> result = new HashSet<>();
-        for (Node node : nodes) {
-            if (node instanceof VisualNode) {
-                result.add(node);
-                result.addAll(Hierarchy.getDescendantsOfType(node, VisualNode.class));
-            }
+    public static Collection<VisualNode> getRecursivelyIncludedNodes(Collection<? extends VisualNode> nodes) {
+        HashSet<VisualNode> result = new HashSet<>();
+        for (VisualNode node : nodes) {
+            result.add(node);
+            result.addAll(Hierarchy.getDescendantsOfType(node, VisualNode.class));
         }
         return result;
     }
@@ -38,10 +36,10 @@ public class SelectionHelper {
         return Hierarchy.getChildrenOfType(model.getCurrentLevel(), VisualConnection.class);
     }
 
-    public static Collection<Node> getGroupableCurrentLevelSelection(VisualModel model) {
-        HashSet<Node> result = new HashSet<>();
-        Collection<Node> currentLevelSelection = getOrderedCurrentLevelSelection(model);
-        for (Node node : currentLevelSelection) {
+    public static Collection<VisualNode> getGroupableCurrentLevelSelection(VisualModel model) {
+        HashSet<VisualNode> result = new HashSet<>();
+        Collection<VisualNode> currentLevelSelection = getOrderedCurrentLevelSelection(model);
+        for (VisualNode node : currentLevelSelection) {
             if (model.isGroupable(node) && !(node instanceof VisualConnection)) {
                 result.add(node);
             }
@@ -52,9 +50,10 @@ public class SelectionHelper {
         return result;
     }
 
-    public static Collection<VisualConnection> getIncludedConnections(Collection<Node> nodes, Collection<VisualConnection> connections) {
+    public static Collection<VisualConnection> getIncludedConnections(Collection<? extends VisualNode> nodes,
+            Collection<? extends VisualConnection> connections) {
         Collection<VisualConnection> result = new HashSet<>();
-        Collection<Node> recursiveNodes = getRecursivelyIncludedNodes(nodes);
+        Collection<VisualNode> recursiveNodes = getRecursivelyIncludedNodes(nodes);
         for (VisualConnection connection : connections) {
             VisualNode first = connection.getFirst();
             VisualNode second = connection.getSecond();

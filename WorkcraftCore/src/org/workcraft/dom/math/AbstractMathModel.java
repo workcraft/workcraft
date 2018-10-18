@@ -1,35 +1,47 @@
 package org.workcraft.dom.math;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.NodeFactory;
-import org.workcraft.dom.AbstractModel;
-import org.workcraft.dom.Container;
-import org.workcraft.dom.DefaultHangingConnectionRemover;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
+import org.workcraft.dom.*;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
+import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.MultiSet;
 
-public abstract class AbstractMathModel extends AbstractModel implements MathModel {
+import java.util.Collection;
+import java.util.HashSet;
+
+public abstract class AbstractMathModel extends AbstractModel<MathNode, MathConnection> implements MathModel {
 
     public AbstractMathModel() {
         this(null);
     }
 
     public AbstractMathModel(Container root) {
-        this(root, null);
+        this(root, (References) null);
+    }
+
+    public AbstractMathModel(Container root, References refs) {
+        this(root, new HierarchyReferenceManager(refs));
     }
 
     public AbstractMathModel(Container root, ReferenceManager man) {
-        super((root == null) ? new MathGroup() : root, man);
+        super(root, man);
         new DefaultHangingConnectionRemover(this).attach(getRoot());
+    }
+
+    @Override
+    public MathGroup createDefaultRoot() {
+        return new MathGroup();
+    }
+
+    @Override
+    public HierarchyReferenceManager createDefaultReferenceManager() {
+        return new HierarchyReferenceManager();
     }
 
     @Override
@@ -85,8 +97,8 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
         return createNode(null, container, type);
     }
 
-    private void setNamespaceRecursively(HierarchicalUniqueNameReferenceManager dstRefManager, Container dstContainer,
-            Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
+    private void setNamespaceRecursively(HierarchyReferenceManager dstRefManager, Container dstContainer,
+            Model srcModel, Container srcRoot, Collection<? extends MathNode> srcChildren) {
 
         // Collect the nodes to reparent - need to assign the whole tree to new providers
         Collection<Node> nodes = null;
@@ -101,7 +113,7 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
             dstProvider = (NamespaceProvider) dstContainer;
         }
 
-        HierarchicalUniqueNameReferenceManager srcRefManager = (HierarchicalUniqueNameReferenceManager) srcModel.getReferenceManager();
+        HierarchyReferenceManager srcRefManager = (HierarchyReferenceManager) srcModel.getReferenceManager();
         dstRefManager.setNamespaceProvider(nodes, srcRefManager, dstProvider);
 
         srcRoot.reparent(nodes, dstContainer);
@@ -121,13 +133,13 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
     }
 
     @Override
-    public boolean reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
+    public boolean reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<? extends MathNode> srcChildren) {
         if (srcModel == null) {
             srcModel = this;
         }
-        HierarchicalUniqueNameReferenceManager manager = null;
-        if (getReferenceManager() instanceof HierarchicalUniqueNameReferenceManager) {
-            manager = (HierarchicalUniqueNameReferenceManager) getReferenceManager();
+        HierarchyReferenceManager manager = null;
+        if (getReferenceManager() instanceof HierarchyReferenceManager) {
+            manager = (HierarchyReferenceManager) getReferenceManager();
         }
         if (manager == null) {
             return false;
@@ -149,6 +161,22 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
             result.add(categoryName);
         }
         return result;
+    }
+
+    @Override
+    public void validateConnection(MathNode first, MathNode second) throws InvalidConnectionException {
+        if ((first == null) || (second == null)) {
+            throw new InvalidConnectionException("Invalid connection");
+        }
+    }
+
+    @Override
+    public MathConnection connect(MathNode first, MathNode second) throws InvalidConnectionException {
+        validateConnection(first, second);
+        MathConnection connection = new MathConnection(first, second);
+        Container container = Hierarchy.getNearestContainer(first, second);
+        container.add(connection);
+        return connection;
     }
 
 }

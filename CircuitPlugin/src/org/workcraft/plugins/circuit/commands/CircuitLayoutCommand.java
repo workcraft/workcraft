@@ -229,11 +229,11 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
         circuit.selectNone();
         // Dissolve joints
         DissolveJointTransformationCommand splitJointsCommand = new DissolveJointTransformationCommand();
-        Collection<Node> joints = splitJointsCommand.collect(circuit);
+        Collection<VisualNode> joints = splitJointsCommand.collect(circuit);
         splitJointsCommand.transform(circuit, joints);
         // Straighten connections
         StraightenConnectionTransformationCommand straightenConnectionsCommand = new StraightenConnectionTransformationCommand();
-        Collection<Node> connections = straightenConnectionsCommand.collect(circuit);
+        Collection<VisualNode> connections = straightenConnectionsCommand.collect(circuit);
         straightenConnectionsCommand.transform(circuit, connections);
     }
 

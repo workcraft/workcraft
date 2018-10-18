@@ -1,10 +1,7 @@
 package org.workcraft.plugins.son.algorithm;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
@@ -12,6 +9,10 @@ import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.util.Phase;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
 
 public class ErrorTracingAlg extends SimulationAlg {
 
@@ -31,7 +32,7 @@ public class ErrorTracingAlg extends SimulationAlg {
             Collection<TransitionNode> removeList = new ArrayList<>();
 
             for (TransitionNode e : fireList) {
-                if (!net.getSONConnectionTypes(e).contains(Semantics.SYNCLINE)) {
+                if (!net.getSONConnectionTypes((MathNode) e).contains(Semantics.SYNCLINE)) {
                     //set number from the very first asynchronous event
                     if (getPreAsynEvents(e).isEmpty() || !hasCommonElements(fireList, getPreAsynEvents(e))) {
                         setAsynErrNum(e, phases, isLower);
@@ -95,13 +96,13 @@ public class ErrorTracingAlg extends SimulationAlg {
             err++;
         }
         //get err number from lower conditions and channel places
-        for (Node pre : net.getPreset(e)) {
+        for (MathNode pre : net.getPreset((MathNode) e)) {
             if (pre instanceof PlaceNode) {
                 err = err + ((PlaceNode) pre).getErrors();
             }
         }
 
-        for (Node post: net.getPostset(e)) {
+        for (MathNode post: net.getPostset((MathNode) e)) {
             if (post instanceof Condition) {
                 ((Condition) post).setErrors(err);
                 //set err number for lower condition
@@ -124,7 +125,7 @@ public class ErrorTracingAlg extends SimulationAlg {
             if (e.isFaulty()) {
                 err++;
             }
-            for (Node pre : net.getPreset(e)) {
+            for (MathNode pre : net.getPreset((MathNode) e)) {
                 if (pre instanceof Condition) {
                     err = err + ((Condition) pre).getErrors();
                 }
@@ -139,7 +140,7 @@ public class ErrorTracingAlg extends SimulationAlg {
         }
 
         for (TransitionNode e : sync) {
-            for (Node post: net.getPostset(e)) {
+            for (MathNode post: net.getPostset((MathNode) e)) {
                 if (post instanceof Condition) {
                     ((Condition) post).setErrors(err);
                     //set err number for upper conditions
@@ -151,7 +152,7 @@ public class ErrorTracingAlg extends SimulationAlg {
                 }
 
                 if (post instanceof ChannelPlace) {
-                    for (Node n : net.getPostset(post)) {
+                    for (MathNode n : net.getPostset(post)) {
                         if (!sync.contains(n)) {
                             ((ChannelPlace) post).setErrors(err);
                         }
@@ -168,7 +169,7 @@ public class ErrorTracingAlg extends SimulationAlg {
             Collection<TransitionNode> removeList = new ArrayList<>();
 
             for (TransitionNode e : fireList) {
-                if (!net.getSONConnectionTypes(e).contains(Semantics.SYNCLINE)) {
+                if (!net.getSONConnectionTypes((MathNode) e).contains(Semantics.SYNCLINE)) {
                     //set number from the very first asynchronous event
                     if (getPostAsynEvents(e).isEmpty() || !hasCommonElements(fireList, getPostAsynEvents(e))) {
                         setRevAsynErrNum(e, phases, isLower);
@@ -218,13 +219,13 @@ public class ErrorTracingAlg extends SimulationAlg {
             err++;
         }
         //get err number from lower conditions and channel places
-        for (Node pre : net.getPreset(e)) {
+        for (MathNode pre : net.getPreset((MathNode) e)) {
             if (pre instanceof PlaceNode) {
                 err = err + ((PlaceNode) pre).getErrors();
             }
         }
 
-        for (Node post: net.getPostset(e)) {
+        for (MathNode post: net.getPostset((MathNode) e)) {
             if (post instanceof Condition) {
                 ((Condition) post).setErrors(err);
                 //set err number for lower condition
@@ -248,12 +249,12 @@ public class ErrorTracingAlg extends SimulationAlg {
             if (e.isFaulty()) {
                 err++;
             }
-            for (Node pre : net.getPreset(e)) {
+            for (MathNode pre : net.getPreset((MathNode) e)) {
                 if (pre instanceof Condition) {
                     err = err + ((Condition) pre).getErrors();
                 }
                 if (pre instanceof ChannelPlace) {
-                    for (Node n : net.getPreset(pre)) {
+                    for (MathNode n : net.getPreset(pre)) {
                         if (!sync.contains(n)) {
                             err = err + ((ChannelPlace) pre).getErrors();
                         }
@@ -263,7 +264,7 @@ public class ErrorTracingAlg extends SimulationAlg {
         }
 
         for (TransitionNode e : sync) {
-            for (Node post: net.getPostset(e)) {
+            for (MathNode post: net.getPostset((MathNode) e)) {
                 if (post instanceof Condition) {
                     ((Condition) post).setErrors(err);
                     //set err number for upper conditions
@@ -276,7 +277,7 @@ public class ErrorTracingAlg extends SimulationAlg {
                 }
 
                 if (post instanceof ChannelPlace) {
-                    for (Node n : net.getPostset(post)) {
+                    for (MathNode n : net.getPostset(post)) {
                         if (!sync.contains(n)) {
                             ((ChannelPlace) post).setErrors(((ChannelPlace) post).getErrors() - err);
                         }
@@ -285,4 +286,5 @@ public class ErrorTracingAlg extends SimulationAlg {
             }
         }
     }
+
 }

@@ -1,42 +1,26 @@
 package org.workcraft.plugins.dfs.commands;
 
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-
 import org.workcraft.dom.Container;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.visual.BoundingBoxHelper;
-import org.workcraft.dom.visual.ConnectionHelper;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualTransformableNode;
+import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.dfs.BinaryRegister.Marking;
-import org.workcraft.plugins.dfs.ControlConnection;
-import org.workcraft.plugins.dfs.ControlRegister;
+import org.workcraft.plugins.dfs.*;
 import org.workcraft.plugins.dfs.ControlRegister.SynchronisationType;
-import org.workcraft.plugins.dfs.Dfs;
-import org.workcraft.plugins.dfs.Logic;
-import org.workcraft.plugins.dfs.PopRegister;
-import org.workcraft.plugins.dfs.PushRegister;
-import org.workcraft.plugins.dfs.Register;
-import org.workcraft.plugins.dfs.VisualControlConnection;
-import org.workcraft.plugins.dfs.VisualControlRegister;
-import org.workcraft.plugins.dfs.VisualDfs;
-import org.workcraft.plugins.dfs.VisualLogic;
-import org.workcraft.plugins.dfs.VisualPopRegister;
-import org.workcraft.plugins.dfs.VisualPushRegister;
-import org.workcraft.plugins.dfs.VisualRegister;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Pair;
+
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 public class WaggingGenerator {
     private final VisualDfs dfs;
@@ -59,7 +43,7 @@ public class WaggingGenerator {
         this.dfs = dfs;
         this.count = count;
 
-        for (Node node: dfs.getSelection()) {
+        for (VisualNode node: dfs.getSelection()) {
             if (node instanceof VisualComponent) {
                 selectedComponents.add((VisualComponent) node);
             } else if (node instanceof VisualConnection) {
@@ -133,8 +117,7 @@ public class WaggingGenerator {
             replica.copyPosition(component);
             replica.copyStyle(component);
             // postpone adding to the model so no notifications are sent too early
-            Dfs mathDfs = (Dfs) dfs.getMathModel();
-            mathDfs.add(replica.getReferencedComponent());
+            dfs.getMathModel().add(replica.getReferencedComponent());
             Hierarchy.getNearestContainer(component).add(replica);
         }
         return replica;
@@ -167,7 +150,7 @@ public class WaggingGenerator {
             waggingData.pushRegisters.clear();
             waggingData.popRegisters.clear();
             for (VisualComponent cur: waggingData.dataComponents) {
-                for (Node pred: dfs.getPreset(replicaToOriginalMap.get(cur))) {
+                for (VisualNode pred: dfs.getPreset(replicaToOriginalMap.get(cur))) {
                     if (selectedComponents.contains(pred)) continue;
                     Point2D.Double position = new Point2D.Double(cur.getX() / 2 + ((VisualComponent) pred).getX() / 2, cur.getY());
                     VisualPushRegister push = createPushRegister(Hierarchy.getNearestContainer(cur, pred), position);
@@ -176,7 +159,7 @@ public class WaggingGenerator {
                     waggingData.pushRegisters.add(push);
                     hasPred = true;
                 }
-                for (Node succ: dfs.getPostset(replicaToOriginalMap.get(cur))) {
+                for (VisualNode succ: dfs.getPostset(replicaToOriginalMap.get(cur))) {
                     if (selectedComponents.contains(succ)) continue;
                     Point2D.Double position = new Point2D.Double(cur.getX() / 2 + ((VisualComponent) succ).getX() / 2, cur.getY());
                     VisualPopRegister pop = createPopRegister(Hierarchy.getNearestContainer(cur, succ), position);
@@ -296,7 +279,7 @@ public class WaggingGenerator {
 
     private void group() {
         // data components
-        ArrayList<Node> dataNodes = new ArrayList<>();
+        ArrayList<VisualNode> dataNodes = new ArrayList<>();
         for (WaggingData waggingData: wagging) {
             dataNodes.addAll(waggingData.dataComponents);
             dataNodes.addAll(waggingData.pushRegisters);
@@ -305,14 +288,14 @@ public class WaggingGenerator {
         dfs.select(dataNodes);
         dfs.groupSelection();
         // push control
-        ArrayList<Node> pushNodes = new ArrayList<>();
+        ArrayList<VisualNode> pushNodes = new ArrayList<>();
         for (WaggingData waggingData: wagging) {
             pushNodes.addAll(waggingData.pushControls);
         }
         dfs.select(pushNodes);
         dfs.groupSelection();
         // pop control
-        ArrayList<Node> popNodes = new ArrayList<>();
+        ArrayList<VisualNode> popNodes = new ArrayList<>();
         for (WaggingData waggingData: wagging) {
             popNodes.addAll(waggingData.popControls);
         }
@@ -337,7 +320,7 @@ public class WaggingGenerator {
     }
 
     private Container getCommonContainer() {
-        ArrayList<Node> nodes = new ArrayList<>();
+        ArrayList<VisualNode> nodes = new ArrayList<>();
         for (WaggingData waggingData: wagging) {
             nodes.addAll(waggingData.dataComponents);
             nodes.addAll(waggingData.pushRegisters);
@@ -349,7 +332,7 @@ public class WaggingGenerator {
     private void addComponent(VisualComponent component, Container container, Point2D position) {
         component.setPosition(position);
         // postpone adding to the model so no notifications are sent too early
-        ((Dfs) dfs.getMathModel()).add(component.getReferencedComponent());
+        dfs.getMathModel().add(component.getReferencedComponent());
         if (container == null) {
             container = dfs.getRoot();
         }
@@ -380,22 +363,30 @@ public class WaggingGenerator {
     private VisualConnection createConnection(VisualComponent first, VisualComponent second) {
         MathNode firstRef = first.getReferencedComponent();
         MathNode secondRef = second.getReferencedComponent();
-        MathConnection connectionRef = ((Dfs) dfs.getMathModel()).connect(firstRef, secondRef);
-        VisualConnection connection = new VisualConnection(connectionRef, first, second);
-        Hierarchy.getNearestContainer(first, second).add(connection);
-        return connection;
+        try {
+            MathConnection connectionRef = dfs.getMathModel().connect(firstRef, secondRef);
+            VisualConnection connection = new VisualConnection(connectionRef, first, second);
+            Hierarchy.getNearestContainer(first, second).add(connection);
+            return connection;
+        } catch (InvalidConnectionException e) {
+            throw new RuntimeException();
+        }
     }
 
     private VisualControlConnection createControlConnection(VisualComponent first, VisualComponent second, boolean inversing) {
         MathNode firstRef = first.getReferencedComponent();
         MathNode secondRef = second.getReferencedComponent();
-        ControlConnection connectionRef = ((Dfs) dfs.getMathModel()).controlConnect(firstRef, secondRef);
-        connectionRef.setInverting(inversing);
-        VisualControlConnection connection = new VisualControlConnection(connectionRef, first, second);
-        connection.setBubble(inversing);
-        connection.setScaleMode(ScaleMode.ADAPTIVE);
-        Hierarchy.getNearestContainer(first, second).add(connection);
-        return connection;
+        try {
+            ControlConnection connectionRef = dfs.getMathModel().controlConnect(firstRef, secondRef);
+            connectionRef.setInverting(inversing);
+            VisualControlConnection connection = new VisualControlConnection(connectionRef, first, second);
+            connection.setBubble(inversing);
+            connection.setScaleMode(ScaleMode.ADAPTIVE);
+            Hierarchy.getNearestContainer(first, second).add(connection);
+            return connection;
+        } catch (InvalidConnectionException e) {
+            throw new RuntimeException();
+        }
     }
 
     private void convertConnectionToPolyline(VisualConnection connection, double x1Offset, double y1Offset, double x2Offset, double y2Offset) {

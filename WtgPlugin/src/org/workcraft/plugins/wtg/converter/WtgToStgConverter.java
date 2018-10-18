@@ -1,6 +1,6 @@
 package org.workcraft.plugins.wtg.converter;
 
-import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.dtd.*;
@@ -114,8 +114,8 @@ public class WtgToStgConverter {
     }
 
     private Pair<NamedTransition, NamedTransition> convertWaveform(Waveform waveform) {
-        Set<Node> preset = srcModel.getPreset(waveform);
-        Set<Node> postset = srcModel.getPostset(waveform);
+        Set<MathNode> preset = srcModel.getPreset(waveform);
+        Set<MathNode> postset = srcModel.getPostset(waveform);
         if ((preset.size() != 1) || (postset.size() != 1)) {
             String waveformName = srcModel.getName(waveform);
             throw new FormatException("Incorrect preset and/or postset of waveform '" + waveformName + "'");
@@ -123,7 +123,7 @@ public class WtgToStgConverter {
         String waveformName = srcModel.getName(waveform);
         // Waveform entry
         DummyTransition entryTransition = null;
-        Node entryNode = preset.iterator().next();
+        MathNode entryNode = preset.iterator().next();
         if (entryNode instanceof State) {
             State entryState = (State) entryNode;
             StgPlace entryPlace = stateToPlaceMap.get(entryState);
@@ -136,7 +136,7 @@ public class WtgToStgConverter {
         }
         // Waveform exit
         DummyTransition exitTransition = null;
-        Node exitNode = postset.iterator().next();
+        MathNode exitNode = postset.iterator().next();
         if (exitNode instanceof State) {
             State exitState = (State) exitNode;
             StgPlace exitPlace = stateToPlaceMap.get(exitState);
@@ -309,7 +309,7 @@ public class WtgToStgConverter {
     private void convertConnections(Waveform waveform) {
         for (Event event : srcModel.getEvents(waveform)) {
             NamedTransition fromTransition = eventToTransitionMap.get(event);
-            for (Node node: srcModel.getPostset(event)) {
+            for (MathNode node: srcModel.getPostset(event)) {
                 NamedTransition toTransition = eventToTransitionMap.get(node);
                 if (isRedundantConnection(event, node)) continue;
                 try {
@@ -321,15 +321,15 @@ public class WtgToStgConverter {
         }
     }
 
-    private boolean isRedundantConnection(Node fromNode, Node toNode) {
+    private boolean isRedundantConnection(MathNode fromNode, MathNode toNode) {
         if (fromNode instanceof EntryEvent) {
-            Set<Node> preset = srcModel.getPreset(toNode);
+            Set<MathNode> preset = srcModel.getPreset(toNode);
             if ((preset.size() > 1) && preset.contains(fromNode)) {
                 return true;
             }
         }
         if (toNode instanceof ExitEvent) {
-            Set<Node> postset = srcModel.getPostset(fromNode);
+            Set<MathNode> postset = srcModel.getPostset(fromNode);
             if ((postset.size() > 1) && postset.contains(toNode)) {
                 return true;
             }
@@ -351,7 +351,7 @@ public class WtgToStgConverter {
         // There should be no loops, so visitedEvents should not be necessary
         // Yet, using it prevents an infinite loop if something else fails
         Set<Event> visitedEvents = new HashSet<>();
-        for (Node node : srcModel.getPreset(toTransition)) {
+        for (MathNode node : srcModel.getPreset(toTransition)) {
             if (node instanceof TransitionEvent) {
                 if (node != fromTransition) {
                     toVisit.add((Event) node);
@@ -363,7 +363,7 @@ public class WtgToStgConverter {
         while (!toVisit.isEmpty()) {
             Event event = toVisit.poll();
             if (event instanceof TransitionEvent) {
-                for (Node node : srcModel.getPreset(event)) {
+                for (MathNode node : srcModel.getPreset(event)) {
                     Event previousEvent = (Event) node;
                     if (previousEvent == fromTransition) {
                         return true;
@@ -447,7 +447,7 @@ public class WtgToStgConverter {
         return dstModel;
     }
 
-    public boolean isRelated(Node highLevelNode, Node node) {
+    public boolean isRelated(MathNode highLevelNode, MathNode node) {
         boolean result = false;
         if (highLevelNode instanceof Event) {
             NamedTransition relatedTransition = getRelatedTransition((Event) highLevelNode);

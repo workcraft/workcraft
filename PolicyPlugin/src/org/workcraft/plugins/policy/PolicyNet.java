@@ -1,59 +1,35 @@
 package org.workcraft.plugins.policy;
 
+import org.workcraft.annotations.VisualClass;
+import org.workcraft.dom.Connection;
+import org.workcraft.dom.Container;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
+import org.workcraft.plugins.petri.PetriNet;
+import org.workcraft.plugins.policy.observers.BundleConsistencySupervisor;
+import org.workcraft.serialisation.References;
+import org.workcraft.util.Hierarchy;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import org.workcraft.annotations.VisualClass;
-import org.workcraft.dom.Connection;
-import org.workcraft.dom.Container;
-import org.workcraft.dom.Node;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
-import org.workcraft.observation.HierarchyEvent;
-import org.workcraft.observation.HierarchySupervisor;
-import org.workcraft.observation.NodesDeletingEvent;
-import org.workcraft.plugins.petri.PetriNet;
-import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.petri.Transition;
-import org.workcraft.serialisation.References;
-import org.workcraft.util.Hierarchy;
-import org.workcraft.util.Identifier;
-
 @VisualClass(org.workcraft.plugins.policy.VisualPolicyNet.class)
 public class PolicyNet extends PetriNet implements PolicyNetModel {
 
     public PolicyNet() {
-        this(new Locality(), null);
+        this(null, null);
     }
 
     public PolicyNet(Container root, References refs) {
-        super(root, new HierarchicalUniqueNameReferenceManager(refs) {
-            @Override
-            public String getPrefix(Node node) {
-                if (node instanceof Place) return "p";
-                if (node instanceof Transition) return "t";
-                if (node instanceof Bundle) return "b";
-                if (node instanceof Locality) return Identifier.createInternal("loc");
-                return super.getPrefix(node);
-            }
-        });
+        super(root, refs);
+        new BundleConsistencySupervisor(this).attach(getRoot());
+    }
 
-        // Update all bundles when a transition is removed or re-parented
-        new HierarchySupervisor() {
-            @Override
-            public void handleEvent(HierarchyEvent e) {
-                if (e instanceof NodesDeletingEvent) {
-                    for (Node node: e.getAffectedNodes()) {
-                        if (node instanceof BundledTransition) {
-                            for (Bundle b: new ArrayList<Bundle>(getBundles())) {
-                                b.remove((BundledTransition) node);
-                            }
-                        }
-                    }
-                }
-            }
-        }.attach(getRoot());
+    @Override
+    public Locality createDefaultRoot() {
+        return new Locality();
     }
 
     @Override
@@ -97,7 +73,7 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
         return result;
     }
 
-    public Locality createLocality(ArrayList<Node> nodes, Container parent) {
+    public Locality createLocality(ArrayList<? extends MathNode> nodes, Container parent) {
         Locality locality = new Locality();
         parent.add(locality);
         parent.reparent(nodes, locality);
@@ -115,7 +91,7 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
         return locality;
     }
 
-    private void splitBundlesByLocalities(ArrayList<Node> nodes) {
+    private void splitBundlesByLocalities(ArrayList<? extends MathNode> nodes) {
         HashMap<Bundle, HashSet<BundledTransition>> subBundles = new HashMap<>();
         for (Node node: nodes) {
             if (node instanceof BundledTransition) {
@@ -123,7 +99,7 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
                 for (Bundle b: getBundlesOfTransition(t)) {
                     HashSet<BundledTransition> transitions = subBundles.get(b);
                     if (transitions == null) {
-                        transitions = new HashSet<BundledTransition>();
+                        transitions = new HashSet<>();
                         subBundles.put(b, transitions);
                     }
                     transitions.add(t);

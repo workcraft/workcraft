@@ -45,7 +45,6 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
         if (hasNameProperties) {
             addNamePropertyDeclarations();
         }
-
     }
 
     private void addColorPropertyDeclarations() {

@@ -1,17 +1,16 @@
 package org.workcraft;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.VisualComponentGeneratorAttribute;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.util.ConstructorParametersMatcher;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 public class NodeFactory {
 
@@ -54,30 +53,15 @@ public class NodeFactory {
     }
 
     private static VisualComponent createVisualComponentInternal(MathNode component, Object... constructorParameters) throws NodeCreationException {
-        VisualComponentGeneratorAttribute generator = component.getClass().getAnnotation(VisualComponentGeneratorAttribute.class);
-        if (generator != null) {
-            try {
-                return ((org.workcraft.dom.VisualComponentGenerator) Class.forName(generator.generator())
-                        .getConstructor().newInstance())
-                        .createComponent(component, constructorParameters);
-            } catch (Exception e) {
-                throw new NodeCreationException(e);
-            }
-        } else {
-            return createVisualComponentSimple(component, constructorParameters);
-        }
-    }
-
-    private static VisualComponent createVisualComponentSimple(MathNode component, Object... constructorParameters) throws NodeCreationException {
         // Find the corresponding visual class
-        VisualClass vcat = component.getClass().getAnnotation(VisualClass.class);
+        VisualClass annotation = component.getClass().getAnnotation(VisualClass.class);
 
         // The component/connection does not define a visual representation
-        if (vcat == null) {
+        if (annotation == null) {
             return null;
         }
         try {
-            Class<?> visualClass = vcat.value();
+            Class<?> visualClass = annotation.value();
 
             Object[] args = new Object[constructorParameters.length + 1];
             args[0] = component;

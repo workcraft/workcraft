@@ -2,9 +2,11 @@ package org.workcraft.plugins.son.elements;
 
 import java.awt.Color;
 
+import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
 
+@IdentifierPrefix("c")
 @VisualClass (org.workcraft.plugins.son.elements.VisualCondition.class)
 public class Condition extends PlaceNode {
 

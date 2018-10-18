@@ -1,8 +1,10 @@
 package org.workcraft.plugins.dfs;
 
+import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
 
+@IdentifierPrefix("r")
 @VisualClass(org.workcraft.plugins.dfs.VisualCounterflowRegister.class)
 public class CounterflowRegister extends MathDelayNode {
     public static final String PROPERTY_AND_MARKED = "And-marked";

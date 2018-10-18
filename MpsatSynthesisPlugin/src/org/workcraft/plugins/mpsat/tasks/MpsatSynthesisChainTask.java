@@ -14,7 +14,7 @@ import org.workcraft.plugins.shared.tasks.ExportTask;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.StgUtils;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;

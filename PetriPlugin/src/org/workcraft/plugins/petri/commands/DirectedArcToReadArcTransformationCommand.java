@@ -1,21 +1,19 @@
 package org.workcraft.plugins.petri.commands;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-
 import org.workcraft.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.petri.PetriNetModel;
-import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.VisualReadArc;
+import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 public class DirectedArcToReadArcTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
@@ -37,12 +35,12 @@ public class DirectedArcToReadArcTransformationCommand extends AbstractTransform
     }
 
     @Override
-    public boolean isApplicableTo(Node node) {
+    public boolean isApplicableTo(VisualNode node) {
         return PetriNetUtils.isVisualConsumingArc(node) || PetriNetUtils.isVisualProducingArc(node);
     }
 
     @Override
-    public boolean isEnabled(ModelEntry me, Node node) {
+    public boolean isEnabled(ModelEntry me, VisualNode node) {
         return true;
     }
 
@@ -52,39 +50,33 @@ public class DirectedArcToReadArcTransformationCommand extends AbstractTransform
     }
 
     @Override
-    public Collection<Node> collect(Model model) {
-        Collection<Node> arcs = new HashSet<>();
-        if (model instanceof VisualModel) {
-            VisualModel visualModel = (VisualModel) model;
-            arcs.addAll(PetriNetUtils.getVisualConsumingArcs(visualModel));
-            arcs.addAll(PetriNetUtils.getVisualProducingArcs(visualModel));
-            Collection<Node> selection = visualModel.getSelection();
-            arcs.retainAll(selection);
-        }
+    public Collection<VisualNode> collect(VisualModel model) {
+        Collection<VisualNode> arcs = new HashSet<>();
+        arcs.addAll(PetriNetUtils.getVisualConsumingArcs(model));
+        arcs.addAll(PetriNetUtils.getVisualProducingArcs(model));
+        Collection<VisualNode> selection = model.getSelection();
+        arcs.retainAll(selection);
         return arcs;
     }
 
     @Override
-    public void transform(Model model, Collection<Node> nodes) {
-        if (model instanceof VisualModel) {
-            VisualModel visualModel = (VisualModel) model;
-            readArcs = new HashSet<>();
-            for (Node node: nodes) {
-                // Check that the arc was not removed because of a dual arc
-                if (node.getParent() != null) {
-                    transform(model, node);
-                }
+    public void transform(VisualModel model, Collection<? extends VisualNode> nodes) {
+        readArcs = new HashSet<>();
+        for (VisualNode node: nodes) {
+            // Check that the arc was not removed because of a dual arc
+            if (node.getParent() != null) {
+                transform(model, node);
             }
-            visualModel.select(new LinkedList<Node>(readArcs));
-            readArcs = null;
         }
+        model.select(readArcs);
+        readArcs = null;
     }
 
     @Override
-    public void transform(Model model, Node node) {
-        if ((model instanceof VisualModel) && (node instanceof VisualConnection)) {
+    public void transform(VisualModel model, VisualNode node) {
+        if (node instanceof VisualConnection) {
             VisualConnection connection = (VisualConnection) node;
-            VisualReadArc readArc = PetriNetUtils.convertDirectedArcToReadArc((VisualModel) model, connection);
+            VisualReadArc readArc = PetriNetUtils.convertDirectedArcToReadArc(model, connection);
             if ((readArcs != null) && (readArc != null)) {
                 readArcs.add(readArc);
             }

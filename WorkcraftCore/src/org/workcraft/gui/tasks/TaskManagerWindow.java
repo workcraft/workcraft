@@ -1,22 +1,5 @@
 package org.workcraft.gui.tasks;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.lang.reflect.InvocationTargetException;
-
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.Scrollable;
-import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.layouts.SmartFlowLayout;
@@ -24,6 +7,11 @@ import org.workcraft.tasks.BasicProgressMonitor;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskMonitor;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
 
 @SuppressWarnings("serial")
 public class TaskManagerWindow extends JPanel implements TaskMonitor {

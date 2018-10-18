@@ -1,18 +1,20 @@
 package org.workcraft.annotations;
 
+import org.workcraft.dom.references.Identifier;
+
 public class Annotations {
 
     public static String getDisplayName(Class<?> cls) {
-        DisplayName dn = cls.getAnnotation(DisplayName.class);
-        if (dn == null) {
+        DisplayName annotation = cls.getAnnotation(DisplayName.class);
+        if (annotation == null) {
             return cls.getSimpleName();
         }
-        return dn.value();
+        return annotation.value();
     }
 
     public static String getShortName(Class<?> cls) {
-        ShortName sn = cls.getAnnotation(ShortName.class);
-        if (sn == null) {
+        ShortName annotation = cls.getAnnotation(ShortName.class);
+        if (annotation == null) {
             String result = "";
             String s = getDisplayName(cls);
             boolean b = true;
@@ -25,34 +27,42 @@ public class Annotations {
             }
             return result;
         }
-        return sn.value();
+        return annotation.value();
     }
 
     public static String getSVGIconPath(Class<?> cls) {
-        SVGIcon icon = cls.getAnnotation(SVGIcon.class);
-        if (icon == null) {
+        SVGIcon annotation = cls.getAnnotation(SVGIcon.class);
+        if (annotation == null) {
             return null;
         }
-        return icon.value();
+        return annotation.value();
     }
 
     public static int getHotKeyCode(Class<?> cls) {
-        Hotkey hkd = cls.getAnnotation(Hotkey.class);
-        if (hkd == null) {
+        Hotkey annotation = cls.getAnnotation(Hotkey.class);
+        if (annotation == null) {
             return -1;
         } else {
-            return hkd.value();
+            return annotation.value();
         }
     }
 
     public static Class<?> getVisualClass(Class<?> cls) {
-        VisualClass vcat = cls.getAnnotation(VisualClass.class);
+        VisualClass annotation = cls.getAnnotation(VisualClass.class);
         // The component/connection does not define a visual representation
-        if (vcat == null) {
+        if (annotation == null) {
             return null;
         } else {
-            return vcat.value();
+            return annotation.value();
         }
+    }
+
+    public static String getIdentifierPrefix(Class<?> cls) {
+        IdentifierPrefix annotation = cls.getAnnotation(IdentifierPrefix.class);
+        if (annotation == null) {
+            return null;
+        }
+        return annotation.isInternal() ? Identifier.createInternal(annotation.value()) : annotation.value();
     }
 
 }

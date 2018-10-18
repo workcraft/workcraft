@@ -1,26 +1,25 @@
 package org.workcraft.plugins.circuit;
 
+import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
-import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
-import org.workcraft.plugins.circuit.Contact.IOType;
+import org.workcraft.plugins.circuit.observers.FunctionConsistencySupervisor;
+import org.workcraft.plugins.circuit.observers.IOTypeConsistencySupervisor;
+import org.workcraft.plugins.circuit.observers.ZeroDelayConsistencySupervisor;
 import org.workcraft.plugins.circuit.references.CircuitReferenceManager;
-import org.workcraft.plugins.circuit.supervisors.FunctionConsistencySupervisor;
-import org.workcraft.plugins.circuit.supervisors.IOTypeConsistencySupervisor;
-import org.workcraft.plugins.circuit.supervisors.ZeroDelayConsistencySupervisor;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.util.Identifier;
 import org.workcraft.util.MultiSet;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 public class Circuit extends AbstractMathModel {
 
@@ -28,38 +27,110 @@ public class Circuit extends AbstractMathModel {
         this(null, null);
     }
 
-    public Circuit(MathGroup root) {
-        this(root, null);
-    }
-
     public Circuit(Container root, References refs) {
-        super(root, new CircuitReferenceManager((NamespaceProvider) root, refs) {
-            @Override
-            public String getPrefix(Node node) {
-                if (node instanceof CircuitComponent) return "g";
-                if (node instanceof Contact) {
-                    Contact contact = (Contact) node;
-                    if (contact.getIOType() == IOType.INPUT) {
-                        if (contact.getParent() instanceof CircuitComponent) return "i";
-                        else return "in";
-                    }
-                    if (contact.getIOType() == IOType.OUTPUT) {
-                        if (contact.getParent() instanceof CircuitComponent) return "z";
-                        else return "out";
-                    }
-                }
-                if (node instanceof Joint) return Identifier.createInternal("joint");
-                return super.getPrefix(node);
-            }
-        });
-
+        super(root, new CircuitReferenceManager(refs));
         new FunctionConsistencySupervisor(this).attach(getRoot());
         new ZeroDelayConsistencySupervisor(this).attach(getRoot());
         new IOTypeConsistencySupervisor(this).attach(getRoot());
     }
 
-    public MathConnection connect(Node first, Node second) throws InvalidConnectionException {
-        MathConnection connection = new MathConnection((MathNode) first, (MathNode) second);
+    @Override
+    public void validateConnection(MathNode first, MathNode second) throws InvalidConnectionException {
+        super.validateConnection(first, second);
+
+        if (first == second) {
+            throw new InvalidConnectionException("Connections are only valid between different objects.");
+        }
+
+        if (second instanceof MathConnection) {
+            throw new InvalidConnectionException("Merging connections is not allowed.");
+        }
+
+        if ((second instanceof Contact) || (second instanceof Joint)) {
+            for (Connection connection : getConnections(second)) {
+                if ((connection.getFirst() != first) && (connection.getSecond() == second)) {
+                    throw new InvalidConnectionException("Only one connection is allowed as a driver.");
+                }
+            }
+        }
+
+        if (first instanceof Contact) {
+            Contact contact = (Contact) first;
+            if (contact.isInput() && !contact.isPort()) {
+                throw new InvalidConnectionException("Input pin of a component cannot be a driver.");
+            }
+            if (contact.isOutput() && contact.isPort()) {
+                throw new InvalidConnectionException("Primary output cannot be a driver.");
+            }
+        }
+
+        if (second instanceof Contact) {
+            Contact contact = (Contact) second;
+            if (contact.isOutput() && !contact.isPort()) {
+                throw new InvalidConnectionException("Output pin of a component cannot be driven.");
+            }
+            if (contact.isInput() && contact.isPort()) {
+                throw new InvalidConnectionException("Primary input cannot be driven.");
+            }
+        }
+
+        HashSet<Contact> drivenSet = new HashSet<>();
+        Contact driver = null;
+        if (first instanceof MathConnection) {
+            MathConnection firstConnection = (MathConnection) first;
+            driver = CircuitUtils.findDriver(this, firstConnection, true);
+            if (driver != null) {
+                drivenSet.addAll(CircuitUtils.findDriven(this, driver, true));
+            } else {
+                drivenSet.addAll(CircuitUtils.findDriven(this, firstConnection, true));
+            }
+        } else if ((first instanceof Contact) || (first instanceof Joint)) {
+            driver = CircuitUtils.findDriver(this, first, true);
+            if (driver != null) {
+                drivenSet.addAll(CircuitUtils.findDriven(this, driver, true));
+            } else {
+                drivenSet.addAll(CircuitUtils.findDriven(this, first, true));
+            }
+        }
+        if ((second instanceof Contact) || (second instanceof Joint)) {
+            drivenSet.addAll(CircuitUtils.findDriven(this, second, true));
+        }
+        int outputPortCount = 0;
+        for (Contact driven: drivenSet) {
+            if (driven.isOutput() && driven.isPort()) {
+                outputPortCount++;
+                if (outputPortCount > 1) {
+                    throw new InvalidConnectionException("Fork on output ports is not allowed.");
+                }
+                if ((driver != null) && driver.isInput() && driver.isPort()) {
+                    throw new InvalidConnectionException("Direct connection from input port to output port is not allowed.");
+                }
+            }
+        }
+        // Handle zero-delay components
+        Node firstParent = first.getParent();
+        if (firstParent instanceof FunctionComponent) {
+            FunctionComponent firstComponent = (FunctionComponent) firstParent;
+            Node secondParent = second.getParent();
+            if (secondParent instanceof FunctionComponent) {
+                FunctionComponent secondComponent = (FunctionComponent) secondParent;
+                if (firstComponent.getIsZeroDelay() && secondComponent.getIsZeroDelay()) {
+                    throw new InvalidConnectionException("Zero delay components cannot be connected to each other.");
+                }
+            }
+            if (second instanceof Contact) {
+                Contact secondContact = (Contact) second;
+                if (firstComponent.getIsZeroDelay() && secondContact.isPort() && secondContact.isOutput()) {
+                    throw new InvalidConnectionException("Zero delay components cannot be connected to output ports.");
+                }
+            }
+        }
+    }
+
+    @Override
+    public MathConnection connect(MathNode first, MathNode second) throws InvalidConnectionException {
+        validateConnection(first, second);
+        MathConnection connection = new MathConnection(first, second);
         Container container = Hierarchy.getNearestContainer(first, second);
         if (container instanceof CircuitComponent) {
             container = (Container) container.getParent();

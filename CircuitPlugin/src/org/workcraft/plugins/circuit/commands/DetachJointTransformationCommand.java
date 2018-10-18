@@ -1,20 +1,19 @@
 package org.workcraft.plugins.circuit.commands;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualContact;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 public class DetachJointTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
@@ -34,7 +33,7 @@ public class DetachJointTransformationCommand extends AbstractTransformationComm
     }
 
     @Override
-    public boolean isApplicableTo(Node node) {
+    public boolean isApplicableTo(VisualNode node) {
         if (node instanceof VisualContact) {
             VisualContact contact = (VisualContact) node;
             return contact.isDriver();
@@ -43,7 +42,7 @@ public class DetachJointTransformationCommand extends AbstractTransformationComm
     }
 
     @Override
-    public boolean isEnabled(ModelEntry me, Node node) {
+    public boolean isEnabled(ModelEntry me, VisualNode node) {
         if (node instanceof VisualContact) {
             VisualModel visualModel = me.getVisualModel();
             return visualModel.getConnections(node).size() > 1;
@@ -57,8 +56,8 @@ public class DetachJointTransformationCommand extends AbstractTransformationComm
     }
 
     @Override
-    public Collection<Node> collect(Model model) {
-        Collection<Node> drivers = new HashSet<>();
+    public Collection<VisualNode> collect(VisualModel model) {
+        Collection<VisualNode> drivers = new HashSet<>();
         if (model instanceof VisualCircuit) {
             VisualCircuit circuit = (VisualCircuit) model;
             for (VisualContact driver: circuit.getVisualDrivers()) {
@@ -66,10 +65,10 @@ public class DetachJointTransformationCommand extends AbstractTransformationComm
                     drivers.add(driver);
                 }
             }
-            Collection<Node> selection = circuit.getSelection();
+            Collection<VisualNode> selection = circuit.getSelection();
             if (!selection.isEmpty()) {
-                HashSet<Node> selectedDrivers = new HashSet<>(selection);
-                for (Node node: selection) {
+                HashSet<VisualNode> selectedDrivers = new HashSet<>(selection);
+                for (VisualNode node: selection) {
                     if (node instanceof VisualCircuitComponent) {
                         VisualCircuitComponent component = (VisualCircuitComponent) node;
                         selectedDrivers.addAll(component.getVisualOutputs());
@@ -85,7 +84,7 @@ public class DetachJointTransformationCommand extends AbstractTransformationComm
     }
 
     @Override
-    public void transform(Model model, Node node) {
+    public void transform(VisualModel model, VisualNode node) {
         if ((model instanceof VisualCircuit) && (node instanceof VisualContact)) {
             VisualCircuit circuit = (VisualCircuit) model;
             VisualContact driver = (VisualContact) node;

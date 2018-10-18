@@ -10,7 +10,7 @@ import org.workcraft.formula.*;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.util.Identifier;
+import org.workcraft.dom.references.Identifier;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;

@@ -1,11 +1,13 @@
 package org.workcraft.plugins.graph;
 
 import org.workcraft.annotations.DisplayName;
+import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 
 @DisplayName("Vertex")
+@IdentifierPrefix("v")
 @VisualClass(org.workcraft.plugins.graph.VisualVertex.class)
 public class Vertex extends MathNode {
 

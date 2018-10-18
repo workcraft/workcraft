@@ -5,14 +5,16 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
-import org.workcraft.plugins.dtd.supervisors.DtdStateSupervisor;
+import org.workcraft.plugins.dtd.observers.DtdStateSupervisor;
 import org.workcraft.plugins.dtd.tools.DtdConnectionTool;
 import org.workcraft.plugins.dtd.tools.DtdSelectionTool;
 import org.workcraft.plugins.dtd.tools.DtdSignalGeneratorTool;
@@ -87,13 +89,19 @@ public class VisualDtd extends AbstractVisualModel {
     }
 
     @Override
-    public void validateConnection(Node first, Node second) throws InvalidConnectionException {
+    public void validateConnection(VisualNode first, VisualNode second) throws InvalidConnectionException {
+        super.validateConnection(first, second);
+
         if (first == second) {
             throw new InvalidConnectionException("Self-loops are not allowed.");
         }
 
         if (getConnection(first, second) != null) {
             throw new InvalidConnectionException("Connection already exists.");
+        }
+
+        if ((first instanceof VisualSignal) || (second instanceof VisualSignal)) {
+            throw new InvalidConnectionException("Invalid connection.");
         }
 
         if ((first instanceof VisualTransitionEvent) && (second instanceof VisualTransitionEvent)) {
@@ -114,7 +122,6 @@ public class VisualDtd extends AbstractVisualModel {
                     throw new InvalidConnectionException("Cannot connect transitions of the same signal and direction.");
                 }
             }
-            return;
         }
 
         if ((first instanceof VisualEntryEvent) && (second instanceof VisualExitEvent)) {
@@ -125,7 +132,6 @@ public class VisualDtd extends AbstractVisualModel {
             if (firstSignal != secondSignal) {
                 throw new InvalidConnectionException("Cannot relate entry and exit of different signals.");
             }
-            return;
         }
 
         if ((first instanceof VisualEntryEvent) && (second instanceof VisualTransitionEvent)) {
@@ -151,7 +157,6 @@ public class VisualDtd extends AbstractVisualModel {
                     && (secondTransition.getDirection() == TransitionEvent.Direction.FALL)) {
                 throw new InvalidConnectionException("Signal is already low.");
             }
-            return;
         }
 
         if ((first instanceof VisualTransitionEvent) && (second instanceof VisualExitEvent)) {
@@ -162,19 +167,17 @@ public class VisualDtd extends AbstractVisualModel {
             if (firstSignal != secondSignal) {
                 throw new InvalidConnectionException("Cannot relate transition and exit of different signals.");
             }
-            return;
         }
-        throw new InvalidConnectionException("Invalid connection.");
     }
 
     @Override
-    public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
+    public VisualConnection connect(VisualNode first, VisualNode second, MathConnection mConnection) throws InvalidConnectionException {
         validateConnection(first, second);
 
         VisualComponent v1 = (VisualComponent) first;
         VisualComponent v2 = (VisualComponent) second;
-        Node m1 = v1.getReferencedComponent();
-        Node m2 = v2.getReferencedComponent();
+        MathNode m1 = v1.getReferencedComponent();
+        MathNode m2 = v2.getReferencedComponent();
 
         if ((v1 instanceof VisualTransitionEvent) && (v2 instanceof VisualTransitionEvent)) {
             if (v1.getX() > v2.getX() - DtdSettings.getTransitionSeparation()) {
@@ -406,8 +409,8 @@ public class VisualDtd extends AbstractVisualModel {
 
     @Override
     public void deleteSelection() {
-        HashSet<Node> undeletableNodes = new HashSet<>();
-        for (Node node: getSelection()) {
+        HashSet<VisualNode> undeletableNodes = new HashSet<>();
+        for (VisualNode node: getSelection()) {
             if (node instanceof VisualEvent) {
                 undeletableNodes.add(node);
             }

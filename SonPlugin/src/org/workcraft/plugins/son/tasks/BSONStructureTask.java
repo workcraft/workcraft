@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.ASONAlg;
@@ -56,7 +57,7 @@ public class BSONStructureTask extends AbstractStructuralVerification {
 
         // group info
         infoMsg("Initialising selected groups and components...");
-        ArrayList<Node> components = new ArrayList<>();
+        ArrayList<MathNode> components = new ArrayList<>();
 
         for (ONGroup group : groups) {
             components.addAll(group.getComponents());
@@ -153,7 +154,7 @@ public class BSONStructureTask extends AbstractStructuralVerification {
                 boolean isInput = false;
                 boolean isOutput = false;
 
-                for (Node node : group.getComponents()) {
+                for (MathNode node : group.getComponents()) {
                     if (net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE)) {
                         isInput = true;
                     }
@@ -166,7 +167,7 @@ public class BSONStructureTask extends AbstractStructuralVerification {
                     result.add(group);
                 }
             } else {
-                for (Node node : group.getComponents()) {
+                for (MathNode node : group.getComponents()) {
                     if (net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE)) {
                         result.add(group);
                     }

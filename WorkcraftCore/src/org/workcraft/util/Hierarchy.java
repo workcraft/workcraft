@@ -1,9 +1,6 @@
 package org.workcraft.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-
+import net.sf.jga.fn.UnaryFunctor;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
@@ -11,7 +8,9 @@ import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.visual.NodeHelper;
 import org.workcraft.workspace.ModelEntry;
 
-import net.sf.jga.fn.UnaryFunctor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 
 public class Hierarchy {
 
@@ -123,7 +122,7 @@ public class Hierarchy {
         return getNearestAncestor(parent, Container.class);
     }
 
-    public static Container getNearestContainer(Collection<Node> nodes) {
+    public static Container getNearestContainer(Collection<? extends Node> nodes) {
         return getNearestContainer(nodes.toArray(new Node[nodes.size()]));
     }
 

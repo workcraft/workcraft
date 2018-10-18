@@ -1,32 +1,22 @@
 package org.workcraft.plugins.xmas.components;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
-import java.awt.Shape;
+import org.workcraft.dom.Container;
+import org.workcraft.dom.DefaultGroupImpl;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.*;
+import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.observation.*;
+import org.workcraft.plugins.xmas.XmasSettings;
+import org.workcraft.plugins.xmas.components.XmasContact.IOType;
+
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import org.workcraft.dom.Container;
-import org.workcraft.dom.DefaultGroupImpl;
-import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.Positioning;
-import org.workcraft.dom.visual.Stylable;
-import org.workcraft.dom.visual.TransformHelper;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.observation.HierarchyObserver;
-import org.workcraft.observation.ObservableHierarchy;
-import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.observation.StateEvent;
-import org.workcraft.observation.StateObserver;
-import org.workcraft.plugins.xmas.XmasSettings;
-import org.workcraft.plugins.xmas.components.XmasContact.IOType;
 
 public abstract class VisualXmasComponent extends VisualComponent implements Container, StateObserver, ObservableHierarchy {
     // Degree symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
@@ -198,23 +188,23 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
     public void remove(Node node) { }
 
     @Override
-    public void add(Collection<Node> nodes) {
+    public void add(Collection<? extends Node> nodes) {
         for (Node x : nodes) {
             add(x);
         }
     }
 
     @Override
-    public void remove(Collection<Node> nodes) {
+    public void remove(Collection<? extends Node> nodes) {
     }
 
     @Override
-    public void reparent(Collection<Node> nodes, Container newParent) {
+    public void reparent(Collection<? extends Node> nodes, Container newParent) {
         groupImpl.reparent(nodes, newParent);
     }
 
     @Override
-    public void reparent(Collection<Node> nodes) {
+    public void reparent(Collection<? extends Node> nodes) {
         groupImpl.reparent(nodes);
     }
 

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Node;
 import org.workcraft.formula.BooleanFormula;
@@ -19,6 +20,7 @@ import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.util.Hierarchy;
 
+@IdentifierPrefix("g")
 @VisualClass(org.workcraft.plugins.circuit.VisualFunctionComponent.class)
 public class FunctionComponent extends CircuitComponent {
     public static final String PROPERTY_IS_ZERO_DELAY = "Zero delay";

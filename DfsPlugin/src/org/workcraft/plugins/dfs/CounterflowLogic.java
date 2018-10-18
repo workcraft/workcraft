@@ -1,8 +1,10 @@
 package org.workcraft.plugins.dfs;
 
+import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
 
+@IdentifierPrefix("l")
 @VisualClass(org.workcraft.plugins.dfs.VisualCounterflowLogic.class)
 public class CounterflowLogic extends MathDelayNode {
     public static final String PROPERTY_FORWARD_COMPUTED = "Forward computed";

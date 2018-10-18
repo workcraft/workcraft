@@ -1,9 +1,6 @@
 package org.workcraft.plugins.son;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Collection;
-
+import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
@@ -16,16 +13,21 @@ import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.util.Hierarchy;
 
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collection;
+
+@IdentifierPrefix("g")
 @VisualClass (org.workcraft.plugins.son.VisualONGroup.class)
 public class ONGroup extends PageNode {
 
     private String label = "";
     private Color color = SONSettings.getGroupForegroundColor();
 
-    public Collection<Node> getComponents() {
-        ArrayList<Node> result = new ArrayList<>();
+    public Collection<MathNode> getComponents() {
+        ArrayList<MathNode> result = new ArrayList<>();
 
-        for (Node node : Hierarchy.getDescendantsOfType(this, MathNode.class)) {
+        for (MathNode node : Hierarchy.getDescendantsOfType(this, MathNode.class)) {
             if (node instanceof Condition || node instanceof Event) {
                 result.add(node);
             }
@@ -56,7 +58,7 @@ public class ONGroup extends PageNode {
         }
     }
 
-    public boolean containsAll(Collection<Node> nodes) {
+    public boolean containsAll(Collection<? extends Node> nodes) {
         for (Node node: nodes) {
             if (!this.contains(node)) {
                 return false;

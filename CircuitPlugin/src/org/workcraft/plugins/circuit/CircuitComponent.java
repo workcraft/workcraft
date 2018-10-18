@@ -1,13 +1,13 @@
 package org.workcraft.plugins.circuit;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.util.Hierarchy;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 @VisualClass(org.workcraft.plugins.circuit.VisualCircuitComponent.class)
 public class CircuitComponent extends MathGroup {

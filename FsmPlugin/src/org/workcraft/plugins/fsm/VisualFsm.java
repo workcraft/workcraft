@@ -2,18 +2,15 @@ package org.workcraft.plugins.fsm;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.*;
-import org.workcraft.observation.HierarchyEvent;
-import org.workcraft.observation.HierarchySupervisor;
-import org.workcraft.observation.NodesAddingEvent;
+import org.workcraft.plugins.fsm.observers.FirstStateSupervisor;
 import org.workcraft.plugins.fsm.tools.FsmSimulationTool;
 import org.workcraft.util.Hierarchy;
 
@@ -31,29 +28,7 @@ public class VisualFsm extends AbstractVisualModel {
     public VisualFsm(Fsm model, VisualGroup root) {
         super(model, root);
         setGraphEditorTools();
-        if (root == null) {
-            try {
-                createDefaultFlatStructure();
-            } catch (NodeCreationException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        // Make the first created state initial
-        new HierarchySupervisor() {
-            @Override
-            public void handleEvent(HierarchyEvent e) {
-                if (e instanceof NodesAddingEvent) {
-                    Collection<VisualState> existingStates = Hierarchy.getChildrenOfType(getRoot(), VisualState.class);
-                    if (existingStates.isEmpty()) {
-                        Collection<VisualState> newStates = Hierarchy.filterNodesByType(e.getAffectedNodes(), VisualState.class);
-                        if (!newStates.isEmpty()) {
-                            VisualState state = newStates.iterator().next();
-                            state.getReferencedState().setInitial(true);
-                        }
-                    }
-                }
-            }
-        }.attach(getRoot());
+        new FirstStateSupervisor().attach(getRoot());
     }
 
     private void setGraphEditorTools() {
@@ -67,11 +42,11 @@ public class VisualFsm extends AbstractVisualModel {
     }
 
     @Override
-    public void validateConnection(Node first, Node second) throws InvalidConnectionException {
+    public void validateConnection(VisualNode first, VisualNode second) throws InvalidConnectionException {
     }
 
     @Override
-    public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
+    public VisualConnection connect(VisualNode first, VisualNode second, MathConnection mConnection) throws InvalidConnectionException {
         validateConnection(first, second);
 
         VisualState vState1 = (VisualState) first;

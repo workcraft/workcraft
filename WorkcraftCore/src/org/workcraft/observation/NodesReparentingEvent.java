@@ -1,25 +1,25 @@
 package org.workcraft.observation;
 
+import org.workcraft.dom.Node;
+
 import java.util.ArrayList;
 import java.util.Collection;
-
-import org.workcraft.dom.Node;
 
 public class NodesReparentingEvent implements HierarchyEvent {
     private final Node oldParentNode;
     private final Node newParentNode;
     private final Collection<Node> affectedNodes;
 
-    public NodesReparentingEvent(Node oldParentNode, Node newParentNode, Collection<Node> affectedNodes) {
+    public NodesReparentingEvent(Node oldParentNode, Node newParentNode, Collection<? extends Node> affectedNodes) {
         this.oldParentNode = oldParentNode;
         this.newParentNode = newParentNode;
-        this.affectedNodes = affectedNodes;
+        this.affectedNodes = (Collection<Node>) affectedNodes;
     }
 
     public NodesReparentingEvent(Node oldParentNode, Node newParentNode, Node affectedNode) {
         this.oldParentNode = oldParentNode;
         this.newParentNode = newParentNode;
-        this.affectedNodes = new ArrayList<Node>();
+        this.affectedNodes = new ArrayList<>();
         affectedNodes.add(affectedNode);
     }
 

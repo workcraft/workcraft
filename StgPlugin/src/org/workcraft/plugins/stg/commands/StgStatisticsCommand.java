@@ -1,21 +1,21 @@
 package org.workcraft.plugins.stg.commands;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.workcraft.commands.AbstractStatisticsCommand;
-import org.workcraft.dom.Connection;
-import org.workcraft.dom.Node;
-import org.workcraft.plugins.petri.PetriNetChecker;
+import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
+import org.workcraft.plugins.petri.utils.PetriNetChecker;
 import org.workcraft.plugins.stg.DummyTransition;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class StgStatisticsCommand extends AbstractStatisticsCommand {
 
@@ -35,7 +35,7 @@ public class StgStatisticsCommand extends AbstractStatisticsCommand {
 
         Collection<Transition> transitions = stg.getTransitions();
         Collection<Place> places = stg.getPlaces();
-        Collection<Connection> connections = stg.getConnections();
+        Collection<MathConnection> connections = stg.getConnections();
 
         int inputSignalCount = stg.getSignalReferences(Signal.Type.INPUT).size();
         int outputSignalCount = stg.getSignalReferences(Signal.Type.OUTPUT).size();
@@ -86,8 +86,8 @@ public class StgStatisticsCommand extends AbstractStatisticsCommand {
             if (transition instanceof DummyTransition) {
                 dummyTransitionCount++;
             }
-            Set<Node> transitionPreset = stg.getPreset(transition);
-            Set<Node> transitionPostset = stg.getPostset(transition);
+            Set<MathNode> transitionPreset = stg.getPreset(transition);
+            Set<MathNode> transitionPostset = stg.getPostset(transition);
             if (transitionPreset.size() > 1) {
                 joinCount++;
             }
@@ -109,7 +109,7 @@ public class StgStatisticsCommand extends AbstractStatisticsCommand {
             if (transitionPostset.size() > maxTransitionFanout) {
                 maxTransitionFanout = transitionPostset.size();
             }
-            HashSet<Node> loopset = new HashSet<>(transitionPreset);
+            HashSet<MathNode> loopset = new HashSet<>(transitionPreset);
             loopset.retainAll(transitionPostset);
             selfLoopCount += loopset.size();
         }
@@ -124,8 +124,8 @@ public class StgStatisticsCommand extends AbstractStatisticsCommand {
         int tokenCount = 0;
         int markedCount = 0;
         for (Place place: places) {
-            Set<Node> placePreset = stg.getPreset(place);
-            Set<Node> placePostset = stg.getPostset(place);
+            Set<MathNode> placePreset = stg.getPreset(place);
+            Set<MathNode> placePostset = stg.getPostset(place);
             if (placePreset.size() > 1) {
                 mergeCount++;
             }
@@ -155,7 +155,7 @@ public class StgStatisticsCommand extends AbstractStatisticsCommand {
 
         int producingArcCount = 0;
         int consumingArcCount = 0;
-        for (Connection connection: connections) {
+        for (MathConnection connection: connections) {
             if (connection.getFirst() instanceof Transition) {
                 producingArcCount++;
             }

@@ -1,8 +1,6 @@
 package org.workcraft.plugins.fsm;
 
 import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.dom.VisualModelDescriptor;
-import org.workcraft.dom.math.MathModel;
 
 public class FsmDescriptor  implements ModelDescriptor {
 
@@ -12,12 +10,12 @@ public class FsmDescriptor  implements ModelDescriptor {
     }
 
     @Override
-    public MathModel createMathModel() {
+    public Fsm createMathModel() {
         return new Fsm();
     }
 
     @Override
-    public VisualModelDescriptor getVisualModelDescriptor() {
+    public VisualFsmDescriptor getVisualModelDescriptor() {
         return new VisualFsmDescriptor();
     }
 

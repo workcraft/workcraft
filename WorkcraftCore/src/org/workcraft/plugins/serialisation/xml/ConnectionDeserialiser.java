@@ -3,13 +3,13 @@ package org.workcraft.plugins.serialisation.xml;
 import org.w3c.dom.Element;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.serialisation.ReferenceResolver;
 import org.workcraft.serialisation.xml.CustomXMLDeserialiser;
 import org.workcraft.serialisation.xml.NodeFinaliser;
 import org.workcraft.serialisation.xml.NodeInitialiser;
 
 public class ConnectionDeserialiser implements CustomXMLDeserialiser {
+
     public String getClassName() {
         return MathConnection.class.getName();
     }
@@ -18,7 +18,7 @@ public class ConnectionDeserialiser implements CustomXMLDeserialiser {
     public void finaliseInstance(Element element, Object instance,
             ReferenceResolver internalReferenceResolver,
             ReferenceResolver externalReferenceResolver,
-            NodeFinaliser nodeFinaliser) throws DeserialisationException {
+            NodeFinaliser nodeFinaliser) {
 
         String firstRef = element.getAttribute("first");
         MathNode firstNode = (MathNode) internalReferenceResolver.getObject(firstRef);
@@ -26,8 +26,8 @@ public class ConnectionDeserialiser implements CustomXMLDeserialiser {
         String secondRef = element.getAttribute("second");
         MathNode secondNode = (MathNode) internalReferenceResolver.getObject(secondRef);
 
-        MathConnection con = (MathConnection) instance;
-        con.setDependencies(firstNode, secondNode);
+        MathConnection connection = (MathConnection) instance;
+        connection.setDependencies(firstNode, secondNode);
     }
 
     @Override
@@ -40,6 +40,7 @@ public class ConnectionDeserialiser implements CustomXMLDeserialiser {
     @Override
     public void initInstance(Element element, Object instance,
             ReferenceResolver externalReferenceResolver,
-            NodeInitialiser nodeInitialiser) throws DeserialisationException {
+            NodeInitialiser nodeInitialiser) {
     }
+
 }

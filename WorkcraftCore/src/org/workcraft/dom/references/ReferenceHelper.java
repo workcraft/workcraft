@@ -1,26 +1,13 @@
 package org.workcraft.dom.references;
 
+import org.workcraft.dom.Model;
+import org.workcraft.dom.Node;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.workcraft.dom.Connection;
-import org.workcraft.dom.Container;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
-import org.workcraft.dom.math.CommentNode;
-import org.workcraft.dom.math.PageNode;
-import org.workcraft.util.Identifier;
-
 public class ReferenceHelper {
-
-    public static String getDefaultPrefix(Node node) {
-        if (node instanceof PageNode) return "pg";
-        if (node instanceof Connection) return Identifier.createInternal("c");
-        if (node instanceof CommentNode) return Identifier.createInternal("comment");
-        if (node instanceof Container) return Identifier.createInternal("group");
-        return "node";
-    }
 
     public static String getNodesAsString(final Model model, Collection<? extends Node> nodes, int len) {
         return wrapString(getNodesAsString(model, nodes), len);

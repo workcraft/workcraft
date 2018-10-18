@@ -1,20 +1,16 @@
 package org.workcraft.plugins.stg.commands;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
-import org.workcraft.plugins.stg.Signal;
-import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.VisualSignalTransition;
-import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.plugins.stg.*;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 public class MirrorSignalTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
@@ -34,7 +30,7 @@ public class MirrorSignalTransformationCommand extends AbstractTransformationCom
     }
 
     @Override
-    public boolean isApplicableTo(Node node) {
+    public boolean isApplicableTo(VisualNode node) {
         if (node instanceof VisualSignalTransition) {
             VisualSignalTransition signalTransition = (VisualSignalTransition) node;
             Signal.Type signalType = signalTransition.getSignalType();
@@ -44,7 +40,7 @@ public class MirrorSignalTransformationCommand extends AbstractTransformationCom
     }
 
     @Override
-    public boolean isEnabled(ModelEntry me, Node node) {
+    public boolean isEnabled(ModelEntry me, VisualNode node) {
         return true;
     }
 
@@ -54,12 +50,12 @@ public class MirrorSignalTransformationCommand extends AbstractTransformationCom
     }
 
     @Override
-    public Collection<Node> collect(Model model) {
-        Collection<Node> signalTransitions = new HashSet<>();
+    public Collection<VisualNode> collect(VisualModel model) {
+        Collection<VisualNode> signalTransitions = new HashSet<>();
         if (model instanceof VisualStg) {
             VisualStg stg = (VisualStg) model;
             signalTransitions.addAll(stg.getVisualSignalTransitions());
-            Collection<Node> selection = stg.getSelection();
+            Collection<VisualNode> selection = stg.getSelection();
             if (!selection.isEmpty()) {
                 signalTransitions.retainAll(selection);
             }
@@ -68,12 +64,12 @@ public class MirrorSignalTransformationCommand extends AbstractTransformationCom
     }
 
     @Override
-    public void transform(Model model, Collection<Node> nodes) {
+    public void transform(VisualModel model, Collection<? extends VisualNode> nodes) {
         if (model instanceof VisualStg) {
             VisualStg visualStg = (VisualStg) model;
             HashSet<String> processedSignals = new HashSet<>();
-            Stg stg = (Stg) visualStg.getMathModel();
-            for (Node node: nodes) {
+            Stg stg = visualStg.getMathModel();
+            for (VisualNode node: nodes) {
                 if (node instanceof VisualSignalTransition) {
                     VisualSignalTransition visualTransition = (VisualSignalTransition) node;
                     SignalTransition transition = visualTransition.getReferencedTransition();
@@ -88,7 +84,7 @@ public class MirrorSignalTransformationCommand extends AbstractTransformationCom
     }
 
     @Override
-    public void transform(Model model, Node node) {
+    public void transform(VisualModel model, VisualNode node) {
         if ((model instanceof VisualStg) && (node instanceof VisualSignalTransition)) {
             SignalTransition signalTransition = ((VisualSignalTransition) node).getReferencedTransition();
             Signal.Type signalType = signalTransition.getSignalType();

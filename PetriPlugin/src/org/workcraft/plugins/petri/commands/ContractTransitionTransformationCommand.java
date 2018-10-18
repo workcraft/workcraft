@@ -1,47 +1,32 @@
 package org.workcraft.plugins.petri.commands;
 
-import java.awt.geom.Point2D;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
-
 import org.workcraft.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathModel;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.Replica;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.petri.PetriNetModel;
-import org.workcraft.plugins.petri.PetriNetUtils;
-import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.petri.VisualPetriNet;
-import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.plugins.petri.VisualReadArc;
-import org.workcraft.plugins.petri.VisualReplicaPlace;
-import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.Geometry;
-import org.workcraft.util.Hierarchy;
-import org.workcraft.util.LogUtils;
-import org.workcraft.util.Pair;
+import org.workcraft.plugins.petri.*;
+import org.workcraft.plugins.petri.utils.PetriNetUtils;
+import org.workcraft.util.*;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.awt.geom.Point2D;
+import java.util.*;
 
 public class ContractTransitionTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
@@ -63,12 +48,12 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
     }
 
     @Override
-    public boolean isApplicableTo(Node node) {
+    public boolean isApplicableTo(VisualNode node) {
         return node instanceof VisualTransition;
     }
 
     @Override
-    public boolean isEnabled(ModelEntry me, Node node) {
+    public boolean isEnabled(ModelEntry me, VisualNode node) {
         return true;
     }
 
@@ -80,7 +65,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
     @Override
     public Void execute(WorkspaceEntry we) {
         VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
-        Collection<Node> nodes = collect(visualModel);
+        Collection<VisualNode> nodes = collect(visualModel);
         if (nodes.size() > 1) {
             DialogUtils.showError("One transition can be contracted at a time.");
         } else if (!nodes.isEmpty()) {
@@ -92,49 +77,45 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
     }
 
     @Override
-    public Collection<Node> collect(Model model) {
-        Collection<Node> transitions = new HashSet<>();
-        if (model instanceof VisualModel) {
-            VisualModel visualModel = (VisualModel) model;
-            transitions.addAll(PetriNetUtils.getVisualTransitions(visualModel));
-            transitions.retainAll(visualModel.getSelection());
-        }
+    public Collection<VisualNode> collect(VisualModel model) {
+        Collection<VisualNode> transitions = new HashSet<>();
+        transitions.addAll(PetriNetUtils.getVisualTransitions(model));
+        transitions.retainAll(model.getSelection());
         return transitions;
     }
 
     @Override
-    public void transform(Model model, Node node) {
-        if ((model instanceof VisualModel) && (node instanceof VisualTransition)) {
-            VisualModel visualModel = (VisualModel) model;
-            PetriNetModel mathModel = (PetriNetModel) visualModel.getMathModel();
-            VisualTransition visualTransition = (VisualTransition) node;
-            Transition mathTransition = visualTransition.getReferencedTransition();
+    public void transform(VisualModel model, VisualNode node) {
+        if (node instanceof VisualTransition) {
+            PetriNetModel mathModel = (PetriNetModel) model.getMathModel();
+            VisualTransition transition = (VisualTransition) node;
+            Transition mathTransition = transition.getReferencedTransition();
             if (hasSelfLoop(mathModel, mathTransition)) {
                 DialogUtils.showError("A transition with a self-loop/read-arc cannot be contracted.");
             } else if (needsWaitedArcs(mathModel, mathTransition)) {
                 DialogUtils.showError("This transformation requires weighted arcs that are currently not supported.");
             } else if (isLanguageChanging(mathModel, mathTransition)) {
-                contractTransition(visualModel, visualTransition);
+                contractTransition(model, transition);
                 DialogUtils.showWarning("This transformation may change the language.");
             } else if (isSafenessViolationg(mathModel, mathTransition)) {
-                contractTransition(visualModel, visualTransition);
+                contractTransition(model, transition);
                 DialogUtils.showWarning("This transformation may be not safeness-preserving.");
             } else {
-                contractTransition(visualModel, visualTransition);
+                contractTransition(model, transition);
             }
         }
     }
 
     private boolean needsWaitedArcs(PetriNetModel model, Transition transition) {
-        HashSet<Node> predPredNodes = new HashSet<>();
-        HashSet<Node> predSuccNodes = new HashSet<>();
-        for (Node predNode: model.getPreset(transition)) {
+        HashSet<MathNode> predPredNodes = new HashSet<>();
+        HashSet<MathNode> predSuccNodes = new HashSet<>();
+        for (MathNode predNode: model.getPreset(transition)) {
             predPredNodes.addAll(model.getPreset(predNode));
             predSuccNodes.addAll(model.getPostset(predNode));
         }
-        HashSet<Node> succPredNodes = new HashSet<>();
-        HashSet<Node> succSuccNodes = new HashSet<>();
-        for (Node succNode: model.getPostset(transition)) {
+        HashSet<MathNode> succPredNodes = new HashSet<>();
+        HashSet<MathNode> succSuccNodes = new HashSet<>();
+        for (MathNode succNode: model.getPostset(transition)) {
             succPredNodes.addAll(model.getPreset(succNode));
             succSuccNodes.addAll(model.getPostset(succNode));
         }
@@ -144,7 +125,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
     }
 
     private boolean hasSelfLoop(PetriNetModel model, Transition transition) {
-        HashSet<Node> connectedNodes = new HashSet<>(model.getPreset(transition));
+        HashSet<MathNode> connectedNodes = new HashSet<>(model.getPreset(transition));
         connectedNodes.retainAll(model.getPostset(transition));
         return !connectedNodes.isEmpty();
     }
@@ -155,9 +136,9 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
 
     // There are no choice places in the preset (preset can be empty).
     private boolean isType1Secure(PetriNetModel model, Transition transition) {
-        Set<Node> predNodes = model.getPreset(transition);
-        for (Node predNode: predNodes) {
-            HashSet<Node> predSuccNodes = new HashSet<>(model.getPostset(predNode));
+        Set<MathNode> predNodes = model.getPreset(transition);
+        for (MathNode predNode: predNodes) {
+            HashSet<MathNode> predSuccNodes = new HashSet<>(model.getPostset(predNode));
             predSuccNodes.remove(transition);
             if (!predSuccNodes.isEmpty()) {
                 return false;
@@ -168,9 +149,9 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
 
     // There is at least one unmarked place in the postset AND there are no merge places in the postset (the postset cannot be empty).
     private boolean isType2Secure(PetriNetModel model, Transition transition) {
-        Set<Node> succNodes = model.getPostset(transition);
+        Set<MathNode> succNodes = model.getPostset(transition);
         int markedPlaceCount = 0;
-        for (Node succNode: succNodes) {
+        for (MathNode succNode: succNodes) {
             Place succPlace = (Place) succNode;
             if (succPlace.getTokens() != 0) {
                 markedPlaceCount++;
@@ -179,8 +160,8 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
         if (markedPlaceCount >= succNodes.size()) {
             return false;
         }
-        for (Node succNode: succNodes) {
-            HashSet<Node> succPredNodes = new HashSet<>(model.getPreset(succNode));
+        for (MathNode succNode: succNodes) {
+            HashSet<MathNode> succPredNodes = new HashSet<>(model.getPreset(succNode));
             succPredNodes.remove(transition);
             if (!succPredNodes.isEmpty()) {
                 return false;
@@ -195,16 +176,16 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
 
     // The only place in the postset is unmarked AND it is not a merge.
     private boolean isType1Safe(PetriNetModel model, Transition transition) {
-        Set<Node> succNodes = model.getPostset(transition);
+        Set<MathNode> succNodes = model.getPostset(transition);
         if (succNodes.size() != 1) {
             return false;
         }
-        for (Node succNode: succNodes) {
+        for (MathNode succNode: succNodes) {
             Place succPlace = (Place) succNode;
             if (succPlace.getTokens() != 0) {
                 return false;
             }
-            HashSet<Node> succPredNodes = new HashSet<>(model.getPreset(succNode));
+            HashSet<MathNode> succPredNodes = new HashSet<>(model.getPreset(succNode));
             succPredNodes.remove(transition);
             if (!succPredNodes.isEmpty()) {
                 return false;
@@ -215,20 +196,20 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
 
     // There is a single place in the preset AND all the postset places are unmarked and not merge places (the postset cannot be empty).
     private boolean isType2Safe(PetriNetModel model, Transition transition) {
-        Set<Node> predNodes = model.getPreset(transition);
+        Set<MathNode> predNodes = model.getPreset(transition);
         if (predNodes.size() != 1) {
             return false;
         }
-        Set<Node> succNodes = model.getPostset(transition);
+        Set<MathNode> succNodes = model.getPostset(transition);
         if (succNodes.isEmpty()) {
             return false;
         }
-        for (Node succNode: succNodes) {
+        for (MathNode succNode: succNodes) {
             Place succPlace = (Place) succNode;
             if (succPlace.getTokens() != 0) {
                 return false;
             }
-            HashSet<Node> succPredNodes = new HashSet<>(model.getPreset(succNode));
+            HashSet<MathNode> succPredNodes = new HashSet<>(model.getPreset(succNode));
             succPredNodes.remove(transition);
             if (!succPredNodes.isEmpty()) {
                 return false;
@@ -239,12 +220,12 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
 
     // The only preset place is not a choice.
     private boolean isType3Safe(PetriNetModel model, Transition transition) {
-        Set<Node> predNodes = model.getPreset(transition);
+        Set<MathNode> predNodes = model.getPreset(transition);
         if (predNodes.size() != 1) {
             return false;
         }
-        for (Node predNode: predNodes) {
-            HashSet<Node> predSuccNodes = new HashSet<>(model.getPostset(predNode));
+        for (MathNode predNode: predNodes) {
+            HashSet<MathNode> predSuccNodes = new HashSet<>(model.getPostset(predNode));
             predSuccNodes.remove(transition);
             if (!predSuccNodes.isEmpty()) {
                 return false;
@@ -255,13 +236,13 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
 
     private void contractTransition(VisualModel visualModel, VisualTransition visualTransition) {
         beforeContraction(visualModel, visualTransition);
-        LinkedList<Node> predNodes = new LinkedList<>(visualModel.getPreset(visualTransition));
-        LinkedList<Node> succNodes = new LinkedList<>(visualModel.getPostset(visualTransition));
+        LinkedList<VisualNode> predNodes = new LinkedList<>(visualModel.getPreset(visualTransition));
+        LinkedList<VisualNode> succNodes = new LinkedList<>(visualModel.getPostset(visualTransition));
         boolean isTrivial = (predNodes.size() == 1) && (succNodes.size() == 1);
         HashMap<VisualPlace, Pair<VisualPlace, VisualPlace>> productPlaceMap = new HashMap<>();
-        for (Node predNode: predNodes) {
+        for (VisualNode predNode: predNodes) {
             VisualPlace predPlace = (VisualPlace) predNode;
-            for (Node succNode: succNodes) {
+            for (VisualNode succNode: succNodes) {
                 VisualPlace succPlace = (VisualPlace) succNode;
                 VisualPlace productPlace = createProductPlace(visualModel, predPlace, succPlace);
                 initialiseProductPlace(visualModel, predPlace, succPlace, productPlace);
@@ -301,10 +282,10 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
         }
         visualModel.remove(visualTransition);
         afterContraction(visualModel, visualTransition, productPlaceMap);
-        for (Node predNode: predNodes) {
+        for (VisualNode predNode: predNodes) {
             visualModel.remove(predNode);
         }
-        for (Node succNode: succNodes) {
+        for (VisualNode succNode: succNodes) {
             visualModel.remove(succNode);
         }
     }
@@ -313,7 +294,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
         Container visualContainer = (Container) Hierarchy.getCommonParent(predPlace, succPlace);
         Container mathContainer = NamespaceHelper.getMathContainer(visualModel, visualContainer);
         MathModel mathModel = visualModel.getMathModel();
-        HierarchicalUniqueNameReferenceManager refManager = (HierarchicalUniqueNameReferenceManager) mathModel.getReferenceManager();
+        HierarchyReferenceManager refManager = (HierarchyReferenceManager) mathModel.getReferenceManager();
         NameManager nameManagerer = refManager.getNameManager((NamespaceProvider) mathContainer);
         String predName = visualModel.getMathName(predPlace);
         String succName = visualModel.getMathName(succPlace);
@@ -347,8 +328,8 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
 
         HashMap<VisualConnection, VisualConnection> productConnectionMap = new HashMap<>();
         for (VisualConnection originalConnection: originalConnections) {
-            Node first = originalConnection.getFirst();
-            Node second = originalConnection.getSecond();
+            VisualNode first = originalConnection.getFirst();
+            VisualNode second = originalConnection.getSecond();
             VisualConnection newConnection = null;
             try {
                 if (originalConnection instanceof VisualReadArc) {
@@ -370,7 +351,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
                 LogUtils.logWarning(e.getMessage());
             }
             if (newConnection instanceof VisualConnection) {
-                productConnectionMap.put((VisualConnection) newConnection, originalConnection);
+                productConnectionMap.put(newConnection, originalConnection);
                 newConnection.copyStyle(originalConnection);
                 newConnection.copyShape(originalConnection);
                 filterControlPoints(newConnection);

@@ -1,8 +1,6 @@
 package org.workcraft.plugins.stg;
 
 import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.dom.VisualModelDescriptor;
-import org.workcraft.dom.math.MathModel;
 
 public class StgDescriptor implements ModelDescriptor {
 
@@ -12,12 +10,12 @@ public class StgDescriptor implements ModelDescriptor {
     }
 
     @Override
-    public MathModel createMathModel() {
+    public Stg createMathModel() {
         return new Stg();
     }
 
     @Override
-    public VisualModelDescriptor getVisualModelDescriptor() {
+    public VisualStgDescriptor getVisualModelDescriptor() {
         return new VisualStgDescriptor();
     }
 

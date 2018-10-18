@@ -1,17 +1,17 @@
 package org.workcraft.plugins.transform;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.commands.AbstractTransformationCommand;
-import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 public class CopyLabelTransformationCommand extends AbstractTransformationCommand {
 
@@ -31,27 +31,23 @@ public class CopyLabelTransformationCommand extends AbstractTransformationComman
     }
 
     @Override
-    public Collection<Node> collect(Model model) {
-        Collection<Node> result = new HashSet<>();
-        if (model instanceof VisualModel) {
-            VisualModel visualModel = (VisualModel) model;
-            result.addAll(Hierarchy.getDescendantsOfType(model.getRoot(), VisualComponent.class));
-            Collection<Node> selection = visualModel.getSelection();
-            if (!selection.isEmpty()) {
-                result.retainAll(selection);
-            }
+    public Collection<VisualNode> collect(VisualModel model) {
+        Collection<VisualNode> result = new HashSet<>();
+        result.addAll(Hierarchy.getDescendantsOfType(model.getRoot(), VisualComponent.class));
+        Collection<? extends VisualNode> selection = model.getSelection();
+        if (!selection.isEmpty()) {
+            result.retainAll(selection);
         }
         return result;
     }
 
     @Override
-    public void transform(Model model, Node node) {
-        if ((model instanceof VisualModel) && (node instanceof VisualComponent)) {
-            VisualModel visualModel = (VisualModel) model;
-            VisualComponent visualComponent = (VisualComponent) node;
-            MathModel mathModel = visualModel.getMathModel();
-            Node refComponent = visualComponent.getReferencedComponent();
-            visualComponent.setLabel(mathModel.getName(refComponent));
+    public void transform(VisualModel model, VisualNode node) {
+        if (node instanceof VisualComponent) {
+            VisualComponent component = (VisualComponent) node;
+            MathModel mathModel = model.getMathModel();
+            Node refComponent = component.getReferencedComponent();
+            component.setLabel(mathModel.getName(refComponent));
         }
     }
 

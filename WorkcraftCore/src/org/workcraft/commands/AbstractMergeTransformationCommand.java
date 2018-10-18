@@ -1,16 +1,6 @@
 package org.workcraft.commands;
 
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
-import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathModel;
@@ -18,9 +8,13 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.Undirected;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.util.Hierarchy;
+
+import java.awt.geom.Point2D;
+import java.util.*;
 
 public abstract class AbstractMergeTransformationCommand extends AbstractTransformationCommand {
 
@@ -34,7 +28,7 @@ public abstract class AbstractMergeTransformationCommand extends AbstractTransfo
     }
 
     @Override
-    public void transform(Model model, Collection<Node> nodes) {
+    public void transform(VisualModel model, Collection<? extends VisualNode> nodes) {
         Map<Class<? extends VisualComponent>, Set<VisualComponent>> classComponents = new HashMap<>();
         Set<Class<? extends VisualComponent>> mergableClasses = getMergableClasses();
         for (Class<? extends VisualComponent> mergableClass: mergableClasses) {
@@ -46,21 +40,18 @@ public abstract class AbstractMergeTransformationCommand extends AbstractTransfo
             }
             classComponents.put(mergableClass, components);
         }
-        if (model instanceof VisualModel) {
-            VisualModel visualModel = (VisualModel) model;
-            for (Class<? extends VisualComponent> mergableClass: mergableClasses) {
-                Set<VisualComponent> components = classComponents.get(mergableClass);
-                VisualComponent mergedComponent = createMergedComponent(visualModel, components, mergableClass);
-                replaceComponents(visualModel, components, mergedComponent);
-                if (mergedComponent != null) {
-                    visualModel.addToSelection(mergedComponent);
-                }
+        for (Class<? extends VisualComponent> mergableClass: mergableClasses) {
+            Set<VisualComponent> components = classComponents.get(mergableClass);
+            VisualComponent mergedComponent = createMergedComponent(model, components, mergableClass);
+            replaceComponents(model, components, mergedComponent);
+            if (mergedComponent != null) {
+                model.addToSelection(mergedComponent);
             }
         }
     }
 
     @Override
-    public void transform(Model model, Node node) {
+    public void transform(VisualModel model, VisualNode node) {
     }
 
 
@@ -92,10 +83,10 @@ public abstract class AbstractMergeTransformationCommand extends AbstractTransfo
 
     public void replaceComponents(VisualModel model, Set<VisualComponent> components, VisualComponent newComponent) {
         for (VisualComponent component: components) {
-            for (Connection connection: model.getConnections(component)) {
+            for (VisualConnection connection: model.getConnections(component)) {
                 boolean isUndirected = connection instanceof Undirected;
-                Node first = connection.getFirst();
-                Node second = connection.getSecond();
+                VisualNode first = connection.getFirst();
+                VisualNode second = connection.getSecond();
                 try {
                     VisualConnection newConnection = null;
                     if ((first != component) && (second == component)) {
@@ -113,8 +104,8 @@ public abstract class AbstractMergeTransformationCommand extends AbstractTransfo
                         }
                     }
                     if ((newConnection != null) && (connection instanceof VisualConnection)) {
-                        newConnection.copyStyle((VisualConnection) connection);
-                        newConnection.copyShape((VisualConnection) connection);
+                        newConnection.copyStyle(connection);
+                        newConnection.copyShape(connection);
                     }
                 } catch (InvalidConnectionException e) {
                 }

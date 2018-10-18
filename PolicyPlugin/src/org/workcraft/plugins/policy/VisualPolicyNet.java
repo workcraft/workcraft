@@ -3,22 +3,20 @@ package org.workcraft.plugins.policy;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.ShortName;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.SelectionHelper;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.dom.visual.VisualTransformableNode;
+import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.ConnectionTool;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.observation.*;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.tools.PetriPlaceGeneratorTool;
-import org.workcraft.plugins.policy.propertydescriptors.BundleColorPropertyDescriptor;
-import org.workcraft.plugins.policy.propertydescriptors.BundleNamePropertyDescriptor;
-import org.workcraft.plugins.policy.propertydescriptors.BundlesOfTransitionPropertyDescriptor;
-import org.workcraft.plugins.policy.propertydescriptors.TransitionsOfBundlePropertyDescriptor;
+import org.workcraft.plugins.policy.observers.SpanningTreeInvalidator;
+import org.workcraft.plugins.policy.properties.BundleColorPropertyDescriptor;
+import org.workcraft.plugins.policy.properties.BundleNamePropertyDescriptor;
+import org.workcraft.plugins.policy.properties.BundlesOfTransitionPropertyDescriptor;
+import org.workcraft.plugins.policy.properties.TransitionsOfBundlePropertyDescriptor;
 import org.workcraft.plugins.policy.tools.PolicyBundledTransitionGeneratorTool;
 import org.workcraft.plugins.policy.tools.PolicySelectionTool;
 import org.workcraft.plugins.policy.tools.PolicySimulationTool;
@@ -34,6 +32,7 @@ import java.util.List;
 @DisplayName ("Policy Net")
 @ShortName("policy")
 public class VisualPolicyNet extends VisualPetriNet {
+
     private final ColorGenerator bundleColorGenerator = new ColorGenerator(ColorUtils.getHsbPalette(
             new float[]{0.05f, 0.15f, 0.25f, 0.35f, 0.45f, 0.55f, 0.65f, 0.75f, 0.85f, 0.95f},
             new float[]{0.50f}, new float[]{0.9f, 0.7f, 0.5f}));
@@ -45,19 +44,7 @@ public class VisualPolicyNet extends VisualPetriNet {
     public VisualPolicyNet(PolicyNet model, VisualGroup root) {
         super(model, root == null ? new VisualLocality((Locality) model.getRoot()) : root);
         setGraphEditorTools();
-        // invalidate spanning trees of all VisualBundles when the the model is changed
-        new StateSupervisor() {
-            @Override
-            public void handleEvent(StateEvent e) {
-                if (e instanceof ModelModifiedEvent
-                        || e instanceof PropertyChangedEvent
-                        || e instanceof TransformChangedEvent) {
-                    for (VisualBundle b: getVisualBundles()) {
-                        b.invalidateSpanningTree();
-                    }
-                }
-            }
-        }.attach(getRoot());
+        new SpanningTreeInvalidator(this).attach(getRoot());
     }
 
     private void setGraphEditorTools() {
@@ -77,11 +64,11 @@ public class VisualPolicyNet extends VisualPetriNet {
 
     @Override
     public VisualGroup groupSelection() {
-        ArrayList<Node> selected = new ArrayList<>();
-        ArrayList<Node> refSelected = new ArrayList<>();
-        for (Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
+        ArrayList<VisualNode> selected = new ArrayList<>();
+        ArrayList<MathNode> refSelected = new ArrayList<>();
+        for (VisualNode node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
             if (node instanceof VisualTransformableNode) {
-                selected.add((VisualTransformableNode) node);
+                selected.add(node);
                 if (node instanceof VisualComponent) {
                     refSelected.add(((VisualComponent) node).getReferencedComponent());
                 } else if (node instanceof VisualLocality) {
@@ -96,7 +83,7 @@ public class VisualPolicyNet extends VisualPetriNet {
             curLocality.add(newLocality);
             curLocality.reparent(selected, newLocality);
 
-            ArrayList<Node> connectionsToLocality = new ArrayList<>();
+            ArrayList<VisualNode> connectionsToLocality = new ArrayList<>();
             for (VisualConnection connection : Hierarchy.getChildrenOfType(curLocality, VisualConnection.class)) {
                 if (Hierarchy.isDescendant(connection.getFirst(), newLocality) && Hierarchy.isDescendant(connection.getSecond(), newLocality)) {
                     connectionsToLocality.add(connection);
@@ -111,22 +98,22 @@ public class VisualPolicyNet extends VisualPetriNet {
     @Override
     public void ungroupSelection() {
         int count = 0;
-        for (Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
+        for (VisualNode node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
             if (node instanceof VisualLocality) {
                 count++;
             }
         }
         if (count == 1) {
-            ArrayList<Node> toSelect = new ArrayList<>();
-            Collection<Node> mathNodes = new ArrayList<>();
-            for (Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
+            ArrayList<VisualNode> toSelect = new ArrayList<>();
+            Collection<MathNode> mathNodes = new ArrayList<>();
+            for (VisualNode node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
                 if (node instanceof VisualLocality) {
                     VisualLocality locality = (VisualLocality) node;
-                    for (Node subNode : locality.unGroup()) {
+                    for (VisualNode subNode : locality.unGroup()) {
                         toSelect.add(subNode);
                     }
                     for (Node child : locality.getLocality().getChildren()) {
-                        mathNodes.add(child);
+                        mathNodes.add((MathNode) child);
                     }
                     locality.getLocality().reparent(mathNodes, ((VisualLocality) getCurrentLevel()).getLocality());
                     getMathModel().remove(locality.getLocality());

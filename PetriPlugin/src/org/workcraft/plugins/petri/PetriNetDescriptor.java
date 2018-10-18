@@ -1,8 +1,6 @@
 package org.workcraft.plugins.petri;
 
 import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.dom.VisualModelDescriptor;
-import org.workcraft.dom.math.MathModel;
 
 public class PetriNetDescriptor implements ModelDescriptor {
 
@@ -12,12 +10,12 @@ public class PetriNetDescriptor implements ModelDescriptor {
     }
 
     @Override
-    public MathModel createMathModel() {
+    public PetriNet createMathModel() {
         return new PetriNet();
     }
 
     @Override
-    public VisualModelDescriptor getVisualModelDescriptor() {
+    public VisualPetriNetDescriptor getVisualModelDescriptor() {
         return new VisualPetriNetDescriptor();
     }
 

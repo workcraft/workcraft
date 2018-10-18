@@ -1,8 +1,6 @@
 package org.workcraft.plugins.dfs;
 
 import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.dom.VisualModelDescriptor;
-import org.workcraft.dom.math.MathModel;
 
 public class DfsDescriptor implements ModelDescriptor {
 
@@ -12,12 +10,12 @@ public class DfsDescriptor implements ModelDescriptor {
     }
 
     @Override
-    public MathModel createMathModel() {
+    public Dfs createMathModel() {
         return new Dfs();
     }
 
     @Override
-    public VisualModelDescriptor getVisualModelDescriptor() {
+    public VisualDfsDescriptor getVisualModelDescriptor() {
         return new VisualDfsDescriptor();
     }
 

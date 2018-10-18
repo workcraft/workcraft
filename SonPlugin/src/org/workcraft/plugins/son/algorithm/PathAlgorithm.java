@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.Stack;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.util.Marking;
@@ -91,7 +92,7 @@ public class PathAlgorithm {
 
     private LinkedList<Node> getPostset(Node n, Collection<Node> nodes) {
         LinkedList<Node> list = new LinkedList<>();
-        for (Node post : net.getPostset(n)) {
+        for (MathNode post : net.getPostset((MathNode) n)) {
             if (nodes.contains(post)) {
                 list.add(post);
             }

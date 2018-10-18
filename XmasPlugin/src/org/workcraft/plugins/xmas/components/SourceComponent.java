@@ -1,8 +1,10 @@
 package org.workcraft.plugins.xmas.components;
 
+import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
 
+@IdentifierPrefix("src")
 @VisualClass(org.workcraft.plugins.xmas.components.VisualSourceComponent.class)
 public class SourceComponent extends XmasComponent {
 

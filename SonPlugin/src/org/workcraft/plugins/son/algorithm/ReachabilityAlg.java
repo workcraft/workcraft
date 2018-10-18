@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
@@ -92,7 +93,7 @@ public class ReachabilityAlg extends RelationAlgorithm {
         if (isInitial(n) && (n instanceof Condition)) {
             result.addAll(getPostBhvSet((Condition) n));
         } else if (n instanceof TransitionNode) {
-            for (SONConnection con : net.getSONConnections(n)) {
+            for (SONConnection con : net.getSONConnections((MathNode) n)) {
                 if (con.getSemantics() == Semantics.SYNCLINE) {
                     if (con.getFirst() == n) {
                         result.add(con.getSecond());
@@ -104,11 +105,11 @@ public class ReachabilityAlg extends RelationAlgorithm {
                 }
             }
         } else if (n instanceof ChannelPlace) {
-            Node input = net.getPreset(n).iterator().next();
+            Node input = net.getPreset((MathNode) n).iterator().next();
             result.add(input);
-            Collection<Semantics> semantics = net.getSONConnectionTypes(n);
+            Collection<Semantics> semantics = net.getSONConnectionTypes((MathNode) n);
             if (semantics.iterator().next() == Semantics.SYNCLINE) {
-                Node output = net.getPostset(n).iterator().next();
+                Node output = net.getPostset((MathNode) n).iterator().next();
                 result.add(output);
             }
         }

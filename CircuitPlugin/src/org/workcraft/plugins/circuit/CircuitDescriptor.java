@@ -1,13 +1,11 @@
 package org.workcraft.plugins.circuit;
 
 import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.dom.VisualModelDescriptor;
-import org.workcraft.dom.math.MathModel;
 
 public class CircuitDescriptor implements ModelDescriptor {
 
     @Override
-    public MathModel createMathModel() {
+    public Circuit createMathModel() {
         return new Circuit();
     }
 
@@ -17,7 +15,7 @@ public class CircuitDescriptor implements ModelDescriptor {
     }
 
     @Override
-    public VisualModelDescriptor getVisualModelDescriptor() {
+    public VisualCircuitDescriptor getVisualModelDescriptor() {
         return new VisualCircuitDescriptor();
     }
 

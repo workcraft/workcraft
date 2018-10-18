@@ -8,5 +8,4 @@ public interface ReferenceManager {
     Node getNodeByReference(NamespaceProvider provider, String reference);
     void attach(Node root);
     void detach();
-    String getPrefix(Node node);
 }

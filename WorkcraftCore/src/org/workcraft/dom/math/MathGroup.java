@@ -1,17 +1,17 @@
 package org.workcraft.dom.math;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.util.Hierarchy;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class MathGroup extends MathNode implements NamespaceProvider, ObservableHierarchy {
     private final DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
@@ -57,22 +57,22 @@ public class MathGroup extends MathNode implements NamespaceProvider, Observable
     }
 
     @Override
-    public void add(Collection<Node> nodes) {
+    public void add(Collection<? extends Node> nodes) {
         groupImpl.add(nodes);
     }
 
     @Override
-    public void remove(Collection<Node> nodes) {
+    public void remove(Collection<? extends Node> nodes) {
         groupImpl.remove(nodes);
     }
 
     @Override
-    public void reparent(Collection<Node> nodes, Container newParent) {
+    public void reparent(Collection<? extends Node> nodes, Container newParent) {
         groupImpl.reparent(nodes, newParent);
     }
 
     @Override
-    public void reparent(Collection<Node> nodes) {
+    public void reparent(Collection<? extends Node> nodes) {
         groupImpl.reparent(nodes);
     }
 
@@ -80,8 +80,8 @@ public class MathGroup extends MathNode implements NamespaceProvider, Observable
         ArrayList<Node> nodesToReparent = new ArrayList<>(groupImpl.getChildren());
         Container newParent = Hierarchy.getNearestAncestor(getParent(), Container.class);
         if (manager != null) {
-            if (manager instanceof HierarchicalUniqueNameReferenceManager) {
-                HierarchicalUniqueNameReferenceManager hierManager = (HierarchicalUniqueNameReferenceManager) manager;
+            if (manager instanceof HierarchyReferenceManager) {
+                HierarchyReferenceManager hierManager = (HierarchyReferenceManager) manager;
                 NamespaceProvider provider = hierManager.getNamespaceProvider(newParent);
                 hierManager.setNamespaceProvider(nodesToReparent, provider);
             }

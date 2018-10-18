@@ -2,12 +2,10 @@ package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -57,12 +55,12 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
     }
 
     @Override
-    public boolean isApplicableTo(Node node) {
+    public boolean isApplicableTo(VisualNode node) {
         return (node instanceof VisualFunctionComponent) && ((VisualFunctionComponent) node).isGate();
     }
 
     @Override
-    public boolean isEnabled(ModelEntry me, Node node) {
+    public boolean isEnabled(ModelEntry me, VisualNode node) {
         return true;
     }
 
@@ -72,12 +70,12 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
     }
 
     @Override
-    public Collection<Node> collect(Model model) {
-        Collection<Node> components = new HashSet<>();
+    public Collection<VisualNode> collect(VisualModel model) {
+        Collection<VisualNode> components = new HashSet<>();
         if (model instanceof VisualCircuit) {
             VisualCircuit circuit = (VisualCircuit) model;
             components.addAll(Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualFunctionComponent.class));
-            Collection<Node> selection = circuit.getSelection();
+            Collection<VisualNode> selection = circuit.getSelection();
             if (!selection.isEmpty()) {
                 components.retainAll(selection);
             }
@@ -86,7 +84,7 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
     }
 
     @Override
-    public void transform(Model model, Node node) {
+    public void transform(VisualModel model, VisualNode node) {
         if ((model instanceof VisualCircuit) && (node instanceof VisualFunctionComponent)) {
             VisualCircuit circuit = (VisualCircuit) model;
             VisualFunctionComponent component = (VisualFunctionComponent) node;
@@ -225,7 +223,7 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
         for (VisualContact inputContact: component.getOrderedVisualFunctionContacts()) {
             VisualNode driver = null;
             VisualConnection visualConnection = null;
-            for (Connection connection: circuit.getConnections(inputContact)) {
+            for (VisualConnection connection: circuit.getConnections(inputContact)) {
                 if (!(connection instanceof VisualConnection)) continue;
                 visualConnection = (VisualConnection) connection;
                 driver = visualConnection.getFirst();
@@ -239,7 +237,7 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
     private Set<NodeConnectionPair> getComponentNonLoopDrivenNodes(VisualCircuit circuit, VisualFunctionComponent component) {
         Set<NodeConnectionPair> result = new HashSet<>();
         for (VisualContact outputContact: component.getVisualOutputs()) {
-            for (Connection connection: circuit.getConnections(outputContact)) {
+            for (VisualConnection connection: circuit.getConnections(outputContact)) {
                 if (!CircuitUtils.isSelfLoop(connection) && (connection instanceof VisualConnection)) {
                     VisualConnection visualConnection = (VisualConnection) connection;
                     result.add(new NodeConnectionPair(visualConnection.getSecond(), visualConnection));

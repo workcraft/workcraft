@@ -1,44 +1,33 @@
 package org.workcraft.plugins.fsm;
 
-import java.util.Collection;
-
-import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.NameManager;
-import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.plugins.fsm.observers.InitialStateSupervisor;
+import org.workcraft.plugins.fsm.observers.SymbolConsistencySupervisor;
 import org.workcraft.plugins.fsm.properties.EventSymbolPropertyDescriptor;
 import org.workcraft.plugins.fsm.properties.SymbolPropertyDescriptor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.util.Identifier;
 
-@VisualClass(org.workcraft.plugins.fsm.VisualFsm.class)
+import java.util.Collection;
+
 public class Fsm extends AbstractMathModel {
+
     public static final String EPSILON_SERIALISATION = "epsilon";
 
     public Fsm() {
-        this(null, (References) null);
+        this(null, null);
     }
 
     public Fsm(Container root, References refs) {
-        this(root, new HierarchicalUniqueNameReferenceManager(refs) {
-            @Override
-            public String getPrefix(Node node) {
-                if (node instanceof State) return "s";
-                if (node instanceof Event) return Identifier.createInternal("e");
-                return super.getPrefix(node);
-            }
-        });
-    }
-
-    public Fsm(Container root, ReferenceManager man) {
-        super(root, man);
+        super(root, refs);
         new InitialStateSupervisor(this).attach(getRoot());
         new SymbolConsistencySupervisor(this).attach(getRoot());
     }
@@ -114,13 +103,13 @@ public class Fsm extends AbstractMathModel {
     }
 
     @Override
-    public boolean reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
+    public boolean reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<? extends MathNode> srcChildren) {
         if (srcModel == null) {
             srcModel = this;
         }
-        HierarchicalUniqueNameReferenceManager refManager = (HierarchicalUniqueNameReferenceManager) getReferenceManager();
+        HierarchyReferenceManager refManager = (HierarchyReferenceManager) getReferenceManager();
         NameManager nameManagerer = refManager.getNameManager(null);
-        for (Node srcNode: srcChildren) {
+        for (MathNode srcNode: srcChildren) {
             if (srcNode instanceof Event) {
                 Event srcEvent = (Event) srcNode;
                 Symbol dstSymbol = null;

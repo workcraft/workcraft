@@ -1,21 +1,12 @@
 package org.workcraft.plugins.policy.commands;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
-
-import org.workcraft.dom.Node;
-import org.workcraft.plugins.petri.PetriNet;
-import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.petri.VisualPetriNet;
-import org.workcraft.plugins.petri.VisualTransition;
+import org.workcraft.dom.math.MathNode;
+import org.workcraft.plugins.petri.*;
 import org.workcraft.plugins.policy.VisualBundledTransition;
 import org.workcraft.plugins.policy.VisualPolicyNet;
 import org.workcraft.plugins.policy.tools.PolicyToPetriConverter;
+
+import java.util.*;
 
 public class TransitionBundler {
 
@@ -95,9 +86,9 @@ public class TransitionBundler {
 
     private Set<Transition> getConflict(Transition t, Collection<Transition> enabled) {
         Set<Transition> result = new HashSet<>();
-        Set<Node> tPreset = model.getPreset(t);
+        Set<MathNode> tPreset = model.getPreset(t);
         for (Transition c: enabled) {
-            Set<Node> cPreset = model.getPreset(c);
+            Set<MathNode> cPreset = model.getPreset(c);
             if (cPreset.equals(tPreset)) {
                 result.add(c);
             }

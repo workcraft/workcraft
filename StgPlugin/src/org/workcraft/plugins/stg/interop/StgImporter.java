@@ -9,7 +9,7 @@ import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.StgUtils;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.plugins.stg.jj.ParseException;
 import org.workcraft.plugins.stg.jj.StgParser;
 import org.workcraft.workspace.ModelEntry;

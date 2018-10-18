@@ -1,18 +1,10 @@
 package org.workcraft.dom;
 
+import org.workcraft.observation.*;
+import org.workcraft.util.Hierarchy;
+
 import java.util.Collection;
 import java.util.LinkedList;
-
-import org.workcraft.observation.HierarchyObserver;
-import org.workcraft.observation.NodesAddedEvent;
-import org.workcraft.observation.NodesAddingEvent;
-import org.workcraft.observation.NodesDeletedEvent;
-import org.workcraft.observation.NodesDeletingEvent;
-import org.workcraft.observation.NodesReparentedEvent;
-import org.workcraft.observation.NodesReparentingEvent;
-import org.workcraft.observation.ObservableHierarchy;
-import org.workcraft.observation.ObservableHierarchyImpl;
-import org.workcraft.util.Hierarchy;
 
 public abstract class AbstractGroup implements Container, ObservableHierarchy {
     private Node parent = null;
@@ -98,7 +90,7 @@ public abstract class AbstractGroup implements Container, ObservableHierarchy {
     }
 
     @Override
-    public void add(Collection<Node> nodes) {
+    public void add(Collection<? extends Node> nodes) {
         observableHierarchyImpl.sendNotification(new NodesAddingEvent(groupRef, nodes));
         for (Node node : nodes) {
             addInternal(node, false);
@@ -116,7 +108,7 @@ public abstract class AbstractGroup implements Container, ObservableHierarchy {
     }
 
     @Override
-    public void remove(Collection<Node> nodes) {
+    public void remove(Collection<? extends Node> nodes) {
         LinkedList<Node> nodesToRemove = new LinkedList<>(nodes);
         observableHierarchyImpl.sendNotification(new NodesDeletingEvent(groupRef, nodesToRemove));
         for (Node node : nodesToRemove) {
@@ -126,7 +118,7 @@ public abstract class AbstractGroup implements Container, ObservableHierarchy {
     }
 
     @Override
-    public void reparent(Collection<Node> nodes, Container newParent) {
+    public void reparent(Collection<? extends Node> nodes, Container newParent) {
         observableHierarchyImpl.sendNotification(new NodesReparentingEvent(groupRef, newParent, nodes));
         for (Node node: nodes) {
             removeInternal(node, false);
@@ -143,7 +135,7 @@ public abstract class AbstractGroup implements Container, ObservableHierarchy {
         observableHierarchyImpl.sendNotification(new NodesReparentedEvent(groupRef, newParent, nodes));
     }
 
-    private boolean isSameModel(Collection<Node> nodes, Container newParent) {
+    private boolean isSameModel(Collection<? extends Node> nodes, Container newParent) {
         Node newRoot = Hierarchy.getTopParent(newParent);
         boolean sameModel = true;
         for (Node node : nodes) {
@@ -156,7 +148,7 @@ public abstract class AbstractGroup implements Container, ObservableHierarchy {
     }
 
     @Override
-    public void reparent(Collection<Node> nodes) {
+    public void reparent(Collection<? extends Node> nodes) {
         for (Node node : nodes) {
             addInternal(node, false);
         }

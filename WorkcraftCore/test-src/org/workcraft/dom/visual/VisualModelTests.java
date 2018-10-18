@@ -1,37 +1,31 @@
 package org.workcraft.dom.visual;
 
-import static org.workcraft.dom.visual.Tools.createComponent;
-import static org.workcraft.dom.visual.Tools.createConnection;
-import static org.workcraft.dom.visual.Tools.createGroup;
+import org.junit.Assert;
+import org.junit.Test;
+import org.workcraft.dom.Container;
+import org.workcraft.dom.Model;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.math.*;
+import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.exceptions.VisualModelInstantiationException;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.workcraft.dom.AbstractModel;
-import org.workcraft.dom.Container;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
-import org.workcraft.dom.math.MathConnection;
-import org.workcraft.dom.math.MathGroup;
-import org.workcraft.dom.math.MathModel;
-import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.VisualModelInstantiationException;
+import static org.workcraft.dom.visual.Tools.*;
 
 public class VisualModelTests {
 
-    private class MockMathModel extends AbstractModel implements MathModel {
+    private class MockMathModel extends AbstractMathModel implements MathModel {
         MockMathModel() {
             super(new MathGroup());
         }
 
         @Override
-        public boolean reparent(Container targetContainer, Model sourceModel, Container sourceRoot, Collection<Node> sourceChildren) {
+        public boolean reparent(Container targetContainer, Model sourceModel, Container sourceRoot, Collection<? extends MathNode> sourceChildren) {
             return true;
         }
 
@@ -58,11 +52,11 @@ public class VisualModelTests {
         }
 
         @Override
-        public void validateConnection(Node first, Node second) throws InvalidConnectionException {
+        public void validateConnection(VisualNode first, VisualNode second) throws InvalidConnectionException {
         }
 
         @Override
-        public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
+        public VisualConnection connect(VisualNode first, VisualNode second, MathConnection mConnection) throws InvalidConnectionException {
             return null;
         }
     }
@@ -567,7 +561,7 @@ public class VisualModelTests {
         Assert.assertEquals(0, boxHitTest(model, new Rectangle2D.Double(-0.01, 4.99, 1.02, 1.02)).size());
     }
 
-    private Collection<Node> boxHitTest(VisualModel model, Rectangle2D.Double rect) {
+    private Collection<VisualNode> boxHitTest(VisualModel model, Rectangle2D.Double rect) {
         Point2D.Double p1 = new Point2D.Double(rect.getMinX(), rect.getMinY());
         Point2D.Double p2 = new Point2D.Double(rect.getMaxX(), rect.getMaxY());
         return model.hitBox(p1, p2);

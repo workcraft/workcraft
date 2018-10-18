@@ -1,45 +1,72 @@
 package org.workcraft.plugins.wtg;
 
-import java.util.*;
-
-import org.workcraft.annotations.VisualClass;
+import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
-import org.workcraft.dom.references.ReferenceManager;
+import org.workcraft.dom.math.MathNode;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.dtd.*;
-import org.workcraft.plugins.wtg.supervisors.InitialStateSupervisor;
-import org.workcraft.plugins.wtg.supervisors.SignalTypeConsistencySupervisor;
+import org.workcraft.plugins.wtg.observers.InitialStateSupervisor;
+import org.workcraft.plugins.wtg.observers.SignalTypeConsistencySupervisor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.util.Identifier;
 
-@VisualClass(org.workcraft.plugins.wtg.VisualWtg.class)
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 public class Wtg extends Dtd {
 
     public Wtg() {
-        this(null, (References) null);
+        this(null, null);
     }
 
     public Wtg(Container root, References refs) {
-        this(root, new HierarchicalUniqueNameReferenceManager(refs) {
-            @Override
-            public String getPrefix(Node node) {
-                if (node instanceof EntryEvent) return Identifier.createInternal("entry");
-                if (node instanceof ExitEvent) return Identifier.createInternal("exit");
-                if (node instanceof TransitionEvent) return Identifier.createInternal("t");
-                if (node instanceof Signal) return "x";
-                if (node instanceof State) return "s";
-                if (node instanceof Waveform) return "w";
-                return super.getPrefix(node);
-            }
-        });
-    }
-
-    public Wtg(Container root, ReferenceManager man) {
-        super(root, man);
+        super(root, refs);
         new InitialStateSupervisor().attach(getRoot());
         new SignalTypeConsistencySupervisor(this).attach(getRoot());
+    }
+
+    @Override
+    public void validateConnection(MathNode first, MathNode second) throws InvalidConnectionException {
+        super.validateConnection(first, second);
+
+        if (first == second) {
+            throw new InvalidConnectionException("Self-loops are not allowed.");
+        }
+
+        if ((first instanceof Waveform) && (second instanceof Waveform)) {
+            throw new InvalidConnectionException("Cannot directly connect waveforms.");
+        }
+
+        if ((first instanceof State) && (second instanceof State)) {
+            throw new InvalidConnectionException("Cannot directly connect states.");
+        }
+
+        if ((first instanceof State) && (second instanceof Waveform)) {
+            for (Connection connection : getConnections(second)) {
+                if ((connection.getFirst() != first) && (connection.getSecond() == second)) {
+                    throw new InvalidConnectionException("Waveform cannot have more than one preceding state.");
+                }
+            }
+        }
+
+        if ((first instanceof Waveform) && (second instanceof State)) {
+            for (Connection connection : getConnections(second)) {
+                if ((connection.getFirst() == first) && (connection.getSecond() != second)) {
+                    throw new InvalidConnectionException("Waveform cannot have more than one succeeding state.");
+                }
+            }
+        }
+        if ((first instanceof TransitionEvent) && (second instanceof TransitionEvent)) {
+            Signal firstSignal = ((TransitionEvent) first).getSignal();
+            Signal secondSignal = ((TransitionEvent) second).getSignal();
+            Node firstWaveform = firstSignal.getParent();
+            Node secondWaveform = secondSignal.getParent();
+            if (firstWaveform != secondWaveform) {
+                throw new InvalidConnectionException("Cannot connect events from different waveforms.");
+            }
+        }
     }
 
     public final Collection<State> getStates() {

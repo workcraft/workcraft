@@ -10,7 +10,7 @@ import org.workcraft.formula.utils.StringGenerator.Void;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.serialisation.xml.CustomXMLSerialiser;
 import org.workcraft.serialisation.xml.NodeSerialiser;
-import org.workcraft.util.Identifier;
+import org.workcraft.dom.references.Identifier;
 
 public abstract class BooleanFormulaSerialiser implements CustomXMLSerialiser {
     @Override

@@ -1,8 +1,10 @@
 package org.workcraft.plugins.xmas.components;
 
+import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
 
+@IdentifierPrefix("fun")
 @VisualClass(org.workcraft.plugins.xmas.components.VisualFunctionComponent.class)
 public class FunctionComponent extends XmasComponent {
     public static final String PROPERTY_TYPE = "Type";

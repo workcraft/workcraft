@@ -1,6 +1,6 @@
 package org.workcraft.plugins.wtg.utils;
 
-import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.dtd.EntryEvent;
 import org.workcraft.plugins.dtd.ExitEvent;
 import org.workcraft.plugins.dtd.Signal;
@@ -58,7 +58,7 @@ public class WtgUtils {
 
     public static Map<String, Guard> getGuardFromState(Wtg wtg, State state) {
         Map<String, Guard> result = new HashMap<>();
-        for (Node node : wtg.getPostset(state)) {
+        for (MathNode node : wtg.getPostset(state)) {
             if (node instanceof Waveform) {
                 result.put(wtg.getName(node), ((Waveform) node).getGuard());
             }
@@ -82,13 +82,13 @@ public class WtgUtils {
         //BFS initialization
         int remainingSignals = wtg.getSignalNames().size();
         State initialState = wtg.getInitialState();
-        Set<Node> visitedNodes = new HashSet<>();
-        Queue<Node> nodesToVisit = new LinkedList<>();
+        Set<MathNode> visitedNodes = new HashSet<>();
+        Queue<MathNode> nodesToVisit = new LinkedList<>();
         nodesToVisit.add(initialState);
         visitedNodes.add(initialState);
         //BFS main loop
         while ((!nodesToVisit.isEmpty()) && (remainingSignals > 0)) {
-            Node node = nodesToVisit.poll();
+            MathNode node = nodesToVisit.poll();
 
             if (node instanceof Waveform) {
                 Waveform waveform = (Waveform) node;
@@ -101,7 +101,7 @@ public class WtgUtils {
                 }
             }
 
-            for (Node n : wtg.getPostset(node)) {
+            for (MathNode n : wtg.getPostset(node)) {
                 if (!visitedNodes.contains(n)) {
                     nodesToVisit.add(n);
                     visitedNodes.add(n);
@@ -111,16 +111,16 @@ public class WtgUtils {
         return result;
     }
 
-    public static Signal.State getFinalSignalStateForSignalFromNode(Wtg wtg, Node node, String signalName) {
+    public static Signal.State getFinalSignalStateForSignalFromNode(Wtg wtg, MathNode node, String signalName) {
         //Returns the final signal state for a signal in a waveform or state.
         //The search is propagated backwards until the first instance of the signal is found
 
-        Set<Node> visitedNodes = new HashSet<>();
-        Queue<Node> nodesToVisit = new LinkedList<>();
+        Set<MathNode> visitedNodes = new HashSet<>();
+        Queue<MathNode> nodesToVisit = new LinkedList<>();
         visitedNodes.add(node);
         nodesToVisit.add(node);
         while (!nodesToVisit.isEmpty()) {
-            Node visitingNode = nodesToVisit.poll();
+            MathNode visitingNode = nodesToVisit.poll();
             if (visitingNode instanceof Waveform) {
                 Waveform predecesorWaveform = (Waveform) visitingNode;
                 Map<String, Signal.State> finalSignalStates = getFinalSignalStatesFromWaveform(wtg, predecesorWaveform);
@@ -129,7 +129,7 @@ public class WtgUtils {
                 }
             }
 
-            for (Node n : wtg.getPreset(visitingNode)) {
+            for (MathNode n : wtg.getPreset(visitingNode)) {
                 if (!visitedNodes.contains(n)) {
                     nodesToVisit.add(n);
                     visitedNodes.add(n);

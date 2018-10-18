@@ -1,15 +1,5 @@
 package org.workcraft.dom.visual;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.Path2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
@@ -24,6 +14,12 @@ import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.Hierarchy;
+
+import java.awt.*;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.Collection;
 
 public class VisualGroup extends VisualTransformableNode implements Drawable, Collapsible, Container, ObservableHierarchy {
     public static final String PROPERTY_IS_COLLAPSED = "Is collapsed";
@@ -157,8 +153,8 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
         return Hierarchy.getChildrenOfType(this, VisualConnection.class);
     }
 
-    public List<Node> unGroup() {
-        ArrayList<Node> nodesToReparent = new ArrayList<>(groupImpl.getChildren());
+    public Collection<VisualNode> unGroup() {
+        Collection<VisualNode> nodesToReparent = NodeHelper.filterByType(groupImpl.getChildren(), VisualNode.class);
         Container newParent = Hierarchy.getNearestAncestor(getParent(), Container.class);
         groupImpl.reparent(nodesToReparent, newParent);
         double tx = localToParentTransform.getTranslateX();
@@ -221,22 +217,22 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
     }
 
     @Override
-    public void add(Collection<Node> nodes) {
+    public void add(Collection<? extends Node> nodes) {
         groupImpl.add(nodes);
     }
 
     @Override
-    public void remove(Collection<Node> nodes) {
+    public void remove(Collection<? extends Node> nodes) {
         groupImpl.remove(nodes);
     }
 
     @Override
-    public void reparent(Collection<Node> nodes, Container newParent) {
+    public void reparent(Collection<? extends Node> nodes, Container newParent) {
         groupImpl.reparent(nodes, newParent);
     }
 
     @Override
-    public void reparent(Collection<Node> nodes) {
+    public void reparent(Collection<? extends Node> nodes) {
         groupImpl.reparent(nodes);
     }
 

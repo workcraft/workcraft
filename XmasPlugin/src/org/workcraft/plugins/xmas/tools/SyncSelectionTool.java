@@ -1,19 +1,9 @@
 package org.workcraft.plugins.xmas.tools;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map.Entry;
-import java.util.Queue;
-
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 import org.workcraft.gui.graph.tools.GraphEditor;
@@ -22,12 +12,16 @@ import org.workcraft.plugins.xmas.components.VisualSyncComponent;
 import org.workcraft.plugins.xmas.components.VisualXmasComponent;
 import org.workcraft.util.Hierarchy;
 
+import javax.swing.*;
+import java.util.*;
+import java.util.Map.Entry;
+
 public class SyncSelectionTool extends SelectionTool {
 
     private HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap = null;
 
     @Override
-    public JPopupMenu createPopupMenu(Node node, final GraphEditor editor) {
+    public JPopupMenu createPopupMenu(VisualNode node, final GraphEditor editor) {
         JPopupMenu popup = super.createPopupMenu(node, editor);
         if (node instanceof VisualSyncComponent) {
             final VisualSyncComponent component = (VisualSyncComponent) node;
@@ -51,9 +45,9 @@ public class SyncSelectionTool extends SelectionTool {
     }
 
     @Override
-    public Collection<Node> getNodeWithAdjacentConnections(VisualModel model, Node node) {
-        HashSet<Node> result = new HashSet<>();
-        Queue<Node> queue = new LinkedList<>();
+    public Collection<VisualNode> getNodeWithAdjacentConnections(VisualModel model, VisualNode node) {
+        HashSet<VisualNode> result = new HashSet<>();
+        Queue<VisualNode> queue = new LinkedList<>();
         queue.add(node);
         while (!queue.isEmpty()) {
             node = queue.remove();

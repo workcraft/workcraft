@@ -2,15 +2,13 @@ package org.workcraft.plugins.son;
 
 import org.workcraft.Framework;
 import org.workcraft.annotations.VisualClass;
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
+import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.connections.SONConnection;
@@ -42,22 +40,7 @@ public class SON extends AbstractMathModel {
     }
 
     public SON(Container root, References refs) {
-        super(root, new HierarchicalUniqueNameReferenceManager(refs) {
-            @Override
-            public String getPrefix(Node node) {
-                if (node instanceof Condition) return "c";
-                if (node instanceof Event) return "e";
-                if (node instanceof ChannelPlace) return "q";
-                if (node instanceof Block) return "b";
-                if (node instanceof SONConnection) return "con";
-                if (node instanceof ONGroup) return "g";
-                if (node instanceof PageNode) return "p";
-                return super.getPrefix(node);
-            }
-        });
-    }
-
-    public void validate() throws ModelValidationException {
+        super(root, refs);
     }
 
     public final Condition createCondition(String name, Container container) {
@@ -72,21 +55,21 @@ public class SON extends AbstractMathModel {
         return condition;
     }
 
-    public SONConnection connect(Node first, Node second, Semantics semantics) throws InvalidConnectionException {
+    public SONConnection connect(MathNode first, MathNode second, Semantics semantics) throws InvalidConnectionException {
         if (getSONConnection(first, second) != null) {
             throw new InvalidConnectionException("Duplicate Connections" + getNodeReference(first) + " " + getNodeReference(second));
         }
 
-        SONConnection con = new SONConnection((MathNode) first, (MathNode) second, semantics);
+        SONConnection con = new SONConnection(first, second, semantics);
         Hierarchy.getNearestContainer(first, second).add(con);
 
         return con;
     }
 
-    public Collection<Node> getComponents() {
-        ArrayList<Node> result = new ArrayList<>();
+    public Collection<MathNode> getComponents() {
+        ArrayList<MathNode> result = new ArrayList<>();
 
-        for (Node node : Hierarchy.getDescendantsOfType(getRoot(), MathNode.class)) {
+        for (MathNode node : Hierarchy.getDescendantsOfType(getRoot(), MathNode.class)) {
             if (node instanceof PlaceNode || node instanceof Event) {
                 result.add(node);
             }
@@ -103,8 +86,8 @@ public class SON extends AbstractMathModel {
         return result;
     }
 
-    public Collection<Node> getNodes() {
-        ArrayList<Node> result = new ArrayList<>();
+    public Collection<MathNode> getNodes() {
+        ArrayList<MathNode> result = new ArrayList<>();
         result.addAll(getComponents());
         for (SONConnection con : getSONConnections()) {
             if (con.getSemantics() != Semantics.BHVLINE) {
@@ -126,7 +109,7 @@ public class SON extends AbstractMathModel {
 
     public Collection<Condition> getConditions() {
         ArrayList<Condition> result = new ArrayList<>();
-        for (Node node : getComponents()) {
+        for (MathNode node : getComponents()) {
             if (node instanceof Condition) {
                 result.add((Condition) node);
             }
@@ -141,7 +124,7 @@ public class SON extends AbstractMathModel {
 
     public Collection<Event> getEvents() {
         ArrayList<Event> result = new ArrayList<>();
-        for (Node node : getComponents()) {
+        for (MathNode node : getComponents()) {
             if (node instanceof Event) {
                 result.add((Event) node);
             }
@@ -152,7 +135,7 @@ public class SON extends AbstractMathModel {
 
     public Collection<PlaceNode> getPlaceNodes() {
         ArrayList<PlaceNode> result = new ArrayList<>();
-        for (Node node : getComponents()) {
+        for (MathNode node : getComponents()) {
             if (node instanceof PlaceNode) {
                 result.add((PlaceNode) node);
             }
@@ -163,7 +146,7 @@ public class SON extends AbstractMathModel {
 
     public Collection<Time> getTimeNodes() {
         ArrayList<Time> result = new ArrayList<>();
-        for (Node node : getComponents()) {
+        for (MathNode node : getComponents()) {
             if (node instanceof Time) {
                 result.add((Time) node);
             }
@@ -172,7 +155,7 @@ public class SON extends AbstractMathModel {
         return result;
     }
 
-    public String getComponentLabel(Node n) {
+    public String getComponentLabel(MathNode n) {
         if (n instanceof PlaceNode) {
             return ((PlaceNode) n).getLabel();
         }
@@ -209,7 +192,7 @@ public class SON extends AbstractMathModel {
     }
 
     public void refreshAllColor() {
-        for (Node n:  getComponents()) {
+        for (MathNode n:  getComponents()) {
             setFillColor(n, CommonVisualSettings.getFillColor());
             setForegroundColor(n, CommonVisualSettings.getBorderColor());
             setTimeColor(n, Color.BLACK);
@@ -230,7 +213,7 @@ public class SON extends AbstractMathModel {
     }
 
     public void refreshNodeColor() {
-        for (Node n:  getComponents()) {
+        for (MathNode n:  getComponents()) {
             setFillColor(n, CommonVisualSettings.getFillColor());
             setForegroundColor(n, CommonVisualSettings.getBorderColor());
             setTokenColor(n, Color.BLACK);
@@ -354,9 +337,9 @@ public class SON extends AbstractMathModel {
         return Hierarchy.getDescendantsOfType(getRoot(), SONConnection.class);
     }
 
-    public Collection<SONConnection> getSONConnections(Node node) {
+    public Collection<SONConnection> getSONConnections(MathNode node) {
         ArrayList<SONConnection> result = new ArrayList<>();
-        for (Connection con : this.getConnections(node)) {
+        for (MathConnection con : this.getConnections(node)) {
             if (con instanceof SONConnection) {
                 result.add((SONConnection) con);
             }
@@ -365,7 +348,7 @@ public class SON extends AbstractMathModel {
         return result;
     }
 
-    public SONConnection getSONConnection(Node first, Node second) {
+    public SONConnection getSONConnection(MathNode first, MathNode second) {
         ArrayList<SONConnection> connection = new ArrayList<>();
 
         for (SONConnection con : getSONConnections(first)) {
@@ -384,31 +367,27 @@ public class SON extends AbstractMathModel {
         return connection.iterator().next();
     }
 
-    public Collection<SONConnection> getInputSONConnections(Node node) {
+    public Collection<SONConnection> getInputSONConnections(MathNode node) {
         ArrayList<SONConnection> result = new ArrayList<>();
         for (SONConnection con : this.getSONConnections(node)) {
-            if (node instanceof MathNode) {
-                if (con.getSecond() == node) {
-                    result.add(con);
-                }
+            if (con.getSecond() == node) {
+                result.add(con);
             }
         }
         return result;
     }
 
-    public Collection<SONConnection> getOutputSONConnections(Node node) {
+    public Collection<SONConnection> getOutputSONConnections(MathNode node) {
         Collection<SONConnection> result = new ArrayList<>();
         for (SONConnection con : this.getSONConnections(node)) {
-            if (node instanceof MathNode) {
-                if (con.getFirst() == node) {
-                    result.add(con);
-                }
+            if (con.getFirst() == node) {
+                result.add(con);
             }
         }
         return result;
     }
 
-    public Collection<Semantics> getSONConnectionTypes(Node node) {
+    public Collection<Semantics> getSONConnectionTypes(MathNode node) {
         Collection<Semantics> result = new HashSet<>();
         for (SONConnection con : getSONConnections(node)) {
             result.add(con.getSemantics());
@@ -417,10 +396,10 @@ public class SON extends AbstractMathModel {
         return result;
     }
 
-    public Collection<Semantics> getSONConnectionTypes(Collection<Node> nodes) {
+    public Collection<Semantics> getSONConnectionTypes(Collection<? extends Node> nodes) {
         Collection<Semantics> result = new HashSet<>();
         for (Node node : nodes) {
-            for (SONConnection con : getSONConnections(node)) {
+            for (SONConnection con : getSONConnections((MathNode) node)) {
                 if (nodes.contains(con.getFirst()) && nodes.contains(con.getSecond())) {
                     result.add(con.getSemantics());
                 }
@@ -429,36 +408,32 @@ public class SON extends AbstractMathModel {
         return result;
     }
 
-    public Semantics getSONConnectionType(Node first, Node second) {
+    public Semantics getSONConnectionType(MathNode first, MathNode second) {
         SONConnection con = getSONConnection(first, second);
         return con.getSemantics();
     }
 
-    public Collection<Semantics> getInputSONConnectionTypes(Node node) {
+    public Collection<Semantics> getInputSONConnectionTypes(MathNode node) {
         Collection<Semantics> result = new HashSet<>();
         for (SONConnection con : this.getSONConnections(node)) {
-            if (node instanceof MathNode) {
-                if (con.getSecond() == node) {
-                    result.add(con.getSemantics());
-                }
+            if (con.getSecond() == node) {
+                result.add(con.getSemantics());
             }
         }
         return result;
     }
 
-    public Collection<Semantics> getOutputSONConnectionTypes(Node node) {
+    public Collection<Semantics> getOutputSONConnectionTypes(MathNode node) {
         Collection<Semantics> result = new HashSet<>();
         for (SONConnection con : this.getSONConnections(node)) {
-            if (node instanceof MathNode) {
-                if (con.getFirst() == node) {
-                    result.add(con.getSemantics());
-                }
+            if (con.getFirst() == node) {
+                result.add(con.getSemantics());
             }
         }
         return result;
     }
 
-    public Collection<SONConnection> getInputPNConnections(Node node) {
+    public Collection<SONConnection> getInputPNConnections(MathNode node) {
         Collection<SONConnection> result = new ArrayList<>();
 
         for (SONConnection con : getInputSONConnections(node)) {
@@ -469,7 +444,7 @@ public class SON extends AbstractMathModel {
         return result;
     }
 
-    public Collection<SONConnection> getOutputPNConnections(Node node) {
+    public Collection<SONConnection> getOutputPNConnections(MathNode node) {
         Collection<SONConnection> result = new ArrayList<>();
 
         for (SONConnection con : getOutputSONConnections(node)) {
@@ -480,7 +455,7 @@ public class SON extends AbstractMathModel {
         return result;
     }
 
-    public Collection<SONConnection> getInputScenarioPNConnections(Node node, ScenarioRef s) {
+    public Collection<SONConnection> getInputScenarioPNConnections(MathNode node, ScenarioRef s) {
         Collection<SONConnection> result = new ArrayList<>();
 
         for (SONConnection con : getInputSONConnections(node)) {
@@ -497,7 +472,7 @@ public class SON extends AbstractMathModel {
         return result;
     }
 
-    public Collection<SONConnection> getOutputScenarioPNConnections(Node node, ScenarioRef s) {
+    public Collection<SONConnection> getOutputScenarioPNConnections(MathNode node, ScenarioRef s) {
         Collection<SONConnection> result = new ArrayList<>();
 
         for (SONConnection con : getOutputSONConnections(node)) {
@@ -551,7 +526,7 @@ public class SON extends AbstractMathModel {
         return null;
     }
 
-    public boolean isInSameGroup(Node first, Node second) {
+    public boolean isInSameGroup(MathNode first, MathNode second) {
         for (ONGroup group : getGroups()) {
             if (group.contains(first) && group.contains(second)) {
                 return true;
@@ -600,4 +575,5 @@ public class SON extends AbstractMathModel {
 
         return properties;
     }
+
 }

@@ -70,27 +70,16 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
         try {
             Constructor<?> ctor;
             if (underlyingModel == null) {
-                try {
-                    ctor = new ConstructorParametersMatcher().match(cls, root.getClass(), References.class);
-                    result = (Model) ctor.newInstance(root, rr);
-                } catch (NoSuchMethodException e) {
-                    ctor = new ConstructorParametersMatcher().match(cls, root.getClass());
-                    result = (Model) ctor.newInstance(root);
-                }
+                ctor = new ConstructorParametersMatcher().match(cls, root.getClass(), References.class);
+                result = (Model) ctor.newInstance(root, rr);
             } else {
-                try {
-                    ctor = new ConstructorParametersMatcher().match(cls, underlyingModel.getClass(), root.getClass(), References.class);
-                    result = (Model) ctor.newInstance(underlyingModel, root, rr);
-                } catch (NoSuchMethodException e) {
-                    ctor = new ConstructorParametersMatcher().match(cls, underlyingModel.getClass(), root.getClass());
-                    result = (Model) ctor.newInstance(underlyingModel, root);
-                }
+                ctor = new ConstructorParametersMatcher().match(cls, underlyingModel.getClass(), root.getClass());
+                result = (Model) ctor.newInstance(underlyingModel, root);
             }
-        } catch (InstantiationException | IllegalAccessException |
-                IllegalArgumentException | InvocationTargetException e) {
-            throw new DeserialisationException(e);
         } catch (NoSuchMethodException e) {
             throw new DeserialisationException("Missing appropriate constructor for model deserealisation.", e);
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            throw new DeserialisationException(e);
         }
         return result;
     }

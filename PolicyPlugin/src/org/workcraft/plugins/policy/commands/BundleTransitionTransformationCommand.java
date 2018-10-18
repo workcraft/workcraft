@@ -2,8 +2,8 @@ package org.workcraft.plugins.policy.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractTransformationCommand;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.plugins.policy.VisualPolicyNet;
@@ -46,7 +46,7 @@ public class BundleTransitionTransformationCommand extends AbstractTransformatio
     }
 
     @Override
-    public void transform(Model model, Node node) {
+    public void transform(VisualModel model, VisualNode node) {
     }
 
 }

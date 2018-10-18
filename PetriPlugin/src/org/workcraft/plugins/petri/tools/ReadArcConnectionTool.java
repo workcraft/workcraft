@@ -10,7 +10,7 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.ConnectionTool;
-import org.workcraft.plugins.petri.PetriNetUtils;
+import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.VisualReplicaPlace;

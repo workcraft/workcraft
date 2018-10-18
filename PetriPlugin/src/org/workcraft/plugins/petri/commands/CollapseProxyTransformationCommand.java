@@ -1,20 +1,19 @@
 package org.workcraft.plugins.petri.commands;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.petri.PetriNetModel;
-import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
+import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 public class CollapseProxyTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
@@ -34,12 +33,12 @@ public class CollapseProxyTransformationCommand extends AbstractTransformationCo
     }
 
     @Override
-    public boolean isApplicableTo(Node node) {
+    public boolean isApplicableTo(VisualNode node) {
         return node instanceof VisualReplicaPlace;
     }
 
     @Override
-    public boolean isEnabled(ModelEntry me, Node node) {
+    public boolean isEnabled(ModelEntry me, VisualNode node) {
         return true;
     }
 
@@ -49,27 +48,24 @@ public class CollapseProxyTransformationCommand extends AbstractTransformationCo
     }
 
     @Override
-    public Collection<Node> collect(Model model) {
-        Collection<Node> replicas = new HashSet<>();
-        if (model instanceof VisualModel) {
-            VisualModel visualModel = (VisualModel) model;
-            // Collect selected (or all) replicas
-            replicas.addAll(PetriNetUtils.getVisualReplicaPlaces(visualModel));
-            Collection<Node> selection = visualModel.getSelection();
-            if (!selection.isEmpty()) {
-                replicas.retainAll(selection);
-            }
-            // Collect replicas on selected (or all) read-arcs
-            HashSet<VisualReadArc> readArcs = PetriNetUtils.getVisualReadArcs(visualModel);
-            if (!selection.isEmpty()) {
-                readArcs.retainAll(selection);
-            }
-            if (!readArcs.isEmpty()) {
-                for (VisualReadArc readArc: readArcs) {
-                    if (readArc.getFirst() instanceof VisualReplicaPlace) {
-                        VisualReplicaPlace replica = (VisualReplicaPlace) readArc.getFirst();
-                        replicas.add(replica);
-                    }
+    public Collection<VisualNode> collect(VisualModel model) {
+        Collection<VisualNode> replicas = new HashSet<>();
+        // Collect selected (or all) replicas
+        replicas.addAll(PetriNetUtils.getVisualReplicaPlaces(model));
+        Collection<VisualNode> selection = model.getSelection();
+        if (!selection.isEmpty()) {
+            replicas.retainAll(selection);
+        }
+        // Collect replicas on selected (or all) read-arcs
+        HashSet<VisualReadArc> readArcs = PetriNetUtils.getVisualReadArcs(model);
+        if (!selection.isEmpty()) {
+            readArcs.retainAll(selection);
+        }
+        if (!readArcs.isEmpty()) {
+            for (VisualReadArc readArc: readArcs) {
+                if (readArc.getFirst() instanceof VisualReplicaPlace) {
+                    VisualReplicaPlace replica = (VisualReplicaPlace) readArc.getFirst();
+                    replicas.add(replica);
                 }
             }
         }
@@ -77,11 +73,10 @@ public class CollapseProxyTransformationCommand extends AbstractTransformationCo
     }
 
     @Override
-    public void transform(Model model, Node node) {
-        if ((model instanceof VisualModel) && (node instanceof VisualReplicaPlace)) {
-            VisualModel visualModel = (VisualModel) model;
+    public void transform(VisualModel model, VisualNode node) {
+        if (node instanceof VisualReplicaPlace) {
             VisualReplicaPlace replicaPlace = (VisualReplicaPlace) node;
-            PetriNetUtils.collapseReplicaPlace(visualModel, replicaPlace);
+            PetriNetUtils.collapseReplicaPlace(model, replicaPlace);
         }
     }
 

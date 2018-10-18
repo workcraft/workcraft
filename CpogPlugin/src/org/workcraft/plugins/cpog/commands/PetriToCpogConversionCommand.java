@@ -4,7 +4,6 @@ import org.workcraft.Framework;
 import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.cpog.CpogDescriptor;
-import org.workcraft.plugins.cpog.PetriToCpogSettings;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.gui.PetriToCpogDialog;
 import org.workcraft.plugins.cpog.untangling.PetriToCpogConverter;
@@ -36,7 +35,7 @@ public class PetriToCpogConversionCommand extends AbstractConversionCommand {
             DialogUtils.showError("Conditional Partial Order Graph cannot be derived from a hierarchical Petri Net.");
             return null;
         }
-        PetriToCpogSettings settings = new PetriToCpogSettings();
+        PetriToCpogParameters settings = new PetriToCpogParameters();
         PetriToCpogDialog dialog = new PetriToCpogDialog(mainWindow, settings);
         GUI.centerToParent(dialog, mainWindow);
         dialog.setVisible(true);

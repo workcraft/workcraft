@@ -5,12 +5,12 @@ import java.util.Collection;
 public interface Container extends Node {
 
     void add(Node node);
-    void add(Collection<Node> nodes);
+    void add(Collection<? extends Node> nodes);
 
     void remove(Node node);
-    void remove(Collection<Node> nodes);
+    void remove(Collection<? extends Node> nodes);
 
-    void reparent(Collection<Node> nodes);
-    void reparent(Collection<Node> nodes, Container newParent);
+    void reparent(Collection<? extends Node> nodes);
+    void reparent(Collection<? extends Node> nodes, Container newParent);
 
 }
