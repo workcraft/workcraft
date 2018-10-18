@@ -291,7 +291,7 @@ public class CircuitUtils {
     }
 
     public static BooleanFormula parsePinFuncton(VisualCircuit circuit, VisualFunctionComponent component, String function) throws ParseException {
-        if (function == null) {
+        if ((function == null) || function.isEmpty()) {
             return null;
         }
         return BooleanFormulaParser.parse(function, name -> {
@@ -305,7 +305,7 @@ public class CircuitUtils {
     }
 
     public static BooleanFormula parsePortFuncton(VisualCircuit circuit, String function) throws ParseException {
-        if (function == null) {
+        if ((function == null) || function.isEmpty()) {
             return null;
         }
         return BooleanFormulaParser.parse(function, name -> {
@@ -319,7 +319,7 @@ public class CircuitUtils {
     }
 
     public static BooleanFormula parsePinFuncton(Circuit circuit, FunctionComponent component, String function) throws ParseException {
-        if (function == null) {
+        if ((function == null) || function.isEmpty()) {
             return null;
         }
         return BooleanFormulaParser.parse(function, name -> {

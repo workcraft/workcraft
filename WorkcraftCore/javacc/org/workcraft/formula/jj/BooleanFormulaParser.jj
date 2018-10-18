@@ -26,7 +26,7 @@ import org.workcraft.util.Func;
 public class BooleanFormulaParser {
 
     public BooleanFormulaParser(Reader reader, Func<String, ? extends BooleanFormula> vars) {
-        this (reader);
+        this(reader);
         this.vars = vars;
     }
 
