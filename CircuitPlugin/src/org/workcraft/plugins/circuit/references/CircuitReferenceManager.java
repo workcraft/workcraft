@@ -1,9 +1,9 @@
 package org.workcraft.plugins.circuit.references;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.references.NameManager;
-import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.plugins.circuit.CircuitComponent;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
@@ -50,7 +50,6 @@ public class CircuitReferenceManager extends HierarchyReferenceManager {
                 name = nodeName;
             }
         } else if (Identifier.isNumber(name)) {
-            //???!!!
             name = getNameManager(null).getPrefix(node) + name;
         }
         if (node instanceof Contact) {
