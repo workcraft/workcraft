@@ -171,6 +171,7 @@ def coverallsProjects = subprojects.findAll {
     it.name == 'PetrifyPlugin' ||
     it.name == 'PetriPlugin' ||
     it.name == 'StgPlugin' ||
+    it.name == 'WtgPlugin' ||
     it.name == 'WorkcraftCore'
 }
 

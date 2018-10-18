@@ -3,7 +3,7 @@
   associations="true" dependencies="false" nesting-relationships="true" router="FAN">  
   <class id="1" language="java" name="org.workcraft.observation.HierarchySupervisor" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/observation/HierarchySupervisor.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="35" width="144" x="588" y="112"/>    
+    <position height="-1" width="-1" x="278" y="0"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false" static="true"/>      
@@ -13,7 +13,7 @@
   <class id="2" language="java" name="org.workcraft.dom.DefaultHangingConnectionRemover" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/dom/DefaultHangingConnectionRemover.java" binary="false" 
     corner="BOTTOM_RIGHT">    
-    <position height="35" width="230" x="1130" y="187"/>    
+    <position height="-1" width="-1" x="118" y="135"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false" static="true"/>      
@@ -22,7 +22,7 @@
   </class>  
   <class id="3" language="java" name="org.workcraft.dom.DefaultMathNodeRemover" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/dom/DefaultMathNodeRemover.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="35" width="176" x="479" y="187"/>    
+    <position height="-1" width="-1" x="715" y="275"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false" static="true"/>      
@@ -31,7 +31,7 @@
   </class>  
   <class id="4" language="java" name="org.workcraft.dom.NodeContextTracker" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/dom/NodeContextTracker.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="35" width="179" x="48" y="187"/>    
+    <position height="-1" width="-1" x="278" y="71"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false" static="true"/>      
@@ -40,7 +40,7 @@
   </class>  
   <class id="5" language="java" name="org.workcraft.dom.visual.AbstractVisualModel" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/dom/visual/AbstractVisualModel.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="35" width="143" x="909" y="112"/>    
+    <position height="-1" width="-1" x="277" y="353"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false" static="true"/>      
@@ -49,7 +49,7 @@
   </class>  
   <class id="6" language="java" name="org.workcraft.dom.AbstractModel" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/dom/AbstractModel.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="35" width="143" x="910" y="37"/>    
+    <position height="-1" width="-1" x="281" y="196"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false" static="true"/>      
@@ -58,133 +58,173 @@
   </class>  
   <class id="7" language="java" name="org.workcraft.dom.math.AbstractMathModel" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/dom/math/AbstractMathModel.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="35" width="136" x="1092" y="112"/>    
+    <position height="-1" width="-1" x="116" y="353"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false" static="true"/>      
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <interface id="8" language="java" name="org.workcraft.dom.Model" project="WorkcraftCore" 
-    file="/WorkcraftCore/src/org/workcraft/dom/Model.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="35" width="93" x="1400" y="187"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
-      sort-features="false" accessors="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
-      <operations public="false" package="false" protected="false" private="false" static="true"/>    
-    </display>  
-  </interface>  
-  <class id="9" language="java" name="org.workcraft.dom.visual.SelectionEventPropagator" project="WorkcraftCore" 
+  <class id="8" language="java" name="org.workcraft.dom.visual.SelectionEventPropagator" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/dom/visual/SelectionEventPropagator.java" binary="false" 
     corner="BOTTOM_RIGHT">    
-    <position height="35" width="174" x="695" y="187"/>    
+    <position height="-1" width="-1" x="523" y="182"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false" static="true"/>      
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="10" language="java" name="org.workcraft.dom.visual.TransformEventPropagator" project="WorkcraftCore" 
+  <class id="9" language="java" name="org.workcraft.dom.visual.TransformEventPropagator" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/dom/visual/TransformEventPropagator.java" binary="false" 
     corner="BOTTOM_RIGHT">    
-    <position height="35" width="181" x="909" y="187"/>    
+    <position height="-1" width="-1" x="420" y="136"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false" static="true"/>      
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="11" language="java" name="org.workcraft.dom.visual.RemovedNodeDeselector" project="WorkcraftCore" 
+  <class id="10" language="java" name="org.workcraft.dom.visual.RemovedNodeDeselector" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/dom/visual/RemovedNodeDeselector.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="35" width="172" x="267" y="187"/>    
+    <position height="-1" width="-1" x="619" y="229"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false" static="true"/>      
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <dependency id="12">    
-    <end type="SOURCE" refId="7"/>    
-    <end type="TARGET" refId="2"/>  
-  </dependency>  
-  <dependency id="13">    
+  <class id="11" language="java" name="org.workcraft.dom.DefaultReplicaRemover" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/dom/DefaultReplicaRemover.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="813" y="319"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="12" language="java" name="org.workcraft.dom.references.FlatReferenceManager" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/dom/references/FlatReferenceManager.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="378" y="259"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="13" language="java" name="org.workcraft.dom.references.HierarchyReferenceManager" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/dom/references/HierarchyReferenceManager.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="159" y="259"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <generalization id="14">    
     <end type="SOURCE" refId="5"/>    
-    <end type="TARGET" refId="9"/>  
-  </dependency>  
-  <dependency id="14">    
-    <end type="SOURCE" refId="5"/>    
-    <end type="TARGET" refId="2"/>  
-  </dependency>  
-  <dependency id="15">    
-    <end type="SOURCE" refId="5"/>    
-    <end type="TARGET" refId="3"/>  
-  </dependency>  
-  <generalization id="16">    
-    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="6"/>  
+  </generalization>  
+  <generalization id="15">    
+    <bendpoint x="616" y="64"/>    
+    <end type="SOURCE" refId="10"/>    
     <end type="TARGET" refId="1"/>  
   </generalization>  
+  <dependency id="16">    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="13"/>  
+  </dependency>  
   <dependency id="17">    
+    <bendpoint x="716" y="317"/>    
     <end type="SOURCE" refId="5"/>    
-    <end type="TARGET" refId="8"/>  
+    <end type="TARGET" refId="3"/>  
   </dependency>  
   <generalization id="18">    
     <end type="SOURCE" refId="4"/>    
     <end type="TARGET" refId="1"/>  
   </generalization>  
-  <realization id="19">    
-    <bendpoint x="1258" y="112"/>    
-    <end type="SOURCE" refId="6"/>    
-    <end type="TARGET" refId="8"/>  
-  </realization>  
-  <generalization id="20">    
-    <end type="SOURCE" refId="2"/>    
-    <end type="TARGET" refId="1"/>  
-  </generalization>  
-  <dependency id="21">    
-    <end type="SOURCE" refId="5"/>    
-    <end type="TARGET" refId="11"/>  
-  </dependency>  
-  <generalization id="22">    
-    <end type="SOURCE" refId="11"/>    
-    <end type="TARGET" refId="1"/>  
-  </generalization>  
-  <generalization id="23">    
-    <end type="SOURCE" refId="5"/>    
-    <end type="TARGET" refId="6"/>  
-  </generalization>  
-  <generalization id="24">    
+  <generalization id="19">    
     <end type="SOURCE" refId="7"/>    
     <end type="TARGET" refId="6"/>  
   </generalization>  
-  <association id="25">    
-    <bendpoint x="488" y="112"/>    
+  <generalization id="20">    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="1"/>  
+  </generalization>  
+  <generalization id="21">    
+    <bendpoint x="814" y="38"/>    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="1"/>  
+  </generalization>  
+  <dependency id="22">    
+    <bendpoint x="524" y="244"/>    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="8"/>  
+  </dependency>  
+  <dependency id="23">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="12"/>  
+  </dependency>  
+  <generalization id="24">    
+    <bendpoint x="713" y="52"/>    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="1"/>  
+  </generalization>  
+  <generalization id="25">    
+    <bendpoint x="521" y="75"/>    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="1"/>  
+  </generalization>  
+  <association id="26">    
     <end type="SOURCE" refId="6" navigable="false">      
-      <attribute id="26" name="nodeContextTracker">        
-        <position height="18" width="106" x="510" y="62"/>      
-      </attribute>      
-      <multiplicity id="27" minimum="0" maximum="1">        
-        <position height="0" width="0" x="0" y="0"/>      
+      <attribute id="27" name="nodeContextTracker"/>      
+      <multiplicity id="28" minimum="0" maximum="1">        
+        <position height="0" width="0" x="154" y="-134"/>      
       </multiplicity>    
     </end>    
     <end type="TARGET" refId="4" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <generalization id="28">    
-    <end type="SOURCE" refId="10"/>    
-    <end type="TARGET" refId="1"/>  
-  </generalization>  
   <generalization id="29">    
-    <end type="SOURCE" refId="9"/>    
+    <end type="SOURCE" refId="2"/>    
     <end type="TARGET" refId="1"/>  
   </generalization>  
-  <dependency id="30">    
+  <generalization id="30">    
+    <end type="SOURCE" refId="12"/>    
+    <end type="TARGET" refId="1"/>  
+  </generalization>  
+  <generalization id="31">    
+    <end type="SOURCE" refId="13"/>    
+    <end type="TARGET" refId="1"/>  
+  </generalization>  
+  <dependency id="32">    
+    <bendpoint x="621" y="262"/>    
     <end type="SOURCE" refId="5"/>    
     <end type="TARGET" refId="10"/>  
   </dependency>  
-  <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+  <dependency id="33">    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="2"/>  
+  </dependency>  
+  <dependency id="34">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="2"/>  
+  </dependency>  
+  <dependency id="35">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="9"/>  
+  </dependency>  
+  <dependency id="36">    
+    <bendpoint x="815" y="356"/>    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="11"/>  
+  </dependency>  
+  <classifier-display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
     sort-features="false" accessors="true" visibility="true">    
-    <attributes public="true" package="true" protected="false" private="false" static="true"/>    
-    <operations public="true" package="true" protected="false" private="false" static="true"/>  
+    <attributes public="false" package="false" protected="false" private="false" static="true"/>    
+    <operations public="false" package="false" protected="false" private="false" static="true"/>  
   </classifier-display>  
   <association-display labels="true" multiplicity="true"/>
 </class-diagram>
