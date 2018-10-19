@@ -27,18 +27,19 @@ public class NamePropertyDescriptor implements PropertyDescriptor {
 
     @Override
     public void setValue(Object value) {
-        String name = (String) value;
-        if (Identifier.isName(name)) {
-            if (!name.equals(model.getName(node))) {
-                model.setName(node, name);
-                if (node instanceof ObservableState) {
-                    ((ObservableState) node).sendNotification(new PropertyChangedEvent(node, PROPERTY_NAME));
+        if (value instanceof String) {
+            String name = (String) value;
+            if (Identifier.isName(name)) {
+                if (!name.equals(model.getName(node))) {
+                    model.setName(node, name);
+                    if (node instanceof ObservableState) {
+                        ((ObservableState) node).sendNotification(new PropertyChangedEvent(node, PROPERTY_NAME));
+                    }
                 }
+            } else {
+                throw new ArgumentException("'" + name + "' is not a valid C-style identifier.\n"
+                        + "The first character must be alphabetic or '_' and the following -- alphanumeric or '_'.");
             }
-        } else {
-            throw new ArgumentException("'" + name + "' is not a valid C-style identifier.\n\n"
-                    + "The first character must be alphabetic or an underscore and\n"
-                    + "the following characters must be alphanumeric or an underscore.");
         }
     }
 
