@@ -15,7 +15,6 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 
 @SuppressWarnings("serial")
@@ -94,7 +93,6 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
                         }
                     } catch (InvocationTargetException e) {
                     }
-                    //label.setEnabled(false);
                     return label;
                 }
             };
@@ -107,8 +105,8 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
     }
 
     @Override
-    public void setObject(Properties o) {
-        model.setObject(o);
+    public void setObject(Properties object) {
+        model.setObject(object);
         cellRenderers = new TableCellRenderer[model.getRowCount()];
         cellEditors = new TableCellEditor[model.getRowCount()];
         for (int i = 0; i < model.getRowCount(); i++) {
@@ -136,22 +134,23 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
         }
     }
 
+    @Override
     public Properties getObject() {
         return model.getObject();
     }
 
     @Override
-    public void editingStopped(ChangeEvent e) {
+    public void editingStopped(ChangeEvent event) {
         TableCellEditor editor = getCellEditor();
         if (editor != null) {
             Object value = editor.getCellEditorValue();
             try {
                 setValueAt(value, editingRow, editingColumn);
-                removeEditor();
-            } catch (ConcurrentModificationException e1) {
-                e1.printStackTrace();
+//            } catch (ConcurrentModificationException e) {
             } catch (Throwable t) {
                 DialogUtils.showError(t.getMessage(), "Cannot change property");
+            } finally {
+                removeEditor();
             }
         }
     }
