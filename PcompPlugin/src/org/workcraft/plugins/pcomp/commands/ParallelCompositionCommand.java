@@ -1,12 +1,5 @@
 package org.workcraft.plugins.pcomp.commands;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.workcraft.Framework;
 import org.workcraft.PluginManager;
 import org.workcraft.commands.Command;
@@ -23,14 +16,17 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.ExportUtils;
-import org.workcraft.util.FileUtils;
-import org.workcraft.util.GUI;
-import org.workcraft.util.LogUtils;
+import org.workcraft.util.*;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ParallelCompositionCommand implements Command {
 
@@ -61,10 +57,11 @@ public class ParallelCompositionCommand implements Command {
         PcompDialog dialog = new PcompDialog(mainWindow, we);
         GUI.centerToParent(dialog, mainWindow);
         Collection<Mutex> mutexes = new HashSet<>();
-        Set<Path<String>> paths = null;
-        if (dialog.run()) {
-            paths = dialog.getSourcePaths();
+        if (!dialog.run()) {
+            return;
         }
+
+        Set<Path<String>> paths = dialog.getSourcePaths();
         if ((paths == null) || (paths.size() < 2)) {
             DialogUtils.showWarning("At least 2 STGs are required for parallel composition.");
             return;

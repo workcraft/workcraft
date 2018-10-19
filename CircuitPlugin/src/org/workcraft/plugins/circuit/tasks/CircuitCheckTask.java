@@ -16,8 +16,8 @@ import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.plugins.stg.interop.StgFormat;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -91,7 +91,7 @@ public class CircuitCheckTask extends MpsatChainTask {
             // Write device STG into a .g file
             String devStgName = (envStg != null ? StgUtils.DEVICE_FILE_PREFIX : StgUtils.SYSTEM_FILE_PREFIX) + stgFileExtension;
             File devStgFile = new File(directory, devStgName);
-            Result<? extends ExportOutput> devExportResult = CircuitStgUtils.exportStg(devStg, devStgFile, directory, monitor);
+            Result<? extends ExportOutput> devExportResult = StgUtils.exportStg(devStg, devStgFile, monitor);
             if (devExportResult.getOutcome() != Outcome.SUCCESS) {
                 if (devExportResult.getOutcome() == Outcome.CANCEL) {
                     return new Result<>(Outcome.CANCEL);
@@ -110,7 +110,7 @@ public class CircuitCheckTask extends MpsatChainTask {
                     sysStgFile = devStgFile;
                 } else {
                     File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + stgFileExtension);
-                    Result<? extends ExportOutput> envExportResult = CircuitStgUtils.exportStg(envStg, envStgFile, directory, monitor);
+                    Result<? extends ExportOutput> envExportResult = StgUtils.exportStg(envStg, envStgFile, monitor);
                     if (envExportResult.getOutcome() != Outcome.SUCCESS) {
                         if (envExportResult.getOutcome() == Outcome.CANCEL) {
                             return new Result<>(Outcome.CANCEL);
@@ -140,7 +140,7 @@ public class CircuitCheckTask extends MpsatChainTask {
                     sysStg.setSignalType(g2SignalName, signalOriginalType.get(g2SignalName));
                 }
                 sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + stgFileExtension);
-                CircuitStgUtils.exportStg(sysStg, sysStgFile, directory, monitor);
+                StgUtils.exportStg(sysStg, sysStgFile, monitor);
             }
             monitor.progressUpdate(0.2);
 
@@ -159,7 +159,7 @@ public class CircuitCheckTask extends MpsatChainTask {
                     // Convert internal signals to dummies
                     StgUtils.convertInternalSignalsToDummies(envStg);
                     File envModStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + fileSuffix + stgFileExtension);
-                    Result<? extends ExportOutput> envModExportResult = CircuitStgUtils.exportStg(envStg, envModStgFile, directory, monitor);
+                    Result<? extends ExportOutput> envModExportResult = StgUtils.exportStg(envStg, envModStgFile, monitor);
                     if (envModExportResult.getOutcome() != Outcome.SUCCESS) {
                         if (envModExportResult.getOutcome() == Outcome.CANCEL) {
                             return new Result<>(Outcome.CANCEL);
@@ -188,7 +188,7 @@ public class CircuitCheckTask extends MpsatChainTask {
                         sysModStg.setSignalType(g2SignalName, signalOriginalType.get(g2SignalName));
                     }
                     sysModStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + fileSuffix + StgUtils.MUTEX_FILE_SUFFIX + stgFileExtension);
-                    CircuitStgUtils.exportStg(sysModStg, sysModStgFile, directory, monitor);
+                    StgUtils.exportStg(sysModStg, sysModStgFile, monitor);
                 }
             }
             monitor.progressUpdate(0.3);

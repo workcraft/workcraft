@@ -1,35 +1,39 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.workcraft.gui.graph.tools.Trace;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
-import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.plugins.petri.Place;
+import org.workcraft.plugins.petri.Transition;
+import org.workcraft.plugins.petri.utils.PetriUtils;
+import org.workcraft.plugins.shared.tasks.ExportOutput;
+import org.workcraft.plugins.stg.DummyTransition;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
+import java.util.*;
+
 class MpsatOutputPersistencyOutputHandler extends MpsatReachabilityOutputHandler {
 
-    MpsatOutputPersistencyOutputHandler(WorkspaceEntry we, PcompOutput pcompOutput, MpsatOutput mpsatOutput, MpsatParameters settings) {
-        super(we, pcompOutput, mpsatOutput, settings);
+    MpsatOutputPersistencyOutputHandler(WorkspaceEntry we,
+            ExportOutput exportOutput, PcompOutput pcompOutput, MpsatOutput mpsatOutput, MpsatParameters settings) {
+
+        super(we, exportOutput, pcompOutput, mpsatOutput, settings);
     }
 
     @Override
     public List<MpsatSolution> processSolutions(WorkspaceEntry we, List<MpsatSolution> solutions) {
         List<MpsatSolution> result = new LinkedList<>();
+
+        Map<String, String> substitutions = getSubstitutions(we);
         ComponentData data = getCompositionData(we);
-        StgModel stg = getSrcStg(data);
+        StgModel stg = getSrcStg(we);
         HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
+
         for (MpsatSolution solution: solutions) {
             if ((solution == null) || (stg == null)) {
                 result.add(solution);
@@ -37,7 +41,7 @@ class MpsatOutputPersistencyOutputHandler extends MpsatReachabilityOutputHandler
             Trace trace = solution.getMainTrace();
             LogUtils.logMessage("Violation trace: " + trace.toText());
             if (data != null) {
-                trace = getProjectedTrace(trace, data);
+                trace = getProjectedTrace(trace, data, substitutions);
                 LogUtils.logMessage("Projection trace: " + trace.toText());
             }
             if (!PetriUtils.fireTrace(stg, trace)) {
@@ -45,12 +49,12 @@ class MpsatOutputPersistencyOutputHandler extends MpsatReachabilityOutputHandler
                 throw new RuntimeException("Cannot execute trace: " + trace.toText());
             }
             // Check if any local signal gets disabled by firing other signal event
-            HashSet<String> enabledLocalSignals = StgUtils.getEnabledLocalSignals(stg);
-            for (SignalTransition transition: StgUtils.getEnabledSignalTransitions(stg)) {
+            HashSet<String> enabledLocalSignals = getEnabledLocalSignals(stg);
+            for (SignalTransition transition : getEnabledSignalTransitions(stg)) {
                 stg.fire(transition);
                 HashSet<String> nonpersistentLocalSignals = new HashSet<>(enabledLocalSignals);
                 nonpersistentLocalSignals.remove(transition.getSignalName());
-                nonpersistentLocalSignals.removeAll(StgUtils.getEnabledLocalSignals(stg));
+                nonpersistentLocalSignals.removeAll(getEnabledLocalSignals(stg));
                 if (!nonpersistentLocalSignals.isEmpty()) {
                     String comment = getMessageWithList("Non-persistent signal", nonpersistentLocalSignals);
                     String transitionRef = stg.getNodeReference(transition);
@@ -64,6 +68,39 @@ class MpsatOutputPersistencyOutputHandler extends MpsatReachabilityOutputHandler
                 stg.unFire(transition);
             }
             PetriUtils.setMarking(stg, marking);
+        }
+        return result;
+    }
+
+    private HashSet<String> getEnabledLocalSignals(StgModel stg) {
+        HashSet<String> result = getEnabledSignals(stg);
+        HashSet<String> localSignals = new HashSet<>();
+        localSignals.addAll(stg.getSignalReferences(Signal.Type.OUTPUT));
+        localSignals.addAll(stg.getSignalReferences(Signal.Type.INTERNAL));
+        result.retainAll(localSignals);
+        return result;
+    }
+
+    private HashSet<String> getEnabledSignals(StgModel stg) {
+        HashSet<String> result = new HashSet<>();
+        for (SignalTransition signalTransition : getEnabledSignalTransitions(stg)) {
+            String signalRef = stg.getSignalReference(signalTransition);
+            result.add(signalRef);
+        }
+        return result;
+    }
+
+    public static HashSet<SignalTransition> getEnabledSignalTransitions(StgModel stg) {
+        HashSet<SignalTransition> result = new HashSet<>();
+        for (Transition transition: stg.getTransitions()) {
+            if (transition instanceof DummyTransition) {
+                String ref = stg.getNodeReference(transition);
+                throw new RuntimeException("Dummies are not supported in output persistency check: " + ref);
+            }
+            if ((transition instanceof SignalTransition) && stg.isEnabled(transition)) {
+                SignalTransition signalTransition = (SignalTransition) transition;
+                result.add(signalTransition);
+            }
         }
         return result;
     }

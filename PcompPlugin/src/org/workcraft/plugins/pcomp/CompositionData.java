@@ -6,7 +6,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -65,6 +67,10 @@ public class CompositionData {
     public ComponentData getComponentData(int index) {
         ArrayList<ComponentData> components = new ArrayList<>(fileToComponent.values());
         return components.get(index);
+    }
+
+    public Set<String> getFileNames() {
+        return new HashSet<>(fileToComponent.keySet());
     }
 
 }

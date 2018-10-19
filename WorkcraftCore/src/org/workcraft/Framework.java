@@ -859,8 +859,7 @@ public final class Framework {
             vmodel1.select(children);
         }
         // FIXME: Dirty hack to avoid any hanging observers (serialise and deserialise the model).
-        Memento memo = saveModel(me1);
-        return loadModel(memo);
+        return cloneModel(me1);
     }
 
     /**
@@ -996,6 +995,11 @@ public final class Framework {
         } catch (IOException e) {
             throw new DeserialisationException(e);
         }
+    }
+
+    public ModelEntry cloneModel(ModelEntry modelEntry) {
+        Memento memento = saveModel(modelEntry);
+        return loadModel(memento);
     }
 
     /**
