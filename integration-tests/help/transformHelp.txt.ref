@@ -38,3 +38,4 @@ transformStgMirrorSignal(work) - transform the given STG 'work' by mirroring sel
 transformStgMirrorTransition(work) - transform the given STG 'work' by mirroring selected (or all) transition sign
 transformStgSelectAllSignalTransitions(work) - select all transitions of selected signals in the given STG 'work'
 transformStgSignalToDummyTransition(work) - transform the given STG 'work' by converting selected signal transitions to dummies
+transformWtgStructureWaveform(work) - transform the given WTG 'work' by structuring the waveforms
