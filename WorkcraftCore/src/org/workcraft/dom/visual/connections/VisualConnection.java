@@ -283,8 +283,8 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
             observableHierarchyImpl.sendNotification(new NodesAddedEvent(this, getGraphic()));
             graphic.invalidate();
             observableStateImpl.sendNotification(new PropertyChangedEvent(this, PROPERTY_CONNECTION_TYPE));
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_CONNECTION_TYPE));
         }
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_CONNECTION_TYPE));
     }
 
     public Color getColor() {

@@ -10,7 +10,6 @@ import org.workcraft.plugins.layout.RandomLayoutCommand;
 import org.workcraft.plugins.layout.RandomLayoutSettings;
 import org.workcraft.plugins.shared.*;
 import org.workcraft.plugins.statistics.BasicStatisticsCommand;
-import org.workcraft.plugins.transform.CopyLabelTransformationCommand;
 import org.workcraft.plugins.transform.StraightenConnectionTransformationCommand;
 
 public class BuiltinTools implements Module {
@@ -29,8 +28,6 @@ public class BuiltinTools implements Module {
         pm.registerSettings(CommonSignalSettings.class);
         pm.registerSettings(CommonSatSettings.class);
 
-        ScriptableCommandUtils.register(CopyLabelTransformationCommand.class, "transformModelCopyLabel",
-                "transform the given 'work' by copying unique names of the selected (or all) nodes into their labels");
         ScriptableCommandUtils.register(StraightenConnectionTransformationCommand.class, "transformModelStraightenConnection",
                 "transform the given 'work' by straightening selected (or all) arcs");
 
