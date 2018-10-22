@@ -121,11 +121,8 @@ public class SerialiserUtils {
     }
 
     private static void writeGraphEntry(PrintWriter out, Model model, Node node, boolean needInstanceNumbers) {
-        if (node instanceof StgPlace) {
-            StgPlace stgPlace = (StgPlace) node;
-            if (stgPlace.isImplicit()) {
-                return;
-            }
+        if ((node instanceof StgPlace) && ((StgPlace) node).isImplicit()) {
+            return;
         }
         String nodeRef = getReference(model, node, needInstanceNumbers);
         out.write(nodeRef);
@@ -229,12 +226,9 @@ public class SerialiserUtils {
         out.write("}\n");
         StringBuilder capacity = new StringBuilder();
         for (Place p : places) {
-            if (p instanceof StgPlace) {
-                StgPlace stgPlace = (StgPlace) p;
-                if (stgPlace.getCapacity() != 1) {
-                    String placeRef = getReference(model, p, needInstanceNumbers);
-                    capacity.append(" " + placeRef + "=" + stgPlace.getCapacity());
-                }
+            if (p.getCapacity() != 1) {
+                String placeRef = getReference(model, p, needInstanceNumbers);
+                capacity.append(" " + placeRef + "=" + p.getCapacity());
             }
         }
         if (capacity.length() > 0) {
