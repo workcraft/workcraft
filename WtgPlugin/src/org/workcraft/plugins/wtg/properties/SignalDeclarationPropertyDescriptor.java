@@ -13,9 +13,7 @@ import org.workcraft.plugins.wtg.*;
 import org.workcraft.plugins.wtg.tools.WtgSignalGeneratorTool;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Map;
+import java.util.*;
 
 import static org.workcraft.plugins.wtg.utils.WtgUtils.getFinalSignalStatesFromWaveform;
 
@@ -80,7 +78,7 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
                         Signal signal = newSignal.getReferencedSignal();
                         wtg.setName(signal, signalName);
                         signal.sendNotification(new PropertyChangedEvent(signal, Signal.PROPERTY_NAME));
-                        Signal.State initialState = inferrInitialState();
+                        Signal.State initialState = inferInitialState();
                         if (initialState != null) {
                             signal.setInitialState(initialState);
                         }
@@ -93,7 +91,7 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
         }
     }
 
-    private Signal.State inferrInitialState() {
+    private Signal.State inferInitialState() {
         Signal.State result;
         Guard guard = visualWaveform.getReferencedWaveform().getGuard();
         if (guard.containsKey(signalName)) {
@@ -129,26 +127,38 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
     private Signal.State findPreviousSignalState() {
         Wtg wtg = (Wtg) visualWtg.getMathModel();
         Waveform waveform = visualWaveform.getReferencedWaveform();
+        if (wtg.getPreset(waveform).size() == 0) {
+            return null;
+        }
         Signal.State result = null;
-        for (MathNode state : wtg.getPreset(waveform)) {
-            if (state instanceof State) {
-                for (MathNode node : wtg.getPreset(state)) {
-                    if (node instanceof Waveform) {
-                        if (node == visualWaveform.getReferencedWaveform()) {
-                            continue;
-                        }
-                        Map<String, Signal.State> finalStates = getFinalSignalStatesFromWaveform(wtg, (Waveform) node);
-                        if (finalStates.containsKey(signalName)) {
-                            if (result == null) {
-                                result = finalStates.get(signalName);
-                            } else if (finalStates.get(signalName) != result) {
-                                return null;
-                            }
-                        }
+        Set<MathNode> visitedNodes = new HashSet<>();
+        Queue<MathNode> nodesToVisit = new LinkedList<>();
+        visitedNodes.add(waveform);
+        MathNode previousState = wtg.getPreset(waveform).iterator().next();
+        visitedNodes.add(previousState);
+        nodesToVisit.add(previousState);
+        while (!nodesToVisit.isEmpty()) {
+            MathNode node = nodesToVisit.poll();
+            if (node instanceof Waveform) {
+                Map<String, Signal.State> finalStates = getFinalSignalStatesFromWaveform(wtg, (Waveform) node);
+                if (finalStates.containsKey(signalName)) {
+                    if (result == null) {
+                        result = finalStates.get(signalName);
+                    } else if (finalStates.get(signalName) != result) {
+                        return null;
                     }
+                    continue;
+                }
+            }
+
+            for (MathNode n : wtg.getPreset(node)) {
+                if (!visitedNodes.contains(n)) {
+                    nodesToVisit.add(n);
+                    visitedNodes.add(n);
                 }
             }
         }
+
         return result;
     }
 

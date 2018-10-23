@@ -141,7 +141,7 @@ public class VerificationUtils {
         if (!checkWaveformsNotEmpty(wtg)) {
             return false;
         }
-        //Checks that the initial signal states are valid (i.e. no signal stable at unknown)
+        //Checks that the initial signal states are valid (i.e. no signal stable at unknown or unstable)
         if (!checkValidInitialSignalStates(wtg)) {
             return false;
         }
@@ -658,9 +658,9 @@ public class VerificationUtils {
 
     public static boolean checkValidInitialSignalStates(Wtg wtg) {
         for (Signal.State signalState : getInitialSignalStates(wtg).values()) {
-            if (signalState == Signal.State.STABLE) {
+            if (signalState == Signal.State.STABLE || signalState == Signal.State.UNSTABLE) {
                 DialogUtils.showError("The initial state for a signal in a WTG can not be " +
-                        Signal.State.STABLE.toString() + ".");
+                        signalState.toString() + ".");
                 return false;
             }
         }

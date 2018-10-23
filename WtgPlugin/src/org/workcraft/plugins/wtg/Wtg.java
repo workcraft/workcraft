@@ -6,6 +6,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.dtd.*;
+import org.workcraft.plugins.wtg.observers.GuardNameSupervisor;
 import org.workcraft.plugins.wtg.observers.InitialStateSupervisor;
 import org.workcraft.plugins.wtg.observers.SignalTypeConsistencySupervisor;
 import org.workcraft.serialisation.References;
@@ -25,6 +26,7 @@ public class Wtg extends Dtd {
         super(root, refs);
         new InitialStateSupervisor().attach(getRoot());
         new SignalTypeConsistencySupervisor(this).attach(getRoot());
+        new GuardNameSupervisor(this).attach(getRoot());
     }
 
     @Override

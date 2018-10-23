@@ -2,10 +2,7 @@ package org.workcraft.plugins.wtg;
 
 import org.workcraft.*;
 import org.workcraft.commands.ScriptableCommandUtils;
-import org.workcraft.plugins.wtg.commands.WtgInputPropernessVerificationCommand;
-import org.workcraft.plugins.wtg.commands.WtgReachabilityVerificationCommand;
-import org.workcraft.plugins.wtg.commands.WtgSoundnessVerificationCommand;
-import org.workcraft.plugins.wtg.commands.WtgToStgConversionCommand;
+import org.workcraft.plugins.wtg.commands.*;
 import org.workcraft.plugins.wtg.serialisation.GuardDeserialiser;
 import org.workcraft.plugins.wtg.serialisation.GuardSerialiser;
 
@@ -43,6 +40,9 @@ public class WtgModule  implements Module {
 
         ScriptableCommandUtils.register(WtgInputPropernessVerificationCommand.class, "checkWtgInputProperness",
                 "check the given WTG 'work' for input properness");
+
+        ScriptableCommandUtils.register(StructureWaveformTransformationCommand.class, "transformWtgStructureWaveform",
+                "transform the given WTG 'work' by structuring the waveforms");
     }
 
     private void initCompatibilityManager() {
