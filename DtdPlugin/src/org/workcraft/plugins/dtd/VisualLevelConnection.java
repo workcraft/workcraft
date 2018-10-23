@@ -5,6 +5,7 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.dtd.utils.DtdUtils;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 import java.awt.*;
 
@@ -60,6 +61,12 @@ public class VisualLevelConnection extends VisualConnection {
             return DtdUtils.getNextState(event.getReferencedSignalEvent());
         }
         return null;
+    }
+
+    @NoAutoSerialisation
+    @Override
+    public void setConnectionType(ConnectionType value) {
+        super.setConnectionType(ConnectionType.POLYLINE);
     }
 
 }

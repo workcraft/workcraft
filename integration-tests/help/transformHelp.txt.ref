@@ -14,7 +14,6 @@ transformDfsWagging3Way(work) - transform the given DFS 'work' by applying 3-way
 transformDfsWagging4Way(work) - transform the given DFS 'work' by applying 4-way wagging to the selected pipeline section
 transformFsmContractState(work) - transform the given FSM or FST 'work' by contracting selected states
 transformFsmMergeState(work) - transform the given FSM or FST 'work' by merging selected states
-transformModelCopyLabel(work) - transform the given 'work' by copying unique names of the selected (or all) nodes into their labels
 transformModelStraightenConnection(work) - transform the given 'work' by straightening selected (or all) arcs
 transformPetriCollapseProxy(work) - transform the given Petri net (or derived model, e.g.STG) 'work' by collapsing selected (or all) proxy places
 transformPetriContractTransition(work) - transform the given Petri net 'work' by contracting a selected transition
