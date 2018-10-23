@@ -1,39 +1,13 @@
 package org.workcraft.plugins.dfs.tools;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-
-import javax.swing.Icon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableColumnModel;
-
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 import org.workcraft.plugins.dfs.VisualDelayComponent;
 import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.util.GUI;
@@ -41,6 +15,17 @@ import org.workcraft.util.Hierarchy;
 import org.workcraft.util.IntDocument;
 import org.workcraft.util.graph.cycle.ElementaryCyclesSearch;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import java.awt.*;
+import java.awt.event.*;
+import java.text.DecimalFormat;
+import java.util.*;
+import java.util.List;
 
 public class CycleAnalyserTool extends AbstractGraphEditorTool {
     // Infinity symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
@@ -73,13 +58,13 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         cycleTable = new JTable(new CycleTableModel());
         cycleTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         TableColumnModel columnModel = cycleTable.getColumnModel();
-        columnModel.getColumn(COLUMN_THROUGHPUT).setPreferredWidth(50);
-        columnModel.getColumn(COLUMN_TOKEN).setPreferredWidth(30);
-        columnModel.getColumn(COLUMN_DELAY).setPreferredWidth(30);
-        columnModel.getColumn(COLUMN_CYCLE).setPreferredWidth(300);
+        TableColumn throughputColumn = columnModel.getColumn(COLUMN_THROUGHPUT);
+        throughputColumn.setPreferredWidth(Math.round(throughputColumn.getPreferredWidth() * 1.6f));
+        cycleTable.setRowHeight(SizeHelper.getComponentHeightFromFont(cycleTable.getFont()));
+        cycleTable.setDefaultRenderer(Object.class, new CycleTableCellRenderer());
         cycleTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-        cycleTable.setAutoCreateColumnsFromModel(false);
         cycleTable.addMouseListener(new MouseListener() {
+            @Override
             public void mouseClicked(MouseEvent e) {
                 int selectedRow = cycleTable.getSelectedRow();
                 if ((cycles != null) && (selectedRow >= 0) && (selectedRow < cycles.size())) {
@@ -357,15 +342,6 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
             Cycle cycle = cycles.get(row);
             if (cycle != null) {
                 switch (col) {
-                case COLUMN_CYCLE:
-                    result = cycle.toString();
-                    break;
-                case COLUMN_TOKEN:
-                    result = cycle.tokenCount;
-                    break;
-                case COLUMN_DELAY:
-                    result = new DecimalFormat("#.###").format(cycle.totalDelay);
-                    break;
                 case COLUMN_THROUGHPUT:
                     if (cycle.totalDelay == 0) {
                         result = Character.toString(INFINITY_SYMBOL);
@@ -373,10 +349,34 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
                         result = new DecimalFormat("#.###").format(cycle.throughput);
                     }
                     break;
+                case COLUMN_TOKEN:
+                    result = cycle.tokenCount;
+                    break;
+                case COLUMN_DELAY:
+                    result = new DecimalFormat("#.###").format(cycle.totalDelay);
+                    break;
+                case COLUMN_CYCLE:
+                    result = cycle.toString();
+                    break;
                 default:
                     result = null;
                     break;
                 }
+            }
+            return result;
+        }
+    }
+
+    @SuppressWarnings("serial")
+    private final class CycleTableCellRenderer implements TableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            JLabel result = new JLabel();
+            result.setBorder(PropertyEditorTable.BORDER_RENDER);
+            if ((cycles != null) && (row >= 0) && (row < cycles.size())) {
+                result.setText(value.toString());
+                result.setToolTipText(cycles.get(row).toString());
             }
             return result;
         }

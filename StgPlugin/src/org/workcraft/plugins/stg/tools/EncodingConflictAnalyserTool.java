@@ -76,7 +76,7 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
         coresTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         coresTable.getColumnModel().getColumn(COLUMN_COLOR).setMaxWidth(50);
         coresTable.setRowHeight(SizeHelper.getComponentHeightFromFont(coresTable.getFont()));
-        coresTable.setDefaultRenderer(Object.class, new CoreTableCellRendererImplementation());
+        coresTable.setDefaultRenderer(Object.class, new CoreTableCellRenderer());
         coresTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         coresTable.addMouseListener(new MouseListener() {
             @Override
@@ -128,7 +128,7 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
         densityTable = new JTable(new HeightmapTableModel());
         densityTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         densityTable.setRowHeight(SizeHelper.getComponentHeightFromFont(coresTable.getFont()));
-        densityTable.setDefaultRenderer(Object.class, new HeightmapTableCellRendererImplementation());
+        densityTable.setDefaultRenderer(Object.class, new HeightmapTableCellRenderer());
         densityTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         densityTable.setToolTipText("Core density colors");
         densityTable.addMouseListener(new MouseListener() {
@@ -249,7 +249,7 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
     }
 
     @SuppressWarnings("serial")
-    private final class CoreTableCellRendererImplementation implements TableCellRenderer {
+    private final class CoreTableCellRenderer implements TableCellRenderer {
         private final JLabel label = new JLabel() {
             @Override
             public void paint(Graphics g) {
@@ -347,7 +347,7 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
     }
 
     @SuppressWarnings("serial")
-    private final class HeightmapTableCellRendererImplementation implements TableCellRenderer {
+    private final class HeightmapTableCellRenderer implements TableCellRenderer {
         private final JLabel label = new JLabel() {
             @Override
             public void paint(Graphics g) {

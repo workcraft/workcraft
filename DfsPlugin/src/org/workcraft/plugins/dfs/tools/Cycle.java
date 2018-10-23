@@ -33,6 +33,9 @@ public class Cycle implements Comparable<Cycle> {
     private int getTokenCount() {
         Integer result = 0;
         boolean spreadTokenDetected = false;
+        boolean isMarkedFirstRegister = false;
+        boolean isMarkedLastRegister = false;
+        boolean isFirstRegister = true;
         for (VisualComponent c: components) {
             if (c instanceof VisualRegister || c instanceof VisualBinaryRegister) {
                 boolean hasToken = false;
@@ -43,6 +46,7 @@ public class Cycle implements Comparable<Cycle> {
                     BinaryRegister ref = ((VisualBinaryRegister) c).getReferencedBinaryRegister();
                     hasToken = ref.isTrueMarked() || ref.isFalseMarked();
                 }
+
                 if (!hasToken) {
                     spreadTokenDetected = false;
                 } else {
@@ -51,7 +55,16 @@ public class Cycle implements Comparable<Cycle> {
                         spreadTokenDetected = true;
                     }
                 }
+
+                if (isFirstRegister) {
+                    isMarkedFirstRegister = hasToken;
+                    isFirstRegister = false;
+                }
+                isMarkedLastRegister = hasToken;
             }
+        }
+        if (isMarkedFirstRegister && isMarkedLastRegister && (result > 1)) {
+            result--;
         }
         return result;
     }

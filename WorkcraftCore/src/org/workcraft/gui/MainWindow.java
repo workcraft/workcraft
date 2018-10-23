@@ -28,7 +28,6 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
-import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.tools.GraphEditor;
@@ -89,16 +88,12 @@ public class MainWindow extends JFrame {
     public static final String TITLE_TASKS = "Tasks";
     public static final String TITLE_WORKSPACE = "Workspace";
     public static final String TITLE_PROPERTY_EDITOR = "Property editor";
+    public static final String TITLE_MODEL_TOOLS = "Model tools";
     public static final String TITLE_TOOL_CONTROLS = "Tool controls";
-    public static final String TITLE_EDITOR_TOOLS = "Editor tools";
     public static final String TITLE_PLACEHOLDER = "";
+    public static final String PREFIX_DOCUMENT = "Document";
 
-    private final ScriptedActionListener defaultActionListener = new ScriptedActionListener() {
-        @Override
-        public void actionPerformed(Action action) {
-            action.run();
-        }
-    };
+    private final ScriptedActionListener defaultActionListener = action -> action.run();
 
     private MultiBorderLayout layout;
     private JPanel content;
@@ -207,7 +202,7 @@ public class MainWindow extends JFrame {
         int options = DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON;
         if (editorWindows.isEmpty()) {
             editorWindow = createDockableWindow(editor, title, documentPlaceholder, options,
-                    DockingConstants.CENTER_REGION, "Document" + we.getWorkspacePath());
+                    DockingConstants.CENTER_REGION, PREFIX_DOCUMENT + we.getWorkspacePath());
             DockingManager.close(documentPlaceholder);
             DockingManager.unregisterDockable(documentPlaceholder);
             utilityWindows.remove(documentPlaceholder);
@@ -215,7 +210,7 @@ public class MainWindow extends JFrame {
             unmaximiseAllDockableWindows();
             DockableWindow firstEditorWindow = editorWindows.values().iterator().next().iterator().next();
             editorWindow = createDockableWindow(editor, title, firstEditorWindow, options,
-                    DockingConstants.CENTER_REGION, "Document" + we.getWorkspacePath());
+                    DockingConstants.CENTER_REGION, PREFIX_DOCUMENT + we.getWorkspacePath());
         }
         EditorWindowTabListener tabListener = new EditorWindowTabListener(editor);
         editorWindow.addTabListener(tabListener);
@@ -277,8 +272,8 @@ public class MainWindow extends JFrame {
 
         // Create toolbars.
         globalToolbar = new ToolBar(this);
-        modelToolbar = new JToolBar("Model tools");
-        controlToolbar = new JToolBar("Tool controls");
+        modelToolbar = new JToolBar(TITLE_MODEL_TOOLS);
+        controlToolbar = new JToolBar(TITLE_TOOL_CONTROLS);
         mainMenu.registerToolbar(globalToolbar);
         mainMenu.registerToolbar(modelToolbar);
         mainMenu.registerToolbar(controlToolbar);
@@ -295,6 +290,8 @@ public class MainWindow extends JFrame {
         DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
         DockingManager.display(outputDockable);
         utilityWindows.add(documentPlaceholder);
+        setWorkActionsEnableness(false);
+        updateDockableWindowVisibility();
 
         new Thread(() -> {
             // Hack to fix the annoying delay occurring when createGlyphVector is called for the first time.
@@ -304,8 +301,6 @@ public class MainWindow extends JFrame {
             // Force SVG rendering classes to load.
             GUI.createIconFromSVG("images/icon.svg");
         }).start();
-
-        setWorkActionsEnableness(false);
     }
 
     private void setWorkActionsEnableness(boolean enable) {
