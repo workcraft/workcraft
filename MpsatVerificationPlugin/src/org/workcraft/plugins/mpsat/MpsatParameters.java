@@ -216,10 +216,10 @@ public class MpsatParameters {
             "}\n";
 
     // Reach expression for checking if these two pairs of signals can be implemented by a mutex
-    private static final String REACH_MUTEX_R1 = "/* insert r1 name here */";
-    private static final String REACH_MUTEX_G1 = "/* insert g1 name here */";
-    private static final String REACH_MUTEX_R2 = "/* insert r2 name here */";
-    private static final String REACH_MUTEX_G2 = "/* insert g2 name here */";
+    private static final String REPLACEMENT_MUTEX_R1 = "/* insert r1 name here */";
+    private static final String REPLACEMENT_MUTEX_G1 = "/* insert g1 name here */";
+    private static final String REPLACEMENT_MUTEX_R2 = "/* insert r2 name here */";
+    private static final String REPLACEMENT_MUTEX_G2 = "/* insert g2 name here */";
     private static final String REACH_MUTEX_IMPLEMENTABILITY =
             "// For given signals r1, r2, g1, g2, check whether g1/g2 can be implemented\n" +
             "// by a mutex with requests r1/r2 and grants g1/g2.\n" +
@@ -233,10 +233,10 @@ public class MpsatParameters {
             "// Note that the latter property does not follow from the above constraints\n" +
             "// for the next state functions of the grants.\n" +
             "let\n" +
-            "    r1s = S\"" + REACH_MUTEX_R1 + "\",\n" +
-            "    g1s = S\"" + REACH_MUTEX_G1 + "\",\n" +
-            "    r2s = S\"" + REACH_MUTEX_R2 + "\",\n" +
-            "    g2s = S\"" + REACH_MUTEX_G2 + "\",\n" +
+            "    r1s = S\"" + REPLACEMENT_MUTEX_R1 + "\",\n" +
+            "    g1s = S\"" + REPLACEMENT_MUTEX_G1 + "\",\n" +
+            "    r2s = S\"" + REPLACEMENT_MUTEX_R2 + "\",\n" +
+            "    g2s = S\"" + REPLACEMENT_MUTEX_G2 + "\",\n" +
             "    r1 = $r1s,\n" +
             "    g1 = $g1s,\n" +
             "    r2 = $r2s,\n" +
@@ -264,16 +264,16 @@ public class MpsatParameters {
 
     public static MpsatParameters getMutexImplementabilitySettings(Mutex mutex) {
         String reach = REACH_MUTEX_IMPLEMENTABILITY
-                .replace(REACH_MUTEX_R1, mutex.r1.name)
-                .replace(REACH_MUTEX_G1, mutex.g1.name)
-                .replace(REACH_MUTEX_R2, mutex.r2.name)
-                .replace(REACH_MUTEX_G2, mutex.g2.name);
+                .replace(REPLACEMENT_MUTEX_R1, mutex.r1.name)
+                .replace(REPLACEMENT_MUTEX_G1, mutex.g1.name)
+                .replace(REPLACEMENT_MUTEX_R2, mutex.r2.name)
+                .replace(REPLACEMENT_MUTEX_G2, mutex.g2.name);
         String propertName = "Mutex implementability for place '" + mutex.name + "'";
         return new MpsatParameters(propertName, MpsatMode.STG_REACHABILITY, 0,
                 MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount(), reach, true);
     }
 
-    private static final String REACH_OUTPUT_PERSISTENCY_EXCEPTIONS =
+    private static final String REPLACEMENT_OUTPUT_PERSISTENCY_EXCEPTIONS =
             "/* insert signal pairs of output persistency exceptions */"; // For example: {"me1_g1", "me1_g2"}, {"me2_g1", "me2_g2"},
 
     private static final String REACH_OUTPUT_PERSISTENCY =
@@ -282,7 +282,7 @@ public class MpsatParameters {
             REACH_DUMMY_CHECK +
             "? fail \"Output persistency can currently be checked only for STGs without dummies\" :\n" +
             "let\n" +
-            "    EXCEPTIONS = {" + REACH_OUTPUT_PERSISTENCY_EXCEPTIONS + "{\"\"}} \\ {{\"\"}},\n" +
+            "    EXCEPTIONS = {" + REPLACEMENT_OUTPUT_PERSISTENCY_EXCEPTIONS + "{\"\"}} \\ {{\"\"}},\n" +
             "    SIGE = gather pair in EXCEPTIONS {\n" +
             "        gather str in pair { S str }\n" +
             "    },\n" +
@@ -321,7 +321,7 @@ public class MpsatParameters {
                 str += "{\"" + exceptionPair.getFirst() + "\", \"" + exceptionPair.getSecond() + "\"}, ";
             }
         }
-        String reachOutputPersistence = REACH_OUTPUT_PERSISTENCY.replace(REACH_OUTPUT_PERSISTENCY_EXCEPTIONS, str);
+        String reachOutputPersistence = REACH_OUTPUT_PERSISTENCY.replace(REPLACEMENT_OUTPUT_PERSISTENCY_EXCEPTIONS, str);
         return new MpsatParameters("Output persistency", MpsatMode.STG_REACHABILITY_OUTPUT_PERSISTENCY, 0,
                 MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount(), reachOutputPersistence, true);
     }
@@ -397,9 +397,12 @@ public class MpsatParameters {
     }
 
     // Reach expression for checking conformation (this is a template, the list of places needs to be updated)
-    private static final String REACH_CONFORMATION_DEV_PLACES =
+    private static final String REPLACEMENT_CONFORMATION_DEV_PLACES =
             "/* insert device place names here */"; // For example: "p0", "<a-,b+>"
 
+    // Note: New (PNML-based) version of Punf is required to check conformation property. Old version of
+    // Punf does not support dead signals, dead transitions and dead places well (e.g. a dead transition
+    // may disappear from unfolding), therefore the conformation property cannot be checked reliably.
     private static final String REACH_CONFORMATION =
             "// Check a device STG for conformation to its environment STG.\n" +
             "// LIMITATIONS (could be checked before parallel composition):\n" +
@@ -411,7 +414,7 @@ public class MpsatParameters {
             "     // This set may in fact contain places from the environment STG, e.g. when PCOMP removes duplicate\n" +
             "     // places from the composed STG, it substitutes them with equivalent places that remain.\n" +
             "     // LIMITATION: syntax error if any of these sets is empty.\n" +
-            "    PDEV_NAMES = {" + REACH_CONFORMATION_DEV_PLACES + "\"\"} \\ {\"\"},\n" +
+            "    PDEV_NAMES = {" + REPLACEMENT_CONFORMATION_DEV_PLACES + "\"\"} \\ {\"\"},\n" +
             "    // PDEV is the set of places with the names in PDEV_NAMES.\n" +
             "    // XML-based PUNF / MPSAT are needed here to process dead places correctly.\n" +
             "    PDEV = gather nm in PDEV_NAMES { P nm },\n" +
@@ -449,27 +452,22 @@ public class MpsatParameters {
     // Note: New (PNML-based) version of Punf is required to check conformation property. Old version of
     // Punf does not support dead signals, dead transitions and dead places well (e.g. a dead transition
     // may disappear from unfolding), therefore the conformation property cannot be checked reliably.
-    public static MpsatParameters getConformationSettings(Collection<String> devPlaceNames) {
-        String str = "";
-        for (String name: devPlaceNames) {
-            str += "\"" + name + "\", ";
-        }
-        String reachConformation = REACH_CONFORMATION.replace(REACH_CONFORMATION_DEV_PLACES, str);
+    public static MpsatParameters getConformationSettings(Collection<String> devPlaceRefs) {
+        String str = getRefsAsString(devPlaceRefs);
+        String reachConformation = REACH_CONFORMATION.replace(REPLACEMENT_CONFORMATION_DEV_PLACES, str);
         return new MpsatParameters("Conformation", MpsatMode.STG_REACHABILITY_CONFORMATION, 0,
                 MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount(), reachConformation, true);
     }
 
-
-    private static final String REACH_CONFORMATION_NWAY_SHADOW_TRANSITIONS =
+    private static final String REPLACEMENT_SHADOW_TRANSITIONS =
             "/* insert set of names of shadow transitions here */"; // For example: "x+/1", "x-", "y+", "y-/1"
 
-    private static final String REACH_CONFORMATION_NWAY =
+    private static final String REACH_SHADOW_ENABLENESS =
             "// Check whether several STGs conform to each other.\n" +
             "// The enabled-via-dummies semantics is assumed for @.\n" +
             "let\n" +
             "    // set of phantom output transition names in the whole composed STG\n" +
-            "    SHADOW_OUTPUT_TRANSITIONS_NAMES = {\n" + REACH_CONFORMATION_NWAY_SHADOW_TRANSITIONS +
-            "        \"\"} \\ {\"\"},\n" +
+            "    SHADOW_OUTPUT_TRANSITIONS_NAMES = {\n" + REPLACEMENT_SHADOW_TRANSITIONS + "\"\"} \\ {\"\"},\n" +
             "    SHADOW_OUTPUT_TRANSITIONS = gather n in SHADOW_OUTPUT_TRANSITIONS_NAMES { T n }\n" +
             "{\n" +
             "    // Optimisation: make sure phantom events are not in the configuration\n" +
@@ -488,17 +486,25 @@ public class MpsatParameters {
             "    }\n" +
             "}\n";
 
-    // Note: New (PNML-based) version of Punf is required to check conformation property. Old version of
-    // Punf does not support dead signals, dead transitions and dead places well (e.g. a dead transition
-    // may disappear from unfolding), therefore the conformation property cannot be checked reliably.
+    private static final String REACH_CONFORMATION_NWAY =
+            "// Check whether several STGs conform to each other.\n" + REACH_SHADOW_ENABLENESS;
+
     public static MpsatParameters getConformationNwaySettings(Set<String> shadowTransitionNames) {
-        String str = "";
-        for (String name: shadowTransitionNames) {
-            str += "\"" + name + "\", ";
-        }
-        String reachConformationNway = REACH_CONFORMATION_NWAY.replace(REACH_CONFORMATION_NWAY_SHADOW_TRANSITIONS, str);
+        String str = getRefsAsString(shadowTransitionNames);
+        String reachConformationNway = REACH_CONFORMATION_NWAY.replace(REPLACEMENT_SHADOW_TRANSITIONS, str);
 
         return new MpsatParameters("N-way conformation", MpsatMode.STG_REACHABILITY_CONFORMATION_NWAY, 0,
+                MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount(), reachConformationNway, true);
+    }
+
+    private static final String REACH_OUTPUT_DETERMINACY =
+            "// Check whether an STG is output-determinate.\n" + REACH_SHADOW_ENABLENESS;
+
+    public static MpsatParameters getOutputDeterminacySettings(Collection<String> shadowTransitionRefs) {
+        String str = getRefsAsString(shadowTransitionRefs);
+        String reachConformationNway = REACH_OUTPUT_DETERMINACY.replace(REPLACEMENT_SHADOW_TRANSITIONS, str);
+
+        return new MpsatParameters("Output determinacy", MpsatMode.STG_REACHABILITY_OUTPUT_DETERMINACY, 0,
                 MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount(), reachConformationNway, true);
     }
 
@@ -586,13 +592,8 @@ public class MpsatParameters {
             "    }\n" +
             "}\n";
 
-    public static MpsatParameters getPlaceRedundancySettings(Collection<String> placeNames) {
-        String str = "";
-        if (placeNames != null) {
-            for (String placeName: placeNames) {
-                str += "\"" + placeName + "\", ";
-            }
-        }
+    public static MpsatParameters getPlaceRedundancySettings(Collection<String> placeRefs) {
+        String str = getRefsAsString(placeRefs);
         String reachPlaceRedundancy = REACH_PLACE_REDUNDANCY.replace(REACH_PLACE_REDUNDANCY_NAMES, str);
         return new MpsatParameters("Place redundancy", MpsatMode.REACHABILITY_REDUNDANCY, 0,
                 MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount(), reachPlaceRedundancy, true);
@@ -601,6 +602,14 @@ public class MpsatParameters {
     public static MpsatParameters getEmptyAssertionSettings() {
         return new MpsatParameters("Empty assertion", MpsatMode.ASSERTION, 0,
                 SolutionMode.MINIMUM_COST, 0, "", true);
+    }
+
+    private static String getRefsAsString(Collection<String> refs) {
+        String str = "";
+        for (String name : refs) {
+            str += "\"" + name + "\", ";
+        }
+        return str;
     }
 
 }

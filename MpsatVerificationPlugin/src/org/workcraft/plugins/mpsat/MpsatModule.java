@@ -38,6 +38,8 @@ public class MpsatModule implements Module {
                 "check the STG 'work' for normalcy");
         ScriptableCommandUtils.register(MpsatMutexImplementabilityVerificationCommand.class, "checkStgMutexImplementability",
                 "check the STG 'work' for implementability of its mutex places");
+        ScriptableCommandUtils.register(MpsatOutputDeterminacyVerificationCommand.class, "checkStgOutputDeterminacy",
+                "check the STG 'work' for output determinacy ");
 
         // TODO: Need a way to pass the list of places from the JavaScript wrapper
         pm.registerCommand(MpsatPlaceRedundancyVerificationCommand.class);

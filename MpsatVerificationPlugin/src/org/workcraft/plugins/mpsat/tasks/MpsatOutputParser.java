@@ -1,12 +1,12 @@
 package org.workcraft.plugins.mpsat.tasks;
 
+import org.workcraft.gui.graph.tools.Trace;
+
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.workcraft.gui.graph.tools.Trace;
 
 public class MpsatOutputParser {
 

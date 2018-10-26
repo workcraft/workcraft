@@ -25,7 +25,7 @@ public class MpsatConformationNwayVerificationCommand extends AbstractVerificati
 
     @Override
     public String getDisplayName() {
-        return "  N-way conformation [MPSat]...";
+        return "N-way conformation [MPSat]...";
     }
 
     @Override
@@ -35,7 +35,7 @@ public class MpsatConformationNwayVerificationCommand extends AbstractVerificati
 
     @Override
     public int getPriority() {
-        return 3;
+        return 1;
     }
 
     @Override

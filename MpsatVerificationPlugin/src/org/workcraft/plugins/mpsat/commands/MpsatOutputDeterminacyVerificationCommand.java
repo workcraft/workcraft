@@ -1,27 +1,39 @@
-package org.workcraft.plugins.policy.commands;
+package org.workcraft.plugins.mpsat.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
+import org.workcraft.plugins.mpsat.tasks.MpsatOutputDeterminacyTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
-import org.workcraft.plugins.policy.PolicyNet;
-import org.workcraft.plugins.policy.tasks.CheckDeadlockFreenessTask;
+import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class PolicyDeadlockFreenessVerificationCommand extends AbstractVerificationCommand {
+public class MpsatOutputDeterminacyVerificationCommand extends AbstractVerificationCommand {
 
+    @Override
     public String getDisplayName() {
-        return "Deadlock with bundels [MPSat]";
+        return "Output determinacy [MPSat]";
     }
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, PolicyNet.class);
+        return WorkspaceUtils.isApplicable(we, StgModel.class);
     }
+
+    @Override
+    public int getPriority() {
+        return 3;
+    }
+
+    @Override
+    public Position getPosition() {
+        return Position.BOTTOM_MIDDLE;
+    }
+
 
     @Override
     public void run(WorkspaceEntry we) {
@@ -39,9 +51,9 @@ public class PolicyDeadlockFreenessVerificationCommand extends AbstractVerificat
     }
 
     private MpsatChainResultHandler queueVerification(WorkspaceEntry we) {
-        Framework framework = Framework.getInstance();
+        final Framework framework = Framework.getInstance();
+        MpsatOutputDeterminacyTask task = new MpsatOutputDeterminacyTask(we);
         TaskManager manager = framework.getTaskManager();
-        CheckDeadlockFreenessTask task = new CheckDeadlockFreenessTask(we);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         MpsatChainResultHandler monitor = new MpsatChainResultHandler(we);
         manager.queue(task, description, monitor);

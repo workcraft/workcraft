@@ -1,29 +1,19 @@
 package org.workcraft.plugins.mpsat;
 
-import java.io.File;
-import java.net.URL;
-
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.DesktopApi;
-import org.workcraft.plugins.mpsat.commands.MpsatCombinedVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatConformationVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatConsistencyVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatCscVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatDeadlockFreenessVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatDiInterfaceVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatInputPropernessVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatMutexImplementabilityVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatNormalcyVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatOutputPersistencyVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatUscVerificationCommand;
+import org.workcraft.plugins.mpsat.commands.*;
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import java.io.File;
+import java.net.URL;
 
 public class MpsatVerificationCommandTests {
 

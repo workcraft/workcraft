@@ -26,6 +26,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class MpsatChainTask implements Task<MpsatChainOutput> {
+
     private final WorkspaceEntry we;
     private final MpsatParameters settings;
 
