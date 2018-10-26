@@ -25,7 +25,7 @@ public class MpsatConformationNwayVerificationCommand extends AbstractVerificati
 
     @Override
     public String getDisplayName() {
-        return "  N-way conformation (without dummies) [MPSat]...";
+        return "  N-way conformation [MPSat]...";
     }
 
     @Override
@@ -50,14 +50,14 @@ public class MpsatConformationNwayVerificationCommand extends AbstractVerificati
             LogUtils.logError("Command '" + getClass().getSimpleName() + "' only works in GUI mode.");
             return;
         }
-        Set<Path<String>> paths = null;
         MainWindow mainWindow = framework.getMainWindow();
         NwayDialog dialog = new NwayDialog(mainWindow, we);
         GUI.centerToParent(dialog, mainWindow);
-        if (dialog.run()) {
-            paths = dialog.getSourcePaths();
+        if (!dialog.run()) {
+            return;
         }
 
+        Set<Path<String>> paths = dialog.getSourcePaths();
         if ((paths == null) || (paths.size() < 2)) {
             DialogUtils.showWarning("At least two STGs are required for N-way conformation.");
             return;

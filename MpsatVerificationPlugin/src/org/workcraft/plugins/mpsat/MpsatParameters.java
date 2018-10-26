@@ -1,16 +1,16 @@
 package org.workcraft.plugins.mpsat;
 
+import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.util.FileUtils;
+import org.workcraft.util.LogUtils;
+import org.workcraft.util.Pair;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
-
-import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.util.FileUtils;
-import org.workcraft.util.LogUtils;
-import org.workcraft.util.Pair;
 
 public class MpsatParameters {
 
@@ -311,7 +311,7 @@ public class MpsatParameters {
             "}\n";
 
     public static MpsatParameters getOutputPersistencySettings() {
-        return getOutputPersistencySettings(new LinkedList<Pair<String, String>>());
+        return getOutputPersistencySettings(new LinkedList<>());
     }
 
     public static MpsatParameters getOutputPersistencySettings(Collection<Pair<String, String>> exceptionPairs) {
@@ -459,78 +459,31 @@ public class MpsatParameters {
                 MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount(), reachConformation, true);
     }
 
-    // Reach expression for checking n-way conformation (this is a template, the lists of places and outputs need to be updated)
-    private static final String REACH_CONFORMATION_NWAY_PLACES =
-            "/* insert set of names of place here */"; // For example: {"p1", "<a+,b+>", "#1"}, {"<b+,c+>", "p2", "#2"},
 
-    private static final String REACH_CONFORMATION_NWAY_OUTPUTS =
-            "/* insert set of names of outputs here */"; // For example: {"b","#1"}, {"c","#2"}
+    private static final String REACH_CONFORMATION_NWAY_SHADOW_TRANSITIONS =
+            "/* insert set of names of shadow transitions here */"; // For example: "x+/1", "x-", "y+", "y-/1"
 
     private static final String REACH_CONFORMATION_NWAY =
             "// Check whether several STGs conform to each other.\n" +
-            "// LIMITATIONS (could be checked before parallel composition):\n" +
-            "// - Each transition in each STG must have some arcs, i.e. its preset or postset is non-empty.\n" +
-            "// - The STGs must have no dummies.\n" +
-            "card DUMMY != 0 ? fail \"Conformation can currently be checked only for device STGs without dummies\" :\n" +
+            "// The enabled-via-dummies semantics is assumed for @.\n" +
             "let\n" +
-            "    // set of place names of all STGs;\n" +
-            "    // each set of names is tagged by adding a string of the form #STG_number to it, e.g. \"#1\", \"#2\", \"#3\", etc.\n" +
-            "    // note that the tags can never be confused with names, as the latter cannot contain \"#\";\n" +
-            "    // note also that tags guarantee that no set of strings is empty\n" +
-            "    SETS_OF_PLACE_NAMES = {\n" + REACH_CONFORMATION_NWAY_PLACES +
-            "        {\"\"}} \\ {{\"\"}},\n" +
-            "    // set of output signal names of all STGs;\n" +
-            "    // each set of names is tagged as above, and the tags for the same STG must match\n" +
-            "    SETS_OF_OUTPUTS_NAMES = {\n" + REACH_CONFORMATION_NWAY_OUTPUTS +
-            "        {\"\"}} \\ {{\"\"}},\n" +
-            "    // EXTENDED_PLACES includes places with the names of the form p@num.\n" +
-            "    // Such places appeared during optimisation of the unfolding prefix due to splitting places\n" +
-            "    // incident with multiple read arcs (-r option of punf).\n" +
-            "    EXTENDED_PLACES = PP \".*@[0-9]+\"\n" +
+            "    // set of phantom output transition names in the whole composed STG\n" +
+            "    SHADOW_OUTPUT_TRANSITIONS_NAMES = {\n" + REACH_CONFORMATION_NWAY_SHADOW_TRANSITIONS +
+            "        \"\"} \\ {\"\"},\n" +
+            "    SHADOW_OUTPUT_TRANSITIONS = gather n in SHADOW_OUTPUT_TRANSITIONS_NAMES { T n }\n" +
             "{\n" +
-            "    // Check if there exists an STG that does not conform to the rest of the composition;\n" +
-            "    // let PNAMES be the set of names of places in the composed STG which originated from such an STG.\n" +
-            "    // This set may in fact contain places from the other STGs, e.g. when PCOMP removes duplicate\n" +
-            "    // places from the composed STG, it substitutes them with equivalent places that remain.\n" +
-            "    exists PNAMES in SETS_OF_PLACE_NAMES {\n" +
-            "        let\n" +
-            "            // find the tag in PNAMES - unfortunately it will be returned as a singleton set TAG_SINGLETON\n" +
-            "            // as currently it's hard to extract it (could try converting to a string \"{element}\" and selecting\n" +
-            "            // the substring for the element)\n" +
-            "            TAG_SINGLETON = gather str in PNAMES s.t. str[0..0]=\"#\" { str },\n" +
-            "            // find the set of output signal names containing the same tag - unfortunately it will be returned as a\n" +
-            "            // singleton set OUTPUTS_SINGLETON with the set of names as the element, as currently it's hard to extract it\n" +
-            "            OUTPUTS_SINGLETON=gather OUT_S in SETS_OF_OUTPUTS_NAMES s.t. card (TAG_SINGLETON * OUT_S) != 0 { OUT_S },\n" +
-            "            // PSTG is the set of places with the names in PNAMES;\n" +
-            "            // XML-based PUNF / MPSAT are needed here to process dead places correctly\n" +
-            "            PSTG = gather nm in PNAMES s.t. nm[0..0]!=\"#\" { P nm },\n" +
-            "            // PSTG_EXT includes PSTG and places with the names of the form p@num, where p is a place in PSTG.\n" +
-            "            // Such places appeared during optimisation of the unfolding prefix due to splitting places\n" +
-            "            // incident with multiple read arcs (-r option of punf).\n" +
-            "            // Note that such a place must have the same preset and postset (ignoring context) as p.\n" +
-            "            PSTG_EXT = PSTG + gather p in EXTENDED_PLACES s.t.\n" +
-            "            let name_p=name p, pre_p=pre p, post_p=post p, s_pre_p=pre_p \\ post_p, s_post_p=post_p \\ pre_p {\n" +
-            "                exists q in PSTG {\n" +
-            "                    let name_q=name q, pre_q=pre q, post_q=post q {\n" +
-            "                        name_p[..len name_q] = name_q + \"@\" &\n" +
-            "                        pre_q \\ post_q=s_pre_p & post_q \\ pre_q=s_post_p\n" +
-            "                    }\n" +
-            "                }\n" +
+            "    // Optimisation: make sure phantom events are not in the configuration\n" +
+            "    forall e in ev SHADOW_OUTPUT_TRANSITIONS \\ CUTOFFS { ~$e }\n" +
+            "    &\n" +
+            "    // Check if some output signal is enabled due to phantom transitions only;\n" +
+            "    // this would mean that some component STG does not conform to the rest of the composition\n" +
+            "    exists o in OUTPUTS {\n" +
+            "        let tran_o = tran o {\n" +
+            "            exists t in tran_o * SHADOW_OUTPUT_TRANSITIONS {\n" +
+            "                forall p in pre t { $p }\n" +
             "            }\n" +
-            "            { p },\n" +
-            "            // TSTG is the set of the STG's transitions;\n" +
-            "            // XML-based PUNF / MPSAT are needed here to process dead transitions correctly;\n" +
-            "            // LIMITATION: each transition in the device must have some arcs, i.e. its preset or postset is non-empty\n" +
-            "            TSTG = tran sig (pre PSTG + post PSTG)\n" +
-            "        {\n" +
-            "            exists t in TSTG, OSTG in OUTPUTS_SINGLETON s.t. name sig t in OSTG {\n" +
-            "                // Check if t is enabled in the device STG\n" +
-            "                // LIMITATION: The STG must have no dummies (this limitation is checked above)\n" +
-            "                forall p in pre t s.t. p in PSTG_EXT { $p }\n" +
-            "                &\n" +
-            "               // Check if t is enabled in the composed STG\n" +
-            "               ~@ sig t\n" +
-            "            }\n" +
+            "            &\n" +
+            "            forall tt in tran_o \\ SHADOW_OUTPUT_TRANSITIONS { ~@tt }\n" +
             "        }\n" +
             "    }\n" +
             "}\n";
@@ -538,28 +491,15 @@ public class MpsatParameters {
     // Note: New (PNML-based) version of Punf is required to check conformation property. Old version of
     // Punf does not support dead signals, dead transitions and dead places well (e.g. a dead transition
     // may disappear from unfolding), therefore the conformation property cannot be checked reliably.
-    public static MpsatParameters getConformationNwaySettings(
-            ArrayList<Set<String>> allPlaceSets, ArrayList<Set<String>> allOutputSets) {
-        String placeStr = getReferenceSetsAsString(allPlaceSets);
-        String outputStr = getReferenceSetsAsString(allOutputSets);
-        String reachConformationNway = REACH_CONFORMATION_NWAY
-                .replace(REACH_CONFORMATION_NWAY_PLACES, placeStr)
-                .replace(REACH_CONFORMATION_NWAY_OUTPUTS, outputStr);
+    public static MpsatParameters getConformationNwaySettings(Set<String> shadowTransitionNames) {
+        String str = "";
+        for (String name: shadowTransitionNames) {
+            str += "\"" + name + "\", ";
+        }
+        String reachConformationNway = REACH_CONFORMATION_NWAY.replace(REACH_CONFORMATION_NWAY_SHADOW_TRANSITIONS, str);
+
         return new MpsatParameters("N-way conformation", MpsatMode.STG_REACHABILITY_CONFORMATION_NWAY, 0,
                 MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount(), reachConformationNway, true);
-    }
-
-    private static String getReferenceSetsAsString(ArrayList<Set<String>> allSets) {
-        String result = "";
-        for (int i = 0; i < allSets.size(); i++) {
-            Collection<String> names = allSets.get(i);
-            result += "        {";
-            for (String name: names) {
-                result += "\"" + name + "\", ";
-            }
-            result += "\"#" + i + "\"},\n";
-        }
-        return result;
     }
 
     // Reach expression for checking strict implementation

@@ -1,6 +1,7 @@
 package org.workcraft.plugins.stg.utils;
 
 import org.workcraft.Framework;
+import org.workcraft.PluginManager;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.math.MathModel;
@@ -9,14 +10,24 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.gui.workspace.Path;
+import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.utils.PetriUtils;
+import org.workcraft.plugins.shared.tasks.ExportOutput;
+import org.workcraft.plugins.shared.tasks.ExportTask;
 import org.workcraft.plugins.stg.*;
+import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.interop.StgImporter;
+import org.workcraft.tasks.ProgressMonitor;
+import org.workcraft.tasks.Result;
+import org.workcraft.tasks.SubtaskMonitor;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.DialogUtils;
+import org.workcraft.util.ExportUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -159,10 +170,15 @@ public class StgUtils {
         }
     }
 
-    public static void convertInternalSignalsToDummies(Stg stg) {
-        for (SignalTransition transition : stg.getSignalTransitions(Signal.Type.INTERNAL)) {
-            StgUtils.convertSignalToDummyTransition(stg, transition);
+    public static Map<String, String> convertInternalSignalsToDummies(Stg stg) {
+        Map<String, String> result = new HashMap<>();
+        for (SignalTransition signalTransition : stg.getSignalTransitions(Signal.Type.INTERNAL)) {
+            String signalTransitionRef = stg.getNodeReference(signalTransition);
+            DummyTransition dummyTransition = StgUtils.convertSignalToDummyTransition(stg, signalTransition);
+            String dummyTransitionRef = stg.getNodeReference(dummyTransition);
+            result.put(dummyTransitionRef, signalTransitionRef);
         }
+        return result;
     }
 
     public static Set<String> getNewSignals(StgModel srcStg, StgModel dstStg) {
@@ -224,32 +240,23 @@ public class StgUtils {
         return result;
     }
 
-    public static HashSet<SignalTransition> getEnabledSignalTransitions(StgModel stg) {
-        HashSet<SignalTransition> result = new HashSet<>();
-        for (Transition transition : PetriUtils.getEnabledTransitions(stg)) {
-            if (transition instanceof SignalTransition) {
-                result.add((SignalTransition) transition);
-            }
+    public static Result<? extends ExportOutput> exportStg(Stg stg, File file, ProgressMonitor<?> monitor) {
+        Framework framework = Framework.getInstance();
+        PluginManager pluginManager = framework.getPluginManager();
+        StgFormat format = StgFormat.getInstance();
+        Exporter exporter = ExportUtils.chooseBestExporter(pluginManager, stg, format);
+        if (exporter == null) {
+            throw new NoExporterException(stg, format);
         }
-        return result;
-    }
 
-    public static HashSet<String> getEnabledLocalSignals(StgModel stg) {
-        HashSet<String> result = new HashSet<>();
-        for (SignalTransition transition : getEnabledSignalTransitions(stg)) {
-            if ((transition.getSignalType() == Signal.Type.OUTPUT) || (transition.getSignalType() == Signal.Type.INTERNAL)) {
-                result.add(transition.getSignalName());
-            }
+        ExportTask exportTask = new ExportTask(exporter, stg, file.getAbsolutePath());
+        String description = "Exporting " + file.getAbsolutePath();
+        SubtaskMonitor<Object> subtaskMonitor = null;
+        if (monitor != null) {
+            subtaskMonitor = new SubtaskMonitor<>(monitor);
         }
-        return result;
-    }
-
-    public static HashSet<String> getEnabledSignals(StgModel stg) {
-        HashSet<String> result = new HashSet<>();
-        for (SignalTransition transition : getEnabledSignalTransitions(stg)) {
-            result.add(transition.getSignalName());
-        }
-        return result;
+        TaskManager taskManager = framework.getTaskManager();
+        return taskManager.execute(exportTask, description, subtaskMonitor);
     }
 
     /**

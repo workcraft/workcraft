@@ -1,9 +1,5 @@
 package org.workcraft.plugins.circuit.tasks;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.formula.BooleanFormula;
@@ -13,19 +9,14 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitSignalInfo;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.mpsat.MpsatParameters;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
-import org.workcraft.plugins.mpsat.tasks.MpsatOutputParser;
-import org.workcraft.plugins.mpsat.tasks.MpsatOutput;
-import org.workcraft.plugins.mpsat.tasks.MpsatTask;
+import org.workcraft.plugins.mpsat.tasks.*;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.plugins.stg.interop.StgFormat;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -34,6 +25,10 @@ import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class CircuitStrictImplementationCheckTask extends MpsatChainTask {
     private final MpsatParameters toolchainPreparationSettings = MpsatParameters.getToolchainPreparationSettings();
@@ -64,7 +59,7 @@ public class CircuitStrictImplementationCheckTask extends MpsatChainTask {
 
             // Write environment STG into a .g file
             File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + stgFileExtension);
-            Result<? extends ExportOutput> envExportResult = CircuitStgUtils.exportStg(envStg, envStgFile, directory, monitor);
+            Result<? extends ExportOutput> envExportResult = StgUtils.exportStg(envStg, envStgFile, monitor);
             if (envExportResult.getOutcome() != Outcome.SUCCESS) {
                 if (envExportResult.getOutcome() == Outcome.CANCEL) {
                     return new Result<>(Outcome.CANCEL);

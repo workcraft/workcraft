@@ -150,6 +150,9 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
             protected Direction getter(VisualContact object) {
                 return object.getDirection();
             }
+            public boolean isDisabled() {
+                return getObject().isPin();
+            }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualContact, IOType>(

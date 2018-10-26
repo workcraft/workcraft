@@ -63,6 +63,8 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainOut
 
     private void handleSuccess(final Result<? extends MpsatChainOutput> chainResult) {
         MpsatChainOutput chainOutput = chainResult.getPayload();
+        Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
+        ExportOutput exportOutput = (exportResult == null) ? null : exportResult.getPayload();
         Result<? extends PcompOutput> pcompResult = (chainOutput == null) ? null : chainOutput.getPcompResult();
         PcompOutput pcompOutput = (pcompResult == null) ? null : pcompResult.getPayload();
         Result<? extends MpsatOutput> mpsatResult = (chainOutput == null) ? null : chainOutput.getMpsatResult();
@@ -86,19 +88,19 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainOut
             SwingUtilities.invokeLater(new MpsatRedundancyOutputHandler(we, mpsatOutput, mpsatSettings));
             break;
         case DEADLOCK:
-            SwingUtilities.invokeLater(new MpsatDeadlockFreenessOutputHandler(we, pcompOutput, mpsatOutput, mpsatSettings));
+            SwingUtilities.invokeLater(new MpsatDeadlockFreenessOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
             break;
         case STG_REACHABILITY_CONSISTENCY:
-            SwingUtilities.invokeLater(new MpsatConsistencyOutputHandler(we, pcompOutput, mpsatOutput, mpsatSettings));
+            SwingUtilities.invokeLater(new MpsatConsistencyOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
             break;
         case STG_REACHABILITY_OUTPUT_PERSISTENCY:
-            SwingUtilities.invokeLater(new MpsatOutputPersistencyOutputHandler(we, pcompOutput, mpsatOutput, mpsatSettings));
+            SwingUtilities.invokeLater(new MpsatOutputPersistencyOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
             break;
         case STG_REACHABILITY_CONFORMATION:
-            SwingUtilities.invokeLater(new MpsatConformationOutputHandler(we, pcompOutput, mpsatOutput, mpsatSettings));
+            SwingUtilities.invokeLater(new MpsatConformationOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
             break;
         case STG_REACHABILITY_CONFORMATION_NWAY:
-            SwingUtilities.invokeLater(new MpsatConformationNwayOutputHandler(wes, pcompOutput, mpsatOutput, mpsatSettings));
+            SwingUtilities.invokeLater(new MpsatConformationNwayOutputHandler(wes, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
             break;
         case CSC_CONFLICT_DETECTION:
         case USC_CONFLICT_DETECTION:
@@ -115,6 +117,8 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainOut
 
     private boolean handlePartialFailure(final Result<? extends MpsatChainOutput> chainResult) {
         MpsatChainOutput chainOutput = chainResult.getPayload();
+        Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
+        ExportOutput exportOutput = (exportResult == null) ? null : exportResult.getPayload();
         Result<? extends PcompOutput> pcompResult = (chainOutput == null) ? null : chainOutput.getPcompResult();
         if ((pcompResult != null) && (pcompResult.getOutcome() == Outcome.FAILURE)) {
             return false;
@@ -136,7 +140,7 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainOut
                     String mpsatFakeStdout = "SOLUTION 0\n" + solution + "\npath cost: " + cost + "\n";
                     MpsatOutput mpsatFakeOutput = new MpsatOutput(new ExternalProcessOutput(0, mpsatFakeStdout.getBytes(), new byte[0]));
                     SwingUtilities.invokeLater(new MpsatConsistencyOutputHandler(
-                            we, pcompOutput, mpsatFakeOutput, MpsatParameters.getConsistencySettings()));
+                            we, exportOutput, pcompOutput, mpsatFakeOutput, MpsatParameters.getConsistencySettings()));
                 } else {
                     String comment = solution.getComment();
                     String message = CANNOT_VERIFY_PREFIX;

@@ -1,11 +1,5 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.tools.Trace;
@@ -14,6 +8,7 @@ import org.workcraft.plugins.mpsat.gui.MpsatReachibilityDialog;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
+import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.util.DialogUtils;
@@ -21,24 +16,32 @@ import org.workcraft.util.GUI;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 class MpsatReachabilityOutputHandler implements Runnable {
 
     protected static final String TITLE = "Verification results";
 
     private final WorkspaceEntry we;
+    private ExportOutput exportOutput;
     private final PcompOutput pcompOutput;
     private final MpsatOutput mpsatOutput;
     private final MpsatParameters settings;
 
-    private final HashMap<String, StgModel> srcStgs = new HashMap<>();
     private CompositionData compositionData = null;
 
     MpsatReachabilityOutputHandler(WorkspaceEntry we, MpsatOutput mpsatOutput, MpsatParameters settings) {
-        this(we, null, mpsatOutput, settings);
+        this(we, null, null, mpsatOutput, settings);
     }
 
-    MpsatReachabilityOutputHandler(WorkspaceEntry we, PcompOutput pcompOutput, MpsatOutput mpsatOutput, MpsatParameters settings) {
+    MpsatReachabilityOutputHandler(WorkspaceEntry we, ExportOutput exportOutput, PcompOutput pcompOutput, MpsatOutput mpsatOutput, MpsatParameters settings) {
         this.we = we;
+        this.exportOutput = exportOutput;
         this.pcompOutput = pcompOutput;
         this.mpsatOutput = mpsatOutput;
         this.settings = settings;
@@ -46,6 +49,10 @@ class MpsatReachabilityOutputHandler implements Runnable {
 
     public WorkspaceEntry getWorkspaceEntry() {
         return we;
+    }
+
+    public ExportOutput getExportOutput() {
+        return exportOutput;
     }
 
     public PcompOutput getPcompOutput() {
@@ -68,9 +75,10 @@ class MpsatReachabilityOutputHandler implements Runnable {
     public List<MpsatSolution> processSolutions(WorkspaceEntry we, List<MpsatSolution> solutions) {
         List<MpsatSolution> result = new LinkedList<>();
         ComponentData data = getCompositionData(we);
+        Map<String, String> substitutions = getSubstitutions(we);
         for (MpsatSolution solution: solutions) {
-            Trace mainTrace = getProjectedTrace(solution.getMainTrace(), data);
-            Trace branchTrace = getProjectedTrace(solution.getBranchTrace(), data);
+            Trace mainTrace = getProjectedTrace(solution.getMainTrace(), data, substitutions);
+            Trace branchTrace = getProjectedTrace(solution.getBranchTrace(), data, substitutions);
             String comment = solution.getComment();
             MpsatSolution processedSolution = new MpsatSolution(mainTrace, branchTrace, comment);
             result.add(processedSolution);
@@ -78,7 +86,7 @@ class MpsatReachabilityOutputHandler implements Runnable {
         return result;
     }
 
-    public Trace getProjectedTrace(Trace trace, ComponentData data) {
+    public Trace getProjectedTrace(Trace trace, ComponentData data, Map<String, String> substitutions) {
         if ((trace == null) || trace.isEmpty() || (data == null)) {
             return trace;
         }
@@ -86,10 +94,25 @@ class MpsatReachabilityOutputHandler implements Runnable {
         for (String ref: trace) {
             String srcRef = data.getSrcTransition(ref);
             if (srcRef != null) {
+                if (substitutions.containsKey(srcRef)) {
+                    srcRef = substitutions.get(srcRef);
+                }
                 result.add(srcRef);
             }
         }
         return result;
+    }
+
+    public Map<String, String> getSubstitutions(WorkspaceEntry we) {
+        return getSubstitutions(0);
+    }
+
+    public Map<String, String> getSubstitutions(int index) {
+        if (getExportOutput() instanceof MultiSubExportOutput) {
+            MultiSubExportOutput exportOutput = (MultiSubExportOutput) getExportOutput();
+            return exportOutput.getSubstitutions(index);
+        }
+        return new HashMap<>();
     }
 
     public ComponentData getCompositionData(WorkspaceEntry we) {
@@ -109,18 +132,16 @@ class MpsatReachabilityOutputHandler implements Runnable {
         return compositionData == null ? null : compositionData.getComponentData(index);
     }
 
-    public StgModel getSrcStg(ComponentData data) {
+    public StgModel getSrcStg(WorkspaceEntry we) {
+        ComponentData data = getCompositionData(we);
         if (data == null) {
             return getMpsatOutput().getInputStg();
         }
-        if (!srcStgs.containsKey(data.getFileName())) {
-            File file = new File(data.getFileName());
-            if ((file != null) && file.exists()) {
-                StgModel srcStg = StgUtils.importStg(file);
-                srcStgs.put(data.getFileName(), srcStg);
-            }
+        File file = new File(data.getFileName());
+        if ((file != null) && file.exists()) {
+            return StgUtils.importStg(file);
         }
-        return srcStgs.get(data.getFileName());
+        return null;
     }
 
     public String getMessage(boolean isSatisfiable) {

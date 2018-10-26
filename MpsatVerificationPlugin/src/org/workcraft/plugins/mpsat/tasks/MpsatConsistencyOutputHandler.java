@@ -2,11 +2,13 @@ package org.workcraft.plugins.mpsat.tasks;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.workcraft.gui.graph.tools.Trace;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
+import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.util.LogUtils;
@@ -15,17 +17,20 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 class MpsatConsistencyOutputHandler extends MpsatReachabilityOutputHandler {
 
-    MpsatConsistencyOutputHandler(WorkspaceEntry we, PcompOutput pcompOutput, MpsatOutput mpsatOutput, MpsatParameters settings) {
-        super(we, pcompOutput, mpsatOutput, settings);
+    MpsatConsistencyOutputHandler(WorkspaceEntry we,
+            ExportOutput exportOutput, PcompOutput pcompOutput, MpsatOutput mpsatOutput, MpsatParameters settings) {
+
+        super(we, exportOutput, pcompOutput, mpsatOutput, settings);
     }
 
     @Override
     public List<MpsatSolution> processSolutions(WorkspaceEntry we, List<MpsatSolution> solutions) {
         List<MpsatSolution> result = new LinkedList<>();
         ComponentData data = getCompositionData(we);
+        Map<String, String> substitutions = getSubstitutions(we);
         for (MpsatSolution solution: solutions) {
             LogUtils.logMessage("Processing reported trace: " + solution.getMainTrace());
-            Trace trace = getProjectedTrace(solution.getMainTrace(), data);
+            Trace trace = getProjectedTrace(solution.getMainTrace(), data, substitutions);
             int size = trace.size();
             if (size <= 0) {
                 LogUtils.logMessage("No consistency violation detected");

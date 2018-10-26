@@ -7,8 +7,9 @@ import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.gui.MpsatReachibilityDialog;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
-import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.plugins.petri.Place;
+import org.workcraft.plugins.petri.utils.PetriUtils;
+import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.StgModel;
@@ -20,21 +21,27 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 class MpsatDeadlockFreenessOutputHandler extends MpsatReachabilityOutputHandler {
 
-    MpsatDeadlockFreenessOutputHandler(WorkspaceEntry we, PcompOutput pcompOutput, MpsatOutput mpsatOutput, MpsatParameters settings) {
-        super(we, pcompOutput, mpsatOutput, settings);
+    MpsatDeadlockFreenessOutputHandler(WorkspaceEntry we,
+            ExportOutput exportOutput, PcompOutput pcompOutput, MpsatOutput mpsatOutput, MpsatParameters settings) {
+
+        super(we, exportOutput, pcompOutput, mpsatOutput, settings);
     }
 
     @Override
     public List<MpsatSolution> processSolutions(WorkspaceEntry we, List<MpsatSolution> solutions) {
         List<MpsatSolution> result = new LinkedList<>();
+
+        StgModel stg = getSrcStg(we);
         ComponentData data = getCompositionData(we);
-        StgModel stg = getSrcStg(data);
+        Map<String, String> substitutions = getSubstitutions(we);
+
         for (MpsatSolution solution : solutions) {
             LogUtils.logMessage("Processing reported trace: " + solution.getMainTrace());
-            Trace trace = getProjectedTrace(solution.getMainTrace(), data);
+            Trace trace = getProjectedTrace(solution.getMainTrace(), data, substitutions);
             // Execute trace to potentially interesting state
             HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
             if (!PetriUtils.fireTrace(stg, trace)) {

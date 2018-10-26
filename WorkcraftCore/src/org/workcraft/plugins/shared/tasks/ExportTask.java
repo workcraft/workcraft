@@ -1,9 +1,5 @@
 package org.workcraft.plugins.shared.tasks;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 import org.workcraft.dom.Model;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualModel;
@@ -13,6 +9,10 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.LogUtils;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class ExportTask implements Task<ExportOutput> {
 
@@ -45,7 +45,7 @@ public class ExportTask implements Task<ExportOutput> {
             file.createNewFile();
             fos = new FileOutputStream(file);
         } catch (IOException e) {
-            return new Result<ExportOutput>(e);
+            return new Result<>(e);
         }
 
         boolean success = false;
@@ -62,25 +62,25 @@ public class ExportTask implements Task<ExportOutput> {
                     String text = "Exporter to " + exporterName + " format is not compatible with " + modelName + " model.";
                     // FIXME: Is it really necessary to nest the exceptions?
                     Exception nestedException = new Exception(new RuntimeException(text));
-                    return new Result<ExportOutput>(nestedException);
+                    return new Result<>(nestedException);
                 }
             }
             exporter.export(model, fos);
             success = true;
         } catch (Throwable e) {
-            return new Result<ExportOutput>(e);
+            return new Result<>(e);
         } finally {
             try {
                 fos.close();
             } catch (IOException e) {
-                return new Result<ExportOutput>(e);
+                return new Result<>(e);
             }
             if (!success) {
                 file.delete();
             }
         }
 
-        return new Result<ExportOutput>(Outcome.SUCCESS, new ExportOutput(file));
+        return new Result<>(Outcome.SUCCESS, new ExportOutput(file));
     }
 
 }

@@ -143,7 +143,7 @@ public class Stg extends AbstractMathModel implements StgModel {
     @Override
     public Collection<SignalTransition> getSignalTransitions(final Signal.Type type) {
         return Hierarchy.getDescendantsOfType(getRoot(), SignalTransition.class,
-                transition -> transition.getSignalType() == type);
+                transition -> (transition.getSignalType() == type) || (type == null));
     }
 
     public Set<String> getSignalNames(Container container) {

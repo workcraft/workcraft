@@ -1,10 +1,5 @@
 package org.workcraft.plugins.circuit.commands;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Set;
-
-import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
@@ -12,12 +7,15 @@ import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.interop.StgFormat;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.FileUtils;
+
+import java.io.File;
+import java.util.Set;
 
 public class CircuitToStgWithEnvironmentConversionCommand extends CircuitToStgConversionCommand {
 
@@ -83,7 +81,7 @@ public class CircuitToStgWithEnvironmentConversionCommand extends CircuitToStgCo
     }
 
     private static File exportEnvStg(File envFile, Set<String> inputSignalNames, Set<String> outputSignalNames,
-            File directory) throws DeserialisationException, IOException {
+            File directory) {
 
         File result = null;
         Stg envStg = StgUtils.loadStg(envFile);
@@ -95,14 +93,14 @@ public class CircuitToStgWithEnvironmentConversionCommand extends CircuitToStgCo
         return result;
     }
 
-    private static File exportDevStg(Stg devStg, File directory) throws IOException {
+    private static File exportDevStg(Stg devStg, File directory) {
         String stgFileExtension = StgFormat.getInstance().getExtension();
         return exportStg(devStg, StgUtils.DEVICE_FILE_PREFIX + stgFileExtension, directory);
     }
 
-    private static File exportStg(Stg stg, String fileName, File directory) throws IOException {
+    private static File exportStg(Stg stg, String fileName, File directory) {
         File stgFile = new File(directory, fileName);
-        Result<? extends ExportOutput> exportResult = CircuitStgUtils.exportStg(stg, stgFile, directory, null);
+        Result<? extends ExportOutput> exportResult = StgUtils.exportStg(stg, stgFile, null);
 
         switch (exportResult.getOutcome()) {
         case SUCCESS:
