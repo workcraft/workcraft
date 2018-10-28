@@ -467,7 +467,7 @@ public class MpsatParameters {
             "// The enabled-via-dummies semantics is assumed for @.\n" +
             "let\n" +
             "    // set of phantom output transition names in the whole composed STG\n" +
-            "    SHADOW_OUTPUT_TRANSITIONS_NAMES = {\n" + REPLACEMENT_SHADOW_TRANSITIONS + "\"\"} \\ {\"\"},\n" +
+            "    SHADOW_OUTPUT_TRANSITIONS_NAMES = {" + REPLACEMENT_SHADOW_TRANSITIONS + "\"\"} \\ {\"\"},\n" +
             "    SHADOW_OUTPUT_TRANSITIONS = gather n in SHADOW_OUTPUT_TRANSITIONS_NAMES { T n }\n" +
             "{\n" +
             "    // Optimisation: make sure phantom events are not in the configuration\n" +
