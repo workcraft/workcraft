@@ -15,7 +15,7 @@ public class CircuitResetVerificationCommand extends AbstractVerificationCommand
 
     @Override
     public String getDisplayName() {
-        return "Initialisation via primary inputs";
+        return "Initialisation via forced primary inputs";
     }
 
     @Override
@@ -42,10 +42,10 @@ public class CircuitResetVerificationCommand extends AbstractVerificationCommand
             }
         }
         if (incorrectlyInitialisedComponentRefs.isEmpty()) {
-            DialogUtils.showInfo("The circuit is fully initialised via inputs");
+            DialogUtils.showInfo("The circuit is fully initialised via forced inputs");
             return true;
         } else {
-            String msg = "The circuit cannot be initialised via inputs.\n" +
+            String msg = "The circuit cannot be initialised via forced inputs.\n" +
                     LogUtils.getTextWithRefs("Problematic signal", incorrectlyInitialisedComponentRefs);
             DialogUtils.showError(msg);
             return false;

@@ -27,7 +27,7 @@ public class CircuitResetActiveLowCommand extends CircuitAbstractInitialisationC
             we.saveMemento();
             ResetUtils.insertReset(circuit, name, true);
         }
-        return null;
+        return super.execute(we);
     }
 
 }

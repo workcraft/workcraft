@@ -35,7 +35,7 @@ public class ForceInitSequentialGatesCommand extends CircuitAbstractInitialisati
             ArrayList<String> refs = ReferenceHelper.getReferenceList(circuit, changedContacts);
             LogUtils.logInfo(LogUtils.getTextWithRefs("Force init output pin", refs));
         }
-        return null;
+        return super.execute(we);
     }
 
 }

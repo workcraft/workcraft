@@ -64,6 +64,7 @@ subprojects {
         compile fileTree(dir: '../ThirdParty', include: ['*.jar'])
         compile fileTree(dir: '../ThirdParty/batik', include: ['*.jar'])
         compile 'org.jetbrains.kotlin:kotlin-stdlib'
+        compile 'com.sun.activation:javax.activation:1.2.0'
 
         testCompile 'junit:junit:4.12'
         javacc 'net.java.dev.javacc:javacc:7.0.3'
