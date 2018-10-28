@@ -1,8 +1,5 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import java.io.File;
-import java.util.Set;
-
 import org.workcraft.Framework;
 import org.workcraft.PluginManager;
 import org.workcraft.exceptions.NoExporterException;
@@ -20,19 +17,19 @@ import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExportTask;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.plugins.stg.interop.StgFormat;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.Result;
+import org.workcraft.plugins.stg.utils.StgUtils;
+import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.tasks.SubtaskMonitor;
-import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class MpsatConformationTask extends MpsatChainTask {
+import java.io.File;
+import java.util.Set;
+
+public class MpsatConformationTask implements Task<MpsatChainOutput> {
 
     private final MpsatParameters toolchainPreparationSettings = new MpsatParameters("Toolchain preparation of data",
             MpsatMode.UNDEFINED, 0, null, 0);
@@ -40,10 +37,11 @@ public class MpsatConformationTask extends MpsatChainTask {
     private final MpsatParameters toolchainCompletionSettings = new MpsatParameters("Toolchain completion",
             MpsatMode.UNDEFINED, 0, null, 0);
 
+    private final WorkspaceEntry we;
     private final File envFile;
 
     public MpsatConformationTask(WorkspaceEntry we, File envFile) {
-        super(we, null);
+        this.we = we;
         this.envFile = envFile;
     }
 
@@ -52,7 +50,6 @@ public class MpsatConformationTask extends MpsatChainTask {
         Framework framework = Framework.getInstance();
         PluginManager pluginManager = framework.getPluginManager();
         TaskManager taskManager = framework.getTaskManager();
-        WorkspaceEntry we = getWorkspaceEntry();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         StgFormat format = StgFormat.getInstance();
@@ -167,7 +164,6 @@ public class MpsatConformationTask extends MpsatChainTask {
             monitor.progressUpdate(1.0);
 
             // Success
-            unfoldingFile.delete();
             String message = "The model conforms to its environment (" + envFile.getName() + ").";
             return new Result<>(Outcome.SUCCESS,
                     new MpsatChainOutput(devExportResult, pcompResult, punfResult, null, toolchainCompletionSettings, message));

@@ -35,7 +35,7 @@ public class ProcessRedundantForceInitPinsCommand extends CircuitAbstractInitial
             ArrayList<String> refs = ReferenceHelper.getReferenceList(circuit, changedContacts);
             LogUtils.logInfo(LogUtils.getTextWithRefs("Force init is cleared for pin", refs));
         }
-        return null;
+        return super.execute(we);
     }
 
 }

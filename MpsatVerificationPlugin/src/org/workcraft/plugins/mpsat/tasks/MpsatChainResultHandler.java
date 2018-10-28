@@ -1,10 +1,5 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import javax.swing.SwingUtilities;
-
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.PunfOutputParser.Cause;
@@ -19,6 +14,10 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainOutput> {
 
@@ -101,6 +100,9 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainOut
             break;
         case STG_REACHABILITY_CONFORMATION_NWAY:
             SwingUtilities.invokeLater(new MpsatConformationNwayOutputHandler(wes, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
+            break;
+        case STG_REACHABILITY_OUTPUT_DETERMINACY:
+            SwingUtilities.invokeLater(new MpsatOutputDeterminacyOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
             break;
         case CSC_CONFLICT_DETECTION:
         case USC_CONFLICT_DETECTION:

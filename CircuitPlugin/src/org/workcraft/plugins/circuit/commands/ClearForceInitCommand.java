@@ -35,7 +35,7 @@ public class ClearForceInitCommand extends CircuitAbstractInitialisationCommand 
             ArrayList<String> refs = ReferenceHelper.getReferenceList(circuit, changedContacts);
             LogUtils.logInfo(LogUtils.getTextWithRefs("Force init is cleared for contact", refs));
         }
-        return null;
+        return super.execute(we);
     }
 
 }

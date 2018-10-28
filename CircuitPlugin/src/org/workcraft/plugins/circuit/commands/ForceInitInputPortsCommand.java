@@ -35,7 +35,7 @@ public class ForceInitInputPortsCommand extends CircuitAbstractInitialisationCom
             ArrayList<String> refs = ReferenceHelper.getReferenceList(circuit, changedContacts);
             LogUtils.logInfo(LogUtils.getTextWithRefs("Force init input port", refs));
         }
-        return null;
+        return super.execute(we);
     }
 
 }

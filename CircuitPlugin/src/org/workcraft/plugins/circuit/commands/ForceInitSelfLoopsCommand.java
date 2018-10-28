@@ -35,7 +35,7 @@ public class ForceInitSelfLoopsCommand extends CircuitAbstractInitialisationComm
             ArrayList<String> refs = ReferenceHelper.getReferenceList(circuit, changedContacts);
             LogUtils.logInfo(LogUtils.getTextWithRefs("Force init self-loop pin", refs));
         }
-        return null;
+        return super.execute(we);
     }
 
 }

@@ -45,7 +45,8 @@ public class MpsatSolutionPanel extends JPanel {
         if (columnCount > MAX_COLUMN_COUNT) {
             columnCount = MAX_COLUMN_COUNT;
         }
-        JTextArea traceText = new JTextArea(1, columnCount);
+        int rowCount = solution.getBranchTrace() == null ? 1 : 2;
+        JTextArea traceText = new JTextArea(rowCount, columnCount);
         traceText.setMargin(SizeHelper.getTextMargin());
         if (solutionString.isEmpty()) {
             traceText.setText(Trace.EMPTY_TRACE_TEXT);

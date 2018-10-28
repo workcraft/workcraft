@@ -4,6 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.utils.TransformUtils;
+import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
@@ -22,12 +23,12 @@ import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
+public class MpsatOutputDeterminacyTask implements Task<MpsatChainOutput> {
 
     private final MpsatParameters toolchainPreparationSettings = new MpsatParameters("Toolchain preparation of data",
             MpsatMode.UNDEFINED, 0, null, 0);
@@ -35,10 +36,10 @@ public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
     private final MpsatParameters toolchainCompletionSettings = new MpsatParameters("Toolchain completion",
             MpsatMode.UNDEFINED, 0, null, 0);
 
-    private final ArrayList<WorkspaceEntry> wes;
+    private final WorkspaceEntry we;
 
-    public MpsatConformationNwayTask(ArrayList<WorkspaceEntry> wes) {
-        this.wes = wes;
+    public MpsatOutputDeterminacyTask(WorkspaceEntry we) {
+        this.we = we;
     }
 
     @Override
@@ -46,32 +47,38 @@ public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
         Framework framework = Framework.getInstance();
         TaskManager taskManager = framework.getTaskManager();
 
-        String prefix = FileUtils.getTempPrefix("-pcomp");
+        String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         String stgFileExtension = StgFormat.getInstance().getExtension();
         try {
-            List<File> stgFiles = new ArrayList<>();
-            List<Map<String, String>> substitutes = new ArrayList<>();
-            for (WorkspaceEntry we: wes) {
-                // Clone STG before converting its internal signals to dummies
-                ModelEntry me = framework.cloneModel(we.getModelEntry());
-                Stg stg = WorkspaceUtils.getAs(me, Stg.class);
-                Map<String, String> dummy2InternalRefs = StgUtils.convertInternalSignalsToDummies(stg);
-                substitutes.add(dummy2InternalRefs);
+            // Clone STG before converting its internal signals to dummies
+            ModelEntry me = framework.cloneModel(we.getModelEntry());
+            Stg stg = WorkspaceUtils.getAs(me, Stg.class);
+            Map<String, String> dummy2InternalRefs = StgUtils.convertInternalSignalsToDummies(stg);
 
-                // Generating .g for the model
-                File stgFile = new File(directory, we.getTitle() + stgFileExtension);
-                stgFiles.add(stgFile);
-
-                Result<? extends ExportOutput> exportResult = StgUtils.exportStg(stg, stgFile, monitor);
-                if (exportResult.getOutcome() != Outcome.SUCCESS) {
-                    if (exportResult.getOutcome() == Outcome.CANCEL) {
-                        return new Result<>(Outcome.CANCEL);
-                    }
-                    return new Result<>(Outcome.FAILURE,
-                            new MpsatChainOutput(exportResult, null, null, null, toolchainPreparationSettings));
+            // Generating two copies of .g file for the model (dev and env)
+            File devStgFile = new File(directory, StgUtils.DEVICE_FILE_PREFIX + stgFileExtension);
+            Result<? extends ExportOutput> devExportResult = StgUtils.exportStg(stg, devStgFile, monitor);
+            if (devExportResult.getOutcome() != Outcome.SUCCESS) {
+                if (devExportResult.getOutcome() == Outcome.CANCEL) {
+                    return new Result<>(Outcome.CANCEL);
                 }
+                return new Result<>(Outcome.FAILURE,
+                        new MpsatChainOutput(devExportResult, null, null, null, toolchainPreparationSettings));
             }
+
+            File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + stgFileExtension);
+            Result<? extends ExportOutput> envExportResult = StgUtils.exportStg(stg, envStgFile, monitor);
+            if (envExportResult.getOutcome() != Outcome.SUCCESS) {
+                if (envExportResult.getOutcome() == Outcome.CANCEL) {
+                    return new Result<>(Outcome.CANCEL);
+                }
+                return new Result<>(Outcome.FAILURE,
+                        new MpsatChainOutput(envExportResult, null, null, null, toolchainPreparationSettings));
+            }
+
+            List<File> stgFiles = Arrays.asList(devStgFile, envStgFile);
+            List<Map<String, String>> substitutes = Arrays.asList(dummy2InternalRefs, dummy2InternalRefs);
             Result<MultiSubExportOutput> multiExportResult = new Result<>(new MultiSubExportOutput(stgFiles, substitutes));
             monitor.progressUpdate(0.30);
 
@@ -79,7 +86,7 @@ public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
             File sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
             File detailFile = new File(directory, StgUtils.DETAIL_FILE_PREFIX + StgUtils.XML_FILE_EXTENSION);
             PcompTask pcompTask = new PcompTask(stgFiles.toArray(new File[0]), sysStgFile, detailFile,
-                    ConversionMode.OUTPUT, false, false, directory);
+                    ConversionMode.OUTPUT, true, false, directory);
 
             Result<? extends PcompOutput> pcompResult = taskManager.execute(
                     pcompTask, "Running parallel composition [PComp]", new SubtaskMonitor<>(monitor));
@@ -95,8 +102,9 @@ public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
 
             // Insert shadow transitions into the composed STG
             CompositionData compositionData = new CompositionData(detailFile);
+            ComponentData devComponentData = compositionData.getComponentData(devStgFile);
             Stg modSysStg = StgUtils.loadStg(sysStgFile);
-            Set<String> shadowTransitions = TransformUtils.generateShadowTransitions(modSysStg, compositionData);
+            Set<String> devShadowTransitions = TransformUtils.generateShadowTransitions(modSysStg, devComponentData);
             File modSysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + stgFileExtension);
             Result<? extends ExportOutput> modSysExportResult = StgUtils.exportStg(modSysStg, modSysStgFile, monitor);
 
@@ -115,34 +123,34 @@ public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
             }
             monitor.progressUpdate(0.60);
 
-            // Check for conformation
-            MpsatParameters conformationSettings = MpsatParameters.getConformationNwaySettings(shadowTransitions);
-            MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
+            // Check for output determinacy
+            MpsatParameters settings = MpsatParameters.getOutputDeterminacySettings(devShadowTransitions);
+            MpsatTask mpsatConformationTask = new MpsatTask(settings.getMpsatArguments(directory),
                     unfoldingFile, directory, sysStgFile);
             Result<? extends MpsatOutput>  mpsatConformationResult = taskManager.execute(
-                    mpsatConformationTask, "Running conformation check [MPSat]", new SubtaskMonitor<>(monitor));
+                    mpsatConformationTask, "Running output determinacy check [MPSat]", new SubtaskMonitor<>(monitor));
 
             if (mpsatConformationResult.getOutcome() != Outcome.SUCCESS) {
                 if (mpsatConformationResult.getOutcome() == Outcome.CANCEL) {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new MpsatChainOutput(modSysExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings));
+                        new MpsatChainOutput(modSysExportResult, pcompResult, punfResult, mpsatConformationResult, settings));
             }
             monitor.progressUpdate(0.80);
 
             MpsatOutputParser mpsatConformationParser = new MpsatOutputParser(mpsatConformationResult.getPayload());
             if (!mpsatConformationParser.getSolutions().isEmpty()) {
                 return new Result<>(Outcome.SUCCESS,
-                        new MpsatChainOutput(multiExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings,
-                                "This model does not conform to the environment."));
+                        new MpsatChainOutput(multiExportResult, pcompResult, punfResult, mpsatConformationResult, settings,
+                                "This model does is not output determinate."));
             }
             monitor.progressUpdate(1.0);
 
             // Success
-            String message = "N-way conformation holds.";
             return new Result<>(Outcome.SUCCESS,
-                    new MpsatChainOutput(multiExportResult, pcompResult, punfResult, null, toolchainCompletionSettings, message));
+                    new MpsatChainOutput(multiExportResult, pcompResult, punfResult, null,
+                            toolchainCompletionSettings, "Output determinacy holds."));
 
         } catch (Throwable e) {
             return new Result<>(e);

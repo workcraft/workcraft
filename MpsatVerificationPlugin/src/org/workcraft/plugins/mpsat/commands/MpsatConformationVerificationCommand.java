@@ -30,7 +30,7 @@ public class MpsatConformationVerificationCommand extends AbstractVerificationCo
 
     @Override
     public String getDisplayName() {
-        return "   1-way conformation (1st STG without dummies) [MPSat]...";
+        return "1-way conformation (1st STG without dummies) [MPSat]...";
     }
 
     @Override
@@ -40,7 +40,7 @@ public class MpsatConformationVerificationCommand extends AbstractVerificationCo
 
     @Override
     public int getPriority() {
-        return 4;
+        return 2;
     }
 
     @Override
