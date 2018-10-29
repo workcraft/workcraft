@@ -1,27 +1,25 @@
 package org.workcraft.plugins.xmas.components;
 
-import java.awt.Color;
-import java.awt.Shape;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Path2D;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 
+import java.awt.*;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Path2D;
+
 @DisplayName("Credit")
 @SVGIcon("images/xmas-node-credit.svg")
 public class VisualCreditComponent extends VisualXmasComponent {
-    public Color color = new Color(0, 0, 0, 255);
 
     public VisualCreditComponent(CreditComponent component) {
         super(component);
         addPropertyDeclarations();
         if (component.getChildren().isEmpty()) {
-            this.addInput("i", Positioning.LEFT);
-            this.addOutput("o", Positioning.RIGHT);
+            this.addInput(Positioning.LEFT);
+            this.addOutput(Positioning.RIGHT);
         }
     }
 
@@ -54,19 +52,19 @@ public class VisualCreditComponent extends VisualXmasComponent {
     public Shape getShape() {
         Path2D shape = new Path2D.Double();
 
-        shape.moveTo(-0.5 * size, -0.4 * size);
-        shape.lineTo(-0.5 * size, +0.4 * size);
-        shape.lineTo(+0.5 * size, +0.4 * size);
-        shape.lineTo(+0.5 * size, -0.4 * size);
+        shape.moveTo(-0.5 * SIZE, -0.4 * SIZE);
+        shape.lineTo(-0.5 * SIZE, +0.4 * SIZE);
+        shape.lineTo(+0.5 * SIZE, +0.4 * SIZE);
+        shape.lineTo(+0.5 * SIZE, -0.4 * SIZE);
         shape.closePath();
 
-        shape.moveTo(0.0, -0.4 * size);
-        shape.lineTo(0.0, +0.4 * size);
+        shape.moveTo(0.0, -0.4 * SIZE);
+        shape.lineTo(0.0, +0.4 * SIZE);
 
-        double tokenSize = size / 10.0;
+        double tokenSize = SIZE / 10.0;
         for (int i = 0; i < 4; i++) {
-            shape.append(new Ellipse2D.Double(-0.2 * size - 0.5 * tokenSize, -0.5 * tokenSize, tokenSize, tokenSize), false);
-            shape.append(new Ellipse2D.Double(+0.2 * size - 0.5 * tokenSize, -0.5 * tokenSize, tokenSize, tokenSize), false);
+            shape.append(new Ellipse2D.Double(-0.2 * SIZE - 0.5 * tokenSize, -0.5 * tokenSize, tokenSize, tokenSize), false);
+            shape.append(new Ellipse2D.Double(+0.2 * SIZE - 0.5 * tokenSize, -0.5 * tokenSize, tokenSize, tokenSize), false);
             tokenSize /= 3.0;
         }
 

@@ -1,15 +1,5 @@
 package org.workcraft.plugins.graph;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.event.KeyEvent;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Path2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
@@ -17,9 +7,16 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.shared.CommonVisualSettings;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 @Hotkey(KeyEvent.VK_V)
 @DisplayName("Vertex")
@@ -73,47 +70,28 @@ public class VisualVertex extends VisualComponent {
         });
     }
 
+    @Override
     public Shape getShape() {
-        double xy = -size / 2 + strokeWidth / 2;
-        double wh = size - strokeWidth;
-        Shape shape = new Ellipse2D.Double(xy, xy, wh, wh);
+        double size = CommonVisualSettings.getNodeSize() - CommonVisualSettings.getStrokeWidth();
+        double pos = -0.5 * size;
+        Shape shape = new Ellipse2D.Double(pos, pos, size, size);
         if (getRenderType() != null) {
             switch (getRenderType()) {
             case CIRCLE:
-                shape = new Ellipse2D.Double(xy, xy, wh, wh);
+                shape = new Ellipse2D.Double(pos, pos, size, size);
                 break;
             case SQUARE:
-                shape = new Rectangle2D.Double(xy, xy, wh, wh);
+                shape = new Rectangle2D.Double(pos, pos, size, size);
                 break;
             case LABEL:
                 shape = new Path2D.Double();
                 break;
             default:
-                shape = new Ellipse2D.Double(xy, xy, wh, wh);
+                shape = new Ellipse2D.Double(pos, pos, size, size);
                 break;
             }
         }
         return shape;
-    }
-
-    @Override
-    public void draw(DrawRequest r) {
-        Graphics2D g = r.getGraphics();
-        Color colorisation = r.getDecoration().getColorisation();
-        Color background = r.getDecoration().getBackground();
-        Shape shape = getShape();
-        g.setColor(Coloriser.colorise(getFillColor(), background));
-        g.fill(shape);
-        g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-        g.setStroke(new BasicStroke((float) strokeWidth));
-        g.draw(shape);
-        drawLabelInLocalSpace(r);
-        drawNameInLocalSpace(r);
-    }
-
-    @Override
-    public Rectangle2D getInternalBoundingBoxInLocalSpace() {
-        return getShape().getBounds2D();
     }
 
     @Override

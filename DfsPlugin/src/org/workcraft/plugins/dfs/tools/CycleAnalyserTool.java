@@ -369,16 +369,29 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     @SuppressWarnings("serial")
     private final class CycleTableCellRenderer implements TableCellRenderer {
+        private final JLabel label = new JLabel() {
+            @Override
+            public void paint(final Graphics g) {
+                g.setColor(getBackground());
+                g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+                super.paint(g);
+            }
+        };
+
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
-            JLabel result = new JLabel();
-            result.setBorder(PropertyEditorTable.BORDER_RENDER);
+            label.setBorder(PropertyEditorTable.BORDER_RENDER);
             if ((cycles != null) && (row >= 0) && (row < cycles.size())) {
-                result.setText(value.toString());
-                result.setToolTipText(cycles.get(row).toString());
+                label.setText(value.toString());
+                label.setToolTipText(cycles.get(row).toString());
             }
-            return result;
+            if (isSelected) {
+                label.setBackground(table.getSelectionBackground());
+            } else {
+                label.setBackground(table.getBackground());
+            }
+            return label;
         }
     }
 

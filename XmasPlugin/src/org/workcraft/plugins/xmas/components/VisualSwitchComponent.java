@@ -1,10 +1,5 @@
 package org.workcraft.plugins.xmas.components;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.geom.Path2D;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
@@ -16,18 +11,21 @@ import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.SwitchComponent.Type;
 import org.workcraft.plugins.xmas.components.SwitchComponent.Val;
 
+import java.awt.*;
+import java.awt.geom.Path2D;
+
 @DisplayName("Switch")
 @SVGIcon("images/xmas-node-switch.svg")
 public class VisualSwitchComponent extends VisualXmasComponent {
 
-    public final double pointerSize = 0.20 * size;
+    private static final double POINTER_SIZE = 0.20 * SIZE;
 
     public VisualSwitchComponent(SwitchComponent component) {
         super(component);
         if (component.getChildren().isEmpty()) {
-            this.addInput("i", Positioning.LEFT);
-            this.addOutput("a", Positioning.TOP_RIGHT);
-            this.addOutput("b", Positioning.BOTTOM_RIGHT);
+            this.addInput(Positioning.LEFT);
+            this.addOutput(Positioning.TOP_RIGHT);
+            this.addOutput(Positioning.BOTTOM_RIGHT);
         }
         addPropertyDeclarations();
     }
@@ -59,18 +57,18 @@ public class VisualSwitchComponent extends VisualXmasComponent {
 
     public Shape getUpPointerShape() {
         Path2D shape = new Path2D.Double();
-        shape.moveTo(+0.50 * size, -0.28 * size);
-        shape.lineTo(+0.50 * size + 0.7 * pointerSize, -0.28 * size + pointerSize);
-        shape.lineTo(+0.50 * size - 0.7 * pointerSize, -0.28 * size + pointerSize);
+        shape.moveTo(+0.50 * SIZE, -0.28 * SIZE);
+        shape.lineTo(+0.50 * SIZE + 0.7 * POINTER_SIZE, -0.28 * SIZE + POINTER_SIZE);
+        shape.lineTo(+0.50 * SIZE - 0.7 * POINTER_SIZE, -0.28 * SIZE + POINTER_SIZE);
         shape.closePath();
         return shape;
     }
 
     public Shape getDownPointerShape() {
         Path2D shape = new Path2D.Double();
-        shape.moveTo(+0.50 * size, +0.28 * size);
-        shape.lineTo(+0.50 * size + 0.7 * pointerSize, +0.28 * size - pointerSize);
-        shape.lineTo(+0.50 * size - 0.7 * pointerSize, +0.28 * size - pointerSize);
+        shape.moveTo(+0.50 * SIZE, +0.28 * SIZE);
+        shape.lineTo(+0.50 * SIZE + 0.7 * POINTER_SIZE, +0.28 * SIZE - POINTER_SIZE);
+        shape.lineTo(+0.50 * SIZE - 0.7 * POINTER_SIZE, +0.28 * SIZE - POINTER_SIZE);
         shape.closePath();
         return shape;
     }
@@ -99,22 +97,22 @@ public class VisualSwitchComponent extends VisualXmasComponent {
     public Shape getShape() {
         Path2D shape = new Path2D.Double();
 
-        shape.moveTo(-0.50 * size, +0.00);
+        shape.moveTo(-0.50 * SIZE, +0.00);
         shape.lineTo(-0.08, +0.00);
 
-        shape.moveTo(0.00, -0.60 * size);
-        shape.lineTo(0.00, +0.60 * size);
+        shape.moveTo(0.00, -0.60 * SIZE);
+        shape.lineTo(0.00, +0.60 * SIZE);
 
-        shape.moveTo(0.00, -0.50 * size);
-        shape.lineTo(+0.50 * size, -0.50 * size);
+        shape.moveTo(0.00, -0.50 * SIZE);
+        shape.lineTo(+0.50 * SIZE, -0.50 * SIZE);
 
-        shape.moveTo(0.00, +0.50 * size);
-        shape.lineTo(+0.50 * size, +0.50 * size);
+        shape.moveTo(0.00, +0.50 * SIZE);
+        shape.lineTo(+0.50 * SIZE, +0.50 * SIZE);
 
         // Arrows
-        shape.moveTo(-0.15 * size, -0.05 * size);
-        shape.lineTo(-0.05 * size, +0.00);
-        shape.lineTo(-0.15 * size, +0.05 * size);
+        shape.moveTo(-0.15 * SIZE, -0.05 * SIZE);
+        shape.lineTo(-0.05 * SIZE, +0.00);
+        shape.lineTo(-0.15 * SIZE, +0.05 * SIZE);
         shape.closePath();
 
         return shape;

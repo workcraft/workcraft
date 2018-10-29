@@ -1,11 +1,5 @@
 package org.workcraft.plugins.stg;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.Point2D;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.DrawRequest;
@@ -21,13 +15,18 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.util.HashSet;
+import java.util.Set;
+
 public class VisualImplicitPlaceArc extends VisualConnection {
     private StgPlace implicitPlace;
     private MathConnection refCon1;
     private MathConnection refCon2;
 
-    private static double tokenSpaceSize = 0.8;
-    private static double singleTokenSize = tokenSpaceSize / 1.9;
+    private static double tokenSpace = 0.8;
+    private static double singleTokenSize = tokenSpace / 1.9;
     private static double multipleTokenSeparation = 0.0125;
 
     protected Color tokenColor = CommonVisualSettings.getBorderColor();
@@ -103,7 +102,7 @@ public class VisualImplicitPlaceArc extends VisualConnection {
         Point2D p = getMiddleSegmentCenterPoint();
         Graphics2D g = r.getGraphics();
         g.translate(p.getX(), p.getY());
-        VisualPlace.drawTokens(r, tokens, singleTokenSize, multipleTokenSeparation, tokenSpaceSize, 0, tokenColor);
+        VisualPlace.drawTokens(r, tokens, singleTokenSize, multipleTokenSeparation, tokenSpace, tokenColor);
     }
 
     @NoAutoSerialisation

@@ -11,6 +11,7 @@ import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.*;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.Hierarchy;
 
 import java.awt.*;
@@ -238,6 +239,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
     }
 
     private Rectangle2D getContactMinimalBox() {
+        double size = CommonVisualSettings.getNodeSize();
         double x1 = -size / 2;
         double y1 = -size / 2;
         double x2 = size / 2;

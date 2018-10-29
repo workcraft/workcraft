@@ -1,26 +1,9 @@
 package org.workcraft.plugins.cpog;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.event.KeyEvent;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Path2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.io.IOException;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
-import org.workcraft.dom.visual.BoundingBoxHelper;
-import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.Positioning;
-import org.workcraft.dom.visual.Stylable;
-import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.*;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
@@ -31,6 +14,15 @@ import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.cpog.formula.CpogFormulaVariable;
 import org.workcraft.plugins.cpog.formula.CpogVisitor;
 import org.workcraft.plugins.cpog.formula.PrettifyBooleanReplacer;
+import org.workcraft.plugins.shared.CommonVisualSettings;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.io.IOException;
 
 @Hotkey(KeyEvent.VK_V)
 @DisplayName("Vertex")
@@ -91,23 +83,24 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
         });
     }
 
+    @Override
     public Shape getShape() {
-        double xy = -size / 2 + strokeWidth / 2;
-        double wh = size - strokeWidth;
-        Shape shape = new Ellipse2D.Double(xy, xy, wh, wh);
+        double size = CommonVisualSettings.getNodeSize() - CommonVisualSettings.getStrokeWidth();
+        double pos = -0.5 * size;
+        Shape shape = new Ellipse2D.Double(pos, pos, size, size);
         if (getRenderType() != null) {
             switch (getRenderType()) {
             case CIRCLE:
-                shape = new Ellipse2D.Double(xy, xy, wh, wh);
+                shape = new Ellipse2D.Double(pos, pos, size, size);
                 break;
             case SQUARE:
-                shape = new Rectangle2D.Double(xy, xy, wh, wh);
+                shape = new Rectangle2D.Double(pos, pos, size, size);
                 break;
             case LABEL:
                 shape = new Path2D.Double();
                 break;
             default:
-                shape = new Ellipse2D.Double(xy, xy, wh, wh);
+                shape = new Ellipse2D.Double(pos, pos, size, size);
                 break;
             }
         }
@@ -124,6 +117,7 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
         g.setColor(Coloriser.colorise(getFillColor(), background));
         g.fill(shape);
         g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+        double strokeWidth = CommonVisualSettings.getStrokeWidth();
         if (value == Zero.instance()) {
             g.setStroke(new BasicStroke((float) strokeWidth, BasicStroke.CAP_BUTT,
                     BasicStroke.JOIN_MITER, 1.0f, new float[] {0.18f, 0.18f}, 0.00f));

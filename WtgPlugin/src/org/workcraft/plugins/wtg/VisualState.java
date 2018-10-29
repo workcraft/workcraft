@@ -1,13 +1,5 @@
 package org.workcraft.plugins.wtg;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.event.KeyEvent;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
@@ -19,6 +11,11 @@ import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.wtg.decorations.StateDecoration;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 
 @Hotkey(KeyEvent.VK_Q)
 @DisplayName("State")
@@ -44,18 +41,18 @@ public class VisualState extends VisualComponent {
     }
 
     @Override
+    public Shape getShape() {
+        double size = CommonVisualSettings.getNodeSize() - CommonVisualSettings.getStrokeWidth();
+        double pos = -0.5 * size;
+        return new Ellipse2D.Double(pos, pos, size, size);
+    }
+
+    @Override
     public void draw(DrawRequest r) {
+        super.draw(r);
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
-
-        double s = size - strokeWidth;
-        Shape shape = new Ellipse2D.Double(-s / 2, -s / 2, s, s);
-        g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
-        g.fill(shape);
-        g.setStroke(new BasicStroke((float) strokeWidth));
         g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-        g.draw(shape);
-
         if (d instanceof StateDecoration) {
             StateDecoration sd = (StateDecoration) d;
             if (sd.isMarked()) {
@@ -64,9 +61,6 @@ public class VisualState extends VisualComponent {
         } else if (getReferencedState().isInitial()) {
             g.fill(getInitialMarkerShape());
         }
-
-        drawLabelInLocalSpace(r);
-        drawNameInLocalSpace(r);
     }
 
     private Shape getInitialMarkerShape() {
@@ -80,11 +74,6 @@ public class VisualState extends VisualComponent {
             bb = BoundingBoxHelper.union(bb, getInitialMarkerShape().getBounds2D());
         }
         return bb;
-    }
-
-    @Override
-    public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-        return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
     }
 
     public State getReferencedState() {

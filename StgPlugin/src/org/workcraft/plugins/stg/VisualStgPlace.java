@@ -1,11 +1,5 @@
 package org.workcraft.plugins.stg;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.event.KeyEvent;
-import java.awt.geom.Ellipse2D;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
@@ -15,6 +9,11 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.shared.CommonVisualSettings;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.Ellipse2D;
 
 @DisplayName("Place")
 @Hotkey(KeyEvent.VK_P)
@@ -48,14 +47,13 @@ public class VisualStgPlace extends VisualPlace {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
         if (getReferencedComponent().isMutex()) {
-            double xy = -size / 2 - strokeWidth / 2;
-            double wh = size + strokeWidth;
-            Shape shape = new Ellipse2D.Double(xy, xy, wh, wh);
-
+            double size = CommonVisualSettings.getNodeSize() + CommonVisualSettings.getStrokeWidth();
+            double pos = -0.5 * size;
+            Shape shape = new Ellipse2D.Double(pos, pos, size, size);
             g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
             g.fill(shape);
             g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-            g.setStroke(new BasicStroke((float) strokeWidth * 0.5f));
+            g.setStroke(new BasicStroke((float) CommonVisualSettings.getStrokeWidth() / 2.0f));
             g.draw(shape);
         }
         super.draw(r);

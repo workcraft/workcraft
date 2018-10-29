@@ -136,7 +136,7 @@ public class VisualComponentGroupTests {
         VisualGroup node1 = new VisualGroup();
         VisualGroup node2 = new VisualGroup();
         root.add(node1);
-        root.add((VisualNode) node2);
+        root.add(node2);
         node1.add(getSquareNode(node1, 0, 0));
         node2.add(getSquareNode(node2, 1, 1));
         Assert.assertEquals(node2, HitMan.hitFirstChild(new Point2D.Double(1.5, 1.5), root));
@@ -187,10 +187,6 @@ public class VisualComponentGroupTests {
 
         Assert.assertNull(HitMan.hitFirstChild(new Point2D.Double(0.5, 0.5), node1));
         Assert.assertNull(HitMan.hitFirstChild(new Point2D.Double(1.5, 1.5), node1));
-
-//        Assert.assertEquals(sq1, HitMan.hitTestForSelection(new Point2D.Double(10.5, 15.5), root));
-//        Assert.assertEquals(sq2, HitMan.hitTestForSelection(new Point2D.Double(11.5, 16.5), root));
-//        Assert.assertEquals(null, HitMan.hitTestForSelection(new Point2D.Double(10.5, 16.5), root));
     }
 
     private VisualGroup createGroup(VisualGroup parent) {
@@ -232,10 +228,6 @@ public class VisualComponentGroupTests {
         @Override
         public Collection<MathNode> getMathReferences() {
             return null;
-        }
-
-        @Override
-        public void draw(DrawRequest r) {
         }
     }
 

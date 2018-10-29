@@ -1,13 +1,14 @@
 package org.workcraft.plugins.shared;
-import java.awt.Color;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.workcraft.Config;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
+
+import java.awt.*;
+import java.util.LinkedList;
+import java.util.List;
 
 public class CommonVisualSettings implements Settings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();

@@ -2,8 +2,13 @@ package org.workcraft.plugins.xmas;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.ShortName;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
@@ -55,6 +60,23 @@ public class VisualXmas extends AbstractVisualModel {
     @Override
     public Xmas getMathModel() {
         return (Xmas) super.getMathModel();
+    }
+
+    @Override
+    public VisualXmasConnection connect(VisualNode first, VisualNode second, MathConnection mConnection)
+            throws InvalidConnectionException {
+
+        validateConnection(first, second);
+        if (mConnection == null) {
+            MathNode mFirst = getMathReference(first);
+            MathNode mSecond = getMathReference(second);
+            mConnection = getMathModel().connect(mFirst, mSecond);
+        }
+        VisualXmasConnection vConnection = new VisualXmasConnection(mConnection, first, second);
+        Node parent = Hierarchy.getCommonParent(first, second);
+        VisualGroup container = Hierarchy.getNearestAncestor(parent, VisualGroup.class);
+        container.add(vConnection);
+        return vConnection;
     }
 
     public Collection<VisualXmasComponent> getNodes() {

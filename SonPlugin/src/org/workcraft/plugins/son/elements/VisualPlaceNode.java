@@ -1,20 +1,6 @@
 package org.workcraft.plugins.son.elements;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-
-import org.workcraft.dom.visual.BoundingBoxHelper;
-import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.Positioning;
-import org.workcraft.dom.visual.RenderedText;
-import org.workcraft.dom.visual.Stylable;
-import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.*;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -23,6 +9,11 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.tools.PlaceNodeDecoration;
 import org.workcraft.plugins.son.util.Interval;
+
+import java.awt.*;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 public class VisualPlaceNode extends VisualComponent {
 
@@ -38,7 +29,9 @@ public class VisualPlaceNode extends VisualComponent {
 
     private String value = "";
 
-    protected static double singleTokenSize = CommonVisualSettings.getNodeSize() / 1.9;
+    private static double size = CommonVisualSettings.getNodeSize();
+    private static double strokeWidth = CommonVisualSettings.getStrokeWidth();
+    private static double singleTokenSize = CommonVisualSettings.getNodeSize() / 1.9;
     protected static double labelOffset = 0.5;
 
     public VisualPlaceNode(PlaceNode refNode) {

@@ -4,6 +4,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 import java.awt.*;
@@ -41,7 +42,7 @@ public class VisualTransitionEvent extends VisualEvent {
 
     private Shape getShapeRise(double w, double h, double s) {
         Path2D shape = getShapeEmpty();
-        double sw2 = 0.5 * strokeWidth;
+        double sw2 = 0.5 * CommonVisualSettings.getStrokeWidth();
         double w2 = 0.5 * w;
         double s2 = 0.5 * s;
         shape.moveTo(0.0, +s2);
@@ -55,7 +56,7 @@ public class VisualTransitionEvent extends VisualEvent {
 
     private Shape getShapeFall(double w, double h, double s) {
         Path2D shape = getShapeEmpty();
-        double sw2 = 0.5 * strokeWidth;
+        double sw2 = 0.5 * CommonVisualSettings.getStrokeWidth();
         double w2 = 0.5 * w;
         double s2 = 0.5 * s;
         shape.moveTo(0.0, -s2);
@@ -69,7 +70,7 @@ public class VisualTransitionEvent extends VisualEvent {
 
     private Shape getShapeDestabilise(double w, double h, double s) {
         Path2D shape = getShapeEmpty();
-        double sw2 = 0.5 * strokeWidth;
+        double sw2 = 0.5 * CommonVisualSettings.getStrokeWidth();
         double w2 = 0.5 * w;
         double s2 = 0.5 * s;
         shape.moveTo(0.0, +s2 - sw2);
@@ -89,7 +90,7 @@ public class VisualTransitionEvent extends VisualEvent {
 
     private Shape getShapeStabilise(double w, double h, double s) {
         Path2D shape = getShapeEmpty();
-        double sw2 = 0.5 * strokeWidth;
+        double sw2 = 0.5 * CommonVisualSettings.getStrokeWidth();
         double w2 = 0.5 * w;
         double s2 = 0.5 * s;
         shape.moveTo(0.0, +0.0);
@@ -112,6 +113,7 @@ public class VisualTransitionEvent extends VisualEvent {
         if (getReferencedTransition() == null) {
             return getShapeEmpty();
         }
+        double size = CommonVisualSettings.getNodeSize();
         double w = 0.08 * size;
         double h = 0.1 * size;
         double s = 0.5 * size;
@@ -126,7 +128,7 @@ public class VisualTransitionEvent extends VisualEvent {
 
     @Override
     public BasicStroke getStroke() {
-        return new BasicStroke((float) strokeWidth / 2.0f);
+        return new BasicStroke((float) CommonVisualSettings.getStrokeWidth() / 2.0f);
     }
 
     @Override

@@ -1,16 +1,5 @@
 package org.workcraft.plugins.cpog;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.event.KeyEvent;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.io.IOException;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
@@ -22,7 +11,14 @@ import org.workcraft.formula.One;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.io.IOException;
 
 @Hotkey(KeyEvent.VK_X)
 @DisplayName("Variable")
@@ -73,21 +69,24 @@ public class VisualVariable extends VisualComponent {
     }
 
     @Override
+    public Shape getShape() {
+        double size = CommonVisualSettings.getNodeSize() - CommonVisualSettings.getStrokeWidth();
+        double pos = -0.5 * size;
+        return new Rectangle2D.Double(pos, pos, size, size);
+    }
+
+    @Override
     public void draw(DrawRequest r) {
         Graphics2D g = r.getGraphics();
-        Color colorisation = r.getDecoration().getColorisation();
-        Color background = r.getDecoration().getBackground();
+        Decoration d = r.getDecoration();
 
-        Shape shape = new Rectangle2D.Double(-size / 2 + strokeWidth / 2, -size / 2 + strokeWidth / 2,
-                size - strokeWidth, size - strokeWidth);
-
-        g.setStroke(new BasicStroke((float) strokeWidth));
-        g.setColor(Coloriser.colorise(getFillColor(), background));
+        Shape shape = getShape();
+        g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
         g.fill(shape);
-        g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+        g.setStroke(new BasicStroke((float) CommonVisualSettings.getStrokeWidth()));
+        g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
         g.draw(shape);
 
-        g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
         switch (getState()) {
         case FALSE:
             valueFalseRenderedFormula.draw(g);

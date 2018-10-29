@@ -3,8 +3,12 @@ package org.workcraft.plugins.dfs;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 
 public abstract class VisualDelayComponent extends VisualComponent {
+
+    public double size = CommonVisualSettings.getNodeSize();
+    public double strokeWidth = CommonVisualSettings.getStrokeWidth();
 
     public VisualDelayComponent(MathDelayNode ref) {
         super(ref);

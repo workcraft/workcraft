@@ -1,14 +1,5 @@
 package org.workcraft.plugins.xmas.components;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Path2D;
-import java.awt.geom.Point2D;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
@@ -21,27 +12,29 @@ import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.shared.CommonDecorationSettings;
 
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
+
 @DisplayName("Queue")
 @Hotkey(KeyEvent.VK_Q)
 @SVGIcon("images/xmas-node-queue.svg")
 public class VisualQueueComponent extends VisualXmasComponent {
 
-    public static final String PROPERTY_FOREGROUND_COLOR = "Foreground color";
-
-    public final double slotWidth = 0.35 * size;
-    public final double slotHeight = 1.0 * size;
-    public final double contactLength = 0.5 * size - slotWidth;
-    public final double tokenSize = 0.5 * slotWidth;
-    public final double headSize = 0.15 * size;
-    public final double tailSize = 0.15 * size;
-
-    public Color color = new Color(0, 0, 0, 255);
+    public static final double SLOT_WIDTH = 0.35 * SIZE;
+    public static final double SLOT_HEIGHT = 1.0 * SIZE;
+    public static final double HEAD_SIZE = 0.15 * SIZE;
+    public static final double TAIL_SIZE = 0.15 * SIZE;
+    private static final double CONTACT_LENGTH = 0.5 * SIZE - SLOT_WIDTH;
 
     public VisualQueueComponent(QueueComponent component) {
         super(component);
         if (component.getChildren().isEmpty()) {
-            this.addInput("i", Positioning.LEFT);
-            this.addOutput("o", Positioning.RIGHT);
+            this.addInput(Positioning.LEFT);
+            this.addOutput(Positioning.RIGHT);
         }
         addPropertyDeclarations();
     }
@@ -76,7 +69,7 @@ public class VisualQueueComponent extends VisualXmasComponent {
 
     public void setContactPosition(VisualXmasContact vc, Positioning positioning) {
         double factor2 = (double) getReferencedQueueComponent().getCapacity() / 2.0;
-        double offset = factor2 * (size / 2 - contactLength) + contactLength;
+        double offset = factor2 * (SIZE / 2 - CONTACT_LENGTH) + CONTACT_LENGTH;
         double x = positioning.xSign * offset;
         double y = positioning.ySign * offset;
         vc.setPosition(new Point2D.Double(x, y));
@@ -92,14 +85,14 @@ public class VisualQueueComponent extends VisualXmasComponent {
 
     private double getSlotOffset(int i) {
         int capacity = getReferencedQueueComponent().getCapacity();
-        return slotWidth * (i - 0.5 * (capacity - 1));
+        return SLOT_WIDTH * (i - 0.5 * (capacity - 1));
     }
 
     public Shape getSlotShape(int index) {
         Path2D shape = new Path2D.Double();
         if (isInitialised()) {
-            double w2 = 0.5 * slotWidth;
-            double h2 = 0.5 * slotHeight;
+            double w2 = 0.5 * SLOT_WIDTH;
+            double h2 = 0.5 * SLOT_HEIGHT;
             double slotOffset = getSlotOffset(index);
             shape.moveTo(slotOffset - w2, -h2);
             shape.lineTo(slotOffset - w2, +h2);
@@ -114,7 +107,7 @@ public class VisualQueueComponent extends VisualXmasComponent {
         Path2D shape = new Path2D.Double();
         if (isInitialised()) {
             double slotOffset = getSlotOffset(index);
-            shape.append(new Ellipse2D.Double(slotOffset - 0.5 * tokenSize, -0.5 * tokenSize, tokenSize, tokenSize), false);
+            shape.append(new Ellipse2D.Double(slotOffset - 0.5 * TOKEN_SIZE, -0.5 * TOKEN_SIZE, TOKEN_SIZE, TOKEN_SIZE), false);
         }
         return shape;
     }
@@ -123,10 +116,10 @@ public class VisualQueueComponent extends VisualXmasComponent {
         Path2D shape = new Path2D.Double();
         if (isInitialised()) {
             double slotOffset = getSlotOffset(index);
-            double headOffset = -0.5 * slotHeight;
-            shape.moveTo(slotOffset - 0.7 * headSize, headOffset);
-            shape.lineTo(slotOffset + 0.00, headOffset + headSize);
-            shape.lineTo(slotOffset + 0.7 * headSize, headOffset);
+            double headOffset = -0.5 * SLOT_HEIGHT;
+            shape.moveTo(slotOffset - 0.7 * HEAD_SIZE, headOffset);
+            shape.lineTo(slotOffset + 0.00, headOffset + HEAD_SIZE);
+            shape.lineTo(slotOffset + 0.7 * HEAD_SIZE, headOffset);
             shape.closePath();
         }
         return shape;
@@ -136,10 +129,10 @@ public class VisualQueueComponent extends VisualXmasComponent {
         Path2D shape = new Path2D.Double();
         if (isInitialised()) {
             double slotOffset = getSlotOffset(index);
-            double tailOffset = 0.5 * slotHeight;
-            shape.moveTo(slotOffset - 0.7 * tailSize, tailOffset);
-            shape.lineTo(slotOffset + 0.00, tailOffset - tailSize);
-            shape.lineTo(slotOffset + 0.7 * tailSize, tailOffset);
+            double tailOffset = 0.5 * SLOT_HEIGHT;
+            shape.moveTo(slotOffset - 0.7 * TAIL_SIZE, tailOffset);
+            shape.lineTo(slotOffset + 0.00, tailOffset - TAIL_SIZE);
+            shape.lineTo(slotOffset + 0.7 * TAIL_SIZE, tailOffset);
             shape.closePath();
         }
         return shape;
@@ -151,13 +144,13 @@ public class VisualQueueComponent extends VisualXmasComponent {
         QueueComponent ref = getReferencedQueueComponent();
         if (ref != null) {
             int capacity = ref.getCapacity();
-            double contactOffset = 0.5 * capacity * slotWidth;
+            double contactOffset = 0.5 * capacity * SLOT_WIDTH;
 
             shape.moveTo(+contactOffset, 0.0);
-            shape.lineTo(+contactOffset + contactLength, 0.0);
+            shape.lineTo(+contactOffset + CONTACT_LENGTH, 0.0);
 
             shape.moveTo(-contactOffset, 0.0);
-            shape.lineTo(-contactOffset - contactLength, 0.0);
+            shape.lineTo(-contactOffset - CONTACT_LENGTH, 0.0);
 
             for (int i = 0; i < capacity; i++) {
                 shape.append(getSlotShape(i), false);

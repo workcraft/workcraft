@@ -8,6 +8,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.wtg.decorations.WaveformDecoration;
 import org.workcraft.util.Hierarchy;
 
@@ -76,7 +77,7 @@ public class VisualWaveform extends VisualPage {
             if (getIsCollapsed() && !isCurrentLevelInside()) {
                 g.setColor(Coloriser.colorise(getFillColor(), d.getColorisation()));
                 g.fill(bb);
-                g.setStroke(new BasicStroke((float) strokeWidth));
+                g.setStroke(new BasicStroke((float) CommonVisualSettings.getStrokeWidth()));
             } else {
                 float[] pattern = {0.05f, 0.05f};
                 BasicStroke stroke = new BasicStroke(0.05f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f);

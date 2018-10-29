@@ -1,9 +1,5 @@
 package org.workcraft.plugins.xmas.components;
 
-import java.awt.Shape;
-import java.awt.event.KeyEvent;
-import java.awt.geom.Path2D;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
@@ -11,6 +7,10 @@ import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.xmas.components.FunctionComponent.Type;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.Path2D;
 
 @DisplayName("Function")
 @Hotkey(KeyEvent.VK_F)
@@ -20,8 +20,8 @@ public class VisualFunctionComponent extends VisualXmasComponent {
     public VisualFunctionComponent(FunctionComponent component) {
         super(component);
         if (component.getChildren().isEmpty()) {
-            this.addInput("", Positioning.LEFT);
-            this.addOutput("", Positioning.RIGHT);
+            this.addInput(Positioning.LEFT);
+            this.addOutput(Positioning.RIGHT);
         }
         addPropertyDeclarations();
     }
@@ -46,11 +46,11 @@ public class VisualFunctionComponent extends VisualXmasComponent {
     public Shape getShape() {
         Path2D shape = new Path2D.Double();
 
-        shape.moveTo(-0.5 * size, 0.0);
-        shape.lineTo(+0.5 * size, 0.0);
+        shape.moveTo(-0.5 * SIZE, 0.0);
+        shape.lineTo(+0.5 * SIZE, 0.0);
 
-        shape.moveTo(-0.2 * size, +0.2 * size);
-        shape.lineTo(+0.2 * size, -0.2 * size);
+        shape.moveTo(-0.2 * SIZE, +0.2 * SIZE);
+        shape.lineTo(+0.2 * SIZE, -0.2 * SIZE);
 
         return shape;
     }

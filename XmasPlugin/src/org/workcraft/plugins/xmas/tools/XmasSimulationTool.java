@@ -49,6 +49,7 @@ import org.workcraft.plugins.xmas.stg.XmasToStgConverter;
 import org.workcraft.util.Hierarchy;
 
 public class XmasSimulationTool extends StgSimulationTool {
+
     private static final Color COLOR_IRDY = Color.RED;
     private static final Color COLOR_TRDY = Color.BLUE;
     private static final Color COLOR_BOTH_READY = Color.MAGENTA;
@@ -132,12 +133,12 @@ public class XmasSimulationTool extends StgSimulationTool {
             VisualQueueComponent queue = (VisualQueueComponent) node;
             QueueStg queueStg = converter.getQueueStg(queue);
             int capacity = queue.getReferencedQueueComponent().getCapacity();
-            int idx = (int) Math.floor(0.5 * capacity + posNode.getX() * queue.slotWidth);
+            int idx = (int) Math.floor(0.5 * capacity + posNode.getX() * queue.SLOT_WIDTH);
             if (idx >= capacity) idx = capacity - 1;
             if (idx < 0) idx = 0;
             SlotStg slot = queueStg.slotList.get(idx);
-            double headThreshold = 0.5 * queue.slotHeight - queue.headSize;
-            double tailThreshold = 0.5 * queue.slotHeight - queue.tailSize;
+            double headThreshold = 0.5 * queue.SLOT_HEIGHT - queue.HEAD_SIZE;
+            double tailThreshold = 0.5 * queue.SLOT_HEIGHT - queue.TAIL_SIZE;
             if (posNode.getY() < -headThreshold) {
                 result = getExcitedTransition(slot.hd.rdy.getAllTransitions());
             } else if (posNode.getY() > tailThreshold) {
