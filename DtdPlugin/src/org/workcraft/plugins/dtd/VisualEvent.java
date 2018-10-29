@@ -1,17 +1,13 @@
 package org.workcraft.plugins.dtd;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.CustomTouchable;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
+
+import java.awt.*;
+import java.awt.geom.Point2D;
 
 public abstract class VisualEvent extends VisualComponent implements CustomTouchable {
 
@@ -42,11 +38,6 @@ public abstract class VisualEvent extends VisualComponent implements CustomTouch
     }
 
     @Override
-    public Rectangle2D getInternalBoundingBoxInLocalSpace() {
-        return getShape().getBounds2D();
-    }
-
-    @Override
     public boolean getLabelVisibility() {
         return false;
     }
@@ -65,8 +56,6 @@ public abstract class VisualEvent extends VisualComponent implements CustomTouch
     public VisualSignal getVisualSignal() {
         return (VisualSignal) getParent();
     }
-
-    public abstract Shape getShape();
 
     public abstract BasicStroke getStroke();
 

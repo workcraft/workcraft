@@ -1,17 +1,16 @@
 package org.workcraft.plugins.xmas.components;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.Line2D;
 
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.util.Geometry;
+
+import java.awt.*;
+import java.awt.geom.Line2D;
 
 public class VisualXmasConnection extends VisualConnection {
 
@@ -23,8 +22,8 @@ public class VisualXmasConnection extends VisualConnection {
         this(con, null, null);
     }
 
-    public VisualXmasConnection(MathConnection con, VisualComponent c1, VisualComponent c2) {
-        super(con, c1, c2);
+    public VisualXmasConnection(MathConnection refConnection, VisualNode first, VisualNode second) {
+        super(refConnection, first, second);
         removePropertyDeclarationByName(PROPERTY_LINE_WIDTH);
     }
 

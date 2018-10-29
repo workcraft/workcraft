@@ -1,8 +1,10 @@
 package org.workcraft.plugins.fst;
 
+import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.fsm.Symbol;
 
+@IdentifierPrefix("x")
 public class Signal extends Symbol {
 
     public static final String PROPERTY_TYPE = "Type";

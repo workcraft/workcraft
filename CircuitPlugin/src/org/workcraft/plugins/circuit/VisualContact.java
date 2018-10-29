@@ -207,7 +207,8 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
         });
     }
 
-    private Shape getShape() {
+    @Override
+    public Shape getShape() {
         Contact contact = getReferencedContact();
         return ((contact != null) && contact.isPort()) ? getPortShape() : getContactShape();
     }
@@ -337,11 +338,6 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
     @Override
     public boolean getNameVisibility() {
         return true;
-    }
-
-    @Override
-    public Rectangle2D getInternalBoundingBoxInLocalSpace() {
-        return getShape().getBounds2D();
     }
 
     @Override

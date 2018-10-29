@@ -17,7 +17,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.*;
 
-public abstract class VisualComponent extends VisualTransformableNode implements Dependent, Replicable, Drawable {
+public class VisualComponent extends VisualTransformableNode implements Dependent, Replicable, Drawable {
     public static final String PROPERTY_LABEL = "Label";
     public static final String PROPERTY_LABEL_POSITIONING = "Label positioning";
     public static final String PROPERTY_LABEL_COLOR = "Label color";
@@ -27,8 +27,6 @@ public abstract class VisualComponent extends VisualTransformableNode implements
     public static final String PROPERTY_FILL_COLOR = "Fill color";
 
     private MathNode refNode = null;
-    protected double size = CommonVisualSettings.getNodeSize();
-    protected double strokeWidth = CommonVisualSettings.getStrokeWidth();
     private Color foregroundColor = CommonVisualSettings.getBorderColor();
     private Color fillColor = CommonVisualSettings.getFillColor();
 
@@ -325,7 +323,8 @@ public abstract class VisualComponent extends VisualTransformableNode implements
         Graphics2D g = r.getGraphics();
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
         if (bb != null) {
-            g.setStroke(new BasicStroke((float) strokeWidth));
+            float strokeWidth = (float) CommonVisualSettings.getStrokeWidth();
+            g.setStroke(new BasicStroke(strokeWidth));
             g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
             g.draw(bb);
         }
@@ -394,15 +393,34 @@ public abstract class VisualComponent extends VisualTransformableNode implements
         cacheNameRenderedText(r);
     }
 
+    public Shape getShape() {
+        double size = CommonVisualSettings.getNodeSize() - CommonVisualSettings.getStrokeWidth();
+        double pos = -0.5 * size;
+        return new Rectangle2D.Double(pos, pos, size, size);
+    }
+
+    @Override
+    public void draw(DrawRequest r) {
+        Graphics2D g = r.getGraphics();
+        Decoration d = r.getDecoration();
+
+        Shape shape = getShape();
+        g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+        g.fill(shape);
+
+        g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+        g.setStroke(new BasicStroke((float) CommonVisualSettings.getStrokeWidth()));
+        g.draw(shape);
+
+        drawLabelInLocalSpace(r);
+        drawNameInLocalSpace(r);
+    }
+
     /*
      * The internal bounding box does not include the related label and name of the node
      */
     public Rectangle2D getInternalBoundingBoxInLocalSpace() {
-        return new Rectangle2D.Double(-size / 2, -size / 2, size, size);
-    }
-
-    public Rectangle2D getInternalBoundingBox() {
-        return transformToParentSpace(getInternalBoundingBoxInLocalSpace());
+        return getShape().getBounds2D();
     }
 
     public Rectangle2D getInternalBoundingBoxInRootSpace() {

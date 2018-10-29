@@ -16,8 +16,8 @@ import org.workcraft.gui.graph.tools.Decoration;
 @SVGIcon("images/son-node-channel_place.svg")
 public class VisualChannelPlace extends VisualPlaceNode {
 
+    private static double size = 1.2;
     private static float strokeWidth = 0.2f;
-    protected double size = 1.2;
 
     public VisualChannelPlace(ChannelPlace cplace) {
         super(cplace);

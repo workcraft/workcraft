@@ -1,12 +1,5 @@
 package org.workcraft.plugins.xmas.components;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.event.KeyEvent;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Path2D;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
@@ -16,17 +9,20 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.plugins.xmas.XmasSettings;
 
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Path2D;
+
 @DisplayName("Sink")
 @Hotkey(KeyEvent.VK_O)
 @SVGIcon("images/xmas-node-sink.svg")
 public class VisualSinkComponent extends VisualXmasComponent {
 
-    public final double tokenSize = 0.18 * size;
-
     public VisualSinkComponent(SinkComponent component) {
         super(component);
         if (component.getChildren().isEmpty()) {
-            this.addInput("i", Positioning.CENTER);
+            this.addInput(Positioning.CENTER);
         }
     }
 
@@ -39,22 +35,22 @@ public class VisualSinkComponent extends VisualXmasComponent {
         Path2D shape = new Path2D.Double();
 
         shape.moveTo(0.00, +0.00);
-        shape.lineTo(0.00, +0.40 * size);
+        shape.lineTo(0.00, +0.40 * SIZE);
 
-        shape.moveTo(-0.35 * size, 0.40 * size);
-        shape.lineTo(+0.35 * size, 0.40 * size);
+        shape.moveTo(-0.35 * SIZE, 0.40 * SIZE);
+        shape.lineTo(+0.35 * SIZE, 0.40 * SIZE);
 
-        shape.moveTo(-0.20 * size, +0.55 * size);
-        shape.lineTo(+0.20 * size, +0.55 * size);
+        shape.moveTo(-0.20 * SIZE, +0.55 * SIZE);
+        shape.lineTo(+0.20 * SIZE, +0.55 * SIZE);
 
-        shape.moveTo(-0.05 * size, +0.70 * size);
-        shape.lineTo(+0.05 * size, +0.70 * size);
+        shape.moveTo(-0.05 * SIZE, +0.70 * SIZE);
+        shape.lineTo(+0.05 * SIZE, +0.70 * SIZE);
 
         return shape;
     }
 
     public Shape getTokenShape() {
-        return new Ellipse2D.Double(+1.4 * tokenSize, +0.6 * tokenSize, tokenSize, tokenSize);
+        return new Ellipse2D.Double(+1.4 * TOKEN_SIZE, +0.6 * TOKEN_SIZE, TOKEN_SIZE, TOKEN_SIZE);
     }
 
     @Override

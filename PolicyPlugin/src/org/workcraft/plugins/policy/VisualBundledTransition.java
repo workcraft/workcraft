@@ -1,13 +1,5 @@
 package org.workcraft.plugins.policy;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.event.KeyEvent;
-import java.awt.geom.Rectangle2D;
-import java.util.Collection;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
@@ -16,6 +8,11 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.Rectangle2D;
+import java.util.Collection;
 
 @Hotkey(KeyEvent.VK_T)
 @DisplayName ("Transition")
@@ -41,6 +38,9 @@ public class VisualBundledTransition extends VisualTransition {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
         VisualPolicyNet model = (VisualPolicyNet) r.getModel();
+
+        double size = CommonVisualSettings.getNodeSize();
+        double strokeWidth = CommonVisualSettings.getStrokeWidth();
         double w = size - strokeWidth;
         double h = size - strokeWidth;
         double w2 = w / 2;

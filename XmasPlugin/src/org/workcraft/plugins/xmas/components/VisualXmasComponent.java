@@ -8,6 +8,7 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.*;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.XmasContact.IOType;
 
@@ -21,6 +22,8 @@ import java.util.Collection;
 public abstract class VisualXmasComponent extends VisualComponent implements Container, StateObserver, ObservableHierarchy {
     // Degree symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
     public static final char DEGREE_SYMBOL = 0x00B0;
+    public static final double SIZE = CommonVisualSettings.getNodeSize();
+    public static final double TOKEN_SIZE = 0.18 * SIZE;
 
     private static final String PROPERTY_ORIENTATION = "Orientation";
 
@@ -145,7 +148,8 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
     }
 
     public void setContactPosition(VisualXmasContact vc, Positioning positioning) {
-        vc.setPosition(new Point2D.Double(size / 2 * positioning.xSign, size / 2 * positioning.ySign));
+        double size2 = CommonVisualSettings.getNodeSize() / 2.0;
+        vc.setPosition(new Point2D.Double(size2 * positioning.xSign, size2 * positioning.ySign));
     }
 
     @Override
@@ -212,16 +216,16 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
     public void notify(StateEvent e) {
     }
 
-    public VisualXmasContact addInput(String name, Positioning positioning) {
+    public VisualXmasContact addInput(Positioning positioning) {
         XmasContact c = new XmasContact(IOType.INPUT);
-        VisualXmasContact vc = new VisualXmasContact(c, name);
+        VisualXmasContact vc = new VisualXmasContact(c);
         addContact(vc, positioning);
         return vc;
     }
 
-    public VisualXmasContact addOutput(String name, Positioning positioning) {
+    public VisualXmasContact addOutput(Positioning positioning) {
         XmasContact c = new XmasContact(IOType.OUTPUT);
-        VisualXmasContact vc = new VisualXmasContact(c, name);
+        VisualXmasContact vc = new VisualXmasContact(c);
         addContact(vc, positioning);
         return vc;
     }

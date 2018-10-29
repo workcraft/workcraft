@@ -16,7 +16,6 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 
@@ -74,20 +73,16 @@ public class VisualPlace extends VisualComponent {
     }
 
     @Override
+    public Shape getShape() {
+        double size = CommonVisualSettings.getNodeSize() - CommonVisualSettings.getStrokeWidth();
+        double pos = -0.5 * size;
+        return new Ellipse2D.Double(pos, pos, size, size);
+    }
+
+    @Override
     public void draw(DrawRequest r) {
-        Graphics2D g = r.getGraphics();
+        super.draw(r);
         Decoration d = r.getDecoration();
-
-        double xy = -size / 2 + strokeWidth / 2;
-        double wh = size - strokeWidth;
-        Shape shape = new Ellipse2D.Double(xy, xy, wh, wh);
-
-        g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
-        g.fill(shape);
-        g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-        g.setStroke(new BasicStroke((float) strokeWidth));
-        g.draw(shape);
-
         Place place = (Place) getReferencedComponent();
         int tokenCount = place.getTokens();
         Color tokenColor = getTokenColor();
@@ -95,15 +90,8 @@ public class VisualPlace extends VisualComponent {
             tokenCount = ((PlaceDecoration) d).getTokens();
             tokenColor = ((PlaceDecoration) d).getTokenColor();
         }
-        drawTokens(r, tokenCount, singleTokenSize, multipleTokenSeparation, size, strokeWidth, tokenColor);
-
-        drawLabelInLocalSpace(r);
-        drawNameInLocalSpace(r);
-    }
-
-    @Override
-    public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-        return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
+        double tokenSpace = CommonVisualSettings.getNodeSize() - 2.0 * CommonVisualSettings.getStrokeWidth();
+        drawTokens(r, tokenCount, singleTokenSize, multipleTokenSeparation, tokenSpace, tokenColor);
     }
 
     public Place getReferencedPlace() {
@@ -121,8 +109,7 @@ public class VisualPlace extends VisualComponent {
         }
     }
 
-    public static void drawTokens(DrawRequest r, int count, double size, double separation,
-            double diameter, double borderWidth, Color color) {
+    public static void drawTokens(DrawRequest r, int count, double size, double separation, double space, Color color) {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
         Shape shape;
@@ -134,7 +121,7 @@ public class VisualPlace extends VisualComponent {
             if (count > 1 && count < 8) {
                 double alpha = Math.PI / count;
                 if (count == 7) alpha = Math.PI / 6;
-                double radius = (diameter / 2 - borderWidth - separation) / (1 + 1 / Math.sin(alpha));
+                double radius = (space / 2 - separation) / (1 + 1 / Math.sin(alpha));
                 double step = radius / Math.sin(alpha);
                 radius -= separation;
                 for (int i = 0; i < count; i++) {

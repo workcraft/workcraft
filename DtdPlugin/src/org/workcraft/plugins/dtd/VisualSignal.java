@@ -12,6 +12,7 @@ import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.plugins.shared.CommonSignalSettings;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Hierarchy;
 
@@ -99,6 +100,7 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
 
     @Override
     public Rectangle2D getInternalBoundingBoxInLocalSpace() {
+        double size = CommonVisualSettings.getNodeSize();
         return new Rectangle2D.Double(-0.25 * size, -0.25 * size, 0.5 * size, 0.5 * size);
     }
 
