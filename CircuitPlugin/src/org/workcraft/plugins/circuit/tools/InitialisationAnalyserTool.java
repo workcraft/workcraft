@@ -91,7 +91,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
         JButton clearAllForceInitButton = GUI.createIconButton(
                 GUI.createIconFromSVG("images/circuit-initialisation-clear_all.svg"),
-                "Clear force init for input ports and output pins");
+                "Clear force init from all input ports and component outputs");
         clearAllForceInitButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.setForceInit(c, false)));
 
         JButton toggleForceInitInputPortsButton = GUI.createIconButton(
