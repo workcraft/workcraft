@@ -165,7 +165,7 @@ public abstract class AbstractMathModel extends AbstractModel<MathNode, MathConn
 
     @Override
     public void validateConnection(MathNode first, MathNode second) throws InvalidConnectionException {
-        if ((first == null) || (second == null)) {
+        if ((first == null) || (first instanceof MathConnection) || (second == null) || (second instanceof MathConnection)) {
             throw new InvalidConnectionException("Invalid connection");
         }
     }
