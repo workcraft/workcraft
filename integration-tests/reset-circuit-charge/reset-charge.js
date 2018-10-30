@@ -1,4 +1,4 @@
-work = load('charge-tm.circuit.work');
+work = load("charge-tm.circuit.work");
 
 resetCircuitClearForceInit(work);
 
@@ -13,8 +13,8 @@ resetCircuitProcessRedundantForceInitPins(work);
 resetCircuitInsertActiveLow(work);
 
 write(
-    'Initialisation check: ' + checkCircuitReset(work) + '\n' +
-    'Combined check: ' + checkCircuitCombined(work) + '\n' +
-    statCircuit(work), 'charge-tm.circuit.stat');
+    "Initialisation check: " + checkCircuitReset(work) + "\n" +
+    "Combined check: " + checkCircuitCombined(work) + "\n" +
+    statCircuit(work), "charge-tm.circuit.stat");
 
 exit();

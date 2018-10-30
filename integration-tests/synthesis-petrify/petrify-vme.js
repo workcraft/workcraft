@@ -1,19 +1,19 @@
-stgWork = load('vme.stg.work');
+stgWork = load("vme.stg.work");
 
 cgCircuitWork = synthComplexGatePetrify(stgWork);
 cgStat = statCircuit(cgCircuitWork);
-write(cgStat, 'petrify-vme-cg.circuit.stat');
+write(cgStat, "petrify-vme-cg.circuit.stat");
 
 gcCircuitWork = synthGeneralisedCelementPetrify(stgWork);
 gcStat = statCircuit(gcCircuitWork);
-write(gcStat, 'petrify-vme-gc.circuit.stat');
+write(gcStat, "petrify-vme-gc.circuit.stat");
 
 stdcCircuitWork = synthStandardCelementPetrify(stgWork);
 stdcStat = statCircuit(stdcCircuitWork);
-write(stdcStat, 'petrify-vme-stdc.circuit.stat');
+write(stdcStat, "petrify-vme-stdc.circuit.stat");
 
 tmCircuitWork = synthTechnologyMappingPetrify(stgWork);
 tmStat = statCircuit(tmCircuitWork);
-write(tmStat, 'petrify-vme-tm.circuit.stat');
+write(tmStat, "petrify-vme-tm.circuit.stat");
 
 exit();

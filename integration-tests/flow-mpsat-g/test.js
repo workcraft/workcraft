@@ -44,7 +44,7 @@ function process(name) {
             return false;
         }
         s += "OK\n";
-        save(cscStgWork, name + '-csc.stg.work');
+        save(cscStgWork, name + "-csc.stg.work");
     }
 
 
