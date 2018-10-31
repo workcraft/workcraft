@@ -50,6 +50,7 @@ public class PcompDialog extends JDialog {
         this.we = we;
         setContentPane(createContents());
         setMinimumSize(new Dimension(600, 400));
+        pack();
     }
 
     private JPanel createContents() {

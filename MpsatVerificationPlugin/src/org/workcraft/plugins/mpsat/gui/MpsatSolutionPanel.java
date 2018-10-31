@@ -1,27 +1,20 @@
 package org.workcraft.plugins.mpsat.gui;
 
-import java.awt.event.ActionListener;
-
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-
+import info.clearthought.layout.TableLayout;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.graph.tools.Trace;
 import org.workcraft.plugins.mpsat.tasks.MpsatSolution;
 import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import info.clearthought.layout.TableLayout;
+import javax.swing.*;
+import java.awt.event.ActionListener;
 
 @SuppressWarnings("serial")
 public class MpsatSolutionPanel extends JPanel {
 
-    private static final int MIN_COLUMN_COUNT = 25;
-    private static final int MAX_COLUMN_COUNT = 80;
+    private static final int MIN_COLUMN_COUNT = 20;
+    private static final int MAX_COLUMN_COUNT = 60;
 
     public  MpsatSolutionPanel(final WorkspaceEntry we, final MpsatSolution solution, final ActionListener closeAction) {
         double[][] sizes = new double[][] {
@@ -37,17 +30,10 @@ public class MpsatSolutionPanel extends JPanel {
         if (solution.getComment() != null) {
             commentLabel.setText(solution.getComment());
         }
-        String solutionString = solution.toString();
-        int columnCount = solutionString.length();
-        if (columnCount < MIN_COLUMN_COUNT) {
-            columnCount = MIN_COLUMN_COUNT;
-        }
-        if (columnCount > MAX_COLUMN_COUNT) {
-            columnCount = MAX_COLUMN_COUNT;
-        }
-        int rowCount = solution.getBranchTrace() == null ? 1 : 2;
-        JTextArea traceText = new JTextArea(rowCount, columnCount);
+
+        JTextArea traceText = new JTextArea(getRowCount(solution), getColumnCount(solution));
         traceText.setMargin(SizeHelper.getTextMargin());
+        String solutionString = solution.toString();
         if (solutionString.isEmpty()) {
             traceText.setText(Trace.EMPTY_TRACE_TEXT);
             traceText.setEnabled(false);
@@ -73,6 +59,29 @@ public class MpsatSolutionPanel extends JPanel {
         add(commentLabel, "0 0");
         add(scrollPane, "0 1");
         add(buttonsPanel, "1 1");
+    }
+
+    public int getRowCount(MpsatSolution solution) {
+        return solution.getBranchTrace() == null ? 1 : 2;
+    }
+
+    public int getColumnCount(MpsatSolution solution) {
+        int result = 0;
+        Trace mainTrace = solution.getMainTrace();
+        if (mainTrace != null) {
+            result = Math.max(result, mainTrace.toString().length());
+        }
+        Trace branchTrace = solution.getBranchTrace();
+        if (branchTrace != null) {
+            result = Math.max(result, branchTrace.toString().length());
+        }
+        if (result < MIN_COLUMN_COUNT) {
+            result = MIN_COLUMN_COUNT;
+        }
+        if (result > MAX_COLUMN_COUNT) {
+            result = MAX_COLUMN_COUNT;
+        }
+        return result;
     }
 
 }

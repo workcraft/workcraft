@@ -37,6 +37,7 @@ public class NwayDialog extends JDialog {
         this.we = we;
         setContentPane(createContents());
         setMinimumSize(new Dimension(500, 300));
+        pack();
     }
 
     private JPanel createContents() {
