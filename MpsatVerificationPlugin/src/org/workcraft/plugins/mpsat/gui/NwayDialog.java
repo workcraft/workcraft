@@ -1,20 +1,5 @@
 package org.workcraft.plugins.mpsat.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Window;
-import java.awt.event.KeyEvent;
-import java.util.Set;
-
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.JRootPane;
-import javax.swing.KeyStroke;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.trees.TreeWindow;
@@ -22,19 +7,23 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.gui.workspace.WorkspaceChooser;
 import org.workcraft.plugins.stg.StgWorkspaceFilter;
 import org.workcraft.util.GUI;
+import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.util.Set;
 
 @SuppressWarnings("serial")
 public class NwayDialog extends JDialog {
 
-    private final WorkspaceEntry we;
     private boolean result;
     private WorkspaceChooser chooser;
     private Set<Path<String>> sourcePaths;
 
-    public NwayDialog(Window owner, WorkspaceEntry we) {
+    public NwayDialog(Window owner) {
         super(owner, "N-way conformation", ModalityType.DOCUMENT_MODAL);
-        this.we = we;
         setContentPane(createContents());
         setMinimumSize(new Dimension(500, 300));
         pack();
@@ -43,13 +32,10 @@ public class NwayDialog extends JDialog {
     private JPanel createContents() {
         final JPanel content = new JPanel(new BorderLayout());
         content.setBorder(SizeHelper.getEmptyBorder());
-        final Framework framework = Framework.getInstance();
-        chooser = new WorkspaceChooser(framework.getWorkspace(), new StgWorkspaceFilter());
+        Workspace workspace = Framework.getInstance().getWorkspace();
+        chooser = new WorkspaceChooser(workspace, new StgWorkspaceFilter());
         chooser.setBorder(SizeHelper.getTitledBorder("Source STGs"));
         chooser.setCheckBoxMode(TreeWindow.CheckBoxMode.LEAF);
-        if (we != null) {
-            chooser.checkNode(we.getWorkspacePath());
-        }
         content.add(chooser, BorderLayout.CENTER);
 
         JPanel outputOptions = new JPanel();
@@ -89,6 +75,17 @@ public class NwayDialog extends JDialog {
     private void actionCancel() {
         result = false;
         setVisible(false);
+    }
+
+    public void checkAll() {
+        Workspace workspace = Framework.getInstance().getWorkspace();
+        for (WorkspaceEntry we : workspace.getWorks()) {
+            setChecked(we, true);
+        }
+    }
+
+    public void setChecked(WorkspaceEntry we, boolean value) {
+        chooser.setChecked(we.getWorkspacePath(), value);
     }
 
     public Set<Path<String>> getSourcePaths() {

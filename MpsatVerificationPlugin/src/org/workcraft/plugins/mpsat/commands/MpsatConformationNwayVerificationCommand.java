@@ -51,7 +51,8 @@ public class MpsatConformationNwayVerificationCommand extends AbstractVerificati
             return;
         }
         MainWindow mainWindow = framework.getMainWindow();
-        NwayDialog dialog = new NwayDialog(mainWindow, we);
+        NwayDialog dialog = new NwayDialog(mainWindow);
+        dialog.checkAll();
         GUI.centerToParent(dialog, mainWindow);
         if (!dialog.run()) {
             return;

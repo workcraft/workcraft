@@ -64,7 +64,7 @@ public class WorkspaceChooser extends JPanel {
 
         this.add(GUI.createWideLabeledComponent(nameFilter, "Search: "), "0 0");
 
-        filteredSource = new FilteredTreeSource<Path<String>>(workspace.getTree(), filter);
+        filteredSource = new FilteredTreeSource<>(workspace.getTree(), filter);
 
         tree = TreeWindow.create(filteredSource, new WorkspaceTreeDecorator(workspace), null);
 
@@ -99,16 +99,12 @@ public class WorkspaceChooser extends JPanel {
         return (filter.eval(arg) && arg.getNode().contains(nameFilter.getText())) || getCheckedNodes().contains(arg);
     }
 
-    public void clearCheckBoxes() {
-        tree.clearCheckBoxes();
-    }
-
-    public void checkNode(Path<String> node) {
-        tree.setChecked(node, true);
-    }
-
-    public void uncheckNode(Path<String> node) {
-        tree.setChecked(node, false);
+    public void setChecked(Path<String> node, boolean value) {
+        if (filteredSource.isLeaf(node)) {
+            if (filter.eval(node)) {
+                tree.setChecked(node, value);
+            }
+        }
     }
 
     public void setCheckBoxMode(CheckBoxMode mode) {
@@ -118,4 +114,5 @@ public class WorkspaceChooser extends JPanel {
     public Set<Path<String>> getCheckedNodes() {
         return tree.getCheckedNodes();
     }
+
 }

@@ -1,31 +1,20 @@
 package org.workcraft.gui.trees;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.Rectangle;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.swing.Icon;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.JTree;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.TreePath;
-
+import info.clearthought.layout.TableLayout;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.workspace.Workspace;
 
-import info.clearthought.layout.TableLayout;
+import javax.swing.*;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreePath;
+import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.*;
+import java.util.List;
 
 public class TreeWindow<Node> extends JPanel {
 
@@ -276,7 +265,7 @@ public class TreeWindow<Node> extends JPanel {
 
     public static <Node> TreeWindow<Node> create(TreeSource<Node> source, TreeDecorator<Node> decorator,
             TreePopupProvider<Node> popupProvider) {
-        return new TreeWindow<Node>(source, decorator, popupProvider);
+        return new TreeWindow<>(source, decorator, popupProvider);
     }
 
     public void setChecked(Node node, boolean value) {
