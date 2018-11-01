@@ -1,12 +1,16 @@
 package org.workcraft.interop;
 
+import org.workcraft.util.LogUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 public class ExternalProcess {
 
@@ -97,13 +101,13 @@ public class ExternalProcess {
 
     private final LinkedList<ExternalProcessListener> listeners = new LinkedList<>();
 
+    public ExternalProcess(String[] command) {
+        this(command, null);
+    }
+
     public ExternalProcess(String[] command, String workingDirectoryPath) {
         processBuilder = new ProcessBuilder(command);
         processBuilder.directory(workingDirectoryPath == null ? null : new File(workingDirectoryPath));
-    }
-
-    public ExternalProcess(String[] array, File workingDir) {
-        this(array, workingDir == null ? null : workingDir.getAbsolutePath());
     }
 
     private void outputData(byte[] data) {
@@ -172,6 +176,14 @@ public class ExternalProcess {
 
     public void closeInput() throws IOException {
         outputStream.close();
+    }
+
+    public static void printCommandLine(String[] args) {
+        printCommandLine(Arrays.asList(args));
+    }
+
+    public static void printCommandLine(List<String> args) {
+        LogUtils.logInfo("Running external command: " + String.join(" ", args));
     }
 
 }
