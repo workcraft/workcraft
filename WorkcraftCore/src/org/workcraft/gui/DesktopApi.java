@@ -1,6 +1,9 @@
 package org.workcraft.gui;
 
-import java.awt.Desktop;
+import org.workcraft.interop.ExternalProcess;
+import org.workcraft.util.LogUtils;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -16,18 +19,21 @@ public class DesktopApi {
     public static boolean browse(URI uri) {
         if (openSystemSpecific(uri.toString())) return true;
         if (browseDesktop(uri)) return true;
+        LogUtils.logError("Cannot open a browser for '" + uri.toString() + "'");
         return false;
     }
 
     public static boolean open(File file) {
         if (openDesktop(file)) return true;
         if (openSystemSpecific(file.getPath())) return true;
+        LogUtils.logError("Cannot open a viewer for  '" + file.getPath() + "'");
         return false;
     }
 
     public static boolean edit(File file) {
         if (editDesktop(file)) return true;
         if (openSystemSpecific(file.getPath())) return true;
+        LogUtils.logError("Cannot open an editor for '" + file.getPath() + "'");
         return false;
     }
 
@@ -83,29 +89,19 @@ public class DesktopApi {
         if (os.isWindows()) {
             if (runCommand("explorer", "%s", what)) return true;
         }
-
         return false;
     }
 
     private static boolean runCommand(String command, String args, String file) {
         String[] parts = prepareCommand(command, args, file);
+        ExternalProcess process = new ExternalProcess(parts);
         try {
-            Process p = Runtime.getRuntime().exec(parts);
-            if (p == null) return false;
-
-            try {
-                int retval = p.exitValue();
-                if (retval == 0) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } catch (IllegalThreadStateException itse) {
-                return true;
-            }
+            process.start();
+            ExternalProcess.printCommandLine(parts);
         } catch (IOException e) {
             return false;
         }
+        return true;
     }
 
     private static String[] prepareCommand(String command, String args, String file) {

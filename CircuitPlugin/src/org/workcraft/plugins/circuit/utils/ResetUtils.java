@@ -1,16 +1,13 @@
 package org.workcraft.plugins.circuit.utils;
 
-import org.workcraft.dom.visual.BoundingBoxHelper;
-import org.workcraft.dom.visual.MixUtils;
-import org.workcraft.dom.visual.Touchable;
-import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.references.Identifier;
+import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.dom.references.Identifier;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -206,8 +203,8 @@ public class ResetUtils {
                 insertResetGate(circuit, resetPort, contact, activeLow);
             }
         }
-        forceInitResetCircuit(circuit, resetPort, activeLow);
         positionResetPort(circuit, resetPort);
+        forceInitResetCircuit(circuit, resetPort, activeLow);
     }
 
     private static VisualFunctionContact getOrCreateResetPort(VisualCircuit circuit, String portName) {
@@ -420,13 +417,17 @@ public class ResetUtils {
     private static void positionResetPort(VisualCircuit circuit, VisualFunctionContact resetPort) {
         Collection<Touchable> nodes = new HashSet<>();
         nodes.addAll(Hierarchy.getChildrenOfType(circuit.getRoot(), VisualConnection.class));
+        for (VisualConnection resetConnection : circuit.getConnections(resetPort)) {
+            nodes.remove(resetConnection);
+        }
         nodes.addAll(Hierarchy.getChildrenOfType(circuit.getRoot(), VisualCircuitComponent.class));
         nodes.addAll(Hierarchy.getChildrenOfType(circuit.getRoot(), VisualJoint.class));
         Rectangle2D modelBox = BoundingBoxHelper.mergeBoundingBoxes(nodes);
-
         Collection<VisualContact> driven = CircuitUtils.findDriven(circuit, resetPort, false);
+        double x = modelBox.getMinX();
         double y = driven.isEmpty() ? modelBox.getCenterY() : MixUtils.middleRootspacePosition(driven).getY();
-        resetPort.setRootSpacePosition(new Point2D.Double(modelBox.getMinX(), y));
+        Point2D.Double pos = new Point2D.Double(TransformHelper.snapP5(x), TransformHelper.snapP5(y));
+        resetPort.setRootSpacePosition(pos);
 
         VisualJoint joint = CircuitUtils.detachJoint(circuit, resetPort);
         if (joint != null) {

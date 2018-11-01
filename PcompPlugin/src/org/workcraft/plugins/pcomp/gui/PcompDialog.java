@@ -1,21 +1,6 @@
 package org.workcraft.plugins.pcomp.gui;
 
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Window;
-import java.awt.event.KeyEvent;
-import java.util.Set;
-
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.KeyStroke;
-
+import info.clearthought.layout.TableLayout;
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.exceptions.NotSupportedException;
@@ -26,14 +11,17 @@ import org.workcraft.plugins.pcomp.commands.ParallelCompositionCommand;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.stg.StgWorkspaceFilter;
 import org.workcraft.util.GUI;
+import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import info.clearthought.layout.TableLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.util.Set;
 
 @SuppressWarnings("serial")
 public class PcompDialog extends JDialog {
 
-    private final WorkspaceEntry we;
     private boolean result;
     private WorkspaceChooser chooser;
     private Set<Path<String>> sourcePaths;
@@ -45,11 +33,11 @@ public class PcompDialog extends JDialog {
     private JCheckBox saveDetail;
     private JCheckBox improvedPcomp;
 
-    public PcompDialog(Window owner, WorkspaceEntry we) {
+    public PcompDialog(Window owner) {
         super(owner, "Parallel composition", ModalityType.DOCUMENT_MODAL);
-        this.we = we;
         setContentPane(createContents());
         setMinimumSize(new Dimension(600, 400));
+        pack();
     }
 
     private JPanel createContents() {
@@ -64,9 +52,6 @@ public class PcompDialog extends JDialog {
         chooser = new WorkspaceChooser(framework.getWorkspace(), new StgWorkspaceFilter());
         chooser.setBorder(SizeHelper.getTitledBorder("Source STGs"));
         chooser.setCheckBoxMode(TreeWindow.CheckBoxMode.LEAF);
-        if (we != null) {
-            chooser.checkNode(we.getWorkspacePath());
-        }
         content.add(chooser, "0 0 0 1");
 
         showInEditor = new JCheckBox();
@@ -137,6 +122,17 @@ public class PcompDialog extends JDialog {
     private void actionCancel() {
         result = false;
         setVisible(false);
+    }
+
+    public void checkAll() {
+        Workspace workspace = Framework.getInstance().getWorkspace();
+        for (WorkspaceEntry we : workspace.getWorks()) {
+            setChecked(we, true);
+        }
+    }
+
+    public void setChecked(WorkspaceEntry we, boolean value) {
+        chooser.setChecked(we.getWorkspacePath(), value);
     }
 
     public Set<Path<String>> getSourcePaths() {

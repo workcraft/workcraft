@@ -42,12 +42,13 @@ public class ExternalProcessTask implements Task<ExternalProcessOutput>, Externa
     public Result<? extends ExternalProcessOutput> run(ProgressMonitor<? super ExternalProcessOutput> monitor) {
         this.monitor = monitor;
 
-        ExternalProcess process = new ExternalProcess(args.toArray(new String[args.size()]), workingDir);
+        String workingDirectoryPath = workingDir == null ? null : workingDir.getAbsolutePath();
+        ExternalProcess process = new ExternalProcess(args.toArray(new String[args.size()]), workingDirectoryPath);
 
         process.addListener(this);
 
         try {
-            printCommandLine(this.args);
+            ExternalProcess.printCommandLine(this.args);
             process.start();
         } catch (IOException e) {
             LogUtils.logError(e.getMessage());
@@ -80,10 +81,6 @@ public class ExternalProcessTask implements Task<ExternalProcessOutput>, Externa
                 Collections.emptyMap());
 
         return Result.success(output);
-    }
-
-    public static void printCommandLine(List<String> args) {
-        LogUtils.logInfo("Running external command: " + String.join(" ", args));
     }
 
     @Override

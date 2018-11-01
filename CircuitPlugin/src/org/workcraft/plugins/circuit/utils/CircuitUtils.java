@@ -28,28 +28,6 @@ import java.util.*;
 
 public class CircuitUtils {
 
-    public static VisualContact findDriver(VisualCircuit circuit, VisualJoint joint) {
-        return findDriver(circuit, joint, true);
-    }
-
-    public static VisualContact findDriver(VisualCircuit circuit, VisualJoint joint, boolean transparentZeroDelayComponents) {
-        Contact mathDriver = findDriver(circuit.getMathModel(), joint.getReferencedComponent(), transparentZeroDelayComponents);
-        return circuit.getVisualComponent(mathDriver, VisualContact.class);
-    }
-
-    public static VisualContact findDriver(VisualCircuit circuit, VisualConnection connection) {
-        return findDriver(circuit, connection, true);
-    }
-
-    public static VisualContact findDriver(VisualCircuit circuit, VisualConnection connection, boolean transparentZeroDelayComponents) {
-        Contact mathDriver = findDriver(circuit.getMathModel(), connection.getReferencedConnection(), transparentZeroDelayComponents);
-        return circuit.getVisualComponent(mathDriver, VisualContact.class);
-    }
-
-    public static VisualContact findDriver(VisualCircuit circuit, VisualContact contact) {
-        return findDriver(circuit, contact, true);
-    }
-
     public static VisualContact findDriver(VisualCircuit circuit, VisualContact contact, boolean transparentZeroDelayComponents) {
         Contact mathDriver = findDriver(circuit.getMathModel(), contact.getReferencedContact(), transparentZeroDelayComponents);
         return circuit.getVisualComponent(mathDriver, VisualContact.class);

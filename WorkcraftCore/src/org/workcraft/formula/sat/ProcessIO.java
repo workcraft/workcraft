@@ -1,14 +1,6 @@
 package org.workcraft.formula.sat;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 
 public class ProcessIO {
 
@@ -71,11 +63,10 @@ public class ProcessIO {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return result.toString();
+        return result;
     }
 
-    public static String readFile(File file)
-            throws FileNotFoundException, IOException {
+    public static String readFile(File file) throws IOException {
         String result;
         BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
 
@@ -90,8 +81,7 @@ public class ProcessIO {
         return result;
     }
 
-    private static void writeFile(String text, File file)
-            throws FileNotFoundException, IOException {
+    private static void writeFile(String text, File file) throws IOException {
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
         writer.write(text);
         writer.close();

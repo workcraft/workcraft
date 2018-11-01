@@ -54,7 +54,8 @@ public class ParallelCompositionCommand implements Command {
             return;
         }
         MainWindow mainWindow = framework.getMainWindow();
-        PcompDialog dialog = new PcompDialog(mainWindow, we);
+        PcompDialog dialog = new PcompDialog(mainWindow);
+        dialog.checkAll();
         GUI.centerToParent(dialog, mainWindow);
         Collection<Mutex> mutexes = new HashSet<>();
         if (!dialog.run()) {

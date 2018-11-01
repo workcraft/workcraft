@@ -376,6 +376,7 @@ public class MainWindow extends JFrame {
 
         WorkspaceEntry we = editor.getWorkspaceEntry();
         if (we.isChanged()) {
+            requestFocus(we);
             String title = we.getTitle();
             int result = JOptionPane.showConfirmDialog(this,
                     "Document '" + title + "' has unsaved changes.\n" + "Save before closing?",

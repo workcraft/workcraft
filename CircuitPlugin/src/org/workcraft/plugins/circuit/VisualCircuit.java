@@ -29,6 +29,7 @@ import org.workcraft.plugins.circuit.routing.RouterVisualiser;
 import org.workcraft.plugins.circuit.routing.impl.Router;
 import org.workcraft.plugins.circuit.routing.impl.RouterTask;
 import org.workcraft.plugins.circuit.tools.*;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.ModelEntry;
@@ -38,9 +39,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
 
 @DisplayName("Digital Circuit")
@@ -72,6 +71,102 @@ public class VisualCircuit extends AbstractVisualModel {
     @Override
     public Circuit getMathModel() {
         return (Circuit) super.getMathModel();
+    }
+
+    @Override
+    public void validateConnection(VisualNode first, VisualNode second) throws InvalidConnectionException {
+        if (first == second) {
+            throw new InvalidConnectionException("Connections are only valid between different objects.");
+        }
+
+        if (second instanceof VisualConnection) {
+            throw new InvalidConnectionException("Merging connections is not allowed.");
+        }
+
+        if (second instanceof VisualComponent) {
+            for (VisualConnection connection : getConnections(second)) {
+                if (connection.getSecond() == second) {
+                    throw new InvalidConnectionException("Only one connection is allowed as a driver.");
+                }
+            }
+        }
+
+        if (first instanceof VisualContact) {
+            VisualContact secondContact = (VisualContact) first;
+            if (secondContact.isInput() && !secondContact.isPort()) {
+                throw new InvalidConnectionException("Input pin of a component cannot be a driver.");
+            }
+            if (secondContact.isOutput() && secondContact.isPort()) {
+                throw new InvalidConnectionException("Primary output cannot be a driver.");
+            }
+        }
+
+        if (second instanceof VisualContact) {
+            VisualContact secondContact = (VisualContact) second;
+            if (secondContact.isOutput() && !secondContact.isPort()) {
+                throw new InvalidConnectionException("Output pin of a component cannot be driven.");
+            }
+            if (secondContact.isInput() && secondContact.isPort()) {
+                throw new InvalidConnectionException("Primary input cannot be driven.");
+            }
+        }
+
+        // Handle driver-driven relationship of input and output ports
+        HashSet<Contact> drivenSet = new HashSet<>();
+        Circuit circuit = getMathModel();
+        Contact driver = null;
+        if (first instanceof VisualConnection) {
+            MathConnection firstConnection = ((VisualConnection) first).getReferencedConnection();
+            driver = CircuitUtils.findDriver(circuit, firstConnection, true);
+            if (driver != null) {
+                drivenSet.addAll(CircuitUtils.findDriven(circuit, driver, true));
+            } else {
+                drivenSet.addAll(CircuitUtils.findDriven(circuit, firstConnection, true));
+            }
+        } else if (first instanceof VisualComponent) {
+            MathNode firstComponent = ((VisualComponent) first).getReferencedComponent();
+            driver = CircuitUtils.findDriver(circuit, firstComponent, true);
+            if (driver != null) {
+                drivenSet.addAll(CircuitUtils.findDriven(circuit, driver, true));
+            } else {
+                drivenSet.addAll(CircuitUtils.findDriven(circuit, firstComponent, true));
+            }
+        }
+        if (second instanceof VisualComponent) {
+            MathNode secondComponent = ((VisualComponent) second).getReferencedComponent();
+            drivenSet.addAll(CircuitUtils.findDriven(circuit, secondComponent, true));
+        }
+        int outputPortCount = 0;
+        for (Contact driven: drivenSet) {
+            if (driven.isOutput() && driven.isPort()) {
+                outputPortCount++;
+                if (outputPortCount > 1) {
+                    throw new InvalidConnectionException("Fork on output ports is not allowed.");
+                }
+                if ((driver != null) && driver.isInput() && driver.isPort()) {
+                    throw new InvalidConnectionException("Direct connection from input port to output port is not allowed.");
+                }
+            }
+        }
+
+        // Handle zero-delay components
+        Node firstParent = first.getParent();
+        if (firstParent instanceof VisualFunctionComponent) {
+            VisualFunctionComponent firstComponent = (VisualFunctionComponent) firstParent;
+            Node secondParent = second.getParent();
+            if (secondParent instanceof VisualFunctionComponent) {
+                VisualFunctionComponent secondComponent = (VisualFunctionComponent) secondParent;
+                if (firstComponent.getIsZeroDelay() && secondComponent.getIsZeroDelay()) {
+                    throw new InvalidConnectionException("Zero delay components cannot be connected to each other.");
+                }
+            }
+            if (second instanceof VisualContact) {
+                VisualContact secondContact = (VisualContact) second;
+                if (firstComponent.getIsZeroDelay() && secondContact.isPort() && secondContact.isOutput()) {
+                    throw new InvalidConnectionException("Zero delay components cannot be connected to output ports.");
+                }
+            }
+        }
     }
 
     @Override

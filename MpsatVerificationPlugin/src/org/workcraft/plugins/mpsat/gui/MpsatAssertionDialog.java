@@ -83,6 +83,7 @@ public class MpsatAssertionDialog extends JDialog {
             }
         });
         setMinimumSize(new Dimension(450, 350));
+        pack();
     }
 
     private void createPresetPanel() {

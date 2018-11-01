@@ -300,7 +300,7 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
     private void alignPorts(VisualCircuit circuit) {
         for (VisualContact contact: circuit.getVisualPorts()) {
             if (contact.isOutput()) {
-                VisualContact driver = CircuitUtils.findDriver(circuit, contact);
+                VisualContact driver = CircuitUtils.findDriver(circuit, contact, true);
                 if (driver != null) {
                     double y = driver.getRootSpaceY();
                     contact.setRootSpaceY(y);

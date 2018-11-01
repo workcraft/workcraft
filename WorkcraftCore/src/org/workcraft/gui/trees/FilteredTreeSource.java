@@ -38,7 +38,6 @@ public class FilteredTreeSource<T> implements TreeSource<T> {
         }
 
         boolean result;
-
         if (isLeaf(node)) {
             result = filter.eval(node);
         } else {
@@ -48,9 +47,7 @@ public class FilteredTreeSource<T> implements TreeSource<T> {
                 result = hasAcceptableChildren(node, depth);
             }
         }
-
         acceptableCache.put(node, result);
-
         return result;
     }
 
@@ -65,14 +62,12 @@ public class FilteredTreeSource<T> implements TreeSource<T> {
 
     @Override
     public List<T> getChildren(T node) {
-
         LinkedList<T> result = new LinkedList<>();
         for (T t : source.getChildren(node)) {
             if (isAcceptable(t, 10)) {
                 result.add(t);
             }
         }
-
         return result;
     }
 

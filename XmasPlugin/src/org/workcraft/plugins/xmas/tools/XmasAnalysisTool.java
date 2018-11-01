@@ -1,36 +1,12 @@
 package org.workcraft.plugins.xmas.tools;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.Graphics2D;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-
 import org.workcraft.commands.Command;
 import org.workcraft.dom.Node;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
+import org.workcraft.interop.ExternalProcess;
 import org.workcraft.plugins.xmas.VisualXmas;
 import org.workcraft.plugins.xmas.Xmas;
 import org.workcraft.plugins.xmas.XmasSettings;
@@ -45,6 +21,18 @@ import org.workcraft.util.FileUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command {
 
@@ -489,7 +477,7 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
                     ArrayList<String> vxmCommand = new ArrayList<>();
                     vxmCommand.add(XmasSettings.getTempVxmCommandFile().getAbsolutePath());
                     vxmCommand.addAll(processArg(XmasSettings.getTempVxmVsettingsFile().getAbsolutePath(), index));
-                    ExternalProcessTask.printCommandLine(vxmCommand);
+                    ExternalProcess.printCommandLine(vxmCommand);
                     String[] cmdArray = vxmCommand.toArray(new String[vxmCommand.size()]);
                     Process vxmProcess = Runtime.getRuntime().exec(cmdArray, null, XmasSettings.getTempVxmDirectory());
 

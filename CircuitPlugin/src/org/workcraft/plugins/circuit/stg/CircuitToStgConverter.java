@@ -139,7 +139,7 @@ public class CircuitToStgConverter {
     private HashSet<VisualContact> identifyDrivers() {
         HashSet<VisualContact> result = new HashSet<>();
         for (VisualContact contact: circuit.getVisualFunctionContacts()) {
-            VisualContact driver = CircuitUtils.findDriver(circuit, contact);
+            VisualContact driver = CircuitUtils.findDriver(circuit, contact, true);
             if (driver == null) {
                 driver = contact;
             }
