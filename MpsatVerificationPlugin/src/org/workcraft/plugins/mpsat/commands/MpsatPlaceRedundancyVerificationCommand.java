@@ -61,7 +61,7 @@ public class MpsatPlaceRedundancyVerificationCommand extends MpsatAbstractVerifi
         return MpsatParameters.getPlaceRedundancySettings(placeNames);
     }
 
-    private HashSet<String> getSelectedPlaces(WorkspaceEntry we) {
+    protected HashSet<String> getSelectedPlaces(WorkspaceEntry we) {
         VisualModel model = we.getModelEntry().getVisualModel();
         HashSet<String> placeNames = new HashSet<>();
         for (VisualNode node: model.getSelection()) {
