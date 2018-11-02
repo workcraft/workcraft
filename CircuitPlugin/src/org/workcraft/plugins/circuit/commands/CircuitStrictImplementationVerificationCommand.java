@@ -3,7 +3,10 @@ package org.workcraft.plugins.circuit.commands;
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.dom.references.ReferenceHelper;
-import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.Contact;
+import org.workcraft.plugins.circuit.FunctionComponent;
+import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.tasks.CircuitStrictImplementationCheckTask;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
@@ -71,11 +74,12 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
     }
 
     private boolean checkPrerequisites(WorkspaceEntry we) {
-        return VerificationUtils.checkCircuitHasComponents(we)
-                && VerificationUtils.checkInterfaceInitialState(we)
-                && checkCircuitHasEnvironmentStrict(we)
-                && checkCircuitInterfaceSignals(we)
-                && checkCircuitLocalSignals(we);
+        return isApplicableTo(we)
+            && VerificationUtils.checkCircuitHasComponents(we)
+            && VerificationUtils.checkInterfaceInitialState(we)
+            && checkCircuitHasEnvironmentStrict(we)
+            && checkCircuitInterfaceSignals(we)
+            && checkCircuitLocalSignals(we);
     }
 
     private boolean checkCircuitHasEnvironmentStrict(WorkspaceEntry we) {

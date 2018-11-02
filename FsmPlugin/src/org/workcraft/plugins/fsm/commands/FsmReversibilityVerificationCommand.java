@@ -36,6 +36,9 @@ public class FsmReversibilityVerificationCommand extends AbstractVerificationCom
 
     @Override
     public final Boolean execute(WorkspaceEntry we) {
+        if (!isApplicableTo(we)) {
+            return null;
+        }
         final Fsm fsm = WorkspaceUtils.getAs(we, Fsm.class);
         HashSet<State> irreversibleStates = checkReversibility(fsm);
         if (irreversibleStates.isEmpty()) {

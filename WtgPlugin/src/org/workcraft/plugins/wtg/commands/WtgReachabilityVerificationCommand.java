@@ -22,6 +22,9 @@ public class WtgReachabilityVerificationCommand extends AbstractVerificationComm
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
+        if (!isApplicableTo(we)) {
+            return null;
+        }
         final Wtg wtg = WorkspaceUtils.getAs(we, Wtg.class);
         boolean result = VerificationUtils.checkReachability(wtg);
         if (result) {

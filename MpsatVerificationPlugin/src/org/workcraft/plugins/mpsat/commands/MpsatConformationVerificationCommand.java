@@ -72,6 +72,9 @@ public class MpsatConformationVerificationCommand extends AbstractVerificationCo
     }
 
     private MpsatChainResultHandler queueVerification(WorkspaceEntry we, boolean interactive) {
+        if (!isApplicableTo(we)) {
+            return null;
+        }
         MpsatChainResultHandler monitor = null;
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         if (check(stg)) {

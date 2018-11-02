@@ -23,6 +23,9 @@ public class WtgSoundnessVerificationCommand extends AbstractVerificationCommand
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
+        if (!isApplicableTo(we)) {
+            return null;
+        }
         final Wtg wtg = WorkspaceUtils.getAs(we, Wtg.class);
         boolean result = false;
         if (VerificationUtils.checkStructure(wtg)) {

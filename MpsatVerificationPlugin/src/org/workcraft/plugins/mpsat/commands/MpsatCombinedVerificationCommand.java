@@ -58,6 +58,9 @@ public class MpsatCombinedVerificationCommand extends AbstractVerificationComman
     }
 
     private MpsatCombinedChainResultHandler queueVerification(WorkspaceEntry we) {
+        if (!isApplicableTo(we)) {
+            return null;
+        }
         MpsatCombinedChainResultHandler monitor = null;
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         if (MpsatUtils.mutexStructuralCheck(stg, true)) {

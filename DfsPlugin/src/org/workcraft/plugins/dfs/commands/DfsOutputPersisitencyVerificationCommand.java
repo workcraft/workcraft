@@ -44,6 +44,9 @@ public class DfsOutputPersisitencyVerificationCommand extends AbstractVerificati
     }
 
     private MpsatChainResultHandler queueVerification(WorkspaceEntry we) {
+        if (!isApplicableTo(we)) {
+            return null;
+        }
         Framework framework = Framework.getInstance();
         TaskManager manager = framework.getTaskManager();
         DfsOutputPersistencyCheckTask task = new DfsOutputPersistencyCheckTask(we);

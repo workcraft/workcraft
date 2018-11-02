@@ -44,6 +44,9 @@ public class DfsDeadlockFreenessVerificationCommand extends AbstractVerification
     }
 
     private MpsatChainResultHandler queueVerification(WorkspaceEntry we) {
+        if (!isApplicableTo(we)) {
+            return null;
+        }
         Framework framework = Framework.getInstance();
         TaskManager manager = framework.getTaskManager();
         DfsDeadlockFreenessCheckTask task = new DfsDeadlockFreenessCheckTask(we);

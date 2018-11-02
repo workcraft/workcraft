@@ -36,6 +36,9 @@ public class FsmDeadlockFreenessVerificationCommand extends AbstractVerification
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
+        if (!isApplicableTo(we)) {
+            return null;
+        }
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
         final Fsm fsm = WorkspaceUtils.getAs(we, Fsm.class);
