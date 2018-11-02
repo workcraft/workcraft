@@ -42,6 +42,42 @@ public class MpsatVerificationCommandTests {
     }
 
     @Test
+    public void testPhilosophersDeadlockVerification() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "philosophers-deadlock.pn.work");
+        testVerificationCommands(workName,
+                null,  // combined
+                null,  // consistency
+                false,  // deadlock freeness
+                null,  // input properness
+                null,  // output persistency
+                null, // CSC
+                null, // USC
+                null,  // DI interface
+                null, // normalcy
+                null,  // mutex implementability
+                null, null // conformation
+        );
+    }
+
+    @Test
+    public void testPhilosophersNoDeadlockVerification() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "philosophers-no_deadlock.pn.work");
+        testVerificationCommands(workName,
+                null,  // combined
+                null,  // consistency
+                true,  // deadlock freeness
+                null,  // input properness
+                null,  // output persistency
+                null, // CSC
+                null, // USC
+                null,  // DI interface
+                null, // normalcy
+                null,  // mutex implementability
+                null, null // conformation
+        );
+    }
+
+    @Test
     public void testVmeVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
         testVerificationCommands(workName,
