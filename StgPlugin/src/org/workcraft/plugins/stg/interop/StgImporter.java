@@ -1,18 +1,18 @@
 package org.workcraft.plugins.stg.interop;
 
-import java.io.InputStream;
-
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.interop.Importer;
+import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.plugins.stg.jj.ParseException;
 import org.workcraft.plugins.stg.jj.StgParser;
 import org.workcraft.workspace.ModelEntry;
+
+import java.io.InputStream;
 
 public class StgImporter implements Importer {
 
@@ -35,7 +35,7 @@ public class StgImporter implements Importer {
                 parser.disable_tracing();
             }
             Stg stg = parser.parse();
-            StgUtils.checkStg(stg, false);
+            PetriUtils.checkSoundness(stg, false);
             return stg;
         } catch (FormatException | ParseException e) {
             throw new DeserialisationException(e);

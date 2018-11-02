@@ -7,14 +7,19 @@ import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
-import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.utils.StgUtils;
+import org.workcraft.plugins.petri.PetriNetModel;
+import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public abstract class MpsatAbstractVerificationCommand extends AbstractVerificationCommand {
+
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, PetriNetModel.class);
+    }
 
     @Override
     public void run(WorkspaceEntry we) {
@@ -46,8 +51,8 @@ public abstract class MpsatAbstractVerificationCommand extends AbstractVerificat
     }
 
     public boolean checkPrerequisites(WorkspaceEntry we) {
-        Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        return StgUtils.checkStg(stg, true);
+        PetriNetModel net = WorkspaceUtils.getAs(we, PetriNetModel.class);
+        return PetriUtils.checkSoundness(net, true);
     }
 
     public abstract MpsatParameters getSettings(WorkspaceEntry we);
