@@ -1,13 +1,13 @@
 package org.workcraft.plugins.fst;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
 import org.workcraft.Config;
 import org.workcraft.gui.DesktopApi;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.Settings;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 public class ProcessWindowsSettings implements Settings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
@@ -41,51 +41,61 @@ public class ProcessWindowsSettings implements Settings {
     public ProcessWindowsSettings() {
 
         properties.add(new PropertyDeclaration<ProcessWindowsSettings, String>(
-                this, "Ltscat module path", String.class, true, false, false) {
-            protected void setter(ProcessWindowsSettings object, String value) {
+                this, "Ltscat module path", String.class) {
+            @Override
+            public void setter(ProcessWindowsSettings object, String value) {
                 setLtscatFolder(value);
             }
-            protected String getter(ProcessWindowsSettings object) {
+            @Override
+            public String getter(ProcessWindowsSettings object) {
                 return getLtscatFolder();
             }
         });
 
         properties.add(new PropertyDeclaration<ProcessWindowsSettings, String>(
-                this, "Shutters command", String.class, true, false, false) {
-            protected void setter(ProcessWindowsSettings object, String value) {
+                this, "Shutters command", String.class) {
+            @Override
+            public void setter(ProcessWindowsSettings object, String value) {
                 setShuttersCommand(value);
             }
-            protected String getter(ProcessWindowsSettings object) {
+            @Override
+            public String getter(ProcessWindowsSettings object) {
                 return getShuttersCommand();
             }
         });
 
         properties.add(new PropertyDeclaration<ProcessWindowsSettings, String>(
-                this, "Espresso command", String.class, true, false, false) {
-            protected void setter(ProcessWindowsSettings object, String value) {
+                this, "Espresso command", String.class) {
+            @Override
+            public void setter(ProcessWindowsSettings object, String value) {
                 setEspressoCommand(value);
             }
-            protected String getter(ProcessWindowsSettings object) {
+            @Override
+            public String getter(ProcessWindowsSettings object) {
                 return getEspressoCommand();
             }
         });
 
         properties.add(new PropertyDeclaration<ProcessWindowsSettings, String>(
-                this, "Abc command", String.class, true, false, false) {
-            protected void setter(ProcessWindowsSettings object, String value) {
+                this, "Abc command", String.class) {
+            @Override
+            public void setter(ProcessWindowsSettings object, String value) {
                 setAbcCommand(value);
             }
-            protected String getter(ProcessWindowsSettings object) {
+            @Override
+            public String getter(ProcessWindowsSettings object) {
                 return getAbcCommand();
             }
         });
 
         properties.add(new PropertyDeclaration<ProcessWindowsSettings, Boolean>(
-                this, "Force positive literals", Boolean.class, true, false, false) {
-            protected void setter(ProcessWindowsSettings object, Boolean value) {
+                this, "Force positive literals", Boolean.class) {
+            @Override
+            public void setter(ProcessWindowsSettings object, Boolean value) {
                 setForcePositiveMode(value);
             }
-            protected Boolean getter(ProcessWindowsSettings object) {
+            @Override
+            public Boolean getter(ProcessWindowsSettings object) {
                 return getForcePositiveMode();
             }
         });

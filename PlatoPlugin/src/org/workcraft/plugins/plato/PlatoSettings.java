@@ -1,13 +1,13 @@
 package org.workcraft.plugins.plato;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
 import org.workcraft.Config;
 import org.workcraft.gui.DesktopApi;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.Settings;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 public class PlatoSettings implements Settings {
 
@@ -25,22 +25,25 @@ public class PlatoSettings implements Settings {
 
     public PlatoSettings() {
         properties.add(new PropertyDeclaration<PlatoSettings, String>(
-                this, "Concepts folder location", String.class, true, false, false) {
-            protected void setter(PlatoSettings object, String value) {
+                this, "Concepts folder location", String.class) {
+            @Override
+            public void setter(PlatoSettings object, String value) {
                 setPlatoFolderLocation(value);
             }
-            protected String getter(PlatoSettings object) {
+            @Override
+            public String getter(PlatoSettings object) {
                 return getPlatoFolderLocation();
             }
         });
 
         properties.add(new PropertyDeclaration<PlatoSettings, String>(
-                this, "Folders to always include (separate with \';\')", String.class, true, false, false) {
-            protected void setter(PlatoSettings object, String value) {
+                this, "Folders to always include (separate with \';\')", String.class) {
+            @Override
+            public void setter(PlatoSettings object, String value) {
                 setPlatoIncludesList(value);
             }
             @Override
-            protected String getter(PlatoSettings object) {
+            public String getter(PlatoSettings object) {
                 return getPlatoIncludesList();
             }
         });

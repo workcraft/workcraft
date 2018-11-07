@@ -9,7 +9,10 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.Trace;
-import org.workcraft.gui.propertyeditor.*;
+import org.workcraft.gui.properties.BooleanCellEditor;
+import org.workcraft.gui.properties.BooleanCellRenderer;
+import org.workcraft.gui.properties.ColorCellEditor;
+import org.workcraft.gui.properties.ColorCellRenderer;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.dtd.DtdDescriptor;
 import org.workcraft.plugins.dtd.VisualDtd;
@@ -232,7 +235,7 @@ public class StgSimulationTool extends PetriSimulationTool {
         public Component getTableCellRendererComponent(final JTable table, final Object value,
                                                        final boolean isSelected, final boolean hasFocus, final int row, final int column) {
             label.setText("");
-            label.setBorder(PropertyEditorTable.BORDER_RENDER);
+            label.setBorder(SizeHelper.getTableCellBorder());
             label.setForeground(table.getForeground());
             label.setBackground(table.getBackground());
             label.setFont(table.getFont().deriveFont(Font.PLAIN));
@@ -351,7 +354,7 @@ public class StgSimulationTool extends PetriSimulationTool {
                 final boolean isSelected, final boolean hasFocus, final int row, final int column) {
 
             JLabel result = null;
-            label.setBorder(PropertyEditorTable.BORDER_RENDER);
+            label.setBorder(SizeHelper.getTableCellBorder());
             if (isActivated() && (value instanceof String)) {
                 label.setText(value.toString());
                 final Node node = getUnderlyingStg().getNodeByReference(value.toString());

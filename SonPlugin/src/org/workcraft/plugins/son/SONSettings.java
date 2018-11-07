@@ -1,14 +1,14 @@
 package org.workcraft.plugins.son;
 
-import java.awt.Color;
+import org.workcraft.Config;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.Settings;
+import org.workcraft.plugins.shared.CommonVisualSettings;
+
+import java.awt.*;
 import java.util.Collection;
 import java.util.LinkedList;
-
-import org.workcraft.Config;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
-import org.workcraft.plugins.shared.CommonVisualSettings;
 
 public class SONSettings implements Settings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
@@ -38,61 +38,73 @@ public class SONSettings implements Settings {
 
     public SONSettings() {
         properties.add(new PropertyDeclaration<SONSettings, Color>(
-                this, "Erroneous node color(relation)", Color.class, true, false, false) {
-            protected void setter(SONSettings object, Color value) {
+                this, "Erroneous node color(relation)", Color.class) {
+            @Override
+            public void setter(SONSettings object, Color value) {
                 setRelationErrColor(value);
             }
-            protected Color getter(SONSettings object) {
+            @Override
+            public Color getter(SONSettings object) {
                 return getRelationErrColor();
             }
         });
 
         properties.add(new PropertyDeclaration<SONSettings, Color>(
-                this, "Erroneous node color(cycle)", Color.class, true, false, false) {
-            protected void setter(SONSettings object, Color value) {
+                this, "Erroneous node color(cycle)", Color.class) {
+            @Override
+            public void setter(SONSettings object, Color value) {
                 setCyclePathColor(value);
             }
-            protected Color getter(SONSettings object) {
+            @Override
+            public Color getter(SONSettings object) {
                 return getCyclePathColor();
             }
         });
 
         properties.add(new PropertyDeclaration<SONSettings, Color>(
-                this, "Erroneous connection color", Color.class, true, false, false) {
-            protected void setter(SONSettings object, Color value) {
+                this, "Erroneous connection color", Color.class) {
+            @Override
+            public void setter(SONSettings object, Color value) {
                 setConnectionErrColor(value);
             }
-            protected Color getter(SONSettings object) {
+            @Override
+            public Color getter(SONSettings object) {
                 return getConnectionErrColor();
             }
         });
 
         properties.add(new PropertyDeclaration<SONSettings, Color>(
-                this, "Error label color", Color.class, true, false, false) {
-            protected void setter(SONSettings object, Color value) {
+                this, "Error label color", Color.class) {
+            @Override
+            public void setter(SONSettings object, Color value) {
                 setErrLabelColor(value);
             }
-            protected Color getter(SONSettings object) {
+            @Override
+            public Color getter(SONSettings object) {
                 return getErrLabelColor();
             }
         });
 
         properties.add(new PropertyDeclaration<SONSettings, Color>(
-                this, "Group Foreground color", Color.class, true, false, false) {
-            protected void setter(SONSettings object, Color value) {
+                this, "Group Foreground color", Color.class) {
+            @Override
+            public void setter(SONSettings object, Color value) {
                 setGroupForegroundColor(value);
             }
-            protected Color getter(SONSettings object) {
+            @Override
+            public Color getter(SONSettings object) {
                 return getGroupForegroundColor();
             }
         });
 
         properties.add(new PropertyDeclaration<SONSettings, Color>(
-                this, "Block fill color", Color.class, true, false, false) {
-            protected void setter(SONSettings object, Color value) {
+                this, "Block fill color", Color.class) {
+            @Override
+            public void setter(SONSettings object, Color value) {
                 setGroupForegroundColor(value);
             }
-            protected Color getter(SONSettings object) {
+            @Override
+            public Color getter(SONSettings object) {
                 return getGroupForegroundColor();
             }
         });

@@ -8,7 +8,7 @@ import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.plugins.shared.CommonSignalSettings;
@@ -44,21 +44,25 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
         removePropertyDeclarationByName(PROPERTY_LABEL_COLOR);
 
         addPropertyDeclaration(new PropertyDeclaration<VisualSignal, Signal.Type>(
-                this, Signal.PROPERTY_TYPE, Signal.Type.class, true, true, true) {
-            protected void setter(VisualSignal object, Signal.Type value) {
+                this, Signal.PROPERTY_TYPE, Signal.Type.class, true, true) {
+            @Override
+            public void setter(VisualSignal object, Signal.Type value) {
                 object.setType(value);
             }
-            protected Signal.Type getter(VisualSignal object) {
+            @Override
+            public Signal.Type getter(VisualSignal object) {
                 return object.getType();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualSignal, Signal.State>(
-                this, Signal.PROPERTY_INITIAL_STATE, Signal.State.class, true, true, true) {
-            protected void setter(VisualSignal object, Signal.State value) {
+                this, Signal.PROPERTY_INITIAL_STATE, Signal.State.class, true, true) {
+            @Override
+            public void setter(VisualSignal object, Signal.State value) {
                 object.setInitialState(value);
             }
-            protected Signal.State getter(VisualSignal object) {
+            @Override
+            public Signal.State getter(VisualSignal object) {
                 return object.getInitialState();
             }
         });

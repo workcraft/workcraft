@@ -14,7 +14,7 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.plugins.dfs.decorations.LogicDecoration;
 
 @Hotkey(KeyEvent.VK_L)
@@ -29,20 +29,24 @@ public class VisualLogic extends VisualDelayComponent {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualLogic, Boolean>(
-                this, Logic.PROPERTY_COMPUTED, Boolean.class, true, true, true) {
+                this, Logic.PROPERTY_COMPUTED, Boolean.class, true, true) {
+            @Override
             public void setter(VisualLogic object, Boolean value) {
                 object.getReferencedLogic().setComputed(value);
             }
+            @Override
             public Boolean getter(VisualLogic object) {
                 return object.getReferencedLogic().isComputed();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualLogic, Boolean>(
-                this, Logic.PROPERTY_EARLY_EVALUATION, Boolean.class, true, true, true) {
+                this, Logic.PROPERTY_EARLY_EVALUATION, Boolean.class, true, true) {
+            @Override
             public void setter(VisualLogic object, Boolean value) {
                 object.getReferencedLogic().setEarlyEvaluation(value);
             }
+            @Override
             public Boolean getter(VisualLogic object) {
                 return object.getReferencedLogic().isEarlyEvaluation();
             }

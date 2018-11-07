@@ -1,10 +1,10 @@
 package org.workcraft.plugins.stg.properties;
 
-import java.util.Map;
-
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.plugins.stg.Stg;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.plugins.stg.Stg;
+
+import java.util.Map;
 
 public class SignalPropertyDescriptor implements PropertyDescriptor {
     private final Stg stg;
@@ -38,11 +38,6 @@ public class SignalPropertyDescriptor implements PropertyDescriptor {
     @Override
     public void setValue(Object value) {
         stg.setName(transition, (String) value);
-    }
-
-    @Override
-    public boolean isWritable() {
-        return true;
     }
 
     @Override

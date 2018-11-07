@@ -1,18 +1,11 @@
 package org.workcraft.dom.visual;
 
-import java.awt.Font;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.Toolkit;
-import java.awt.image.BufferedImage;
-
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.border.Border;
-
 import org.workcraft.plugins.shared.CommonVisualSettings;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class SizeHelper {
 
@@ -152,6 +145,10 @@ public class SizeHelper {
     public static Border getEmptyBorder() {
         int gap = (int) Math.round(0.2 * getBaseSize());
         return BorderFactory.createEmptyBorder(gap, gap, gap, gap);
+    }
+
+    public static Border getTableCellBorder() {
+        return BorderFactory.createEmptyBorder(1, 3, 1, 1);
     }
 
     public static Insets getTextMargin() {

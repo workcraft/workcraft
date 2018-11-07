@@ -1,7 +1,7 @@
 package org.workcraft.plugins.graph.properties;
 
 import org.workcraft.dom.Node;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.graph.Graph;
 import org.workcraft.plugins.graph.Symbol;
 import org.workcraft.plugins.graph.Vertex;
@@ -58,11 +58,6 @@ public class VertexSymbolPropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public boolean isWritable() {
-        return true;
-    }
-
-    @Override
     public boolean isCombinable() {
         return true;
     }
@@ -71,4 +66,5 @@ public class VertexSymbolPropertyDescriptor implements PropertyDescriptor {
     public boolean isTemplatable() {
         return true;
     }
+
 }

@@ -1,12 +1,10 @@
 package org.workcraft.gui;
 
-import java.awt.BorderLayout;
+import org.workcraft.gui.properties.Properties;
+import org.workcraft.gui.properties.PropertyEditorTable;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
-import org.workcraft.gui.propertyeditor.Properties;
-import org.workcraft.gui.propertyeditor.PropertyEditorTable;
+import javax.swing.*;
+import java.awt.*;
 
 @SuppressWarnings("serial")
 public class PropertyEditorWindow extends JPanel {
@@ -23,27 +21,21 @@ public class PropertyEditorWindow extends JPanel {
         empty = true;
     }
 
-    public Properties getObject() {
-        return propertyTable.getObject();
-    }
-
-    public void setObject(Properties o) {
+    public void set(Properties properties) {
         removeAll();
-        propertyTable.setObject(o);
+        propertyTable.assign(properties);
         add(scrollPane, BorderLayout.CENTER);
         validate();
         repaint();
-        empty = o.getDescriptors().size() == 0;
+        empty = properties.getDescriptors().size() == 0;
     }
 
-    public void clearObject() {
-        if (propertyTable.getObject() != null) {
-            removeAll();
-            propertyTable.clearObject();
-            add(disabledPanel, BorderLayout.CENTER);
-            validate();
-            repaint();
-        }
+    public void clear() {
+        removeAll();
+        propertyTable.clear();
+        add(disabledPanel, BorderLayout.CENTER);
+        validate();
+        repaint();
         empty = true;
     }
 

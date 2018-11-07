@@ -1,29 +1,18 @@
 package org.workcraft.plugins.fsm;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Path2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.LinkedList;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
-import org.workcraft.dom.visual.BoundingBoxHelper;
-import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.MixUtils;
-import org.workcraft.dom.visual.Positioning;
-import org.workcraft.dom.visual.Stylable;
-import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.*;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.*;
+import java.util.LinkedList;
 
 @Hotkey(KeyEvent.VK_T)
 @DisplayName("State")
@@ -43,30 +32,36 @@ public class VisualState extends VisualComponent {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualState, Boolean>(
-                this, State.PROPERTY_INITIAL, Boolean.class, true, false, false) {
+                this, State.PROPERTY_INITIAL, Boolean.class, false, false) {
+            @Override
             public void setter(VisualState object, Boolean value) {
                 object.getReferencedState().setInitial(value);
             }
+            @Override
             public Boolean getter(VisualState object) {
                 return object.getReferencedState().isInitial();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualState, Positioning>(
-                this, PROPERTY_INITIAL_MARKER_POSITIONING, Positioning.class, true, true, true) {
-            protected void setter(VisualState object, Positioning value) {
+                this, PROPERTY_INITIAL_MARKER_POSITIONING, Positioning.class, true, true) {
+            @Override
+            public void setter(VisualState object, Positioning value) {
                 object.setInitialMarkerPositioning(value);
             }
-            protected Positioning getter(VisualState object) {
+            @Override
+            public Positioning getter(VisualState object) {
                 return object.getInitialMarkerPositioning();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualState, Boolean>(
-                this, State.PROPERTY_FINAL, Boolean.class, true, true, true) {
+                this, State.PROPERTY_FINAL, Boolean.class, true, true) {
+            @Override
             public void setter(VisualState object, Boolean value) {
                 object.getReferencedState().setFinal(value);
             }
+            @Override
             public Boolean getter(VisualState object) {
                 return object.getReferencedState().isFinal();
             }

@@ -4,7 +4,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
@@ -143,66 +143,78 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualContact, Direction>(
-                this, PROPERTY_DIRECTION, Direction.class, true, true, true) {
-            protected void setter(VisualContact object, Direction value) {
+                this, PROPERTY_DIRECTION, Direction.class, true, true) {
+            @Override
+            public void setter(VisualContact object, Direction value) {
                 object.setDirection(value);
             }
-            protected Direction getter(VisualContact object) {
+            @Override
+            public Direction getter(VisualContact object) {
                 return object.getDirection();
             }
-            public boolean isDisabled() {
-                return getObject().isPin();
+            @Override
+            public boolean isVisible() {
+                return isPort();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualContact, IOType>(
-                this, Contact.PROPERTY_IO_TYPE, IOType.class, true, true, false) {
-            protected void setter(VisualContact object, IOType value) {
+                this, Contact.PROPERTY_IO_TYPE, IOType.class, true, false) {
+            @Override
+            public void setter(VisualContact object, IOType value) {
                 object.getReferencedContact().setIOType(value);
             }
-            protected IOType getter(VisualContact object) {
+            @Override
+            public IOType getter(VisualContact object) {
                 return object.getReferencedContact().getIOType();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualContact, Boolean>(
-                this, Contact.PROPERTY_INIT_TO_ONE, Boolean.class, true, true, true) {
-            protected void setter(VisualContact object, Boolean value) {
+                this, Contact.PROPERTY_INIT_TO_ONE, Boolean.class, true, true) {
+            @Override
+            public void setter(VisualContact object, Boolean value) {
                 object.getReferencedContact().setInitToOne(value);
             }
-            protected Boolean getter(VisualContact object) {
+            @Override
+            public Boolean getter(VisualContact object) {
                 return object.getReferencedContact().getInitToOne();
             }
-            public boolean isDisabled() {
-                VisualContact contact = getObject();
-                return contact.isDriven();
+            @Override
+            public boolean isVisible() {
+                return isDriver();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualContact, Boolean>(
-                this, Contact.PROPERTY_FORCED_INIT, Boolean.class, true, true, true) {
-            protected void setter(VisualContact object, Boolean value) {
+                this, Contact.PROPERTY_FORCED_INIT, Boolean.class, true, true) {
+            @Override
+            public void setter(VisualContact object, Boolean value) {
                 object.getReferencedContact().setForcedInit(value);
             }
-            protected Boolean getter(VisualContact object) {
+            @Override
+            public Boolean getter(VisualContact object) {
                 return object.getReferencedContact().getForcedInit();
             }
-            public boolean isDisabled() {
-                return getObject().isDriven();
+            @Override
+            public boolean isVisible() {
+                return isDriver();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualContact, Boolean>(
-                this, Contact.PROPERTY_PATH_BREAKER, Boolean.class, true, true, true) {
-            protected void setter(VisualContact object, Boolean value) {
+                this, Contact.PROPERTY_PATH_BREAKER, Boolean.class, true, true) {
+            @Override
+            public void setter(VisualContact object, Boolean value) {
                 object.getReferencedContact().setPathBreaker(value);
             }
-            protected Boolean getter(VisualContact object) {
+            @Override
+            public Boolean getter(VisualContact object) {
                 return object.getReferencedContact().getPathBreaker();
             }
-            public boolean isDisabled() {
-                VisualContact contact = getObject();
-                return contact.isPort() || contact.isDriver();
+            @Override
+            public boolean isVisible() {
+                return isPin() && isDriven();
             }
         });
     }

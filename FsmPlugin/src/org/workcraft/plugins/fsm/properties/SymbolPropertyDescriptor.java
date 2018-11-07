@@ -1,14 +1,14 @@
 package org.workcraft.plugins.fsm.properties;
 
-import java.util.Map;
-
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.FormatException;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.Symbol;
+
+import java.util.Map;
 
 public class SymbolPropertyDescriptor implements PropertyDescriptor {
     private final Fsm fsm;
@@ -32,21 +32,6 @@ public class SymbolPropertyDescriptor implements PropertyDescriptor {
     @Override
     public Class<?> getType() {
         return String.class;
-    }
-
-    @Override
-    public boolean isWritable() {
-        return true;
-    }
-
-    @Override
-    public boolean isCombinable() {
-        return false;
-    }
-
-    @Override
-    public boolean isTemplatable() {
-        return false;
     }
 
     @Override

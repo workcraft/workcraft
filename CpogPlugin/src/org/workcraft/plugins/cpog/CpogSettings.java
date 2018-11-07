@@ -1,13 +1,13 @@
 package org.workcraft.plugins.cpog;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
 import org.workcraft.Config;
 import org.workcraft.gui.DesktopApi;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.Settings;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 public class CpogSettings implements Settings {
 
@@ -31,41 +31,49 @@ public class CpogSettings implements Settings {
 
     public CpogSettings() {
         properties.add(new PropertyDeclaration<CpogSettings, String>(
-                this, "Scenco command", String.class, true, false, false) {
-            protected void setter(CpogSettings object, String value) {
+                this, "Scenco command", String.class) {
+            @Override
+            public void setter(CpogSettings object, String value) {
                 setScencoCommand(value);
             }
-            protected String getter(CpogSettings object) {
+            @Override
+            public String getter(CpogSettings object) {
                 return getScencoCommand();
             }
         });
 
         properties.add(new PropertyDeclaration<CpogSettings, String>(
-                this, "Espresso command", String.class, true, false, false) {
-            protected void setter(CpogSettings object, String value) {
+                this, "Espresso command", String.class) {
+            @Override
+            public void setter(CpogSettings object, String value) {
                 setEspressoCommand(value);
             }
-            protected String getter(CpogSettings object) {
+            @Override
+            public String getter(CpogSettings object) {
                 return getEspressoCommand();
             }
         });
 
         properties.add(new PropertyDeclaration<CpogSettings, String>(
-                this, "Abc command", String.class, true, false, false) {
-            protected void setter(CpogSettings object, String value) {
+                this, "Abc command", String.class) {
+            @Override
+            public void setter(CpogSettings object, String value) {
                 setAbcTool(value);
             }
-            protected String getter(CpogSettings object) {
+            @Override
+            public String getter(CpogSettings object) {
                 return getAbcTool();
             }
         });
 
         properties.add(new PropertyDeclaration<CpogSettings, String>(
-                this, "PG miner command", String.class, true, false, false) {
-            protected void setter(CpogSettings object, String value) {
+                this, "PG miner command", String.class) {
+            @Override
+            public void setter(CpogSettings object, String value) {
                 setPgminerCommand(value);
             }
-            protected String getter(CpogSettings object) {
+            @Override
+            public String getter(CpogSettings object) {
                 return getPgminerCommand();
             }
         });

@@ -1,6 +1,6 @@
 package org.workcraft.plugins.wtg.properties;
 
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.dtd.Signal;
 import org.workcraft.plugins.wtg.Guard;
@@ -40,11 +40,6 @@ public class SignalNamePropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public boolean isWritable() {
-        return true;
-    }
-
-    @Override
     public void setValue(Object value) {
         if ((value instanceof String) && (signalName != null) && !signalName.equals(value)) {
             for (Signal signal : wtg.getSignals()) {
@@ -63,16 +58,6 @@ public class SignalNamePropertyDescriptor implements PropertyDescriptor {
                 waveform.setGuard(newGuard);
             }
         }
-    }
-
-    @Override
-    public boolean isCombinable() {
-        return false;
-    }
-
-    @Override
-    public boolean isTemplatable() {
-        return false;
     }
 
 }

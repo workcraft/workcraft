@@ -1,10 +1,10 @@
 package org.workcraft.plugins.fst.properties;
 
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.plugins.fst.Signal;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.plugins.fst.Signal;
 
 public class TypePropertyDescriptor implements PropertyDescriptor {
 
@@ -25,21 +25,6 @@ public class TypePropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public boolean isWritable() {
-        return true;
-    }
-
-    @Override
-    public boolean isCombinable() {
-        return true;
-    }
-
-    @Override
-    public boolean isTemplatable() {
-        return true;
-    }
-
-    @Override
     public Signal.Type getValue() {
         return signal.getType();
     }
@@ -56,6 +41,16 @@ public class TypePropertyDescriptor implements PropertyDescriptor {
             result.put(item, item.toString());
         }
         return result;
+    }
+
+    @Override
+    public boolean isCombinable() {
+        return true;
+    }
+
+    @Override
+    public boolean isTemplatable() {
+        return true;
     }
 
 }

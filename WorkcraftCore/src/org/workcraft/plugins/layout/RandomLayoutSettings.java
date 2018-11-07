@@ -1,12 +1,12 @@
 package org.workcraft.plugins.layout;
 
+import org.workcraft.Config;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.Settings;
+
 import java.util.LinkedList;
 import java.util.List;
-
-import org.workcraft.Config;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
 
 public class RandomLayoutSettings implements Settings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
@@ -29,41 +29,49 @@ public class RandomLayoutSettings implements Settings {
 
     public RandomLayoutSettings() {
         properties.add(new PropertyDeclaration<RandomLayoutSettings, Double>(
-                this, "Start X", Double.class, true, false, false) {
-            protected void setter(RandomLayoutSettings object, Double value) {
+                this, "Start X", Double.class) {
+            @Override
+            public void setter(RandomLayoutSettings object, Double value) {
                 setStartX(value);
             }
-            protected Double getter(RandomLayoutSettings object) {
+            @Override
+            public Double getter(RandomLayoutSettings object) {
                 return getStartX();
             }
         });
 
         properties.add(new PropertyDeclaration<RandomLayoutSettings, Double>(
-                this, "Start Y", Double.class, true, false, false) {
-            protected void setter(RandomLayoutSettings object, Double value) {
+                this, "Start Y", Double.class) {
+            @Override
+            public void setter(RandomLayoutSettings object, Double value) {
                 setStartY(value);
             }
-            protected Double getter(RandomLayoutSettings object) {
+            @Override
+            public Double getter(RandomLayoutSettings object) {
                 return getStartY();
             }
         });
 
         properties.add(new PropertyDeclaration<RandomLayoutSettings, Double>(
-                this, "Range X", Double.class, true, false, false) {
-            protected void setter(RandomLayoutSettings object, Double value) {
+                this, "Range X", Double.class) {
+            @Override
+            public void setter(RandomLayoutSettings object, Double value) {
                 setRangeX(value);
             }
-            protected Double getter(RandomLayoutSettings object) {
+            @Override
+            public Double getter(RandomLayoutSettings object) {
                 return getRangeX();
             }
         });
 
         properties.add(new PropertyDeclaration<RandomLayoutSettings, Double>(
-                this, "Range Y", Double.class, true, false, false) {
-            protected void setter(RandomLayoutSettings object, Double value) {
+                this, "Range Y", Double.class) {
+            @Override
+            public void setter(RandomLayoutSettings object, Double value) {
                 setRangeY(value);
             }
-            protected Double getter(RandomLayoutSettings object) {
+            @Override
+            public Double getter(RandomLayoutSettings object) {
                 return getRangeY();
             }
         });

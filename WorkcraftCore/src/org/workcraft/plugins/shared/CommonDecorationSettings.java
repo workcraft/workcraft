@@ -1,12 +1,13 @@
 package org.workcraft.plugins.shared;
-import java.awt.Color;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.workcraft.Config;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.Settings;
+
+import java.awt.*;
+import java.util.LinkedList;
+import java.util.List;
 
 public class CommonDecorationSettings implements Settings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
@@ -32,66 +33,61 @@ public class CommonDecorationSettings implements Settings {
 
     public CommonDecorationSettings() {
         properties.add(new PropertyDeclaration<CommonDecorationSettings, Color>(
-                this, "Highlighted component color",
-                Color.class, true, false, false) {
+                this, "Highlighted component color", Color.class) {
             @Override
-            protected void setter(CommonDecorationSettings object, Color value) {
+            public void setter(CommonDecorationSettings object, Color value) {
                 setHighlightedComponentColor(value);
             }
             @Override
-            protected Color getter(CommonDecorationSettings object) {
+            public Color getter(CommonDecorationSettings object) {
                 return getHighlightedComponentColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonDecorationSettings, Color>(
-                this, "Selected component color",
-                Color.class, true, false, false) {
+                this, "Selected component color", Color.class) {
             @Override
-            protected void setter(CommonDecorationSettings object, Color value) {
+            public void setter(CommonDecorationSettings object, Color value) {
                 setSelectedComponentColor(value);
             }
             @Override
-            protected Color getter(CommonDecorationSettings object) {
+            public Color getter(CommonDecorationSettings object) {
                 return getSelectedComponentColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonDecorationSettings, Color>(
-                this, "Shaded component color",
-                Color.class, true, false, false) {
+                this, "Shaded component color", Color.class) {
             @Override
-            protected void setter(CommonDecorationSettings object, Color value) {
+            public void setter(CommonDecorationSettings object, Color value) {
                 setShadedComponentColor(value);
             }
             @Override
-            protected Color getter(CommonDecorationSettings object) {
+            public Color getter(CommonDecorationSettings object) {
                 return getShadedComponentColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonDecorationSettings, Color>(
-                this, "Excited component color",
-                Color.class, true, false, false) {
+                this, "Excited component color", Color.class) {
             @Override
-            protected void setter(CommonDecorationSettings object, Color value) {
+            public void setter(CommonDecorationSettings object, Color value) {
                 setExcitedComponentColor(value);
             }
             @Override
-            protected Color getter(CommonDecorationSettings object) {
+            public Color getter(CommonDecorationSettings object) {
                 return getExcitedComponentColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonDecorationSettings, Color>(
-                this, "Suggested component background",
-                Color.class, true, false, false) {
+                this, "Suggested component background", Color.class) {
             @Override
-            protected void setter(CommonDecorationSettings object, Color value) {
+            public void setter(CommonDecorationSettings object, Color value) {
                 setSuggestedComponentColor(value);
             }
             @Override
-            protected Color getter(CommonDecorationSettings object) {
+            public Color getter(CommonDecorationSettings object) {
                 return getSuggestedComponentColor();
             }
         });

@@ -1,11 +1,11 @@
 package org.workcraft.plugins.policy.properties;
 
-import java.awt.Color;
-import java.util.Map;
-
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.policy.VisualBundle;
 import org.workcraft.plugins.policy.VisualPolicyNet;
+
+import java.awt.*;
+import java.util.Map;
 
 public final class BundleColorPropertyDescriptor implements PropertyDescriptor {
     private final VisualPolicyNet model;
@@ -39,21 +39,6 @@ public final class BundleColorPropertyDescriptor implements PropertyDescriptor {
     @Override
     public void setValue(Object value) {
         bundle.setColor((Color) value);
-    }
-
-    @Override
-    public boolean isWritable() {
-        return true;
-    }
-
-    @Override
-    public boolean isCombinable() {
-        return false;
-    }
-
-    @Override
-    public boolean isTemplatable() {
-        return false;
     }
 
 }

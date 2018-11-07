@@ -8,7 +8,7 @@ import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
-import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.plugins.dtd.VisualDtd;
 import org.workcraft.plugins.wtg.properties.SignalDeclarationPropertyDescriptor;
 import org.workcraft.plugins.wtg.properties.SignalNamePropertyDescriptor;

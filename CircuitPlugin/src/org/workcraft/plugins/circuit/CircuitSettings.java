@@ -2,9 +2,9 @@ package org.workcraft.plugins.circuit;
 
 import org.workcraft.Config;
 import org.workcraft.gui.DesktopApi;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.Settings;
 import org.workcraft.plugins.circuit.utils.Gate2;
 import org.workcraft.plugins.circuit.utils.Gate3;
 import org.workcraft.plugins.stg.Mutex;
@@ -109,253 +109,297 @@ public class CircuitSettings implements Settings {
 
     public CircuitSettings() {
         properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
-                this, "Show contacts", Boolean.class, true, false, false) {
-            protected void setter(CircuitSettings object, Boolean value) {
+                this, "Show contacts", Boolean.class) {
+            @Override
+            public void setter(CircuitSettings object, Boolean value) {
                 setShowContacts(value);
             }
-            protected Boolean getter(CircuitSettings object) {
+            @Override
+            public Boolean getter(CircuitSettings object) {
                 return getShowContacts();
             }
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
-                this, "Show names of zero-dealy components", Boolean.class, true, false, false) {
-            protected void setter(CircuitSettings object, Boolean value) {
+                this, "Show names of zero-dealy components", Boolean.class) {
+            @Override
+            public void setter(CircuitSettings object, Boolean value) {
                 setShowZeroDelayNames(value);
             }
-            protected Boolean getter(CircuitSettings object) {
+            @Override
+            public Boolean getter(CircuitSettings object) {
                 return getShowZeroDelayNames();
             }
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, Color>(
-                this, "Active wire", Color.class, true, false, false) {
-            protected void setter(CircuitSettings object, Color value) {
+                this, "Active wire", Color.class) {
+            @Override
+            public void setter(CircuitSettings object, Color value) {
                 setActiveWireColor(value);
             }
-            protected Color getter(CircuitSettings object) {
+            @Override
+            public Color getter(CircuitSettings object) {
                 return getActiveWireColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, Color>(
-                this, "Inactive wire", Color.class, true, false, false) {
-            protected void setter(CircuitSettings object, Color value) {
+                this, "Inactive wire", Color.class) {
+            @Override
+            public void setter(CircuitSettings object, Color value) {
                 setInactiveWireColor(value);
             }
-            protected Color getter(CircuitSettings object) {
+            @Override
+            public Color getter(CircuitSettings object) {
                 return getInactiveWireColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, Color>(
-                this, "Gate with conflict of initialisation", Color.class, true, false, false) {
-            protected void setter(CircuitSettings object, Color value) {
+                this, "Gate with conflict of initialisation", Color.class) {
+            @Override
+            public void setter(CircuitSettings object, Color value) {
                 setConflictInitGateColor(value);
             }
-            protected Color getter(CircuitSettings object) {
+            @Override
+            public Color getter(CircuitSettings object) {
                 return getConflictInitGateColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, Color>(
-                this, "Gate with forced initial state", Color.class, true, false, false) {
-            protected void setter(CircuitSettings object, Color value) {
+                this, "Gate with forced initial state", Color.class) {
+            @Override
+            public void setter(CircuitSettings object, Color value) {
                 setForcedInitGateColor(value);
             }
-            protected Color getter(CircuitSettings object) {
+            @Override
+            public Color getter(CircuitSettings object) {
                 return getForcedInitGateColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, Color>(
-                this, "Gate with propagated initial state", Color.class, true, false, false) {
-            protected void setter(CircuitSettings object, Color value) {
+                this, "Gate with propagated initial state", Color.class) {
+            @Override
+            public void setter(CircuitSettings object, Color value) {
                 setPropagatedInitGateColor(value);
             }
-            protected Color getter(CircuitSettings object) {
+            @Override
+            public Color getter(CircuitSettings object) {
                 return getPropagatedInitGateColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, Double>(
-                this, "Border width", Double.class, true, false, false) {
-            protected void setter(CircuitSettings object, Double value) {
+                this, "Border width", Double.class) {
+            @Override
+            public void setter(CircuitSettings object, Double value) {
                 setBorderWidth(value);
             }
-            protected Double getter(CircuitSettings object) {
+            @Override
+            public Double getter(CircuitSettings object) {
                 return getBorderWidth();
             }
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, Double>(
-                this, "Wire width", Double.class, true, false, false) {
-            protected void setter(CircuitSettings object, Double value) {
+                this, "Wire width", Double.class) {
+            @Override
+            public void setter(CircuitSettings object, Double value) {
                 setWireWidth(value);
             }
-            protected Double getter(CircuitSettings object) {
+            @Override
+            public Double getter(CircuitSettings object) {
                 return getWireWidth();
             }
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
-                this, "Simplify generated circuit STG", Boolean.class, true, false, false) {
-            protected void setter(CircuitSettings object, Boolean value) {
+                this, "Simplify generated circuit STG", Boolean.class) {
+            @Override
+            public void setter(CircuitSettings object, Boolean value) {
                 setSimplifyStg(value);
             }
-            protected Boolean getter(CircuitSettings object) {
+            @Override
+            public Boolean getter(CircuitSettings object) {
                 return getSimplifyStg();
             }
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Gate library for technology mapping", String.class, true, false, false) {
-            protected void setter(CircuitSettings object, String value) {
+                this, "Gate library for technology mapping", String.class) {
+            @Override
+            public void setter(CircuitSettings object, String value) {
                 setGateLibrary(value);
             }
-            protected String getter(CircuitSettings object) {
+            @Override
+            public String getter(CircuitSettings object) {
                 return getGateLibrary();
             }
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Substitution rules for export", String.class, true, false, false) {
-            protected void setter(CircuitSettings object, String value) {
+                this, "Substitution rules for export", String.class) {
+            @Override
+            public void setter(CircuitSettings object, String value) {
                 setSubstitutionLibrary(value);
             }
-            protected String getter(CircuitSettings object) {
+            @Override
+            public String getter(CircuitSettings object) {
                 return getSubstitutionLibrary();
             }
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "BUF name and input-output pins", String.class, true, false, false) {
-            protected void setter(CircuitSettings object, String value) {
+                this, "BUF name and input-output pins", String.class) {
+            @Override
+            public void setter(CircuitSettings object, String value) {
                 if (parseGate2Data(value) != null) {
                     setBufData(value);
                 } else {
                     DialogUtils.showError("BUF description format is incorrect. It should be as follows:\n" + defaultBufData);
                 }
             }
-            protected String getter(CircuitSettings object) {
+            @Override
+            public String getter(CircuitSettings object) {
                 return getBufData();
             }
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "AND2 name and input-output pins", String.class, true, false, false) {
-            protected void setter(CircuitSettings object, String value) {
+                this, "AND2 name and input-output pins", String.class) {
+            @Override
+            public void setter(CircuitSettings object, String value) {
                 if (parseGate3Data(value) != null) {
                     setAndData(value);
                 } else {
                     DialogUtils.showError("AND2 description format is incorrect. It should be as follows:\n" + defaultAndData);
                 }
             }
-            protected String getter(CircuitSettings object) {
+            @Override
+            public String getter(CircuitSettings object) {
                 return getAndData();
             }
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "OR2 name and input-output pins", String.class, true, false, false) {
-            protected void setter(CircuitSettings object, String value) {
+                this, "OR2 name and input-output pins", String.class) {
+            @Override
+            public void setter(CircuitSettings object, String value) {
                 if (parseGate3Data(value) != null) {
                     setOrData(value);
                 } else {
                     DialogUtils.showError("OR2 description format is incorrect. It should be as follows:\n" + defaultOrData);
                 }
             }
-            protected String getter(CircuitSettings object) {
+            @Override
+            public String getter(CircuitSettings object) {
                 return getOrData();
             }
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "NAND2 name and input-output pins", String.class, true, false, false) {
-            protected void setter(CircuitSettings object, String value) {
+                this, "NAND2 name and input-output pins", String.class) {
+            @Override
+            public void setter(CircuitSettings object, String value) {
                 if (parseGate3Data(value) != null) {
                     setNandData(value);
                 } else {
                     DialogUtils.showError("NAND2 description format is incorrect. It should be as follows:\n" + defaultAndData);
                 }
             }
-            protected String getter(CircuitSettings object) {
+            @Override
+            public String getter(CircuitSettings object) {
                 return getNandData();
             }
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "NOR2-gate name and input-output pins", String.class, true, false, false) {
-            protected void setter(CircuitSettings object, String value) {
+                this, "NOR2-gate name and input-output pins", String.class) {
+            @Override
+            public void setter(CircuitSettings object, String value) {
                 if (parseGate3Data(value) != null) {
                     setNorData(value);
                 } else {
                     DialogUtils.showError("NOR2 description format is incorrect. It should be as follows:\n" + defaultOrData);
                 }
             }
-            protected String getter(CircuitSettings object) {
+            @Override
+            public String getter(CircuitSettings object) {
                 return getNorData();
             }
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "NAND2B name and input-output pins", String.class, true, false, false) {
-            protected void setter(CircuitSettings object, String value) {
+                this, "NAND2B name and input-output pins", String.class) {
+            @Override
+            public void setter(CircuitSettings object, String value) {
                 if (parseGate3Data(value) != null) {
                     setNandbData(value);
                 } else {
                     DialogUtils.showError("NAND2B description format is incorrect. It should be as follows:\n" + defaultAndData);
                 }
             }
-            protected String getter(CircuitSettings object) {
+            @Override
+            public String getter(CircuitSettings object) {
                 return getNandbData();
             }
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "NOR2B-gate name and input-output pins", String.class, true, false, false) {
-            protected void setter(CircuitSettings object, String value) {
+                this, "NOR2B-gate name and input-output pins", String.class) {
+            @Override
+            public void setter(CircuitSettings object, String value) {
                 if (parseGate3Data(value) != null) {
                     setNorbData(value);
                 } else {
                     DialogUtils.showError("NOR2B description format is incorrect. It should be as follows:\n" + defaultOrData);
                 }
             }
-            protected String getter(CircuitSettings object) {
+            @Override
+            public String getter(CircuitSettings object) {
                 return getNorbData();
             }
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Mutex name and request-grant pairs", String.class, true, false, false) {
-            protected void setter(CircuitSettings object, String value) {
+                this, "Mutex name and request-grant pairs", String.class) {
+            @Override
+            public void setter(CircuitSettings object, String value) {
                 if (parseMutexData(value) != null) {
                     setMutexData(value);
                 } else {
                     DialogUtils.showError("Mutex description format is incorrect. It should be as follows:\n" + defaultMutexData);
                 }
             }
-            protected String getter(CircuitSettings object) {
+            @Override
+            public String getter(CircuitSettings object) {
                 return getMutexData();
             }
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Bus split suffix ($ is replaced by index)", String.class, true, false, false) {
-            protected void setter(CircuitSettings object, String value) {
+                this, "Bus split suffix ($ is replaced by index)", String.class) {
+            @Override
+            public void setter(CircuitSettings object, String value) {
                 setBusSuffix(value);
             }
-            protected String getter(CircuitSettings object) {
+            @Override
+            public String getter(CircuitSettings object) {
                 return getBusSuffix();
             }
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Reset port name", String.class, true, false, false) {
-            protected void setter(CircuitSettings object, String value) {
+                this, "Reset port name", String.class) {
+            @Override
+            public void setter(CircuitSettings object, String value) {
                 setResetName(value);
             }
-            protected String getter(CircuitSettings object) {
+            @Override
+            public String getter(CircuitSettings object) {
                 return getResetName();
             }
         });

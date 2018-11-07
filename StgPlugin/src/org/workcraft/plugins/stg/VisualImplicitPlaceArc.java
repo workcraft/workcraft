@@ -6,10 +6,8 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.observation.StateEvent;
-import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.shared.CommonVisualSettings;
@@ -49,30 +47,36 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualImplicitPlaceArc, Integer>(
-                this, Place.PROPERTY_TOKENS, Integer.class, true, true, true) {
+                this, Place.PROPERTY_TOKENS, Integer.class, true, true) {
+            @Override
             public void setter(VisualImplicitPlaceArc object, Integer value) {
                 object.getImplicitPlace().setTokens(value);
             }
+            @Override
             public Integer getter(VisualImplicitPlaceArc object) {
                 return object.getImplicitPlace().getTokens();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualImplicitPlaceArc, Integer>(
-                this, Place.PROPERTY_CAPACITY, Integer.class, true, true, true) {
+                this, Place.PROPERTY_CAPACITY, Integer.class, true, true) {
+            @Override
             public void setter(VisualImplicitPlaceArc object, Integer value) {
                 object.getImplicitPlace().setCapacity(value);
             }
+            @Override
             public Integer getter(VisualImplicitPlaceArc object) {
                 return object.getImplicitPlace().getCapacity();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualImplicitPlaceArc, Color>(
-                this, VisualPlace.PROPERTY_TOKEN_COLOR, Color.class, true, true, true) {
+                this, VisualPlace.PROPERTY_TOKEN_COLOR, Color.class, true, true) {
+            @Override
             public void setter(VisualImplicitPlaceArc object, Color value) {
                 object.setTokenColor(value);
             }
+            @Override
             public Color getter(VisualImplicitPlaceArc object) {
                 return object.getTokenColor();
             }
@@ -80,11 +84,7 @@ public class VisualImplicitPlaceArc extends VisualConnection {
     }
 
     private void addPlaceObserver(Place implicitPlace) {
-        implicitPlace.addObserver(new StateObserver() {
-            public void notify(StateEvent e) {
-                observableStateImpl.sendNotification(e);
-            }
-        });
+        implicitPlace.addObserver(e -> observableStateImpl.sendNotification(e));
     }
 
     public void setImplicitPlaceArcDependencies(MathConnection refCon1, MathConnection refCon2, StgPlace implicitPlace) {

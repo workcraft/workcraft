@@ -6,7 +6,7 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.SwitchComponent.Type;
 import org.workcraft.plugins.xmas.components.SwitchComponent.Val;
@@ -32,20 +32,24 @@ public class VisualSwitchComponent extends VisualXmasComponent {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualSwitchComponent, Type>(
-                this, SwitchComponent.PROPERTY_TYPE, Type.class, true, true, true) {
-            protected void setter(VisualSwitchComponent object, Type value) {
+                this, SwitchComponent.PROPERTY_TYPE, Type.class, true, true) {
+            @Override
+            public void setter(VisualSwitchComponent object, Type value) {
                 object.getReferencedSwitchComponent().setType(value);
             }
-            protected Type getter(VisualSwitchComponent object) {
+            @Override
+            public Type getter(VisualSwitchComponent object) {
                 return object.getReferencedSwitchComponent().getType();
             }
         });
         addPropertyDeclaration(new PropertyDeclaration<VisualSwitchComponent, Val>(
-                this, SwitchComponent.PROPERTY_VAL, Val.class, true, true, true) {
-            protected void setter(VisualSwitchComponent object, Val value) {
+                this, SwitchComponent.PROPERTY_VAL, Val.class, true, true) {
+            @Override
+            public void setter(VisualSwitchComponent object, Val value) {
                 object.getReferencedSwitchComponent().setVal(value);
             }
-            protected Val getter(VisualSwitchComponent object) {
+            @Override
+            public Val getter(VisualSwitchComponent object) {
                 return object.getReferencedSwitchComponent().getVal();
             }
         });

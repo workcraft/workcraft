@@ -4,7 +4,7 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.utils.StringGenerator;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.cpog.*;
 
 import java.lang.reflect.InvocationTargetException;
@@ -72,11 +72,6 @@ public class BooleanFormulaPropertyDescriptor implements PropertyDescriptor {
                 throw new InvocationTargetException(e);
             }
         }
-    }
-
-    @Override
-    public boolean isWritable() {
-        return true;
     }
 
     @Override

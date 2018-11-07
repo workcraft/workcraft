@@ -12,9 +12,10 @@ import org.workcraft.gui.*;
 import org.workcraft.gui.actions.ActionButton;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
-import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.gui.propertyeditor.Properties;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.gui.properties.ModelProperties;
+import org.workcraft.gui.properties.Properties;
+import org.workcraft.gui.properties.PropertyDerivative;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.shared.CommonEditorSettings;
@@ -358,49 +359,17 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             @Override
             public Collection<PropertyDescriptor> getDescriptors() {
                 ArrayList<PropertyDescriptor> list = new ArrayList<>();
-                for (final PropertyDescriptor d : mix.getDescriptors()) {
-                    list.add(new PropertyDescriptor() {
-                        @Override
-                        public void setValue(Object value) throws InvocationTargetException {
-                            we.saveMemento();
-                            d.setValue(value);
-                        }
+                for (final PropertyDescriptor descriptor : mix.getDescriptors()) {
+                    if (descriptor.isVisible()) {
+                        list.add(new PropertyDerivative(descriptor) {
+                            @Override
+                            public void setValue(Object value) throws InvocationTargetException {
+                                we.saveMemento();
+                                super.setValue(value);
+                            }
 
-                        @Override
-                        public Object getValue() throws InvocationTargetException {
-                            return d.getValue();
-                        }
-
-                        @Override
-                        public Class<?> getType() {
-                            return d.getType();
-                        }
-
-                        @Override
-                        public String getName() {
-                            return d.getName();
-                        }
-
-                        @Override
-                        public Map<? extends Object, String> getChoice() {
-                            return d.getChoice();
-                        }
-
-                        @Override
-                        public boolean isWritable() {
-                            return d.isWritable();
-                        }
-
-                        @Override
-                        public boolean isCombinable() {
-                            return d.isCombinable();
-                        }
-
-                        @Override
-                        public boolean isTemplatable() {
-                            return d.isTemplatable();
-                        }
-                    });
+                        });
+                    }
                 }
                 return list;
             }
@@ -414,8 +383,8 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     private ModelProperties getNodeProperties(VisualNode node) {
         ModelProperties result = new ModelProperties();
         Properties properties = getModel().getProperties(node);
-        result.addApplicable(properties.getDescriptors());
-        result.addApplicable(node.getDescriptors());
+        result.addAll(properties.getDescriptors());
+        result.addAll(node.getDescriptors());
         return result;
     }
 
@@ -423,7 +392,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         ModelProperties allProperties = new ModelProperties();
         for (VisualNode node: nodes) {
             Properties properties = getNodeProperties(node);
-            allProperties.addApplicable(properties.getDescriptors());
+            allProperties.addAll(properties.getDescriptors());
         }
         // Combine duplicates by creating a new ModelProperties
         return new ModelProperties(allProperties.getDescriptors());
@@ -484,9 +453,9 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         final PropertyEditorWindow propertyEditorWindow = mainWindow.getPropertyView();
         GraphEditorTool tool = toolbox.getSelectedTool();
         if ((tool == null) || !tool.requiresPropertyEditor() || properties.getDescriptors().isEmpty()) {
-            propertyEditorWindow.clearObject();
+            propertyEditorWindow.clear();
         } else {
-            propertyEditorWindow.setObject(propertiesWrapper(properties));
+            propertyEditorWindow.set(propertiesWrapper(properties));
             if ((templateNode != null) && (defaultNode != null)) {
                 JButton resetButton = new JButton(RESET_TO_DEFAULTS);
                 resetButton.addActionListener(new TemplateResetActionListener(templateNode, defaultNode));

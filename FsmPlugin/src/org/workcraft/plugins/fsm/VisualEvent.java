@@ -1,26 +1,20 @@
 package org.workcraft.plugins.fsm;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-
-import org.workcraft.dom.visual.BoundingBoxHelper;
-import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.Positioning;
-import org.workcraft.dom.visual.RenderedText;
-import org.workcraft.dom.visual.Stylable;
+import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.Geometry;
+
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 public class VisualEvent extends VisualConnection {
     // Epsilon symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
@@ -48,11 +42,13 @@ public class VisualEvent extends VisualConnection {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualEvent, Color>(
-                this, PROPERTY_LABEL_COLOR, Color.class, true, true, true) {
-            protected void setter(VisualEvent object, Color value) {
+                this, PROPERTY_LABEL_COLOR, Color.class, true, true) {
+            @Override
+            public void setter(VisualEvent object, Color value) {
                 object.setLabelColor(value);
             }
-            protected Color getter(VisualEvent object) {
+            @Override
+            public Color getter(VisualEvent object) {
                 return object.getLabelColor();
             }
         });

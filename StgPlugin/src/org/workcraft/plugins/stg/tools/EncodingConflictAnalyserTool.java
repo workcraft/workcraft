@@ -1,39 +1,26 @@
 package org.workcraft.plugins.stg.tools;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.HashSet;
-
-import javax.swing.ButtonGroup;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellRenderer;
-
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 import org.workcraft.plugins.stg.VisualNamedTransition;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
 
@@ -263,7 +250,7 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
             JLabel result = null;
-            label.setBorder(PropertyEditorTable.BORDER_RENDER);
+            label.setBorder(SizeHelper.getTableCellBorder());
             if ((cores != null) && (row >= 0) && (row < cores.size())) {
                 Core core = cores.get(row);
                 label.setText((String) value);
@@ -361,7 +348,7 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
             JLabel result = null;
-            label.setBorder(PropertyEditorTable.BORDER_RENDER);
+            label.setBorder(SizeHelper.getTableCellBorder());
             if (density != null) {
                 label.setText((String) value);
                 Color color = density.getLevelColor(column);

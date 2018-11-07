@@ -9,7 +9,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.ConnectionTool;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
-import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.tools.PetriPlaceGeneratorTool;
 import org.workcraft.plugins.policy.observers.SpanningTreeInvalidator;

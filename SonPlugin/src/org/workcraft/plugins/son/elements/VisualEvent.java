@@ -8,7 +8,7 @@ import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.util.Interval;
@@ -35,10 +35,12 @@ public class VisualEvent extends VisualComponent implements VisualTransitionNode
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualEvent, Boolean>(
-                this, "Fault", Boolean.class, true, true, true) {
+                this, "Fault", Boolean.class, true, true) {
+            @Override
             public void setter(VisualEvent object, Boolean value) {
                 ((Event) getReferencedComponent()).setFaulty(value);
             }
+            @Override
             public Boolean getter(VisualEvent object) {
                 return     ((Event) getReferencedComponent()).isFaulty();
             }

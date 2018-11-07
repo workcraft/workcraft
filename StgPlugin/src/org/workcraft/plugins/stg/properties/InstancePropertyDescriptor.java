@@ -1,10 +1,10 @@
 package org.workcraft.plugins.stg.properties;
 
-import java.util.Map;
-
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.stg.NamedTransition;
 import org.workcraft.plugins.stg.Stg;
+
+import java.util.Map;
 
 public class InstancePropertyDescriptor implements PropertyDescriptor {
     private final Stg stg;
@@ -38,21 +38,6 @@ public class InstancePropertyDescriptor implements PropertyDescriptor {
     @Override
     public Class<?> getType() {
         return int.class;
-    }
-
-    @Override
-    public boolean isWritable() {
-        return true;
-    }
-
-    @Override
-    public boolean isCombinable() {
-        return false;
-    }
-
-    @Override
-    public boolean isTemplatable() {
-        return false;
     }
 
 }

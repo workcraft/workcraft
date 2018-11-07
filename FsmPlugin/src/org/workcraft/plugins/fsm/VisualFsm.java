@@ -10,7 +10,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.*;
-import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.plugins.fsm.observers.FirstStateSupervisor;
 import org.workcraft.plugins.fsm.properties.EventSymbolPropertyDescriptor;
 import org.workcraft.plugins.fsm.properties.SymbolPropertyDescriptor;

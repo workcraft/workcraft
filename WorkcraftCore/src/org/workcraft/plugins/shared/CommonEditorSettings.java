@@ -1,12 +1,13 @@
 package org.workcraft.plugins.shared;
-import java.awt.Color;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.workcraft.Config;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.Settings;
+
+import java.awt.*;
+import java.util.LinkedList;
+import java.util.List;
 
 public class CommonEditorSettings implements Settings {
 
@@ -83,209 +84,193 @@ public class CommonEditorSettings implements Settings {
 
     public CommonEditorSettings() {
         properties.add(new PropertyDeclaration<CommonEditorSettings, Color>(
-                this, "Background color",
-                Color.class, true, false, false) {
+                this, "Background color", Color.class) {
             @Override
-            protected void setter(CommonEditorSettings object, Color value) {
+            public void setter(CommonEditorSettings object, Color value) {
                 setBackgroundColor(value);
             }
             @Override
-            protected Color getter(CommonEditorSettings object) {
+            public Color getter(CommonEditorSettings object) {
                 return getBackgroundColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
-                this, "Show grid",
-                Boolean.class, true, false, false) {
+                this, "Show grid", Boolean.class) {
             @Override
-            protected void setter(CommonEditorSettings object, Boolean value) {
+            public void setter(CommonEditorSettings object, Boolean value) {
                 setGridVisibility(value);
             }
             @Override
-            protected Boolean getter(CommonEditorSettings object) {
+            public Boolean getter(CommonEditorSettings object) {
                 return getGridVisibility();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
-                this, "Use light grid",
-                Boolean.class, true, false, false) {
+                this, "Use light grid", Boolean.class) {
             @Override
-            protected void setter(CommonEditorSettings object, Boolean value) {
+            public void setter(CommonEditorSettings object, Boolean value) {
                 setLightGrid(value);
             }
             @Override
-            protected Boolean getter(CommonEditorSettings object) {
+            public Boolean getter(CommonEditorSettings object) {
                 return getLightGrid();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonEditorSettings, Double>(
-                this, "Light grid size (mm)",
-                Double.class, true, false, false) {
+                this, "Light grid size (mm)", Double.class) {
             @Override
-            protected void setter(CommonEditorSettings object, Double value) {
+            public void setter(CommonEditorSettings object, Double value) {
                 setLightGridSize(value);
             }
             @Override
-            protected Double getter(CommonEditorSettings object) {
+            public Double getter(CommonEditorSettings object) {
                 return getLightGridSize();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonEditorSettings, Color>(
-                this, "Grid color",
-                Color.class, true, false, false) {
+                this, "Grid color", Color.class) {
             @Override
-            protected void setter(CommonEditorSettings object, Color value) {
+            public void setter(CommonEditorSettings object, Color value) {
                 setGridColor(value);
             }
             @Override
-            protected Color getter(CommonEditorSettings object) {
+            public Color getter(CommonEditorSettings object) {
                 return getGridColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
-                this, "Show rulers",
-                Boolean.class, true, false, false) {
+                this, "Show rulers", Boolean.class) {
             @Override
-            protected void setter(CommonEditorSettings object, Boolean value) {
+            public void setter(CommonEditorSettings object, Boolean value) {
                 setRulerVisibility(value);
             }
             @Override
-            protected Boolean getter(CommonEditorSettings object) {
+            public Boolean getter(CommonEditorSettings object) {
                 return getRulerVisibility();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
-                this, "Show hints",
-                Boolean.class, true, false, false) {
+                this, "Show hints", Boolean.class) {
             @Override
-            protected void setter(CommonEditorSettings object, Boolean value) {
+            public void setter(CommonEditorSettings object, Boolean value) {
                 setHintVisibility(value);
             }
             @Override
-            protected Boolean getter(CommonEditorSettings object) {
+            public Boolean getter(CommonEditorSettings object) {
                 return getHintVisibility();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonEditorSettings, Color>(
-                this, "Hint color",
-                Color.class, true, false, false) {
+                this, "Hint color", Color.class) {
             @Override
-            protected void setter(CommonEditorSettings object, Color value) {
+            public void setter(CommonEditorSettings object, Color value) {
                 setHintColor(value);
             }
             @Override
-            protected Color getter(CommonEditorSettings object) {
+            public Color getter(CommonEditorSettings object) {
                 return getHintColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
-                this, "Show issues",
-                Boolean.class, true, false, false) {
+                this, "Show issues", Boolean.class) {
             @Override
-            protected void setter(CommonEditorSettings object, Boolean value) {
+            public void setter(CommonEditorSettings object, Boolean value) {
                 setIssueVisibility(value);
             }
             @Override
-            protected Boolean getter(CommonEditorSettings object) {
+            public Boolean getter(CommonEditorSettings object) {
                 return getIssueVisibility();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonEditorSettings, Color>(
-                this, "Issue color",
-                Color.class, true, false, false) {
+                this, "Issue color", Color.class) {
             @Override
-            protected void setter(CommonEditorSettings object, Color value) {
+            public void setter(CommonEditorSettings object, Color value) {
                 setIssueColor(value);
             }
             @Override
-            protected Color getter(CommonEditorSettings object) {
+            public Color getter(CommonEditorSettings object) {
                 return getIssueColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonEditorSettings, Integer>(
-                this, "Issue visibility interval (ms)",
-                Integer.class, true, false, false) {
+                this, "Issue visibility interval (ms)", Integer.class) {
             @Override
-            protected void setter(CommonEditorSettings object, Integer value) {
+            public void setter(CommonEditorSettings object, Integer value) {
                 setFlashInterval(value);
             }
             @Override
-            protected Integer getter(CommonEditorSettings object) {
+            public Integer getter(CommonEditorSettings object) {
                 return getFlashInterval();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonEditorSettings, Integer>(
-                this, "Number of recent files (0-99)",
-                Integer.class, true, false, false) {
+                this, "Number of recent files (0-99)", Integer.class) {
             @Override
-            protected void setter(CommonEditorSettings object, Integer value) {
+            public void setter(CommonEditorSettings object, Integer value) {
                 setRecentCount(value);
             }
             @Override
-            protected Integer getter(CommonEditorSettings object) {
+            public Integer getter(CommonEditorSettings object) {
                 return getRecentCount();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonEditorSettings, TitleStyle>(
-                this, "Model title style",
-                TitleStyle.class, true, false, false) {
+                this, "Model title style", TitleStyle.class) {
             @Override
-            protected void setter(CommonEditorSettings object, TitleStyle value) {
+            public void setter(CommonEditorSettings object, TitleStyle value) {
                 setTitleStyle(value);
             }
             @Override
-            protected TitleStyle getter(CommonEditorSettings object) {
+            public TitleStyle getter(CommonEditorSettings object) {
                 return getTitleStyle();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
-                this, "Show names as absolute paths",
-                Boolean.class, true, false, false) {
+                this, "Show names as absolute paths", Boolean.class) {
             @Override
-            protected void setter(CommonEditorSettings object, Boolean value) {
+            public void setter(CommonEditorSettings object, Boolean value) {
                 setShowAbsolutePaths(value);
             }
             @Override
-            protected Boolean getter(CommonEditorSettings object) {
+            public Boolean getter(CommonEditorSettings object) {
                 return getShowAbsolutePaths();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
-                this, "Open non-visual models (imported or converted)",
-                Boolean.class, true, false, false) {
+                this, "Open non-visual models (imported or converted)", Boolean.class) {
             @Override
-            protected void setter(CommonEditorSettings object, Boolean value) {
+            public void setter(CommonEditorSettings object, Boolean value) {
                 setOpenNonvisual(value);
             }
             @Override
-            protected Boolean getter(CommonEditorSettings object) {
+            public Boolean getter(CommonEditorSettings object) {
                 return getOpenNonvisual();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonEditorSettings, Integer>(
-                this, "Minimal redraw interval (ms)",
-                Integer.class, true, false, false) {
+                this, "Minimal redraw interval (ms)", Integer.class) {
             @Override
-            protected void setter(CommonEditorSettings object, Integer value) {
+            public void setter(CommonEditorSettings object, Integer value) {
                 setRedrawInterval(value);
             }
             @Override
-            protected Integer getter(CommonEditorSettings object) {
+            public Integer getter(CommonEditorSettings object) {
                 return getRedrawInterval();
             }
         });

@@ -1,45 +1,20 @@
 package org.workcraft.dom.visual.connections;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Stroke;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
-
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.visual.Dependent;
-import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.Drawable;
-import org.workcraft.dom.visual.MixUtils;
-import org.workcraft.dom.visual.Shapable;
-import org.workcraft.dom.visual.Stylable;
-import org.workcraft.dom.visual.Touchable;
-import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.*;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.observation.HierarchyObserver;
-import org.workcraft.observation.NodesAddedEvent;
-import org.workcraft.observation.NodesDeletedEvent;
-import org.workcraft.observation.NodesDeletingEvent;
-import org.workcraft.observation.ObservableHierarchy;
-import org.workcraft.observation.ObservableHierarchyImpl;
-import org.workcraft.observation.ObservableState;
-import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.observation.StateEvent;
-import org.workcraft.observation.StateObserver;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.observation.*;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
+
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.*;
 
 public class VisualConnection extends VisualNode implements Node, Drawable, Shapable, Dependent,
         Connection, VisualConnectionProperties, ObservableHierarchy {
@@ -134,7 +109,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualConnection, Double>(
-                this, PROPERTY_LINE_WIDTH, Double.class, true, true, true) {
+                this, PROPERTY_LINE_WIDTH, Double.class, true, true) {
             @Override
             public void setter(VisualConnection object, Double value) {
                 object.setLineWidth(value);
@@ -146,7 +121,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualConnection, Double>(
-                this, PROPERTY_ARROW_WIDTH, Double.class, true, true, true) {
+                this, PROPERTY_ARROW_WIDTH, Double.class, true, true) {
             @Override
             public void setter(VisualConnection object, Double value) {
                 object.setArrowWidth(value);
@@ -158,7 +133,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualConnection, Double>(
-                this, PROPERTY_ARROW_LENGTH, Double.class, true, true, true) {
+                this, PROPERTY_ARROW_LENGTH, Double.class, true, true) {
             @Override
             public void setter(VisualConnection object, Double value) {
                 object.setArrowLength(value);
@@ -179,8 +154,9 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualConnection, ConnectionType>(
-                this, PROPERTY_CONNECTION_TYPE, ConnectionType.class, true, true, false) {
-            protected void setter(VisualConnection object, ConnectionType value) {
+                this, PROPERTY_CONNECTION_TYPE, ConnectionType.class, true, false) {
+            @Override
+            public void setter(VisualConnection object, ConnectionType value) {
                 object.setConnectionType(value);
                 for (ControlPoint cp: object.getGraphic().getControlPoints()) {
                     if (cp != null) {
@@ -188,27 +164,32 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
                     }
                 }
             }
-            protected ConnectionType getter(VisualConnection object) {
+            @Override
+            public ConnectionType getter(VisualConnection object) {
                 return object.getConnectionType();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualConnection, ScaleMode>(
-                this, PROPERTY_SCALE_MODE, ScaleMode.class, true, true, true) {
-            protected void setter(VisualConnection object, ScaleMode value) {
+                this, PROPERTY_SCALE_MODE, ScaleMode.class, true, true) {
+            @Override
+            public void setter(VisualConnection object, ScaleMode value) {
                 object.setScaleMode(value);
             }
-            protected ScaleMode getter(VisualConnection object) {
+            @Override
+            public ScaleMode getter(VisualConnection object) {
                 return object.getScaleMode();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualConnection, Color>(
-                this, PROPERTY_COLOR, Color.class, true, true, true) {
-            protected void setter(VisualConnection object, Color value) {
+                this, PROPERTY_COLOR, Color.class, true, true) {
+            @Override
+            public void setter(VisualConnection object, Color value) {
                 object.setColor(value);
             }
-            protected Color getter(VisualConnection object) {
+            @Override
+            public Color getter(VisualConnection object) {
                 return object.getColor();
             }
         });
@@ -223,11 +204,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
             children.add(graphic);
         }
         if (refConnection instanceof ObservableState) {
-            ((ObservableState) refConnection).addObserver(new StateObserver() {
-                public void notify(StateEvent e) {
-                    observableStateImpl.sendNotification(e);
-                }
-            });
+            ((ObservableState) refConnection).addObserver(e -> observableStateImpl.sendNotification(e));
         }
     }
 

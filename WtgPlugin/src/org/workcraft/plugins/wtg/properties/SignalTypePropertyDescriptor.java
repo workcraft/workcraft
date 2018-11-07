@@ -1,6 +1,6 @@
 package org.workcraft.plugins.wtg.properties;
 
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.dtd.Signal;
 import org.workcraft.plugins.wtg.Wtg;
 
@@ -14,11 +14,6 @@ public class SignalTypePropertyDescriptor implements PropertyDescriptor {
     public SignalTypePropertyDescriptor(Wtg wtg, String signalName) {
         this.wtg = wtg;
         this.signalName = signalName;
-    }
-
-    @Override
-    public boolean isWritable() {
-        return true;
     }
 
     @Override
@@ -60,16 +55,6 @@ public class SignalTypePropertyDescriptor implements PropertyDescriptor {
     @Override
     public Class<?> getType() {
         return int.class;
-    }
-
-    @Override
-    public boolean isCombinable() {
-        return false;
-    }
-
-    @Override
-    public boolean isTemplatable() {
-        return false;
     }
 
 }

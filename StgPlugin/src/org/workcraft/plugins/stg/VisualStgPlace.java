@@ -7,7 +7,7 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
@@ -27,10 +27,12 @@ public class VisualStgPlace extends VisualPlace {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualStgPlace, Boolean>(
-                this, StgPlace.PROPERTY_MUTEX, Boolean.class, true, true, false) {
+                this, StgPlace.PROPERTY_MUTEX, Boolean.class, true, false) {
+            @Override
             public void setter(VisualStgPlace object, Boolean value) {
                 object.getReferencedComponent().setMutex(value);
             }
+            @Override
             public Boolean getter(VisualStgPlace object) {
                 return object.getReferencedComponent().isMutex();
             }

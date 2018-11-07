@@ -1,10 +1,10 @@
 package org.workcraft.plugins.policy.properties;
 
-import java.util.Map;
-
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.policy.VisualBundledTransition;
 import org.workcraft.plugins.policy.VisualPolicyNet;
+
+import java.util.Map;
 
 public final class BundlesOfTransitionPropertyDescriptor implements PropertyDescriptor {
     private final VisualPolicyNet model;
@@ -38,21 +38,6 @@ public final class BundlesOfTransitionPropertyDescriptor implements PropertyDesc
     @Override
     public void setValue(Object value) {
         model.setBundlesOfTransitionAsString(transition, (String) value);
-    }
-
-    @Override
-    public boolean isWritable() {
-        return true;
-    }
-
-    @Override
-    public boolean isCombinable() {
-        return false;
-    }
-
-    @Override
-    public boolean isTemplatable() {
-        return false;
     }
 
 }

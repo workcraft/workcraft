@@ -2,7 +2,7 @@ package org.workcraft.plugins.circuit;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathGroup;
-import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
+import org.workcraft.gui.properties.NamePropertyDescriptor;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.util.Hierarchy;
 

@@ -1,13 +1,5 @@
 package org.workcraft.plugins.dfs;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.event.KeyEvent;
-import java.awt.geom.Line2D;
-import java.awt.geom.Path2D;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
@@ -15,8 +7,13 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.plugins.dfs.decorations.CounterflowLogicDecoration;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
 
 @Hotkey(KeyEvent.VK_K)
 @DisplayName ("Counterflow logic")
@@ -30,40 +27,48 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualCounterflowLogic, Boolean>(
-                this, CounterflowLogic.PROPERTY_FORWARD_COMPUTED, Boolean.class, true, true, true) {
+                this, CounterflowLogic.PROPERTY_FORWARD_COMPUTED, Boolean.class, true, true) {
+            @Override
             public void setter(VisualCounterflowLogic object, Boolean value) {
                 object.getReferencedCounterflowLogic().setForwardComputed(value);
             }
+            @Override
             public Boolean getter(VisualCounterflowLogic object) {
                 return object.getReferencedCounterflowLogic().isForwardComputed();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualCounterflowLogic, Boolean>(
-                this, CounterflowLogic.PROPERTY_BACKWARD_COMPUTED, Boolean.class, true, true, true) {
+                this, CounterflowLogic.PROPERTY_BACKWARD_COMPUTED, Boolean.class, true, true) {
+            @Override
             public void setter(VisualCounterflowLogic object, Boolean value) {
                 object.getReferencedCounterflowLogic().setBackwardComputed(value);
             }
+            @Override
             public Boolean getter(VisualCounterflowLogic object) {
                 return object.getReferencedCounterflowLogic().isBackwardComputed();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualCounterflowLogic, Boolean>(
-                this, CounterflowLogic.PROPERTY_FORWARD_EARLY_EVALUATION, Boolean.class, true, true, true) {
+                this, CounterflowLogic.PROPERTY_FORWARD_EARLY_EVALUATION, Boolean.class, true, true) {
+            @Override
             public void setter(VisualCounterflowLogic object, Boolean value) {
                 object.getReferencedCounterflowLogic().setForwardEarlyEvaluation(value);
             }
+            @Override
             public Boolean getter(VisualCounterflowLogic object) {
                 return object.getReferencedCounterflowLogic().isForwardEarlyEvaluation();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualCounterflowLogic, Boolean>(
-                this, CounterflowLogic.PROPERTY_BACKWARD_EARLY_EVALUATION, Boolean.class, true, true, true) {
+                this, CounterflowLogic.PROPERTY_BACKWARD_EARLY_EVALUATION, Boolean.class, true, true) {
+            @Override
             public void setter(VisualCounterflowLogic object, Boolean value) {
                 object.getReferencedCounterflowLogic().setBackwardEarlyEvaluation(value);
             }
+            @Override
             public Boolean getter(VisualCounterflowLogic object) {
                 return object.getReferencedCounterflowLogic().isBackwardEarlyEvaluation();
             }

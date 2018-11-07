@@ -5,7 +5,7 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.Stylable;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.plugins.xmas.components.FunctionComponent.Type;
 
 import java.awt.*;
@@ -28,11 +28,13 @@ public class VisualFunctionComponent extends VisualXmasComponent {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualFunctionComponent, Type>(
-                this, FunctionComponent.PROPERTY_TYPE, Type.class, true, true, true) {
-            protected void setter(VisualFunctionComponent object, Type value) {
+                this, FunctionComponent.PROPERTY_TYPE, Type.class, true, true) {
+            @Override
+            public void setter(VisualFunctionComponent object, Type value) {
                 object.getReferencedFunctionComponent().setType(value);
             }
-            protected Type getter(VisualFunctionComponent object) {
+            @Override
+            public Type getter(VisualFunctionComponent object) {
                 return object.getReferencedFunctionComponent().getType();
             }
         });

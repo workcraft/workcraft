@@ -2,9 +2,9 @@ package org.workcraft.plugins.petrify;
 
 import org.workcraft.Config;
 import org.workcraft.gui.DesktopApi;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.Settings;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -46,100 +46,109 @@ public class PetrifySettings implements Settings {
 
     public PetrifySettings() {
         properties.add(new PropertyDeclaration<PetrifySettings, String>(
-                this, "Petrify command",
-                String.class, true, false, false) {
-            protected void setter(PetrifySettings object, String value) {
+                this, "Petrify command", String.class) {
+            @Override
+            public void setter(PetrifySettings object, String value) {
                 setCommand(value);
             }
-            protected String getter(PetrifySettings object) {
+            @Override
+            public String getter(PetrifySettings object) {
                 return getCommand();
             }
         });
 
         properties.add(new PropertyDeclaration<PetrifySettings, String>(
-                this, "Additional parameters",
-                String.class, true, false, false) {
-            protected void setter(PetrifySettings object, String value) {
+                this, "Additional parameters", String.class) {
+            @Override
+            public void setter(PetrifySettings object, String value) {
                 setArgs(value);
             }
-            protected String getter(PetrifySettings object) {
+            @Override
+            public String getter(PetrifySettings object) {
                 return getArgs();
             }
         });
 
         properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
-                this, "Edit additional parameters before every call",
-                Boolean.class, true, false, false) {
-            protected void setter(PetrifySettings object, Boolean value) {
+                this, "Edit additional parameters before every call", Boolean.class) {
+            @Override
+            public void setter(PetrifySettings object, Boolean value) {
                 setAdvancedMode(value);
             }
-            protected Boolean getter(PetrifySettings object) {
+            @Override
+            public Boolean getter(PetrifySettings object) {
                 return getAdvancedMode();
             }
         });
 
         properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
-                this, "Write log file (" + PetrifyUtils.LOG_FILE_NAME + ")",
-                Boolean.class, true, false, false) {
-            protected void setter(PetrifySettings object, Boolean value) {
+                this, "Write log file (" + PetrifyUtils.LOG_FILE_NAME + ")", Boolean.class) {
+            @Override
+            public void setter(PetrifySettings object, Boolean value) {
                 setWriteLog(value);
             }
-            protected Boolean getter(PetrifySettings object) {
+            @Override
+            public Boolean getter(PetrifySettings object) {
                 return getWriteLog();
             }
         });
 
         properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
-                this, "Write STG file (" + PetrifyUtils.STG_FILE_NAME + ")",
-                Boolean.class, true, false, false) {
-            protected void setter(PetrifySettings object, Boolean value) {
+                this, "Write STG file (" + PetrifyUtils.STG_FILE_NAME + ")", Boolean.class) {
+            @Override
+            public void setter(PetrifySettings object, Boolean value) {
                 setWriteStg(value);
             }
-            protected Boolean getter(PetrifySettings object) {
+            @Override
+            public Boolean getter(PetrifySettings object) {
                 return getWriteStg();
             }
         });
 
         properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
-                this, "Write EQN file (" + PetrifyUtils.EQN_FILE_NAME + ")",
-                Boolean.class, true, false, false) {
-            protected void setter(PetrifySettings object, Boolean value) {
+                this, "Write EQN file (" + PetrifyUtils.EQN_FILE_NAME + ")", Boolean.class) {
+            @Override
+            public void setter(PetrifySettings object, Boolean value) {
                 setWriteEqn(value);
             }
-            protected Boolean getter(PetrifySettings object) {
+            @Override
+            public Boolean getter(PetrifySettings object) {
                 return getWriteEqn();
             }
         });
 
         properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
-                this, "Output stdout",
-                Boolean.class, true, false, false) {
-            protected void setter(PetrifySettings object, Boolean value) {
+                this, "Output stdout", Boolean.class) {
+            @Override
+            public void setter(PetrifySettings object, Boolean value) {
                 setPrintStdout(value);
             }
-            protected Boolean getter(PetrifySettings object) {
+            @Override
+            public Boolean getter(PetrifySettings object) {
                 return getPrintStdout();
             }
         });
 
         properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
-                this, "Output stderr",
-                Boolean.class, true, false, false) {
-            protected void setter(PetrifySettings object, Boolean value) {
+                this, "Output stderr", Boolean.class) {
+            @Override
+            public void setter(PetrifySettings object, Boolean value) {
                 setPrintStderr(value);
             }
-            protected Boolean getter(PetrifySettings object) {
+            @Override
+            public Boolean getter(PetrifySettings object) {
                 return getPrintStderr();
             }
         });
 
         properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
-                this, "Open resulting STG if new signals are inserted",
-                Boolean.class, true, false, false) {
-            protected void setter(PetrifySettings object, Boolean value) {
+                this, "Open resulting STG if new signals are inserted", Boolean.class) {
+            @Override
+            public void setter(PetrifySettings object, Boolean value) {
                 setOpenSynthesisStg(value);
             }
-            protected Boolean getter(PetrifySettings object) {
+            @Override
+            public Boolean getter(PetrifySettings object) {
                 return getOpenSynthesisStg();
             }
         });

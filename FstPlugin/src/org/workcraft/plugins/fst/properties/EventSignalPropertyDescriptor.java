@@ -1,12 +1,12 @@
 package org.workcraft.plugins.fst.properties;
 
-import java.util.Map;
-
 import org.workcraft.dom.Node;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.Signal;
 import org.workcraft.plugins.fst.SignalEvent;
+
+import java.util.Map;
 
 public class EventSignalPropertyDescriptor implements PropertyDescriptor {
     private final Fst fst;
@@ -58,11 +58,6 @@ public class EventSignalPropertyDescriptor implements PropertyDescriptor {
         if (signal != null) {
             signalEvent.setSymbol(signal);
         }
-    }
-
-    @Override
-    public boolean isWritable() {
-        return true;
     }
 
     @Override

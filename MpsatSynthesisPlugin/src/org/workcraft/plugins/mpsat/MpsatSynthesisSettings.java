@@ -2,9 +2,9 @@ package org.workcraft.plugins.mpsat;
 
 import org.workcraft.Config;
 import org.workcraft.gui.DesktopApi;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.Settings;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -36,68 +36,74 @@ public class MpsatSynthesisSettings implements Settings {
 
     public MpsatSynthesisSettings() {
         properties.add(new PropertyDeclaration<MpsatSynthesisSettings, String>(
-                this, "MPSat command for synthesis",
-                String.class, true, false, false) {
-            protected void setter(MpsatSynthesisSettings object, String value) {
+                this, "MPSat command for synthesis", String.class) {
+            @Override
+            public void setter(MpsatSynthesisSettings object, String value) {
                 setCommand(value);
             }
-            protected String getter(MpsatSynthesisSettings object) {
+            @Override
+            public String getter(MpsatSynthesisSettings object) {
                 return getCommand();
             }
         });
 
         properties.add(new PropertyDeclaration<MpsatSynthesisSettings, String>(
-                this, "Additional parameters",
-                String.class, true, false, false) {
-            protected void setter(MpsatSynthesisSettings object, String value) {
+                this, "Additional parameters", String.class) {
+            @Override
+            public void setter(MpsatSynthesisSettings object, String value) {
                 setArgs(value);
 
             }
-            protected String getter(MpsatSynthesisSettings object) {
+            @Override
+            public String getter(MpsatSynthesisSettings object) {
                 return getArgs();
             }
         });
 
         properties.add(new PropertyDeclaration<MpsatSynthesisSettings, Boolean>(
-                this, "Edit additional parameters before every call",
-                Boolean.class, true, false, false) {
-            protected void setter(MpsatSynthesisSettings object, Boolean value) {
+                this, "Edit additional parameters before every call", Boolean.class) {
+            @Override
+            public void setter(MpsatSynthesisSettings object, Boolean value) {
                 setAdvancedMode(value);
             }
-            protected Boolean getter(MpsatSynthesisSettings object) {
+            @Override
+            public Boolean getter(MpsatSynthesisSettings object) {
                 return getAdvancedMode();
             }
         });
 
         properties.add(new PropertyDeclaration<MpsatSynthesisSettings, Boolean>(
-                this, "Output stdout",
-                Boolean.class, true, false, false) {
-            protected void setter(MpsatSynthesisSettings object, Boolean value) {
+                this, "Output stdout", Boolean.class) {
+            @Override
+            public void setter(MpsatSynthesisSettings object, Boolean value) {
                 setPrintStdout(value);
             }
-            protected Boolean getter(MpsatSynthesisSettings object) {
+            @Override
+            public Boolean getter(MpsatSynthesisSettings object) {
                 return getPrintStdout();
             }
         });
 
         properties.add(new PropertyDeclaration<MpsatSynthesisSettings, Boolean>(
-                this, "Output stderr",
-                Boolean.class, true, false, false) {
-            protected void setter(MpsatSynthesisSettings object, Boolean value) {
+                this, "Output stderr", Boolean.class) {
+            @Override
+            public void setter(MpsatSynthesisSettings object, Boolean value) {
                 setPrintStderr(value);
             }
-            protected Boolean getter(MpsatSynthesisSettings object) {
+            @Override
+            public Boolean getter(MpsatSynthesisSettings object) {
                 return getPrintStderr();
             }
         });
 
         properties.add(new PropertyDeclaration<MpsatSynthesisSettings, Boolean>(
-                this, "Open resulting STG if new signals are inserted",
-                Boolean.class, true, false, false) {
-            protected void setter(MpsatSynthesisSettings object, Boolean value) {
+                this, "Open resulting STG if new signals are inserted", Boolean.class) {
+            @Override
+            public void setter(MpsatSynthesisSettings object, Boolean value) {
                 setOpenSynthesisStg(value);
             }
-            protected Boolean getter(MpsatSynthesisSettings object) {
+            @Override
+            public Boolean getter(MpsatSynthesisSettings object) {
                 return getOpenSynthesisStg();
             }
         });

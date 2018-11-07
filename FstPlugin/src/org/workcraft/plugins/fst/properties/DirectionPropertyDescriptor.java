@@ -1,12 +1,12 @@
 package org.workcraft.plugins.fst.properties;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fst.SignalEvent;
 import org.workcraft.plugins.fst.SignalEvent.Direction;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class DirectionPropertyDescriptor implements PropertyDescriptor {
     private final Event event;
@@ -23,21 +23,6 @@ public class DirectionPropertyDescriptor implements PropertyDescriptor {
     @Override
     public Class<?> getType() {
         return int.class;
-    }
-
-    @Override
-    public boolean isWritable() {
-        return true;
-    }
-
-    @Override
-    public boolean isCombinable() {
-        return true;
-    }
-
-    @Override
-    public boolean isTemplatable() {
-        return true;
     }
 
     @Override
@@ -67,6 +52,16 @@ public class DirectionPropertyDescriptor implements PropertyDescriptor {
             }
         }
         return result;
+    }
+
+    @Override
+    public boolean isCombinable() {
+        return true;
+    }
+
+    @Override
+    public boolean isTemplatable() {
+        return true;
     }
 
 }

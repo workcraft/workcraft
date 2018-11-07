@@ -21,7 +21,7 @@ import org.workcraft.exceptions.*;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.gui.properties.Settings;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Format;

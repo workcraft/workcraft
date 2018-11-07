@@ -1,12 +1,13 @@
 package org.workcraft.plugins.shared;
-import java.awt.Color;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.workcraft.Config;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.Settings;
+
+import java.awt.*;
+import java.util.LinkedList;
+import java.util.List;
 
 public class CommonSignalSettings implements Settings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
@@ -32,66 +33,61 @@ public class CommonSignalSettings implements Settings {
 
     public CommonSignalSettings() {
         properties.add(new PropertyDeclaration<CommonSignalSettings, Color>(
-                this, "Input signal color",
-                Color.class, true, false, false) {
+                this, "Input signal color", Color.class) {
             @Override
-            protected void setter(CommonSignalSettings object, Color value) {
+            public void setter(CommonSignalSettings object, Color value) {
                 setInputColor(value);
             }
             @Override
-            protected Color getter(CommonSignalSettings object) {
+            public Color getter(CommonSignalSettings object) {
                 return getInputColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonSignalSettings, Color>(
-                this, "Output signal color",
-                Color.class, true, false, false) {
+                this, "Output signal color", Color.class) {
             @Override
-            protected void setter(CommonSignalSettings object, Color value) {
+            public void setter(CommonSignalSettings object, Color value) {
                 setOutputColor(value);
             }
             @Override
-            protected Color getter(CommonSignalSettings object) {
+            public Color getter(CommonSignalSettings object) {
                 return getOutputColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonSignalSettings, Color>(
-                this, "Internal signal color",
-                Color.class, true, false, false) {
+                this, "Internal signal color", Color.class) {
             @Override
-            protected void setter(CommonSignalSettings object, Color value) {
+            public void setter(CommonSignalSettings object, Color value) {
                 setInternalColor(value);
             }
             @Override
-            protected Color getter(CommonSignalSettings object) {
+            public Color getter(CommonSignalSettings object) {
                 return getInternalColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonSignalSettings, Color>(
-                this, "Dummy color",
-                Color.class, true, false, false) {
+                this, "Dummy color", Color.class) {
             @Override
-            protected void setter(CommonSignalSettings object, Color value) {
+            public void setter(CommonSignalSettings object, Color value) {
                 setDummyColor(value);
             }
             @Override
-            protected Color getter(CommonSignalSettings object) {
+            public Color getter(CommonSignalSettings object) {
                 return getDummyColor();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonSignalSettings, Boolean>(
-                this, "Show signal toggle (~)",
-                Boolean.class, true, false, false) {
+                this, "Show signal toggle (~)", Boolean.class) {
             @Override
-            protected void setter(CommonSignalSettings object, Boolean value) {
+            public void setter(CommonSignalSettings object, Boolean value) {
                 setShowToggle(value);
             }
             @Override
-            protected Boolean getter(CommonSignalSettings object) {
+            public Boolean getter(CommonSignalSettings object) {
                 return getShowToggle();
             }
         });

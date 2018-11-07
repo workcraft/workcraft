@@ -6,7 +6,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.*;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.xmas.XmasSettings;
@@ -99,11 +99,13 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualXmasComponent, Orientation>(
-                this, PROPERTY_ORIENTATION, Orientation.class, true, true, true) {
-            protected void setter(VisualXmasComponent object, Orientation value) {
+                this, PROPERTY_ORIENTATION, Orientation.class, true, true) {
+            @Override
+            public void setter(VisualXmasComponent object, Orientation value) {
                 object.setOrientation(value);
             }
-            protected Orientation getter(VisualXmasComponent object) {
+            @Override
+            public Orientation getter(VisualXmasComponent object) {
                 return object.getOrientation();
             }
         });

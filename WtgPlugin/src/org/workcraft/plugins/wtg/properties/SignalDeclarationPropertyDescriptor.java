@@ -4,7 +4,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.dtd.DtdSettings;
 import org.workcraft.plugins.dtd.Signal;
@@ -46,7 +46,7 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
 
     @Override
     public Object getValue() {
-        Wtg wtg = (Wtg) visualWtg.getMathModel();
+        Wtg wtg = visualWtg.getMathModel();
         for (Signal signal : wtg.getSignals(visualWaveform.getReferencedWaveform())) {
             if (wtg.getName(signal).equals(signalName)) {
                 return true;
@@ -56,13 +56,8 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public boolean isWritable() {
-        return true;
-    }
-
-    @Override
     public void setValue(Object value) {
-        Wtg wtg = (Wtg) visualWtg.getMathModel();
+        Wtg wtg = visualWtg.getMathModel();
         if ((value instanceof Boolean) && (signalName != null)) {
             if ((Boolean) value) {
                 for (GraphEditorTool tool : visualWtg.getGraphEditorTools()) {
@@ -125,7 +120,7 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
     }
 
     private Signal.State findPreviousSignalState() {
-        Wtg wtg = (Wtg) visualWtg.getMathModel();
+        Wtg wtg = visualWtg.getMathModel();
         Waveform waveform = visualWaveform.getReferencedWaveform();
         if (wtg.getPreset(waveform).size() == 0) {
             return null;

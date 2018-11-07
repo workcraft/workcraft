@@ -1,12 +1,12 @@
 package org.workcraft.plugins.stg.properties;
 
+import org.workcraft.dom.Container;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.plugins.stg.Signal;
+import org.workcraft.plugins.stg.Stg;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import org.workcraft.dom.Container;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.Signal;
 
 public class SignalTypePropertyDescriptor implements PropertyDescriptor {
     private final Stg stg;
@@ -17,11 +17,6 @@ public class SignalTypePropertyDescriptor implements PropertyDescriptor {
         this.stg = stg;
         this.signal = signal;
         this.container = container;
-    }
-
-    @Override
-    public boolean isWritable() {
-        return true;
     }
 
     @Override
@@ -51,16 +46,6 @@ public class SignalTypePropertyDescriptor implements PropertyDescriptor {
     @Override
     public Class<?> getType() {
         return int.class;
-    }
-
-    @Override
-    public boolean isCombinable() {
-        return false;
-    }
-
-    @Override
-    public boolean isTemplatable() {
-        return false;
     }
 
 }

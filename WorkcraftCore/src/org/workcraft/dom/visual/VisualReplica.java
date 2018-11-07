@@ -4,7 +4,7 @@ import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
@@ -47,21 +47,25 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
 
     private void addColorPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualReplica, Color>(
-                this, PROPERTY_COLOR, Color.class, true, true, true) {
-            protected void setter(VisualReplica object, Color value) {
+                this, PROPERTY_COLOR, Color.class, true, true) {
+            @Override
+            public void setter(VisualReplica object, Color value) {
                 object.setForegroundColor(value);
             }
-            protected Color getter(VisualReplica object) {
+            @Override
+            public Color getter(VisualReplica object) {
                 return object.getForegroundColor();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualReplica, Color>(
-                this, PROPERTY_FILL_COLOR, Color.class, true, true, true) {
-            protected void setter(VisualReplica object, Color value) {
+                this, PROPERTY_FILL_COLOR, Color.class, true, true) {
+            @Override
+            public void setter(VisualReplica object, Color value) {
                 object.setFillColor(value);
             }
-            protected Color getter(VisualReplica object) {
+            @Override
+            public Color getter(VisualReplica object) {
                 return object.getFillColor();
             }
         });
@@ -69,21 +73,25 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
 
     private void addNamePropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualReplica, Positioning>(
-                this, PROPERTY_NAME_POSITIONING, Positioning.class, true, true, true) {
-            protected void setter(VisualReplica object, Positioning value) {
+                this, PROPERTY_NAME_POSITIONING, Positioning.class, true, true) {
+            @Override
+            public void setter(VisualReplica object, Positioning value) {
                 object.setNamePositioning(value);
             }
-            protected Positioning getter(VisualReplica object) {
+            @Override
+            public Positioning getter(VisualReplica object) {
                 return object.getNamePositioning();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualReplica, Color>(
-                this, PROPERTY_NAME_COLOR, Color.class, true, true, true) {
-            protected void setter(VisualReplica object, Color value) {
+                this, PROPERTY_NAME_COLOR, Color.class, true, true) {
+            @Override
+            public void setter(VisualReplica object, Color value) {
                 object.setNameColor(value);
             }
-            protected Color getter(VisualReplica object) {
+            @Override
+            public Color getter(VisualReplica object) {
                 return object.getNameColor();
             }
         });

@@ -1,6 +1,6 @@
 package org.workcraft.plugins.son.properties;
 
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.util.Interval;
 
@@ -25,21 +25,6 @@ public class ConnectionTimePropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public boolean isWritable() {
-        return false;
-    }
-
-    @Override
-    public boolean isCombinable() {
-        return false;
-    }
-
-    @Override
-    public boolean isTemplatable() {
-        return false;
-    }
-
-    @Override
     public Object getValue() {
         Interval value = con.getReferencedSONConnection().getTime();
         return value.toString();
@@ -55,6 +40,11 @@ public class ConnectionTimePropertyDescriptor implements PropertyDescriptor {
     @Override
     public Map<? extends Object, String> getChoice() {
         return null;
+    }
+
+    @Override
+    public boolean isEditable() {
+        return false;
     }
 
 }

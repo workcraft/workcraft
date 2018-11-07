@@ -12,7 +12,6 @@ import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.InitialisationState;
 import org.workcraft.plugins.circuit.utils.ResetUtils;
@@ -271,7 +270,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         public Component getTableCellRendererComponent(final JTable table, final Object value,
                 final boolean isSelected, final boolean hasFocus, final int row, final int column) {
             label.setText("");
-            label.setBorder(PropertyEditorTable.BORDER_RENDER);
+            label.setBorder(SizeHelper.getTableCellBorder());
             label.setBackground((Color) value);
             return label;
         }

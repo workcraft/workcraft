@@ -1,24 +1,21 @@
 package org.workcraft.plugins.son;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.font.GlyphVector;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.util.Hierarchy;
+
+import java.awt.*;
+import java.awt.font.GlyphVector;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class VisualSuperGroup extends VisualGroup {
 
@@ -34,14 +31,17 @@ public class VisualSuperGroup extends VisualGroup {
 
     public VisualSuperGroup() {
         addPropertyDeclaration(new PropertyDeclaration<VisualSuperGroup, String>(
-                this, "Label", String.class, true, true, true) {
+                this, "Label", String.class, true, true) {
+            @Override
             public void setter(VisualSuperGroup object, String value) {
                 object.setLabel(value);
             }
+            @Override
             public String getter(VisualSuperGroup object) {
                 return object.getLabel();
             }
         });
+
         removePropertyDeclarationByName(PROPERTY_IS_COLLAPSED);
     }
 

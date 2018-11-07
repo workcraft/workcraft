@@ -1,10 +1,10 @@
 package org.workcraft.plugins.circuit.properties;
 
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.plugins.circuit.VisualCircuit;
+
 import java.io.File;
 import java.util.Map;
-
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.plugins.circuit.VisualCircuit;
 
 public class EnvironmentFilePropertyDescriptor implements PropertyDescriptor {
 
@@ -25,11 +25,6 @@ public class EnvironmentFilePropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public boolean isWritable() {
-        return true;
-    }
-
-    @Override
     public Class<?> getType() {
         return File.class;
     }
@@ -42,16 +37,6 @@ public class EnvironmentFilePropertyDescriptor implements PropertyDescriptor {
     @Override
     public void setValue(Object value) {
         circuit.setEnvironmentFile((File) value);
-    }
-
-    @Override
-    public boolean isCombinable() {
-        return false;
-    }
-
-    @Override
-    public boolean isTemplatable() {
-        return false;
     }
 
 }

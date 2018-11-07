@@ -12,7 +12,7 @@ import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
@@ -45,23 +45,25 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
     private void addPropertyDeclarations() {
 
         addPropertyDeclaration(new PropertyDeclaration<VisualFunctionComponent, RenderType>(
-                this, PROPERTY_RENDER_TYPE, RenderType.class, true, true, true) {
-            protected void setter(VisualFunctionComponent object, RenderType value) {
+                this, PROPERTY_RENDER_TYPE, RenderType.class, true, true) {
+            @Override
+            public void setter(VisualFunctionComponent object, RenderType value) {
                 object.setRenderType(value);
             }
-
-            protected RenderType getter(VisualFunctionComponent object) {
+            @Override
+            public RenderType getter(VisualFunctionComponent object) {
                 return object.getRenderType();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualFunctionComponent, Boolean>(
-                this, FunctionComponent.PROPERTY_IS_ZERO_DELAY, Boolean.class, true, true, true) {
-            protected void setter(VisualFunctionComponent object, Boolean value) {
+                this, FunctionComponent.PROPERTY_IS_ZERO_DELAY, Boolean.class, true, true) {
+            @Override
+            public void setter(VisualFunctionComponent object, Boolean value) {
                 object.setIsZeroDelay(value);
             }
-
-            protected Boolean getter(VisualFunctionComponent object) {
+            @Override
+            public Boolean getter(VisualFunctionComponent object) {
                 return object.getIsZeroDelay();
             }
         });
@@ -466,7 +468,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
     }
 
     @Override
-    protected void drawNameInLocalSpace(DrawRequest r) {
+    public void drawNameInLocalSpace(DrawRequest r) {
         if (!getIsZeroDelay() || CircuitSettings.getShowZeroDelayNames()) {
             super.drawNameInLocalSpace(r);
         }

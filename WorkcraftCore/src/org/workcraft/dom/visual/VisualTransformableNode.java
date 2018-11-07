@@ -1,19 +1,19 @@
 package org.workcraft.dom.visual;
 
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.Collection;
-
 import org.w3c.dom.Element;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
+
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.Collection;
 
 public abstract class VisualTransformableNode extends VisualNode implements Movable, Rotatable, Flippable {
     public static final String PROPERTY_X = "X";
@@ -24,7 +24,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualTransformableNode, Double>(
-                this, PROPERTY_X, Double.class, true, true, false) {
+                this, PROPERTY_X, Double.class, true, false) {
             @Override
             public void setter(VisualTransformableNode object, Double value) {
                 object.setRootSpaceX(value);
@@ -36,7 +36,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualTransformableNode, Double>(
-                this, PROPERTY_Y, Double.class, true, true, false) {
+                this, PROPERTY_Y, Double.class, true, false) {
             @Override
             public void setter(VisualTransformableNode object, Double value) {
                 object.setRootSpaceY(value);

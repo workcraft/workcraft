@@ -1,12 +1,12 @@
 package org.workcraft.plugins.shared;
 
+import org.workcraft.Config;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.Settings;
+
 import java.util.Collection;
 import java.util.LinkedList;
-
-import org.workcraft.Config;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
 
 public class CommonSatSettings implements Settings {
 
@@ -43,40 +43,37 @@ public class CommonSatSettings implements Settings {
 
     public CommonSatSettings() {
         properties.add(new PropertyDeclaration<CommonSatSettings, SatSolver>(
-                this, "SAT solver",
-                SatSolver.class, true, false, false) {
+                this, "SAT solver", SatSolver.class) {
             @Override
-            protected void setter(CommonSatSettings object, SatSolver value) {
+            public void setter(CommonSatSettings object, SatSolver value) {
                 setSatSolver(value);
             }
             @Override
-            protected SatSolver getter(CommonSatSettings object) {
+            public SatSolver getter(CommonSatSettings object) {
                 return getSatSolver();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonSatSettings, String>(
-                this, "Clasp solver command",
-                String.class, true, false, false) {
+                this, "Clasp solver command", String.class) {
             @Override
-            protected void setter(CommonSatSettings object, String value) {
+            public void setter(CommonSatSettings object, String value) {
                 setClaspCommand(value);
             }
             @Override
-            protected String getter(CommonSatSettings object) {
+            public String getter(CommonSatSettings object) {
                 return getClaspCommand();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonSatSettings, String>(
-                this, "MiniSat solver command",
-                String.class, true, false, false) {
+                this, "MiniSat solver command", String.class) {
             @Override
-            protected void setter(CommonSatSettings object, String value) {
+            public void setter(CommonSatSettings object, String value) {
                 setMinisatCommand(value);
             }
             @Override
-            protected String getter(CommonSatSettings object) {
+            public String getter(CommonSatSettings object) {
                 return getMinisatCommand();
             }
         });

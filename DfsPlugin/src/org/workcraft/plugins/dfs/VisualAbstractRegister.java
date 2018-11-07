@@ -1,11 +1,11 @@
 package org.workcraft.plugins.dfs;
 
-import java.awt.Color;
-
 import org.workcraft.dom.visual.Stylable;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+
+import java.awt.*;
 
 public abstract class VisualAbstractRegister extends VisualDelayComponent {
     public static final String PROPERTY_TOKEN_COLOR = "Token color";
@@ -18,10 +18,12 @@ public abstract class VisualAbstractRegister extends VisualDelayComponent {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualAbstractRegister, Color>(
-                this, PROPERTY_TOKEN_COLOR, Color.class, true, true, true) {
+                this, PROPERTY_TOKEN_COLOR, Color.class, true, true) {
+            @Override
             public void setter(VisualAbstractRegister object, Color value) {
                 object.setTokenColor(value);
             }
+            @Override
             public Color getter(VisualAbstractRegister object) {
                 return object.getTokenColor();
             }

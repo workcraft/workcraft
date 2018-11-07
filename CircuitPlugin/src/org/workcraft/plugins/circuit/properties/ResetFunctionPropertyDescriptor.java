@@ -3,8 +3,7 @@ package org.workcraft.plugins.circuit.properties;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.utils.StringGenerator;
-import org.workcraft.gui.propertyeditor.Disableable;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
@@ -12,7 +11,7 @@ import org.workcraft.plugins.circuit.utils.CircuitUtils;
 
 import java.util.Map;
 
-public class ResetFunctionPropertyDescriptor implements PropertyDescriptor, Disableable {
+public class ResetFunctionPropertyDescriptor implements PropertyDescriptor {
 
     private final VisualCircuit circuit;
     private final VisualFunctionContact contact;
@@ -30,21 +29,6 @@ public class ResetFunctionPropertyDescriptor implements PropertyDescriptor, Disa
     @Override
     public Class<?> getType() {
         return String.class;
-    }
-
-    @Override
-    public boolean isWritable() {
-        return true;
-    }
-
-    @Override
-    public boolean isCombinable() {
-        return true;
-    }
-
-    @Override
-    public boolean isTemplatable() {
-        return false;
     }
 
     @Override
@@ -70,8 +54,18 @@ public class ResetFunctionPropertyDescriptor implements PropertyDescriptor, Disa
     }
 
     @Override
-    public boolean isDisabled() {
-        return contact.isDriven();
+    public boolean isVisible() {
+        return contact.isDriver();
+    }
+
+    @Override
+    public boolean isCombinable() {
+        return true;
+    }
+
+    @Override
+    public boolean isTemplatable() {
+        return false;
     }
 
 }

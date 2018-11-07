@@ -1,13 +1,5 @@
 package org.workcraft.plugins.dfs;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.event.KeyEvent;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
@@ -15,8 +7,13 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.plugins.dfs.decorations.RegisterDecoration;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 
 @Hotkey(KeyEvent.VK_R)
 @DisplayName ("Register")
@@ -34,10 +31,12 @@ public class VisualRegister extends VisualAbstractRegister {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualRegister, Boolean>(
-                this, Register.PROPERTY_MARKED, Boolean.class, true, true, true) {
+                this, Register.PROPERTY_MARKED, Boolean.class, true, true) {
+            @Override
             public void setter(VisualRegister object, Boolean value) {
                 object.getReferencedRegister().setMarked(value);
             }
+            @Override
             public Boolean getter(VisualRegister object) {
                 return object.getReferencedRegister().isMarked();
             }

@@ -1,12 +1,12 @@
 package org.workcraft.plugins.stg.properties;
 
+import org.workcraft.dom.Node;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.plugins.stg.Stg;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import org.workcraft.dom.Node;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.SignalTransition;
 
 public class DirectionPropertyDescriptor implements PropertyDescriptor {
     private final Stg stg;
@@ -28,21 +28,6 @@ public class DirectionPropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public boolean isWritable() {
-        return true;
-    }
-
-    @Override
-    public boolean isCombinable() {
-        return true;
-    }
-
-    @Override
-    public boolean isTemplatable() {
-        return false;
-    }
-
-    @Override
     public Object getValue() {
         return stg.getDirection(st);
     }
@@ -59,6 +44,16 @@ public class DirectionPropertyDescriptor implements PropertyDescriptor {
             result.put(item, item.toString());
         }
         return result;
+    }
+
+    @Override
+    public boolean isCombinable() {
+        return true;
+    }
+
+    @Override
+    public boolean isTemplatable() {
+        return false;
     }
 
 }

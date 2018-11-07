@@ -1,12 +1,12 @@
 package org.workcraft.plugins.stg.properties;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.plugins.stg.Stg;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.plugins.stg.Stg;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class TypePropertyDescriptor implements PropertyDescriptor {
     public static final String PROPERTY_SIGNAL_TYPE = "Signal type";
@@ -28,21 +28,6 @@ public class TypePropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public boolean isWritable() {
-        return true;
-    }
-
-    @Override
-    public boolean isCombinable() {
-        return true;
-    }
-
-    @Override
-    public boolean isTemplatable() {
-        return false;
-    }
-
-    @Override
     public Object getValue() {
         return transition.getSignalType();
     }
@@ -59,6 +44,16 @@ public class TypePropertyDescriptor implements PropertyDescriptor {
             result.put(item, item.toString());
         }
         return result;
+    }
+
+    @Override
+    public boolean isCombinable() {
+        return true;
+    }
+
+    @Override
+    public boolean isTemplatable() {
+        return false;
     }
 
 }

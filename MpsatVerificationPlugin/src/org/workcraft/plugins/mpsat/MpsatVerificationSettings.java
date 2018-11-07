@@ -1,13 +1,14 @@
 package org.workcraft.plugins.mpsat;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.workcraft.Config;
 import org.workcraft.gui.DesktopApi;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.Settings;
 import org.workcraft.plugins.mpsat.MpsatParameters.SolutionMode;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class MpsatVerificationSettings implements Settings {
 
@@ -43,81 +44,97 @@ public class MpsatVerificationSettings implements Settings {
 
     public MpsatVerificationSettings() {
         properties.add(new PropertyDeclaration<MpsatVerificationSettings, String>(
-                this, "MPSat command for verification", String.class, true, false, false) {
-            protected void setter(MpsatVerificationSettings object, String value) {
+                this, "MPSat command for verification", String.class) {
+            @Override
+            public void setter(MpsatVerificationSettings object, String value) {
                 setCommand(value);
             }
-            protected String getter(MpsatVerificationSettings object) {
+            @Override
+            public String getter(MpsatVerificationSettings object) {
                 return getCommand();
             }
         });
 
         properties.add(new PropertyDeclaration<MpsatVerificationSettings, SolutionMode>(
-                this, "Solution mode", SolutionMode.class, true, false, false) {
-            protected void setter(MpsatVerificationSettings object, SolutionMode value) {
+                this, "Solution mode", SolutionMode.class) {
+            @Override
+            public void setter(MpsatVerificationSettings object, SolutionMode value) {
                 setSolutionMode(value);
             }
-            protected SolutionMode getter(MpsatVerificationSettings object) {
+            @Override
+            public SolutionMode getter(MpsatVerificationSettings object) {
                 return getSolutionMode();
             }
         });
 
         properties.add(new PropertyDeclaration<MpsatVerificationSettings, String>(
-                this, "Additional parameters", String.class, true, false, false) {
-            protected void setter(MpsatVerificationSettings object, String value) {
+                this, "Additional parameters", String.class) {
+            @Override
+            public void setter(MpsatVerificationSettings object, String value) {
                 setArgs(value);
             }
-            protected String getter(MpsatVerificationSettings object) {
+            @Override
+            public String getter(MpsatVerificationSettings object) {
                 return getArgs();
             }
         });
 
         properties.add(new PropertyDeclaration<MpsatVerificationSettings, Boolean>(
-                this, "Edit additional parameters before every call", Boolean.class, true, false, false) {
-            protected void setter(MpsatVerificationSettings object, Boolean value) {
+                this, "Edit additional parameters before every call", Boolean.class) {
+            @Override
+            public void setter(MpsatVerificationSettings object, Boolean value) {
                 setAdvancedMode(value);
             }
-            protected Boolean getter(MpsatVerificationSettings object) {
+            @Override
+            public Boolean getter(MpsatVerificationSettings object) {
                 return getAdvancedMode();
             }
         });
 
         properties.add(new PropertyDeclaration<MpsatVerificationSettings, Boolean>(
-                this, "Output stdout", Boolean.class, true, false, false) {
-            protected void setter(MpsatVerificationSettings object, Boolean value) {
+                this, "Output stdout", Boolean.class) {
+            @Override
+            public void setter(MpsatVerificationSettings object, Boolean value) {
                 setPrintStdout(value);
             }
-            protected Boolean getter(MpsatVerificationSettings object) {
+            @Override
+            public Boolean getter(MpsatVerificationSettings object) {
                 return getPrintStdout();
             }
         });
 
         properties.add(new PropertyDeclaration<MpsatVerificationSettings, Boolean>(
-                this, "Output stderr", Boolean.class, true, false, false) {
-            protected void setter(MpsatVerificationSettings object, Boolean value) {
+                this, "Output stderr", Boolean.class) {
+            @Override
+            public void setter(MpsatVerificationSettings object, Boolean value) {
                 setPrintStderr(value);
             }
-            protected Boolean getter(MpsatVerificationSettings object) {
+            @Override
+            public Boolean getter(MpsatVerificationSettings object) {
                 return getPrintStderr();
             }
         });
 
         properties.add(new PropertyDeclaration<MpsatVerificationSettings, Boolean>(
-                this, "Output Reach expressions", Boolean.class, true, false, false) {
-            protected void setter(MpsatVerificationSettings object, Boolean value) {
+                this, "Output Reach expressions", Boolean.class) {
+            @Override
+            public void setter(MpsatVerificationSettings object, Boolean value) {
                 setDebugReach(value);
             }
-            protected Boolean getter(MpsatVerificationSettings object) {
+            @Override
+            public Boolean getter(MpsatVerificationSettings object) {
                 return getDebugReach();
             }
         });
 
         properties.add(new PropertyDeclaration<MpsatVerificationSettings, Boolean>(
-                this, "Output conflict cores", Boolean.class, true, false, false) {
-            protected void setter(MpsatVerificationSettings object, Boolean value) {
+                this, "Output conflict cores", Boolean.class) {
+            @Override
+            public void setter(MpsatVerificationSettings object, Boolean value) {
                 setDebugCores(value);
             }
-            protected Boolean getter(MpsatVerificationSettings object) {
+            @Override
+            public Boolean getter(MpsatVerificationSettings object) {
                 return getDebugCores();
             }
         });

@@ -9,7 +9,7 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.*;
-import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.plugins.graph.properties.SymbolPropertyDescriptor;
 import org.workcraft.plugins.graph.properties.VertexSymbolPropertyDescriptor;
 import org.workcraft.plugins.graph.tools.GraphSimulationTool;

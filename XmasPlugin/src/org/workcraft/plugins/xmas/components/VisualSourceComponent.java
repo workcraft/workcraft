@@ -8,7 +8,7 @@ import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.SourceComponent.Mode;
 import org.workcraft.plugins.xmas.components.SourceComponent.Type;
@@ -35,20 +35,25 @@ public class VisualSourceComponent extends VisualXmasComponent {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualSourceComponent, Type>(
-                this, SourceComponent.PROPERTY_TYPE, Type.class, true, true, true) {
-            protected void setter(VisualSourceComponent object, Type value) {
+                this, SourceComponent.PROPERTY_TYPE, Type.class, true, true) {
+            @Override
+            public void setter(VisualSourceComponent object, Type value) {
                 object.getReferencedSourceComponent().setType(value);
             }
-            protected Type getter(VisualSourceComponent object) {
+            @Override
+            public Type getter(VisualSourceComponent object) {
                 return object.getReferencedSourceComponent().getType();
             }
         });
+
         addPropertyDeclaration(new PropertyDeclaration<VisualSourceComponent, Mode>(
-                this, SourceComponent.PROPERTY_MODE, Mode.class, true, true, true) {
-            protected void setter(VisualSourceComponent object, Mode value) {
+                this, SourceComponent.PROPERTY_MODE, Mode.class, true, true) {
+            @Override
+            public void setter(VisualSourceComponent object, Mode value) {
                 object.getReferencedSourceComponent().setMode(value);
             }
-            protected Mode getter(VisualSourceComponent object) {
+            @Override
+            public Mode getter(VisualSourceComponent object) {
                 return object.getReferencedSourceComponent().getMode();
             }
         });

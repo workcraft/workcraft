@@ -4,7 +4,7 @@ import java.awt.Component;
 
 import javax.swing.JTable;
 
-import org.workcraft.gui.propertyeditor.GenericCellEditor;
+import org.workcraft.gui.properties.GenericCellEditor;
 import org.workcraft.plugins.cpog.Encoding;
 
 class EncodingCellEditor extends GenericCellEditor {

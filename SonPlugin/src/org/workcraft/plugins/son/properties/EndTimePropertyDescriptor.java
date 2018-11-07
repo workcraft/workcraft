@@ -1,10 +1,10 @@
 package org.workcraft.plugins.son.properties;
 
-import java.util.Map;
-
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.util.Interval;
+
+import java.util.Map;
 
 public class EndTimePropertyDescriptor implements PropertyDescriptor {
     private final Time t;
@@ -25,21 +25,6 @@ public class EndTimePropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public boolean isWritable() {
-        return false;
-    }
-
-    @Override
-    public boolean isCombinable() {
-        return false;
-    }
-
-    @Override
-    public boolean isTemplatable() {
-        return false;
-    }
-
-    @Override
     public Object getValue() {
         Interval value = t.getEndTime();
         return value.toString();
@@ -55,6 +40,11 @@ public class EndTimePropertyDescriptor implements PropertyDescriptor {
     @Override
     public Map<? extends Object, String> getChoice() {
         return null;
+    }
+
+    @Override
+    public boolean isEditable() {
+        return false;
     }
 
 }
