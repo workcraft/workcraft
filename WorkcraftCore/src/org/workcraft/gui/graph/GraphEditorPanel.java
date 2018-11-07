@@ -408,43 +408,24 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     }
 
     private ModelProperties getModelProperties() {
-        ModelProperties properties = new ModelProperties();
-        // Properties of the visual model
-        Properties modelProperties = getModel().getProperties(null);
-        properties.addAll(modelProperties.getDescriptors());
-        // Properties of the math model
-        Properties mathModelProperties = getModel().getMathModel().getProperties(null);
-        properties.addAll(mathModelProperties.getDescriptors());
-        return properties;
+        return getModel().getProperties(null);
     }
 
-    private ModelProperties getNodeProperties(Node node) {
-        ModelProperties properties = new ModelProperties();
-        // Properties of the visual node
-        Properties nodeProperties = getModel().getProperties(node);
-        properties.addApplicable(nodeProperties.getDescriptors());
-        if (node instanceof Properties) {
-            properties.addApplicable(((Properties) node).getDescriptors());
-        }
-        // Properties of the math node
-        if (node instanceof Dependent) {
-            for (Node mathNode : ((Dependent) node).getMathReferences()) {
-                Properties mathNodeProperties = getModel().getMathModel().getProperties(mathNode);
-                properties.addApplicable(mathNodeProperties.getDescriptors());
-                if (mathNode instanceof Properties) {
-                    properties.addApplicable(((Properties) mathNode).getDescriptors());
-                }
-            }
-        }
-        return properties;
+    private ModelProperties getNodeProperties(VisualNode node) {
+        ModelProperties result = new ModelProperties();
+        Properties properties = getModel().getProperties(node);
+        result.addApplicable(properties.getDescriptors());
+        result.addApplicable(node.getDescriptors());
+        return result;
     }
 
     private ModelProperties getSelectionProperties(Collection<? extends VisualNode> nodes) {
         ModelProperties allProperties = new ModelProperties();
-        for (Node node: nodes) {
-            Properties nodeProperties = getNodeProperties(node);
-            allProperties.addApplicable(nodeProperties.getDescriptors());
+        for (VisualNode node: nodes) {
+            Properties properties = getNodeProperties(node);
+            allProperties.addApplicable(properties.getDescriptors());
         }
+        // Combine duplicates by creating a new ModelProperties
         return new ModelProperties(allProperties.getDescriptors());
     }
 
@@ -488,7 +469,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
                 properties = getModelProperties();
                 title += " [" + TITLE_SUFFIX_MODEL + "]";
             } else if (selection.size() == 1) {
-                final Node node = selection.iterator().next();
+                final VisualNode node = selection.iterator().next();
                 properties = getNodeProperties(node);
                 title += " [" + TITLE_SUFFIX_SINGLE_ELEMENT + "]";
             } else {

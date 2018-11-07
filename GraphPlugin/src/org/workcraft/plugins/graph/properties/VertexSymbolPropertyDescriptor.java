@@ -1,19 +1,19 @@
 package org.workcraft.plugins.graph.properties;
 
-import java.util.Map;
-
 import org.workcraft.dom.Node;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.graph.Graph;
 import org.workcraft.plugins.graph.Symbol;
 import org.workcraft.plugins.graph.Vertex;
 
+import java.util.Map;
+
 public class VertexSymbolPropertyDescriptor implements PropertyDescriptor {
-    private final Graph dg;
+    private final Graph graph;
     private final Vertex vertex;
 
-    public VertexSymbolPropertyDescriptor(Graph dg, Vertex vertex) {
-        this.dg = dg;
+    public VertexSymbolPropertyDescriptor(Graph graph, Vertex vertex) {
+        this.graph = graph;
         this.vertex = vertex;
     }
 
@@ -37,7 +37,7 @@ public class VertexSymbolPropertyDescriptor implements PropertyDescriptor {
         Symbol symbol = vertex.getSymbol();
         String symbolName = "";
         if (symbol != null) {
-            symbolName = dg.getName(symbol);
+            symbolName = graph.getName(symbol);
         }
         return symbolName;
     }
@@ -47,11 +47,11 @@ public class VertexSymbolPropertyDescriptor implements PropertyDescriptor {
         Symbol symbol = null;
         String symbolName = (String) value;
         if (!symbolName.isEmpty()) {
-            Node node = dg.getNodeByReference(symbolName);
+            Node node = graph.getNodeByReference(symbolName);
             if (node instanceof Symbol) {
                 symbol = (Symbol) node;
             } else {
-                symbol = dg.createSymbol(symbolName);
+                symbol = graph.createSymbol(symbolName);
             }
         }
         vertex.setSymbol(symbol);

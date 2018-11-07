@@ -1,10 +1,7 @@
 package org.workcraft.plugins.cpog;
 
 import org.workcraft.dom.Container;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
-import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.plugins.cpog.observers.ConditionConsistencySupervisor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
@@ -44,15 +41,6 @@ public class Cpog extends AbstractMathModel {
 
     public Collection<Arc> getArcs() {
         return Hierarchy.getChildrenOfType(getRoot(), Arc.class);
-    }
-
-    @Override
-    public ModelProperties getProperties(Node node) {
-        ModelProperties properties = super.getProperties(node);
-        if (node != null) {
-            properties.removeByName(NamePropertyDescriptor.PROPERTY_NAME);
-        }
-        return properties;
     }
 
 }

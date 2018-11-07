@@ -11,6 +11,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
+import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.observation.ObservableState;
 
 import java.awt.*;
@@ -69,4 +70,6 @@ public interface VisualModel extends Model<VisualNode, VisualConnection>, Observ
 
     void setGraphEditorTools(List<GraphEditorTool> tool);
     List<GraphEditorTool> getGraphEditorTools();
+
+    ModelProperties getProperties(VisualNode node);
 }

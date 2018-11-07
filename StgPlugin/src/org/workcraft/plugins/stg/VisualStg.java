@@ -13,11 +13,11 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.plugins.petri.*;
 import org.workcraft.plugins.petri.tools.ReadArcConnectionTool;
 import org.workcraft.plugins.petri.utils.PetriNetUtils;
-import org.workcraft.plugins.stg.properties.SignalNamePropertyDescriptor;
-import org.workcraft.plugins.stg.properties.SignalTypePropertyDescriptor;
+import org.workcraft.plugins.stg.properties.*;
 import org.workcraft.plugins.stg.tools.*;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Pair;
@@ -398,10 +398,10 @@ public class VisualStg extends AbstractVisualModel {
     }
 
     @Override
-    public ModelProperties getProperties(Node node) {
+    public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
+        Stg stg = getMathModel();
         if (node == null) {
-            Stg stg = getMathModel();
             for (Signal.Type type : Signal.Type.values()) {
                 Container container = NamespaceHelper.getMathContainer(this, getCurrentLevel());
                 for (final String signalName : stg.getSignalNames(type, container)) {
@@ -411,6 +411,20 @@ public class VisualStg extends AbstractVisualModel {
                     SignalTypePropertyDescriptor typeDescriptor = new SignalTypePropertyDescriptor(stg, signalName, container);
                     properties.insertOrderedByFirstWord(typeDescriptor);
                 }
+            }
+        } else if (node instanceof VisualSignalTransition) {
+            VisualSignalTransition transition = (VisualSignalTransition) node;
+            properties.removeByName(NamePropertyDescriptor.PROPERTY_NAME);
+            properties.add(new TypePropertyDescriptor(stg, transition.getReferencedTransition()));
+            properties.add(new SignalPropertyDescriptor(stg, transition.getReferencedTransition()));
+            properties.add(new DirectionPropertyDescriptor(stg, transition.getReferencedTransition()));
+            if (StgSettings.getShowTransitionInstance()) {
+                properties.add(new InstancePropertyDescriptor(stg, transition.getReferencedTransition()));
+            }
+        } else if (node instanceof VisualDummyTransition) {
+            VisualDummyTransition dummy = (VisualDummyTransition) node;
+            if (StgSettings.getShowTransitionInstance()) {
+                properties.add(new InstancePropertyDescriptor(stg, dummy.getReferencedTransition()));
             }
         }
         return properties;

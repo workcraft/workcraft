@@ -20,7 +20,7 @@ public class VisualReplicaPlace extends VisualReplica {
 
     public VisualReplicaPlace() {
         super();
-        removePropertyDeclarationByName(PROPERTY_FOREGROUND_COLOR);
+        removePropertyDeclarationByName(PROPERTY_COLOR);
         removePropertyDeclarationByName(PROPERTY_FILL_COLOR);
         removePropertyDeclarationByName(PROPERTY_NAME_POSITIONING);
     }

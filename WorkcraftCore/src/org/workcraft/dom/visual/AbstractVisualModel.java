@@ -10,12 +10,14 @@ import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.FlatReferenceManager;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.gui.propertyeditor.TitlePropertyDescriptor;
 import org.workcraft.observation.*;
 import org.workcraft.plugins.layout.DotLayoutCommand;
@@ -622,15 +624,6 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
         observableState.sendNotification(e);
     }
 
-    @Override
-    public ModelProperties getProperties(Node node) {
-        ModelProperties properties = new ModelProperties();
-        if (node == null) {
-            properties.add(new TitlePropertyDescriptor(this));
-        }
-        return properties;
-    }
-
     public Collection<MathNode> getMathChildren(Collection<? extends VisualNode> nodes) {
         Collection<MathNode> ret = new HashSet<>();
         for (Node node: nodes) {
@@ -710,6 +703,20 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
     @Override
     public final List<GraphEditorTool> getGraphEditorTools() {
         return graphEditorTools;
+    }
+
+    @Override
+    public ModelProperties getProperties(VisualNode node) {
+        ModelProperties properties = new ModelProperties();
+        if (node == null) {
+            properties.add(new TitlePropertyDescriptor(this));
+        } else {
+            String name = getMathName(node);
+            if ((name != null) && !Identifier.isInternal(name)) {
+                properties.add(new NamePropertyDescriptor(this, node));
+            }
+        }
+        return properties;
     }
 
 }

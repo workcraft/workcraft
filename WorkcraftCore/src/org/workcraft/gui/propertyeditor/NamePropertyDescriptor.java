@@ -1,28 +1,27 @@
 package org.workcraft.gui.propertyeditor;
 
-import java.util.Map;
-
-import org.workcraft.dom.AbstractModel;
-import org.workcraft.dom.Node;
-import org.workcraft.exceptions.ArgumentException;
-import org.workcraft.observation.ObservableState;
-import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.dom.references.Identifier;
+import org.workcraft.dom.visual.AbstractVisualModel;
+import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.exceptions.ArgumentException;
+import org.workcraft.observation.PropertyChangedEvent;
+
+import java.util.Map;
 
 public class NamePropertyDescriptor implements PropertyDescriptor {
     public static final String PROPERTY_NAME = "Name";
 
-    private final AbstractModel model;
-    private final Node node;
+    private final AbstractVisualModel model;
+    private final VisualNode node;
 
-    public NamePropertyDescriptor(AbstractModel model, Node node) {
+    public NamePropertyDescriptor(AbstractVisualModel model, VisualNode node) {
         this.model = model;
         this.node = node;
     }
 
     @Override
     public Object getValue() {
-        return model.getName(node);
+        return model.getMathName(node);
     }
 
     @Override
@@ -30,11 +29,9 @@ public class NamePropertyDescriptor implements PropertyDescriptor {
         if (value instanceof String) {
             String name = (String) value;
             if (Identifier.isName(name)) {
-                if (!name.equals(model.getName(node))) {
-                    model.setName(node, name);
-                    if (node instanceof ObservableState) {
-                        ((ObservableState) node).sendNotification(new PropertyChangedEvent(node, PROPERTY_NAME));
-                    }
+                if (!name.equals(model.getMathName(node))) {
+                    model.setMathName(node, name);
+                    node.sendNotification(new PropertyChangedEvent(node, PROPERTY_NAME));
                 }
             } else {
                 throw new ArgumentException("'" + name + "' is not a valid C-style identifier.\n"

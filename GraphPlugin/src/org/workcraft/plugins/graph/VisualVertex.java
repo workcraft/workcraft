@@ -71,6 +71,11 @@ public class VisualVertex extends VisualComponent {
     }
 
     @Override
+    public Vertex getReferencedComponent() {
+        return (Vertex) super.getReferencedComponent();
+    }
+
+    @Override
     public Shape getShape() {
         double size = CommonVisualSettings.getNodeSize() - CommonVisualSettings.getStrokeWidth();
         double pos = -0.5 * size;

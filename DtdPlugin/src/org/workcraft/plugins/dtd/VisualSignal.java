@@ -28,7 +28,6 @@ import java.util.HashSet;
 @SVGIcon("images/dtd-node-signal.svg")
 public class VisualSignal extends VisualComponent implements Container, CustomTouchable, ObservableHierarchy {
 
-    public static final String PROPERTY_COLOR = "Color";
     protected DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
     public VisualSignal(Signal signal) {
@@ -37,7 +36,6 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
     }
 
     private void configureProperties() {
-        renamePropertyDeclarationByName(PROPERTY_FOREGROUND_COLOR, PROPERTY_COLOR);
         removePropertyDeclarationByName(PROPERTY_FILL_COLOR);
         removePropertyDeclarationByName(PROPERTY_NAME_POSITIONING);
         removePropertyDeclarationByName(PROPERTY_NAME_COLOR);

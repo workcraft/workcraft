@@ -16,12 +16,17 @@ import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
+import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.elements.*;
 import org.workcraft.plugins.son.elements.Event;
+import org.workcraft.plugins.son.properties.ConnectionTimePropertyDescriptor;
+import org.workcraft.plugins.son.properties.DurationPropertyDescriptor;
+import org.workcraft.plugins.son.properties.EndTimePropertyDescriptor;
+import org.workcraft.plugins.son.properties.StartTimePropertyDescriptor;
 import org.workcraft.plugins.son.tools.*;
 import org.workcraft.util.Hierarchy;
 
@@ -607,4 +612,28 @@ public class VisualSON extends AbstractVisualModel {
             ((VisualONGroup) n).setForegroundColor(nodeColor);
         }
     }
+
+    @Override
+    public ModelProperties getProperties(VisualNode node) {
+        ModelProperties properties = super.getProperties(node);
+        if (node instanceof VisualSONConnection) {
+            VisualSONConnection con = (VisualSONConnection) node;
+            if (con.getSemantics() == Semantics.PNLINE || con.getSemantics() == Semantics.ASYNLINE) {
+                properties.add(new ConnectionTimePropertyDescriptor((VisualSONConnection) node));
+            }
+        }
+
+        if (node instanceof VisualComponent) {
+            VisualComponent component = (VisualComponent) node;
+            if (component.getReferencedComponent() instanceof Time) {
+                Time time = (Time) component.getReferencedComponent();
+                properties.add(new StartTimePropertyDescriptor(time));
+                properties.add(new EndTimePropertyDescriptor(time));
+                properties.add(new DurationPropertyDescriptor(time));
+            }
+        }
+
+        return properties;
+    }
+
 }

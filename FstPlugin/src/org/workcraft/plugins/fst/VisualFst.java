@@ -9,15 +9,20 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.*;
+import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fsm.VisualState;
+import org.workcraft.plugins.fst.properties.DirectionPropertyDescriptor;
+import org.workcraft.plugins.fst.properties.EventSignalPropertyDescriptor;
+import org.workcraft.plugins.fst.properties.SignalTypePropertyDescriptor;
+import org.workcraft.plugins.fst.properties.TypePropertyDescriptor;
 import org.workcraft.plugins.fst.tools.FstSimulationTool;
 import org.workcraft.util.Hierarchy;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @DisplayName("Finite State Transducer")
 public class VisualFst extends VisualFsm {
@@ -42,6 +47,11 @@ public class VisualFst extends VisualFsm {
     }
 
     @Override
+    public Fst getMathModel() {
+        return (Fst) super.getMathModel();
+    }
+
+    @Override
     public VisualConnection connect(VisualNode first, VisualNode second, MathConnection mConnection) throws InvalidConnectionException {
         validateConnection(first, second);
 
@@ -51,8 +61,8 @@ public class VisualFst extends VisualFsm {
         State mState2 = vState2.getReferencedState();
 
         if (mConnection == null) {
-            Signal signal = ((Fst) getMathModel()).createSignal(null, Signal.Type.DUMMY);
-            mConnection = ((Fst) getMathModel()).createSignalEvent(mState1, mState2, signal);
+            Signal signal = getMathModel().createSignal(null, Signal.Type.DUMMY);
+            mConnection = getMathModel().createSignalEvent(mState1, mState2, signal);
         }
         VisualSignalEvent vEvent = new VisualSignalEvent((SignalEvent) mConnection, vState1, vState2);
 
@@ -63,6 +73,30 @@ public class VisualFst extends VisualFsm {
 
     public Collection<VisualSignalEvent> getVisualSignalEvents() {
         return Hierarchy.getDescendantsOfType(getRoot(), VisualSignalEvent.class);
+    }
+
+    @Override
+    public ModelProperties getProperties(VisualNode node) {
+        ModelProperties properties = super.getProperties(node);
+        if (node == null) {
+            for (final Signal signal: getMathModel().getSignals()) {
+                SignalTypePropertyDescriptor typeDescriptor = new SignalTypePropertyDescriptor(getMathModel(), signal);
+                properties.insertOrderedByFirstWord(typeDescriptor);
+            }
+        } else if (node instanceof VisualSignalEvent) {
+            LinkedList<PropertyDescriptor> eventDescriptors = new LinkedList<>();
+            SignalEvent signalEvent = ((VisualSignalEvent) node).getReferencedSignalEvent();
+            eventDescriptors.add(new EventSignalPropertyDescriptor(getMathModel(), signalEvent));
+            Signal signal = signalEvent.getSignal();
+            eventDescriptors.add(new TypePropertyDescriptor(signal));
+            if (signal.hasDirection()) {
+                eventDescriptors.add(new DirectionPropertyDescriptor(signalEvent));
+            }
+            Collections.sort(eventDescriptors, Comparator.comparing(PropertyDescriptor::getName));
+            properties.addAll(eventDescriptors);
+            properties.removeByName(Event.PROPERTY_SYMBOL);
+        }
+        return properties;
     }
 
 }

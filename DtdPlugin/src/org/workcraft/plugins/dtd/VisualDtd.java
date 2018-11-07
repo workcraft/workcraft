@@ -65,27 +65,9 @@ public class VisualDtd extends AbstractVisualModel {
         setGraphEditorTools(tools);
     }
 
-    private boolean isTransitionReachableFromTransition(VisualTransitionEvent fromTransition, VisualTransitionEvent toTransition) {
-        Set<VisualTransitionEvent> visited = new HashSet<>();
-        Queue<VisualTransitionEvent> toVisit = new LinkedList<>();
-        visited.add(fromTransition);
-        toVisit.add(fromTransition);
-        while (!toVisit.isEmpty()) {
-            VisualTransitionEvent transitionEvent = toVisit.poll();
-            for (Node node : getPostset(transitionEvent)) {
-                if (node instanceof VisualTransitionEvent) {
-                    VisualTransitionEvent successorEvent = (VisualTransitionEvent) node;
-                    if (successorEvent == toTransition) {
-                        return true;
-                    }
-                    if (!visited.contains(successorEvent)) {
-                        visited.add(successorEvent);
-                        toVisit.add(successorEvent);
-                    }
-                }
-            }
-        }
-        return false;
+    @Override
+    public Dtd getMathModel() {
+        return (Dtd) super.getMathModel();
     }
 
     @Override
@@ -170,6 +152,29 @@ public class VisualDtd extends AbstractVisualModel {
         }
     }
 
+    private boolean isTransitionReachableFromTransition(VisualTransitionEvent fromTransition, VisualTransitionEvent toTransition) {
+        Set<VisualTransitionEvent> visited = new HashSet<>();
+        Queue<VisualTransitionEvent> toVisit = new LinkedList<>();
+        visited.add(fromTransition);
+        toVisit.add(fromTransition);
+        while (!toVisit.isEmpty()) {
+            VisualTransitionEvent transitionEvent = toVisit.poll();
+            for (Node node : getPostset(transitionEvent)) {
+                if (node instanceof VisualTransitionEvent) {
+                    VisualTransitionEvent successorEvent = (VisualTransitionEvent) node;
+                    if (successorEvent == toTransition) {
+                        return true;
+                    }
+                    if (!visited.contains(successorEvent)) {
+                        visited.add(successorEvent);
+                        toVisit.add(successorEvent);
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     @Override
     public VisualConnection connect(VisualNode first, VisualNode second, MathConnection mConnection) throws InvalidConnectionException {
         validateConnection(first, second);
@@ -186,7 +191,7 @@ public class VisualDtd extends AbstractVisualModel {
         }
 
         if (mConnection == null) {
-            mConnection = ((Dtd) getMathModel()).connect(m1, m2);
+            mConnection = getMathModel().connect(m1, m2);
         }
 
         Container container = Hierarchy.getNearestContainer(v1, v2);

@@ -250,17 +250,17 @@ public class VisualPolicyNet extends VisualPetriNet {
     }
 
     @Override
-    public ModelProperties getProperties(Node node) {
+    public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
-            for (VisualBundle vb: getVisualBundles()) {
-                properties.add(new BundleNamePropertyDescriptor(this, vb));
-                properties.add(new BundleColorPropertyDescriptor(this, vb));
-                properties.add(new TransitionsOfBundlePropertyDescriptor(this, vb));
+            for (VisualBundle bundle: getVisualBundles()) {
+                properties.add(new BundleNamePropertyDescriptor(this, bundle));
+                properties.add(new BundleColorPropertyDescriptor(this, bundle));
+                properties.add(new TransitionsOfBundlePropertyDescriptor(this, bundle));
             }
         } else if (node instanceof VisualBundledTransition) {
-            VisualBundledTransition t = (VisualBundledTransition) node;
-            properties.add(new BundlesOfTransitionPropertyDescriptor(this, t));
+            VisualBundledTransition transition = (VisualBundledTransition) node;
+            properties.add(new BundlesOfTransitionPropertyDescriptor(this, transition));
         }
         return properties;
     }

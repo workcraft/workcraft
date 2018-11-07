@@ -1,16 +1,16 @@
 package org.workcraft.plugins.son.properties;
 
-import java.util.Map;
-
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.plugins.son.connections.SONConnection;
+import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.util.Interval;
 
+import java.util.Map;
+
 public class ConnectionTimePropertyDescriptor implements PropertyDescriptor {
-    private final SONConnection con;
+    private final VisualSONConnection con;
     public static final String PROPERTY_CONNECTION_TIME = "Time interval";
 
-    public ConnectionTimePropertyDescriptor(SONConnection con) {
+    public ConnectionTimePropertyDescriptor(VisualSONConnection con) {
         this.con = con;
     }
 
@@ -41,7 +41,7 @@ public class ConnectionTimePropertyDescriptor implements PropertyDescriptor {
 
     @Override
     public Object getValue() {
-        Interval value = con.getTime();
+        Interval value = con.getReferencedSONConnection().getTime();
         return value.toString();
     }
 
@@ -49,7 +49,7 @@ public class ConnectionTimePropertyDescriptor implements PropertyDescriptor {
     public void setValue(Object value) {
         String input = (String) value;
         Interval result = new Interval(Interval.getMin(input), Interval.getMax(input));
-        con.setTime(result);
+        con.getReferencedSONConnection().setTime(result);
     }
 
     @Override

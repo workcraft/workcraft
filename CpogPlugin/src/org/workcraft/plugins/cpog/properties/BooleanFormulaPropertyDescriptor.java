@@ -1,6 +1,6 @@
 package org.workcraft.plugins.cpog.properties;
 
-import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.utils.StringGenerator;
@@ -13,10 +13,10 @@ import java.util.Map;
 
 public class BooleanFormulaPropertyDescriptor implements PropertyDescriptor {
 
-    private final Cpog cpog;
-    private final Node node;
+    private final VisualCpog cpog;
+    private final VisualNode node;
 
-    public BooleanFormulaPropertyDescriptor(Cpog cpog, Node node) {
+    public BooleanFormulaPropertyDescriptor(VisualCpog cpog, VisualNode node) {
         this.cpog = cpog;
         this.node = node;
     }
@@ -56,7 +56,7 @@ public class BooleanFormulaPropertyDescriptor implements PropertyDescriptor {
     public void setValue(Object value) throws InvocationTargetException {
         if (value instanceof String) {
             String string = (String) value;
-            Collection<Variable> variables = cpog.getVariables();
+            Collection<Variable> variables = cpog.getMathModel().getVariables();
             try {
                 if (node instanceof VisualRhoClause) {
                     VisualRhoClause rhoClause = (VisualRhoClause) this.node;

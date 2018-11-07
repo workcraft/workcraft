@@ -23,7 +23,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
     public static final String PROPERTY_LABEL_COLOR = "Label color";
     public static final String PROPERTY_NAME_POSITIONING = "Name positioning";
     public static final String PROPERTY_NAME_COLOR = "Name color";
-    public static final String PROPERTY_FOREGROUND_COLOR = "Foreground color";
+    public static final String PROPERTY_COLOR = "Color";
     public static final String PROPERTY_FILL_COLOR = "Fill color";
 
     private MathNode refNode = null;
@@ -65,7 +65,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
 
     private void addColorPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Color>(
-                this, PROPERTY_FOREGROUND_COLOR, Color.class, true, true, true) {
+                this, PROPERTY_COLOR, Color.class, true, true, true) {
             protected void setter(VisualComponent object, Color value) {
                 object.setForegroundColor(value);
             }
@@ -210,7 +210,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
     public void setForegroundColor(Color value) {
         if (!foregroundColor.equals(value)) {
             foregroundColor = value;
-            sendNotification(new PropertyChangedEvent(this, PROPERTY_FOREGROUND_COLOR));
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_COLOR));
         }
     }
 

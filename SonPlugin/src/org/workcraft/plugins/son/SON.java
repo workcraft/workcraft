@@ -9,17 +9,12 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.*;
 import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.exception.IncompatibleScenarioException;
-import org.workcraft.plugins.son.properties.ConnectionTimePropertyDescriptor;
-import org.workcraft.plugins.son.properties.DurationPropertyDescriptor;
-import org.workcraft.plugins.son.properties.EndTimePropertyDescriptor;
-import org.workcraft.plugins.son.properties.StartTimePropertyDescriptor;
 import org.workcraft.plugins.son.util.Scenario;
 import org.workcraft.plugins.son.util.ScenarioRef;
 import org.workcraft.plugins.son.util.ScenarioSaveList;
@@ -555,25 +550,6 @@ public class SON extends AbstractMathModel {
             result.append(']');
         }
         return result.toString();
-    }
-
-    @Override
-    public ModelProperties getProperties(Node node) {
-        ModelProperties properties = super.getProperties(node);
-        if (node instanceof SONConnection) {
-            SONConnection con = (SONConnection) node;
-            if (con.getSemantics() == Semantics.PNLINE || con.getSemantics() == Semantics.ASYNLINE) {
-                properties.add(new ConnectionTimePropertyDescriptor((SONConnection) node));
-            }
-        }
-
-        if (node instanceof Time) {
-            properties.add(new StartTimePropertyDescriptor((Time) node));
-            properties.add(new EndTimePropertyDescriptor((Time) node));
-            properties.add(new DurationPropertyDescriptor((Time) node));
-        }
-
-        return properties;
     }
 
 }

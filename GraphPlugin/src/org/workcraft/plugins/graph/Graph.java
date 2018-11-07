@@ -7,9 +7,7 @@ import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.NameManager;
-import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.graph.observers.SymbolConsistencySupervisor;
-import org.workcraft.plugins.graph.properties.VertexSymbolPropertyDescriptor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
@@ -83,16 +81,6 @@ public class Graph extends AbstractMathModel {
             }
         }
         return super.reparent(dstContainer, srcModel, srcRoot, srcChildren);
-    }
-
-    @Override
-    public ModelProperties getProperties(Node node) {
-        ModelProperties properties = super.getProperties(node);
-        if (node instanceof Vertex) {
-            Vertex vertex = (Vertex) node;
-            properties.add(new VertexSymbolPropertyDescriptor(this, vertex));
-        }
-        return properties;
     }
 
 }

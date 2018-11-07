@@ -2,7 +2,6 @@ package org.workcraft.dom;
 
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.ReferenceManager;
-import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.util.Func;
 
 import java.util.Collection;
@@ -51,8 +50,6 @@ public interface Model<N extends Node, C extends Connection>  extends NodeContex
     void add(Node node);
     void remove(Node node);
     void remove(Collection<Node> nodes);
-
-    ModelProperties getProperties(Node node);
 
     default void beforeSerialisation() {
     }

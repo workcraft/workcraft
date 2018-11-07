@@ -10,7 +10,10 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.*;
+import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.fsm.observers.FirstStateSupervisor;
+import org.workcraft.plugins.fsm.properties.EventSymbolPropertyDescriptor;
+import org.workcraft.plugins.fsm.properties.SymbolPropertyDescriptor;
 import org.workcraft.plugins.fsm.tools.FsmSimulationTool;
 import org.workcraft.util.Hierarchy;
 
@@ -39,6 +42,11 @@ public class VisualFsm extends AbstractVisualModel {
         tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(State.class)));
         tools.add(new FsmSimulationTool());
         setGraphEditorTools(tools);
+    }
+
+    @Override
+    public Fsm getMathModel() {
+        return (Fsm) super.getMathModel();
     }
 
     @Override
@@ -74,6 +82,21 @@ public class VisualFsm extends AbstractVisualModel {
 
     public Collection<VisualEvent> getVisualSymbols() {
         return Hierarchy.getDescendantsOfType(getRoot(), VisualEvent.class);
+    }
+
+    @Override
+    public ModelProperties getProperties(VisualNode node) {
+        ModelProperties properties = super.getProperties(node);
+        if (node == null) {
+            for (final Symbol symbol: getMathModel().getSymbols()) {
+                SymbolPropertyDescriptor symbolDescriptor = new SymbolPropertyDescriptor(getMathModel(), symbol);
+                properties.insertOrderedByFirstWord(symbolDescriptor);
+            }
+        } else if (node instanceof VisualEvent) {
+            VisualEvent event = (VisualEvent) node;
+            properties.add(new EventSymbolPropertyDescriptor(getMathModel(), event.getReferencedEvent()));
+        }
+        return properties;
     }
 
 }

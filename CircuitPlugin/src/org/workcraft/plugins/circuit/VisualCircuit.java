@@ -382,7 +382,7 @@ public class VisualCircuit extends AbstractVisualModel {
     }
 
     @Override
-    public ModelProperties getProperties(Node node) {
+    public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
             properties.add(new EnvironmentFilePropertyDescriptor(this));

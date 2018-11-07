@@ -2,7 +2,6 @@ package org.workcraft.plugins.cpog;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.visual.*;
@@ -14,6 +13,7 @@ import org.workcraft.gui.graph.tools.ConnectionTool;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.plugins.cpog.observers.VariableConsistencySupervisor;
 import org.workcraft.plugins.cpog.properties.BooleanFormulaPropertyDescriptor;
 import org.workcraft.plugins.cpog.tools.CpogSelectionTool;
@@ -186,10 +186,13 @@ public class VisualCpog extends AbstractVisualModel {
     }
 
     @Override
-    public ModelProperties getProperties(Node node) {
+    public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
+        if (node != null) {
+            properties.removeByName(NamePropertyDescriptor.PROPERTY_NAME);
+        }
         if ((node instanceof VisualRhoClause) || (node instanceof VisualVertex) || (node instanceof VisualArc)) {
-            properties.add(new BooleanFormulaPropertyDescriptor(getMathModel(), node));
+            properties.add(new BooleanFormulaPropertyDescriptor(this, node));
         }
         return properties;
     }
