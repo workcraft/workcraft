@@ -17,17 +17,16 @@ import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.gui.properties.ModelProperties;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.elements.*;
 import org.workcraft.plugins.son.elements.Event;
-import org.workcraft.plugins.son.properties.ConnectionTimePropertyDescriptor;
-import org.workcraft.plugins.son.properties.DurationPropertyDescriptor;
-import org.workcraft.plugins.son.properties.EndTimePropertyDescriptor;
-import org.workcraft.plugins.son.properties.StartTimePropertyDescriptor;
 import org.workcraft.plugins.son.tools.*;
+import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.util.Hierarchy;
 
 import javax.swing.*;
@@ -617,23 +616,89 @@ public class VisualSON extends AbstractVisualModel {
     public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
         if (node instanceof VisualSONConnection) {
-            VisualSONConnection con = (VisualSONConnection) node;
-            if (con.getSemantics() == Semantics.PNLINE || con.getSemantics() == Semantics.ASYNLINE) {
-                properties.add(new ConnectionTimePropertyDescriptor((VisualSONConnection) node));
+            VisualSONConnection connection = (VisualSONConnection) node;
+            if ((connection.getSemantics() == Semantics.PNLINE) || (connection.getSemantics() == Semantics.ASYNLINE)) {
+                properties.add(getConnectionTimeProperty(connection));
             }
         }
-
         if (node instanceof VisualComponent) {
             VisualComponent component = (VisualComponent) node;
             if (component.getReferencedComponent() instanceof Time) {
                 Time time = (Time) component.getReferencedComponent();
-                properties.add(new StartTimePropertyDescriptor(time));
-                properties.add(new EndTimePropertyDescriptor(time));
-                properties.add(new DurationPropertyDescriptor(time));
+                properties.add(getStartTimeProperty(time));
+                properties.add(getEndTimeProperty(time));
+                properties.add(getDurationProperty(time));
             }
         }
-
         return properties;
+    }
+
+    private PropertyDescriptor getConnectionTimeProperty(VisualSONConnection connection) {
+        return new PropertyDeclaration<VisualSONConnection, String>(connection, Time.PROPERTY_CONNECTION_TIME, String.class) {
+            @Override
+            public String getter(VisualSONConnection object) {
+                return object.getReferencedSONConnection().getTime().toString();
+            }
+            @Override
+            public void setter(VisualSONConnection object, String value) {
+                object.getReferencedSONConnection().setTime(new Interval(Interval.getMin(value), Interval.getMax(value)));
+            }
+            @Override
+            public boolean isEditable() {
+                return false;
+            }
+        };
+    }
+
+    private PropertyDescriptor getStartTimeProperty(Time time) {
+        return new PropertyDeclaration<Time, String>(time, Time.PROPERTY_START_TIME, String.class) {
+            @Override
+            public String getter(Time object) {
+                return object.getStartTime().toString();
+            }
+            @Override
+            public void setter(Time object, String value) {
+                object.setStartTime(new Interval(value));
+            }
+            @Override
+            public boolean isEditable() {
+                return false;
+            }
+        };
+    }
+
+    private PropertyDescriptor getEndTimeProperty(Time time) {
+        return new PropertyDeclaration<Time, String>(time, Time.PROPERTY_END_TIME, String.class) {
+            @Override
+            public String getter(Time object) {
+                return object.getEndTime().toString();
+            }
+            @Override
+            public void setter(Time object, String value) {
+                object.setEndTime(new Interval(value));
+            }
+            @Override
+            public boolean isEditable() {
+                return false;
+            }
+        };
+    }
+
+    private PropertyDescriptor getDurationProperty(Time time) {
+        return new PropertyDeclaration<Time, String>(time, Time.PROPERTY_DURATION, String.class) {
+            @Override
+            public String getter(Time object) {
+                return object.getDuration().toString();
+            }
+            @Override
+            public void setter(Time object, String value) {
+                object.setDuration(new Interval(value));
+            }
+            @Override
+            public boolean isEditable() {
+                return false;
+            }
+        };
     }
 
 }

@@ -35,12 +35,12 @@ public abstract class PropertyDeclaration<O, V> implements PropertyDescriptor {
     }
 
     @Override
-    public Object getValue() {
+    public final Object getValue() {
         return getter(object);
     }
 
     @Override
-    public void setValue(Object value) {
+    public final void setValue(Object value) {
         try {
             setter(object, cls.cast(value));
         } catch (ClassCastException e) {
@@ -49,22 +49,22 @@ public abstract class PropertyDeclaration<O, V> implements PropertyDescriptor {
     }
 
     @Override
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
     @Override
-    public Class<V> getType() {
+    public final Class<V> getType() {
         return cls;
     }
 
     @Override
-    public boolean isCombinable() {
+    public final boolean isCombinable() {
         return combinable;
     }
 
     @Override
-    public boolean isTemplatable() {
+    public final boolean isTemplatable() {
         return templatable;
     }
 

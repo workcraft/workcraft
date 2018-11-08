@@ -354,24 +354,24 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         return we;
     }
 
-    private Properties propertiesWrapper(final ModelProperties mix) {
-        return new Properties() {
-            @Override
-            public Collection<PropertyDescriptor> getDescriptors() {
-                ArrayList<PropertyDescriptor> list = new ArrayList<>();
-                for (final PropertyDescriptor descriptor : mix.getDescriptors()) {
-                    if (descriptor.isVisible()) {
-                        list.add(new PropertyDerivative(descriptor) {
-                            @Override
-                            public void setValue(Object value) throws InvocationTargetException {
-                                we.saveMemento();
-                                super.setValue(value);
-                            }
-
-                        });
-                    }
+    private Properties wrapProperties(final ModelProperties mix) {
+        return () -> {
+            ArrayList<PropertyDescriptor> list = new ArrayList<>();
+            for (final PropertyDescriptor descriptor : mix.getDescriptors()) {
+                if (descriptor.isVisible()) {
+                    list.add(wrapProperty(descriptor));
                 }
-                return list;
+            }
+            return list;
+        };
+    }
+
+    private PropertyDescriptor wrapProperty(PropertyDescriptor descriptor) {
+        return new PropertyDerivative(descriptor) {
+            @Override
+            public void setValue(Object value) throws InvocationTargetException {
+                we.saveMemento();
+                super.setValue(value);
             }
         };
     }
@@ -455,7 +455,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         if ((tool == null) || !tool.requiresPropertyEditor() || properties.getDescriptors().isEmpty()) {
             propertyEditorWindow.clear();
         } else {
-            propertyEditorWindow.set(propertiesWrapper(properties));
+            propertyEditorWindow.set(wrapProperties(properties));
             if ((templateNode != null) && (defaultNode != null)) {
                 JButton resetButton = new JButton(RESET_TO_DEFAULTS);
                 resetButton.addActionListener(new TemplateResetActionListener(templateNode, defaultNode));

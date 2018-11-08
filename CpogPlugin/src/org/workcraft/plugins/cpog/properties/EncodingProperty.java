@@ -1,11 +1,10 @@
 package org.workcraft.plugins.cpog.properties;
 
+import org.workcraft.gui.properties.PropertyClass;
+
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
-
-import org.workcraft.gui.properties.PropertyClass;
-import org.workcraft.plugins.cpog.Encoding;
 
 public class EncodingProperty implements PropertyClass {
 
@@ -22,6 +21,7 @@ public class EncodingProperty implements PropertyClass {
     }
 
     public Object toCellRendererValue(Object value) {
-        return (Encoding) value;
+        return value;
     }
+
 }

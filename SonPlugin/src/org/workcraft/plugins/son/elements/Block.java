@@ -7,9 +7,6 @@ import org.workcraft.dom.math.PageNode;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.connections.SONConnection;
-import org.workcraft.plugins.son.properties.DurationPropertyDescriptor;
-import org.workcraft.plugins.son.properties.EndTimePropertyDescriptor;
-import org.workcraft.plugins.son.properties.StartTimePropertyDescriptor;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.util.Hierarchy;
 
@@ -126,7 +123,7 @@ public class Block extends PageNode implements TransitionNode, Time {
     public void setDuration(Interval value) {
         if (duration != value) {
             duration = value;
-            sendNotification(new PropertyChangedEvent(this, DurationPropertyDescriptor.PROPERTY_DURATION));
+            sendNotification(new PropertyChangedEvent(this, Time.PROPERTY_DURATION));
         }
     }
 
@@ -147,7 +144,7 @@ public class Block extends PageNode implements TransitionNode, Time {
     public void setStartTime(Interval value) {
         if (statTime != value) {
             statTime = value;
-            sendNotification(new PropertyChangedEvent(this, StartTimePropertyDescriptor.PROPERTY_START_TIME));
+            sendNotification(new PropertyChangedEvent(this, Time.PROPERTY_START_TIME));
         }
     }
 
@@ -160,7 +157,7 @@ public class Block extends PageNode implements TransitionNode, Time {
     public void setEndTime(Interval value) {
         if (endTime != value) {
             endTime = value;
-            sendNotification(new PropertyChangedEvent(this, EndTimePropertyDescriptor.PROPERTY_END_TIME));
+            sendNotification(new PropertyChangedEvent(this, Time.PROPERTY_END_TIME));
         }
     }
 

@@ -99,7 +99,7 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
 
     private Point2D newSignalPosition() {
         Point2D result = null;
-        for (VisualComponent visualComponent  : visualWaveform.getComponents()) {
+        for (VisualComponent visualComponent : visualWaveform.getComponents()) {
             if (visualComponent instanceof VisualSignal) {
                 VisualSignal visualSignal = (VisualSignal) visualComponent;
                 if (result == null) {
@@ -159,7 +159,7 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
 
     private void deleteAndSpaceVertically(Wtg wtg) {
         ArrayList<VisualSignal> visualSignals = new ArrayList<>();
-        for (VisualComponent visualComponent  : visualWaveform.getComponents()) {
+        for (VisualComponent visualComponent : visualWaveform.getComponents()) {
             if (visualComponent instanceof VisualSignal) {
                 visualSignals.add((VisualSignal) visualComponent);
             }
@@ -195,13 +195,4 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
         }
     }
 
-    @Override
-    public boolean isCombinable() {
-        return false;
-    }
-
-    @Override
-    public boolean isTemplatable() {
-        return false;
-    }
 }

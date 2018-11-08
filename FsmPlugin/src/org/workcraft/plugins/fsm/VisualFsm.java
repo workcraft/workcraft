@@ -2,18 +2,21 @@ package org.workcraft.plugins.fsm;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.*;
 import org.workcraft.gui.properties.ModelProperties;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.fsm.observers.FirstStateSupervisor;
-import org.workcraft.plugins.fsm.properties.EventSymbolPropertyDescriptor;
-import org.workcraft.plugins.fsm.properties.SymbolPropertyDescriptor;
 import org.workcraft.plugins.fsm.tools.FsmSimulationTool;
 import org.workcraft.util.Hierarchy;
 
@@ -63,7 +66,7 @@ public class VisualFsm extends AbstractVisualModel {
         State mState2 = vState2.getReferencedState();
 
         if (mConnection == null) {
-            mConnection = ((Fsm) getMathModel()).createEvent(mState1, mState2, null);
+            mConnection = getMathModel().createEvent(mState1, mState2, null);
         }
         VisualEvent vEvent = new VisualEvent((Event) mConnection, vState1, vState2);
 
@@ -89,14 +92,62 @@ public class VisualFsm extends AbstractVisualModel {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
             for (final Symbol symbol: getMathModel().getSymbols()) {
-                SymbolPropertyDescriptor symbolDescriptor = new SymbolPropertyDescriptor(getMathModel(), symbol);
-                properties.insertOrderedByFirstWord(symbolDescriptor);
+                properties.insertOrderedByFirstWord(getSymbolProperty(symbol));
             }
         } else if (node instanceof VisualEvent) {
-            VisualEvent event = (VisualEvent) node;
-            properties.add(new EventSymbolPropertyDescriptor(getMathModel(), event.getReferencedEvent()));
+            properties.add(getEventSymbolProperty((VisualEvent) node));
         }
         return properties;
+    }
+
+    private PropertyDescriptor getSymbolProperty(Symbol symbol) {
+        return new PropertyDeclaration<Symbol, String>(
+                symbol, getMathModel().getName(symbol) + " name", String.class) {
+            @Override
+            public void setter(Symbol object, String value) {
+                Node node = getMathModel().getNodeByReference(value);
+                if (node == null) {
+                    getMathModel().setName(object, value);
+                    for (Event event: getMathModel().getEvents(object)) {
+                        event.sendNotification(new PropertyChangedEvent(event, Event.PROPERTY_SYMBOL));
+                    }
+                } else if (!(node instanceof Symbol)) {
+                    throw new FormatException("Node '" + value + "' already exists and it is not a symbol.");
+                }
+            }
+            @Override
+            public String getter(Symbol object) {
+                return getMathModel().getName(object);
+            }
+        };
+    }
+
+    private PropertyDescriptor getEventSymbolProperty(VisualEvent event) {
+        return new PropertyDeclaration<VisualEvent, String>(
+                event, Event.PROPERTY_SYMBOL, String.class, true, true) {
+            @Override
+            public void setter(VisualEvent object, String value) {
+                Symbol symbol = null;
+                if (!value.isEmpty()) {
+                    Node node = getMathModel().getNodeByReference(value);
+                    if (node instanceof Symbol) {
+                        symbol = (Symbol) node;
+                    } else {
+                        symbol = getMathModel().createSymbol(value);
+                    }
+                }
+                object.getReferencedEvent().setSymbol(symbol);
+            }
+            @Override
+            public String getter(VisualEvent object) {
+                Symbol symbol = object.getReferencedEvent().getSymbol();
+                String symbolName = "";
+                if (symbol != null) {
+                    symbolName = getMathModel().getName(symbol);
+                }
+                return symbolName;
+            }
+        };
     }
 
 }
