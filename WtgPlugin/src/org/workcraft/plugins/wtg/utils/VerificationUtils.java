@@ -723,6 +723,15 @@ public class VerificationUtils {
                 if (successorNode instanceof State) {
                     if (signalStates.containsKey(successorNode)) {
                         if (!signalStates.get(successorNode).equals(finalWaveformSignalState)) {
+                            String msg = "In waveform '" + wtg.getName(waveform) +
+                                    "' the following signals have an inconsistent exit state with respect to the exit state of other waveforms:";
+                            for (Map.Entry<String, Signal.State> signal : signalStates.get(successorNode).entrySet()) {
+                                if ((finalWaveformSignalState.containsKey(signal.getKey())) &&
+                                        (!finalWaveformSignalState.get(signal.getKey()).equals(signal.getValue()))) {
+                                    msg = msg + " " + signal.getKey();
+                                }
+                            }
+                            DialogUtils.showError(msg);
                             return false;
                         }
                     } else {
@@ -748,9 +757,13 @@ public class VerificationUtils {
                     Boolean guardValue = waveform.getGuard().get(signalName);
                     if ((guardValue && initialSignalState != Signal.State.HIGH) ||
                             (!guardValue && initialSignalState != Signal.State.LOW)) {
+                        DialogUtils.showError("Initial signal state for signal '" + signalName +
+                                "' is inconsistent with its guard in waveform '" + wtg.getName(waveform) + "'");
                         return false;
                     }
                 } else {
+                    DialogUtils.showError("Initial signal state for signal '" + signalName +
+                            "' is inconsistent in waveform '" + wtg.getName(waveform) + "'");
                     return false;
                 }
             }
@@ -762,22 +775,27 @@ public class VerificationUtils {
         for (TransitionEvent transition : wtg.getTransitions(waveform)) {
             TransitionEvent.Direction direction = transition.getDirection();
             Signal.State previousState = wtg.getPreviousState(transition);
+            boolean consistent = true;
             if (direction == TransitionEvent.Direction.RISE) {
                 if ((previousState != Signal.State.LOW) && (previousState != Signal.State.UNSTABLE)) {
-                    return false;
+                    consistent = false;
                 }
             } else if (direction == TransitionEvent.Direction.FALL) {
                 if ((previousState != Signal.State.HIGH) && (previousState != Signal.State.UNSTABLE)) {
-                    return false;
+                    consistent = false;
                 }
             }  else if (direction == TransitionEvent.Direction.STABILISE) {
                 if (previousState != Signal.State.UNSTABLE) {
-                    return false;
+                    consistent = false;
                 }
             } else if (direction == TransitionEvent.Direction.DESTABILISE) {
                 if ((previousState != Signal.State.HIGH) && (previousState != Signal.State.LOW)) {
-                    return false;
+                    consistent = false;
                 }
+            }
+            if (!consistent) {
+                DialogUtils.showError(" In waveform '" + wtg.getName(waveform) + "', inconsistent transition for signal '"
+                        + wtg.getName(transition.getSignal()) + "'");
             }
         }
         return true;
