@@ -1,23 +1,12 @@
 package org.workcraft.gui.properties;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Insets;
-import java.io.File;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JTable;
-import javax.swing.SwingConstants;
-import javax.swing.border.Border;
+import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
+import java.awt.*;
+import java.io.File;
 
 @SuppressWarnings("serial")
 public class FileCellRenderer extends JPanel implements TableCellRenderer {
-    Border unselectedBorder = null;
-    Border selectedBorder = null;
 
     private final JButton chooseButton;
 
@@ -26,12 +15,12 @@ public class FileCellRenderer extends JPanel implements TableCellRenderer {
         chooseButton.setBorderPainted(false);
         chooseButton.setFocusable(false);
         chooseButton.setOpaque(true);
-        chooseButton.setMargin(new Insets(1, 1, 1, 1));
+        chooseButton.setMargin(FileCell.INSETS);
         chooseButton.setHorizontalAlignment(SwingConstants.LEFT);
 
-        JButton clearButton = new JButton("\u00d7");
+        JButton clearButton = new JButton(Character.toString(FileCell.CLEAR_SYMBOL));
         clearButton.setFocusable(false);
-        clearButton.setMargin(new Insets(1, 1, 1, 1));
+        clearButton.setMargin(FileCell.INSETS);
 
         setLayout(new BorderLayout());
         add(chooseButton, BorderLayout.CENTER);
@@ -44,9 +33,10 @@ public class FileCellRenderer extends JPanel implements TableCellRenderer {
             boolean isSelected, boolean hasFocus, int row, int column) {
 
         chooseButton.setFont(table.getFont());
-        if (value == null) {
-            chooseButton.setText("");
-        } else {
+        chooseButton.setText(null);
+        setToolTipText(null);
+
+        if (value instanceof File) {
             File file = (File) value;
             if (file.exists()) {
                 chooseButton.setForeground(Color.BLACK);
@@ -54,21 +44,12 @@ public class FileCellRenderer extends JPanel implements TableCellRenderer {
                 chooseButton.setForeground(Color.RED);
             }
             chooseButton.setText(".../" + file.getName());
+            setToolTipText(file.getAbsolutePath());
 
-            if (isSelected) {
-                if (selectedBorder == null) {
-                    selectedBorder = BorderFactory.createMatteBorder(
-                            0, 0, 0, 0, table.getSelectionBackground());
-                }
-                setBorder(selectedBorder);
-            } else {
-                if (unselectedBorder == null) {
-                    unselectedBorder = BorderFactory.createMatteBorder(
-                            0, 0, 0, 0, table.getBackground());
-                }
-                setBorder(unselectedBorder);
-            }
+            Color background = isSelected ? table.getSelectionBackground() : table.getBackground();
+            setBorder(BorderFactory.createMatteBorder(0, 0, 0, 0, background));
         }
         return this;
     }
+
 }
