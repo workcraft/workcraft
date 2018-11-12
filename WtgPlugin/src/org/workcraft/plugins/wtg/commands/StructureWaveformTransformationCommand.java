@@ -142,22 +142,38 @@ public class StructureWaveformTransformationCommand extends AbstractTransformati
             }
         }
 
-        for (VisualExitEvent exit : visualWtg.getVisualSignalExits(visualWaveform)) {
-            if (maxX != null) {
-                exit.setX(maxX + DtdSettings.getTransitionSeparation());
-            } else {
-                exit.setX(visualWtg.getVisualSignalEntries(visualWaveform).iterator().next().getX()
-                        + DtdSettings.getTransitionSeparation());
+        VisualExitEvent exit = visualWtg.getVisualSignalExits(visualWaveform).iterator().next();
+        double exitX;
+        if (maxX != null) {
+            exitX = maxX + DtdSettings.getTransitionSeparation();
+        } else {
+            exitX = visualWtg.getVisualSignalEntries(visualWaveform).iterator().next().getX()
+                    + DtdSettings.getTransitionSeparation();
+        }
+
+        ArrayList<Pair<VisualEvent, Double>> visualEventsShiftRight = new ArrayList<>();
+        ArrayList<Pair<VisualEvent, Double>> visualEventsShiftLeft = new ArrayList<>();
+        for (Map.Entry<VisualEvent, Double> eventsNewX : nodesX.entrySet()) {
+            if (eventsNewX.getKey().getX() < eventsNewX.getValue()) {
+                visualEventsShiftRight.add(new Pair<>(eventsNewX.getKey(), eventsNewX.getValue()));
+            } else if (eventsNewX.getKey().getX() > eventsNewX.getValue()) {
+                visualEventsShiftLeft.add(new Pair<>(eventsNewX.getKey(), eventsNewX.getValue()));
             }
         }
 
-        ArrayList<Pair<VisualEvent, Double>> visualEvents = new ArrayList<>();
-        for (Map.Entry<VisualEvent, Double> eventsNewX : nodesX.entrySet()) {
-            visualEvents.add(new Pair<>(eventsNewX.getKey(), eventsNewX.getValue()));
+        if (exitX > exit.getX()) {
+            exit.setX(exitX);
         }
-        visualEvents.sort((p1, p2) -> (p1.getSecond().compareTo(p2.getSecond())) * (-1));
-        for (Pair<VisualEvent, Double> visualEventPosition : visualEvents) {
+        visualEventsShiftRight.sort((p1, p2) -> (p1.getSecond().compareTo(p2.getSecond())) * (-1));
+        for (Pair<VisualEvent, Double> visualEventPosition : visualEventsShiftRight) {
             visualEventPosition.getFirst().setX(visualEventPosition.getSecond());
+        }
+        visualEventsShiftLeft.sort(Comparator.comparing(Pair::getSecond));
+        for (Pair<VisualEvent, Double> visualEventPosition : visualEventsShiftLeft) {
+            visualEventPosition.getFirst().setX(visualEventPosition.getSecond());
+        }
+        if (exitX < exit.getX()) {
+            exit.setX(exitX);
         }
     }
 }

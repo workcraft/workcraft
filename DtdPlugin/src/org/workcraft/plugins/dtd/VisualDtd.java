@@ -266,15 +266,19 @@ public class VisualDtd extends AbstractVisualModel {
                 }
             }
         }
-
         //Finally, we have to set the new Xs starting from right to left (larger to smaller)
         ArrayList<Pair<VisualEvent, Double>> visualEvents = new ArrayList<>();
         for (Map.Entry<VisualEvent, Double> eventsNewX : nodesX.entrySet()) {
             visualEvents.add(new Pair<>(eventsNewX.getKey(), eventsNewX.getValue()));
         }
         visualEvents.sort((p1, p2) -> (p1.getSecond().compareTo(p2.getSecond())) * (-1));
+        boolean rightmostEvent = true;
         for (Pair<VisualEvent, Double> visualEventPosition : visualEvents) {
-            visualEventPosition.getFirst().setX(visualEventPosition.getSecond());
+            //We can only set the X for one ExitEvent, and only if it is the rightmost event (i.e. the first in the array)
+            if (!(visualEventPosition.getFirst() instanceof VisualExitEvent) || rightmostEvent) {
+                visualEventPosition.getFirst().setX(visualEventPosition.getSecond());
+            }
+            rightmostEvent = false;
         }
     }
 
