@@ -14,13 +14,17 @@ public class ColorDeserialiser implements BasicXMLDeserialiser<Color> {
 
     @Override
     public Color deserialise(Element element) {
-        String s = element.getAttribute("rgb");
-        if (s == null || s.charAt(0) != '#') {
-            s = "#000000";
+        String s = element.getAttribute("argb");
+        boolean hasAlpha = true;
+        if (!s.startsWith("#")) {
+            hasAlpha = false;
+            s = element.getAttribute("rgb");
+            if (!s.startsWith("#")) {
+                s = "#000000";
+            }
         }
-        int rgb = Integer.parseInt(s.substring(1), 16);
-        return new Color(rgb, false);
-
+        int value = Integer.parseUnsignedInt(s.substring(1), 16);
+        return new Color(value, hasAlpha);
     }
 
 }
