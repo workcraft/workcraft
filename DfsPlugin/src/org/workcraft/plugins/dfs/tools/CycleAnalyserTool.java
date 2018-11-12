@@ -7,7 +7,6 @@ import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 import org.workcraft.plugins.dfs.VisualDelayComponent;
 import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.util.GUI;
@@ -381,7 +380,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
-            label.setBorder(PropertyEditorTable.BORDER_RENDER);
+            label.setBorder(SizeHelper.getTableCellBorder());
             if ((cycles != null) && (row >= 0) && (row < cycles.size())) {
                 label.setText(value.toString());
                 label.setToolTipText(cycles.get(row).toString());

@@ -3,9 +3,9 @@ package org.workcraft.plugins.shared;
 import org.workcraft.Config;
 import org.workcraft.PluginUtils;
 import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.Settings;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -26,26 +26,26 @@ public class CommonFavoriteSettings implements Settings {
 
     public CommonFavoriteSettings() {
         properties.add(new PropertyDeclaration<CommonFavoriteSettings, Boolean>(
-                this, "Filter favorite model types in New work dialog",
-                Boolean.class, true, false, false) {
+                this, "Filter favorite model types in New work dialog", Boolean.class) {
             @Override
-            protected void setter(CommonFavoriteSettings object, Boolean value) {
+            public void setter(CommonFavoriteSettings object, Boolean value) {
                 setFilterFavorites(value);
             }
             @Override
-            protected Boolean getter(CommonFavoriteSettings object) {
+            public Boolean getter(CommonFavoriteSettings object) {
                 return getFilterFavorites();
             }
         });
+
         for (String name: PluginUtils.getSortedModelDisplayNames()) {
             properties.add(new PropertyDeclaration<CommonFavoriteSettings, Boolean>(
-                    this, "  - " + name, Boolean.class, true, false, false) {
+                    this, "  - " + name, Boolean.class) {
                 @Override
-                protected void setter(CommonFavoriteSettings object, Boolean value) {
+                public void setter(CommonFavoriteSettings object, Boolean value) {
                     setIsFavorite(name, value);
                 }
                 @Override
-                protected Boolean getter(CommonFavoriteSettings object) {
+                public Boolean getter(CommonFavoriteSettings object) {
                     return getIsFavorite(name);
                 }
             });

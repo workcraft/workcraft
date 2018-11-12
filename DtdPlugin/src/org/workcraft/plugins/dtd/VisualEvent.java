@@ -11,11 +11,8 @@ import java.awt.geom.Point2D;
 
 public abstract class VisualEvent extends VisualComponent implements CustomTouchable {
 
-    public static final String PROPERTY_COLOR = "Color";
-
     public VisualEvent(Event event) {
         super(event);
-        renamePropertyDeclarationByName(PROPERTY_FOREGROUND_COLOR, PROPERTY_COLOR);
         removePropertyDeclarationByName(PROPERTY_FILL_COLOR);
         removePropertyDeclarationByName(PROPERTY_NAME_POSITIONING);
         removePropertyDeclarationByName(PROPERTY_NAME_COLOR);

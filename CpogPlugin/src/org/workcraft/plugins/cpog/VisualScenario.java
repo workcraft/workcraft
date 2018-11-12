@@ -1,29 +1,21 @@
 package org.workcraft.plugins.cpog;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.io.IOException;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.formula.utils.FormulaRenderingResult;
 import org.workcraft.formula.utils.FormulaToGraphics;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.util.Hierarchy;
+
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.io.IOException;
+import java.util.*;
 
 public class VisualScenario extends VisualGroup {
     public static final String PROPERTY_ENCODING = "Encoding";
@@ -62,20 +54,24 @@ public class VisualScenario extends VisualGroup {
 
     public VisualScenario() {
         addPropertyDeclaration(new PropertyDeclaration<VisualScenario, String>(
-                this, PROPERTY_LABEL, String.class, true, true, true) {
+                this, PROPERTY_LABEL, String.class, true, true) {
+            @Override
             public void setter(VisualScenario object, String value) {
                 object.setLabel(value);
             }
+            @Override
             public String getter(VisualScenario object) {
                 return object.getLabel();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualScenario, Encoding>(
-                this, PROPERTY_ENCODING, Encoding.class, true, true, true) {
+                this, PROPERTY_ENCODING, Encoding.class, true, true) {
+            @Override
             public void setter(VisualScenario object, Encoding value) {
                 object.setEncoding(value);
             }
+            @Override
             public Encoding getter(VisualScenario object) {
                 return object.getEncoding();
             }

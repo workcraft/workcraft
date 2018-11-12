@@ -1,12 +1,13 @@
 package org.workcraft.plugins.pcomp;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.workcraft.Config;
 import org.workcraft.gui.DesktopApi;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.Settings;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class PcompSettings implements Settings {
 
@@ -30,41 +31,49 @@ public class PcompSettings implements Settings {
 
     public PcompSettings() {
         properties.add(new PropertyDeclaration<PcompSettings, String>(
-                this, "PComp command", String.class, true, false, false) {
-            protected void setter(PcompSettings object, String value) {
+                this, "PComp command", String.class) {
+            @Override
+            public void setter(PcompSettings object, String value) {
                 setCommand(value);
             }
-            protected String getter(PcompSettings object) {
+            @Override
+            public String getter(PcompSettings object) {
                 return getCommand();
             }
         });
 
         properties.add(new PropertyDeclaration<PcompSettings, String>(
-                this, "Additional parameters", String.class, true, false, false) {
-            protected void setter(PcompSettings object, String value) {
+                this, "Additional parameters", String.class) {
+            @Override
+            public void setter(PcompSettings object, String value) {
                 setArgs(value);
             }
-            protected String getter(PcompSettings object) {
+            @Override
+            public String getter(PcompSettings object) {
                 return getArgs();
             }
         });
 
         properties.add(new PropertyDeclaration<PcompSettings, Boolean>(
-                this, "Output stdout", Boolean.class, true, false, false) {
-            protected void setter(PcompSettings object, Boolean value) {
+                this, "Output stdout", Boolean.class) {
+            @Override
+            public void setter(PcompSettings object, Boolean value) {
                 setPrintStdout(value);
             }
-            protected Boolean getter(PcompSettings object) {
+            @Override
+            public Boolean getter(PcompSettings object) {
                 return getPrintStdout();
             }
         });
 
         properties.add(new PropertyDeclaration<PcompSettings, Boolean>(
-                this, "Output stderr", Boolean.class, true, false, false) {
-            protected void setter(PcompSettings object, Boolean value) {
+                this, "Output stderr", Boolean.class) {
+            @Override
+            public void setter(PcompSettings object, Boolean value) {
                 setPrintStderr(value);
             }
-            protected Boolean getter(PcompSettings object) {
+            @Override
+            public Boolean getter(PcompSettings object) {
                 return getPrintStderr();
             }
         });

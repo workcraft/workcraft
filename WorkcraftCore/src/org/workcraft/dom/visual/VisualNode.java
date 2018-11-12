@@ -1,9 +1,9 @@
 package org.workcraft.dom.visual;
 
 import org.workcraft.dom.Node;
-import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.gui.propertyeditor.Properties;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.gui.properties.ModelProperties;
+import org.workcraft.gui.properties.Properties;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.ObservableStateImpl;
 import org.workcraft.observation.StateEvent;

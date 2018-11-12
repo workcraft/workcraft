@@ -1,19 +1,18 @@
 package org.workcraft.dom.visual;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.math.CommentNode;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonCommentSettings;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 @Hotkey(KeyEvent.VK_N)
 @DisplayName("Text Note")
@@ -39,11 +38,13 @@ public class VisualComment extends VisualComponent {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualComment, Alignment>(
-                this, PROPERTY_TEXT_ALIGNMENT, Alignment.class, true, true, true) {
-            protected void setter(VisualComment object, Alignment value) {
+                this, PROPERTY_TEXT_ALIGNMENT, Alignment.class, true, true) {
+            @Override
+            public void setter(VisualComment object, Alignment value) {
                 object.setTextAlignment(value);
             }
-            protected Alignment getter(VisualComment object) {
+            @Override
+            public Alignment getter(VisualComment object) {
                 return object.getTextAlignment();
             }
         });

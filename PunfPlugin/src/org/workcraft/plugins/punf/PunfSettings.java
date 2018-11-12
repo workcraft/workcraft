@@ -1,12 +1,13 @@
 package org.workcraft.plugins.punf;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.workcraft.Config;
 import org.workcraft.gui.DesktopApi;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.Settings;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class PunfSettings implements Settings {
 
@@ -33,51 +34,61 @@ public class PunfSettings implements Settings {
 
     public PunfSettings() {
         properties.add(new PropertyDeclaration<PunfSettings, String>(
-                this, "Punf command", String.class, true, false, false) {
-            protected void setter(PunfSettings object, String value) {
+                this, "Punf command", String.class) {
+            @Override
+            public void setter(PunfSettings object, String value) {
                 setCommand(value);
             }
-            protected String getter(PunfSettings object) {
+            @Override
+            public String getter(PunfSettings object) {
                 return getCommand();
             }
         });
 
         properties.add(new PropertyDeclaration<PunfSettings, String>(
-                this, "Additional parameters", String.class, true, false, false) {
-            protected void setter(PunfSettings object, String value) {
+                this, "Additional parameters", String.class) {
+            @Override
+            public void setter(PunfSettings object, String value) {
                 setArgs(value);
             }
-            protected String getter(PunfSettings object) {
+            @Override
+            public String getter(PunfSettings object) {
                 return getArgs();
             }
         });
 
         properties.add(new PropertyDeclaration<PunfSettings, Boolean>(
-                this, "Output stdout", Boolean.class, true, false, false) {
-            protected void setter(PunfSettings object, Boolean value) {
+                this, "Output stdout", Boolean.class) {
+            @Override
+            public void setter(PunfSettings object, Boolean value) {
                 setPrintStdout(value);
             }
-            protected Boolean getter(PunfSettings object) {
+            @Override
+            public Boolean getter(PunfSettings object) {
                 return getPrintStdout();
             }
         });
 
         properties.add(new PropertyDeclaration<PunfSettings, Boolean>(
-                this, "Output stderr", Boolean.class, true, false, false) {
-            protected void setter(PunfSettings object, Boolean value) {
+                this, "Output stderr", Boolean.class) {
+            @Override
+            public void setter(PunfSettings object, Boolean value) {
                 setPrintStderr(value);
             }
-            protected Boolean getter(PunfSettings object) {
+            @Override
+            public Boolean getter(PunfSettings object) {
                 return getPrintStderr();
             }
         });
 
         properties.add(new PropertyDeclaration<PunfSettings, Boolean>(
-                this, "Use legacy MCI unfolding for CSC conflict resolution", Boolean.class, true, false, false) {
-            protected void setter(PunfSettings object, Boolean value) {
+                this, "Use legacy MCI unfolding for CSC conflict resolution", Boolean.class) {
+            @Override
+            public void setter(PunfSettings object, Boolean value) {
                 setUseMciCsc(value);
             }
-            protected Boolean getter(PunfSettings object) {
+            @Override
+            public Boolean getter(PunfSettings object) {
                 return getUseMciCsc();
             }
         });

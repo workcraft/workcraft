@@ -1,13 +1,5 @@
 package org.workcraft.plugins.dfs;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.event.KeyEvent;
-import java.awt.geom.Path2D;
-import java.awt.geom.Rectangle2D;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
@@ -15,8 +7,13 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.plugins.dfs.decorations.CounterflowRegisterDecoration;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.Path2D;
+import java.awt.geom.Rectangle2D;
 
 @Hotkey(KeyEvent.VK_Q)
 @DisplayName ("Counterflow register")
@@ -30,20 +27,24 @@ public class VisualCounterflowRegister extends VisualAbstractRegister {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualCounterflowRegister, Boolean>(
-                this, CounterflowRegister.PROPERTY_OR_MARKED, Boolean.class, true, true, true) {
+                this, CounterflowRegister.PROPERTY_OR_MARKED, Boolean.class, true, true) {
+            @Override
             public void setter(VisualCounterflowRegister object, Boolean value) {
                 object.getReferencedCounterflowRegister().setOrMarked(value);
             }
+            @Override
             public Boolean getter(VisualCounterflowRegister object) {
                 return object.getReferencedCounterflowRegister().isOrMarked();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualCounterflowRegister, Boolean>(
-                this, CounterflowRegister.PROPERTY_AND_MARKED, Boolean.class, true, true, true) {
+                this, CounterflowRegister.PROPERTY_AND_MARKED, Boolean.class, true, true) {
+            @Override
             public void setter(VisualCounterflowRegister object, Boolean value) {
                 object.getReferencedCounterflowRegister().setAndMarked(value);
             }
+            @Override
             public Boolean getter(VisualCounterflowRegister object) {
                 return object.getReferencedCounterflowRegister().isAndMarked();
             }

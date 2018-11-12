@@ -39,6 +39,9 @@ public class PolicyDeadlockFreenessVerificationCommand extends AbstractVerificat
     }
 
     private MpsatChainResultHandler queueVerification(WorkspaceEntry we) {
+        if (!isApplicableTo(we)) {
+            return null;
+        }
         Framework framework = Framework.getInstance();
         TaskManager manager = framework.getTaskManager();
         CheckDeadlockFreenessTask task = new CheckDeadlockFreenessTask(we);

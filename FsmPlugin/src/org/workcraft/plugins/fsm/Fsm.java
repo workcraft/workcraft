@@ -8,11 +8,8 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.exceptions.ArgumentException;
-import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.fsm.observers.InitialStateSupervisor;
 import org.workcraft.plugins.fsm.observers.SymbolConsistencySupervisor;
-import org.workcraft.plugins.fsm.properties.EventSymbolPropertyDescriptor;
-import org.workcraft.plugins.fsm.properties.SymbolPropertyDescriptor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
@@ -130,21 +127,6 @@ public class Fsm extends AbstractMathModel {
             }
         }
         return super.reparent(dstContainer, srcModel, srcRoot, srcChildren);
-    }
-
-    @Override
-    public ModelProperties getProperties(Node node) {
-        ModelProperties properties = super.getProperties(node);
-        if (node == null) {
-            for (final Symbol symbol: getSymbols()) {
-                SymbolPropertyDescriptor symbolDescriptor = new SymbolPropertyDescriptor(this, symbol);
-                properties.insertOrderedByFirstWord(symbolDescriptor);
-            }
-        } else if (node instanceof Event) {
-            Event event = (Event) node;
-            properties.add(new EventSymbolPropertyDescriptor(this, event));
-        }
-        return properties;
     }
 
 }

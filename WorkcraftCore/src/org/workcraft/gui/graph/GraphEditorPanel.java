@@ -12,9 +12,10 @@ import org.workcraft.gui.*;
 import org.workcraft.gui.actions.ActionButton;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
-import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.gui.propertyeditor.Properties;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.gui.properties.ModelProperties;
+import org.workcraft.gui.properties.Properties;
+import org.workcraft.gui.properties.PropertyDerivative;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.shared.CommonEditorSettings;
@@ -29,7 +30,6 @@ import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class GraphEditorPanel extends JPanel implements StateObserver, GraphEditor {
@@ -353,98 +353,47 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         return we;
     }
 
-    private Properties propertiesWrapper(final ModelProperties mix) {
-        return new Properties() {
-            @Override
-            public Collection<PropertyDescriptor> getDescriptors() {
-                ArrayList<PropertyDescriptor> list = new ArrayList<>();
-                for (final PropertyDescriptor d : mix.getDescriptors()) {
-                    list.add(new PropertyDescriptor() {
-                        @Override
-                        public void setValue(Object value) throws InvocationTargetException {
-                            we.saveMemento();
-                            d.setValue(value);
-                        }
-
-                        @Override
-                        public Object getValue() throws InvocationTargetException {
-                            return d.getValue();
-                        }
-
-                        @Override
-                        public Class<?> getType() {
-                            return d.getType();
-                        }
-
-                        @Override
-                        public String getName() {
-                            return d.getName();
-                        }
-
-                        @Override
-                        public Map<? extends Object, String> getChoice() {
-                            return d.getChoice();
-                        }
-
-                        @Override
-                        public boolean isWritable() {
-                            return d.isWritable();
-                        }
-
-                        @Override
-                        public boolean isCombinable() {
-                            return d.isCombinable();
-                        }
-
-                        @Override
-                        public boolean isTemplatable() {
-                            return d.isTemplatable();
-                        }
-                    });
+    private Properties wrapProperties(final ModelProperties mix) {
+        return () -> {
+            ArrayList<PropertyDescriptor> list = new ArrayList<>();
+            for (final PropertyDescriptor descriptor : mix.getDescriptors()) {
+                if (descriptor.isVisible()) {
+                    list.add(wrapProperty(descriptor));
                 }
-                return list;
+            }
+            return list;
+        };
+    }
+
+    private PropertyDescriptor wrapProperty(PropertyDescriptor descriptor) {
+        return new PropertyDerivative(descriptor) {
+            @Override
+            public void setValue(Object value) {
+                we.saveMemento();
+                super.setValue(value);
             }
         };
     }
 
     private ModelProperties getModelProperties() {
-        ModelProperties properties = new ModelProperties();
-        // Properties of the visual model
-        Properties modelProperties = getModel().getProperties(null);
-        properties.addAll(modelProperties.getDescriptors());
-        // Properties of the math model
-        Properties mathModelProperties = getModel().getMathModel().getProperties(null);
-        properties.addAll(mathModelProperties.getDescriptors());
-        return properties;
+        return getModel().getProperties(null);
     }
 
-    private ModelProperties getNodeProperties(Node node) {
-        ModelProperties properties = new ModelProperties();
-        // Properties of the visual node
-        Properties nodeProperties = getModel().getProperties(node);
-        properties.addApplicable(nodeProperties.getDescriptors());
-        if (node instanceof Properties) {
-            properties.addApplicable(((Properties) node).getDescriptors());
-        }
-        // Properties of the math node
-        if (node instanceof Dependent) {
-            for (Node mathNode : ((Dependent) node).getMathReferences()) {
-                Properties mathNodeProperties = getModel().getMathModel().getProperties(mathNode);
-                properties.addApplicable(mathNodeProperties.getDescriptors());
-                if (mathNode instanceof Properties) {
-                    properties.addApplicable(((Properties) mathNode).getDescriptors());
-                }
-            }
-        }
-        return properties;
+    private ModelProperties getNodeProperties(VisualNode node) {
+        ModelProperties result = new ModelProperties();
+        Properties properties = getModel().getProperties(node);
+        result.addAll(properties.getDescriptors());
+        result.addAll(node.getDescriptors());
+        return result;
     }
 
     private ModelProperties getSelectionProperties(Collection<? extends VisualNode> nodes) {
         ModelProperties allProperties = new ModelProperties();
-        for (Node node: nodes) {
-            Properties nodeProperties = getNodeProperties(node);
-            allProperties.addApplicable(nodeProperties.getDescriptors());
+        for (VisualNode node: nodes) {
+            Properties properties = getNodeProperties(node);
+            allProperties.addAll(properties.getDescriptors());
         }
+        // Combine duplicates by creating a new ModelProperties
         return new ModelProperties(allProperties.getDescriptors());
     }
 
@@ -488,7 +437,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
                 properties = getModelProperties();
                 title += " [" + TITLE_SUFFIX_MODEL + "]";
             } else if (selection.size() == 1) {
-                final Node node = selection.iterator().next();
+                final VisualNode node = selection.iterator().next();
                 properties = getNodeProperties(node);
                 title += " [" + TITLE_SUFFIX_SINGLE_ELEMENT + "]";
             } else {
@@ -503,9 +452,9 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         final PropertyEditorWindow propertyEditorWindow = mainWindow.getPropertyView();
         GraphEditorTool tool = toolbox.getSelectedTool();
         if ((tool == null) || !tool.requiresPropertyEditor() || properties.getDescriptors().isEmpty()) {
-            propertyEditorWindow.clearObject();
+            propertyEditorWindow.clear();
         } else {
-            propertyEditorWindow.setObject(propertiesWrapper(properties));
+            propertyEditorWindow.set(wrapProperties(properties));
             if ((templateNode != null) && (defaultNode != null)) {
                 JButton resetButton = new JButton(RESET_TO_DEFAULTS);
                 resetButton.addActionListener(new TemplateResetActionListener(templateNode, defaultNode));

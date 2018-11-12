@@ -4,7 +4,7 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.shared.CommonVisualSettings;
@@ -27,12 +27,18 @@ public class VisualXmasContact extends VisualComponent implements StateObserver 
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualXmasContact, IOType>(
-                this, XmasContact.PROPERTY_IO_TYPE, IOType.class, false, false, false) {
-            protected void setter(VisualXmasContact object, IOType value) {
+                this, XmasContact.PROPERTY_IO_TYPE, IOType.class, false, false) {
+            @Override
+            public void setter(VisualXmasContact object, IOType value) {
                 object.getReferencedContact().setIOType(value);
             }
-            protected IOType getter(VisualXmasContact object) {
+            @Override
+            public IOType getter(VisualXmasContact object) {
                 return object.getReferencedContact().getIOType();
+            }
+            @Override
+            public boolean isEditable() {
+                return false;
             }
         });
     }

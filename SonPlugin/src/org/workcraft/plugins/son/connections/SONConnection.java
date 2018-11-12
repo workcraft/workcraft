@@ -1,14 +1,14 @@
 package org.workcraft.plugins.son.connections;
 
-import java.awt.Color;
-
 import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.plugins.son.properties.ConnectionTimePropertyDescriptor;
+import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.util.Interval;
+
+import java.awt.*;
 
 @IdentifierPrefix("con")
 public class SONConnection extends MathConnection {
@@ -74,7 +74,7 @@ public class SONConnection extends MathConnection {
     public void setTime(Interval value) {
         if (time != value) {
             time = value;
-            sendNotification(new PropertyChangedEvent(this, ConnectionTimePropertyDescriptor.PROPERTY_CONNECTION_TIME));
+            sendNotification(new PropertyChangedEvent(this, Time.PROPERTY_CONNECTION_TIME));
         }
     }
 

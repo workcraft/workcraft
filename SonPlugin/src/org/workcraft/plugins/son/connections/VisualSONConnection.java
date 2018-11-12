@@ -1,28 +1,20 @@
 package org.workcraft.plugins.son.connections;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Stroke;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-
-import org.workcraft.dom.visual.BoundingBoxHelper;
-import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.Positioning;
-import org.workcraft.dom.visual.RenderedText;
-import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.util.Geometry;
+
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 public class VisualSONConnection extends VisualConnection {
 
@@ -39,9 +31,11 @@ public class VisualSONConnection extends VisualConnection {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualSONConnection, String>(
-                this, "Semantic", String.class, true, true, true) {
+                this, "Semantic", String.class, true, true) {
+            @Override
             public void setter(VisualSONConnection object, String value) {
             }
+            @Override
             public String getter(VisualSONConnection object) {
                 switch (getSemantics()) {
                 case PNLINE:
@@ -59,11 +53,13 @@ public class VisualSONConnection extends VisualConnection {
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualSONConnection, Color>(
-                this, "Time color", Color.class, true, true, true) {
-            protected void setter(VisualSONConnection object, Color value) {
+                this, "Time color", Color.class, true, true) {
+            @Override
+            public void setter(VisualSONConnection object, Color value) {
                 object.setTimeLabelColor(value);
             }
-            protected Color getter(VisualSONConnection object) {
+            @Override
+            public Color getter(VisualSONConnection object) {
                 return object.getTimeLabelColor();
             }
         });

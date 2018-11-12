@@ -4,9 +4,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.workcraft.Config;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.Settings;
 
 public class CircuitLayoutSettings implements Settings {
 
@@ -42,74 +42,97 @@ public class CircuitLayoutSettings implements Settings {
 
     public CircuitLayoutSettings() {
         properties.add(new PropertyDeclaration<CircuitLayoutSettings, Double>(
-                this, "Placement spacing horizontally", Double.class, true, false, false) {
-            protected void setter(CircuitLayoutSettings object, Double value) {
+                this, "Placement spacing horizontally", Double.class) {
+            @Override
+            public void setter(CircuitLayoutSettings object, Double value) {
                 setSpacingHorizontal(value);
             }
-            protected Double getter(CircuitLayoutSettings object) {
+            @Override
+            public Double getter(CircuitLayoutSettings object) {
                 return getSpacingHorizontal();
             }
         });
+
         properties.add(new PropertyDeclaration<CircuitLayoutSettings, Double>(
-                this, "Placement spacing vertically", Double.class, true, false, false) {
-            protected void setter(CircuitLayoutSettings object, Double value) {
+                this, "Placement spacing vertically", Double.class) {
+            @Override
+            public void setter(CircuitLayoutSettings object, Double value) {
                 setSpacingVertical(value);
             }
-            protected Double getter(CircuitLayoutSettings object) {
+            @Override
+            public Double getter(CircuitLayoutSettings object) {
                 return getSpacingVertical();
             }
         });
+
         properties.add(new PropertyDeclaration<CircuitLayoutSettings, Double>(
-                this, "Routing prefered margin to bypass obstacles", Double.class, true, false, false) {
-            protected void setter(CircuitLayoutSettings object, Double value) {
+                this, "Routing prefered margin to bypass obstacles", Double.class) {
+            @Override
+            public void setter(CircuitLayoutSettings object, Double value) {
                 setMarginObstacle(value);
             }
-            protected Double getter(CircuitLayoutSettings object) {
+            @Override
+            public Double getter(CircuitLayoutSettings object) {
                 return getMarginObstacle();
             }
         });
+
         properties.add(new PropertyDeclaration<CircuitLayoutSettings, Double>(
-                this, "Routing minimal margin for obstacles in busy locations", Double.class, true, false, false) {
-            protected void setter(CircuitLayoutSettings object, Double value) {
+                this, "Routing minimal margin for obstacles in busy locations", Double.class) {
+            @Override
+            public void setter(CircuitLayoutSettings object, Double value) {
                 setMarginObstacleBusy(value);
             }
-            protected Double getter(CircuitLayoutSettings object) {
+            @Override
+            public Double getter(CircuitLayoutSettings object) {
                 return getMarginObstacleBusy();
             }
         });
+
         properties.add(new PropertyDeclaration<CircuitLayoutSettings, Double>(
-                this, "Routing channel width for wires", Double.class, true, false, false) {
-            protected void setter(CircuitLayoutSettings object, Double value) {
+                this, "Routing channel width for wires", Double.class) {
+            @Override
+            public void setter(CircuitLayoutSettings object, Double value) {
                 setChannelWidth(value);
             }
-            protected Double getter(CircuitLayoutSettings object) {
+            @Override
+            public Double getter(CircuitLayoutSettings object) {
                 return getChannelWidth();
             }
         });
+
         properties.add(new PropertyDeclaration<CircuitLayoutSettings, Double>(
-                this, "Routing major snapping", Double.class, true, false, false) {
-            protected void setter(CircuitLayoutSettings object, Double value) {
+                this, "Routing major snapping", Double.class) {
+            @Override
+            public void setter(CircuitLayoutSettings object, Double value) {
                 setSnappingMajor(value);
             }
-            protected Double getter(CircuitLayoutSettings object) {
+            @Override
+            public Double getter(CircuitLayoutSettings object) {
                 return getSnappingMajor();
             }
         });
+
         properties.add(new PropertyDeclaration<CircuitLayoutSettings, Double>(
-                this, "Routing minor snapping", Double.class, true, false, false) {
-            protected void setter(CircuitLayoutSettings object, Double value) {
+                this, "Routing minor snapping", Double.class) {
+            @Override
+            public void setter(CircuitLayoutSettings object, Double value) {
                 setSnappingMinor(value);
             }
-            protected Double getter(CircuitLayoutSettings object) {
+            @Override
+            public Double getter(CircuitLayoutSettings object) {
                 return getSnappingMinor();
             }
         });
+
         properties.add(new PropertyDeclaration<CircuitLayoutSettings, Boolean>(
-                this, "Debug routing", Boolean.class, true, false, false) {
-            protected void setter(CircuitLayoutSettings object, Boolean value) {
+                this, "Debug routing", Boolean.class) {
+            @Override
+            public void setter(CircuitLayoutSettings object, Boolean value) {
                 setDebugRouting(value);
             }
-            protected Boolean getter(CircuitLayoutSettings object) {
+            @Override
+            public Boolean getter(CircuitLayoutSettings object) {
                 return getDebugRouting();
             }
         });

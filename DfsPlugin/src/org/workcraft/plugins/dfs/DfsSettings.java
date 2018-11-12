@@ -1,13 +1,13 @@
 package org.workcraft.plugins.dfs;
 
-import java.awt.Color;
+import org.workcraft.Config;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.Settings;
+
+import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.workcraft.Config;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
 
 public class DfsSettings implements Settings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
@@ -51,31 +51,37 @@ public class DfsSettings implements Settings {
 
     public DfsSettings() {
         properties.add(new PropertyDeclaration<DfsSettings, Color>(
-                this, "Computed logic color", Color.class, true, false, false) {
-            protected void setter(DfsSettings object, Color value) {
+                this, "Computed logic color", Color.class) {
+            @Override
+            public void setter(DfsSettings object, Color value) {
                 setComputedLogicColor(value);
             }
-            protected Color getter(DfsSettings object) {
+            @Override
+            public Color getter(DfsSettings object) {
                 return getComputedLogicColor();
             }
         });
 
         properties.add(new PropertyDeclaration<DfsSettings, Color>(
-                this, "Register synchronisation color", Color.class, true, false, false) {
-            protected void setter(DfsSettings object, Color value) {
+                this, "Register synchronisation color", Color.class) {
+            @Override
+            public void setter(DfsSettings object, Color value) {
                 setSynchronisationRegisterColor(value);
             }
-            protected Color getter(DfsSettings object) {
+            @Override
+            public Color getter(DfsSettings object) {
                 return getSynchronisationRegisterColor();
             }
         });
 
         properties.add(new PropertyDeclaration<DfsSettings, Palette>(
-                this, "Token palette", Palette.class, true, false, false) {
-            protected void setter(DfsSettings object, Palette value) {
+                this, "Token palette", Palette.class) {
+            @Override
+            public void setter(DfsSettings object, Palette value) {
                 setTokenPalette(value);
             }
-            protected Palette getter(DfsSettings object) {
+            @Override
+            public Palette getter(DfsSettings object) {
                 return getTokenPalette();
             }
         });

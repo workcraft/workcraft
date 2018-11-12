@@ -1,23 +1,21 @@
 package org.workcraft.dom.visual;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 public class VisualReplica extends VisualTransformableNode implements Replica, Drawable {
     public static final String PROPERTY_NAME_POSITIONING = "Name positioning";
     public static final String PROPERTY_NAME_COLOR = "Name color";
-    public static final String PROPERTY_FOREGROUND_COLOR = "Foreground color";
+    public static final String PROPERTY_COLOR = "Color";
     public static final String PROPERTY_FILL_COLOR = "Fill color";
 
     public static final Font nameFont = new Font(Font.SANS_SERIF, Font.ITALIC, 1).deriveFont(0.5f);
@@ -49,21 +47,25 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
 
     private void addColorPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualReplica, Color>(
-                this, PROPERTY_FOREGROUND_COLOR, Color.class, true, true, true) {
-            protected void setter(VisualReplica object, Color value) {
+                this, PROPERTY_COLOR, Color.class, true, true) {
+            @Override
+            public void setter(VisualReplica object, Color value) {
                 object.setForegroundColor(value);
             }
-            protected Color getter(VisualReplica object) {
+            @Override
+            public Color getter(VisualReplica object) {
                 return object.getForegroundColor();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualReplica, Color>(
-                this, PROPERTY_FILL_COLOR, Color.class, true, true, true) {
-            protected void setter(VisualReplica object, Color value) {
+                this, PROPERTY_FILL_COLOR, Color.class, true, true) {
+            @Override
+            public void setter(VisualReplica object, Color value) {
                 object.setFillColor(value);
             }
-            protected Color getter(VisualReplica object) {
+            @Override
+            public Color getter(VisualReplica object) {
                 return object.getFillColor();
             }
         });
@@ -71,21 +73,25 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
 
     private void addNamePropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualReplica, Positioning>(
-                this, PROPERTY_NAME_POSITIONING, Positioning.class, true, true, true) {
-            protected void setter(VisualReplica object, Positioning value) {
+                this, PROPERTY_NAME_POSITIONING, Positioning.class, true, true) {
+            @Override
+            public void setter(VisualReplica object, Positioning value) {
                 object.setNamePositioning(value);
             }
-            protected Positioning getter(VisualReplica object) {
+            @Override
+            public Positioning getter(VisualReplica object) {
                 return object.getNamePositioning();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualReplica, Color>(
-                this, PROPERTY_NAME_COLOR, Color.class, true, true, true) {
-            protected void setter(VisualReplica object, Color value) {
+                this, PROPERTY_NAME_COLOR, Color.class, true, true) {
+            @Override
+            public void setter(VisualReplica object, Color value) {
                 object.setNameColor(value);
             }
-            protected Color getter(VisualReplica object) {
+            @Override
+            public Color getter(VisualReplica object) {
                 return object.getNameColor();
             }
         });
@@ -120,7 +126,7 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
     public void setForegroundColor(Color value) {
         if (!foregroundColor.equals(value)) {
             foregroundColor = value;
-            sendNotification(new PropertyChangedEvent(this, PROPERTY_FOREGROUND_COLOR));
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_COLOR));
         }
     }
 

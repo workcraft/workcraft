@@ -4,7 +4,7 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 
 public class VisualControlConnection extends VisualConnection {
 
@@ -24,7 +24,8 @@ public class VisualControlConnection extends VisualConnection {
     private void addPropertyDeclarations() {
         super.initialise();
         addPropertyDeclaration(new PropertyDeclaration<VisualControlConnection, Boolean>(
-                this, ControlConnection.PROPERTY_INVERTING, Boolean.class, true, true, true) {
+                this, ControlConnection.PROPERTY_INVERTING, Boolean.class, true, true) {
+            @Override
             public void setter(VisualControlConnection object, Boolean value) {
                 ControlConnection ref = getReferencedControlConnection();
                 // check if ref is not null to trick the order of node creation in deserialiser
@@ -33,6 +34,7 @@ public class VisualControlConnection extends VisualConnection {
                 }
                 setBubble(value);
             }
+            @Override
             public Boolean getter(VisualControlConnection object) {
                 return object.getReferencedControlConnection().isInverting();
             }

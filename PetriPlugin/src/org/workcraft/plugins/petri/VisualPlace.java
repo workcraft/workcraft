@@ -8,7 +8,7 @@ import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.petri.tools.PlaceDecoration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
@@ -37,30 +37,36 @@ public class VisualPlace extends VisualComponent {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualPlace, Integer>(
-                this, Place.PROPERTY_TOKENS, Integer.class, true, true, false) {
+                this, Place.PROPERTY_TOKENS, Integer.class, true, false) {
+            @Override
             public void setter(VisualPlace object, Integer value) {
                 object.getReferencedPlace().setTokens(value);
             }
+            @Override
             public Integer getter(VisualPlace object) {
                 return object.getReferencedPlace().getTokens();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualPlace, Color>(
-                this, PROPERTY_TOKEN_COLOR, Color.class, true, true, true) {
+                this, PROPERTY_TOKEN_COLOR, Color.class, true, true) {
+            @Override
             public void setter(VisualPlace object, Color value) {
                 object.setTokenColor(value);
             }
+            @Override
             public Color getter(VisualPlace object) {
                 return object.getTokenColor();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualPlace, Integer>(
-                this, Place.PROPERTY_CAPACITY, Integer.class, true, true, true) {
+                this, Place.PROPERTY_CAPACITY, Integer.class, true, true) {
+            @Override
             public void setter(VisualPlace object, Integer value) {
                 object.getReferencedPlace().setCapacity(value);
             }
+            @Override
             public Integer getter(VisualPlace object) {
                 return object.getReferencedPlace().getCapacity();
             }

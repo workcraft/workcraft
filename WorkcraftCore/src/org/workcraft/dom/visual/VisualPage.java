@@ -8,7 +8,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.TransformChangedEvent;
@@ -39,14 +39,13 @@ public class VisualPage extends VisualComponent implements Collapsible, Containe
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualPage, Boolean>(
-                this, PROPERTY_IS_COLLAPSED, Boolean.class, true, true, true) {
-
+                this, PROPERTY_IS_COLLAPSED, Boolean.class, true, true) {
             @Override
-            protected void setter(VisualPage object, Boolean value) {
+            public void setter(VisualPage object, Boolean value) {
                 object.setIsCollapsed(value);
             }
             @Override
-            protected Boolean getter(VisualPage object) {
+            public Boolean getter(VisualPage object) {
                 return object.getIsCollapsed();
             }
         });

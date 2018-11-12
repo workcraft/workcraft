@@ -1,12 +1,12 @@
 package org.workcraft.plugins.shared;
 
+import org.workcraft.Config;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.Settings;
+
 import java.util.LinkedList;
 import java.util.List;
-
-import org.workcraft.Config;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
 
 public class CommonDebugSettings implements Settings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
@@ -32,66 +32,61 @@ public class CommonDebugSettings implements Settings {
 
     public CommonDebugSettings() {
         properties.add(new PropertyDeclaration<CommonDebugSettings, Boolean>(
-                this, "On modifications copy model to clipboard",
-                Boolean.class, true, false, false) {
+                this, "On modifications copy model to clipboard", Boolean.class) {
             @Override
-            protected void setter(CommonDebugSettings object, Boolean value) {
+            public void setter(CommonDebugSettings object, Boolean value) {
                 setCopyModelOnChange(value);
             }
             @Override
-            protected Boolean getter(CommonDebugSettings object) {
+            public Boolean getter(CommonDebugSettings object) {
                 return getCopyModelOnChange();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonDebugSettings, Boolean>(
-                this, "Verbose log on file import",
-                Boolean.class, true, false, false) {
+                this, "Verbose log on file import", Boolean.class) {
             @Override
-            protected void setter(CommonDebugSettings object, Boolean value) {
+            public void setter(CommonDebugSettings object, Boolean value) {
                 setVerboseImport(value);
             }
             @Override
-            protected Boolean getter(CommonDebugSettings object) {
+            public Boolean getter(CommonDebugSettings object) {
                 return getVerboseImport();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonDebugSettings, Boolean>(
-                this, "Log tracing information from parsers",
-                Boolean.class, true, false, false) {
+                this, "Log tracing information from parsers", Boolean.class) {
             @Override
-            protected void setter(CommonDebugSettings object, Boolean value) {
+            public void setter(CommonDebugSettings object, Boolean value) {
                 setParserTracing(value);
             }
             @Override
-            protected Boolean getter(CommonDebugSettings object) {
+            public Boolean getter(CommonDebugSettings object) {
                 return getParserTracing();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonDebugSettings, Boolean>(
-                this, "Log compatibility manager substitutions",
-                Boolean.class, true, false, false) {
+                this, "Log compatibility manager substitutions", Boolean.class) {
             @Override
-            protected void setter(CommonDebugSettings object, Boolean value) {
+            public void setter(CommonDebugSettings object, Boolean value) {
                 setVerboseCompatibilityManager(value);
             }
             @Override
-            protected Boolean getter(CommonDebugSettings object) {
+            public Boolean getter(CommonDebugSettings object) {
                 return getVerboseCompatibilityManager();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonDebugSettings, Boolean>(
-                this, "Use short header in exported files",
-                Boolean.class, true, false, false) {
+                this, "Use short header in exported files", Boolean.class) {
             @Override
-            protected void setter(CommonDebugSettings object, Boolean value) {
+            public void setter(CommonDebugSettings object, Boolean value) {
                 setShortExportHeader(value);
             }
             @Override
-            protected Boolean getter(CommonDebugSettings object) {
+            public Boolean getter(CommonDebugSettings object) {
                 return getShortExportHeader();
             }
         });

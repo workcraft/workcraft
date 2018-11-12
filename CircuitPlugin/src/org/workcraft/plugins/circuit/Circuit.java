@@ -1,13 +1,10 @@
 package org.workcraft.plugins.circuit;
 
 import org.workcraft.dom.Container;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.plugins.circuit.observers.FunctionConsistencySupervisor;
 import org.workcraft.plugins.circuit.observers.IOTypeConsistencySupervisor;
 import org.workcraft.plugins.circuit.observers.ZeroDelayConsistencySupervisor;
@@ -49,17 +46,6 @@ public class Circuit extends AbstractMathModel {
 
     public Collection<FunctionComponent> getFunctionComponents() {
         return Hierarchy.getDescendantsOfType(getRoot(), FunctionComponent.class);
-    }
-
-    @Override
-    public ModelProperties getProperties(Node node) {
-        ModelProperties properties = super.getProperties(node);
-        if (node != null) {
-            if (node instanceof Joint) {
-                properties.removeByName(NamePropertyDescriptor.PROPERTY_NAME);
-            }
-        }
-        return properties;
     }
 
     public Collection<Joint> getJoints() {

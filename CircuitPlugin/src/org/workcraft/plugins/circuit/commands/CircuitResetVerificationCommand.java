@@ -4,6 +4,7 @@ import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.utils.InitialisationState;
+import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -30,6 +31,9 @@ public class CircuitResetVerificationCommand extends AbstractVerificationCommand
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
+        if (!checkPrerequisites(we)) {
+            return null;
+        }
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         InitialisationState initState = new InitialisationState(circuit);
         HashSet<String> incorrectlyInitialisedComponentRefs = new HashSet<>();
@@ -50,6 +54,10 @@ public class CircuitResetVerificationCommand extends AbstractVerificationCommand
             DialogUtils.showError(msg);
             return false;
         }
+    }
+
+    private boolean checkPrerequisites(WorkspaceEntry we) {
+        return isApplicableTo(we) && VerificationUtils.checkCircuitHasComponents(we);
     }
 
 }

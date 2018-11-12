@@ -1,15 +1,5 @@
 package org.workcraft.plugins.son.elements;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.event.KeyEvent;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Path2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
@@ -19,8 +9,15 @@ import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.RenderedText;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.plugins.son.SONSettings;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 @DisplayName("Condition")
 @Hotkey(KeyEvent.VK_B)
@@ -46,22 +43,34 @@ public class VisualCondition extends VisualPlaceNode {
     //uneditable properties
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualCondition, Boolean>(
-                this, PROPERTY_INITIAL, Boolean.class, false, false, false) {
+                this, PROPERTY_INITIAL, Boolean.class, false, false) {
+            @Override
             public void setter(VisualCondition object, Boolean value) {
                 setInitial(value);
             }
+            @Override
             public Boolean getter(VisualCondition object) {
                 return isInitial();
+            }
+            @Override
+            public boolean isEditable() {
+                return false;
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualCondition, Boolean>(
-                this, PROPERTY_FINAL, Boolean.class, false, false, false) {
+                this, PROPERTY_FINAL, Boolean.class, false, false) {
+            @Override
             public void setter(VisualCondition object, Boolean value) {
                 setFinal(value);
             }
+            @Override
             public Boolean getter(VisualCondition object) {
                 return isFinal();
+            }
+            @Override
+            public boolean isEditable() {
+                return false;
             }
         });
     }

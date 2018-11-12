@@ -9,7 +9,7 @@ import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.cpog.formula.CpogFormulaVariable;
 import org.workcraft.plugins.cpog.formula.CpogVisitor;
@@ -72,12 +72,13 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualVertex, RenderType>(
-                this, PROPERTY_RENDER_TYPE, RenderType.class, true, true, true) {
-            protected void setter(VisualVertex object, RenderType value) {
+                this, PROPERTY_RENDER_TYPE, RenderType.class, true, true) {
+            @Override
+            public void setter(VisualVertex object, RenderType value) {
                 object.setRenderType(value);
             }
-
-            protected RenderType getter(VisualVertex object) {
+            @Override
+            public RenderType getter(VisualVertex object) {
                 return object.getRenderType();
             }
         });
@@ -131,7 +132,7 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
         drawConditionInLocalSpace(r);
     }
 
-    protected void cacheConditionRenderedFormula(DrawRequest r) {
+    public void cacheConditionRenderedFormula(DrawRequest r) {
         String text = getLabel();
         if (getCondition() != One.instance()) {
             text += ": ";
@@ -141,7 +142,7 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
         }
     }
 
-    protected void drawConditionInLocalSpace(DrawRequest r) {
+    public void drawConditionInLocalSpace(DrawRequest r) {
         if (getLabelVisibility()) {
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();

@@ -178,7 +178,7 @@ public class PolicySimulationTool extends PetriSimulationTool {
     public String getTraceLabelByReference(String ref) {
         String label = null;
         if (ref != null) {
-            PolicyNet policy = converter.getPolicyNet().getPolicyNet();
+            PolicyNet policy = converter.getPolicyNet().getMathModel();
             Node node = policy.getNodeByReference(ref);
             if (node instanceof Bundle) {
                 Bundle bundle = (Bundle) node;

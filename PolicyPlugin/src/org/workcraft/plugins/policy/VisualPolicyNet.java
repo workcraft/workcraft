@@ -9,14 +9,12 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.ConnectionTool;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
-import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.gui.properties.ModelProperties;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.tools.PetriPlaceGeneratorTool;
 import org.workcraft.plugins.policy.observers.SpanningTreeInvalidator;
-import org.workcraft.plugins.policy.properties.BundleColorPropertyDescriptor;
-import org.workcraft.plugins.policy.properties.BundleNamePropertyDescriptor;
-import org.workcraft.plugins.policy.properties.BundlesOfTransitionPropertyDescriptor;
-import org.workcraft.plugins.policy.properties.TransitionsOfBundlePropertyDescriptor;
 import org.workcraft.plugins.policy.tools.PolicyBundledTransitionGeneratorTool;
 import org.workcraft.plugins.policy.tools.PolicySelectionTool;
 import org.workcraft.plugins.policy.tools.PolicySimulationTool;
@@ -24,6 +22,7 @@ import org.workcraft.util.ColorGenerator;
 import org.workcraft.util.ColorUtils;
 import org.workcraft.util.Hierarchy;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -58,8 +57,9 @@ public class VisualPolicyNet extends VisualPetriNet {
         setGraphEditorTools(tools);
     }
 
-    public PolicyNet getPolicyNet() {
-        return (PolicyNet) getMathModel();
+    @Override
+    public PolicyNet getMathModel() {
+        return (PolicyNet) super.getMathModel();
     }
 
     @Override
@@ -79,7 +79,7 @@ public class VisualPolicyNet extends VisualPetriNet {
         VisualLocality newLocality = null;
         if (selected.size() > 0) {
             VisualLocality curLocality = (VisualLocality) getCurrentLevel();
-            newLocality = new VisualLocality(getPolicyNet().createLocality(refSelected, curLocality.getLocality()));
+            newLocality = new VisualLocality(getMathModel().createLocality(refSelected, curLocality.getLocality()));
             curLocality.add(newLocality);
             curLocality.reparent(selected, newLocality);
 
@@ -139,7 +139,7 @@ public class VisualPolicyNet extends VisualPetriNet {
     }
 
     public VisualBundle createVisualBundle() {
-        Bundle bundle = getPolicyNet().createBundle();
+        Bundle bundle = getMathModel().createBundle();
         VisualBundle visualBundle = new VisualBundle(bundle);
         getRoot().add(visualBundle);
         visualBundle.setColor(bundleColorGenerator.updateColor());
@@ -148,7 +148,7 @@ public class VisualPolicyNet extends VisualPetriNet {
 
     public VisualBundle createVisualBundle(String name) {
         VisualBundle b = createVisualBundle();
-        getPolicyNet().setName(b.getReferencedBundle(), name);
+        getMathModel().setName(b.getReferencedBundle(), name);
         return b;
     }
 
@@ -163,7 +163,7 @@ public class VisualPolicyNet extends VisualPetriNet {
 
     public void unbundleTransitions(Collection<VisualBundledTransition> transitions) {
         for (VisualBundledTransition t: transitions) {
-            getPolicyNet().unbundleTransition(t.getReferencedTransition());
+            getMathModel().unbundleTransition(t.getReferencedTransition());
         }
         for (VisualBundle b: getVisualBundles()) {
             if (b.getReferencedBundle().isEmpty()) {
@@ -178,17 +178,17 @@ public class VisualPolicyNet extends VisualPetriNet {
             if (result != "") {
                 result += ", ";
             }
-            result += getPolicyNet().getName(b.getReferencedBundle());
+            result += getMathModel().getName(b.getReferencedBundle());
         }
         return result;
     }
 
     public void setBundlesOfTransitionAsString(VisualBundledTransition t, String s) {
-        for (Bundle b: getPolicyNet().getBundles()) {
+        for (Bundle b: getMathModel().getBundles()) {
             b.remove(t.getReferencedTransition());
         }
         for (String ref : s.split("\\s*,\\s*")) {
-            Node node = getPolicyNet().getNodeByReference(ref);
+            Node node = getMathModel().getNodeByReference(ref);
             if (node == null) {
                 node = createVisualBundle(ref).getReferencedBundle();
             }
@@ -209,14 +209,14 @@ public class VisualPolicyNet extends VisualPetriNet {
             if (result != "") {
                 result += ", ";
             }
-            result += getPolicyNet().getName(t.getReferencedTransition());
+            result += getMathModel().getName(t.getReferencedTransition());
         }
         return result;
     }
 
     public void setTransitionsOfBundleAsString(VisualBundle vb, String s) {
         Bundle b = vb.getReferencedBundle();
-        for (BundledTransition t: new ArrayList<BundledTransition>(b.getTransitions())) {
+        for (BundledTransition t: new ArrayList<>(b.getTransitions())) {
             b.remove(t);
         }
         for (String ref : s.split("\\s*,\\s*")) {
@@ -250,19 +250,76 @@ public class VisualPolicyNet extends VisualPetriNet {
     }
 
     @Override
-    public ModelProperties getProperties(Node node) {
+    public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
-            for (VisualBundle vb: getVisualBundles()) {
-                properties.add(new BundleNamePropertyDescriptor(this, vb));
-                properties.add(new BundleColorPropertyDescriptor(this, vb));
-                properties.add(new TransitionsOfBundlePropertyDescriptor(this, vb));
+            for (VisualBundle bundle: getVisualBundles()) {
+                properties.add(getBundleNameProperty(bundle));
+                properties.add(getBundleColorProperty(bundle));
+                properties.add(getTransitionsOfBundleProperty(bundle));
             }
         } else if (node instanceof VisualBundledTransition) {
-            VisualBundledTransition t = (VisualBundledTransition) node;
-            properties.add(new BundlesOfTransitionPropertyDescriptor(this, t));
+            VisualBundledTransition transition = (VisualBundledTransition) node;
+            properties.add(getBundlesOfTransitionProperty(transition));
         }
         return properties;
+    }
+
+    private PropertyDescriptor getBundleNameProperty(VisualBundle bundle) {
+        return new PropertyDeclaration<VisualBundle, String>(
+                bundle, getMathModel().getName(bundle.getReferencedBundle()) + " name", String.class) {
+            @Override
+            public String getter(VisualBundle object) {
+                return getMathModel().getName(object.getReferencedBundle());
+            }
+            @Override
+            public void setter(VisualBundle object, String value) {
+                getMathModel().setName(object.getReferencedBundle(), value);
+            }
+        };
+    }
+
+    private PropertyDescriptor getBundleColorProperty(VisualBundle bundle) {
+        return new PropertyDeclaration<VisualBundle, Color>(
+                bundle, getMathModel().getName(bundle.getReferencedBundle()) + " color", Color.class) {
+            @Override
+            public Color getter(VisualBundle object) {
+                return object.getColor();
+            }
+            @Override
+            public void setter(VisualBundle object, Color value) {
+                object.setColor(value);
+            }
+        };
+    }
+
+    private PropertyDescriptor getTransitionsOfBundleProperty(VisualBundle bundle) {
+        return new PropertyDeclaration<VisualBundle, String>(
+                bundle, getMathModel().getName(bundle.getReferencedBundle()) + " transitions", String.class) {
+            @Override
+            public String getter(VisualBundle object) {
+                return getTransitionsOfBundleAsString(object);
+            }
+            @Override
+            public void setter(VisualBundle object, String value) {
+                setTransitionsOfBundleAsString(object, value);
+            }
+        };
+    }
+
+    private PropertyDescriptor getBundlesOfTransitionProperty(VisualBundledTransition transition) {
+        return new PropertyDeclaration<VisualBundledTransition, String>(
+                transition, "Bundles", String.class) {
+            @Override
+            public String getter(VisualBundledTransition object) {
+                return getBundlesOfTransitionAsString(object);
+            }
+
+            @Override
+            public void setter(VisualBundledTransition object, String value) {
+                setBundlesOfTransitionAsString(object, value);
+            }
+        };
     }
 
 }

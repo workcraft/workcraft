@@ -42,7 +42,7 @@ public class PolicyToPetriConverter {
     private Map<VisualPlace, VisualPlace> convertPlaces() {
         Map<VisualPlace, VisualPlace> result = new HashMap<>();
         for (VisualPlace place : Hierarchy.getDescendantsOfType(policyNet.getRoot(), VisualPlace.class)) {
-            String name = policyNet.getPolicyNet().getNodeReference(place.getReferencedPlace());
+            String name = policyNet.getMathModel().getNodeReference(place.getReferencedPlace());
             VisualPlace newPlace = petriNet.createPlace(name, null);
             newPlace.copyPosition(place);
             newPlace.copyStyle(place);
@@ -54,9 +54,9 @@ public class PolicyToPetriConverter {
     private Map<VisualBundledTransition, VisualTransition> convertTransitions() {
         Map<VisualBundledTransition, VisualTransition> result = new HashMap<>();
         for (VisualBundledTransition transition : Hierarchy.getDescendantsOfType(policyNet.getRoot(), VisualBundledTransition.class)) {
-            Collection<Bundle> bundles = policyNet.getPolicyNet().getBundlesOfTransition(transition.getReferencedTransition());
+            Collection<Bundle> bundles = policyNet.getMathModel().getBundlesOfTransition(transition.getReferencedTransition());
             if (bundles.size() == 0) {
-                String name = policyNet.getPolicyNet().getNodeReference(transition.getReferencedTransition());
+                String name = policyNet.getMathModel().getNodeReference(transition.getReferencedTransition());
                 VisualTransition newTransition = petriNet.createTransition(name, null);
                 newTransition.copyPosition(transition);
                 newTransition.copyStyle(transition);
@@ -81,7 +81,7 @@ public class PolicyToPetriConverter {
                     }
                 }
                 if (count > 0) {
-                    String bundleName = policyNet.getPolicyNet().getNodeReference(bundle.getReferencedBundle());
+                    String bundleName = policyNet.getMathModel().getNodeReference(bundle.getReferencedBundle());
                     VisualTransition newTransition = petriNet.createTransition(bundleName, null);
                     newTransition.setFillColor(bundle.getColor());
                     newTransition.setPosition(new Point2D.Double(x / count, y / count));

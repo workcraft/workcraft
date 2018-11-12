@@ -7,7 +7,7 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
@@ -59,15 +59,21 @@ public class VisualVertex extends VisualComponent {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualVertex, RenderType>(
-                this, PROPERTY_RENDER_TYPE, RenderType.class, true, true, true) {
-            protected void setter(VisualVertex object, RenderType value) {
+                this, PROPERTY_RENDER_TYPE, RenderType.class, true, true) {
+            @Override
+            public void setter(VisualVertex object, RenderType value) {
                 object.setRenderType(value);
             }
-
-            protected RenderType getter(VisualVertex object) {
+            @Override
+            public RenderType getter(VisualVertex object) {
                 return object.getRenderType();
             }
         });
+    }
+
+    @Override
+    public Vertex getReferencedComponent() {
+        return (Vertex) super.getReferencedComponent();
     }
 
     @Override

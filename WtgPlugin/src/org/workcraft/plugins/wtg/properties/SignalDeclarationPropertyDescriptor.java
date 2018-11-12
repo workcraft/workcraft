@@ -4,7 +4,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.dtd.DtdSettings;
 import org.workcraft.plugins.dtd.Signal;
@@ -17,7 +17,7 @@ import java.util.*;
 
 import static org.workcraft.plugins.wtg.utils.WtgUtils.getFinalSignalStatesFromWaveform;
 
-public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
+public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor<Boolean> {
 
     private final VisualWtg visualWtg;
     private final VisualWaveform visualWaveform;
@@ -30,7 +30,7 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public Map<Object, String> getChoice() {
+    public Map<Boolean, String> getChoice() {
         return null;
     }
 
@@ -40,13 +40,13 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public Class<?> getType() {
+    public Class<Boolean> getType() {
         return Boolean.class;
     }
 
     @Override
-    public Object getValue() {
-        Wtg wtg = (Wtg) visualWtg.getMathModel();
+    public Boolean getValue() {
+        Wtg wtg = visualWtg.getMathModel();
         for (Signal signal : wtg.getSignals(visualWaveform.getReferencedWaveform())) {
             if (wtg.getName(signal).equals(signalName)) {
                 return true;
@@ -56,37 +56,35 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public boolean isWritable() {
-        return true;
+    public void setValue(Boolean value) {
+        if (signalName != null) {
+            if (value) {
+                insertNewSignal();
+            } else {
+                deleteAndSpaceVertically();
+            }
+        }
     }
 
-    @Override
-    public void setValue(Object value) {
-        Wtg wtg = (Wtg) visualWtg.getMathModel();
-        if ((value instanceof Boolean) && (signalName != null)) {
-            if ((Boolean) value) {
-                for (GraphEditorTool tool : visualWtg.getGraphEditorTools()) {
-                    if (tool instanceof WtgSignalGeneratorTool) {
-                        Point2D position = newSignalPosition();
-                        VisualSignal newSignal;
-                        try {
-                            newSignal = (VisualSignal)
-                                    ((WtgSignalGeneratorTool) tool).generateNode(visualWtg, position);
-                        } catch (NodeCreationException e1) {
-                            throw new RuntimeException(e1);
-                        }
-                        Signal signal = newSignal.getReferencedSignal();
-                        wtg.setName(signal, signalName);
-                        signal.sendNotification(new PropertyChangedEvent(signal, Signal.PROPERTY_NAME));
-                        Signal.State initialState = inferInitialState();
-                        if (initialState != null) {
-                            signal.setInitialState(initialState);
-                        }
-                        return;
-                    }
+    private void insertNewSignal() {
+        for (GraphEditorTool tool : visualWtg.getGraphEditorTools()) {
+            if (tool instanceof WtgSignalGeneratorTool) {
+                Point2D position = newSignalPosition();
+                VisualSignal newSignal;
+                try {
+                    newSignal = (VisualSignal)
+                            ((WtgSignalGeneratorTool) tool).generateNode(visualWtg, position);
+                } catch (NodeCreationException e1) {
+                    throw new RuntimeException(e1);
                 }
-            } else {
-                deleteAndSpaceVertically(wtg);
+                Signal signal = newSignal.getReferencedSignal();
+                visualWtg.getMathModel().setName(signal, signalName);
+                signal.sendNotification(new PropertyChangedEvent(signal, Signal.PROPERTY_NAME));
+                Signal.State initialState = inferInitialState();
+                if (initialState != null) {
+                    signal.setInitialState(initialState);
+                }
+                return;
             }
         }
     }
@@ -104,7 +102,7 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
 
     private Point2D newSignalPosition() {
         Point2D result = null;
-        for (VisualComponent visualComponent  : visualWaveform.getComponents()) {
+        for (VisualComponent visualComponent : visualWaveform.getComponents()) {
             if (visualComponent instanceof VisualSignal) {
                 VisualSignal visualSignal = (VisualSignal) visualComponent;
                 if (result == null) {
@@ -125,7 +123,7 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
     }
 
     private Signal.State findPreviousSignalState() {
-        Wtg wtg = (Wtg) visualWtg.getMathModel();
+        Wtg wtg = visualWtg.getMathModel();
         Waveform waveform = visualWaveform.getReferencedWaveform();
         if (wtg.getPreset(waveform).size() == 0) {
             return null;
@@ -162,9 +160,9 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
         return result;
     }
 
-    private void deleteAndSpaceVertically(Wtg wtg) {
+    private void deleteAndSpaceVertically() {
         ArrayList<VisualSignal> visualSignals = new ArrayList<>();
-        for (VisualComponent visualComponent  : visualWaveform.getComponents()) {
+        for (VisualComponent visualComponent : visualWaveform.getComponents()) {
             if (visualComponent instanceof VisualSignal) {
                 visualSignals.add((VisualSignal) visualComponent);
             }
@@ -175,7 +173,8 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
         Double nextSignalY = null;
         double offset = 0;
         for (VisualSignal visualSignal : visualSignals) {
-            if (wtg.getName(visualSignal.getReferencedSignal()).equals(signalName)) {
+            String name = visualWtg.getMathModel().getName(visualSignal.getReferencedSignal());
+            if (name.equals(signalName)) {
                 signalFound = true;
                 //Setting the Y for the next signal
                 if (previousSignal == null) {
@@ -200,13 +199,4 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor {
         }
     }
 
-    @Override
-    public boolean isCombinable() {
-        return false;
-    }
-
-    @Override
-    public boolean isTemplatable() {
-        return false;
-    }
 }

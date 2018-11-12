@@ -34,6 +34,11 @@ public abstract class CircuitAbstractInitialisationCommand implements Scriptable
     }
 
     @Override
+    public boolean isVisibleInMenu() {
+        return false;
+    }
+
+    @Override
     public Void execute(WorkspaceEntry we) {
         Framework framework = Framework.getInstance();
         if (framework.isInGuiMode()) {

@@ -9,7 +9,7 @@ import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.plugins.shared.CommonDecorationSettings;
 
 import java.awt.*;
@@ -41,7 +41,8 @@ public class VisualQueueComponent extends VisualXmasComponent {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualQueueComponent, Integer>(
-                this, QueueComponent.PROPERTY_CAPACITY, Integer.class, true, true, true) {
+                this, QueueComponent.PROPERTY_CAPACITY, Integer.class, true, true) {
+            @Override
             public void setter(VisualQueueComponent object, Integer value) {
                 if (value < 1) {
                     throw new ArgumentException("Negative or zero capacity is not allowed.");
@@ -61,6 +62,7 @@ public class VisualQueueComponent extends VisualXmasComponent {
                     TransformHelper.applyTransform(contact, rotateTransform);
                 }
             }
+            @Override
             public Integer getter(VisualQueueComponent object) {
                 return object.getReferencedQueueComponent().getCapacity();
             }

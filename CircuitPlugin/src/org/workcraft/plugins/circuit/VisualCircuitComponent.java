@@ -8,7 +8,7 @@ import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.*;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
 import org.workcraft.plugins.shared.CommonVisualSettings;
@@ -35,8 +35,8 @@ public class VisualCircuitComponent extends VisualComponent implements Container
     double contactLength = 0.5;
     double contactStep = 1.0;
 
-    protected Rectangle2D internalBB = null;
-    protected DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
+    public Rectangle2D internalBB = null;
+    public DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
     private final HashMap<VisualContact, GlyphVector> contactLableGlyphs = new HashMap<>();
 
@@ -48,21 +48,25 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, Boolean>(
-                this, CircuitComponent.PROPERTY_IS_ENVIRONMENT, Boolean.class, true, true, true) {
-            protected void setter(VisualCircuitComponent object, Boolean value) {
+                this, CircuitComponent.PROPERTY_IS_ENVIRONMENT, Boolean.class, true, true) {
+            @Override
+            public void setter(VisualCircuitComponent object, Boolean value) {
                 object.setIsEnvironment(value);
             }
-            protected Boolean getter(VisualCircuitComponent object) {
+            @Override
+            public Boolean getter(VisualCircuitComponent object) {
                 return object.getIsEnvironment();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, Boolean>(
-                this, Contact.PROPERTY_PATH_BREAKER, Boolean.class, true, true, true) {
-            protected void setter(VisualCircuitComponent object, Boolean value) {
+                this, Contact.PROPERTY_PATH_BREAKER, Boolean.class, true, true) {
+            @Override
+            public void setter(VisualCircuitComponent object, Boolean value) {
                 object.getReferencedCircuitComponent().setPathBreaker(value);
             }
-            protected Boolean getter(VisualCircuitComponent object) {
+            @Override
+            public Boolean getter(VisualCircuitComponent object) {
                 return object.getReferencedCircuitComponent().getPathBreaker();
             }
         });
@@ -457,7 +461,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         g.drawGlyphVector(gv, labelX, labelY);
     }
 
-    protected void drawContactLabels(DrawRequest r) {
+    public void drawContactLabels(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         AffineTransform savedTransform = g.getTransform();
 
@@ -515,7 +519,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
     }
 
     @Override
-    protected void drawOutline(DrawRequest r) {
+    public void drawOutline(DrawRequest r) {
         Decoration d = r.getDecoration();
         Graphics2D g = r.getGraphics();
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();

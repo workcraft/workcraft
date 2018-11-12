@@ -32,7 +32,7 @@ import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.layouts.MultiBorderLayout;
-import org.workcraft.gui.propertyeditor.SettingsEditorDialog;
+import org.workcraft.gui.properties.SettingsEditorDialog;
 import org.workcraft.gui.tasks.TaskFailureNotifier;
 import org.workcraft.gui.tasks.TaskManagerWindow;
 import org.workcraft.gui.workspace.Path;
@@ -416,7 +416,7 @@ public class MainWindow extends JFrame {
             setWorkActionsEnableness(false);
             modelToolbar.removeAll();
             controlToolbar.removeAll();
-            propertyEditorWindow.clearObject();
+            propertyEditorWindow.clear();
             toolControlsWindow.setContent(null);
             displayDockableWindow(propertyEditorDockable);
             closeDockableWindow(toolControlsDockable);

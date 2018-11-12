@@ -1,16 +1,13 @@
 package org.workcraft.plugins.son.elements;
 
-import java.awt.Color;
-
 import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.plugins.son.properties.DurationPropertyDescriptor;
-import org.workcraft.plugins.son.properties.EndTimePropertyDescriptor;
-import org.workcraft.plugins.son.properties.StartTimePropertyDescriptor;
 import org.workcraft.plugins.son.util.Interval;
+
+import java.awt.*;
 
 @IdentifierPrefix("e")
 @VisualClass (org.workcraft.plugins.son.elements.VisualEvent.class)
@@ -60,7 +57,7 @@ public class Event extends MathNode implements TransitionNode, Time {
     public void setStartTime(Interval value) {
         if (endTime != value) {
             statTime = value;
-            sendNotification(new PropertyChangedEvent(this, StartTimePropertyDescriptor.PROPERTY_START_TIME));
+            sendNotification(new PropertyChangedEvent(this, Time.PROPERTY_START_TIME));
         }
     }
 
@@ -71,7 +68,7 @@ public class Event extends MathNode implements TransitionNode, Time {
     public void setEndTime(Interval value) {
         if (endTime != value) {
             endTime = value;
-            sendNotification(new PropertyChangedEvent(this, EndTimePropertyDescriptor.PROPERTY_END_TIME));
+            sendNotification(new PropertyChangedEvent(this, Time.PROPERTY_END_TIME));
         }
     }
 
@@ -82,7 +79,7 @@ public class Event extends MathNode implements TransitionNode, Time {
     public void setDuration(Interval value) {
         if (duration != value) {
             duration = value;
-            sendNotification(new PropertyChangedEvent(this, DurationPropertyDescriptor.PROPERTY_DURATION));
+            sendNotification(new PropertyChangedEvent(this, Time.PROPERTY_DURATION));
         }
     }
 

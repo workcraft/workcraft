@@ -3,7 +3,7 @@ package org.workcraft.plugins.son.elements;
 import org.workcraft.dom.visual.*;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.SONSettings;
@@ -42,32 +42,42 @@ public class VisualPlaceNode extends VisualComponent {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualPlaceNode, Boolean>(
-                this, "Marking", Boolean.class, true, true, true) {
+                this, "Marking", Boolean.class, true, true) {
+            @Override
             public void setter(VisualPlaceNode object, Boolean value) {
                 setIsMarked(value);
             }
+            @Override
             public Boolean getter(VisualPlaceNode object) {
                 return isMarked();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualPlaceNode, Color>(
-                this, "Error color", Color.class, true, true, true) {
-            protected void setter(VisualPlaceNode object, Color value) {
+                this, "Error color", Color.class, true, true) {
+            @Override
+            public void setter(VisualPlaceNode object, Color value) {
                 object.setErrLabelColor(value);
             }
-            protected Color getter(VisualPlaceNode object) {
+            @Override
+            public Color getter(VisualPlaceNode object) {
                 return object.getErrLabelColor();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualPlaceNode, String>(
-                this, "Block interface", String.class, false, true, false) {
-            protected void setter(VisualPlaceNode object, String value) {
+                this, "Block interface", String.class, true, false) {
+            @Override
+            public void setter(VisualPlaceNode object, String value) {
                 object.setInterface(value);
             }
-            protected String getter(VisualPlaceNode object) {
+            @Override
+            public String getter(VisualPlaceNode object) {
                 return object.getInterface();
+            }
+            @Override
+            public boolean isEditable() {
+                return false;
             }
         });
     }

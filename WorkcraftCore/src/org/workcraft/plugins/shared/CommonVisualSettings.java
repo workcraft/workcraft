@@ -2,9 +2,9 @@ package org.workcraft.plugins.shared;
 
 import org.workcraft.Config;
 import org.workcraft.dom.visual.Positioning;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.Settings;
 
 import java.awt.*;
 import java.util.LinkedList;
@@ -102,14 +102,13 @@ public class CommonVisualSettings implements Settings {
 
     private void addPropertyFontSize() {
         properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-                this, "Base font size (point) - requires restart",
-                Double.class, true, false, false) {
+                this, "Base font size (point) - requires restart", Double.class) {
             @Override
-            protected void setter(CommonVisualSettings object, Double value) {
+            public void setter(CommonVisualSettings object, Double value) {
                 setFontSize(value);
             }
             @Override
-            protected Double getter(CommonVisualSettings object) {
+            public Double getter(CommonVisualSettings object) {
                 return getFontSize();
             }
         });
@@ -117,14 +116,13 @@ public class CommonVisualSettings implements Settings {
 
     private void addNodeSize() {
         properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-                this, "Node size (cm)",
-                Double.class, true, false, false) {
+                this, "Node size (cm)", Double.class) {
             @Override
-            protected void setter(CommonVisualSettings object, Double value) {
+            public void setter(CommonVisualSettings object, Double value) {
                 setNodeSize(value);
             }
             @Override
-            protected Double getter(CommonVisualSettings object) {
+            public Double getter(CommonVisualSettings object) {
                 return getNodeSize();
             }
         });
@@ -132,14 +130,13 @@ public class CommonVisualSettings implements Settings {
 
     private void addStrokeWidth() {
         properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-                this, "Stroke width (cm)",
-                Double.class, true, false, false) {
+                this, "Stroke width (cm)", Double.class) {
             @Override
-            protected void setter(CommonVisualSettings object, Double value) {
+            public void setter(CommonVisualSettings object, Double value) {
                 setStrokeWidth(value);
             }
             @Override
-            protected Double getter(CommonVisualSettings object) {
+            public Double getter(CommonVisualSettings object) {
                 return getStrokeWidth();
             }
         });
@@ -147,14 +144,13 @@ public class CommonVisualSettings implements Settings {
 
     private void addBorderColor() {
         properties.add(new PropertyDeclaration<CommonVisualSettings, Color>(
-                this, "Border color",
-                Color.class, true, false, false) {
+                this, "Border color", Color.class) {
             @Override
-            protected void setter(CommonVisualSettings object, Color value) {
+            public void setter(CommonVisualSettings object, Color value) {
                 setBorderColor(value);
             }
             @Override
-            protected Color getter(CommonVisualSettings object) {
+            public Color getter(CommonVisualSettings object) {
                 return getBorderColor();
             }
         });
@@ -162,14 +158,13 @@ public class CommonVisualSettings implements Settings {
 
     private void addFillColor() {
         properties.add(new PropertyDeclaration<CommonVisualSettings, Color>(
-                this, "Fill color",
-                Color.class, true, false, false) {
+                this, "Fill color", Color.class) {
             @Override
-            protected void setter(CommonVisualSettings object, Color value) {
+            public void setter(CommonVisualSettings object, Color value) {
                 setFillColor(value);
             }
             @Override
-            protected Color getter(CommonVisualSettings object) {
+            public Color getter(CommonVisualSettings object) {
                 return getFillColor();
             }
         });
@@ -177,14 +172,13 @@ public class CommonVisualSettings implements Settings {
 
     private void addPivotSize() {
         properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-                this, "Pivot size (cm)",
-                Double.class, true, false, false) {
+                this, "Pivot size (cm)", Double.class) {
             @Override
-            protected void setter(CommonVisualSettings object, Double value) {
+            public void setter(CommonVisualSettings object, Double value) {
                 setPivotSize(value);
             }
             @Override
-            protected Double getter(CommonVisualSettings object) {
+            public Double getter(CommonVisualSettings object) {
                 return getPivotSize();
             }
         });
@@ -192,14 +186,13 @@ public class CommonVisualSettings implements Settings {
 
     private void addPivotWidth() {
         properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-                this, "Pivot stroke width (cm)",
-                Double.class, true, false, false) {
+                this, "Pivot stroke width (cm)", Double.class) {
             @Override
-            protected void setter(CommonVisualSettings object, Double value) {
+            public void setter(CommonVisualSettings object, Double value) {
                 setPivotWidth(value);
             }
             @Override
-            protected Double getter(CommonVisualSettings object) {
+            public Double getter(CommonVisualSettings object) {
                 return getPivotWidth();
             }
         });
@@ -207,14 +200,13 @@ public class CommonVisualSettings implements Settings {
 
     private void addLineSpacing() {
         properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-                this, "Line spacing in multi-line text (ratio)",
-                Double.class, true, false, false) {
+                this, "Line spacing in multi-line text (ratio)", Double.class) {
             @Override
-            protected void setter(CommonVisualSettings object, Double value) {
+            public void setter(CommonVisualSettings object, Double value) {
                 setLineSpacing(value);
             }
             @Override
-            protected Double getter(CommonVisualSettings object) {
+            public Double getter(CommonVisualSettings object) {
                 return getLineSpacing();
             }
         });
@@ -222,14 +214,13 @@ public class CommonVisualSettings implements Settings {
 
     private void addLabelVisibility() {
         properties.add(new PropertyDeclaration<CommonVisualSettings, Boolean>(
-                this, "Show labels",
-                Boolean.class, true, false, false) {
+                this, "Show labels", Boolean.class) {
             @Override
-            protected void setter(CommonVisualSettings object, Boolean value) {
+            public void setter(CommonVisualSettings object, Boolean value) {
                 setLabelVisibility(value);
             }
             @Override
-            protected Boolean getter(CommonVisualSettings object) {
+            public Boolean getter(CommonVisualSettings object) {
                 return getLabelVisibility();
             }
         });
@@ -237,14 +228,13 @@ public class CommonVisualSettings implements Settings {
 
     private void addLabelPositioning() {
         properties.add(new PropertyDeclaration<CommonVisualSettings, Positioning>(
-                this, "Label positioning",
-                Positioning.class, true, false, false) {
+                this, "Label positioning", Positioning.class) {
             @Override
-            protected void setter(CommonVisualSettings object, Positioning value) {
+            public void setter(CommonVisualSettings object, Positioning value) {
                 setLabelPositioning(value);
             }
             @Override
-            protected Positioning getter(CommonVisualSettings object) {
+            public Positioning getter(CommonVisualSettings object) {
                 return getLabelPositioning();
             }
         });
@@ -252,14 +242,13 @@ public class CommonVisualSettings implements Settings {
 
     private void addLabelColor() {
         properties.add(new PropertyDeclaration<CommonVisualSettings, Color>(
-                this, "Label color",
-                Color.class, true, false, false) {
+                this, "Label color", Color.class) {
             @Override
-            protected void setter(CommonVisualSettings object, Color value) {
+            public void setter(CommonVisualSettings object, Color value) {
                 setLabelColor(value);
             }
             @Override
-            protected Color getter(CommonVisualSettings object) {
+            public Color getter(CommonVisualSettings object) {
                 return getLabelColor();
             }
         });
@@ -267,14 +256,13 @@ public class CommonVisualSettings implements Settings {
 
     private void addNameVisibility() {
         properties.add(new PropertyDeclaration<CommonVisualSettings, Boolean>(
-                this, "Show names",
-                Boolean.class, true, false, false) {
+                this, "Show names", Boolean.class) {
             @Override
-            protected void setter(CommonVisualSettings object, Boolean value) {
+            public void setter(CommonVisualSettings object, Boolean value) {
                 setNameVisibility(value);
             }
             @Override
-            protected Boolean getter(CommonVisualSettings object) {
+            public Boolean getter(CommonVisualSettings object) {
                 return getNameVisibility();
             }
         });
@@ -282,14 +270,13 @@ public class CommonVisualSettings implements Settings {
 
     private void addNamePositioning() {
         properties.add(new PropertyDeclaration<CommonVisualSettings, Positioning>(
-                this, "Name positioning",
-                Positioning.class, true, false, false) {
+                this, "Name positioning", Positioning.class) {
             @Override
-            protected void setter(CommonVisualSettings object, Positioning value) {
+            public void setter(CommonVisualSettings object, Positioning value) {
                 setNamePositioning(value);
             }
             @Override
-            protected Positioning getter(CommonVisualSettings object) {
+            public Positioning getter(CommonVisualSettings object) {
                 return getNamePositioning();
             }
         });
@@ -297,14 +284,13 @@ public class CommonVisualSettings implements Settings {
 
     private void addNameColor() {
         properties.add(new PropertyDeclaration<CommonVisualSettings, Color>(
-                this, "Name color",
-                Color.class, true, false, false) {
+                this, "Name color", Color.class) {
             @Override
-            protected void setter(CommonVisualSettings object, Color value) {
+            public void setter(CommonVisualSettings object, Color value) {
                 setNameColor(value);
             }
             @Override
-            protected Color getter(CommonVisualSettings object) {
+            public Color getter(CommonVisualSettings object) {
                 return getNameColor();
             }
         });
@@ -312,14 +298,13 @@ public class CommonVisualSettings implements Settings {
 
     private void addConnectionLineWidth() {
         properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-                this, "Connection line width (cm)",
-                Double.class, true, false, false) {
+                this, "Connection line width (cm)", Double.class) {
             @Override
-            protected void setter(CommonVisualSettings object, Double value) {
+            public void setter(CommonVisualSettings object, Double value) {
                 setConnectionLineWidth(value);
             }
             @Override
-            protected Double getter(CommonVisualSettings object) {
+            public Double getter(CommonVisualSettings object) {
                 return getConnectionLineWidth();
             }
         });
@@ -327,14 +312,13 @@ public class CommonVisualSettings implements Settings {
 
     private void addConnectionArrowWidth() {
         properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-                this, "Connection arrow width (cm)",
-                Double.class, true, false, false) {
+                this, "Connection arrow width (cm)", Double.class) {
             @Override
-            protected void setter(CommonVisualSettings object, Double value) {
+            public void setter(CommonVisualSettings object, Double value) {
                 setConnectionArrowWidth(value);
             }
             @Override
-            protected Double getter(CommonVisualSettings object) {
+            public Double getter(CommonVisualSettings object) {
                 return getConnectionArrowWidth();
             }
         });
@@ -342,14 +326,13 @@ public class CommonVisualSettings implements Settings {
 
     private void addConnectionArrowLength() {
         properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-                this, "Connection arrow length (cm)",
-                Double.class, true, false, false) {
+                this, "Connection arrow length (cm)", Double.class) {
             @Override
-            protected void setter(CommonVisualSettings object, Double value) {
+            public void setter(CommonVisualSettings object, Double value) {
                 setConnectionArrowLength(value);
             }
             @Override
-            protected Double getter(CommonVisualSettings object) {
+            public Double getter(CommonVisualSettings object) {
                 return getConnectionArrowLength();
             }
         });
@@ -357,14 +340,13 @@ public class CommonVisualSettings implements Settings {
 
     private void addConnectionBubbleSize() {
         properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-                this, "Connection bubble size (cm)",
-                Double.class, true, false, false) {
+                this, "Connection bubble size (cm)", Double.class) {
             @Override
-            protected void setter(CommonVisualSettings object, Double value) {
+            public void setter(CommonVisualSettings object, Double value) {
                 setConnectionBubbleSize(value);
             }
             @Override
-            protected Double getter(CommonVisualSettings object) {
+            public Double getter(CommonVisualSettings object) {
                 return getConnectionBubbleSize();
             }
         });
@@ -372,14 +354,13 @@ public class CommonVisualSettings implements Settings {
 
     private void addConnectionColor() {
         properties.add(new PropertyDeclaration<CommonVisualSettings, Color>(
-                this, "Connection color",
-                Color.class, true, false, false) {
+                this, "Connection color", Color.class) {
             @Override
-            protected void setter(CommonVisualSettings object, Color value) {
+            public void setter(CommonVisualSettings object, Color value) {
                 setConnectionColor(value);
             }
             @Override
-            protected Color getter(CommonVisualSettings object) {
+            public Color getter(CommonVisualSettings object) {
                 return getConnectionColor();
             }
         });
@@ -387,14 +368,13 @@ public class CommonVisualSettings implements Settings {
 
     private void addUseSubscript() {
         properties.add(new PropertyDeclaration<CommonVisualSettings, Boolean>(
-                this, "In Boolean expressions render text after \'_\' as subscript",
-                Boolean.class, true, false, false) {
+                this, "In Boolean expressions render text after \'_\' as subscript", Boolean.class) {
             @Override
-            protected void setter(CommonVisualSettings object, Boolean value) {
+            public void setter(CommonVisualSettings object, Boolean value) {
                 setUseSubscript(value);
             }
             @Override
-            protected Boolean getter(CommonVisualSettings object) {
+            public Boolean getter(CommonVisualSettings object) {
                 return getUseSubscript();
             }
         });

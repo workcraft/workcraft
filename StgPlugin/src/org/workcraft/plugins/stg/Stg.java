@@ -12,16 +12,10 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NotFoundException;
-import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.observers.SignalTypeConsistencySupervisor;
-import org.workcraft.plugins.stg.properties.DirectionPropertyDescriptor;
-import org.workcraft.plugins.stg.properties.InstancePropertyDescriptor;
-import org.workcraft.plugins.stg.properties.SignalPropertyDescriptor;
-import org.workcraft.plugins.stg.properties.TypePropertyDescriptor;
 import org.workcraft.plugins.stg.references.StgReferenceManager;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.*;
@@ -463,34 +457,6 @@ public class Stg extends AbstractMathModel implements StgModel {
             }
         }
         return super.reparent(dstContainer, srcModel, srcRoot, srcChildren);
-    }
-
-    @Override
-    public ModelProperties getProperties(Node node) {
-        ModelProperties properties = super.getProperties(node);
-        if (node != null) {
-            if (node instanceof StgPlace) {
-                StgPlace place = (StgPlace) node;
-                if (place.isImplicit()) {
-                    properties.removeByName(NamePropertyDescriptor.PROPERTY_NAME);
-                }
-            } else if (node instanceof SignalTransition) {
-                SignalTransition transition = (SignalTransition) node;
-                properties.removeByName(NamePropertyDescriptor.PROPERTY_NAME);
-                properties.add(new TypePropertyDescriptor(this, transition));
-                properties.add(new SignalPropertyDescriptor(this, transition));
-                properties.add(new DirectionPropertyDescriptor(this, transition));
-                if (StgSettings.getShowTransitionInstance()) {
-                    properties.add(new InstancePropertyDescriptor(this, transition));
-                }
-            } else if (node instanceof DummyTransition) {
-                DummyTransition dummy = (DummyTransition) node;
-                if (StgSettings.getShowTransitionInstance()) {
-                    properties.add(new InstancePropertyDescriptor(this, dummy));
-                }
-            }
-        }
-        return properties;
     }
 
     @Override

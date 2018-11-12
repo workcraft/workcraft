@@ -3,7 +3,7 @@ package org.workcraft.plugins.dtd;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
@@ -25,12 +25,13 @@ public class VisualTransitionEvent extends VisualEvent {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualTransitionEvent, TransitionEvent.Direction>(
-                this, TransitionEvent.PROPERTY_DIRECTION, TransitionEvent.Direction.class, true, true, true) {
-            protected void setter(VisualTransitionEvent object, TransitionEvent.Direction value) {
+                this, TransitionEvent.PROPERTY_DIRECTION, TransitionEvent.Direction.class, true, true) {
+            @Override
+            public void setter(VisualTransitionEvent object, TransitionEvent.Direction value) {
                 object.setDirection(value);
             }
-
-            protected TransitionEvent.Direction getter(VisualTransitionEvent object) {
+            @Override
+            public TransitionEvent.Direction getter(VisualTransitionEvent object) {
                 return object.getDirection();
             }
         });

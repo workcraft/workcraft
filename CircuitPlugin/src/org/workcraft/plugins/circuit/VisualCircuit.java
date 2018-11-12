@@ -12,18 +12,19 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.jj.ParseException;
+import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
-import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.gui.properties.ModelProperties;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
-import org.workcraft.plugins.circuit.properties.EnvironmentFilePropertyDescriptor;
-import org.workcraft.plugins.circuit.properties.ResetFunctionPropertyDescriptor;
-import org.workcraft.plugins.circuit.properties.SetFunctionPropertyDescriptor;
 import org.workcraft.plugins.circuit.routing.RouterClient;
 import org.workcraft.plugins.circuit.routing.RouterVisualiser;
 import org.workcraft.plugins.circuit.routing.impl.Router;
@@ -45,6 +46,8 @@ import java.util.List;
 @DisplayName("Digital Circuit")
 @ShortName("circuit")
 public class VisualCircuit extends AbstractVisualModel {
+
+    public static final String PROPERTY_ENVIRONMENT = "Environment";
 
     public VisualCircuit(Circuit model) {
         this(model, null);
@@ -382,22 +385,20 @@ public class VisualCircuit extends AbstractVisualModel {
     }
 
     @Override
-    public ModelProperties getProperties(Node node) {
+    public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
-            properties.add(new EnvironmentFilePropertyDescriptor(this));
+            properties.add(getEnvironmentFileProperty());
         } else if (node instanceof VisualFunctionContact) {
-            VisualFunctionContact contact = (VisualFunctionContact) node;
-            properties.add(new SetFunctionPropertyDescriptor(this, contact));
-            properties.add(new ResetFunctionPropertyDescriptor(this, contact));
+            properties.add(getSetFunctionProperty((VisualFunctionContact) node));
+            properties.add(getResetFunctionProperty((VisualFunctionContact) node));
         } else if (node instanceof VisualCircuitComponent) {
             VisualCircuitComponent component = (VisualCircuitComponent) node;
             VisualContact mainOutput = component.getMainVisualOutput();
             if (mainOutput != null) {
                 if (mainOutput instanceof VisualFunctionContact) {
-                    VisualFunctionContact contact = (VisualFunctionContact) mainOutput;
-                    properties.add(new SetFunctionPropertyDescriptor(this, contact));
-                    properties.add(new ResetFunctionPropertyDescriptor(this, contact));
+                    properties.add(getSetFunctionProperty((VisualFunctionContact) mainOutput));
+                    properties.add(getResetFunctionProperty((VisualFunctionContact) mainOutput));
                 }
                 for (PropertyDescriptor property : mainOutput.getDescriptors()) {
                     String propertyName = property.getName();
@@ -409,6 +410,67 @@ public class VisualCircuit extends AbstractVisualModel {
             }
         }
         return properties;
+    }
+
+    private PropertyDescriptor getEnvironmentFileProperty() {
+        return new PropertyDeclaration<VisualCircuit, File>(
+                this, PROPERTY_ENVIRONMENT, File.class, false, false) {
+            @Override
+            public void setter(VisualCircuit object, File value) {
+                object.setEnvironmentFile(value);
+            }
+
+            @Override
+            public File getter(VisualCircuit object) {
+                return object.getEnvironmentFile();
+            }
+        };
+    }
+
+    private PropertyDescriptor getSetFunctionProperty(VisualFunctionContact contact) {
+        return new PropertyDeclaration<VisualFunctionContact, String>(
+                contact, FunctionContact.PROPERTY_SET_FUNCTION, String.class, true, false) {
+            @Override
+            public void setter(VisualFunctionContact object, String value) {
+                try {
+                    BooleanFormula formula = CircuitUtils.parseContactFunction(VisualCircuit.this, object, value);
+                    object.setSetFunction(formula);
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            @Override
+            public String getter(VisualFunctionContact object) {
+                return StringGenerator.toString(object.getSetFunction());
+            }
+            @Override
+            public boolean isVisible() {
+                return contact.isDriver();
+            }
+        };
+    }
+
+    private PropertyDescriptor getResetFunctionProperty(VisualFunctionContact contact) {
+        return new PropertyDeclaration<VisualFunctionContact, String>(
+                contact, FunctionContact.PROPERTY_RESET_FUNCTION, String.class, true, false) {
+            @Override
+            public void setter(VisualFunctionContact object, String value) {
+                try {
+                    BooleanFormula formula = CircuitUtils.parseContactFunction(VisualCircuit.this, object, value);
+                    object.setResetFunction(formula);
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            @Override
+            public String getter(VisualFunctionContact object) {
+                return StringGenerator.toString(object.getResetFunction());
+            }
+            @Override
+            public boolean isVisible() {
+                return contact.isDriver();
+            }
+        };
     }
 
 }

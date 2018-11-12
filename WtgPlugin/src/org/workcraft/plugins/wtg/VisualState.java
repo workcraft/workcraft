@@ -8,7 +8,7 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.wtg.decorations.StateDecoration;
 
@@ -30,10 +30,12 @@ public class VisualState extends VisualComponent {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualState, Boolean>(
-                this, State.PROPERTY_INITIAL, Boolean.class, true, false, false) {
+                this, State.PROPERTY_INITIAL, Boolean.class, false, false) {
+            @Override
             public void setter(VisualState object, Boolean value) {
                 object.getReferencedState().setInitial(value);
             }
+            @Override
             public Boolean getter(VisualState object) {
                 return object.getReferencedState().isInitial();
             }

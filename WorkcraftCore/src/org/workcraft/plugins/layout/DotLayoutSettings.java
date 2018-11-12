@@ -1,13 +1,13 @@
 package org.workcraft.plugins.layout;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import org.workcraft.Config;
 import org.workcraft.gui.DesktopApi;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.Settings;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class DotLayoutSettings implements Settings {
 
@@ -54,51 +54,61 @@ public class DotLayoutSettings implements Settings {
 
     public DotLayoutSettings() {
         properties.add(new PropertyDeclaration<DotLayoutSettings, String>(
-                this, "Dot command", String.class, true, false, false) {
-            protected void setter(DotLayoutSettings object, String value) {
+                this, "Dot command", String.class) {
+            @Override
+            public void setter(DotLayoutSettings object, String value) {
                 setCommand(value);
             }
-            protected String getter(DotLayoutSettings object) {
+            @Override
+            public String getter(DotLayoutSettings object) {
                 return getCommand();
             }
         });
 
         properties.add(new PropertyDeclaration<DotLayoutSettings, Rankdir>(
-                this, "Direction of layout", Rankdir.class, true, false, false) {
-            protected void setter(DotLayoutSettings object, Rankdir value) {
+                this, "Direction of layout", Rankdir.class) {
+            @Override
+            public void setter(DotLayoutSettings object, Rankdir value) {
                 setRankdir(value);
             }
-            protected Rankdir getter(DotLayoutSettings object) {
+            @Override
+            public Rankdir getter(DotLayoutSettings object) {
                 return getRankdir();
             }
         });
 
         properties.add(new PropertyDeclaration<DotLayoutSettings, Double>(
-                this, "Node separation", Double.class, true, false, false) {
-            protected void setter(DotLayoutSettings object, Double value) {
+                this, "Node separation", Double.class) {
+            @Override
+            public void setter(DotLayoutSettings object, Double value) {
                 setNodesep(value);
             }
-            protected Double getter(DotLayoutSettings object) {
+            @Override
+            public Double getter(DotLayoutSettings object) {
                 return getNodesep();
             }
         });
 
         properties.add(new PropertyDeclaration<DotLayoutSettings, Double>(
-                this, "Rank separation", Double.class, true, false, false) {
-            protected void setter(DotLayoutSettings object, Double value) {
+                this, "Rank separation", Double.class) {
+            @Override
+            public void setter(DotLayoutSettings object, Double value) {
                 setRanksep(value);
             }
-            protected Double getter(DotLayoutSettings object) {
+            @Override
+            public Double getter(DotLayoutSettings object) {
                 return getRanksep();
             }
         });
 
         properties.add(new PropertyDeclaration<DotLayoutSettings, Boolean>(
-                this, "Import connections shape", Boolean.class, true, false, false) {
-            protected void setter(DotLayoutSettings object, Boolean value) {
+                this, "Import connections shape", Boolean.class) {
+            @Override
+            public void setter(DotLayoutSettings object, Boolean value) {
                 setImportConnectionsShape(value);
             }
-            protected Boolean getter(DotLayoutSettings object) {
+            @Override
+            public Boolean getter(DotLayoutSettings object) {
                 return getImportConnectionsShape();
             }
         });

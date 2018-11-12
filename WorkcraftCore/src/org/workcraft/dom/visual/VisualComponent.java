@@ -5,7 +5,7 @@ import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonEditorSettings;
@@ -23,7 +23,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
     public static final String PROPERTY_LABEL_COLOR = "Label color";
     public static final String PROPERTY_NAME_POSITIONING = "Name positioning";
     public static final String PROPERTY_NAME_COLOR = "Name color";
-    public static final String PROPERTY_FOREGROUND_COLOR = "Foreground color";
+    public static final String PROPERTY_COLOR = "Color";
     public static final String PROPERTY_FILL_COLOR = "Fill color";
 
     private MathNode refNode = null;
@@ -65,21 +65,25 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
 
     private void addColorPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Color>(
-                this, PROPERTY_FOREGROUND_COLOR, Color.class, true, true, true) {
-            protected void setter(VisualComponent object, Color value) {
+                this, PROPERTY_COLOR, Color.class, true, true) {
+            @Override
+            public void setter(VisualComponent object, Color value) {
                 object.setForegroundColor(value);
             }
-            protected Color getter(VisualComponent object) {
+            @Override
+            public Color getter(VisualComponent object) {
                 return object.getForegroundColor();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Color>(
-                this, PROPERTY_FILL_COLOR, Color.class, true, true, true) {
-            protected void setter(VisualComponent object, Color value) {
+                this, PROPERTY_FILL_COLOR, Color.class, true, true) {
+            @Override
+            public void setter(VisualComponent object, Color value) {
                 object.setFillColor(value);
             }
-            protected Color getter(VisualComponent object) {
+            @Override
+            public Color getter(VisualComponent object) {
                 return object.getFillColor();
             }
         });
@@ -87,31 +91,37 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
 
     private void addLabelPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualComponent, String>(
-                this, PROPERTY_LABEL, String.class, true, true, true) {
-            protected void setter(VisualComponent object, String value) {
+                this, PROPERTY_LABEL, String.class, true, true) {
+            @Override
+            public void setter(VisualComponent object, String value) {
                 object.setLabel(value);
             }
-            protected String getter(VisualComponent object) {
+            @Override
+            public String getter(VisualComponent object) {
                 return object.getLabel();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Positioning>(
-                this, PROPERTY_LABEL_POSITIONING, Positioning.class, true, true, true) {
-            protected void setter(VisualComponent object, Positioning value) {
+                this, PROPERTY_LABEL_POSITIONING, Positioning.class, true, true) {
+            @Override
+            public void setter(VisualComponent object, Positioning value) {
                 object.setLabelPositioning(value);
             }
-            protected Positioning getter(VisualComponent object) {
+            @Override
+            public Positioning getter(VisualComponent object) {
                 return object.getLabelPositioning();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Color>(
-                this, PROPERTY_LABEL_COLOR, Color.class, true, true, true) {
-            protected void setter(VisualComponent object, Color value) {
+                this, PROPERTY_LABEL_COLOR, Color.class, true, true) {
+            @Override
+            public void setter(VisualComponent object, Color value) {
                 object.setLabelColor(value);
             }
-            protected Color getter(VisualComponent object) {
+            @Override
+            public Color getter(VisualComponent object) {
                 return object.getLabelColor();
             }
         });
@@ -119,21 +129,25 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
 
     private void addNamePropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Positioning>(
-                this, PROPERTY_NAME_POSITIONING, Positioning.class, true, true, true) {
-            protected void setter(VisualComponent object, Positioning value) {
+                this, PROPERTY_NAME_POSITIONING, Positioning.class, true, true) {
+            @Override
+            public void setter(VisualComponent object, Positioning value) {
                 object.setNamePositioning(value);
             }
-            protected Positioning getter(VisualComponent object) {
+            @Override
+            public Positioning getter(VisualComponent object) {
                 return object.getNamePositioning();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Color>(
-                this, PROPERTY_NAME_COLOR, Color.class, true, true, true) {
-            protected void setter(VisualComponent object, Color value) {
+                this, PROPERTY_NAME_COLOR, Color.class, true, true) {
+            @Override
+            public void setter(VisualComponent object, Color value) {
                 object.setNameColor(value);
             }
-            protected Color getter(VisualComponent object) {
+            @Override
+            public Color getter(VisualComponent object) {
                 return object.getNameColor();
             }
         });
@@ -210,7 +224,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
     public void setForegroundColor(Color value) {
         if (!foregroundColor.equals(value)) {
             foregroundColor = value;
-            sendNotification(new PropertyChangedEvent(this, PROPERTY_FOREGROUND_COLOR));
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_COLOR));
         }
     }
 

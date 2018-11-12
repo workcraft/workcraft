@@ -26,7 +26,6 @@ import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.DialogUtils;
 import org.workcraft.util.ExportUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
@@ -336,58 +335,6 @@ public class StgUtils {
         }
         PetriUtils.setMarking(stg, initialMarking);
         return result;
-    }
-
-    public static boolean checkStg(StgModel stg, boolean ask) {
-        String msg = "";
-        Set<String> hangingTransitions = new HashSet<>();
-        Set<String> unboundedTransitions = new HashSet<>();
-        for (Transition transition : stg.getTransitions()) {
-            if (stg.getPreset(transition).isEmpty()) {
-                String ref = stg.getNodeReference(transition);
-                if (stg.getPostset(transition).isEmpty()) {
-                    hangingTransitions.add(ref);
-                } else {
-                    unboundedTransitions.add(ref);
-                }
-            }
-        }
-        if (!hangingTransitions.isEmpty()) {
-            msg += LogUtils.getTextWithRefs("\n* Disconnected transition", hangingTransitions);
-        }
-        if (!unboundedTransitions.isEmpty()) {
-            msg += LogUtils.getTextWithRefs("\n* Empty preset transition", unboundedTransitions);
-        }
-
-        Set<String> hangingPlaces = new HashSet<>();
-        Set<String> deadPlaces = new HashSet<>();
-        for (Place place : stg.getPlaces()) {
-            if (stg.getPreset(place).isEmpty()) {
-                String ref = stg.getNodeReference(place);
-                if (stg.getPostset(place).isEmpty()) {
-                    hangingPlaces.add(ref);
-                } else if (place.getTokens() == 0) {
-                    deadPlaces.add(ref);
-                }
-            }
-        }
-        if (!hangingPlaces.isEmpty()) {
-            msg += LogUtils.getTextWithRefs("\n* Disconnected place", hangingPlaces);
-        }
-        if (!deadPlaces.isEmpty()) {
-            msg += LogUtils.getTextWithRefs("\n* Dead place", deadPlaces);
-        }
-
-        if (!msg.isEmpty()) {
-            msg = "The STG model has the following issues:" + msg;
-            if (ask) {
-                msg += "\n\n Proceed anyway?";
-                return DialogUtils.showConfirmWarning(msg, "Model validation", false);
-            } else {
-                DialogUtils.showWarning(msg);
-            }
-        }
-        return true;
     }
 
 }

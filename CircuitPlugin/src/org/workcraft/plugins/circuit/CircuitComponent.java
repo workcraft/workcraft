@@ -2,7 +2,7 @@ package org.workcraft.plugins.circuit;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathGroup;
-import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
+import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.util.Hierarchy;
 
@@ -25,7 +25,7 @@ public class CircuitComponent extends MathGroup {
         if (value == null) value = "";
         if (!value.equals(name)) {
             name = value;
-            sendNotification(new PropertyChangedEvent(this, NamePropertyDescriptor.PROPERTY_NAME));
+            sendNotification(new PropertyChangedEvent(this, AbstractVisualModel.PROPERTY_NAME));
         }
     }
 

@@ -4,7 +4,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.Stylable;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
@@ -25,19 +25,23 @@ public class VisualCreditComponent extends VisualXmasComponent {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualCreditComponent, Integer>(
-                this, CreditComponent.PROPERTY_CAPACITY, Integer.class, true, true, true) {
+                this, CreditComponent.PROPERTY_CAPACITY, Integer.class, true, true) {
+            @Override
             public void setter(VisualCreditComponent object, Integer value) {
                 object.getReferencedCreditComponent().setCapacity(value);
             }
+            @Override
             public Integer getter(VisualCreditComponent object) {
                 return object.getReferencedCreditComponent().getCapacity();
             }
         });
         addPropertyDeclaration(new PropertyDeclaration<VisualCreditComponent, Integer>(
-                this, CreditComponent.PROPERTY_INIT, Integer.class, true, true, true) {
+                this, CreditComponent.PROPERTY_INIT, Integer.class, true, true) {
+            @Override
             public void setter(VisualCreditComponent object, Integer value) {
                 object.getReferencedCreditComponent().setInit(value);
             }
+            @Override
             public Integer getter(VisualCreditComponent object) {
                 return object.getReferencedCreditComponent().getInit();
             }

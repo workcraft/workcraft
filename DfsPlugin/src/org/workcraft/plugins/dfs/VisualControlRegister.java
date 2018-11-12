@@ -1,24 +1,21 @@
 package org.workcraft.plugins.dfs;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.event.KeyEvent;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
-import java.awt.geom.Path2D;
-import java.awt.geom.Point2D;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.plugins.dfs.ControlRegister.SynchronisationType;
 import org.workcraft.plugins.dfs.decorations.BinaryRegisterDecoration;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
 
 @Hotkey(KeyEvent.VK_T)
 @DisplayName ("Control register")
@@ -32,20 +29,24 @@ public class VisualControlRegister extends VisualBinaryRegister {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualControlRegister, Double>(
-                this, ControlRegister.PROPERTY_PROBABILITY, Double.class, true, true, true) {
+                this, ControlRegister.PROPERTY_PROBABILITY, Double.class, true, true) {
+            @Override
             public void setter(VisualControlRegister object, Double value) {
                 object.getReferencedControlRegister().setProbability(value);
             }
+            @Override
             public Double getter(VisualControlRegister object) {
                 return object.getReferencedControlRegister().getProbability();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualControlRegister, SynchronisationType>(
-                this, ControlRegister.PROPERTY_SYNCHRONISATION_TYPE, SynchronisationType.class, true, true, true) {
+                this, ControlRegister.PROPERTY_SYNCHRONISATION_TYPE, SynchronisationType.class, true, true) {
+            @Override
             public void setter(VisualControlRegister object, SynchronisationType value) {
                 object.getReferencedControlRegister().setSynchronisationType(value);
             }
+            @Override
             public SynchronisationType getter(VisualControlRegister object) {
                 return object.getReferencedControlRegister().getSynchronisationType();
             }

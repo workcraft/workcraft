@@ -2,20 +2,24 @@ package org.workcraft.plugins.cpog;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.jj.BooleanFormulaParser;
+import org.workcraft.formula.jj.ParseException;
+import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.ConnectionTool;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
-import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.gui.properties.ModelProperties;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.cpog.observers.VariableConsistencySupervisor;
-import org.workcraft.plugins.cpog.properties.BooleanFormulaPropertyDescriptor;
 import org.workcraft.plugins.cpog.tools.CpogSelectionTool;
 import org.workcraft.util.Hierarchy;
 
@@ -185,15 +189,6 @@ public class VisualCpog extends AbstractVisualModel {
         return scenario;
     }
 
-    @Override
-    public ModelProperties getProperties(Node node) {
-        ModelProperties properties = super.getProperties(node);
-        if ((node instanceof VisualRhoClause) || (node instanceof VisualVertex) || (node instanceof VisualArc)) {
-            properties.add(new BooleanFormulaPropertyDescriptor(getMathModel(), node));
-        }
-        return properties;
-    }
-
     public void removeWithoutNotify(VisualNode node) {
         if (node.getParent() instanceof VisualPage) {
             ((VisualPage) node.getParent()).removeWithoutNotify(node);
@@ -219,6 +214,75 @@ public class VisualCpog extends AbstractVisualModel {
             select(scenario);
         }
         return scenario;
+    }
+
+    @Override
+    public ModelProperties getProperties(VisualNode node) {
+        ModelProperties properties = super.getProperties(node);
+        if (node != null) {
+            properties.removeByName(AbstractVisualModel.PROPERTY_NAME);
+        }
+        if (node instanceof VisualRhoClause) {
+            properties.add(getRhoClauseFunctionProperty((VisualRhoClause) node));
+        }
+        if (node instanceof VisualVertex) {
+            properties.add(getVertexConditionProperty((VisualVertex) node));
+        }
+        if (node instanceof VisualArc) {
+            properties.add(getArcConditionProperty((VisualArc) node));
+        }
+        return properties;
+    }
+
+    private PropertyDescriptor getRhoClauseFunctionProperty(VisualRhoClause rhoClause) {
+        return new PropertyDeclaration<VisualRhoClause, String>(
+                rhoClause, "Function", String.class, true, true) {
+            @Override
+            public void setter(VisualRhoClause object, String value) {
+                object.setFormula(getFormula(value));
+            }
+            @Override
+            public String getter(VisualRhoClause object) {
+                return StringGenerator.toString(object.getFormula());
+            }
+        };
+    }
+
+    private PropertyDescriptor getVertexConditionProperty(VisualVertex vertex) {
+        return new PropertyDeclaration<VisualVertex, String>(
+                vertex, "Condition", String.class, true, true) {
+            @Override
+            public void setter(VisualVertex object, String value) {
+                object.setCondition(getFormula(value));
+            }
+            @Override
+            public String getter(VisualVertex object) {
+                return StringGenerator.toString(object.getCondition());
+            }
+        };
+    }
+
+    private PropertyDescriptor getArcConditionProperty(VisualArc arc) {
+        return new PropertyDeclaration<VisualArc, String>(
+                arc, "Condition", String.class, true, true) {
+            @Override
+            public void setter(VisualArc object, String value) {
+                object.setCondition(getFormula(value));
+            }
+            @Override
+            public String getter(VisualArc object) {
+                return StringGenerator.toString(object.getCondition());
+            }
+        };
+    }
+
+    private BooleanFormula getFormula(String value) {
+        Collection<Variable> variables = getMathModel().getVariables();
+        try {
+            return BooleanFormulaParser.parse(value, variables);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

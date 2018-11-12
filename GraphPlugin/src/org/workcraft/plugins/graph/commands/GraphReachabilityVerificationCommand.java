@@ -35,6 +35,9 @@ public class GraphReachabilityVerificationCommand extends AbstractVerificationCo
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
+        if (!isApplicableTo(we)) {
+            return null;
+        }
         final Graph graph = WorkspaceUtils.getAs(we, Graph.class);
         HashSet<Vertex> unreachable = checkReachability(graph);
         if (unreachable.isEmpty()) {

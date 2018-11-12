@@ -12,6 +12,11 @@ public class Interval {
         this.max = 9999;
     }
 
+    public Interval(String value) {
+        this.min = getMin(value);
+        this.max = getMax(value);
+    }
+
     public Interval(Integer start, Integer end) {
         this.min = start;
         this.max = end;

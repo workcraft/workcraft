@@ -1,9 +1,9 @@
 package org.workcraft.plugins.dtd;
 
 import org.workcraft.Config;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.Settings;
 import org.workcraft.util.DialogUtils;
 
 import java.util.LinkedList;
@@ -25,25 +25,25 @@ public class DtdSettings implements Settings {
 
     public DtdSettings() {
         properties.add(new PropertyDeclaration<DtdSettings, Double>(
-                this, "Vertical separation between signals",
-                Double.class, true, false, false) {
-            protected void setter(DtdSettings object, Double value) {
+                this, "Vertical separation between signals", Double.class) {
+            @Override
+            public void setter(DtdSettings object, Double value) {
                 setVerticalSeparationIfValid(value, DtdSettings::setVerticalSeparation);
             }
-
-            protected Double getter(DtdSettings object) {
+            @Override
+            public Double getter(DtdSettings object) {
                 return getVerticalSeparation();
             }
         });
 
         properties.add(new PropertyDeclaration<DtdSettings, Double>(
-                this, "Horizontal separation between transitions",
-                Double.class, true, false, false) {
-            protected void setter(DtdSettings object, Double value) {
+                this, "Horizontal separation between transitions", Double.class) {
+            @Override
+            public void setter(DtdSettings object, Double value) {
                 setTransitionSeparationIfValid(value, DtdSettings::setTransitionSeparation);
             }
-
-            protected Double getter(DtdSettings object) {
+            @Override
+            public Double getter(DtdSettings object) {
                 return getTransitionSeparation();
             }
         });

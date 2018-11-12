@@ -2,9 +2,9 @@ package org.workcraft.plugins.atacs;
 
 import org.workcraft.Config;
 import org.workcraft.gui.DesktopApi;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.Settings;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -37,67 +37,73 @@ public class AtacsSettings implements Settings {
 
     public AtacsSettings() {
         properties.add(new PropertyDeclaration<AtacsSettings, Boolean>(
-                this, "Activate ATACS synthesis (experimental)",
-                Boolean.class, true, false, false) {
-            protected void setter(AtacsSettings object, Boolean value) {
+                this, "Activate ATACS synthesis (experimental)", Boolean.class) {
+            @Override
+            public void setter(AtacsSettings object, Boolean value) {
                 setShowInMenu(value);
             }
-            protected Boolean getter(AtacsSettings object) {
+            @Override
+            public Boolean getter(AtacsSettings object) {
                 return getShowInMenu();
             }
         });
 
         properties.add(new PropertyDeclaration<AtacsSettings, String>(
-                this, "ATACS command",
-                String.class, true, false, false) {
-            protected void setter(AtacsSettings object, String value) {
+                this, "ATACS command", String.class) {
+            @Override
+            public void setter(AtacsSettings object, String value) {
                 setCommand(value);
             }
-            protected String getter(AtacsSettings object) {
+            @Override
+            public String getter(AtacsSettings object) {
                 return getCommand();
             }
         });
 
         properties.add(new PropertyDeclaration<AtacsSettings, String>(
-                this, "Additional parameters",
-                String.class, true, false, false) {
-            protected void setter(AtacsSettings object, String value) {
+                this, "Additional parameters", String.class) {
+            @Override
+            public void setter(AtacsSettings object, String value) {
                 setArgs(value);
             }
-            protected String getter(AtacsSettings object) {
+            @Override
+            public String getter(AtacsSettings object) {
                 return getArgs();
             }
         });
 
         properties.add(new PropertyDeclaration<AtacsSettings, Boolean>(
-                this, "Edit additional parameters before every call",
-                Boolean.class, true, false, false) {
-            protected void setter(AtacsSettings object, Boolean value) {
+                this, "Edit additional parameters before every call", Boolean.class) {
+            @Override
+            public void setter(AtacsSettings object, Boolean value) {
                 setAdvancedMode(value);
             }
-            protected Boolean getter(AtacsSettings object) {
+            @Override
+            public Boolean getter(AtacsSettings object) {
                 return getAdvancedMode();
             }
         });
 
         properties.add(new PropertyDeclaration<AtacsSettings, Boolean>(
-                this, "Output stdout",
-                Boolean.class, true, false, false) {
-            protected void setter(AtacsSettings object, Boolean value) {
+                this, "Output stdout", Boolean.class) {
+            @Override
+            public void setter(AtacsSettings object, Boolean value) {
                 setPrintStdout(value);
             }
-            protected Boolean getter(AtacsSettings object) {
+            @Override
+            public Boolean getter(AtacsSettings object) {
                 return getPrintStdout();
             }
         });
 
         properties.add(new PropertyDeclaration<AtacsSettings, Boolean>(
-                this, "Output stderr",
-                Boolean.class, true, false, false) {
-            protected void setter(AtacsSettings object, Boolean value) {
+                this, "Output stderr", Boolean.class) {
+            @Override
+            public void setter(AtacsSettings object, Boolean value) {
                 setPrintStderr(value);
             }
-            protected Boolean getter(AtacsSettings object) {
+            @Override
+            public Boolean getter(AtacsSettings object) {
                 return getPrintStderr();
             }
         });

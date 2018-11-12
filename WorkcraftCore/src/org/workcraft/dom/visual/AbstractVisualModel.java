@@ -10,13 +10,16 @@ import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.FlatReferenceManager;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
-import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.gui.propertyeditor.TitlePropertyDescriptor;
+import org.workcraft.gui.properties.ModelProperties;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.observation.*;
 import org.workcraft.plugins.layout.DotLayoutCommand;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
@@ -32,6 +35,10 @@ import java.util.List;
 import java.util.Queue;
 
 public abstract class AbstractVisualModel extends AbstractModel<VisualNode, VisualConnection> implements VisualModel {
+
+    public static final String PROPERTY_TITLE = "Title";
+    public static final String PROPERTY_NAME = "Name";
+
     private MathModel mathModel;
     private Container currentLevel;
     private final Set<VisualNode> selection = new HashSet<>();
@@ -622,15 +629,6 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
         observableState.sendNotification(e);
     }
 
-    @Override
-    public ModelProperties getProperties(Node node) {
-        ModelProperties properties = new ModelProperties();
-        if (node == null) {
-            properties.add(new TitlePropertyDescriptor(this));
-        }
-        return properties;
-    }
-
     public Collection<MathNode> getMathChildren(Collection<? extends VisualNode> nodes) {
         Collection<MathNode> ret = new HashSet<>();
         for (Node node: nodes) {
@@ -710,6 +708,57 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
     @Override
     public final List<GraphEditorTool> getGraphEditorTools() {
         return graphEditorTools;
+    }
+
+    @Override
+    public ModelProperties getProperties(VisualNode node) {
+        ModelProperties properties = new ModelProperties();
+        if (node == null) {
+            properties.add(getTitleProperty());
+        } else {
+            String name = getMathName(node);
+            if ((name != null) && !Identifier.isInternal(name)) {
+                properties.add(getNameProperty(node));
+            }
+        }
+        return properties;
+    }
+
+    private PropertyDescriptor getTitleProperty() {
+        return new PropertyDeclaration<AbstractVisualModel, String>(
+                this, PROPERTY_TITLE, String.class) {
+            @Override
+            public void setter(AbstractVisualModel object, String value) {
+                object.setTitle(value);
+            }
+            @Override
+            public String getter(AbstractVisualModel object) {
+                return object.getTitle();
+            }
+        };
+    }
+
+    private PropertyDescriptor getNameProperty(VisualNode node) {
+        return new PropertyDeclaration<VisualNode, String>(
+                node, PROPERTY_NAME, String.class) {
+            @Override
+            public String getter(VisualNode object) {
+                return getMathName(object);
+            }
+
+            @Override
+            public void setter(VisualNode object, String value) {
+                if (Identifier.isName(value)) {
+                    if (!value.equals(getMathName(object))) {
+                        setMathName(object, value);
+                        object.sendNotification(new PropertyChangedEvent(node, PROPERTY_NAME));
+                    }
+                } else {
+                    throw new ArgumentException("'" + value + "' is not a valid C-style identifier.\n"
+                            + "The first character must be alphabetic or '_' and the following -- alphanumeric or '_'.");
+                }
+            }
+        };
     }
 
 }

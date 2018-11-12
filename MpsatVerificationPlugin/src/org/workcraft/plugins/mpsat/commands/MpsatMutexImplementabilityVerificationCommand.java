@@ -1,8 +1,5 @@
 package org.workcraft.plugins.mpsat.commands;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.mpsat.MpsatParameters;
@@ -18,6 +15,9 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerificationCommand {
 
@@ -58,17 +58,19 @@ public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerif
 
     private MpsatCombinedChainResultHandler queueVerification(WorkspaceEntry we) {
         MpsatCombinedChainResultHandler monitor = null;
-        Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        if (MpsatUtils.mutexStructuralCheck(stg, false)) {
-            Framework framework = Framework.getInstance();
-            TaskManager manager = framework.getTaskManager();
-            Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
-            MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-            ArrayList<MpsatParameters> settingsList = MpsatUtils.getMutexImplementabilitySettings(mutexes);
-            MpsatCombinedChainTask task = new MpsatCombinedChainTask(we, settingsList);
-            String description = MpsatUtils.getToolchainDescription(we.getTitle());
-            monitor = new MpsatCombinedChainResultHandler(task, mutexes);
-            manager.queue(task, description, monitor);
+        if (isApplicableTo(we)) {
+            Stg stg = WorkspaceUtils.getAs(we, Stg.class);
+            if (MpsatUtils.mutexStructuralCheck(stg, false)) {
+                Framework framework = Framework.getInstance();
+                TaskManager manager = framework.getTaskManager();
+                Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
+                MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
+                ArrayList<MpsatParameters> settingsList = MpsatUtils.getMutexImplementabilitySettings(mutexes);
+                MpsatCombinedChainTask task = new MpsatCombinedChainTask(we, settingsList);
+                String description = MpsatUtils.getToolchainDescription(we.getTitle());
+                monitor = new MpsatCombinedChainResultHandler(task, mutexes);
+                manager.queue(task, description, monitor);
+            }
         }
         return monitor;
     }

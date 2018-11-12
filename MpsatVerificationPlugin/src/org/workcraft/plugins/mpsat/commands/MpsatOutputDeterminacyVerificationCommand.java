@@ -53,6 +53,9 @@ public class MpsatOutputDeterminacyVerificationCommand extends AbstractVerificat
     }
 
     private MpsatChainResultHandler queueVerification(WorkspaceEntry we) {
+        if (!isApplicableTo(we)) {
+            return null;
+        }
         StgModel stg = WorkspaceUtils.getAs(we, StgModel.class);
         if (!stg.getSignalReferences(Signal.Type.INTERNAL).isEmpty()) {
             String msg = "Output determinacy of STGs with internal signals may be ambiguous.\n" +

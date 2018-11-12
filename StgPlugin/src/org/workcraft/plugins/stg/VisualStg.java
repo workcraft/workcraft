@@ -12,12 +12,12 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
-import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.gui.properties.ModelProperties;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.petri.*;
 import org.workcraft.plugins.petri.tools.ReadArcConnectionTool;
 import org.workcraft.plugins.petri.utils.PetriNetUtils;
-import org.workcraft.plugins.stg.properties.SignalNamePropertyDescriptor;
-import org.workcraft.plugins.stg.properties.SignalTypePropertyDescriptor;
 import org.workcraft.plugins.stg.tools.*;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Pair;
@@ -397,25 +397,6 @@ public class VisualStg extends AbstractVisualModel {
         return null;
     }
 
-    @Override
-    public ModelProperties getProperties(Node node) {
-        ModelProperties properties = super.getProperties(node);
-        if (node == null) {
-            Stg stg = getMathModel();
-            for (Signal.Type type : Signal.Type.values()) {
-                Container container = NamespaceHelper.getMathContainer(this, getCurrentLevel());
-                for (final String signalName : stg.getSignalNames(type, container)) {
-                    if (stg.getSignalTransitions(signalName, container).isEmpty()) continue;
-                    SignalNamePropertyDescriptor symbolDescriptor = new SignalNamePropertyDescriptor(stg, signalName, container);
-                    properties.insertOrderedByFirstWord(symbolDescriptor);
-                    SignalTypePropertyDescriptor typeDescriptor = new SignalTypePropertyDescriptor(stg, signalName, container);
-                    properties.insertOrderedByFirstWord(typeDescriptor);
-                }
-            }
-        }
-        return properties;
-    }
-
     public String getSignalReference(VisualSignalTransition transition) {
         String ref = getNodeMathReference(transition);
         String signalName = transition.getSignalName();
@@ -430,6 +411,130 @@ public class VisualStg extends AbstractVisualModel {
             node = connection.getImplicitPlace();
         }
         return super.getNodeMathReference(node);
+    }
+
+    @Override
+    public ModelProperties getProperties(VisualNode node) {
+        ModelProperties properties = super.getProperties(node);
+        Stg stg = getMathModel();
+        if (node == null) {
+            for (Signal.Type type : Signal.Type.values()) {
+                Container container = NamespaceHelper.getMathContainer(this, getCurrentLevel());
+                for (final String signalName : stg.getSignalNames(type, container)) {
+                    if (stg.getSignalTransitions(signalName, container).isEmpty()) continue;
+                    properties.insertOrderedByFirstWord(getSignalNameProperty(signalName, container));
+                    properties.insertOrderedByFirstWord(getSignalTypeProperty(signalName, container));
+                }
+            }
+        } else if (node instanceof VisualSignalTransition) {
+            VisualSignalTransition transition = (VisualSignalTransition) node;
+            properties.removeByName(AbstractVisualModel.PROPERTY_NAME);
+            properties.add(getSignalNameProperty(transition));
+            properties.add(getSignalTypeProperty(transition));
+            properties.add(getDirectionProperty(transition));
+            if (StgSettings.getShowTransitionInstance()) {
+                properties.add(getInstanceProperty(transition));
+            }
+        } else if (node instanceof VisualDummyTransition) {
+            VisualDummyTransition dummy = (VisualDummyTransition) node;
+            if (StgSettings.getShowTransitionInstance()) {
+                properties.add(getInstanceProperty(dummy));
+            }
+        }
+        return properties;
+    }
+
+    private PropertyDescriptor getSignalNameProperty(String signal, Container container) {
+        return new PropertyDeclaration<VisualStg, String>(
+                this, signal + " name", String.class, false, false) {
+            @Override
+            public String getter(VisualStg object) {
+                return signal;
+            }
+            @Override
+            public void setter(VisualStg object, String value) {
+                if (!signal.equals(value)) {
+                    Stg stg = getMathModel();
+                    for (SignalTransition transition : stg.getSignalTransitions(signal, container)) {
+                        stg.setName(transition, value);
+                    }
+                }
+            }
+        };
+    }
+
+    private PropertyDescriptor getSignalTypeProperty(String signal, Container container) {
+        return new PropertyDeclaration<VisualStg, Signal.Type>(
+                this, signal + " type", Signal.Type.class, false, false) {
+            @Override
+            public Signal.Type getter(VisualStg object) {
+                return getMathModel().getSignalType(signal, container);
+            }
+            @Override
+            public void setter(VisualStg object, Signal.Type value) {
+                getMathModel().setSignalType(signal, value, container);
+            }
+        };
+    }
+
+    private PropertyDescriptor getSignalNameProperty(VisualSignalTransition signalTransition) {
+        return new PropertyDeclaration<VisualSignalTransition, String>(
+                signalTransition, "Signal name", String.class, true, false) {
+            @Override
+            public String getter(VisualSignalTransition object) {
+                return object.getReferencedTransition().getSignalName();
+            }
+
+            @Override
+            public void setter(VisualSignalTransition object, String value) {
+                getMathModel().setName(object.getReferencedTransition(), value);
+            }
+        };
+    }
+
+    private PropertyDescriptor getSignalTypeProperty(VisualSignalTransition signalTransition) {
+        return new PropertyDeclaration<VisualSignalTransition, Signal.Type>(
+                signalTransition, "Signal type", Signal.Type.class, true, false) {
+            @Override
+            public Signal.Type getter(VisualSignalTransition object) {
+                return object.getReferencedTransition().getSignalType();
+            }
+
+            @Override
+            public void setter(VisualSignalTransition object, Signal.Type value) {
+                object.getReferencedTransition().setSignalType(value);
+            }
+        };
+    }
+
+    private PropertyDescriptor getDirectionProperty(VisualSignalTransition signalTransition) {
+        return new PropertyDeclaration<VisualSignalTransition, SignalTransition.Direction>(
+                signalTransition, SignalTransition.PROPERTY_DIRECTION, SignalTransition.Direction.class, true, false) {
+            @Override
+            public SignalTransition.Direction getter(VisualSignalTransition object) {
+                return getMathModel().getDirection(object.getReferencedTransition());
+            }
+
+            @Override
+            public void setter(VisualSignalTransition object, SignalTransition.Direction value) {
+                getMathModel().setDirection(object.getReferencedTransition(), value);
+            }
+        };
+    }
+
+    private PropertyDescriptor getInstanceProperty(VisualNamedTransition namedTransition) {
+        return new PropertyDeclaration<VisualNamedTransition, Integer>(
+                namedTransition, "Instance", Integer.class) {
+            @Override
+            public Integer getter(VisualNamedTransition object) {
+                return getMathModel().getInstanceNumber(object.getReferencedTransition());
+            }
+
+            @Override
+            public void setter(VisualNamedTransition object, Integer value) {
+                getMathModel().setInstanceNumber(object.getReferencedTransition(), value);
+            }
+        };
     }
 
 }

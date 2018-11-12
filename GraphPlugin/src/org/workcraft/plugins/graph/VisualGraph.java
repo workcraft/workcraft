@@ -7,10 +7,14 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.exceptions.FormatException;
 import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.*;
-import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.plugins.graph.properties.SymbolPropertyDescriptor;
+import org.workcraft.gui.properties.ModelProperties;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.graph.tools.GraphSimulationTool;
 
 import java.util.ArrayList;
@@ -40,17 +44,72 @@ public class VisualGraph extends AbstractVisualModel {
     }
 
     @Override
-    public ModelProperties getProperties(Node node) {
+    public Graph getMathModel() {
+        return (Graph) super.getMathModel();
+    }
+
+    @Override
+    public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
-        Graph graph = (Graph) getMathModel();
         if (node == null) {
             Container container = NamespaceHelper.getMathContainer(this, getCurrentLevel());
-            for (final Symbol symbol: graph.getSymbols(container)) {
-                SymbolPropertyDescriptor symbolDescriptor = new SymbolPropertyDescriptor(graph, symbol);
-                properties.insertOrderedByFirstWord(symbolDescriptor);
+            for (final Symbol symbol: getMathModel().getSymbols(container)) {
+                properties.insertOrderedByFirstWord(getSymbolProperty(symbol));
             }
+        } else if (node instanceof VisualVertex) {
+            properties.add(getVertexSymbolProperty((VisualVertex) node));
         }
         return properties;
+    }
+
+    private PropertyDescriptor getSymbolProperty(Symbol symbol) {
+        return new PropertyDeclaration<Symbol, String>(
+                symbol, getMathModel().getName(symbol) + " name", String.class) {
+            @Override
+            public void setter(Symbol object, String value) {
+                Node node = getMathModel().getNodeByReference(value);
+                if (node == null) {
+                    getMathModel().setName(object, value);
+                    for (Vertex event: getMathModel().getVertices(object)) {
+                        event.sendNotification(new PropertyChangedEvent(event, Vertex.PROPERTY_SYMBOL));
+                    }
+                } else if (!(node instanceof Symbol)) {
+                    throw new FormatException("Node '" + value + "' already exists and it is not a symbol.");
+                }
+            }
+            @Override
+            public String getter(Symbol object) {
+                return getMathModel().getName(object);
+            }
+        };
+    }
+
+    private PropertyDescriptor getVertexSymbolProperty(VisualVertex event) {
+        return new PropertyDeclaration<VisualVertex, String>(
+                event, Vertex.PROPERTY_SYMBOL, String.class, true, true) {
+            @Override
+            public void setter(VisualVertex object, String value) {
+                Symbol symbol = null;
+                if (!value.isEmpty()) {
+                    Node node = getMathModel().getNodeByReference(value);
+                    if (node instanceof Symbol) {
+                        symbol = (Symbol) node;
+                    } else {
+                        symbol = getMathModel().createSymbol(value);
+                    }
+                }
+                object.getReferencedVertex().setSymbol(symbol);
+            }
+            @Override
+            public String getter(VisualVertex object) {
+                Symbol symbol = object.getReferencedVertex().getSymbol();
+                String symbolName = "";
+                if (symbol != null) {
+                    symbolName = getMathModel().getName(symbol);
+                }
+                return symbolName;
+            }
+        };
     }
 
 }

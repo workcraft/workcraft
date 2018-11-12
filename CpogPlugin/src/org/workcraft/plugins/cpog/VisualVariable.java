@@ -10,7 +10,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.formula.One;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
@@ -55,15 +55,19 @@ public class VisualVariable extends VisualComponent {
 
     public VisualVariable(Variable variable) {
         super(variable);
+
         addPropertyDeclaration(new PropertyDeclaration<VisualVariable, VariableState>(
-                this, Variable.PROPERTY_STATE, VariableState.class, true, true, true) {
+                this, Variable.PROPERTY_STATE, VariableState.class, true, true) {
+            @Override
             public void setter(VisualVariable object, VariableState value) {
                 object.setState(value);
             }
+            @Override
             public VariableState getter(VisualVariable object) {
                 return object.getState();
             }
         });
+
         removePropertyDeclarationByName(PROPERTY_NAME_POSITIONING);
         removePropertyDeclarationByName(PROPERTY_NAME_COLOR);
     }

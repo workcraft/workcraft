@@ -66,7 +66,8 @@ public class CircuitPropertyVerificationCommand extends AbstractVerificationComm
     }
 
     private boolean checkPrerequisites(WorkspaceEntry we) {
-        return VerificationUtils.checkCircuitHasComponents(we)
+        return isApplicableTo(we)
+            && VerificationUtils.checkCircuitHasComponents(we)
             && VerificationUtils.checkInterfaceInitialState(we)
             && VerificationUtils.checkInterfaceConstrains(we);
     }

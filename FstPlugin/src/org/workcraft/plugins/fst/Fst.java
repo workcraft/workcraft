@@ -3,22 +3,14 @@ package org.workcraft.plugins.fst;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.ArgumentException;
-import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.Symbol;
 import org.workcraft.plugins.fst.observers.SignalConsistencySupervisor;
-import org.workcraft.plugins.fst.properties.DirectionPropertyDescriptor;
-import org.workcraft.plugins.fst.properties.EventSignalPropertyDescriptor;
-import org.workcraft.plugins.fst.properties.SignalTypePropertyDescriptor;
-import org.workcraft.plugins.fst.properties.TypePropertyDescriptor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 public class Fst extends Fsm {
 
@@ -84,29 +76,6 @@ public class Fst extends Fsm {
 
     public final Collection<SignalEvent> getSignalEvents() {
         return Hierarchy.getDescendantsOfType(getRoot(), SignalEvent.class);
-    }
-
-    @Override
-    public ModelProperties getProperties(Node node) {
-        ModelProperties properties = super.getProperties(node);
-        if (node == null) {
-            for (final Signal signal: getSignals()) {
-                SignalTypePropertyDescriptor typeDescriptor = new SignalTypePropertyDescriptor(this, signal);
-                properties.insertOrderedByFirstWord(typeDescriptor);
-            }
-        } else if (node instanceof SignalEvent) {
-            LinkedList<PropertyDescriptor> eventDescriptors = new LinkedList<>();
-            SignalEvent signalEvent = (SignalEvent) node;
-            eventDescriptors.add(new EventSignalPropertyDescriptor(this, signalEvent));
-            Signal signal = signalEvent.getSignal();
-            eventDescriptors.add(new TypePropertyDescriptor(signal));
-            if (signal.hasDirection()) {
-                eventDescriptors.add(new DirectionPropertyDescriptor(signalEvent));
-            }
-            properties.addSorted(eventDescriptors);
-            properties.removeByName(Event.PROPERTY_SYMBOL);
-        }
-        return properties;
     }
 
 }

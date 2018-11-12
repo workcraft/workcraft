@@ -7,7 +7,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.TransformChangedEvent;
@@ -39,14 +39,13 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualGroup, Boolean>(
-                this, PROPERTY_IS_COLLAPSED, Boolean.class, true, true, true) {
-
+                this, PROPERTY_IS_COLLAPSED, Boolean.class, true, true) {
             @Override
-            protected void setter(VisualGroup object, Boolean value) {
+            public void setter(VisualGroup object, Boolean value) {
                 object.setIsCollapsed(value);
             }
             @Override
-            protected Boolean getter(VisualGroup object) {
+            public Boolean getter(VisualGroup object) {
                 return object.getIsCollapsed();
             }
         });

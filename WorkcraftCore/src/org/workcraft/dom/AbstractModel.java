@@ -3,11 +3,8 @@ package org.workcraft.dom;
 import org.workcraft.annotations.Annotations;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.HierarchyReferenceManager;
-import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.references.ReferenceManager;
-import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.util.Func;
 
 import java.util.*;
@@ -209,18 +206,6 @@ public abstract class AbstractModel<N extends Node, C extends Connection>  imple
     @Override
     public String getNodeReference(NamespaceProvider provider, Node node) {
         return mgr.getNodeReference(provider, node);
-    }
-
-    @Override
-    public ModelProperties getProperties(Node node) {
-        ModelProperties properties = new ModelProperties();
-        if ((node != null) && !(node instanceof Connection)) {
-            String name = getName(node);
-            if ((name != null) && !Identifier.isInternal(name)) {
-                properties.add(new NamePropertyDescriptor(this, node));
-            }
-        }
-        return properties;
     }
 
     @Override

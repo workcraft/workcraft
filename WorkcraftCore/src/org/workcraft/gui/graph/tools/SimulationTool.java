@@ -9,7 +9,6 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
-import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 import org.workcraft.plugins.shared.CommonDecorationSettings;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
@@ -581,7 +580,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
             JLabel result = null;
-            label.setBorder(PropertyEditorTable.BORDER_RENDER);
+            label.setBorder(SizeHelper.getTableCellBorder());
             if (isActivated() && (value instanceof String)) {
                 label.setText((String) value);
                 if (isActive(row, column)) {
