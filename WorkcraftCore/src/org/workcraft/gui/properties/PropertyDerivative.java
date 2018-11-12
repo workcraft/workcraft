@@ -1,6 +1,5 @@
 package org.workcraft.gui.properties;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 public class PropertyDerivative implements PropertyDescriptor {
@@ -22,12 +21,12 @@ public class PropertyDerivative implements PropertyDescriptor {
     }
 
     @Override
-    public Object getValue() throws InvocationTargetException {
+    public Object getValue() {
         return descriptor.getValue();
     }
 
     @Override
-    public void setValue(Object value) throws InvocationTargetException {
+    public void setValue(Object value) {
         descriptor.setValue(value);
     }
 

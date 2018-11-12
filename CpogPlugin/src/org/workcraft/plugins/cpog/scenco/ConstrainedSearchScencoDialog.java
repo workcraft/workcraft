@@ -1,41 +1,23 @@
 package org.workcraft.plugins.cpog.scenco;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Window;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.table.DefaultTableCellRenderer;
-
+import info.clearthought.layout.TableLayout;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.layouts.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.VisualCpog;
-import org.workcraft.plugins.cpog.gui.MyTableCellRenderer;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.GUI;
 import org.workcraft.util.IntDocument;
-import org.workcraft.util.DialogUtils;
 
-import info.clearthought.layout.TableLayout;
+import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 @SuppressWarnings("serial")
 public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
@@ -163,7 +145,8 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
             }
         }
         encodingTable = new JTable(data, columnNames);
-        MyTableCellRenderer renderer = new MyTableCellRenderer();
+        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+        renderer.setHorizontalAlignment(SwingConstants.CENTER);
         encodingTable.setDefaultRenderer(Object.class, renderer);
         encodingTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         encodingTable.setAutoscrolls(true);

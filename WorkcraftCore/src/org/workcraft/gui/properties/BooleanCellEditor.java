@@ -32,7 +32,7 @@ public class BooleanCellEditor extends AbstractCellEditor implements TableCellEd
     }
 
     @Override
-    public Object getCellEditorValue() {
+    public Boolean getCellEditorValue() {
         return checkBox.isSelected();
     }
 

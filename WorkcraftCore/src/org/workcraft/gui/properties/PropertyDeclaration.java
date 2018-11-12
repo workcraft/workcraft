@@ -3,7 +3,7 @@ package org.workcraft.gui.properties;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public abstract class PropertyDeclaration<O, V> implements PropertyDescriptor {
+public abstract class PropertyDeclaration<O, V> implements PropertyDescriptor<V> {
     private final O object;
     private final String name;
     private final Class<V> cls;
@@ -35,17 +35,13 @@ public abstract class PropertyDeclaration<O, V> implements PropertyDescriptor {
     }
 
     @Override
-    public final Object getValue() {
+    public final V getValue() {
         return getter(object);
     }
 
     @Override
-    public final void setValue(Object value) {
-        try {
-            setter(object, cls.cast(value));
-        } catch (ClassCastException e) {
-            throw new RuntimeException(e);
-        }
+    public final void setValue(V value) {
+        setter(object, value);
     }
 
     @Override

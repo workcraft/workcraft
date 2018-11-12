@@ -3,7 +3,7 @@ package org.workcraft.gui.properties;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
-public class StringProperty implements PropertyClass {
+public class StringProperty implements PropertyClass<String, String> {
 
     @Override
     public TableCellEditor getCellEditor() {
@@ -16,16 +16,13 @@ public class StringProperty implements PropertyClass {
     }
 
     @Override
-    public Object fromCellEditorValue(Object editorComponentValue) {
-        return editorComponentValue.toString();
+    public String fromCellEditorValue(String editorComponentValue) {
+        return editorComponentValue;
     }
 
     @Override
-    public Object toCellRendererValue(Object value) {
-        String result = "";
-        if (value != null) {
-            result = value.toString();
-        }
-        return result;
+    public String toCellRendererValue(String value) {
+        return (value == null) ? "" : value;
     }
+
 }

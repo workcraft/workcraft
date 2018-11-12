@@ -13,7 +13,6 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 @SuppressWarnings("serial")
@@ -116,12 +115,9 @@ public class PropertyEditorTable extends JTable {
                     label.setText(value.toString());
                     label.setBorder(SizeHelper.getTableCellBorder());
                     PropertyDescriptor descriptor = model.getRowDeclaration(row);
-                    try {
-                        if ((descriptor.getValue() == null) && descriptor.isCombinable()) {
-                            Font boldFont = label.getFont().deriveFont(Font.BOLD);
-                            label.setFont(boldFont);
-                        }
-                    } catch (InvocationTargetException e) {
+                    if ((descriptor.getValue() == null) && descriptor.isCombinable()) {
+                        Font boldFont = label.getFont().deriveFont(Font.BOLD);
+                        label.setFont(boldFont);
                     }
                     return label;
                 }

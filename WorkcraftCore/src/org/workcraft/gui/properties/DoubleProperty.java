@@ -5,26 +5,30 @@ import java.util.IllegalFormatException;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
-public class DoubleProperty implements PropertyClass {
+public class DoubleProperty implements PropertyClass<Double, String> {
 
+    @Override
     public TableCellEditor getCellEditor() {
         return new GenericCellEditor();
     }
 
+    @Override
     public TableCellRenderer getCellRenderer() {
         return new DefaultCellRenderer();
     }
 
-    public Object fromCellEditorValue(Object editorComponentValue) {
+    @Override
+    public Double fromCellEditorValue(String editorComponentValue) {
         try {
-            String s = (String) editorComponentValue;
+            String s = editorComponentValue;
             return Double.parseDouble(s.replace(",", "."));
         } catch (NumberFormatException e) {
             return 0.0;
         }
     }
 
-    public Object toCellRendererValue(Object value) {
+    @Override
+    public String toCellRendererValue(Double value) {
         String result = "";
         if (value != null) {
             try {
@@ -35,4 +39,5 @@ public class DoubleProperty implements PropertyClass {
         }
         return result;
     }
+
 }

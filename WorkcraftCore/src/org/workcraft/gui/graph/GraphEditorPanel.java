@@ -30,7 +30,6 @@ import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class GraphEditorPanel extends JPanel implements StateObserver, GraphEditor {
@@ -369,7 +368,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     private PropertyDescriptor wrapProperty(PropertyDescriptor descriptor) {
         return new PropertyDerivative(descriptor) {
             @Override
-            public void setValue(Object value) throws InvocationTargetException {
+            public void setValue(Object value) {
                 we.saveMemento();
                 super.setValue(value);
             }

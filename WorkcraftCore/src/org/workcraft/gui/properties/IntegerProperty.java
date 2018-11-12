@@ -1,29 +1,32 @@
 package org.workcraft.gui.properties;
 
-import java.util.IllegalFormatException;
-
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
+import java.util.IllegalFormatException;
 
-public class IntegerProperty implements PropertyClass {
+public class IntegerProperty implements PropertyClass<Integer, String> {
 
+    @Override
     public TableCellEditor getCellEditor() {
         return new GenericCellEditor();
     }
 
+    @Override
     public TableCellRenderer getCellRenderer() {
         return new DefaultCellRenderer();
     }
 
-    public Object fromCellEditorValue(Object editorComponentValue) {
+    @Override
+    public Integer fromCellEditorValue(String editorComponentValue) {
         try {
-            return Integer.parseInt((String) editorComponentValue);
+            return Integer.parseInt(editorComponentValue);
         } catch (NumberFormatException e) {
-            return 0.0;
+            return 0;
         }
     }
 
-    public Object toCellRendererValue(Object value) {
+    @Override
+    public String toCellRendererValue(Integer value) {
         String result = "";
         if (value != null) {
             try {

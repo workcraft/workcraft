@@ -2,8 +2,9 @@ package org.workcraft.gui.properties;
 
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
+import java.io.File;
 
-public class FileProperty implements PropertyClass {
+public class FileProperty implements PropertyClass<File, File> {
 
     @Override
     public TableCellEditor getCellEditor() {
@@ -16,12 +17,13 @@ public class FileProperty implements PropertyClass {
     }
 
     @Override
-    public Object fromCellEditorValue(Object value) {
+    public File fromCellEditorValue(File value) {
         return value;
     }
 
     @Override
-    public Object toCellRendererValue(Object value) {
+    public File toCellRendererValue(File value) {
         return value;
     }
+
 }

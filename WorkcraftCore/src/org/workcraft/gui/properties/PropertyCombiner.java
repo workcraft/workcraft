@@ -1,6 +1,5 @@
 package org.workcraft.gui.properties;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,7 +15,7 @@ public final class PropertyCombiner implements PropertyDescriptor {
     }
 
     @Override
-    public Object getValue() throws InvocationTargetException {
+    public Object getValue() {
         Object result = null;
         for (PropertyDescriptor descriptor: values) {
             if (descriptor.isVisible()) {
@@ -31,7 +30,7 @@ public final class PropertyCombiner implements PropertyDescriptor {
     }
 
     @Override
-    public void setValue(Object value) throws InvocationTargetException {
+    public void setValue(Object value) {
         for (PropertyDescriptor descriptor : values) {
             if (descriptor.isVisible()) {
                 descriptor.setValue(value);

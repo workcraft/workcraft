@@ -3,21 +3,25 @@ package org.workcraft.gui.properties;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
-public class BooleanProperty implements PropertyClass {
+public class BooleanProperty implements PropertyClass<Boolean, Boolean> {
 
-    public Object fromCellEditorValue(Object editorComponentValue) {
-        return editorComponentValue;
-    }
-
+    @Override
     public TableCellEditor getCellEditor() {
         return new BooleanCellEditor();
     }
 
+    @Override
     public TableCellRenderer getCellRenderer() {
         return new BooleanCellRenderer();
     }
 
-    public Object toCellRendererValue(Object value) {
+    @Override
+    public Boolean fromCellEditorValue(Boolean editorComponentValue) {
+        return editorComponentValue;
+    }
+
+    @Override
+    public Boolean toCellRendererValue(Boolean value) {
         return value;
     }
 }

@@ -1,14 +1,13 @@
 package org.workcraft.gui.properties;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
-public interface PropertyDescriptor {
+public interface PropertyDescriptor<V> {
     String getName();
-    Class<?> getType();
-    Object getValue() throws InvocationTargetException;
-    void setValue(Object value) throws InvocationTargetException;
-    Map<? extends Object, String> getChoice();
+    Class<V> getType();
+    V getValue();
+    void setValue(V value);
+    Map<V, String> getChoice();
 
     default boolean isEditable() {
         return true;

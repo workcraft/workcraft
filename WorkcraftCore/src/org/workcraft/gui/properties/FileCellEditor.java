@@ -90,7 +90,7 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
     }
 
     @Override
-    public Object getCellEditorValue() {
+    public File getCellEditorValue() {
         return file;
     }
 

@@ -1,11 +1,11 @@
 package org.workcraft.gui.properties;
 
 import javax.swing.table.AbstractTableModel;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 @SuppressWarnings("serial")
 public class PropertyEditorTableModel extends AbstractTableModel {
+
     static final String[] columnNames = {"property", "value" };
     PropertyDescriptor[] declarations = null;
     PropertyClass[] rowClasses = null;
@@ -93,11 +93,7 @@ public class PropertyEditorTableModel extends AbstractTableModel {
         if (rowClasses[row] != null) {
             value = rowClasses[row].fromCellEditorValue(value);
         }
-        try {
-            desc.setValue(value);
-        } catch (InvocationTargetException e) {
-            throw new RuntimeException(e.getCause().getMessage(), e);
-        }
+        desc.setValue(value);
     }
 
 }

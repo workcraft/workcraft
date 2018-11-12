@@ -2,8 +2,9 @@ package org.workcraft.gui.properties;
 
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
+import java.awt.*;
 
-public class ColorProperty implements PropertyClass {
+public class ColorProperty implements PropertyClass<Color, Color> {
 
     @Override
     public TableCellEditor getCellEditor() {
@@ -16,12 +17,12 @@ public class ColorProperty implements PropertyClass {
     }
 
     @Override
-    public Object fromCellEditorValue(Object value) {
+    public Color fromCellEditorValue(Color value) {
         return value;
     }
 
     @Override
-    public Object toCellRendererValue(Object value) {
+    public Color toCellRendererValue(Color value) {
         return value;
     }
 
