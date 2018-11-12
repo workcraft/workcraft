@@ -9,6 +9,7 @@ import org.workcraft.plugins.wtg.Waveform;
 import org.workcraft.plugins.wtg.Wtg;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.LogUtils;
+import org.workcraft.util.Pair;
 
 import java.util.*;
 
@@ -872,4 +873,274 @@ public class VerificationUtils {
         }
         return false;
     }
+
+    public static boolean synthesisGuidelines(Wtg wtg) {
+        Map<Waveform, Set<String>> firedBeforeOut = new HashMap<>();
+        Map<Waveform, Set<String>> firedAfterOut = new HashMap<>();
+        Map<Waveform, Boolean> hasOutput = new HashMap<>();
+        for (Waveform waveform : wtg.getWaveforms()) {
+            Set<String> firedBefore = new HashSet<>();
+            Set<String> firedAfter = new HashSet<>();
+            if (!waveformFollowsSynthesisGuidelines(wtg, waveform, firedBefore, firedAfter)) {
+                return false;
+            }
+            firedBeforeOut.put(waveform, firedBefore);
+            firedAfterOut.put(waveform, firedAfter);
+            hasOutput.put(waveform, hasOutputTransition(wtg, waveform));
+        }
+
+        Set<String> inputSignals = new HashSet<>();
+        for (Signal signal : wtg.getSignals()) {
+            if (signal.getType() == Signal.Type.INPUT) {
+                inputSignals.add(wtg.getName(signal));
+            }
+        }
+
+        for (String signal : inputSignals) {
+            if (!signalFollowsSynthesisGuidelines(wtg, signal, firedBeforeOut, firedAfterOut, hasOutput)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static boolean signalFollowsSynthesisGuidelines(Wtg wtg, String signal, Map<Waveform, Set<String>> firedBeforeOut,
+                                                            Map<Waveform, Set<String>> firedAfterOut, Map<Waveform, Boolean> hasOutput) {
+        Queue<Waveform> toVisit = new LinkedList<>();
+        Set<Waveform> visited = new HashSet<>();
+        //We only need to look waveforms in which the signal fired after any output
+        for (Map.Entry<Waveform, Set<String>> entry : firedAfterOut.entrySet()) {
+            if (entry.getValue().contains(signal)) {
+                toVisit.add(entry.getKey());
+                visited.add(entry.getKey());
+            }
+        }
+
+        while (!toVisit.isEmpty()) {
+            Waveform visitingWaveform = toVisit.poll();
+
+            State followingState;
+            if ((wtg.getPostset(visitingWaveform).iterator().hasNext()) &&
+                    (wtg.getPostset(visitingWaveform).iterator().next() instanceof State)) {
+                followingState = (State) wtg.getPostset(visitingWaveform).iterator().next();
+            } else {
+                continue;
+            }
+
+            for (MathNode node : wtg.getPostset(followingState)) {
+                if (!(node instanceof Waveform)) {
+                    continue;
+                }
+                Waveform nextWaveform = (Waveform) node;
+
+                if (firedBeforeOut.get(nextWaveform).contains(signal)) {
+                    DialogUtils.showError("Input signal '" + signal + "' can fire before reaching waveform '" +
+                            wtg.getName(nextWaveform) +
+                            "' without an output in between, yet it can fire in that waveform before any output does.");
+                    return false;
+                }
+
+                //If a succeeding waveform does not have any output, we have to look at its succeeding waveforms too
+                if ((!hasOutput.get(nextWaveform)) && (!visited.contains(nextWaveform))) {
+                    toVisit.add(nextWaveform);
+                    visited.add(nextWaveform);
+                }
+            }
+        }
+        return true;
+    }
+
+
+    private static boolean waveformFollowsSynthesisGuidelines(Wtg wtg, Waveform waveform, Set<String> firedBeforeOut,
+                                                              Set<String> firedAfterOut) {
+        //firedBeforeOut will contain the input signals that fire before any output does
+        //firedAfterOut will contain the input signals that fire after any output does
+        Map<TransitionEvent, Integer> transitionDependencies = new HashMap<>();
+        for (TransitionEvent transition : wtg.getTransitions(waveform)) {
+            transitionDependencies.put(transition, wtg.getPreset(transition).size());
+        }
+
+        Queue<TransitionEvent> toVisit = new LinkedList<>();
+
+        Set<TransitionEvent> outputHasFired = new HashSet<>();
+        Map<TransitionEvent, Map<Signal, Pair<Boolean, Integer>>> inputsFiredAfterOutput = new HashMap<>();
+        //Contains, for each transition, which is the last fired transition (as an integer index) and whether there has
+        //been any output fired after that last fired transition (true == input cannot fire again, i.e. no output fired)
+
+        for (TransitionEvent transition : wtg.getTransitions(waveform)) {
+            inputsFiredAfterOutput.put(transition, new HashMap<>());
+        }
+        TransitionEvent finalEvent = new TransitionEvent(); //"ghost" event that fires any other transition
+        inputsFiredAfterOutput.put(finalEvent, new HashMap<>());
+
+        Map<TransitionEvent, Integer> transitionIndex = new HashMap<>();
+        //sequential index for every transition. When comparing transitions of the same signal,
+        //a smaller index implies the transition fired before.
+        for (EntryEvent entry : wtg.getEntries(waveform)) {
+            Integer idx = 1;
+            Signal signal = entry.getSignal();
+            MathNode nextEvent = entry;
+            boolean transitionFound = true;
+            while (transitionFound) {
+                transitionFound = false;
+                for (MathNode node : wtg.getPostset(nextEvent)) {
+                    if ((node instanceof TransitionEvent) && (((TransitionEvent) node).getSignal() == signal)) {
+                        transitionIndex.put((TransitionEvent) node, idx);
+                        idx++;
+                        nextEvent = node;
+                        transitionFound = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        List<Signal> guardedSignals = new LinkedList<>();
+        for (Signal signal : wtg.getSignals(waveform)) {
+            String signalName = wtg.getName(signal);
+            if (waveform.getGuard().containsKey(signalName)) {
+                guardedSignals.add(signal);
+                firedBeforeOut.add(wtg.getName(signal));
+            }
+        }
+
+        for (EntryEvent entry : wtg.getEntries(waveform)) {
+            for (MathNode node : wtg.getPostset(entry)) {
+                if (node instanceof TransitionEvent) {
+                    TransitionEvent transition = (TransitionEvent) node;
+                    Integer dependencies = transitionDependencies.computeIfPresent(transition, (k, v) -> v - 1);
+                    if (dependencies == 0) {
+                        toVisit.add(transition);
+
+                        //Guards are considered transitions that fire before any other transition for the guarded signal
+                        for (Signal signal : guardedSignals)  {
+                            inputsFiredAfterOutput.get(transition).put(signal, new Pair<>(true, 0));
+                        }
+                    }
+                }
+            }
+        }
+
+        //We traverse the dependency tree with a BFS
+        while (!toVisit.isEmpty()) {
+            TransitionEvent visitingTransition = toVisit.poll();
+            Signal transitionSignal = visitingTransition.getSignal();
+            if (transitionSignal.getType() == Signal.Type.INPUT) {
+                if (visitingTransition.getDirection() != TransitionEvent.Direction.STABILISE) {
+                    //Stabilise transitions can always fire even after another transition (assuming consistency).
+                    //Any other transition has to be checked
+
+                    if (!outputHasFired.contains(visitingTransition)) {
+                        //if no output has been fired yet and this is an input, then signal fired first
+                        firedBeforeOut.add(wtg.getName(transitionSignal));
+                    }
+
+                    if (inputsFiredAfterOutput.get(visitingTransition).containsKey(transitionSignal)) {
+                        if (inputsFiredAfterOutput.get(visitingTransition).get(transitionSignal).getFirst()) {
+                            DialogUtils.showError("In waveform '" + wtg.getName(waveform) + "' input signal '" +
+                                    wtg.getName(transitionSignal) + "' may fire two times without an output in between.");
+                            return false;
+                        }
+                    }
+
+                    boolean needsOutputFiring = visitingTransition.getDirection() != TransitionEvent.Direction.DESTABILISE;
+                    //destabilise transitions allow to fire again before any output
+
+                    inputsFiredAfterOutput.get(visitingTransition).put(transitionSignal, new Pair<>(needsOutputFiring,
+                            transitionIndex.get(visitingTransition)));
+                }
+            } else {
+                //Transitions for output/internal allow all the input signals to fire again
+                outputHasFired.add(visitingTransition);
+                for (Signal inputsFired : inputsFiredAfterOutput.get(visitingTransition).keySet()) {
+                    Integer firedTransitionIdx = inputsFiredAfterOutput.get(visitingTransition).get(inputsFired).getSecond();
+                    inputsFiredAfterOutput.get(visitingTransition).put(inputsFired, new Pair<>(false, firedTransitionIdx));
+                }
+            }
+
+            for (MathNode node : wtg.getPostset(visitingTransition)) {
+                if ((node instanceof ExitEvent) && (wtg.getPostset(visitingTransition).size() == 1)) {
+                    node = finalEvent; //we set the event to the "ghost" final event
+                }
+
+                if (node instanceof TransitionEvent) {
+                    TransitionEvent nextEvent = (TransitionEvent) node;
+                    if (outputHasFired.contains(visitingTransition)) {
+                        //an output has fired in this or in past transitions
+                        outputHasFired.add(nextEvent);
+                    }
+                    if (inputsFiredAfterOutput.get(nextEvent).isEmpty()) {
+                        //This is the first time we visit nextEvent transition. It first inherits all the signal status
+                        //from visitingTransition
+                        inputsFiredAfterOutput.get(nextEvent).putAll(inputsFiredAfterOutput.get(visitingTransition));
+                    } else {
+                        //The nextEvent transition was previously initialized. It means that nextEvent has more than 1
+                        //dependence. We have to combine the signal status with the visitingTransition
+                        for (Map.Entry<Signal, Pair<Boolean, Integer>> visitingInput:
+                                inputsFiredAfterOutput.get(visitingTransition).entrySet()) {
+                            Signal input = visitingInput.getKey();
+                            Pair<Boolean, Integer> visitingEventInput = visitingInput.getValue();
+
+                            if (inputsFiredAfterOutput.get(nextEvent).containsKey(input)) {
+                                //if the signal is known by both transitions...
+                                Pair<Boolean, Integer> nextEventInput = inputsFiredAfterOutput.get(nextEvent).get(input);
+                                if (nextEventInput.getFirst() != visitingEventInput.getFirst()) {
+                                    //if there has been an output in one of the paths, but not in all of them...
+                                    if (visitingEventInput.getSecond().equals(nextEventInput.getSecond())) {
+                                        //if the last transition is the same common ancestor, and there has been an output
+                                        //in one of the paths, we know that an output must fire before reaching "nextEvent"
+                                        inputsFiredAfterOutput.get(nextEvent).put(input,
+                                                new Pair<>(false, nextEventInput.getSecond()));
+                                    } else if (visitingEventInput.getSecond() > nextEventInput.getSecond()) {
+                                        //If the last transition from visitingEvent is younger than the one in
+                                        //nextEvent, then we propagate the one from visitingEvent
+                                        inputsFiredAfterOutput.get(nextEvent).put(input, visitingEventInput);
+                                    }
+                                    //Else, nextEvent carries the correct signal status
+                                } else {
+                                    //If all paths had an output or none had, then nextEvent has the correct boolean value.
+                                    //The transition index must be set to the younger transition
+                                    Integer youngerTransition = Math.max(visitingEventInput.getSecond(),
+                                            nextEventInput.getSecond());
+                                    inputsFiredAfterOutput.get(nextEvent).put(input, new Pair<>(nextEventInput.getFirst(),
+                                            youngerTransition));
+                                }
+                            } else {
+                                //if the signal is only know in visitingTransition, nextEvent inherits its status
+                                inputsFiredAfterOutput.get(nextEvent).put(input, visitingEventInput);
+                            }
+                        }
+                    }
+
+                    if (nextEvent == finalEvent) {
+                        continue;
+                    }
+                    Integer dependencies = transitionDependencies.computeIfPresent(nextEvent, (k, v) -> v - 1);
+                    if (dependencies == 0) {
+                        toVisit.add(nextEvent);
+                    }
+
+                }
+            }
+        }
+
+        //Finally, we can know the input signals that may fire after any output by looking at the "ghost" final event
+        for (Map.Entry<Signal, Pair<Boolean, Integer>> finalTrans : inputsFiredAfterOutput.get(finalEvent).entrySet()) {
+            if (finalTrans.getValue().getFirst()) {
+                firedAfterOut.add(wtg.getName(finalTrans.getKey()));
+            }
+        }
+        return true;
+    }
+
+    private static boolean hasOutputTransition(Wtg wtg, Waveform waveform) {
+        for (TransitionEvent transition : wtg.getTransitions(waveform)) {
+            if (transition.getSignal().getType() != Signal.Type.INPUT) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

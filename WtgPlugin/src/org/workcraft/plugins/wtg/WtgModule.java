@@ -43,6 +43,9 @@ public class WtgModule  implements Module {
 
         ScriptableCommandUtils.register(StructureWaveformTransformationCommand.class, "transformWtgStructureWaveform",
                 "transform the given WTG 'work' by structuring the waveforms");
+
+        ScriptableCommandUtils.register(WtgSynthesisGuidelinesVerification.class, "checkWtgSynthesisGuidelines",
+                "check the given WTG 'work' for compliance with the synthesis guidelines");
     }
 
     private void initCompatibilityManager() {
