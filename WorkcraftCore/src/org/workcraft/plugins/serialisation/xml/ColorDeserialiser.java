@@ -1,18 +1,19 @@
 package org.workcraft.plugins.serialisation.xml;
 
-import java.awt.Color;
-
 import org.w3c.dom.Element;
-import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.serialisation.xml.BasicXMLDeserialiser;
 
-public class ColorDeserialiser implements BasicXMLDeserialiser {
+import java.awt.*;
 
+public class ColorDeserialiser implements BasicXMLDeserialiser<Color> {
+
+    @Override
     public String getClassName() {
         return Color.class.getName();
     }
 
-    public Object deserialise(Element element) throws DeserialisationException {
+    @Override
+    public Color deserialise(Element element) {
         String s = element.getAttribute("rgb");
         if (s == null || s.charAt(0) != '#') {
             s = "#000000";

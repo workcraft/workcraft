@@ -4,19 +4,13 @@ import org.w3c.dom.Element;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.serialisation.ReferenceResolver;
 
-public interface CustomXMLDeserialiser extends XMLDeserialiser {
-    Object createInstance(Element element,
-            ReferenceResolver externalReferenceResolver,
-            Object... constructorParameters);
+public interface CustomXMLDeserialiser<T> extends XMLDeserialiser {
 
-    void initInstance(Element element, Object instance,
-            ReferenceResolver externalReferenceResolver,
-            NodeInitialiser nodeInitialiser)
-            throws DeserialisationException;
+    T createInstance(Element element, ReferenceResolver externalReferenceResolver, Object... constructorParameters);
 
-    void finaliseInstance(Element element, Object instance,
-            ReferenceResolver internalReferenceResolver,
-            ReferenceResolver externalReferenceResolver,
-            NodeFinaliser nodeFinaliser)
-            throws DeserialisationException;
+    void initInstance(Element element, T instance, ReferenceResolver externalReferenceResolver,
+            NodeInitialiser nodeInitialiser) throws DeserialisationException;
+
+    void finaliseInstance(Element element, T instance, ReferenceResolver internalReferenceResolver,
+            ReferenceResolver externalReferenceResolver, NodeFinaliser nodeFinaliser) throws DeserialisationException;
 }

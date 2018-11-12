@@ -6,21 +6,22 @@ import org.workcraft.formula.serialisation.BooleanFunctionDeserialiser;
 import org.workcraft.plugins.cpog.Vertex;
 import org.workcraft.serialisation.ReferenceResolver;
 
-public class VertexDeserialiser extends BooleanFunctionDeserialiser {
+public class VertexDeserialiser extends BooleanFunctionDeserialiser<Vertex> {
+
     @Override
     public String getClassName() {
         return Vertex.class.getName();
     }
 
     @Override
-    protected void setFormula(Object deserialisee, BooleanFormula formula) {
-        ((Vertex) deserialisee).setCondition(formula);
+    protected void setFormula(Vertex deserialisee, BooleanFormula formula) {
+        deserialisee.setCondition(formula);
     }
 
     @Override
-    public Object createInstance(Element element,
-            ReferenceResolver externalReferenceResolver,
+    public Vertex createInstance(Element element, ReferenceResolver externalReferenceResolver,
             Object... constructorParameters) {
+
         return new Vertex();
     }
 

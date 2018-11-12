@@ -1,14 +1,13 @@
 package org.workcraft.plugins.policy.serialisation;
 
 import org.w3c.dom.Element;
-import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.policy.Locality;
 import org.workcraft.plugins.policy.VisualLocality;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.serialisation.xml.CustomXMLSerialiser;
 import org.workcraft.serialisation.xml.NodeSerialiser;
 
-public class VisualLocalitySerialiser implements CustomXMLSerialiser {
+public class VisualLocalitySerialiser implements CustomXMLSerialiser<VisualLocality> {
 
     @Override
     public String getClassName() {
@@ -16,10 +15,10 @@ public class VisualLocalitySerialiser implements CustomXMLSerialiser {
     }
 
     @Override
-    public void serialise(Element element, Object object, ReferenceProducer internalReferences,
-            ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser) throws SerialisationException {
-        VisualLocality visualLocality = (VisualLocality) object;
-        Locality locality = visualLocality.getLocality();
+    public void serialise(Element element, VisualLocality object, ReferenceProducer internalReferences,
+            ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser) {
+
+        Locality locality = object.getLocality();
         String ref = externalReferences.getReference(locality);
         element.setAttribute("ref", ref);
     }

@@ -9,15 +9,18 @@ import org.workcraft.serialisation.xml.CustomXMLSerialiser;
 import org.workcraft.serialisation.xml.NodeSerialiser;
 import org.workcraft.util.XmlUtils;
 
-public class BezierSerialiser implements CustomXMLSerialiser {
+public class BezierSerialiser implements CustomXMLSerialiser<Bezier> {
 
     @Override
-    public void serialise(Element element, Object object,
-            ReferenceProducer internalReferences,
-            ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser)
-            throws SerialisationException {
-        Bezier b = (Bezier) object;
-        BezierControlPoint[] cp = b.getBezierControlPoints();
+    public String getClassName() {
+        return Bezier.class.getName();
+    }
+
+    @Override
+    public void serialise(Element element, Bezier object, ReferenceProducer internalReferences,
+            ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser) throws SerialisationException {
+
+        BezierControlPoint[] cp = object.getBezierControlPoints();
 
         Element cp1e = XmlUtils.createChildElement("cp1", element);
         Element cp2e = XmlUtils.createChildElement("cp2", element);
@@ -26,8 +29,4 @@ public class BezierSerialiser implements CustomXMLSerialiser {
         nodeSerialiser.serialise(cp2e, cp[1]);
     }
 
-    @Override
-    public String getClassName() {
-        return Bezier.class.getName();
-    }
 }

@@ -12,10 +12,9 @@ import org.workcraft.serialisation.xml.NodeFinaliser;
 import org.workcraft.serialisation.xml.NodeInitialiser;
 import org.workcraft.util.Func;
 
-public abstract class BooleanFunctionDeserialiser implements CustomXMLDeserialiser {
+public abstract class BooleanFunctionDeserialiser<T> implements CustomXMLDeserialiser<T> {
 
-    private static final class VariableResolver implements
-            Func<String, BooleanVariable> {
+    private static final class VariableResolver implements Func<String, BooleanVariable> {
         private final ReferenceResolver internalReferenceResolver;
 
         private VariableResolver(ReferenceResolver internalReferenceResolver) {
@@ -37,8 +36,9 @@ public abstract class BooleanFunctionDeserialiser implements CustomXMLDeserialis
     }
 
     @Override
-    public void finaliseInstance(Element element, Object instance, final ReferenceResolver internalReferenceResolver,
+    public void finaliseInstance(Element element, T instance, final ReferenceResolver internalReferenceResolver,
             ReferenceResolver externalReferenceResolver, NodeFinaliser nodeFinaliser) throws DeserialisationException {
+
         String string = element.getAttribute("formula");
         BooleanFormula formula = parseFormula(string, internalReferenceResolver);
         setFormula(instance, formula);
@@ -58,10 +58,10 @@ public abstract class BooleanFunctionDeserialiser implements CustomXMLDeserialis
     }
 
     @Override
-    public void initInstance(Element element, Object instance, ReferenceResolver externalReferenceResolver,
-            NodeInitialiser nodeInitialiser) throws DeserialisationException {
+    public void initInstance(Element element, T instance, ReferenceResolver externalReferenceResolver,
+            NodeInitialiser nodeInitialiser) {
     }
 
-    protected abstract void setFormula(Object deserialisee, BooleanFormula formula);
+    protected abstract void setFormula(T deserialisee, BooleanFormula formula);
 
 }

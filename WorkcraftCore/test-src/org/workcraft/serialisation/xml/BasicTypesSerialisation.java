@@ -1,26 +1,16 @@
 package org.workcraft.serialisation.xml;
 
-import java.awt.geom.AffineTransform;
-
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
-import org.workcraft.plugins.serialisation.xml.AffineTransformDeserialiser;
-import org.workcraft.plugins.serialisation.xml.AffineTransformSerialiser;
-import org.workcraft.plugins.serialisation.xml.DoubleDeserialiser;
-import org.workcraft.plugins.serialisation.xml.DoubleSerialiser;
-import org.workcraft.plugins.serialisation.xml.EnumDeserialiser;
-import org.workcraft.plugins.serialisation.xml.EnumSerialiser;
-import org.workcraft.plugins.serialisation.xml.IntDeserialiser;
-import org.workcraft.plugins.serialisation.xml.IntSerialiser;
-import org.workcraft.plugins.serialisation.xml.StringDeserialiser;
-import org.workcraft.plugins.serialisation.xml.StringSerialiser;
+import org.workcraft.plugins.serialisation.xml.*;
 import org.workcraft.util.XmlUtils;
+
+import javax.xml.parsers.ParserConfigurationException;
+import java.awt.geom.AffineTransform;
 
 public class BasicTypesSerialisation {
 
@@ -62,9 +52,9 @@ public class BasicTypesSerialisation {
             Element e2 = doc.createElement("property");
             s.serialise(e2, -500);
 
-            Assert.assertEquals(8, ds.deserialise(e));
-            Assert.assertEquals(-500, ds.deserialise(e2));
-        } catch (ParserConfigurationException | SerialisationException | DeserialisationException e) {
+            Assert.assertEquals(new Integer(8), ds.deserialise(e));
+            Assert.assertEquals(new Integer(-500), ds.deserialise(e2));
+        } catch (ParserConfigurationException | SerialisationException  e) {
             throw new RuntimeException(e);
         }
     }
@@ -86,10 +76,10 @@ public class BasicTypesSerialisation {
             Element e3 = doc.createElement("property");
             s.serialise(e3, r);
 
-            Assert.assertEquals(-1E8, ds.deserialise(e));
-            Assert.assertEquals(123.456, ds.deserialise(e2));
-            Assert.assertEquals(r, ds.deserialise(e3));
-        } catch (ParserConfigurationException | SerialisationException | DeserialisationException e) {
+            Assert.assertEquals(new Double(-1E8), ds.deserialise(e));
+            Assert.assertEquals(new Double(123.456), ds.deserialise(e2));
+            Assert.assertEquals(new Double(r), ds.deserialise(e3));
+        } catch (ParserConfigurationException | SerialisationException e) {
             throw new RuntimeException(e);
         }
     }
@@ -109,7 +99,7 @@ public class BasicTypesSerialisation {
             s.serialise(e, t);
 
             Assert.assertEquals(t, ds.deserialise(e));
-        } catch (ParserConfigurationException | SerialisationException | DeserialisationException e) {
+        } catch (ParserConfigurationException | SerialisationException e) {
             throw new RuntimeException(e);
         }
     }
@@ -142,7 +132,7 @@ public class BasicTypesSerialisation {
             Assert.assertEquals("череззаборногузадерищенко", ds.deserialise(e1));
             Assert.assertEquals("", ds.deserialise(e2));
             Assert.assertEquals("\" <xml", ds.deserialise(e3));
-        } catch (ParserConfigurationException | SerialisationException | DeserialisationException e) {
+        } catch (ParserConfigurationException | SerialisationException e) {
             throw new RuntimeException(e);
         }
     }

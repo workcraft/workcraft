@@ -6,20 +6,23 @@ import org.workcraft.formula.serialisation.BooleanFunctionDeserialiser;
 import org.workcraft.plugins.cpog.RhoClause;
 import org.workcraft.serialisation.ReferenceResolver;
 
-public class RhoClauseDeserialiser extends BooleanFunctionDeserialiser {
+public class RhoClauseDeserialiser extends BooleanFunctionDeserialiser<RhoClause> {
+
     @Override
     public String getClassName() {
         return RhoClause.class.getName();
     }
 
     @Override
-    public Object createInstance(Element element, ReferenceResolver externalReferenceResolver,
+    public RhoClause createInstance(Element element, ReferenceResolver externalReferenceResolver,
             Object... constructorParameters) {
+
         return new RhoClause();
     }
 
     @Override
-    protected void setFormula(Object deserialisee, BooleanFormula formula) {
-        ((RhoClause) deserialisee).setFormula(formula);
+    protected void setFormula(RhoClause deserialisee, BooleanFormula formula) {
+        deserialisee.setFormula(formula);
     }
+
 }
