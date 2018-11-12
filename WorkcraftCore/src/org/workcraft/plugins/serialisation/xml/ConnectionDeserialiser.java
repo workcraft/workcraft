@@ -8,17 +8,16 @@ import org.workcraft.serialisation.xml.CustomXMLDeserialiser;
 import org.workcraft.serialisation.xml.NodeFinaliser;
 import org.workcraft.serialisation.xml.NodeInitialiser;
 
-public class ConnectionDeserialiser implements CustomXMLDeserialiser {
+public class ConnectionDeserialiser implements CustomXMLDeserialiser<MathConnection> {
 
+    @Override
     public String getClassName() {
         return MathConnection.class.getName();
     }
 
     @Override
-    public void finaliseInstance(Element element, Object instance,
-            ReferenceResolver internalReferenceResolver,
-            ReferenceResolver externalReferenceResolver,
-            NodeFinaliser nodeFinaliser) {
+    public void finaliseInstance(Element element, MathConnection instance, ReferenceResolver internalReferenceResolver,
+            ReferenceResolver externalReferenceResolver, NodeFinaliser nodeFinaliser) {
 
         String firstRef = element.getAttribute("first");
         MathNode firstNode = (MathNode) internalReferenceResolver.getObject(firstRef);
@@ -26,20 +25,18 @@ public class ConnectionDeserialiser implements CustomXMLDeserialiser {
         String secondRef = element.getAttribute("second");
         MathNode secondNode = (MathNode) internalReferenceResolver.getObject(secondRef);
 
-        MathConnection connection = (MathConnection) instance;
-        connection.setDependencies(firstNode, secondNode);
+        instance.setDependencies(firstNode, secondNode);
     }
 
     @Override
-    public Object createInstance(Element element,
-            ReferenceResolver externalReferenceResolver,
+    public MathConnection createInstance(Element element, ReferenceResolver externalReferenceResolver,
             Object... constructorParameters) {
+
         return new MathConnection();
     }
 
     @Override
-    public void initInstance(Element element, Object instance,
-            ReferenceResolver externalReferenceResolver,
+    public void initInstance(Element element, MathConnection instance, ReferenceResolver externalReferenceResolver,
             NodeInitialiser nodeInitialiser) {
     }
 

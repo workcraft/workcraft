@@ -8,25 +8,24 @@ import org.workcraft.serialisation.xml.CustomXMLSerialiser;
 import org.workcraft.serialisation.xml.NodeSerialiser;
 import org.workcraft.util.XmlUtils;
 
-public class VisualConnectionSerialiser implements CustomXMLSerialiser {
+public class VisualConnectionSerialiser implements CustomXMLSerialiser<VisualConnection> {
 
-    public void serialise(Element element, Object object,
-            ReferenceProducer internalReferences,
-            ReferenceProducer externalReferences,
-            NodeSerialiser nodeSerialiser) throws SerialisationException {
-
-        VisualConnection vcon = (VisualConnection) object;
-
-        element.setAttribute("first", internalReferences.getReference(vcon.getFirst()));
-        element.setAttribute("second", internalReferences.getReference(vcon.getSecond()));
-        element.setAttribute("ref", externalReferences.getReference(vcon.getReferencedConnection()));
-
-        Element graphicElement = XmlUtils.createChildElement("graphic", element);
-
-        nodeSerialiser.serialise(graphicElement, vcon.getGraphic());
-    }
-
+    @Override
     public String getClassName() {
         return VisualConnection.class.getName();
     }
+
+    @Override
+    public void serialise(Element element, VisualConnection object, ReferenceProducer internalReferences,
+            ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser) throws SerialisationException {
+
+        element.setAttribute("first", internalReferences.getReference(object.getFirst()));
+        element.setAttribute("second", internalReferences.getReference(object.getSecond()));
+        element.setAttribute("ref", externalReferences.getReference(object.getReferencedConnection()));
+
+        Element graphicElement = XmlUtils.createChildElement("graphic", element);
+
+        nodeSerialiser.serialise(graphicElement, object.getGraphic());
+    }
+
 }

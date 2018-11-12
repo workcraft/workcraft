@@ -1,22 +1,25 @@
 package org.workcraft.plugins.policy.serialisation;
 
 import org.w3c.dom.Element;
-import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.policy.Bundle;
 import org.workcraft.plugins.policy.BundledTransition;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.serialisation.xml.CustomXMLSerialiser;
 import org.workcraft.serialisation.xml.NodeSerialiser;
 
-public class BundleSerialiser implements CustomXMLSerialiser {
-    public void serialise(Element element, Object object,
-            ReferenceProducer internalReferences,
-            ReferenceProducer externalReferences,
-            NodeSerialiser nodeSerialiser) throws SerialisationException {
+public class BundleSerialiser implements CustomXMLSerialiser<Bundle> {
 
-        Bundle b = (Bundle) object;
+    @Override
+    public String getClassName() {
+        return Bundle.class.getName();
+    }
+
+    @Override
+    public void serialise(Element element, Bundle object, ReferenceProducer internalReferences,
+            ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser) {
+
         String s = "";
-        for (BundledTransition t: b.getTransitions()) {
+        for (BundledTransition t: object.getTransitions()) {
             if (s != "") {
                 s += ", ";
             }
@@ -25,7 +28,4 @@ public class BundleSerialiser implements CustomXMLSerialiser {
         element.setAttribute("transitions", s);
     }
 
-    public String getClassName() {
-        return Bundle.class.getName();
-    }
 }

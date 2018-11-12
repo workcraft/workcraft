@@ -11,34 +11,33 @@ import org.workcraft.serialisation.xml.NodeFinaliser;
 import org.workcraft.serialisation.xml.NodeInitialiser;
 import org.workcraft.util.XmlUtils;
 
-public class BezierDeserialiser implements CustomXMLDeserialiser {
+public class BezierDeserialiser implements CustomXMLDeserialiser<Bezier> {
+
     @Override
     public String getClassName() {
         return Bezier.class.getName();
     }
 
     @Override
-    public void finaliseInstance(Element element, Object instance,
+    public void finaliseInstance(Element element, Bezier instance,
             ReferenceResolver internalReferenceResolver,
             ReferenceResolver externalReferenceResolver,
             NodeFinaliser nodeFinaliser) throws DeserialisationException {
-        Bezier bezier = (Bezier) instance;
-        for (BezierControlPoint cp : bezier.getBezierControlPoints()) {
+        for (BezierControlPoint cp : instance.getBezierControlPoints()) {
             nodeFinaliser.finaliseInstance(cp);
         }
-        bezier.finaliseControlPoints();
+        instance.finaliseControlPoints();
     }
 
     @Override
-    public Object createInstance(Element element,
-            ReferenceResolver externalReferenceResolver,
+    public Bezier createInstance(Element element, ReferenceResolver externalReferenceResolver,
             Object... constructorParameters) {
+
         return new Bezier((VisualConnection) constructorParameters[0]);
     }
 
     @Override
-    public void initInstance(Element element, Object instance,
-            ReferenceResolver externalReferenceResolver,
+    public void initInstance(Element element, Bezier instance, ReferenceResolver externalReferenceResolver,
             NodeInitialiser nodeInitialiser) throws DeserialisationException {
 
         Element cp1e = XmlUtils.getChildElement("cp1", element);
@@ -47,6 +46,7 @@ public class BezierDeserialiser implements CustomXMLDeserialiser {
         BezierControlPoint cp1 = (BezierControlPoint) nodeInitialiser.initInstance(cp1e);
         BezierControlPoint cp2 = (BezierControlPoint) nodeInitialiser.initInstance(cp2e);
 
-        ((Bezier) instance).initControlPoints(cp1, cp2);
+        instance.initControlPoints(cp1, cp2);
     }
+
 }

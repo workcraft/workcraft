@@ -1,18 +1,19 @@
 package org.workcraft.plugins.serialisation.xml;
 
-import java.awt.geom.AffineTransform;
-
 import org.w3c.dom.Element;
-import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.serialisation.xml.BasicXMLDeserialiser;
 
-public class AffineTransformDeserialiser implements BasicXMLDeserialiser {
+import java.awt.geom.AffineTransform;
 
+public class AffineTransformDeserialiser implements BasicXMLDeserialiser<AffineTransform> {
+
+    @Override
     public String getClassName() {
         return AffineTransform.class.getName();
     }
 
-    public Object deserialise(Element element) throws DeserialisationException {
+    @Override
+    public AffineTransform deserialise(Element element) {
         AffineTransform t = new AffineTransform();
 
         double[] matrix = new double[6];
@@ -25,4 +26,5 @@ public class AffineTransformDeserialiser implements BasicXMLDeserialiser {
         t.setTransform(matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
         return t;
     }
+
 }

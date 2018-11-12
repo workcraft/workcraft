@@ -11,7 +11,7 @@ import org.workcraft.serialisation.xml.CustomXMLDeserialiser;
 import org.workcraft.serialisation.xml.NodeFinaliser;
 import org.workcraft.serialisation.xml.NodeInitialiser;
 
-public class FunctionDeserialiser implements CustomXMLDeserialiser {
+public class FunctionDeserialiser implements CustomXMLDeserialiser<FunctionContact> {
 
     @Override
     public String getClassName() {
@@ -19,34 +19,30 @@ public class FunctionDeserialiser implements CustomXMLDeserialiser {
     }
 
     @Override
-    public Object createInstance(Element element, ReferenceResolver externalReferenceResolver,
+    public FunctionContact createInstance(Element element, ReferenceResolver externalReferenceResolver,
             Object... constructorParameters) {
+
         return new FunctionContact();
     }
 
     @Override
-    public void finaliseInstance(Element element, Object instance,
-            ReferenceResolver internalReferenceResolver,
-            ReferenceResolver externalReferenceResolver,
-            NodeFinaliser nodeFinaliser) throws DeserialisationException {
-
-        FunctionContact function = (FunctionContact) instance;
+    public void finaliseInstance(Element element, FunctionContact instance, ReferenceResolver internalReferenceResolver,
+            ReferenceResolver externalReferenceResolver, NodeFinaliser nodeFinaliser) throws DeserialisationException {
 
         String setString = element.getAttribute(FunctionSerialiser.SET_FUNCTION_ATTRIBUTE_NAME);
         String processedSetString = NamespaceHelper.convertLegacyFlatnameSeparators(setString);
         BooleanFormula setFormula = BooleanFunctionDeserialiser.parseFormula(processedSetString, internalReferenceResolver);
-        function.setSetFunction(setFormula);
+        instance.setSetFunction(setFormula);
 
         String resetString = element.getAttribute(FunctionSerialiser.RESET_FUNCTION_ATTRIBUTE_NAME);
         String processedResetString = NamespaceHelper.convertLegacyFlatnameSeparators(resetString);
         BooleanFormula resetFormula = BooleanFunctionDeserialiser.parseFormula(processedResetString, internalReferenceResolver);
-        function.setResetFunction(resetFormula);
+        instance.setResetFunction(resetFormula);
     }
 
     @Override
-    public void initInstance(Element element, Object instance,
-            ReferenceResolver externalReferenceResolver,
-            NodeInitialiser nodeInitialiser) throws DeserialisationException {
+    public void initInstance(Element element, FunctionContact instance, ReferenceResolver externalReferenceResolver,
+            NodeInitialiser nodeInitialiser) {
     }
 
 }

@@ -12,17 +12,20 @@ import org.workcraft.serialisation.xml.CustomXMLSerialiser;
 import org.workcraft.serialisation.xml.NodeSerialiser;
 import org.workcraft.dom.references.Identifier;
 
-public abstract class BooleanFormulaSerialiser implements CustomXMLSerialiser {
+public abstract class BooleanFormulaSerialiser<T> implements CustomXMLSerialiser<T> {
+
     @Override
-    public void serialise(Element element, Object object, final ReferenceProducer internalReferences,
+    public void serialise(Element element, T object, ReferenceProducer internalReferences,
             ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser) throws SerialisationException {
+
         BooleanFormula formula = getFormula(object);
         String attributeName = "formula";
 
         writeFormulaAttribute(element, internalReferences, formula, attributeName);
     }
 
-    public static void writeFormulaAttribute(Element element, final ReferenceProducer internalReferences, BooleanFormula formula, String attributeName) {
+    public static void writeFormulaAttribute(Element element, final ReferenceProducer internalReferences,
+            BooleanFormula formula, String attributeName) {
 
         if (formula == null) {
             element.setAttribute(attributeName, "");
@@ -54,5 +57,6 @@ public abstract class BooleanFormulaSerialiser implements CustomXMLSerialiser {
         element.setAttribute(attributeName, string);
     }
 
-    protected abstract BooleanFormula getFormula(Object serialisee);
+    protected abstract BooleanFormula getFormula(T serialisee);
+
 }
