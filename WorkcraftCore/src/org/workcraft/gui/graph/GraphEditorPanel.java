@@ -12,10 +12,7 @@ import org.workcraft.gui.*;
 import org.workcraft.gui.actions.ActionButton;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
-import org.workcraft.gui.properties.ModelProperties;
-import org.workcraft.gui.properties.Properties;
-import org.workcraft.gui.properties.PropertyDerivative;
-import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.*;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.shared.CommonEditorSettings;
@@ -24,13 +21,15 @@ import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
-import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class GraphEditorPanel extends JPanel implements StateObserver, GraphEditor {
 
@@ -375,28 +374,6 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         };
     }
 
-    private ModelProperties getModelProperties() {
-        return getModel().getProperties(null);
-    }
-
-    private ModelProperties getNodeProperties(VisualNode node) {
-        ModelProperties result = new ModelProperties();
-        Properties properties = getModel().getProperties(node);
-        result.addAll(properties.getDescriptors());
-        result.addAll(node.getDescriptors());
-        return result;
-    }
-
-    private ModelProperties getSelectionProperties(Collection<? extends VisualNode> nodes) {
-        ModelProperties allProperties = new ModelProperties();
-        for (VisualNode node: nodes) {
-            Properties properties = getNodeProperties(node);
-            allProperties.addAll(properties.getDescriptors());
-        }
-        // Combine duplicates by creating a new ModelProperties
-        return new ModelProperties(allProperties.getDescriptors());
-    }
-
     public void updateToolsView() {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
@@ -423,25 +400,17 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         final VisualNode templateNode = we.getTemplateNode();
         String title = MainWindow.TITLE_PROPERTY_EDITOR;
         if (templateNode != null) {
-            properties = getNodeProperties(templateNode);
-            for (final PropertyDescriptor pd: new LinkedList<>(properties.getDescriptors())) {
-                if (!pd.isTemplatable()) {
-                    properties.remove(pd);
-                }
-            }
+            properties = ModelPropertyUtils.getTemplateProperties(getModel(), templateNode);
             title += " [" + TITLE_SUFFIX_TEMPLATE + "]";
         } else {
             final VisualModel model = getModel();
+            properties = ModelPropertyUtils.getSelectionProperties(model);
             final Collection<? extends VisualNode> selection = model.getSelection();
             if (selection.size() == 0) {
-                properties = getModelProperties();
                 title += " [" + TITLE_SUFFIX_MODEL + "]";
             } else if (selection.size() == 1) {
-                final VisualNode node = selection.iterator().next();
-                properties = getNodeProperties(node);
                 title += " [" + TITLE_SUFFIX_SINGLE_ELEMENT + "]";
             } else {
-                properties = getSelectionProperties(selection);
                 final int nodeCount = selection.size();
                 title += " [" + nodeCount + " " + TITLE_SUFFIX_SELECTED_ELEMENTS + "]";
             }

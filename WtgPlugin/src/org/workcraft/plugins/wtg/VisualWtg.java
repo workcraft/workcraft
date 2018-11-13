@@ -2,6 +2,7 @@ package org.workcraft.plugins.wtg;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
+import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
@@ -64,19 +65,20 @@ public class VisualWtg extends VisualDtd {
     public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
-            Container container = getCurrentLevel();
-            VisualWaveform waveform = null;
-            if (container instanceof VisualWaveform) {
-                waveform = (VisualWaveform) container;
-            }
             LinkedList<String> signalNames = new LinkedList<>(getMathModel().getSignalNames());
             signalNames.sort(Comparator.comparing(String::toString));
-            for (String signalName : signalNames) {
-                if (waveform != null) {
+            Container container = getCurrentLevel();
+            if (container instanceof VisualWaveform) {
+                VisualWaveform waveform = (VisualWaveform) container;
+                for (String signalName : signalNames) {
                     properties.insertOrderedByFirstWord(new SignalDeclarationPropertyDescriptor(this, waveform, signalName));
                 }
-                properties.insertOrderedByFirstWord(getSignalNameProperty(signalName));
-                properties.insertOrderedByFirstWord(getSignalTypeProperty(signalName));
+                properties.removeByName(AbstractVisualModel.PROPERTY_TITLE);
+            } else {
+                for (String signalName : signalNames) {
+                    properties.insertOrderedByFirstWord(getSignalNameProperty(signalName));
+                    properties.insertOrderedByFirstWord(getSignalTypeProperty(signalName));
+                }
             }
         }
         return properties;
