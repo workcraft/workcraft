@@ -25,25 +25,24 @@ public class WtgConversionCommandTests {
     }
 
     @Test
-    public void testDlatchWtgConversionCommands() throws DeserialisationException {
+    public void testDlatchConversionCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "dlatch.wtg.work");
-        testWtgConversionCommands(workName);
+        testConversionCommands(workName);
     }
 
     @Test
-    public void testBuckWtgConversionCommands() throws DeserialisationException {
+    public void testBuckConversionCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buck.wtg.work");
-        testWtgConversionCommands(workName);
+        testConversionCommands(workName);
     }
 
     @Test
-    public void testGuardsWtgConversionCommands() throws DeserialisationException {
-        String workName = PackageUtils.getPackagePath(getClass(), "guards.wtg.work");
-        testWtgConversionCommands(workName);
+    public void testGuardsConversionCommands() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "instruction_decoder.wtg.work");
+        testConversionCommands(workName);
     }
 
-    private void testWtgConversionCommands(String workName) throws DeserialisationException {
-
+    private void testConversionCommands(String workName) throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         URL url = classLoader.getResource(workName);

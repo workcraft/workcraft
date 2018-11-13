@@ -40,6 +40,7 @@ public class Stg extends AbstractMathModel implements StgModel {
     public StgReferenceManager getReferenceManager() {
         return (StgReferenceManager) super.getReferenceManager();
     }
+
     public final StgPlace createPlace() {
         return createPlace(null, null);
     }

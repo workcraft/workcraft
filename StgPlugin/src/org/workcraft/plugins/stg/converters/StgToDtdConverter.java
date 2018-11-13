@@ -64,7 +64,7 @@ public class StgToDtdConverter {
             String ref = signalData.getFirst();
             Color color = signalData.getSecond();
             String flatName = NamespaceHelper.flattenReference(ref);
-            VisualSignal signal = dtd.createVisualSignal(flatName);
+            VisualSignal signal = createSignal(flatName);
             signal.setPosition(new Point2D.Double(0.0, SIGNAL_OFFSET * result.size()));
             Signal.Type type = convertSignalType(stg.getSignalType(ref));
             signal.setType(type);
@@ -72,6 +72,16 @@ public class StgToDtdConverter {
             result.put(ref, signal);
         }
         return result;
+    }
+
+    private VisualSignal createSignal(String name) {
+        Signal mathSignal = new Signal();
+        dtd.getMathModel().add(mathSignal);
+        dtd.getMathModel().setName(mathSignal, name);
+        VisualSignal visualSignal = new VisualSignal(mathSignal);
+        dtd.add(visualSignal);
+        dtd.createSignalEntryAndExit(visualSignal);
+        return visualSignal;
     }
 
     private HashMap<SignalEvent, SignalTransition> ctreateEvents(Trace trace) {

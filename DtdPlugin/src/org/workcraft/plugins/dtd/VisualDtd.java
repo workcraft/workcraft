@@ -310,16 +310,6 @@ public class VisualDtd extends AbstractVisualModel {
         return Hierarchy.getDescendantsOfType(container, VisualExitEvent.class);
     }
 
-    public VisualSignal createVisualSignal(String name) {
-        Signal mathSignal = new Signal();
-        getMathModel().add(mathSignal);
-        getMathModel().setName(mathSignal, name);
-        VisualSignal visualSignal = new VisualSignal(mathSignal);
-        add(visualSignal);
-        createSignalEntryAndExit(visualSignal);
-        return visualSignal;
-    }
-
     public void createSignalEntryAndExit(VisualSignal signal) {
         Signal mathSignal = signal.getReferencedSignal();
         Color color = signal.getForegroundColor();

@@ -7,12 +7,13 @@ import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class WtgSynthesisGuidelinesVerification extends AbstractVerificationCommand {
+public class WtgSynthesisGuidelinesVerificationCommand extends AbstractVerificationCommand {
+
     private static final String TITLE = "Verification result";
 
     @Override
     public String getDisplayName() {
-        return "Synthesis Guidelines";
+        return "Synthesis guidelines";
     }
 
     @Override
@@ -29,4 +30,5 @@ public class WtgSynthesisGuidelinesVerification extends AbstractVerificationComm
         }
         return result;
     }
+
 }

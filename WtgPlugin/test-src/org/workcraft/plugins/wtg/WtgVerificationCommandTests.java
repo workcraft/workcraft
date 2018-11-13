@@ -8,6 +8,7 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.wtg.commands.WtgInputPropernessVerificationCommand;
 import org.workcraft.plugins.wtg.commands.WtgReachabilityVerificationCommand;
 import org.workcraft.plugins.wtg.commands.WtgSoundnessVerificationCommand;
+import org.workcraft.plugins.wtg.commands.WtgSynthesisGuidelinesVerificationCommand;
 import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -22,25 +23,25 @@ public class WtgVerificationCommandTests {
     }
 
     @Test
-    public void testDlatchWtgVerificationCommands() throws DeserialisationException {
+    public void testDlatchVerificationCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "dlatch.wtg.work");
-        testWtgVerificationCommands(workName, true, true, true);
+        testVerificationCommands(workName, true, true, true, false);
     }
 
     @Test
-    public void testBuckWtgVerificationCommands() throws DeserialisationException {
+    public void testBuckVerificationCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buck.wtg.work");
-        testWtgVerificationCommands(workName, true, true, true);
+        testVerificationCommands(workName, true, true, true, true);
     }
 
     @Test
-    public void testGuardsWtgVerificationCommands() throws DeserialisationException {
-        String workName = PackageUtils.getPackagePath(getClass(), "guards.wtg.work");
-        testWtgVerificationCommands(workName, true, true, true);
+    public void testGuardsVerificationCommands() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "instruction_decoder.wtg.work");
+        testVerificationCommands(workName, true, true, true, true);
     }
 
-    private void testWtgVerificationCommands(String workName, Boolean inputProperness,
-            Boolean reachability, Boolean soundness) throws DeserialisationException {
+    private void testVerificationCommands(String workName, Boolean inputProperness,
+            Boolean reachability, Boolean soundness, Boolean guidelines) throws DeserialisationException {
 
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
@@ -56,6 +57,9 @@ public class WtgVerificationCommandTests {
 
         WtgSoundnessVerificationCommand soundnessCommand = new WtgSoundnessVerificationCommand();
         Assert.assertEquals(soundness, soundnessCommand.execute(we));
+
+        WtgSynthesisGuidelinesVerificationCommand guidelinesCommand = new WtgSynthesisGuidelinesVerificationCommand();
+        Assert.assertEquals(guidelines, guidelinesCommand.execute(we));
 
         framework.closeWork(we);
     }
