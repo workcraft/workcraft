@@ -20,6 +20,7 @@ import org.workcraft.util.Hierarchy;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.awt.geom.Point2D;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +33,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class WorkspaceEntry implements ObservableState {
+
     private ModelEntry modelEntry = null;
     private boolean changed = true;
     private final Workspace workspace;
@@ -47,6 +49,8 @@ public class WorkspaceEntry implements ObservableState {
     private VisualNode templateNode = null;
     private VisualNode defaultNode = null;
 
+    private Point2D pasteOffset = new Point2D.Double(1.0, 1.0);
+
     public WorkspaceEntry(Workspace workspace) {
         this.workspace = workspace;
     }
@@ -54,7 +58,7 @@ public class WorkspaceEntry implements ObservableState {
     public void setChanged(boolean changed) {
         if (this.changed != changed) {
             this.changed = changed;
-            if (changed == false) {
+            if (!changed) {
                 savedMemento = null;
             }
             if (workspace != null) {
@@ -345,7 +349,7 @@ public class WorkspaceEntry implements ObservableState {
             Collection<VisualNode> selectedNodes = new HashSet<>(model.getSelection());
             model.setCurrentLevel(model.getRoot());
             // Starting from the root, delete irrelevant containers and ungroup the containers of the selected nodes.
-            for (Node container: Hierarchy.getPath(currentLevel)) {
+            for (Node container : Hierarchy.getPath(currentLevel)) {
                 if ((container != model.getRoot()) && (container instanceof VisualNode)) {
                     model.select((VisualNode) container);
                     model.selectInverse();
@@ -386,7 +390,7 @@ public class WorkspaceEntry implements ObservableState {
                 setChanged(true);
 
                 VisualModel model = result.getVisualModel();
-                VisualModelTransformer.translateSelection(model, 1.0, 1.0);
+                VisualModelTransformer.translateSelection(model, pasteOffset.getX(), pasteOffset.getY());
             } catch (DeserialisationException e) {
                 DialogUtils.showError(e.getMessage());
             }
@@ -420,6 +424,10 @@ public class WorkspaceEntry implements ObservableState {
 
     public VisualNode getDefaultNode() {
         return defaultNode;
+    }
+
+    public void setPasteOffset(Point2D pasteOffset) {
+        this.pasteOffset = pasteOffset;
     }
 
 }

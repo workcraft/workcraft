@@ -80,8 +80,9 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
             }
         }
         // Select default tool
-        selectedTool = defaultTool;
-        setToolButtonSelection(selectedTool, true);
+        //selectedTool = defaultTool;
+        //setToolButtonSelection(selectedTool, true);
+        selectTool(defaultTool);
     }
 
     private void addTool(final GraphEditorTool tool, boolean isDefault) {
@@ -188,8 +189,10 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
             selectedTool.activated(editor);
         }
         // Update the content of Property editor (first) and Tool controls (second).
-        editor.updatePropertyView();
-        editor.updateToolsView();
+        if (editor != null) {
+            editor.updatePropertyView();
+            editor.updateToolsView();
+        }
         // Update visibility of Property editor and Tool controls.
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();

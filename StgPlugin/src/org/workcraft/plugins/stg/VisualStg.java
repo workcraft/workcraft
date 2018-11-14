@@ -119,7 +119,7 @@ public class VisualStg extends AbstractVisualModel {
                 connection = connect(place, second);
             }
         } else if ((first instanceof VisualStgPlace) || (first instanceof VisualReplicaPlace)) {
-            connection = createSimpleConnection((VisualNode) first, (VisualNode) second, mConnection);
+            connection = createSimpleConnection(first, second, mConnection);
         }
         return connection;
     }
@@ -181,11 +181,11 @@ public class VisualStg extends AbstractVisualModel {
         VisualNode place = null;
         VisualNode transition = null;
         if (first instanceof VisualTransition) {
-            place = (VisualNode) second;
-            transition = (VisualNode) first;
+            place = second;
+            transition = first;
         } else if (second instanceof VisualTransition) {
-            place = (VisualNode) first;
-            transition = (VisualNode) second;
+            place = first;
+            transition = second;
         }
         VisualConnection connection = null;
         if ((place != null) && (transition != null)) {

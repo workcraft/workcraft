@@ -72,7 +72,7 @@ public class SyncSelectionTool extends SelectionTool {
         VisualModel model = editor.getModel();
         Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(model.getRoot(), VisualConnection.class);
         Collection<VisualConnection> includedConnections = SelectionHelper.getIncludedConnections(model.getSelection(), connections);
-        connectionToScaleModeMap = new HashMap<VisualConnection, ScaleMode>();
+        connectionToScaleModeMap = new HashMap<>();
         for (VisualConnection vc: includedConnections) {
             connectionToScaleModeMap.put(vc, vc.getScaleMode());
             vc.setScaleMode(ScaleMode.NONE);

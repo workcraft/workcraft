@@ -12,6 +12,7 @@ import org.workcraft.plugins.dtd.utils.DtdUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
 
 public class DtdSelectionTool extends SelectionTool {
 
@@ -22,15 +23,18 @@ public class DtdSelectionTool extends SelectionTool {
     }
 
     @Override
+    public void activated(final GraphEditor editor) {
+        super.activated(editor);
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        we.setPasteOffset(new Point2D.Double(0.0, 2.0));
+    }
+
+    @Override
     public void setPermissions(final GraphEditor editor) {
         WorkspaceEntry we = editor.getWorkspaceEntry();
         we.setCanModify(true);
         we.setCanSelect(true);
-        we.setCanCopy(false);
-    }
-
-    public DtdSelectionTool(boolean enableGroupping, boolean enablePaging, boolean enableFlipping, boolean enableRotating) {
-        super(enableGroupping, enablePaging, enableFlipping, enableRotating);
+        we.setCanCopy(true);
     }
 
     @Override
