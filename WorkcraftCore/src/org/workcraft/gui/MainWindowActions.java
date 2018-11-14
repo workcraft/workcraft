@@ -1,22 +1,22 @@
 package org.workcraft.gui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import javax.swing.KeyStroke;
-
 import org.workcraft.Framework;
 import org.workcraft.Info;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.actions.Action;
+import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.GUI;
 import org.workcraft.util.LogUtils;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class MainWindowActions {
 
@@ -258,6 +258,10 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
+            GraphEditorPanel editor = Framework.getInstance().getMainWindow().getCurrentEditor();
+            if (!editor.hasFocus()) {
+                editor.getWorkspaceEntry().setPastePosition(null);
+            }
             Framework.getInstance().getMainWindow().paste();
         }
     };

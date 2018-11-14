@@ -56,4 +56,5 @@ public interface Model<N extends Node, C extends Connection>  extends NodeContex
 
     default void afterDeserialisation() {
     }
+
 }

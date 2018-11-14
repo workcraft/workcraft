@@ -411,4 +411,18 @@ public class VisualDtd extends AbstractVisualModel {
         super.deleteSelection();
     }
 
+    @Override
+    public void afterPaste() {
+        super.afterPaste();
+        Collection<VisualNode> selection = new ArrayList<>(getSelection());
+        for (VisualNode node : selection) {
+            if (node instanceof VisualConnection) {
+                VisualConnection connection = (VisualConnection) node;
+                if (DtdUtils.isEventConnection(connection.getReferencedConnection())) {
+                    DtdUtils.decorateVisualEventConnection(connection);
+                }
+            }
+        }
+    }
+
 }

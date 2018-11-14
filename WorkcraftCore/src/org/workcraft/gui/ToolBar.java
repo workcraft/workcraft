@@ -1,12 +1,12 @@
 package org.workcraft.gui;
 
-import javax.swing.JToolBar;
-
 import org.workcraft.gui.actions.ActionButton;
 import org.workcraft.gui.actions.ActionToggle;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.GUI;
+
+import javax.swing.*;
 
 @SuppressWarnings("serial")
 public class ToolBar extends JToolBar {

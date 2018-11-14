@@ -126,13 +126,13 @@ public class HitMan {
         return false;
     }
 
-    public static Node hitDeepest(Point2D point, VisualModel model) {
+    public static VisualNode hitDeepest(Point2D point, VisualModel model) {
         Container root = model.getRoot();
         Point2D pointInLocalSpace = transformToChildSpace(point, root);
         return hitDeepest(pointInLocalSpace, root);
     }
 
-    public static Node hitDeepest(Point2D point, Container container) {
+    public static VisualNode hitDeepest(Point2D point, Container container) {
         VisualTransformableNode vertex = HitMan.hitDeepest(point, container, VisualTransformableNode.class);
         if (vertex instanceof ControlPoint) {
             return vertex;

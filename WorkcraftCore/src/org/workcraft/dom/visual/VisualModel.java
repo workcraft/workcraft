@@ -72,4 +72,8 @@ public interface VisualModel extends Model<VisualNode, VisualConnection>, Observ
     List<GraphEditorTool> getGraphEditorTools();
 
     ModelProperties getProperties(VisualNode node);
+
+    default void afterPaste() {
+    }
+
 }

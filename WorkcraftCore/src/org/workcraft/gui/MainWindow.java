@@ -412,11 +412,7 @@ public class MainWindow extends JFrame {
 
         if (editorWindows.isEmpty()) {
             DockingManager.registerDockable(documentPlaceholder);
-            try {
-                DockingManager.dock(documentPlaceholder, dockableWindow, DockingConstants.CENTER_REGION);
-            } catch (ClassCastException e) {
-                // FIXME: Flexdock may throw ClassCast exception when docking a window in a closing application.
-            }
+            DockingManager.dock(documentPlaceholder, dockableWindow, DockingConstants.CENTER_REGION);
             utilityWindows.add(documentPlaceholder);
             setWorkActionsEnableness(false);
             modelToolbar.removeAll();
@@ -538,7 +534,11 @@ public class MainWindow extends JFrame {
     }
 
     public void shutdown() throws OperationCancelledException {
-        closeEditorWindows();
+        try {
+            closeEditorWindows();
+        } catch (ClassCastException e) {
+            // FIXME: Flexdock may throw ClassCast exception when closing Workcraft.
+        }
 
         final Framework framework = Framework.getInstance();
         if (framework.getWorkspace().isChanged() && !framework.getWorkspace().isTemporary()) {
@@ -1154,6 +1154,7 @@ public class MainWindow extends JFrame {
         if (editorInFocus != null) {
             editorInFocus.getWorkspaceEntry().undo();
             editorInFocus.forceRedraw();
+            editorInFocus.requestFocus();
         }
     }
 
@@ -1161,6 +1162,7 @@ public class MainWindow extends JFrame {
         if (editorInFocus != null) {
             editorInFocus.getWorkspaceEntry().redo();
             editorInFocus.forceRedraw();
+            editorInFocus.requestFocus();
         }
     }
 
@@ -1168,6 +1170,7 @@ public class MainWindow extends JFrame {
         if (editorInFocus != null) {
             editorInFocus.getWorkspaceEntry().cut();
             editorInFocus.forceRedraw();
+            editorInFocus.requestFocus();
         }
     }
 
@@ -1175,6 +1178,7 @@ public class MainWindow extends JFrame {
         if (editorInFocus != null) {
             editorInFocus.getWorkspaceEntry().copy();
             editorInFocus.forceRedraw();
+            editorInFocus.requestFocus();
         }
     }
 
@@ -1182,6 +1186,7 @@ public class MainWindow extends JFrame {
         if (editorInFocus != null) {
             editorInFocus.getWorkspaceEntry().paste();
             editorInFocus.forceRedraw();
+            editorInFocus.requestFocus();
         }
     }
 
@@ -1189,6 +1194,7 @@ public class MainWindow extends JFrame {
         if (editorInFocus != null) {
             editorInFocus.getWorkspaceEntry().delete();
             editorInFocus.forceRedraw();
+            editorInFocus.requestFocus();
         }
     }
 
@@ -1196,6 +1202,7 @@ public class MainWindow extends JFrame {
         if (editorInFocus != null) {
             VisualModel visualModel = editorInFocus.getWorkspaceEntry().getModelEntry().getVisualModel();
             visualModel.selectAll();
+            editorInFocus.requestFocus();
         }
     }
 
@@ -1203,6 +1210,7 @@ public class MainWindow extends JFrame {
         if (editorInFocus != null) {
             VisualModel visualModel = editorInFocus.getWorkspaceEntry().getModelEntry().getVisualModel();
             visualModel.selectNone();
+            editorInFocus.requestFocus();
         }
     }
 
@@ -1210,6 +1218,7 @@ public class MainWindow extends JFrame {
         if (editorInFocus != null) {
             VisualModel visualModel = editorInFocus.getWorkspaceEntry().getModelEntry().getVisualModel();
             visualModel.selectInverse();
+            editorInFocus.requestFocus();
         }
     }
 

@@ -1,42 +1,11 @@
 package org.workcraft.gui.graph.tools;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JPopupMenu;
-import javax.swing.JToolBar;
-
 import org.workcraft.Framework;
 import org.workcraft.NodeTransformer;
 import org.workcraft.commands.Command;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.BoundingBoxHelper;
-import org.workcraft.dom.visual.Flippable;
-import org.workcraft.dom.visual.HitMan;
-import org.workcraft.dom.visual.Rotatable;
-import org.workcraft.dom.visual.TransformHelper;
-import org.workcraft.dom.visual.VisualComment;
-import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualModelTransformer;
-import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.MainWindow;
@@ -53,6 +22,16 @@ import org.workcraft.util.GUI;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.*;
+import java.util.List;
 
 public class SelectionTool extends AbstractGraphEditorTool {
 
@@ -71,6 +50,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
     private SelectionMode selectionMode = SelectionMode.NONE;
     private Rectangle2D selectionBox = null;
 
+    private Point2D currentMousePosition = null;
     private VisualNode currentNode = null;
     private Collection<VisualNode> currentNodes = null;
 
@@ -215,6 +195,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
     @Override
     public void activated(final GraphEditor editor) {
         super.activated(editor);
+        currentMousePosition = null;
         currentNode = null;
         currentNodes = null;
     }
@@ -223,6 +204,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
     public void deactivated(GraphEditor editor) {
         super.deactivated(editor);
         editor.getModel().selectNone();
+        currentMousePosition = null;
         currentNode = null;
         currentNodes = null;
     }
@@ -384,6 +366,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
                 editor.repaint();
             }
         }
+        currentMousePosition = e.getPosition();
     }
 
     @Override
@@ -555,9 +538,19 @@ public class SelectionTool extends AbstractGraphEditorTool {
             }
         }
 
+        if (e.isMenuKeyDown() && !e.isAltKeyDown()) {
+            switch (e.getKeyCode()) {
+            case KeyEvent.VK_V:
+                Point2D pastePosition = TransformHelper.snapP5(currentMousePosition);
+                editor.getWorkspaceEntry().setPastePosition(pastePosition);
+                return true;
+            }
+        }
+
         if (e.isExtendKeyDown()) {
             currentNodes = getNodeWithAdjacentConnections(e.getModel(), currentNode);
             editor.repaint();
+            return true;
         }
 
         return super.keyPressed(e);

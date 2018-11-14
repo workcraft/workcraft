@@ -6,6 +6,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualModelTransformer;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.MainWindow;
@@ -34,6 +35,8 @@ import java.util.zip.ZipInputStream;
 
 public class WorkspaceEntry implements ObservableState {
 
+    private static final Point2D DEFAULT_PASTE_OFFSET = new Point2D.Double(1.0, 1.0);
+
     private ModelEntry modelEntry = null;
     private boolean changed = true;
     private final Workspace workspace;
@@ -49,7 +52,7 @@ public class WorkspaceEntry implements ObservableState {
     private VisualNode templateNode = null;
     private VisualNode defaultNode = null;
 
-    private Point2D pasteOffset = new Point2D.Double(1.0, 1.0);
+    private Point2D pastePosition = null;
 
     public WorkspaceEntry(Workspace workspace) {
         this.workspace = workspace;
@@ -384,17 +387,51 @@ public class WorkspaceEntry implements ObservableState {
         if (framework.clipboard != null) {
             try {
                 Memento memento = framework.saveModel(modelEntry);
-                ModelEntry result = framework.loadModel(memento.getStream(), framework.clipboard.getStream());
-                saveMemento();
-                setModelEntry(result);
-                setChanged(true);
+                ModelEntry me = framework.loadModel(memento.getStream(), framework.clipboard.getStream());
 
-                VisualModel model = result.getVisualModel();
-                VisualModelTransformer.translateSelection(model, pasteOffset.getX(), pasteOffset.getY());
+                VisualModel model = me.getVisualModel();
+                Point2D offset = getPasteOffset(model);
+                if (offset != null) {
+                    VisualModelTransformer.translateSelection(model, offset.getX(), offset.getY());
+                }
+
+                model.afterPaste();
+                saveMemento();
+                setModelEntry(me);
+                setChanged(true);
             } catch (DeserialisationException e) {
                 DialogUtils.showError(e.getMessage());
             }
         }
+    }
+
+    private Point2D getPasteOffset(VisualModel model) {
+        Point2D result = null;
+        if (pastePosition != null) {
+            Point2D pos = getSelectionPivotPosition(model);
+            if (pos != null) {
+                double dx = pastePosition.getX() - pos.getX();
+                double dy = pastePosition.getY() - pos.getY();
+                result = new Point2D.Double(dx, dy);
+            }
+        }
+        if (result == null) {
+            result = DEFAULT_PASTE_OFFSET;
+        }
+        return result;
+    }
+
+    private Point2D getSelectionPivotPosition(VisualModel model) {
+        Point2D result = null;
+        for (VisualNode node : model.getSelection()) {
+            if (node instanceof VisualTransformableNode) {
+                Point2D pos = ((VisualTransformableNode) node).getRootSpacePosition();
+                if ((result == null) || (result.getY() > pos.getY())) {
+                    result = pos;
+                }
+            }
+        }
+        return result;
     }
 
     public void delete() {
@@ -426,8 +463,8 @@ public class WorkspaceEntry implements ObservableState {
         return defaultNode;
     }
 
-    public void setPasteOffset(Point2D pasteOffset) {
-        this.pasteOffset = pasteOffset;
+    public void setPastePosition(Point2D pastePosition) {
+        this.pastePosition = pastePosition;
     }
 
 }

@@ -1,14 +1,14 @@
 package org.workcraft.dom.visual;
 
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.Collection;
-
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.NotAnAncestorException;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
+
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.Collection;
 
 public class TransformHelper {
 
@@ -59,20 +59,23 @@ public class TransformHelper {
         return (double) (Math.round(x * 2)) / 2;
     }
 
+    public static Point2D snapP5(Point2D pos) {
+        return (pos == null) ? null : new Point2D.Double(snapP5(pos.getX()), snapP5(pos.getY()));
+    }
+
     public static Point2D getCentre(Collection<? extends VisualNode> nodes) {
         Rectangle2D bb = null;
         for (VisualNode node : nodes) {
-            Rectangle2D nodeBoundingBox = ((Touchable) node).getBoundingBox();
-            bb = BoundingBoxHelper.union(bb, nodeBoundingBox);
+            if (node instanceof Touchable) {
+                Rectangle2D nodeBoundingBox = ((Touchable) node).getBoundingBox();
+                bb = BoundingBoxHelper.union(bb, nodeBoundingBox);
+            }
         }
-        return new Point2D.Double(bb.getCenterX(), bb.getCenterY());
+        return (bb == null) ? null : new Point2D.Double(bb.getCenterX(), bb.getCenterY());
     }
 
     public static Point2D getSnappedCentre(Collection<? extends VisualNode> nodes) {
-        Point2D centre = getCentre(nodes);
-        double snapX = snapP5(centre.getX());
-        double snapY = snapP5(centre.getY());
-        return new Point2D.Double(snapX, snapY);
+        return snapP5(getCentre(nodes));
     }
 
 }

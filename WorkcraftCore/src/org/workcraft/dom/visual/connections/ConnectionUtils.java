@@ -1,6 +1,4 @@
-package org.workcraft.plugins.circuit.utils;
-
-import org.workcraft.dom.visual.connections.VisualConnection;
+package org.workcraft.dom.visual.connections;
 
 import java.util.Collection;
 import java.util.HashMap;
