@@ -122,6 +122,10 @@ public class MainWindowActions {
             return "Close active work";
         }
         @Override
+        public KeyStroke getKeyStroke() {
+            return KeyStroke.getKeyStroke(KeyEvent.VK_F4, DesktopApi.getMenuKeyMask());
+        }
+        @Override
         public void run() {
             try {
                 Framework.getInstance().getMainWindow().closeActiveEditor();
