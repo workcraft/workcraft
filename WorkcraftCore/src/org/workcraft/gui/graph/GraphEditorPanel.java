@@ -369,6 +369,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             @Override
             public void setValue(Object value) {
                 we.saveMemento();
+                we.setChanged(true);
                 super.setValue(value);
             }
         };
@@ -380,17 +381,19 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
         JToolBar modelToolbar = mainWindow.getModelToolbar();
         modelToolbar.removeAll();
-        toolbox.setToolsForModel(modelToolbar);
+        if (toolbox != null) {
+            toolbox.setToolsForModel(modelToolbar);
 
-        GraphEditorTool selectedTool = toolbox.getSelectedTool();
-        if (selectedTool != null) {
-            JToolBar controlToolbar = mainWindow.getControlToolbar();
-            controlToolbar.removeAll();
-            selectedTool.updateControlsToolbar(controlToolbar, this);
+            GraphEditorTool selectedTool = toolbox.getSelectedTool();
+            if (selectedTool != null) {
+                JToolBar controlToolbar = mainWindow.getControlToolbar();
+                controlToolbar.removeAll();
+                selectedTool.updateControlsToolbar(controlToolbar, this);
 
-            JPanel panel = selectedTool.getControlsPanel(this);
-            ToolControlsWindow controlWindow = mainWindow.getControlsView();
-            controlWindow.setContent(panel);
+                JPanel panel = selectedTool.getControlsPanel(this);
+                ToolControlsWindow controlWindow = mainWindow.getControlsView();
+                controlWindow.setContent(panel);
+            }
         }
     }
 
@@ -419,7 +422,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
         final PropertyEditorWindow propertyEditorWindow = mainWindow.getPropertyView();
-        GraphEditorTool tool = toolbox.getSelectedTool();
+        GraphEditorTool tool = (toolbox == null) ? null : toolbox.getSelectedTool();
         if ((tool == null) || !tool.requiresPropertyEditor() || properties.getDescriptors().isEmpty()) {
             propertyEditorWindow.clear();
         } else {
