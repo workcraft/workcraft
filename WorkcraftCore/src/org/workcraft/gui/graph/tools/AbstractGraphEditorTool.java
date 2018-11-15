@@ -1,13 +1,5 @@
 package org.workcraft.gui.graph.tools;
 
-import java.awt.Cursor;
-import java.awt.Graphics2D;
-
-import javax.swing.Icon;
-import javax.swing.JPanel;
-import javax.swing.JToolBar;
-import javax.swing.Timer;
-
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -15,6 +7,9 @@ import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import java.awt.*;
 
 public abstract class AbstractGraphEditorTool implements GraphEditorTool {
 

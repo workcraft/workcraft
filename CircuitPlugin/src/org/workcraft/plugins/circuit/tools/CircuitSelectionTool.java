@@ -1,6 +1,7 @@
 package org.workcraft.plugins.circuit.tools;
 
 import org.workcraft.dom.visual.*;
+import org.workcraft.dom.visual.connections.ConnectionUtils;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.editors.AbstractInplaceEditor;
@@ -9,7 +10,6 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.*;
-import org.workcraft.plugins.circuit.utils.ConnectionUtils;
 import org.workcraft.util.Hierarchy;
 
 import javax.swing.*;

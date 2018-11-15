@@ -2,6 +2,7 @@ package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.visual.*;
+import org.workcraft.dom.visual.connections.ConnectionUtils;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;

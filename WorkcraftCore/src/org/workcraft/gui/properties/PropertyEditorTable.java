@@ -133,7 +133,10 @@ public class PropertyEditorTable extends JTable {
             try {
                 setValueAt(value, editingRow, editingColumn);
             } catch (Throwable t) {
-                DialogUtils.showError(t.getMessage(), "Cannot change property");
+                String msg = t.getMessage();
+                if ((msg != null) && !msg.isEmpty()) {
+                    DialogUtils.showError(t.getMessage(), "Cannot change property");
+                }
             } finally {
                 removeEditor();
             }

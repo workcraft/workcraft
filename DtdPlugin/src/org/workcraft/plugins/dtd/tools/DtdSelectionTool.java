@@ -26,11 +26,7 @@ public class DtdSelectionTool extends SelectionTool {
         WorkspaceEntry we = editor.getWorkspaceEntry();
         we.setCanModify(true);
         we.setCanSelect(true);
-        we.setCanCopy(false);
-    }
-
-    public DtdSelectionTool(boolean enableGroupping, boolean enablePaging, boolean enableFlipping, boolean enableRotating) {
-        super(enableGroupping, enablePaging, enableFlipping, enableRotating);
+        we.setCanCopy(true);
     }
 
     @Override

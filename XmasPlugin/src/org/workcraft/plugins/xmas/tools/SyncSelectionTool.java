@@ -4,6 +4,7 @@ import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.connections.ConnectionUtils;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 import org.workcraft.gui.graph.tools.GraphEditor;
@@ -14,7 +15,6 @@ import org.workcraft.util.Hierarchy;
 
 import javax.swing.*;
 import java.util.*;
-import java.util.Map.Entry;
 
 public class SyncSelectionTool extends SelectionTool {
 
@@ -72,22 +72,12 @@ public class SyncSelectionTool extends SelectionTool {
         VisualModel model = editor.getModel();
         Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(model.getRoot(), VisualConnection.class);
         Collection<VisualConnection> includedConnections = SelectionHelper.getIncludedConnections(model.getSelection(), connections);
-        connectionToScaleModeMap = new HashMap<VisualConnection, ScaleMode>();
-        for (VisualConnection vc: includedConnections) {
-            connectionToScaleModeMap.put(vc, vc.getScaleMode());
-            vc.setScaleMode(ScaleMode.NONE);
-        }
+        connectionToScaleModeMap = ConnectionUtils.replaceConnectionScaleMode(includedConnections, VisualConnection.ScaleMode.NONE);
     }
 
     @Override
     public void afterSelectionModification(final GraphEditor editor) {
-        if (connectionToScaleModeMap != null) {
-            for (Entry<VisualConnection, ScaleMode> entry: connectionToScaleModeMap.entrySet()) {
-                VisualConnection vc = entry.getKey();
-                ScaleMode scaleMode = entry.getValue();
-                vc.setScaleMode(scaleMode);
-            }
-        }
+        ConnectionUtils.restoreConnectionScaleMode(connectionToScaleModeMap);
         super.afterSelectionModification(editor);
     }
 

@@ -1,10 +1,17 @@
 package org.workcraft.gui.graph.tools;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Graphics2D;
-import java.awt.Toolkit;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.*;
+import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.gui.DesktopApi;
+import org.workcraft.gui.events.GraphEditorKeyEvent;
+import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.util.GUI;
+import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
@@ -14,25 +21,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
-
-import javax.swing.Icon;
-
-import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.ConnectionHelper;
-import org.workcraft.dom.visual.HitMan;
-import org.workcraft.dom.visual.TransformHelper;
-import org.workcraft.dom.visual.VisualComment;
-import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.dom.visual.VisualPage;
-import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.gui.DesktopApi;
-import org.workcraft.gui.events.GraphEditorKeyEvent;
-import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.util.GUI;
-import org.workcraft.workspace.WorkspaceEntry;
 
 public class ConnectionTool extends AbstractGraphEditorTool {
 
@@ -100,9 +88,9 @@ public class ConnectionTool extends AbstractGraphEditorTool {
 
     protected void updateCurrentNode(GraphEditor editor) {
         if (allLevels) {
-            currentNode = (VisualNode) HitMan.hitDeepest(currentPoint, editor.getModel());
+            currentNode = HitMan.hitDeepest(currentPoint, editor.getModel());
         } else {
-            currentNode = (VisualNode) HitMan.hitFirstInCurrentLevel(currentPoint, editor.getModel());
+            currentNode = HitMan.hitFirstInCurrentLevel(currentPoint, editor.getModel());
         }
         if ((currentNode == null) || isConnectable(currentNode)) {
             if (currentNode != firstNode) {

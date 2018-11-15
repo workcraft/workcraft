@@ -172,25 +172,26 @@ public class MainWindow extends JFrame {
         return createDockableWindow(component, name, null, neighbour, options, relativeRegion, split, name);
     }
 
-    private DockableWindow createDockableWindow(JComponent component, String title, Dockable neighbour, int options,
-            String relativeRegion, String persistentID) {
+    private DockableWindow createDockableWindow(JComponent component, String title, Dockable neighbour,
+            int options, String region, String persistentID) {
+
         int id = getNextDockableID();
         DockableWindowContentPanel panel = new DockableWindowContentPanel(this, id, title, component, options);
         DockableWindow dockable = new DockableWindow(this, panel, persistentID);
-        DockingManager.registerDockable(dockable);
         idToDockableWindowMap.put(id, dockable);
+        DockingManager.registerDockable(dockable);
         if (neighbour != null) {
-            DockingManager.dock(dockable, neighbour, relativeRegion);
+            DockingManager.dock(dockable, neighbour, region);
         } else {
-            DockingManager.dock(dockable, rootDockingPort, relativeRegion);
+            DockingManager.dock(dockable, rootDockingPort, region);
         }
         return dockable;
     }
 
-    private DockableWindow createDockableWindow(JComponent component, String title, String tooltip, Dockable neighbour,
-            int options, String relativeRegion, float split, String persistentID) {
-        DockableWindow dockable = createDockableWindow(component, title, neighbour, options, relativeRegion,
-                persistentID);
+    private DockableWindow createDockableWindow(JComponent component, String title, String tooltip,
+            Dockable neighbour, int options, String region, float split, String persistentID) {
+
+        DockableWindow dockable = createDockableWindow(component, title, neighbour, options, region, persistentID);
         DockingManager.setSplitProportion(dockable, split);
         return dockable;
     }
@@ -365,13 +366,13 @@ public class MainWindow extends JFrame {
         }
         GraphEditorPanel editor = getGraphEditorPanel(dockableWindow);
         if (editor != null) {
-            closeDocableEditorWindow(dockableWindow, editor);
+            closeDockableEditorWindow(dockableWindow, editor);
         } else {
             closeDockableUtilityWindow(dockableWindow);
         }
     }
 
-    private void closeDocableEditorWindow(DockableWindow dockableWindow, GraphEditorPanel editor)
+    private void closeDockableEditorWindow(DockableWindow dockableWindow, GraphEditorPanel editor)
             throws OperationCancelledException {
 
         WorkspaceEntry we = editor.getWorkspaceEntry();
@@ -533,12 +534,16 @@ public class MainWindow extends JFrame {
     }
 
     public void shutdown() throws OperationCancelledException {
-        closeEditorWindows();
+        try {
+            closeEditorWindows();
+        } catch (ClassCastException e) {
+            // FIXME: Flexdock may throw ClassCast exception when closing Workcraft.
+        }
 
         final Framework framework = Framework.getInstance();
         if (framework.getWorkspace().isChanged() && !framework.getWorkspace().isTemporary()) {
             int result = JOptionPane.showConfirmDialog(this,
-                    "Current workspace has unsaved changes.\n" + "Save before closing?",
+                    "!Current workspace has unsaved changes.\n" + "Save before closing?",
                     "Close work", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
             switch (result) {
@@ -689,7 +694,7 @@ public class MainWindow extends JFrame {
             recentFiles.remove(fileName);
             // Make sure there is not too many entries
             int recentCount = CommonEditorSettings.getRecentCount();
-            for (String entry: new ArrayList<String>(recentFiles)) {
+            for (String entry: new ArrayList<>(recentFiles)) {
                 if (recentFiles.size() < recentCount) {
                     break;
                 }
@@ -707,7 +712,7 @@ public class MainWindow extends JFrame {
 
     public void clearRecentFilesMenu() {
         recentFiles.clear();
-        mainMenu.setRecentMenu(new ArrayList<String>(recentFiles));
+        mainMenu.setRecentMenu(new ArrayList<>(recentFiles));
     }
 
     public void updateRecentFilesMenu() {
@@ -787,9 +792,11 @@ public class MainWindow extends JFrame {
             mainMenu.setMenuForWorkspaceEntry(we);
             Framework.getInstance().updateJavaScript(we);
         }
-        if (editorInFocus != null) {
-            SwingUtilities.invokeLater(() -> editorInFocus.requestFocus());
-        }
+        SwingUtilities.invokeLater(() -> {
+            if (editorInFocus != null) {
+                editorInFocus.requestFocus();
+            }
+        });
     }
 
     public void updateDockableWindowVisibility() {
@@ -803,7 +810,6 @@ public class MainWindow extends JFrame {
             } else if (propertyEditorWindow.isEmpty()) {
                 closeDockableWindow(propertyEditorDockable);
             }
-
         } catch (OperationCancelledException e) {
         }
     }
@@ -1139,7 +1145,7 @@ public class MainWindow extends JFrame {
     }
 
     public void closeEditors(WorkspaceEntry openFile) throws OperationCancelledException {
-        for (DockableWindow window: new ArrayList<DockableWindow>(editorWindows.get(openFile))) {
+        for (DockableWindow window: new ArrayList<>(editorWindows.get(openFile))) {
             closeDockableWindow(window);
         }
     }
@@ -1148,6 +1154,7 @@ public class MainWindow extends JFrame {
         if (editorInFocus != null) {
             editorInFocus.getWorkspaceEntry().undo();
             editorInFocus.forceRedraw();
+            editorInFocus.requestFocus();
         }
     }
 
@@ -1155,6 +1162,7 @@ public class MainWindow extends JFrame {
         if (editorInFocus != null) {
             editorInFocus.getWorkspaceEntry().redo();
             editorInFocus.forceRedraw();
+            editorInFocus.requestFocus();
         }
     }
 
@@ -1162,6 +1170,7 @@ public class MainWindow extends JFrame {
         if (editorInFocus != null) {
             editorInFocus.getWorkspaceEntry().cut();
             editorInFocus.forceRedraw();
+            editorInFocus.requestFocus();
         }
     }
 
@@ -1169,6 +1178,7 @@ public class MainWindow extends JFrame {
         if (editorInFocus != null) {
             editorInFocus.getWorkspaceEntry().copy();
             editorInFocus.forceRedraw();
+            editorInFocus.requestFocus();
         }
     }
 
@@ -1176,6 +1186,7 @@ public class MainWindow extends JFrame {
         if (editorInFocus != null) {
             editorInFocus.getWorkspaceEntry().paste();
             editorInFocus.forceRedraw();
+            editorInFocus.requestFocus();
         }
     }
 
@@ -1183,6 +1194,7 @@ public class MainWindow extends JFrame {
         if (editorInFocus != null) {
             editorInFocus.getWorkspaceEntry().delete();
             editorInFocus.forceRedraw();
+            editorInFocus.requestFocus();
         }
     }
 
@@ -1190,6 +1202,7 @@ public class MainWindow extends JFrame {
         if (editorInFocus != null) {
             VisualModel visualModel = editorInFocus.getWorkspaceEntry().getModelEntry().getVisualModel();
             visualModel.selectAll();
+            editorInFocus.requestFocus();
         }
     }
 
@@ -1197,6 +1210,7 @@ public class MainWindow extends JFrame {
         if (editorInFocus != null) {
             VisualModel visualModel = editorInFocus.getWorkspaceEntry().getModelEntry().getVisualModel();
             visualModel.selectNone();
+            editorInFocus.requestFocus();
         }
     }
 
@@ -1204,6 +1218,7 @@ public class MainWindow extends JFrame {
         if (editorInFocus != null) {
             VisualModel visualModel = editorInFocus.getWorkspaceEntry().getModelEntry().getVisualModel();
             visualModel.selectInverse();
+            editorInFocus.requestFocus();
         }
     }
 

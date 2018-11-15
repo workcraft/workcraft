@@ -139,6 +139,7 @@ public class DtdUtils {
     public static void decorateVisualEventConnection(VisualConnection connection) {
         VisualComponent v1 = (VisualComponent) connection.getFirst();
         VisualComponent v2 = (VisualComponent) connection.getSecond();
+        connection.setConnectionType(ConnectionType.POLYLINE);
         connection.setConnectionType(ConnectionType.BEZIER);
         connection.setArrowLength(ARROW_LENGTH);
         Bezier bezier = (Bezier) connection.getGraphic();

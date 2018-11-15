@@ -15,6 +15,7 @@ import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.dtd.Signal;
 import org.workcraft.plugins.dtd.VisualDtd;
+import org.workcraft.plugins.dtd.VisualSignal;
 import org.workcraft.plugins.wtg.properties.SignalDeclarationPropertyDescriptor;
 import org.workcraft.plugins.wtg.tools.WtgConnectionTool;
 import org.workcraft.plugins.wtg.tools.WtgSelectionTool;
@@ -136,6 +137,23 @@ public class VisualWtg extends VisualDtd {
                 }
             }
         };
+    }
+
+    @Override
+    public void afterPaste() {
+        super.afterPaste();
+        Collection<VisualNode> selection = new ArrayList<>(getSelection());
+        for (VisualNode node : selection) {
+            if (node.getParent() == getRoot()) {
+                if (node instanceof VisualSignal) {
+                    remove(node);
+                }
+            } else {
+                if ((node instanceof VisualState) || (node instanceof VisualWaveform)) {
+                    remove(node);
+                }
+            }
+        }
     }
 
 }
