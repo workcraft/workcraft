@@ -341,9 +341,9 @@ public class Stg extends AbstractMathModel implements StgModel {
             Node predNode = getReferenceManager().getNodeByReference(provider, implicitPlaceTransitions.getFirst());
             Node succNode = getReferenceManager().getNodeByReference(provider, implicitPlaceTransitions.getSecond());
             if ((predNode instanceof Transition) && (succNode instanceof  Transition)) {
-                Set<MathNode> preset = getPreset((Transition) predNode);
-                Set<MathNode> postset = getPostset((Transition) succNode);
-                Set<MathNode> implicitPlaceCandidates = SetUtils.intersection(preset, postset);
+                Set<MathNode> predPostset = getPostset((Transition) predNode);
+                Set<MathNode> succPreset = getPreset((Transition) succNode);
+                Set<MathNode> implicitPlaceCandidates = SetUtils.intersection(succPreset, predPostset);
                 for (MathNode node: implicitPlaceCandidates) {
                     if ((node instanceof StgPlace) && ((StgPlace) node).isImplicit()) {
                         return node;
