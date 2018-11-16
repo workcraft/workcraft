@@ -207,7 +207,14 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
         for (Node node : getChildren()) {
             if (node instanceof VisualEvent) {
                 VisualEvent event = (VisualEvent) node;
+                double threshold = Math.min(0.1, event.getShape().getBounds2D().getWidth());
                 if (event.hitTest(pointInLocalSpace)) {
+                    return event;
+                }
+                if (event.hitTest(new Point2D.Double(pointInLocalSpace.getX() - threshold, pointInLocalSpace.getY()))) {
+                    return event;
+                }
+                if (event.hitTest(new Point2D.Double(pointInLocalSpace.getX() + threshold, pointInLocalSpace.getY()))) {
                     return event;
                 }
             }

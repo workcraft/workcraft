@@ -1,12 +1,12 @@
 package org.workcraft.gui.events;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
-import java.awt.geom.Point2D;
-
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.graph.tools.GraphEditor;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
 
 public class GraphEditorMouseEvent {
     GraphEditor editor;
@@ -57,14 +57,6 @@ public class GraphEditorMouseEvent {
 
     public Point2D getPrevPosition() {
         return prevPosition;
-    }
-
-    public double getX() {
-        return position.getX();
-    }
-
-    public double getY() {
-        return position.getY();
     }
 
     public int getButton() {

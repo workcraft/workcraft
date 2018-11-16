@@ -18,6 +18,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.*;
 
 public class VisualComponent extends VisualTransformableNode implements Dependent, Replicable, Drawable {
+
     public static final String PROPERTY_LABEL = "Label";
     public static final String PROPERTY_LABEL_POSITIONING = "Label positioning";
     public static final String PROPERTY_LABEL_COLOR = "Label color";
