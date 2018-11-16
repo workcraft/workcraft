@@ -16,6 +16,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
 public abstract class VisualTransformableNode extends VisualNode implements Movable, Rotatable, Flippable {
+
     public static final String PROPERTY_X = "X";
     public static final String PROPERTY_Y = "Y";
 
@@ -249,39 +250,9 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
         transformChanged();
     }
 
-    @NoAutoSerialisation
-    public double getRotation() {
-        return 0;
-    }
-
-    @NoAutoSerialisation
-    public double getScaleX() {
-        return 0;
-    }
-
-    @NoAutoSerialisation
-    public double getScaleY() {
-        return 0;
-    }
-
     @Override
     public AffineTransform getTransform() {
         return getLocalToParentTransform();
-    }
-
-    @NoAutoSerialisation
-    public void setRotation(double rotation) {
-
-    }
-
-    @NoAutoSerialisation
-    public void setScaleX(double scaleX) {
-
-    }
-
-    @NoAutoSerialisation
-    public void setScaleY(double scaleY) {
-
     }
 
     public void setTransform(AffineTransform transform) {

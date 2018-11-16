@@ -1,14 +1,14 @@
 package org.workcraft.util;
 
-import java.awt.geom.AffineTransform;
-import java.awt.geom.CubicCurve2D;
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Point2D;
-
 import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.connections.ParametricCurve;
 import org.workcraft.dom.visual.connections.PartialCurveInfo;
 import org.workcraft.dom.visual.connections.VisualConnectionProperties;
+
+import java.awt.geom.AffineTransform;
+import java.awt.geom.CubicCurve2D;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 
 public class Geometry {
 

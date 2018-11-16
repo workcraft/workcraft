@@ -343,21 +343,22 @@ public class SelectionTool extends AbstractGraphEditorTool {
     public void mouseMoved(GraphEditorMouseEvent e) {
         GraphEditor editor = e.getEditor();
         VisualModel model = editor.getModel();
+        Point2D pos = e.getPosition();
         if (dragState == DrugState.MOVE) {
             Point2D prevPos = e.getPrevPosition();
             Point2D.Double pos1 = new Point2D.Double(prevPos.getX() + offset.getX(), prevPos.getY() + offset.getY());
             Point2D snapPos1 = editor.snap(pos1, snaps);
-            Point2D.Double pos2 = new Point2D.Double(e.getX() + offset.getX(), e.getY() + offset.getY());
+            Point2D.Double pos2 = new Point2D.Double(pos.getX() + offset.getX(), pos.getY() + offset.getY());
             Point2D snapPos2 = editor.snap(pos2, snaps);
             // Intermediate move of the selection - no need for beforeSelectionModification or afterSelectionModification
             VisualModelTransformer.translateSelection(model, snapPos2.getX() - snapPos1.getX(), snapPos2.getY() - snapPos1.getY());
         } else if (dragState == DrugState.SELECT) {
             selected.clear();
-            selected.addAll(model.hitBox(e.getStartPosition(), e.getPosition()));
-            selectionBox = getSelectionRect(e.getStartPosition(), e.getPosition());
+            selected.addAll(model.hitBox(e.getStartPosition(), pos));
+            selectionBox = getSelectionRect(e.getStartPosition(), pos);
             editor.repaint();
         } else {
-            VisualNode node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
+            VisualNode node = HitMan.hitFirstInCurrentLevel(pos, model);
             if (currentNode != node) {
                 currentNode = node;
                 currentNodes = e.isExtendKeyDown()
@@ -366,7 +367,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
                 editor.repaint();
             }
         }
-        currentMousePosition = e.getPosition();
+        currentMousePosition = pos;
     }
 
     @Override

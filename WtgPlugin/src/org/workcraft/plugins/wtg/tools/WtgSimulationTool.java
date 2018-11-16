@@ -10,7 +10,8 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.plugins.dtd.VisualEvent;
+import org.workcraft.plugins.dtd.*;
+import org.workcraft.plugins.dtd.utils.DtdUtils;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.shared.CommonDecorationSettings;
 import org.workcraft.plugins.stg.NamedTransition;
@@ -28,6 +29,7 @@ import org.workcraft.plugins.wtg.decorations.WaveformDecoration;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
 
 public class WtgSimulationTool extends StgSimulationTool {
     private WtgToStgConverter converter;
@@ -49,11 +51,21 @@ public class WtgSimulationTool extends StgSimulationTool {
     @Override
     public void mousePressed(GraphEditorMouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
+            Point2D pos = e.getPosition();
             VisualModel model = e.getModel();
-            Node deepestNode = HitMan.hitDeepest(e.getPosition(), model.getRoot(),
-                    node -> getExcitedTransitionOfNode(node) != null);
+            Node deepestNode = HitMan.hitDeepest(pos, model.getRoot(), node -> node instanceof VisualSignal);
 
-            Transition transition = getExcitedTransitionOfNode(deepestNode);
+            Transition transition = null;
+            if (deepestNode instanceof VisualSignal) {
+                transition = getExcitedTransitionOfSignal((VisualSignal) deepestNode);
+            } else if (deepestNode instanceof VisualEvent) {
+                VisualEvent event = (VisualEvent) deepestNode;
+                transition = getExcitedTransitionOfEvent(event);
+                if (transition == null) {
+                    transition = getExcitedTransitionOfSignal(event.getVisualSignal());
+                }
+            }
+
             if (transition != null) {
                 executeTransition(e.getEditor(), transition);
             }
@@ -66,7 +78,7 @@ public class WtgSimulationTool extends StgSimulationTool {
         boolean ret = false;
         for (Node node: container.getChildren()) {
             if (node instanceof VisualEvent) {
-                ret = ret || (getExcitedTransitionOfNode(node) != null);
+                ret = ret || (getExcitedTransitionOfEvent((VisualEvent) node) != null);
             }
             if (node instanceof Container) {
                 ret = ret || isContainerExcited((Container) node);
@@ -118,11 +130,14 @@ public class WtgSimulationTool extends StgSimulationTool {
             if (node instanceof VisualEvent) {
                 return getEventDecoration((VisualEvent) node);
             }
+            if (node instanceof VisualLevelConnection) {
+                return getLevelDecoration((VisualLevelConnection) node);
+            }
             return null;
         };
     }
 
-    public Decoration getStateDecoration(VisualState state) {
+    private Decoration getStateDecoration(VisualState state) {
         StgPlace p = converter.getRelatedPlace(state.getReferencedState());
         if (p == null) {
             return null;
@@ -146,9 +161,9 @@ public class WtgSimulationTool extends StgSimulationTool {
         return false;
     }
 
-    public Decoration getEventDecoration(VisualEvent event) {
+    private Decoration getEventDecoration(VisualEvent event) {
         MathNode transition = getTraceCurrentNode();
-        final boolean isExcited = getExcitedTransitionOfNode(event) != null;
+        final boolean isExcited = getExcitedTransitionOfEvent(event) != null;
         final boolean isSuggested = isExcited && converter.isRelated(event.getReferencedSignalEvent(), transition);
         return new Decoration() {
             @Override
@@ -163,17 +178,72 @@ public class WtgSimulationTool extends StgSimulationTool {
         };
     }
 
-    private Transition getExcitedTransitionOfNode(Node node) {
-        if (node instanceof VisualEvent) {
-            VisualEvent event = (VisualEvent) node;
-            NamedTransition transition = converter.getRelatedTransition(event.getReferencedSignalEvent());
-            if (transition != null) {
-                if (isEnabledNode(transition)) {
-                    return transition;
-                }
+    private Decoration getLevelDecoration(VisualLevelConnection level) {
+        MathNode transition = getTraceCurrentNode();
+        VisualEvent firstEvent = (VisualEvent) level.getFirst();
+        VisualEvent secondEvent = (VisualEvent) level.getSecond();
+        VisualSignal signal = secondEvent.getVisualSignal();
+
+        Signal.State state = DtdUtils.getNextState(firstEvent.getReferencedSignalEvent());
+        NamedTransition enabledUnstableTransition = converter.getEnabledUnstableTransition(signal.getReferencedSignal());
+        boolean isEnabledUnstable = (state == Signal.State.UNSTABLE) && (enabledUnstableTransition != null);
+        boolean isExcitedWaveform = isContainerExcited(getWaveform(signal));
+        boolean isActiveSection = (secondEvent instanceof VisualExitEvent) || (getExcitedTransitionOfEvent(secondEvent) != null);
+
+        final boolean isExcited = isEnabledUnstable && isExcitedWaveform && isActiveSection;
+        final boolean isSuggested = isExcited && (enabledUnstableTransition == transition);
+        return new Decoration() {
+            @Override
+            public Color getColorisation() {
+                return isExcited ? CommonDecorationSettings.getExcitedComponentColor() : null;
+            }
+
+            @Override
+            public Color getBackground() {
+                return isSuggested ? CommonDecorationSettings.getSuggestedComponentColor() : null;
+            }
+        };
+    }
+
+    private VisualWaveform getWaveform(VisualSignal signal) {
+        if (signal != null) {
+            Node parent = signal.getParent();
+            if (parent instanceof VisualWaveform) {
+                return (VisualWaveform) parent;
             }
         }
         return null;
+    }
+
+    private Transition getExcitedTransitionOfEvent(VisualEvent event) {
+        if (event != null) {
+            NamedTransition transition = converter.getRelatedTransition(event.getReferencedSignalEvent());
+            if ((transition != null) && isEnabledNode(transition)) {
+                return transition;
+            }
+        }
+        return null;
+    }
+
+    private Transition getExcitedTransitionOfSignal(VisualSignal signal) {
+        Transition result = null;
+        VisualWaveform waveform = getWaveform(signal);
+        if ((waveform != null) && isContainerExcited(waveform)) {
+            result = converter.getEnabledUnstableTransition(signal.getReferencedSignal());
+            if (result == null) {
+                result = getExcitedTransitionOfEvent(signal.getVisualSignalEntry());
+            }
+            if (result == null) {
+                for (VisualTransitionEvent transition : signal.getVisualTransitions()) {
+                    result = getExcitedTransitionOfEvent(transition);
+                    if (result != null) break;
+                }
+            }
+            if (result == null) {
+                result = getExcitedTransitionOfEvent(signal.getVisualSignalExit());
+            }
+        }
+        return result;
     }
 
 }
