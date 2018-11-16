@@ -470,4 +470,20 @@ public class WtgToStgConverter {
         return eventToTransitionMap.get(event);
     }
 
+    public NamedTransition getEnabledUnstableTransition(Signal signal) {
+        String signalName = srcModel.getName(signal);
+        UnstableSignalStg unstableSignalStg = unstableSignalToStgMap.get(signalName);
+        if (unstableSignalStg != null) {
+            if (unstableSignalStg.unstablePlace.getTokens() > 0) {
+                if (unstableSignalStg.highPlace.getTokens() > 0) {
+                    return unstableSignalStg.fallTransition;
+                }
+                if (unstableSignalStg.lowPlace.getTokens() > 0) {
+                    return unstableSignalStg.riseTransition;
+                }
+            }
+        }
+        return null;
+    }
+
 }
