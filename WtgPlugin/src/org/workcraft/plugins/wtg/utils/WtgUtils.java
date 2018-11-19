@@ -1,6 +1,7 @@
 package org.workcraft.plugins.wtg.utils;
 
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.dtd.EntryEvent;
 import org.workcraft.plugins.dtd.ExitEvent;
 import org.workcraft.plugins.dtd.Signal;
@@ -137,6 +138,27 @@ public class WtgUtils {
             }
         }
         return null;
+    }
+
+    public static void renameSignal(Wtg wtg, String oldName, String newName) {
+        if ((oldName == null) || (newName == null) || oldName.equals(newName)) {
+            return;
+        }
+        for (Signal signal : wtg.getSignals()) {
+            if (!oldName.equals(wtg.getName(signal))) continue;
+            wtg.setName(signal, newName);
+            signal.sendNotification(new PropertyChangedEvent(signal, Signal.PROPERTY_NAME));
+        }
+        for (Waveform waveform : wtg.getWaveforms()) {
+            Guard guard = waveform.getGuard();
+            if (!guard.containsKey(oldName)) continue;
+            Guard newGuard = new Guard();
+            for (Map.Entry<String, Boolean> entry : guard.entrySet()) {
+                String key = oldName.equals(entry.getKey()) ? newName : entry.getKey();
+                newGuard.put(key, entry.getValue());
+            }
+            waveform.setGuard(newGuard);
+        }
     }
 
 }

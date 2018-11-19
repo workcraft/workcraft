@@ -12,7 +12,6 @@ import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.dtd.Signal;
 import org.workcraft.plugins.dtd.VisualDtd;
 import org.workcraft.plugins.dtd.VisualSignal;
@@ -21,6 +20,7 @@ import org.workcraft.plugins.wtg.tools.WtgConnectionTool;
 import org.workcraft.plugins.wtg.tools.WtgSelectionTool;
 import org.workcraft.plugins.wtg.tools.WtgSignalGeneratorTool;
 import org.workcraft.plugins.wtg.tools.WtgSimulationTool;
+import org.workcraft.plugins.wtg.utils.WtgUtils;
 import org.workcraft.util.Hierarchy;
 
 import java.util.*;
@@ -94,24 +94,7 @@ public class VisualWtg extends VisualDtd {
             }
             @Override
             public void setter(VisualWtg object, String value) {
-                if ((signalName != null) && !signalName.equals(value)) {
-                    Wtg wtg = getMathModel();
-                    for (Signal signal : wtg.getSignals()) {
-                        if (!signalName.equals(wtg.getName(signal))) continue;
-                        wtg.setName(signal, value);
-                        signal.sendNotification(new PropertyChangedEvent(signal, Signal.PROPERTY_NAME));
-                    }
-                    for (Waveform waveform : wtg.getWaveforms()) {
-                        Guard guard = waveform.getGuard();
-                        if (!guard.containsKey(signalName)) continue;
-                        Guard newGuard = new Guard();
-                        for (Map.Entry<String, Boolean> entry : guard.entrySet()) {
-                            String key = signalName.equals(entry.getKey()) ? value : entry.getKey();
-                            newGuard.put(key, entry.getValue());
-                        }
-                        waveform.setGuard(newGuard);
-                    }
-                }
+                WtgUtils.renameSignal(getMathModel(), signalName, value);
             }
         };
     }
