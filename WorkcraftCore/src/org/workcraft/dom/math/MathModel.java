@@ -13,4 +13,6 @@ public interface MathModel extends Model<MathNode, MathConnection> {
 
     void validateConnection(MathNode first, MathNode second) throws InvalidConnectionException;
     MathConnection connect(MathNode first, MathNode second) throws InvalidConnectionException;
+
+    void anonymise();
 }

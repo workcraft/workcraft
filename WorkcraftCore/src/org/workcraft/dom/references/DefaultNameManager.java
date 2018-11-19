@@ -85,26 +85,22 @@ public class DefaultNameManager implements NameManager {
     }
 
     @Override
-    public void setDefaultNameIfUnnamed(Node node) {
-        if (!nodes.containsValue(node)) {
-            String prefix = getPrefix(node);
-            Integer count = getPrefixCount(prefix);
-            String name;
-            do {
-                name = prefix + count++;
-            } while (!isUnusedName(name));
-            setPrefixCount(prefix, count);
-            nodes.put(name, node);
-        }
+    public void setDefaultName(Node node) {
+        String prefix = getPrefix(node);
+        Integer count = getPrefixCount(prefix);
+        String name;
+        do {
+            name = prefix + count++;
+        } while (!isUnusedName(name));
+        setPrefixCount(prefix, count);
+        setName(node, name);
     }
 
-    private static String codeToString(int code) {
-        String result = "";
-        do {
-            result += (char) ('a' + code % 26);
-            code /= 26;
-        } while (code > 0);
-        return result;
+    @Override
+    public void setDefaultNameIfUnnamed(Node node) {
+        if (!nodes.containsValue(node)) {
+            setDefaultName(node);
+        }
     }
 
     @Override
@@ -115,6 +111,15 @@ public class DefaultNameManager implements NameManager {
             result = candidate + codeToString(code);
             code++;
         }
+        return result;
+    }
+
+    private static String codeToString(int code) {
+        String result = "";
+        do {
+            result += (char) ('a' + code % 26);
+            code /= 26;
+        } while (code > 0);
         return result;
     }
 

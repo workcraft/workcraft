@@ -316,9 +316,9 @@ public class VisualCircuit extends AbstractVisualModel {
                     WorkspaceEntry we = getWorkspaceEntry();
                     File newBase = we == null ? null : we.getFile().getParentFile();
                     if (newBase != null) {
-                        String relativePath = filePath.substring(basePath.length(), filePath.length());
+                        String relativePath = filePath.substring(basePath.length());
                         while (relativePath.startsWith("/")) {
-                            relativePath = relativePath.substring(1, relativePath.length());
+                            relativePath = relativePath.substring(1);
                         }
                         file = new File(newBase, relativePath);
                     }

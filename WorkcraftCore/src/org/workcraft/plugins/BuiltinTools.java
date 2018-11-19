@@ -10,6 +10,7 @@ import org.workcraft.plugins.layout.RandomLayoutCommand;
 import org.workcraft.plugins.layout.RandomLayoutSettings;
 import org.workcraft.plugins.shared.*;
 import org.workcraft.plugins.statistics.BasicStatisticsCommand;
+import org.workcraft.plugins.transform.AnonymiseTransformationCommand;
 import org.workcraft.plugins.transform.StraightenConnectionTransformationCommand;
 
 public class BuiltinTools implements Module {
@@ -27,6 +28,9 @@ public class BuiltinTools implements Module {
         pm.registerSettings(CommonLogSettings.class);
         pm.registerSettings(CommonSignalSettings.class);
         pm.registerSettings(CommonSatSettings.class);
+
+        ScriptableCommandUtils.register(AnonymiseTransformationCommand.class, "transformModelAnonymise",
+                "transform the given 'work' by anonymising selected (or all) nodes");
 
         ScriptableCommandUtils.register(StraightenConnectionTransformationCommand.class, "transformModelStraightenConnection",
                 "transform the given 'work' by straightening selected (or all) arcs");

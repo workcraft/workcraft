@@ -3,7 +3,6 @@ package org.workcraft.dom;
 import org.workcraft.annotations.Annotations;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.HierarchyReferenceManager;
-import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.util.Func;
 
@@ -143,7 +142,7 @@ public abstract class AbstractModel<N extends Node, C extends Connection>  imple
     }
 
     @Override
-    public <T> Set<T> getPreset(N node, Class<T> type, Func<Node, Boolean> through) {
+    public <T> Set<T> getPreset(N node, Class<T> type, Func<N, Boolean> through) {
         Set<T> result = new HashSet<>();
         Set<N> visited = new HashSet<>();
         Queue<N> queue = new LinkedList<>();
@@ -166,7 +165,7 @@ public abstract class AbstractModel<N extends Node, C extends Connection>  imple
     }
 
     @Override
-    public <T> Set<T> getPostset(N node, Class<T> type, Func<Node, Boolean> through) {
+    public <T> Set<T> getPostset(N node, Class<T> type, Func<N, Boolean> through) {
         Set<T> result = new HashSet<>();
         Set<N> visited = new HashSet<>();
         Queue<N> queue = new LinkedList<>();
@@ -226,17 +225,6 @@ public abstract class AbstractModel<N extends Node, C extends Connection>  imple
         if (mgr instanceof HierarchyReferenceManager) {
             ((HierarchyReferenceManager) mgr).setName(node, name);
         }
-    }
-
-    @Override
-    public String getDerivedName(Node node, Container container, String candidate) {
-        String result = candidate;
-        if ((mgr instanceof HierarchyReferenceManager) && (container instanceof NamespaceProvider)) {
-            HierarchyReferenceManager manager = (HierarchyReferenceManager) mgr;
-            NameManager nameManager = manager.getNameManager((NamespaceProvider) container);
-            result = nameManager.getDerivedName(null, candidate);
-        }
-        return result;
     }
 
 }
