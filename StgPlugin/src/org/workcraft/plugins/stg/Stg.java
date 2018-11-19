@@ -9,6 +9,7 @@ import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NotFoundException;
@@ -467,6 +468,27 @@ public class Stg extends AbstractMathModel implements StgModel {
         result.add("Transition", getTransitions().size());
         result.add("Arc", getConnections().size());
         return result;
+    }
+
+    @Override
+    public void anonymise() {
+        for (MathNode node : Hierarchy.getDescendantsOfType(getRoot(), MathNode.class)) {
+            String name = getName(node);
+            if ((name != null) && !Identifier.isInternal(name) && !(node instanceof SignalTransition)) {
+                getReferenceManager().setDefaultName(node);
+            }
+        }
+        for (String signalRef : getSignalReferences()) {
+            String newName = null;
+            for (SignalTransition signalTransition : getSignalTransitions(signalRef)) {
+                if (newName == null) {
+                    getReferenceManager().setDefaultName(signalTransition);
+                    newName = signalTransition.getSignalName();
+                } else {
+                    setName(signalTransition, newName);
+                }
+            }
+        }
     }
 
 }
