@@ -3,6 +3,7 @@ package org.workcraft.dom.references;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesAddedEvent;
@@ -211,6 +212,12 @@ public class HierarchyReferenceManager extends HierarchySupervisor implements Re
         NamespaceProvider provider = getNamespaceProvider(node);
         NameManager mgr = getNameManager(provider);
         return mgr.getName(node);
+    }
+
+    public void setDefaultName(MathNode node) {
+        NamespaceProvider namespaceProvider = getNamespaceProvider(node);
+        NameManager nameManagerer = getNameManager(namespaceProvider);
+        nameManagerer.setDefaultName(node);
     }
 
 }

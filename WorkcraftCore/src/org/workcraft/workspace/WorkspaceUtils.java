@@ -1,8 +1,10 @@
 package org.workcraft.workspace;
 
+import org.workcraft.dom.Model;
+
 public class WorkspaceUtils {
 
-    public static boolean isApplicable(WorkspaceEntry we, Class<?> cls) {
+    public static boolean isApplicable(WorkspaceEntry we, Class<? extends Model> cls) {
         if (we != null) {
             return isApplicable(we.getModelEntry(), cls);
         }
@@ -16,14 +18,14 @@ public class WorkspaceUtils {
         return false;
     }
 
-    public static boolean isApplicableExact(WorkspaceEntry we, Class<?> cls) {
+    public static boolean isApplicableExact(WorkspaceEntry we, Class<? extends Model> cls) {
         if (we != null) {
             return isApplicableExact(we.getModelEntry(), cls);
         }
         return false;
     }
 
-    public static boolean isApplicableExact(ModelEntry me, Class<?> cls) {
+    public static boolean isApplicableExact(ModelEntry me, Class<? extends Model> cls) {
         if (me != null) {
             return me.isApplicableExact(cls);
         }

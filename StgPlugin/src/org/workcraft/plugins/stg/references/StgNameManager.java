@@ -1,8 +1,8 @@
 package org.workcraft.plugins.stg.references;
 
 import org.workcraft.dom.Node;
-import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.references.DefaultNameManager;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.util.ListMap;
@@ -252,11 +252,14 @@ public class StgNameManager extends DefaultNameManager {
 
     @Override
     public String getDerivedName(Node node, String candidate) {
-        String result = candidate;
-        if (!(node instanceof SignalTransition)) {
-            result = super.getDerivedName(node, candidate);
+        if (node instanceof SignalTransition) {
+            return candidate;
         }
-        return result;
+        if (node instanceof DummyTransition) {
+            Pair<String, Integer> r = LabelParser.parseDummyTransition(candidate);
+            candidate = r.getFirst();
+        }
+        return super.getDerivedName(node, candidate);
     }
 
 }

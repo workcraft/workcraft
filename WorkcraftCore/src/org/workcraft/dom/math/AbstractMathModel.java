@@ -5,6 +5,7 @@ import org.workcraft.dom.*;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.HierarchyReferenceManager;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
@@ -42,6 +43,11 @@ public abstract class AbstractMathModel extends AbstractModel<MathNode, MathConn
     @Override
     public HierarchyReferenceManager createDefaultReferenceManager() {
         return new HierarchyReferenceManager();
+    }
+
+    @Override
+    public HierarchyReferenceManager getReferenceManager() {
+        return (HierarchyReferenceManager) super.getReferenceManager();
     }
 
     @Override
@@ -137,10 +143,7 @@ public abstract class AbstractMathModel extends AbstractModel<MathNode, MathConn
         if (srcModel == null) {
             srcModel = this;
         }
-        HierarchyReferenceManager manager = null;
-        if (getReferenceManager() instanceof HierarchyReferenceManager) {
-            manager = (HierarchyReferenceManager) getReferenceManager();
-        }
+        HierarchyReferenceManager manager = getReferenceManager();
         if (manager == null) {
             return false;
         }
@@ -177,6 +180,16 @@ public abstract class AbstractMathModel extends AbstractModel<MathNode, MathConn
         Container container = Hierarchy.getNearestContainer(first, second);
         container.add(connection);
         return connection;
+    }
+
+    @Override
+    public void anonymise() {
+        for (MathNode node : Hierarchy.getDescendantsOfType(getRoot(), MathNode.class)) {
+            String name = getName(node);
+            if (!Identifier.isInternal(name)) {
+                getReferenceManager().setDefaultName(node);
+            }
+        }
     }
 
 }

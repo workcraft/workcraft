@@ -37,7 +37,7 @@ public abstract class AbstractTransformationCommand implements ScriptableCommand
         return null;
     }
 
-    public Collection<VisualNode> collect(VisualModel model) {
+    public Collection<? extends VisualNode> collect(VisualModel model) {
         return new HashSet<>(model.getSelection());
     }
 

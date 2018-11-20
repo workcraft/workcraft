@@ -12,9 +12,12 @@ public interface NameManager {
     String getName(Node node);
     boolean isNamed(Node node);
     boolean isUnusedName(String name);
+
     Node getNode(String name);
     void remove(Node node);
 
+    void setDefaultName(Node node);
     void setDefaultNameIfUnnamed(Node node);
+
     String getDerivedName(Node node, String candidate);
 }

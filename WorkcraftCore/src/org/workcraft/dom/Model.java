@@ -35,7 +35,6 @@ public interface Model<N extends Node, C extends Connection>  extends NodeContex
 
     String getName(Node node);
     void setName(Node node, String name);
-    String getDerivedName(Node node, Container container, String candidate);
 
     Container createDefaultRoot();
     Container getRoot();
@@ -44,8 +43,8 @@ public interface Model<N extends Node, C extends Connection>  extends NodeContex
 
     <T> Set<T> getPreset(N node, Class<T> type);
     <T> Set<T> getPostset(N node, Class<T> type);
-    <T> Set<T> getPreset(N node, Class<T> type, Func<Node, Boolean> through);
-    <T> Set<T> getPostset(N node, Class<T> type, Func<Node, Boolean> through);
+    <T> Set<T> getPreset(N node, Class<T> type, Func<N, Boolean> through);
+    <T> Set<T> getPostset(N node, Class<T> type, Func<N, Boolean> through);
 
     void add(Node node);
     void remove(Node node);

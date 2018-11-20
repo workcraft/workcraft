@@ -4,11 +4,14 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.references.Identifier;
+import org.workcraft.dom.references.NameManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.dtd.*;
 import org.workcraft.plugins.wtg.observers.GuardNameSupervisor;
 import org.workcraft.plugins.wtg.observers.InitialStateSupervisor;
 import org.workcraft.plugins.wtg.observers.SignalTypeConsistencySupervisor;
+import org.workcraft.plugins.wtg.utils.WtgUtils;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
@@ -129,6 +132,29 @@ public class Wtg extends Dtd {
             }
         }
         return null;
+    }
+
+    @Override
+    public void anonymise() {
+        HashSet<String> takenNames = new HashSet<>(getSignalNames());
+        for (MathNode node : Hierarchy.getDescendantsOfType(getRoot(), MathNode.class)) {
+            String name = getName(node);
+            if ((name != null) && !Identifier.isInternal(name) && !(node instanceof Signal)) {
+                getReferenceManager().setDefaultName(node);
+                takenNames.add(getName(node));
+            }
+        }
+        NameManager nameManager = getReferenceManager().getNameManager(null);
+        String prefix = nameManager.getPrefix(new Signal());
+        int count = 0;
+        for (String oldName : getSignalNames()) {
+            String newName;
+            do {
+                newName = prefix + count++;
+            } while (takenNames.contains(newName));
+            WtgUtils.renameSignal(this, oldName, newName);
+            takenNames.add(newName);
+        }
     }
 
 }
