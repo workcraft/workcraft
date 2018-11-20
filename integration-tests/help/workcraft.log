@@ -1,0 +1,73 @@
+Workcraft 3 (Return of the Hazard), version 3.2.2 (alpha)
+Copyright 2006-2018 Newcastle University
+
+Initialising JavaScript...
+Initialising plugins...
+  Processing class path entry: AtacsPlugin/build/libs/AtacsPlugin.jar
+  Processing class path entry: CircuitPlugin/build/libs/CircuitPlugin.jar
+  Processing class path entry: CircuitPlugin/build/libs/CircuitPlugin-test.jar
+  Processing class path entry: CpogPlugin/build/libs/CpogPlugin.jar
+  Processing class path entry: DfsPlugin/build/libs/DfsPlugin.jar
+  Processing class path entry: DtdPlugin/build/libs/DtdPlugin.jar
+  Processing class path entry: FsmPlugin/build/libs/FsmPlugin.jar
+  Processing class path entry: FstPlugin/build/libs/FstPlugin.jar
+  Processing class path entry: _GraphPlugin/build/libs/_GraphPlugin.jar
+  Processing class path entry: GraphPlugin/build/libs/GraphPlugin.jar
+  Processing class path entry: MpsatSynthesisPlugin/build/libs/MpsatSynthesisPlugin.jar
+  Processing class path entry: MpsatVerificationPlugin/build/libs/MpsatVerificationPlugin.jar
+  Processing class path entry: PcompPlugin/build/libs/PcompPlugin.jar
+  Processing class path entry: PetrifyPlugin/build/libs/PetrifyPlugin.jar
+  Processing class path entry: _PetriPlugin/build/libs/_PetriPlugin.jar
+  Processing class path entry: PetriPlugin/build/libs/PetriPlugin.jar
+  Processing class path entry: PlatoPlugin/build/libs/PlatoPlugin.jar
+  Processing class path entry: PolicyPlugin/build/libs/PolicyPlugin.jar
+  Processing class path entry: PunfPlugin/build/libs/PunfPlugin.jar
+  Processing class path entry: SonPlugin/build/libs/SonPlugin.jar
+  Processing class path entry: StgPlugin/build/libs/StgPlugin.jar
+  Processing class path entry: _TimelapsePlugin/build/libs/_TimelapsePlugin.jar
+  Processing class path entry: WorkcraftCore/build/libs/WorkcraftCore.jar
+  Processing class path entry: WorkcraftRunner/build/libs/WorkcraftRunner.jar
+  Processing class path entry: WtgPlugin/build/libs/WtgPlugin.jar
+  Processing class path entry: XmasPlugin/build/libs/XmasPlugin.jar
+27 plugin(s) found.
+  Loading module: ATACS synthesis support
+  Loading module: Gate-level circuit model
+  Loading module: Conditional Partial Order Graphs
+  Loading module: Dataflow Structure
+  Loading module: Digital Timing Diagram
+  Loading module: Finite State Machine
+  Loading module: Finite State Transducer
+  Loading module: Directed Graph Module (example)
+  Loading module: Directed Graphs
+  Loading module: MPSat synthesis support
+  Loading module: MPSat verification support
+  Loading module: PComp parallel composition support
+  Loading module: Petrify synthesis support
+  Loading module: Petri Net Module (example)
+  Loading module: Petri Net
+  Loading module: Plato
+  Loading module: Policy Net
+  Loading module: Punf unfolding support
+  Loading module: Structured Occurrence Nets
+  Loading module: Signal Transition Graphs
+  Loading module: Timelapse support
+  Loading module: Built-in tools
+  Loading module: Built-in file operations for Workspace
+  Loading module: Built-in exporters for Workcraft models
+  Loading module: Built-in XML serialisers for basic data types
+  Loading module: Waveform Transition Graph
+  Loading module: xMAS Circuit
+  Executing script: scripts/dfs-file.js
+  Executing script: scripts/core-file.js
+  Executing script: scripts/core-editor.js
+  Executing script: scripts/stg-file.js
+  Executing script: scripts/core-config.js
+  Executing script: scripts/core-misc.js
+  Executing script: scripts/core-output.js
+  Executing script: scripts/circuit-file.js
+  Executing script: scripts/fst-file.js
+  Executing script: scripts/core-exec.js
+  Executing script: scripts/core-workspace.js
+  Executing script: scripts/core-help.js
+Executing help.js...
+Shutting down...

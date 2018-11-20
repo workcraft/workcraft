@@ -6,10 +6,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.utils.PetriNetChecker;
-import org.workcraft.plugins.stg.DummyTransition;
-import org.workcraft.plugins.stg.Signal;
-import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.*;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -34,7 +31,7 @@ public class StgStatisticsCommand extends AbstractStatisticsCommand {
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
 
         Collection<Transition> transitions = stg.getTransitions();
-        Collection<Place> places = stg.getPlaces();
+        Collection<StgPlace> places = stg.getPlaces();
         Collection<MathConnection> connections = stg.getConnections();
 
         int inputSignalCount = stg.getSignalReferences(Signal.Type.INPUT).size();

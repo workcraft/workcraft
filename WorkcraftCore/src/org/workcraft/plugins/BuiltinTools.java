@@ -30,7 +30,7 @@ public class BuiltinTools implements Module {
         pm.registerSettings(CommonSatSettings.class);
 
         ScriptableCommandUtils.register(AnonymiseTransformationCommand.class, "transformModelAnonymise",
-                "transform the given 'work' by anonymising selected (or all) nodes");
+                "anonymise the given 'work' by randomly renaming its nodes");
 
         ScriptableCommandUtils.register(StraightenConnectionTransformationCommand.class, "transformModelStraightenConnection",
                 "transform the given 'work' by straightening selected (or all) arcs");

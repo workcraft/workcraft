@@ -6,9 +6,9 @@ import org.workcraft.dom.math.MathModel;
 import java.util.Collection;
 
 public interface PetriNetModel extends MathModel {
-    Collection<Transition> getTransitions();
-    Collection<Place> getPlaces();
-    Collection<MathConnection> getConnections();
+    Collection<? extends Transition> getTransitions();
+    Collection<? extends Place> getPlaces();
+    Collection<? extends MathConnection> getConnections();
 
     boolean isEnabled(Transition t);
     void fire(Transition t);

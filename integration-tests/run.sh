@@ -13,7 +13,7 @@ function size() {
 }
 
 DIR="integration-tests"
-TEST_DIR_PATTERN="*"
+TEST_DIR_PATTERN="hel*"
 REF_FILE_PATTERN="*.ref"
 SCRIPT_FILE="test.sh"
 LOG_FILE="workcraft.log"

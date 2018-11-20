@@ -14,7 +14,6 @@ import org.workcraft.dom.references.NameManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NotFoundException;
 import org.workcraft.plugins.petri.PetriNet;
-import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.observers.SignalTypeConsistencySupervisor;
 import org.workcraft.plugins.stg.references.StgReferenceManager;
@@ -112,8 +111,8 @@ public class Stg extends AbstractMathModel implements StgModel {
     }
 
     @Override
-    public final Collection<Place> getPlaces() {
-        return Hierarchy.getDescendantsOfType(getRoot(), Place.class);
+    public final Collection<StgPlace> getPlaces() {
+        return Hierarchy.getDescendantsOfType(getRoot(), StgPlace.class);
     }
 
     @Override
