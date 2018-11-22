@@ -1,76 +1,179 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
-<svg id="svg1307" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="48px" width="48px" xmlns:cc="http://creativecommons.org/ns#" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/">
- <defs id="defs1309">
-  <linearGradient id="linearGradient2817">
-   <stop id="stop2819" offset="0"/>
-   <stop id="stop2821" stop-color="#fff" stop-opacity=".48454" offset="1"/>
-  </linearGradient>
-  <linearGradient id="linearGradient2697">
-   <stop id="stop2699" stop-color="#babdb6" offset="0"/>
-   <stop id="stop2701" stop-color="#555753" offset="1"/>
-  </linearGradient>
-  <linearGradient id="linearGradient2679">
-   <stop id="stop2681" stop-color="#f7f7f7" offset="0"/>
-   <stop id="stop2683" stop-color="#ccd0c7" offset="1"/>
-  </linearGradient>
-  <linearGradient id="linearGradient3081">
-   <stop id="stop3083" stop-color="#fff" offset="0"/>
-   <stop id="stop3085" stop-color="#fff" stop-opacity="0" offset="1"/>
-  </linearGradient>
-  <linearGradient id="linearGradient2800" y2="52.511" xlink:href="#linearGradient3081" gradientUnits="userSpaceOnUse" x2="14" gradientTransform="translate(-.0004 -.09426)" y1="15.292" x1="15.09"/>
-  <linearGradient id="linearGradient2803" y2="93.205" xlink:href="#linearGradient2697" gradientUnits="userSpaceOnUse" x2="169" gradientTransform="matrix(1 0 0 1.0044 -145 -71.462)" y1="110.34" x1="169"/>
-  <radialGradient id="radialGradient2809" xlink:href="#linearGradient2679" gradientUnits="userSpaceOnUse" cy="100.2" cx="169.77" gradientTransform="matrix(.0000035623 -1.072 1.9921 -.0000012507 -175.61 212.69)" r="11"/>
-  <linearGradient id="linearGradient2823" y2="105.49" xlink:href="#linearGradient2817" gradientUnits="userSpaceOnUse" x2="174.75" gradientTransform="matrix(1.1033 0 0 1.0549 -163.12 -76.311)" y1="84.263" x1="174.83"/>
- </defs>
- <metadata id="metadata1312">
-  <rdf:RDF>
-   <cc:Work rdf:about="">
-    <dc:format>image/svg+xml</dc:format>
-    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:title>Media Playback Pause</dc:title>
-    <dc:creator>
-     <cc:Agent>
-      <dc:title>Lapo Calamandrei</dc:title>
-     </cc:Agent>
-    </dc:creator>
-    <cc:license rdf:resource="http://creativecommons.org/licenses/publicdomain/"/>
-    <dc:subject>
-     <rdf:Bag>
-      <rdf:li>media</rdf:li>
-      <rdf:li>pause</rdf:li>
-      <rdf:li>playback</rdf:li>
-      <rdf:li>video</rdf:li>
-      <rdf:li>music</rdf:li>
-     </rdf:Bag>
-    </dc:subject>
-    <dc:contributor>
-     <cc:Agent>
-      <dc:title>Jakub Steiner</dc:title>
-     </cc:Agent>
-    </dc:contributor>
-   </cc:Work>
-   <cc:License rdf:about="http://creativecommons.org/licenses/publicdomain/">
-    <cc:permits rdf:resource="http://creativecommons.org/ns#Reproduction"/>
-    <cc:permits rdf:resource="http://creativecommons.org/ns#Distribution"/>
-    <cc:permits rdf:resource="http://creativecommons.org/ns#DerivativeWorks"/>
-   </cc:License>
-  </rdf:RDF>
- </metadata>
- <g id="layer1">
-  <g id="g2837">
-   <path id="path2815" opacity=".15" stroke-linejoin="round" style="color:#000000" d="m26.087 12.829v22.153h8.826v-22.153h-8.826z" stroke="url(#linearGradient2823)" stroke-linecap="square" stroke-width="2" fill="none"/>
-   <path id="path2827" style="color:#000000" d="m26.5 13.406v21h8v-21h-8z" fill-rule="evenodd" fill="url(#radialGradient2809)"/>
-   <path id="path2762" stroke-linejoin="round" style="color:#000000" d="m26.5 13.408v21.092h8v-21.092h-8z" stroke="url(#linearGradient2803)" stroke-linecap="square" fill="none"/>
-   <path id="path2811" style="color:#000000" d="m27.5 14.406v19h6v-19h-6z" stroke="url(#linearGradient2800)" stroke-linecap="square" fill="none"/>
-   <path id="path2479" opacity=".5" style="color:#000000" d="m28.019 14.943v8.385l4.994-0.618v-7.856l-4.994 0.089z" display="block" fill="#f7f7f7"/>
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg1307"
+   height="48px"
+   width="48px"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="simulation-pause.svg">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1176"
+     id="namedview34"
+     showgrid="false"
+     inkscape:zoom="10.544948"
+     inkscape:cx="-19.994774"
+     inkscape:cy="24.260191"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1307" />
+  <defs
+     id="defs1309">
+    <linearGradient
+       id="linearGradient2817">
+      <stop
+         id="stop2819"
+         offset="0" />
+      <stop
+         id="stop2821"
+         stop-color="#fff"
+         stop-opacity=".48454"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient2697">
+      <stop
+         id="stop2699"
+         stop-color="#babdb6"
+         offset="0" />
+      <stop
+         id="stop2701"
+         stop-color="#555753"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient2679">
+      <stop
+         id="stop2681"
+         stop-color="#f7f7f7"
+         offset="0" />
+      <stop
+         id="stop2683"
+         stop-color="#ccd0c7"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3081">
+      <stop
+         id="stop3083"
+         stop-color="#fff"
+         offset="0" />
+      <stop
+         id="stop3085"
+         stop-color="#fff"
+         stop-opacity="0"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient2800"
+       y2="52.511"
+       xlink:href="#linearGradient3081"
+       gradientUnits="userSpaceOnUse"
+       x2="14"
+       gradientTransform="translate(-12.9724,-0.09426)"
+       y1="15.292"
+       x1="15.09" />
+    <linearGradient
+       id="linearGradient2803"
+       y2="93.205"
+       xlink:href="#linearGradient2697"
+       gradientUnits="userSpaceOnUse"
+       x2="169"
+       gradientTransform="matrix(1,0,0,1.0044,-157.972,-71.462)"
+       y1="110.34"
+       x1="169" />
+    <radialGradient
+       id="radialGradient2809"
+       xlink:href="#linearGradient2679"
+       gradientUnits="userSpaceOnUse"
+       cy="100.2"
+       cx="169.77"
+       gradientTransform="matrix(3.5623e-6,-1.072,1.9921,-1.2507e-6,-188.582,212.69)"
+       r="11" />
+    <linearGradient
+       id="linearGradient2823"
+       y2="105.49"
+       xlink:href="#linearGradient2817"
+       gradientUnits="userSpaceOnUse"
+       x2="174.75"
+       gradientTransform="matrix(1.1033,0,0,1.0549,-176.092,-76.311)"
+       y1="84.263"
+       x1="174.83" />
+  </defs>
+  <metadata
+     id="metadata1312">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Media Playback Pause</dc:title>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Lapo Calamandrei</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/publicdomain/" />
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>media</rdf:li>
+            <rdf:li>pause</rdf:li>
+            <rdf:li>playback</rdf:li>
+            <rdf:li>video</rdf:li>
+            <rdf:li>music</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+        <dc:contributor>
+          <cc:Agent>
+            <dc:title>Jakub Steiner</dc:title>
+          </cc:Agent>
+        </dc:contributor>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/publicdomain/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="g15279"
+     transform="translate(-0.014,0.046)"
+     style="stroke:none">
+    <path
+       inkscape:connector-curvature="0"
+       d="m 26.5,13.408 0,21.092 8,0 0,-21.092 -8,0 z"
+       style="color:#000000;fill:#000000;fill-opacity:1;stroke:none;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:1"
+       id="path2762" />
+    <path
+       inkscape:connector-curvature="0"
+       d="m 13.528,13.408 0,21.092 8,0 0,-21.092 -8,0 z"
+       style="color:#000000;fill:#000000;fill-opacity:1;stroke:none;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:1"
+       id="path2852" />
   </g>
-  <g id="use2844" transform="translate(-12.972)">
-   <path id="path2848" opacity=".15" stroke-linejoin="round" style="color:#000000" d="m26.087 12.829v22.153h8.826v-22.153h-8.826z" stroke="url(#linearGradient2823)" stroke-linecap="square" stroke-width="2" fill="none"/>
-   <path id="path2850" style="color:#000000" d="m26.5 13.406v21h8v-21h-8z" fill-rule="evenodd" fill="url(#radialGradient2809)"/>
-   <path id="path2852" stroke-linejoin="round" style="color:#000000" d="m26.5 13.408v21.092h8v-21.092h-8z" stroke="url(#linearGradient2803)" stroke-linecap="square" fill="none"/>
-   <path id="path2854" style="color:#000000" d="m27.5 14.406v19h6v-19h-6z" stroke="url(#linearGradient2800)" stroke-linecap="square" fill="none"/>
-   <path id="path2856" opacity=".5" style="color:#000000" display="block" fill="#f7f7f7" d="m28.019 14.943v10.065l4.994-0.619v-9.535l-4.994 0.089z"/>
-  </g>
- </g>
 </svg>

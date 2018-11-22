@@ -14,7 +14,7 @@
    width="48px"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="simulation-play.svg">
+   sodipodi:docname="simulation-eject.svg">
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -26,11 +26,11 @@
      inkscape:pageshadow="2"
      inkscape:window-width="1920"
      inkscape:window-height="1176"
-     id="namedview20"
+     id="namedview34"
      showgrid="false"
-     inkscape:zoom="5.4526855"
-     inkscape:cx="-30.017806"
-     inkscape:cy="1.2978826"
+     inkscape:zoom="5.8317976"
+     inkscape:cx="72.178996"
+     inkscape:cy="-1.2202286"
      inkscape:window-x="0"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
@@ -42,7 +42,7 @@
        y2="95"
        gradientUnits="userSpaceOnUse"
        x2="70.827"
-       gradientTransform="translate(-45,-71.094)"
+       gradientTransform="translate(-43,-71.094)"
        y1="124.12"
        x1="71.289">
       <stop
@@ -59,7 +59,7 @@
        gradientUnits="userSpaceOnUse"
        cy="83.991"
        cx="107.59"
-       gradientTransform="matrix(0.053243,-0.83624,2.0195,0.12857,-151.92,108.08)"
+       gradientTransform="matrix(0.053243,-0.83624,2.0195,0.12857,-149.92,108.08)"
        r="12.552">
       <stop
          id="stop2693"
@@ -75,7 +75,7 @@
        y2="88.924"
        gradientUnits="userSpaceOnUse"
        x2="70.952"
-       gradientTransform="matrix(1.1282,0,0,1.1282,-53.993,-83.36)"
+       gradientTransform="matrix(1.1282,0,0,1.1282,-51.993,-83.36)"
        y1="101.74"
        x1="70.914">
       <stop
@@ -84,6 +84,55 @@
          offset="0" />
       <stop
          id="stop2688"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient2306-9"
+       y2="95"
+       gradientUnits="userSpaceOnUse"
+       x2="70.827"
+       gradientTransform="translate(-58.803,-70.947)"
+       y1="124.12"
+       x1="71.289">
+      <stop
+         id="stop5077-3"
+         stop-color="#adb0a8"
+         offset="0" />
+      <stop
+         id="stop5079-8"
+         stop-color="#464744"
+         offset="1" />
+    </linearGradient>
+    <radialGradient
+       id="radialGradient2314-1"
+       gradientUnits="userSpaceOnUse"
+       cy="83.991"
+       cx="107.59"
+       gradientTransform="matrix(0.053243,-0.83624,2.0195,0.12857,-165.72,108.22)"
+       r="12.552">
+      <stop
+         id="stop2693-2"
+         stop-color="#fff"
+         offset="0" />
+      <stop
+         id="stop2695-1"
+         stop-color="#d3d7cf"
+         offset="1" />
+    </radialGradient>
+    <linearGradient
+       id="linearGradient3053"
+       y2="88.924"
+       gradientUnits="userSpaceOnUse"
+       y1="101.74"
+       gradientTransform="matrix(1.1282,0,0,1.1282,-67.796,-83.213)"
+       x2="70.952"
+       x1="70.914">
+      <stop
+         id="stop2686-0"
+         stop-color="#fff"
+         offset="0" />
+      <stop
+         id="stop2688-4"
          offset="1" />
     </linearGradient>
   </defs>
@@ -129,9 +178,25 @@
       </cc:License>
     </rdf:RDF>
   </metadata>
-  <path
-     inkscape:connector-curvature="0"
-     d="m 11.948,37.9055 0,-27.811 24.104,13.906 -24.104,13.905 z"
-     style="color:#000000;fill:#000000;fill-opacity:1;stroke:none;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:1"
-     id="path2479" />
+  <g
+     id="g24255"
+     transform="translate(0,-5.9700765)">
+    <g
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       transform="matrix(0,-1,1,0,0.0945,59.423782)"
+       id="g15259">
+      <path
+         sodipodi:nodetypes="cccc"
+         inkscape:connector-curvature="0"
+         d="M 28.288,37.811 28.288,10 42.224048,23.9055 Z"
+         style="color:#000000;fill:#000000;fill-opacity:1;stroke:none;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:1"
+         id="path2479" />
+    </g>
+    <path
+       sodipodi:nodetypes="ccccc"
+       inkscape:connector-curvature="0"
+       d="m 37.546,34.740419 -27.092,0 0,8 27.092,0 z"
+       style="color:#000000;fill:#000000;fill-opacity:1;stroke:none;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:1"
+       id="path2852" />
+  </g>
 </svg>
