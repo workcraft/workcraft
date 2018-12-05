@@ -1,12 +1,5 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
@@ -22,6 +15,13 @@ import org.workcraft.tasks.Task;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.ToolUtils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MpsatTask implements Task<MpsatOutput> {
 
@@ -68,10 +68,6 @@ public class MpsatTask implements Task<MpsatOutput> {
     private final File unfoldingFile;
     private final File directory;
     private final File netFile;
-
-    public MpsatTask(String[] args, File unfoldingFile, File directory) {
-        this(args, unfoldingFile, directory, null);
-    }
 
     public MpsatTask(String[] args, File unfoldingFile, File directory, File netFile) {
         this.args = args;

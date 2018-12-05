@@ -1,18 +1,12 @@
 package org.workcraft.plugins.policy.tasks;
 
-import java.io.File;
-
 import org.workcraft.Framework;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
-import org.workcraft.plugins.mpsat.tasks.MpsatOutputParser;
-import org.workcraft.plugins.mpsat.tasks.MpsatOutput;
-import org.workcraft.plugins.mpsat.tasks.MpsatTask;
+import org.workcraft.plugins.mpsat.tasks.*;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.policy.VisualPolicyNet;
 import org.workcraft.plugins.policy.tools.PolicyToPetriConverter;
@@ -29,6 +23,8 @@ import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.io.File;
 
 public class CheckDeadlockFreenessTask extends MpsatChainTask {
 
@@ -85,7 +81,7 @@ public class CheckDeadlockFreenessTask extends MpsatChainTask {
             monitor.progressUpdate(0.70);
 
             MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory),
-                    unfoldingFile, directory);
+                    unfoldingFile, directory, netFile);
             Result<? extends MpsatOutput> mpsatResult = framework.getTaskManager().execute(
                     mpsatTask, "Running deadlock checking [MPSat]", mon);
 

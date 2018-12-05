@@ -1,7 +1,5 @@
 package org.workcraft.plugins.dfs.tasks;
 
-import java.io.File;
-
 import org.workcraft.Framework;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
@@ -10,11 +8,7 @@ import org.workcraft.plugins.dfs.stg.DfsToStgConverter;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
-import org.workcraft.plugins.mpsat.tasks.MpsatOutputParser;
-import org.workcraft.plugins.mpsat.tasks.MpsatOutput;
-import org.workcraft.plugins.mpsat.tasks.MpsatTask;
+import org.workcraft.plugins.mpsat.tasks.*;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
@@ -29,6 +23,8 @@ import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.io.File;
 
 public class DfsDeadlockFreenessCheckTask extends MpsatChainTask {
 
@@ -48,7 +44,7 @@ public class DfsDeadlockFreenessCheckTask extends MpsatChainTask {
         try {
             VisualDfs dfs = WorkspaceUtils.getAs(we, VisualDfs.class);
             DfsToStgConverter converter = new DfsToStgConverter(dfs);
-            StgModel model = (StgModel) converter.getStgModel().getMathModel();
+            StgModel model = converter.getStgModel().getMathModel();
             StgFormat format = StgFormat.getInstance();
             Exporter exporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), model, format);
             if (exporter == null) {
@@ -86,7 +82,7 @@ public class DfsDeadlockFreenessCheckTask extends MpsatChainTask {
             monitor.progressUpdate(0.70);
 
             MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory),
-                    unfoldingFile, directory);
+                    unfoldingFile, directory, netFile);
             Result<? extends MpsatOutput> mpsatResult = framework.getTaskManager().execute(
                     mpsatTask, "Running deadlock checking [MPSat]", mon);
 
