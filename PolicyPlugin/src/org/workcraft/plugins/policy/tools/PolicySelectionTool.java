@@ -35,13 +35,13 @@ public class PolicySelectionTool extends SelectionTool {
 
         JButton bundleButton = GUI.createIconButton(
                 GUI.createIconFromSVG("images/policy-selection-bundle.svg"),
-                "Bundle selected transitions (" + DesktopApi.getMenuKeyMaskName() + "-B)");
+                "Bundle selected transitions (" + DesktopApi.getMenuKeyName() + "-B)");
         bundleButton.addActionListener(event -> selectionBundle(editor));
         toolbar.add(bundleButton);
 
         JButton unbundleButton = GUI.createIconButton(
                 GUI.createIconFromSVG("images/policy-selection-unbundle.svg"),
-                "Unbundle selected transitions (" + DesktopApi.getMenuKeyMaskName() + "+Shift-B)");
+                "Unbundle selected transitions (" + DesktopApi.getMenuKeyName() + "+Shift-B)");
         unbundleButton.addActionListener(event -> selectionUnbundle(editor));
         toolbar.add(unbundleButton);
         if (toolbar.getComponentCount() > 0) {

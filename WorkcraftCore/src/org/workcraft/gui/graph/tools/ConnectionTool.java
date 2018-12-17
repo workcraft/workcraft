@@ -34,12 +34,13 @@ public class ConnectionTool extends AbstractGraphEditorTool {
     protected boolean directedArcs = true;
     protected boolean allLevels = true;
 
-    private Point2D firstPoint = null;
-    private VisualNode firstNode = null;
     private Point2D currentPoint = null;
     protected VisualNode currentNode = null;
+    private Point2D firstPoint = null;
+    private VisualNode firstNode = null;
+    private Point2D lastPoint = null;
+    private LinkedList<Point2D> controlPoints = new LinkedList<>();
     private boolean mouseLeftFirstNode = false;
-    private LinkedList<Point2D> controlPoints = null;
 
     public ConnectionTool() {
         this(true, true, true);
@@ -81,6 +82,7 @@ public class ConnectionTool extends AbstractGraphEditorTool {
         currentNode = null;
         firstPoint = null;
         firstNode = null;
+        lastPoint = null;
         mouseLeftFirstNode = false;
         editor.getModel().selectNone();
         setPermissions(editor);
@@ -141,10 +143,8 @@ public class ConnectionTool extends AbstractGraphEditorTool {
             g.setStroke(new BasicStroke((float) editor.getViewport().pixelSizeInUserSpace().getX()));
             Path2D path = new Path2D.Double();
             path.moveTo(firstPoint.getX(), firstPoint.getY());
-            if (controlPoints != null) {
-                for (Point2D point: controlPoints) {
-                    path.lineTo(point.getX(), point.getY());
-                }
+            for (Point2D point : controlPoints) {
+                path.lineTo(point.getX(), point.getY());
             }
             path.lineTo(currentPoint.getX(), currentPoint.getY());
             if (currentNode == null) {
@@ -171,29 +171,32 @@ public class ConnectionTool extends AbstractGraphEditorTool {
 
     @Override
     public void mouseMoved(GraphEditorMouseEvent e) {
-        currentPoint = e.getPosition();
+        currentPoint = getCurrentPoint(e);
         updateCurrentNode(e.getEditor());
         e.getEditor().repaint();
     }
 
+    private Point2D getCurrentPoint(GraphEditorMouseEvent e) {
+        Point2D result = e.getPosition();
+        if (e.isShiftKeyDown() && (lastPoint != null)) {
+            if (Math.abs(result.getX() - lastPoint.getX()) > Math.abs(result.getY() - lastPoint.getY())) {
+                return new Point2D.Double(result.getX(), lastPoint.getY());
+            } else {
+                return new Point2D.Double(lastPoint.getX(), result.getY());
+            }
+        }
+        return result;
+    }
+
     @Override
     public void mousePressed(GraphEditorMouseEvent e) {
-        currentPoint = e.getPosition();
+        currentPoint = getCurrentPoint(e);
         GraphEditor editor = e.getEditor();
         updateCurrentNode(editor);
         if (e.getButton() == MouseEvent.BUTTON1) {
             if (currentNode == null) {
                 if (firstNode != null) {
-                    Set<Point2D> snaps = new HashSet<>();
-                    if (controlPoints.isEmpty()) {
-                        AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(firstNode);
-                        Point2D p = TransformHelper.transform(firstNode, localToRootTransform).getCenter();
-                        snaps.add(p);
-                    } else {
-                        snaps.add(controlPoints.getLast());
-                    }
-                    Point2D snapPos = editor.snap(currentPoint, snaps);
-                    controlPoints.add(snapPos);
+                    continueConnection(e);
                 }
             } else {
                 if (firstNode == null) {
@@ -209,7 +212,7 @@ public class ConnectionTool extends AbstractGraphEditorTool {
                 } else {
                     editor.getWorkspaceEntry().saveMemento();
                     finishConnection(e);
-                    if ((e.getModifiers() & DesktopApi.getMenuKeyMouseMask()) != 0) {
+                    if (e.isMenuKeyDown()) {
                         startConnection(e);
                     } else {
                         resetState(editor);
@@ -240,12 +243,27 @@ public class ConnectionTool extends AbstractGraphEditorTool {
         } else {
             firstPoint = TransformHelper.transform(firstNode, localToRootTransform).getCenter();
         }
+        lastPoint = firstPoint;
         currentNode = null;
         mouseLeftFirstNode = false;
         controlPoints = new LinkedList<>();
         GraphEditor editor = e.getEditor();
         hideIssue(editor);
         editor.getWorkspaceEntry().setCanModify(false);
+    }
+
+    public void continueConnection(GraphEditorMouseEvent e) {
+        Set<Point2D> snaps = new HashSet<>();
+        if (controlPoints.isEmpty()) {
+            AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(firstNode);
+            Point2D p = TransformHelper.transform(firstNode, localToRootTransform).getCenter();
+            snaps.add(p);
+        } else {
+            snaps.add(controlPoints.getLast());
+        }
+        Point2D snapPos = e.getEditor().snap(currentPoint, snaps);
+        controlPoints.add(snapPos);
+        lastPoint = snapPos;
     }
 
     public VisualConnection finishConnection(GraphEditorMouseEvent e) {
@@ -293,6 +311,11 @@ public class ConnectionTool extends AbstractGraphEditorTool {
             e.getEditor().repaint();
             return true;
         }
+        if (!controlPoints.isEmpty() && ((e.getKeyCode() == KeyEvent.VK_DELETE) || (e.getKeyCode() == KeyEvent.VK_BACK_SPACE))) {
+            controlPoints.removeLast();
+            e.getEditor().repaint();
+            return true;
+        }
         return super.keyPressed(e);
     }
 
@@ -302,12 +325,13 @@ public class ConnectionTool extends AbstractGraphEditorTool {
     }
 
     public String getFirstHintMessage() {
-        return "Click on a first component.";
+        return "Click on first component.";
     }
 
     public String getSecondHintMessage() {
-        return "Click on a second component or create a polyline segment. Hold "
-                + DesktopApi.getMenuKeyMaskName() + " to connect continuously.";
+        return "Click on second component or create polyline. " +
+                "Hold Shift to connect parallel to axes. " +
+                "Hold " + DesktopApi.getMenuKeyName() + " to connect continuously.";
     }
 
     @Override

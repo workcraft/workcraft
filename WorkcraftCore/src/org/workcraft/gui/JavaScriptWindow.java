@@ -97,7 +97,7 @@ public class JavaScriptWindow extends JPanel {
 
     private void resetScript() {
         isInitState = true;
-        txtScript.setText("// Write a script and press " + DesktopApi.getMenuKeyMaskName() + "-Enter to execute it.");
+        txtScript.setText("// Write a script and press " + DesktopApi.getMenuKeyName() + "-Enter to execute it.");
     }
 
 }

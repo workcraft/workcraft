@@ -43,7 +43,7 @@ public class SONSelectionTool extends SelectionTool {
         //Create groupButton
         final JButton groupButton = GUI.createIconButton(
                 GUI.createIconFromSVG("images/son-selection-group.svg"),
-                "Group selection (" + DesktopApi.getMenuKeyMaskName() + "-G)");
+                "Group selection (" + DesktopApi.getMenuKeyName() + "-G)");
         groupButton.addActionListener(event -> groupSelection(editor));
         toolbar.add(groupButton);
 
@@ -64,7 +64,7 @@ public class SONSelectionTool extends SelectionTool {
         //Create ungroupButton
         JButton ungroupButton = GUI.createIconButton(
                 GUI.createIconFromSVG("images/son-selection-ungroup.svg"),
-                "Ungroup selection (" + DesktopApi.getMenuKeyMaskName() + "+Shift-G)");
+                "Ungroup selection (" + DesktopApi.getMenuKeyName() + "+Shift-G)");
         ungroupButton.addActionListener(event -> ungroupSelection(editor));
         toolbar.add(ungroupButton);
 
@@ -82,25 +82,25 @@ public class SONSelectionTool extends SelectionTool {
 
         JButton flipHorizontalButton = GUI.createIconButton(
                 GUI.createIconFromSVG("images/son-selection-flip_horizontal.svg"),
-                "Flip horizontal (" + DesktopApi.getMenuKeyMaskName() + "-F)");
+                "Flip horizontal (" + DesktopApi.getMenuKeyName() + "-F)");
         flipHorizontalButton.addActionListener(event -> flipSelectionHorizontal(editor));
         toolbar.add(flipHorizontalButton);
 
         JButton flipVerticalButton = GUI.createIconButton(
                 GUI.createIconFromSVG("images/son-selection-flip_vertical.svg"),
-                "Flip vertical (" + DesktopApi.getMenuKeyMaskName() + "+Shift-F)");
+                "Flip vertical (" + DesktopApi.getMenuKeyName() + "+Shift-F)");
         flipVerticalButton.addActionListener(event -> flipSelectionVertical(editor));
         toolbar.add(flipVerticalButton);
 
         JButton rotateClockwiseButton = GUI.createIconButton(
                 GUI.createIconFromSVG("images/son-selection-rotate_clockwise.svg"),
-                "Rotate clockwise (" + DesktopApi.getMenuKeyMaskName() + "-R)");
+                "Rotate clockwise (" + DesktopApi.getMenuKeyName() + "-R)");
         rotateClockwiseButton.addActionListener(event -> rotateSelectionClockwise(editor));
         toolbar.add(rotateClockwiseButton);
 
         JButton rotateCounterclockwiseButton = GUI.createIconButton(
                 GUI.createIconFromSVG("images/son-selection-rotate_counterclockwise.svg"),
-                "Rotate counterclockwise (" + DesktopApi.getMenuKeyMaskName() + "+Shift-R)");
+                "Rotate counterclockwise (" + DesktopApi.getMenuKeyName() + "+Shift-R)");
         rotateCounterclockwiseButton.addActionListener(event -> rotateSelectionCounterclockwise(editor));
         toolbar.add(rotateCounterclockwiseButton);
 
