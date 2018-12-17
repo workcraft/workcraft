@@ -14,7 +14,7 @@ public class DoubleProperty implements PropertyClass<Double, String> {
 
     @Override
     public TableCellRenderer getCellRenderer() {
-        return new DefaultCellRenderer();
+        return new FlatCellRenderer();
     }
 
     @Override

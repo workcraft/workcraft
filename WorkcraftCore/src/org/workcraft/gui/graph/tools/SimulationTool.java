@@ -6,6 +6,7 @@ import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.gui.properties.FlatHeaderRenderer;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
@@ -155,6 +156,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         controlPanel.add(traceControl);
 
         traceTable = new JTable(new TraceTableModel());
+        traceTable.getTableHeader().setDefaultRenderer(new FlatHeaderRenderer());
         traceTable.getTableHeader().setReorderingAllowed(false);
         traceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         traceTable.setRowHeight(SizeHelper.getComponentHeightFromFont(traceTable.getFont()));

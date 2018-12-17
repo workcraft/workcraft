@@ -12,7 +12,7 @@ public class StringProperty implements PropertyClass<String, String> {
 
     @Override
     public TableCellRenderer getCellRenderer() {
-        return new DefaultCellRenderer();
+        return new FlatCellRenderer();
     }
 
     @Override

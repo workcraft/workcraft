@@ -36,8 +36,8 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     private static final String RESET_TO_DEFAULTS = "Reset to defaults";
     public static final String TITLE_SUFFIX_TEMPLATE = "template";
     public static final String TITLE_SUFFIX_MODEL = "model";
-    public static final String TITLE_SUFFIX_SINGLE_ELEMENT = "single element";
-    public static final String TITLE_SUFFIX_SELECTED_ELEMENTS = " selected elements";
+    public static final String TITLE_SUFFIX_SINGLE_ITEM = "single item";
+    public static final String TITLE_SUFFIX_SELECTED_ITEMS = " selected items";
     private static final int VIEWPORT_MARGIN = 25;
 
     private final class UpdateEditorActionListener implements ActionListener {
@@ -412,10 +412,10 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             if (selection.size() == 0) {
                 title += " [" + TITLE_SUFFIX_MODEL + "]";
             } else if (selection.size() == 1) {
-                title += " [" + TITLE_SUFFIX_SINGLE_ELEMENT + "]";
+                title += " [" + TITLE_SUFFIX_SINGLE_ITEM + "]";
             } else {
                 final int nodeCount = selection.size();
-                title += " [" + nodeCount + " " + TITLE_SUFFIX_SELECTED_ELEMENTS + "]";
+                title += " [" + nodeCount + " " + TITLE_SUFFIX_SELECTED_ITEMS + "]";
             }
         }
 

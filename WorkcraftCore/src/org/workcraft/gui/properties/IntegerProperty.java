@@ -13,7 +13,7 @@ public class IntegerProperty implements PropertyClass<Integer, String> {
 
     @Override
     public TableCellRenderer getCellRenderer() {
-        return new DefaultCellRenderer();
+        return new FlatCellRenderer();
     }
 
     @Override

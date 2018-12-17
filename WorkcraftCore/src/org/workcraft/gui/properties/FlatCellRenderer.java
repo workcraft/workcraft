@@ -9,7 +9,7 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 @SuppressWarnings("serial")
-public class DefaultCellRenderer extends JLabel implements TableCellRenderer {
+public class FlatCellRenderer extends JLabel implements TableCellRenderer {
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value,
