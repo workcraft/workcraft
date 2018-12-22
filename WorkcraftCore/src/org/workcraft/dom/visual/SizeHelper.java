@@ -151,6 +151,10 @@ public class SizeHelper {
         return BorderFactory.createEmptyBorder(1, 3, 1, 1);
     }
 
+    public static Border getTableHeaderBorder() {
+        return UIManager.getBorder("TableHeader.cellBorder");
+    }
+
     public static Insets getTextMargin() {
         int gap = (int) Math.round(0.2 * getBaseSize());
         return new Insets(gap, gap, gap, gap);

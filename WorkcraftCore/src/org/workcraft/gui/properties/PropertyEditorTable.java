@@ -29,7 +29,7 @@ public class PropertyEditorTable extends JTable {
         model = new PropertyEditorTableModel();
         setModel(model);
 
-        setTableHeader(null);
+        getTableHeader().setDefaultRenderer(new FlatHeaderRenderer());
         setFocusable(false);
         setRowHeight(SizeHelper.getComponentHeightFromFont(getFont()));
 
@@ -73,7 +73,7 @@ public class PropertyEditorTable extends JTable {
                     cellEditors[i] = cls.getCellEditor();
                 } else {
                     // no PropertyClass exists for this class, fall back to read-only mode using Object.toString()
-                    System.err.println("Data class '" + decl.getType().getName() + "' is not supported by the Property Editor.");
+                    System.err.println("Data class '" + decl.getType().getName() + "' is not supported by the Property editor.");
                     cellRenderers[i] = new DefaultTableCellRenderer();
                     cellEditors[i] = null;
                 }
@@ -100,6 +100,7 @@ public class PropertyEditorTable extends JTable {
             return cellRenderers[row];
         } else {
             return new TableCellRenderer() {
+
                 private final JLabel label = new JLabel() {
                     @Override
                     public void paint(Graphics g) {
@@ -112,13 +113,27 @@ public class PropertyEditorTable extends JTable {
                 @Override
                 public Component getTableCellRendererComponent(JTable table, Object value,
                         boolean isSelected, boolean hasFocus, int row, int column) {
-                    label.setText(value.toString());
+
+                    String text = value.toString();
+                    label.setText(text);
                     label.setBorder(SizeHelper.getTableCellBorder());
+
+                    Font font = label.getFont();
                     PropertyDescriptor descriptor = model.getRowDeclaration(row);
                     if ((descriptor.getValue() == null) && descriptor.isCombinable()) {
-                        Font boldFont = label.getFont().deriveFont(Font.BOLD);
+                        Font boldFont = font.deriveFont(Font.BOLD);
                         label.setFont(boldFont);
                     }
+
+                    int availableWidth = table.getColumnModel().getColumn(column).getWidth();
+                    availableWidth -= table.getIntercellSpacing().getWidth();
+                    Insets borderInsets = label.getBorder().getBorderInsets(label);
+                    availableWidth -= borderInsets.left + borderInsets.right;
+                    FontMetrics fontMetrics = getFontMetrics(font);
+                    if (fontMetrics.stringWidth(text) > availableWidth) {
+                        label.setToolTipText(text);
+                    }
+
                     return label;
                 }
             };

@@ -1,18 +1,12 @@
 package org.workcraft.plugins.dfs.tasks;
 
-import java.io.File;
-
 import org.workcraft.Framework;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.plugins.dfs.stg.DfsToStgConverter;
 import org.workcraft.plugins.mpsat.MpsatParameters;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
-import org.workcraft.plugins.mpsat.tasks.MpsatOutputParser;
-import org.workcraft.plugins.mpsat.tasks.MpsatOutput;
-import org.workcraft.plugins.mpsat.tasks.MpsatTask;
+import org.workcraft.plugins.mpsat.tasks.*;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
@@ -27,6 +21,8 @@ import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.io.File;
 
 public class DfsCheckTask extends MpsatChainTask {
     private final MpsatParameters toolchainPreparationSettings = MpsatParameters.getToolchainPreparationSettings();
@@ -85,7 +81,7 @@ public class DfsCheckTask extends MpsatChainTask {
             monitor.progressUpdate(0.40);
 
             MpsatTask deadlockMpsatTask = new MpsatTask(deadlockSettings.getMpsatArguments(directory),
-                    unfoldingFile, directory);
+                    unfoldingFile, directory, netFile);
             Result<? extends MpsatOutput> deadlockMpsatResult = framework.getTaskManager().execute(
                     deadlockMpsatTask, "Running deadlock checking [MPSat]", mon);
 

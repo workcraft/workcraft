@@ -43,7 +43,8 @@ public class FileCellRenderer extends JPanel implements TableCellRenderer {
             } else {
                 chooseButton.setForeground(Color.RED);
             }
-            chooseButton.setText(".../" + file.getName());
+
+            chooseButton.setText(file.getName());
             setToolTipText(file.getAbsolutePath());
 
             Color background = isSelected ? table.getSelectionBackground() : table.getBackground();

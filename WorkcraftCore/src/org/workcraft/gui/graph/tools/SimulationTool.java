@@ -6,6 +6,7 @@ import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.gui.properties.FlatHeaderRenderer;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
@@ -30,6 +31,35 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class SimulationTool extends AbstractGraphEditorTool implements ClipboardOwner {
+
+    private static final ImageIcon ICON_PLAY = GUI.createIconFromSVG("images/simulation-play.svg");
+    private static final ImageIcon ICON_PAUSE = GUI.createIconFromSVG("images/simulation-pause.svg");
+    private static final ImageIcon ICON_BACKWARD = GUI.createIconFromSVG("images/simulation-backward.svg");
+    private static final ImageIcon ICON_FORWARD = GUI.createIconFromSVG("images/simulation-forward.svg");
+    private static final ImageIcon ICON_RECORD = GUI.createIconFromSVG("images/simulation-record.svg");
+    private static final ImageIcon ICON_STOP = GUI.createIconFromSVG("images/simulation-stop.svg");
+    private static final ImageIcon ICON_EJECT = GUI.createIconFromSVG("images/simulation-eject.svg");
+
+    private static final String HINT_PLAY = "Play through the trace";
+    private static final String HINT_PAUSE = "Pause trace playback";
+    private static final String HINT_BACKWARD = "Step backward ([)";
+    private static final String HINT_FORWARD = "Step forward (])";
+    private static final String HINT_RECORD = "Generate a random trace";
+    private static final String HINT_STOP = "Stop trace generation";
+    private static final String HINT_EJECT = "Reset the trace";
+
+    private static final ImageIcon ICON_TIMING_DIAGRAM = GUI.createIconFromSVG("images/simulation-trace-graph.svg");
+    private static final ImageIcon ICON_COPY_STATE = GUI.createIconFromSVG("images/simulation-trace-copy.svg");
+    private static final ImageIcon ICON_PASTE_STATE = GUI.createIconFromSVG("images/simulation-trace-paste.svg");
+    private static final ImageIcon ICON_MERGE_TRACE = GUI.createIconFromSVG("images/simulation-trace-merge.svg");
+    private static final ImageIcon ICON_SAVE_INITIL_STATE = GUI.createIconFromSVG("images/simulation-marking-save.svg");
+
+    private static final String HINT_TIMING_DIAGRAM = "Generate trace timing digram";
+    private static final String HINT_COPY_STATE = "Copy trace to clipboard";
+    private static final String HINT_PASTE_STATE = "Paste trace from clipboard";
+    private static final String HINT_MERGE_TRACE = "Merge branch into trace";
+    private static final String HINT_SAVE_INITIAL_STATE = "Save current state as initial";
+
     private VisualModel underlyingModel;
 
     protected JPanel controlPanel;
@@ -40,7 +70,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
     protected JTable traceTable;
 
     private JSlider speedSlider;
-    private JButton randomButton, playButton, stopButton, backwardButton, forwardButton;
+    private JButton playButton, backwardButton, forwardButton, recordButton, ejectButton;
     private JPanel panel;
 
     // cache of "excited" containers (the ones containing the excited simulation elements)
@@ -71,30 +101,20 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
             return panel;
         }
 
-        playButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-play.svg"),
-                "Automatic trace playback");
-        stopButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-stop.svg"),
-                "Reset trace playback");
-        backwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-backward.svg"),
-                "Step backward ([)");
-        forwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-forward.svg"),
-                "Step forward (])");
-        randomButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-random_play.svg"),
-                "Random playback");
+        playButton = GUI.createIconButton(ICON_PLAY, HINT_PLAY);
+        backwardButton = GUI.createIconButton(ICON_BACKWARD, HINT_BACKWARD);
+        forwardButton = GUI.createIconButton(ICON_FORWARD, HINT_FORWARD);
+        recordButton = GUI.createIconButton(ICON_RECORD, HINT_RECORD);
+        ejectButton = GUI.createIconButton(ICON_EJECT, HINT_EJECT);
 
         speedSlider = new JSlider(-1000, 1000, 0);
         speedSlider.setToolTipText("Simulation playback speed");
 
-        JButton generateGraphButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-trace-graph.svg"),
-                "Generate trace digram");
-        JButton copyStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-trace-copy.svg"),
-                "Copy trace to clipboard");
-        JButton pasteStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-trace-paste.svg"),
-                "Paste trace from clipboard");
-        JButton mergeTraceButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-trace-merge.svg"),
-                "Merge branch into trace");
-        JButton saveInitStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-marking-save.svg"),
-                "Save current state as initial");
+        JButton generateGraphButton = GUI.createIconButton(ICON_TIMING_DIAGRAM, HINT_TIMING_DIAGRAM);
+        JButton copyStateButton = GUI.createIconButton(ICON_COPY_STATE, HINT_COPY_STATE);
+        JButton pasteStateButton = GUI.createIconButton(ICON_PASTE_STATE, HINT_PASTE_STATE);
+        JButton mergeTraceButton = GUI.createIconButton(ICON_MERGE_TRACE, HINT_MERGE_TRACE);
+        JButton saveInitStateButton = GUI.createIconButton(ICON_SAVE_INITIL_STATE, HINT_SAVE_INITIAL_STATE);
 
         FlowLayout flowLayout = new FlowLayout();
         int buttonWidth = (int) Math.round(playButton.getPreferredSize().getWidth() + flowLayout.getHgap());
@@ -106,10 +126,10 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         simulationControl.setPreferredSize(panelSize);
         simulationControl.setMaximumSize(panelSize);
         simulationControl.add(playButton);
-        simulationControl.add(stopButton);
         simulationControl.add(backwardButton);
         simulationControl.add(forwardButton);
-        simulationControl.add(randomButton);
+        simulationControl.add(recordButton);
+        simulationControl.add(ejectButton);
 
         JPanel speedControl = new JPanel();
         speedControl.setLayout(new BorderLayout());
@@ -136,6 +156,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         controlPanel.add(traceControl);
 
         traceTable = new JTable(new TraceTableModel());
+        traceTable.getTableHeader().setDefaultRenderer(new FlatHeaderRenderer());
         traceTable.getTableHeader().setReorderingAllowed(false);
         traceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         traceTable.setRowHeight(SizeHelper.getComponentHeightFromFont(traceTable.getFont()));
@@ -166,7 +187,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
             editor.requestFocus();
         });
 
-        randomButton.addActionListener(event -> {
+        recordButton.addActionListener(event -> {
             if (timer == null) {
                 timer = new Timer(getAnimationDelay(), event1 -> randomStep(editor));
                 timer.start();
@@ -198,7 +219,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
             editor.requestFocus();
         });
 
-        stopButton.addActionListener(event -> {
+        ejectButton.addActionListener(event -> {
             clearTraces(editor);
             editor.requestFocus();
         });
@@ -350,26 +371,33 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
 
     public void updateState(final GraphEditor editor) {
         if (timer == null) {
-            playButton.setIcon(GUI.createIconFromSVG("images/simulation-play.svg"));
-            randomButton.setIcon(GUI.createIconFromSVG("images/simulation-random_play.svg"));
+            playButton.setIcon(ICON_PLAY);
+            playButton.setToolTipText(HINT_PLAY);
+            recordButton.setIcon(ICON_RECORD);
+            recordButton.setToolTipText(HINT_RECORD);
         } else {
             if (random) {
-                playButton.setIcon(GUI.createIconFromSVG("images/simulation-play.svg"));
-                randomButton.setIcon(GUI.createIconFromSVG("images/simulation-random_pause.svg"));
+                playButton.setIcon(ICON_PLAY);
+                playButton.setToolTipText(HINT_PLAY);
+                recordButton.setIcon(ICON_STOP);
+                recordButton.setToolTipText(HINT_STOP);
                 timer.setDelay(getAnimationDelay());
             } else if (branchTrace.canProgress() || (branchTrace.isEmpty() && mainTrace.canProgress())) {
-                playButton.setIcon(GUI.createIconFromSVG("images/simulation-pause.svg"));
-                randomButton.setIcon(GUI.createIconFromSVG("images/simulation-random_play.svg"));
+                playButton.setIcon(ICON_PAUSE);
+                playButton.setToolTipText(HINT_PAUSE);
+                recordButton.setIcon(ICON_RECORD);
                 timer.setDelay(getAnimationDelay());
             } else {
-                playButton.setIcon(GUI.createIconFromSVG("images/simulation-play.svg"));
-                randomButton.setIcon(GUI.createIconFromSVG("images/simulation-random_play.svg"));
+                playButton.setIcon(ICON_PLAY);
+                playButton.setToolTipText(HINT_PLAY);
+                recordButton.setIcon(ICON_RECORD);
+                recordButton.setToolTipText(HINT_RECORD);
                 timer.stop();
                 timer = null;
             }
         }
         playButton.setEnabled(branchTrace.canProgress() || (branchTrace.isEmpty() && mainTrace.canProgress()));
-        stopButton.setEnabled(!mainTrace.isEmpty() || !branchTrace.isEmpty());
+        ejectButton.setEnabled(!mainTrace.isEmpty() || !branchTrace.isEmpty());
         backwardButton.setEnabled((mainTrace.getPosition() > 0) || (branchTrace.getPosition() > 0));
         forwardButton.setEnabled(branchTrace.canProgress() || (branchTrace.isEmpty() && mainTrace.canProgress()));
         traceTable.tableChanged(new TableModelEvent(traceTable.getModel()));

@@ -16,6 +16,9 @@ import org.workcraft.gui.actions.ScriptedActionListener;
 
 @SuppressWarnings("serial")
 public class DockableTab extends JPanel {
+
+    public static final int MAX_TITLE_LENGTH = 64;
+
     private JLabel label;
 
     public DockableTab(DockableWindow dockableWindow, ScriptedActionListener actionListener) {
@@ -31,8 +34,10 @@ public class DockableTab extends JPanel {
 
         String title = dockableWindow.getTabText();
         String trimmedTitle;
-        if (title.length() > 64) {
-            trimmedTitle = title.substring(0, 31) + "..." + title.substring(title.length() - 32, title.length());
+        if (title.length() > MAX_TITLE_LENGTH) {
+            int i1 = MAX_TITLE_LENGTH / 2;
+            int i2 = title.length() - (MAX_TITLE_LENGTH - i1);
+            trimmedTitle = title.substring(0, i1) + "..." + title.substring(i2);
         } else {
             trimmedTitle = title;
         }

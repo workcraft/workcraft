@@ -186,7 +186,7 @@ public class DesktopApi {
         return ActionEvent.CTRL_MASK;
     }
 
-    public static String getMenuKeyMaskName() {
+    public static String getMenuKeyName() {
         if (getMenuKeyMask() == ActionEvent.META_MASK) {
             return "Cmd";
         }

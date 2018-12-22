@@ -187,8 +187,8 @@ public class MpsatUtils {
         }
         if (!problematicPlaces.isEmpty()) {
             String problematicPlacesString = ReferenceHelper.getNodesAsString(stg, problematicPlaces, SizeHelper.getWrapLength());
-            DialogUtils.showError("A mutex place must precede a pair of\n" +
-                    "non-input transitions, each with a single trigger.\n\n" +
+            DialogUtils.showError("A mutex place must precede two transitions of distinct\n" +
+                    "output or internal signals, each with a single trigger.\n\n" +
                     "Problematic places are:" +
                     (problematicPlacesString.length() > SizeHelper.getWrapLength() - 20 ? "\n" : " ") +
                     problematicPlacesString);

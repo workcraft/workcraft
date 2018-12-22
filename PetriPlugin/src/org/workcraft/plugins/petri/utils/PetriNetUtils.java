@@ -262,7 +262,12 @@ public class PetriNetUtils {
             VisualReplicaPlace replica = visualModel.createVisualReplica(place, VisualReplicaPlace.class, container);
             Point2D splitPointInRootSpace = getReplicaPositionInRootSpace(connection);
             replica.setRootSpacePosition(splitPointInRootSpace);
-            LinkedList<Point2D> locationsInRootSpace = ConnectionHelper.getSuffixControlPoints(connection, splitPointInRootSpace);
+            LinkedList<Point2D> locationsInRootSpace;
+            if (reverse) {
+                locationsInRootSpace = ConnectionHelper.getPrefixControlPoints(connection, splitPointInRootSpace);
+            } else {
+                locationsInRootSpace = ConnectionHelper.getSuffixControlPoints(connection, splitPointInRootSpace);
+            }
             visualModel.remove(connection);
             try {
                 if (connection instanceof VisualReadArc) {

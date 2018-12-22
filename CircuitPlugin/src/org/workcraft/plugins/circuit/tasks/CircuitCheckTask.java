@@ -267,7 +267,7 @@ public class CircuitCheckTask extends MpsatChainTask {
             if (checkDeadlock) {
                 MpsatParameters deadlockSettings = MpsatParameters.getDeadlockSettings();
                 MpsatTask mpsatDeadlockTask = new MpsatTask(deadlockSettings.getMpsatArguments(directory),
-                        unfoldingFile, directory);
+                        unfoldingFile, directory, sysStgFile);
                 SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
                 Result<? extends MpsatOutput> mpsatDeadlockResult = manager.execute(
                         mpsatDeadlockTask, "Running deadlock check [MPSat]", mpsatMonitor);

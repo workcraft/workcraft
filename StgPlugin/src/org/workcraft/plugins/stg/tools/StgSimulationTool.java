@@ -7,6 +7,7 @@ import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.properties.FlatHeaderRenderer;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.Trace;
 import org.workcraft.gui.properties.BooleanCellEditor;
@@ -92,6 +93,7 @@ public class StgSimulationTool extends PetriSimulationTool {
     private final class StateTable extends JTable {
         StateTable(final StateTableModel model) {
             super(model);
+            getTableHeader().setDefaultRenderer(new FlatHeaderRenderer());
             getTableHeader().setReorderingAllowed(false);
             setDragEnabled(true);
             setDropMode(DropMode.INSERT_ROWS);

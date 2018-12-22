@@ -6,7 +6,8 @@ import java.util.Map;
 @SuppressWarnings("serial")
 public class PropertyEditorTableModel extends AbstractTableModel {
 
-    static final String[] columnNames = {"property", "value" };
+    //static final String[] columnNames = {"Property", "Value" };
+    static final String[] columnNames = {"", ""};
     PropertyDescriptor[] declarations = null;
     PropertyClass[] rowClasses = null;
 
@@ -65,7 +66,9 @@ public class PropertyEditorTableModel extends AbstractTableModel {
         return declarations[i];
     }
 
+    @Override
     public Object getValueAt(int row, int col) {
+
         if (col == 0) {
             return declarations[row].getName();
         } else {

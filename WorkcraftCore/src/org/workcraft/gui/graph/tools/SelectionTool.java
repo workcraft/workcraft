@@ -30,8 +30,8 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class SelectionTool extends AbstractGraphEditorTool {
 
@@ -42,7 +42,8 @@ public class SelectionTool extends AbstractGraphEditorTool {
     private boolean ignoreMouseButton1 = false;
     private boolean ignoreMouseButton3 = false;
 
-    private Point2D offset;
+    private Point2D snapOffset;
+    private Point2D moveOffset;
     private Set<Point2D> snaps = new HashSet<>();
     private final DefaultAnchorGenerator anchorGenerator = new DefaultAnchorGenerator();
 
@@ -98,7 +99,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
         if (enableGroupping) {
             JButton groupButton = GUI.createIconButton(
                     GUI.createIconFromSVG("images/selection-group.svg"),
-                    "Group selection (" + DesktopApi.getMenuKeyMaskName() + "-G)");
+                    "Group selection (" + DesktopApi.getMenuKeyName() + "-G)");
             groupButton.addActionListener(event -> {
                 groupSelection(editor);
                 editor.requestFocus();
@@ -120,7 +121,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
         if (enableGroupping || enablePaging) {
             JButton ungroupButton = GUI.createIconButton(
                     GUI.createIconFromSVG("images/selection-ungroup.svg"),
-                    "Ungroup selection (" + DesktopApi.getMenuKeyMaskName() + "+Shift-G)");
+                    "Ungroup selection (" + DesktopApi.getMenuKeyName() + "+Shift-G)");
             ungroupButton.addActionListener(event -> {
                 ungroupSelection(editor);
                 editor.requestFocus();
@@ -282,6 +283,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
                     Collection<VisualNode> nodes = e.isExtendKeyDown()
                             ? getNodeWithAdjacentConnections(model, node)
                             : Arrays.asList(new VisualNode[] {node});
+
                     if (e.isShiftKeyDown()) {
                         model.addToSelection(nodes);
                     } else if (e.isMenuKeyDown()) {
@@ -345,13 +347,24 @@ public class SelectionTool extends AbstractGraphEditorTool {
         VisualModel model = editor.getModel();
         Point2D pos = e.getPosition();
         if (dragState == DrugState.MOVE) {
-            Point2D prevPos = e.getPrevPosition();
-            Point2D.Double pos1 = new Point2D.Double(prevPos.getX() + offset.getX(), prevPos.getY() + offset.getY());
-            Point2D snapPos1 = editor.snap(pos1, snaps);
-            Point2D.Double pos2 = new Point2D.Double(pos.getX() + offset.getX(), pos.getY() + offset.getY());
-            Point2D snapPos2 = editor.snap(pos2, snaps);
+            Point2D startPos = e.getStartPosition();
+            Point2D offsetStartPos = new Point2D.Double(startPos.getX() + snapOffset.getX(), startPos.getY() + snapOffset.getY());
+            Point2D snapOffsetStartPos = editor.snap(offsetStartPos, snaps);
+            Point2D offsetCurrentPos = new Point2D.Double(pos.getX() + snapOffset.getX(), pos.getY() + snapOffset.getY());
+            Point2D snapOffsetCurrentPos = editor.snap(offsetCurrentPos, snaps);
+
             // Intermediate move of the selection - no need for beforeSelectionModification or afterSelectionModification
-            VisualModelTransformer.translateSelection(model, snapPos2.getX() - snapPos1.getX(), snapPos2.getY() - snapPos1.getY());
+            double dx = snapOffsetCurrentPos.getX() - snapOffsetStartPos.getX();
+            double dy = snapOffsetCurrentPos.getY() - snapOffsetStartPos.getY();
+            if (e.isShiftKeyDown()) {
+                if (Math.abs(dx) > Math.abs(dy)) {
+                    dy = 0.0;
+                } else {
+                    dx = 0.0;
+                }
+            }
+            VisualModelTransformer.translateSelection(model, dx - moveOffset.getX(), dy - moveOffset.getY());
+            moveOffset = new Point2D.Double(dx, dy);
         } else if (dragState == DrugState.SELECT) {
             selected.clear();
             selected.addAll(model.hitBox(e.getStartPosition(), pos));
@@ -407,7 +420,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
             Node hitNode = HitMan.hitFirstInCurrentLevel(startPos, model);
 
             if (hitNode == null) {
-                // If hit nothing then start select-drag
+                // If hit nothing then start region selection
                 if (e.isShiftKeyDown()) {
                     selectionMode = SelectionMode.ADD;
                 } else if (e.isMenuKeyDown()) {
@@ -423,21 +436,22 @@ public class SelectionTool extends AbstractGraphEditorTool {
                 } else {
                     selected.addAll(model.getSelection());
                 }
-            } else if ((e.getKeyModifiers() == 0) && (hitNode instanceof VisualNode)) {
-                // If mouse down without modifiers and hit something then begin move-drag
+            } else if (((e.getKeyModifiers() == 0) || e.isShiftKeyDown()) && (hitNode instanceof VisualNode)) {
+                // If mouse down either without modifiers or with Ctrl/Menu being pressed and hit something then begin move-drag
                 dragState = DrugState.MOVE;
                 VisualNode node = (VisualNode) hitNode;
                 if ((node != null) && !model.getSelection().contains(node)) {
                     model.select(node);
                 }
                 AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(node);
-                Point2D pos = TransformHelper.transform(node, localToRootTransform).getCenter();
+                moveOffset = new Point2D.Double(0.0, 0.0);
+                startPos = TransformHelper.transform(node, localToRootTransform).getCenter();
                 snaps = editor.getSnaps(node);
-                Point2D snapPos = editor.snap(pos, snaps);
-                offset = new Point2D.Double(snapPos.getX() - pos.getX(), snapPos.getY() - pos.getY());
+                Point2D snapPos = editor.snap(startPos, snaps);
+                snapOffset = new Point2D.Double(snapPos.getX() - startPos.getX(), snapPos.getY() - startPos.getY());
                 // Initial move of the selection - beforeSelectionModification is needed
                 beforeSelectionModification(editor);
-                VisualModelTransformer.translateSelection(model, offset.getX(), offset.getY());
+                VisualModelTransformer.translateSelection(model, snapOffset.getX(), snapOffset.getY());
             } else {
                 // Do nothing if pressed on a node with modifiers
             }
@@ -568,8 +582,12 @@ public class SelectionTool extends AbstractGraphEditorTool {
 
     @Override
     public String getHintText(final GraphEditor editor) {
-        return "Modifiers: Shift - add to selection; " + DesktopApi.getMenuKeyMaskName()
-            + " - remove from selection; Alt/AltGr - extend selection to adjacent nodes.";
+        if (dragState == DrugState.MOVE) {
+            return "Hold Shift for dragging parallel to axes.";
+        }
+        return "Hold Shift for adding to selection or " +
+                DesktopApi.getMenuKeyName() + " for removing from selection. " +
+                "Hold Alt/AltGr for extending selection to adjacent nodes.";
     }
 
     @Override
@@ -615,8 +633,6 @@ public class SelectionTool extends AbstractGraphEditorTool {
                         || (!selected.contains(node) && model.getSelection().contains(node))) {
                     return Decoration.Selected.INSTANCE;
                 }
-
-                //if (node == mouseOverNode) return selectedDecoration;
 
                 return null;
             }

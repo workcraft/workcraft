@@ -1,21 +1,19 @@
 package org.workcraft.plugins.petri.tools;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-
-import javax.swing.Icon;
-
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.ConnectionTool;
-import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.petri.VisualTransition;
+import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.util.GUI;
+
+import javax.swing.*;
+import java.awt.event.KeyEvent;
 
 public class ReadArcConnectionTool extends ConnectionTool {
 
@@ -52,7 +50,7 @@ public class ReadArcConnectionTool extends ConnectionTool {
 
     @Override
     public String getSecondHintMessage() {
-        return super.getSecondHintMessage() + " Hold Shift to create a place proxy.";
+        return super.getSecondHintMessage() + " Hold Alt/AltGr to create a place proxy.";
     }
 
     @Override
@@ -62,7 +60,7 @@ public class ReadArcConnectionTool extends ConnectionTool {
             if ((connection.getFirst() instanceof VisualPlace)
                     || (connection.getSecond() instanceof VisualPlace)) {
 
-                if ((e.getModifiers() & MouseEvent.SHIFT_DOWN_MASK) != 0) {
+                if (e.isExtendKeyDown()) {
                     VisualModel visualModel = e.getEditor().getModel();
                     connection = PetriNetUtils.replicateConnectedPlace(visualModel, connection);
                 }
