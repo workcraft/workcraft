@@ -10,6 +10,7 @@ import org.workcraft.util.LogUtils;
 import org.workcraft.util.Pair;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MutexUtils {
 
@@ -109,9 +110,44 @@ public class MutexUtils {
         return result;
     }
 
+    public static void factoroutMutexs(StgModel model, Collection<Mutex> mutexes) {
+        if ((model instanceof Stg) && (mutexes != null)) {
+            Stg stg = (Stg) model;
+            for (Mutex mutex: mutexes) {
+                LogUtils.logInfo("Factoring out " + mutex);
+                factoreoutMutexRequest(stg, mutex.r1);
+                factoreoutMutexGrant(stg, mutex.g1);
+                factoreoutMutexRequest(stg, mutex.r2);
+                factoreoutMutexGrant(stg, mutex.g2);
+            }
+        }
+    }
+
+    private static void factoreoutMutexRequest(Stg stg, Signal signal) {
+        if (signal.type == Signal.Type.INTERNAL) {
+            stg.setSignalType(signal.name, Signal.Type.OUTPUT);
+        }
+    }
+
+    private static void factoreoutMutexGrant(Stg stg, Signal signal) {
+        stg.setSignalType(signal.name, Signal.Type.INPUT);
+    }
+
+    public static void restoreMutexSignals(StgModel model, Collection<Mutex> mutexes) {
+        if ((model instanceof Stg) && (mutexes != null)) {
+            Stg stg = (Stg) model;
+            for (Mutex mutex : mutexes) {
+                stg.setSignalType(mutex.r1.name, mutex.r1.type);
+                stg.setSignalType(mutex.g1.name, mutex.g1.type);
+                stg.setSignalType(mutex.r2.name, mutex.r2.type);
+                stg.setSignalType(mutex.g2.name, mutex.g2.type);
+            }
+        }
+    }
+
     public static void restoreMutexPlacesByName(StgModel model, Collection<Mutex> mutexes) {
         if ((model != null) && (mutexes != null)) {
-            for (Mutex mutex: mutexes) {
+            for (Mutex mutex : mutexes) {
                 Node node = model.getNodeByReference(mutex.name);
                 if (node instanceof StgPlace) {
                     StgPlace place = (StgPlace) node;
@@ -124,13 +160,13 @@ public class MutexUtils {
     public static void restoreMutexPlacesByContext(StgModel model, Collection<Mutex> mutexes) {
         if ((model instanceof Stg) && (mutexes != null)) {
             Stg stg = (Stg) model;
-            for (Mutex mutex: mutexes) {
-                restoreMutexPlace(stg, mutex);
+            for (Mutex mutex : mutexes) {
+                restoreMutexPlaceByContext(stg, mutex);
             }
         }
     }
 
-    private static void restoreMutexPlace(Stg stg, Mutex mutex) {
+    private static void restoreMutexPlaceByContext(Stg stg, Mutex mutex) {
         if ((stg == null) || (mutex == null)) {
             return;
         }
@@ -159,20 +195,11 @@ public class MutexUtils {
     }
 
     public static void logInfoPossiblyImplementableMutex(Collection<Mutex> mutexes) {
-        logInfoMutex(mutexes, "Possibly implementable (structuraly detected) mutex places: ");
-    }
-
-    public static void logInfoMutex(Collection<Mutex> mutexes, String prefix) {
-        String s = "";
-        for (Mutex mutex: mutexes) {
-            if (!s.isEmpty()) {
-                s += ", ";
-            }
-            s += mutex.name;
+        if ((mutexes == null) || mutexes.isEmpty()) {
+            return;
         }
-        if (!s.isEmpty()) {
-            LogUtils.logInfo(prefix + s);
-        }
+        String s = mutexes.stream().map(mutex -> mutex.name).collect(Collectors.joining(","));
+        LogUtils.logInfo("Possibly implementable (structurally detected) mutex places: " + s);
     }
 
     public static Set<String> getMutexPlaceReferences(Stg stg) {

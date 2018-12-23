@@ -1,10 +1,5 @@
 package org.workcraft.plugins.petrify.tasks;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.references.ReferenceHelper;
@@ -18,36 +13,42 @@ import org.workcraft.interop.Format;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fst.interop.SgFormat;
 import org.workcraft.plugins.petri.PetriNetModel;
-import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.plugins.petri.Place;
+import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.petrify.PetrifyUtils;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExportTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
-import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.interop.StgImporter;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.ExportUtils;
-import org.workcraft.util.FileUtils;
-import org.workcraft.util.ToolUtils;
+import org.workcraft.util.*;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class PetrifyTransformationTask implements Task<PetrifyTransformationOutput>, ExternalProcessListener {
 
     private final WorkspaceEntry we;
     String[] args;
+    private final Collection<Mutex> mutexes;
 
-    public PetrifyTransformationTask(WorkspaceEntry we, String description, String[] args) {
+    public PetrifyTransformationTask(WorkspaceEntry we, String description, String[] args, Collection<Mutex> mutexes) {
         this.we = we;
         this.args = args;
+        this.mutexes = mutexes;
     }
 
     public WorkspaceEntry getWorkspaceEntry() {
@@ -174,7 +175,7 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationOutp
             throw new RuntimeException("This tool is not applicable to " + model.getDisplayName() + " model.");
         }
 
-        File file = new File(directory, "original" + extension);
+        File file = new File(directory, StgUtils.SPEC_FILE_PREFIX + extension);
         Exporter exporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), model, format);
         if (exporter == null) {
             throw new NoExporterException(model, format);
@@ -183,6 +184,16 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationOutp
         Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(exportTask, "Exporting model");
         if (exportResult.getOutcome() != Outcome.SUCCESS) {
             throw new RuntimeException("Unable to export the model.");
+        }
+        if ((mutexes != null) && !mutexes.isEmpty()) {
+            Stg stg = StgUtils.loadStg(file);
+            MutexUtils.factoroutMutexs(stg, mutexes);
+            file = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + extension);
+            exportTask = new ExportTask(exporter, stg, file.getAbsolutePath());
+            exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
+            if (exportResult.getOutcome() != Outcome.SUCCESS) {
+                throw new RuntimeException("Unable to export the model after factoring out the mutexes.");
+            }
         }
         return file;
     }

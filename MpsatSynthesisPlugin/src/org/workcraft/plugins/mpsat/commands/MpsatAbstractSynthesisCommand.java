@@ -61,8 +61,7 @@ public abstract class MpsatAbstractSynthesisCommand extends AbstractSynthesisCom
             return null;
         }
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-        Framework framework = Framework.getInstance();
-        TaskManager manager = framework.getTaskManager();
+        TaskManager manager = Framework.getInstance().getTaskManager();
         MpsatSynthesisParameters settings = getSettings();
         MpsatSynthesisChainTask task = new MpsatSynthesisChainTask(we, settings, mutexes);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());

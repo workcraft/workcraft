@@ -1,11 +1,5 @@
 package org.workcraft.plugins.petrify.tasks;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SizeHelper;
@@ -13,8 +7,8 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.ExternalProcessListener;
-import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.plugins.petri.Place;
+import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.petrify.PetrifyUtils;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
@@ -22,10 +16,10 @@ import org.workcraft.plugins.shared.tasks.ExportTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.Signal;
+import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.plugins.stg.interop.StgFormat;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -34,10 +28,15 @@ import org.workcraft.tasks.Task;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
-import org.workcraft.util.LogUtils;
 import org.workcraft.util.ToolUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class PetrifySynthesisTask implements Task<PetrifySynthesisOutput>, ExternalProcessListener {
     private final WorkspaceEntry we;
@@ -185,13 +184,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisOutput>, Exter
         }
         if (!mutexes.isEmpty()) {
             stg = StgUtils.loadStg(stgFile);
-            for (Mutex mutex: mutexes) {
-                LogUtils.logInfo("Factored out " + mutex);
-                setMutexRequest(stg, mutex.r1);
-                stg.setSignalType(mutex.g1.name, Signal.Type.INPUT);
-                setMutexRequest(stg, mutex.r2);
-                stg.setSignalType(mutex.g2.name, Signal.Type.INPUT);
-            }
+            MutexUtils.factoroutMutexs(stg, mutexes);
             stgFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + gExtension);
             exportTask = new ExportTask(stgExporter, stg, stgFile.getAbsolutePath());
             exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
@@ -200,13 +193,6 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisOutput>, Exter
             }
         }
         return stgFile;
-    }
-
-    private void setMutexRequest(Stg stg, Signal signal) {
-        if (signal.type == Signal.Type.INTERNAL) {
-            LogUtils.logInfo("Internal signal " + signal.name + " is temporary changed to output, so it is not optimised away.");
-            stg.setSignalType(signal.name, Signal.Type.OUTPUT);
-        }
     }
 
     @Override

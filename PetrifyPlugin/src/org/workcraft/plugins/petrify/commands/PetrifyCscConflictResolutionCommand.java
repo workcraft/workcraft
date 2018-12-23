@@ -42,14 +42,14 @@ public class PetrifyCscConflictResolutionCommand implements ScriptableCommand<Wo
     }
 
     private PetrifyTransformationResultHandler queueCscConflictResolution(WorkspaceEntry we) {
-        PetrifyTransformationTask task = new PetrifyTransformationTask(we,
-                "CSC conflicts resolution", new String[] {"-csc"});
-
-        Framework framework = Framework.getInstance();
-        TaskManager taskManager = framework.getTaskManager();
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
+
+        TaskManager taskManager = Framework.getInstance().getTaskManager();
+        PetrifyTransformationTask task = new PetrifyTransformationTask(
+                we, "CSC conflicts resolution", new String[] {"-csc"}, mutexes);
+
         PetrifyTransformationResultHandler monitor = new PetrifyTransformationResultHandler(we, false, mutexes);
         taskManager.queue(task, "Petrify CSC conflicts resolution", monitor);
         return monitor;

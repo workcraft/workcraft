@@ -1,10 +1,5 @@
 package org.workcraft.plugins.atacs.tasks;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.workcraft.Framework;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
@@ -15,10 +10,10 @@ import org.workcraft.plugins.shared.tasks.ExportTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.Signal;
+import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.plugins.stg.interop.LpnFormat;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -27,10 +22,14 @@ import org.workcraft.tasks.Task;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
-import org.workcraft.util.LogUtils;
 import org.workcraft.util.ToolUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class AtacsSynthesisTask implements Task<AtacsSynthesisOutput>, ExternalProcessListener {
     private final WorkspaceEntry we;
@@ -133,13 +132,7 @@ public class AtacsSynthesisTask implements Task<AtacsSynthesisOutput>, ExternalP
         }
         if (!mutexes.isEmpty()) {
             stg = StgUtils.loadStg(file);
-            for (Mutex mutex: mutexes) {
-                LogUtils.logInfo("Factored out " + mutex);
-                setMutexRequest(stg, mutex.r1);
-                stg.setSignalType(mutex.g1.name, Signal.Type.INPUT);
-                setMutexRequest(stg, mutex.r2);
-                stg.setSignalType(mutex.g2.name, Signal.Type.INPUT);
-            }
+            MutexUtils.factoroutMutexs(stg, mutexes);
             file = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + extension);
             exportTask = new ExportTask(exporter, stg, file.getAbsolutePath());
             exportResult = framework.getTaskManager().execute(exportTask, "Exporting .lpn");
@@ -148,13 +141,6 @@ public class AtacsSynthesisTask implements Task<AtacsSynthesisOutput>, ExternalP
             }
         }
         return file;
-    }
-
-    private void setMutexRequest(Stg stg, Signal signal) {
-        if (signal.type == Signal.Type.INTERNAL) {
-            LogUtils.logInfo("Internal signal " + signal.name + " is temporary changed to output, so it is not optimised away.");
-            stg.setSignalType(signal.name, Signal.Type.OUTPUT);
-        }
     }
 
     @Override
