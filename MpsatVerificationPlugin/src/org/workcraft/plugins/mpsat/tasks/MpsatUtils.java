@@ -43,7 +43,7 @@ public class MpsatUtils {
                             solutions.addAll(getSolutions(mpsatResult));
                         }
                     }
-                } else  if (combinedChainResult.getOutcome() == Outcome.FAILURE) {
+                } else if (combinedChainResult.getOutcome() == Outcome.FAILURE) {
                     Result<? extends PunfOutput> punfResult = combinedChainOutput.getPunfResult();
                     if (punfResult != null) {
                         PunfOutputParser prp = new PunfOutputParser(punfResult.getPayload());

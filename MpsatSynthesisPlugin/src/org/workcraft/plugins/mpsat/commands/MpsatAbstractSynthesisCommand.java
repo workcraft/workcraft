@@ -33,7 +33,7 @@ public abstract class MpsatAbstractSynthesisCommand extends AbstractSynthesisCom
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, StgModel.class);
+        return WorkspaceUtils.isApplicable(we, Stg.class);
     }
 
     @Override

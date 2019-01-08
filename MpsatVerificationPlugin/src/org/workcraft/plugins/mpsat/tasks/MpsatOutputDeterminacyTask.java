@@ -1,6 +1,7 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.Framework;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.utils.TransformUtils;
@@ -12,6 +13,7 @@ import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
+import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.StgUtils;
@@ -23,10 +25,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class MpsatOutputDeterminacyTask implements Task<MpsatChainOutput> {
 
@@ -51,10 +50,19 @@ public class MpsatOutputDeterminacyTask implements Task<MpsatChainOutput> {
         File directory = FileUtils.createTempDirectory(prefix);
         String stgFileExtension = StgFormat.getInstance().getExtension();
         try {
-            // Clone STG before converting its internal signals to dummies
+            // Clone STG before converting its internal signals to outputs
             ModelEntry me = framework.cloneModel(we.getModelEntry());
             Stg stg = WorkspaceUtils.getAs(me, Stg.class);
-            Map<String, String> dummy2InternalRefs = StgUtils.convertInternalSignalsToDummies(stg);
+            StgUtils.convertInternalSignalsToOutputs(stg);
+
+            // Structural check for vacuously held output-determinacy, i.e. there are no dummies
+            // and there are no choices between transitions of the same signal.
+            if (isVacuouslyOutputDeterminate(stg)) {
+                return new Result<>(Outcome.SUCCESS,
+                        new MpsatChainOutput(null, null, null, null,
+                                toolchainPreparationSettings, "Output determinacy vacuously holds."));
+            }
+            monitor.progressUpdate(0.20);
 
             // Generating two copies of .g file for the model (dev and env)
             File devStgFile = new File(directory, StgUtils.DEVICE_FILE_PREFIX + stgFileExtension);
@@ -78,8 +86,7 @@ public class MpsatOutputDeterminacyTask implements Task<MpsatChainOutput> {
             }
 
             List<File> stgFiles = Arrays.asList(devStgFile, envStgFile);
-            List<Map<String, String>> substitutes = Arrays.asList(dummy2InternalRefs, dummy2InternalRefs);
-            Result<MultiSubExportOutput> multiExportResult = new Result<>(new MultiSubExportOutput(stgFiles, substitutes));
+            Result<MultiExportOutput> multiExportResult = new Result<>(new MultiExportOutput(stgFiles));
             monitor.progressUpdate(0.30);
 
             // Generating .g for the whole system (model and environment)
@@ -157,6 +164,23 @@ public class MpsatOutputDeterminacyTask implements Task<MpsatChainOutput> {
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
         }
+    }
+
+    private boolean isVacuouslyOutputDeterminate(Stg stg) {
+        if (!stg.getDummyTransitions().isEmpty()) {
+            return false;
+        }
+        for (String signal : stg.getSignalReferences()) {
+            HashSet<MathNode> places = new HashSet<>();
+            for (SignalTransition t : stg.getSignalTransitions(signal)) {
+                Set<MathNode> preset = stg.getPreset(t);
+                if (!Collections.disjoint(places, preset)) {
+                    return false;
+                }
+                places.addAll(preset);
+            }
+        }
+        return true;
     }
 
 }

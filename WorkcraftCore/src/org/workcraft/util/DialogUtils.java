@@ -1,10 +1,9 @@
 package org.workcraft.util;
 
-import javax.swing.JOptionPane;
-import javax.swing.UIManager;
-
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
+
+import javax.swing.*;
 
 public class DialogUtils {
 
@@ -68,7 +67,7 @@ public class DialogUtils {
     }
 
     private static boolean showConfirm(String msg, String title, int messageType, boolean defaultChoice) {
-        boolean result = false;
+        boolean result = defaultChoice;
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
         if ((mainWindow != null) && framework.isInGuiMode()) {
@@ -105,6 +104,43 @@ public class DialogUtils {
             return JOptionPane.showInputDialog(mainWindow, msg, initial);
         }
         return initial;
+    }
+
+    private static int showYesNoCancel(String msg, String title, int messageType, int defaultChoice) {
+        String yesText = UIManager.getString("OptionPane.yesButtonText");
+        String noText = UIManager.getString("OptionPane.noButtonText");
+        String cancelText = UIManager.getString("OptionPane.cancelButtonText");
+        return showChoice(msg, title, messageType, yesText, noText, cancelText, defaultChoice);
+    }
+
+    public static int showYesNoCancel(String msg, String title, int defaultChoice) {
+        return showYesNoCancel(msg, title, JOptionPane.QUESTION_MESSAGE, defaultChoice);
+    }
+
+    private static int showChoice(String msg, String title, int messageType,
+            String yesText, String noText, String cancelText, int defaultChoice) {
+        int result = JOptionPane.CANCEL_OPTION;
+        Framework framework = Framework.getInstance();
+        MainWindow mainWindow = framework.getMainWindow();
+        if ((mainWindow != null) && framework.isInGuiMode()) {
+            String[] options = {yesText, noText, cancelText};
+            result = JOptionPane.showOptionDialog(mainWindow, msg, title, JOptionPane.YES_NO_CANCEL_OPTION,
+                    messageType, null, options, defaultChoice);
+        }
+        return result;
+    }
+
+    public static int showChoice(String msg, String title,
+            String yesText, String noText, String cancelText, int defaultChoice) {
+        int result = JOptionPane.CANCEL_OPTION;
+        Framework framework = Framework.getInstance();
+        MainWindow mainWindow = framework.getMainWindow();
+        if ((mainWindow != null) && framework.isInGuiMode()) {
+            String[] options = {yesText, noText, cancelText};
+            result = JOptionPane.showOptionDialog(mainWindow, msg, title, JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE, null, options, defaultChoice);
+        }
+        return result;
     }
 
 }

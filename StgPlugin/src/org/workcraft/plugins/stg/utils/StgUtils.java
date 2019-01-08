@@ -180,6 +180,15 @@ public class StgUtils {
         return result;
     }
 
+    public static Set<String> convertInternalSignalsToOutputs(Stg stg) {
+        Set<String> result = new HashSet<>();
+        for (String signal : stg.getSignalReferences(Signal.Type.INTERNAL)) {
+            stg.setSignalType(signal, Signal.Type.OUTPUT);
+            result.add(signal);
+        }
+        return result;
+    }
+
     public static Set<String> getNewSignals(StgModel srcStg, StgModel dstStg) {
         Set<String> result = new HashSet<>();
 

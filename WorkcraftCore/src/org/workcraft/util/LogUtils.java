@@ -91,7 +91,7 @@ public class LogUtils {
         if (refs.size() == 1) {
             msg += " '" + refs.iterator().next() + "'.";
         } else {
-            msg += "s:";
+            msg = makePlural(msg) + ":";
             String str = String.join(", ", refs);
             if (msg.length() + str.length() > len) {
                 msg += "\n";
@@ -101,6 +101,18 @@ public class LogUtils {
             msg += ReferenceHelper.getReferencesAsString(refs, len);
         }
         return msg;
+    }
+
+    private static String makePlural(String s) {
+        if (s.endsWith("y")) {
+            s = s.substring(0, s.length() - 1) + "ie";
+        }
+        if (s.endsWith("s") || s.endsWith("x") || s.endsWith("z") || s.endsWith("ch") || s.endsWith("sh")) {
+            s += "es";
+        } else {
+            s += "s";
+        }
+        return s;
     }
 
 }

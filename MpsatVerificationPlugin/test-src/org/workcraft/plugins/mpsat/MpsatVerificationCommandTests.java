@@ -50,6 +50,7 @@ public class MpsatVerificationCommandTests {
                 false,  // deadlock freeness
                 null,  // input properness
                 null,  // output persistency
+                null,  // output determinacy
                 null, // CSC
                 null, // USC
                 null,  // DI interface
@@ -68,6 +69,7 @@ public class MpsatVerificationCommandTests {
                 true,  // deadlock freeness
                 null,  // input properness
                 null,  // output persistency
+                null,  // output determinacy
                 null, // CSC
                 null, // USC
                 null,  // DI interface
@@ -86,6 +88,7 @@ public class MpsatVerificationCommandTests {
                 true,  // deadlock freeness
                 true,  // input properness
                 true,  // output persistency
+                true,  // output determinacy
                 false, // CSC
                 false, // USC
                 true,  // DI interface
@@ -104,6 +107,7 @@ public class MpsatVerificationCommandTests {
                 true,  // deadlock freeness
                 true,  // input properness
                 true,  // output persistency
+                true,  // output determinacy
                 true,  // CSC
                 true,  // USC
                 false, // DI interface
@@ -122,6 +126,7 @@ public class MpsatVerificationCommandTests {
                 false, // deadlock freeness
                 true,  // input properness
                 false, // output persistency
+                true,  // output determinacy
                 true,  // CSC
                 false, // USC
                 false, // DI interface
@@ -140,6 +145,7 @@ public class MpsatVerificationCommandTests {
                 true,  // deadlock freeness
                 true,  // input properness
                 true,  // output persistency
+                true,  // output determinacy
                 true,  // CSC
                 true,  // USC
                 true,  // DI interface
@@ -151,7 +157,7 @@ public class MpsatVerificationCommandTests {
 
     private void testVerificationCommands(String workName, Boolean combined,
             Boolean consistency, Boolean deadlockFreeness,
-            Boolean inputProperness, Boolean outputPersistency,
+            Boolean inputProperness, Boolean outputPersistency, Boolean outputDeterminacy,
             Boolean csc, Boolean usc,
             Boolean diInterface, Boolean normalcy,
             Boolean mutexImplementability,

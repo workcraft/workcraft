@@ -74,8 +74,7 @@ public class MpsatCombinedVerificationCommand extends AbstractVerificationComman
             LinkedList<Pair<String, String>> exceptions = MutexUtils.getMutexGrantPairs(stg);
             settingsList.add(MpsatParameters.getOutputPersistencySettings(exceptions));
 
-            Framework framework = Framework.getInstance();
-            TaskManager manager = framework.getTaskManager();
+            TaskManager manager = Framework.getInstance().getTaskManager();
             MpsatCombinedChainTask task = new MpsatCombinedChainTask(we, settingsList);
             MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
             String description = MpsatUtils.getToolchainDescription(we.getTitle());
