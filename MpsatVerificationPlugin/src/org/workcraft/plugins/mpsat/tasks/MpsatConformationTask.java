@@ -34,9 +34,6 @@ public class MpsatConformationTask implements Task<MpsatChainOutput> {
     private final MpsatParameters toolchainPreparationSettings = new MpsatParameters("Toolchain preparation of data",
             MpsatMode.UNDEFINED, 0, null, 0);
 
-    private final MpsatParameters toolchainCompletionSettings = new MpsatParameters("Toolchain completion",
-            MpsatMode.UNDEFINED, 0, null, 0);
-
     private final WorkspaceEntry we;
     private final File envFile;
 
@@ -140,25 +137,25 @@ public class MpsatConformationTask implements Task<MpsatChainOutput> {
             CompositionData compositionData = new CompositionData(detailFile);
             ComponentData devComponentData = compositionData.getComponentData(devStgFile);
             Set<String> devPlaceNames = devComponentData.getDstPlaces();
-            MpsatParameters conformationSettings = MpsatParameters.getConformationSettings(devPlaceNames);
-            MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
+            MpsatParameters mpsatSettings = MpsatParameters.getConformationSettings(devPlaceNames);
+            MpsatTask mpsatTask = new MpsatTask(mpsatSettings.getMpsatArguments(directory),
                     unfoldingFile, directory, stgFile);
-            Result<? extends MpsatOutput>  mpsatConformationResult = taskManager.execute(
-                    mpsatConformationTask, "Running conformation check [MPSat]", subtaskMonitor);
+            Result<? extends MpsatOutput>  mpsatResult = taskManager.execute(
+                    mpsatTask, "Running conformation check [MPSat]", subtaskMonitor);
 
-            if (mpsatConformationResult.getOutcome() != Outcome.SUCCESS) {
-                if (mpsatConformationResult.getOutcome() == Outcome.CANCEL) {
+            if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
+                if (mpsatResult.getOutcome() == Outcome.CANCEL) {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings));
+                        new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, mpsatSettings));
             }
             monitor.progressUpdate(0.80);
 
-            MpsatOutputParser mpsatConformationParser = new MpsatOutputParser(mpsatConformationResult.getPayload());
+            MpsatOutputParser mpsatConformationParser = new MpsatOutputParser(mpsatResult.getPayload());
             if (!mpsatConformationParser.getSolutions().isEmpty()) {
                 return new Result<>(Outcome.SUCCESS,
-                        new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings,
+                        new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, mpsatSettings,
                                 "This model does not conform to the environment."));
             }
             monitor.progressUpdate(1.0);
@@ -166,7 +163,7 @@ public class MpsatConformationTask implements Task<MpsatChainOutput> {
             // Success
             String message = "The model conforms to its environment (" + envFile.getName() + ").";
             return new Result<>(Outcome.SUCCESS,
-                    new MpsatChainOutput(devExportResult, pcompResult, punfResult, null, toolchainCompletionSettings, message));
+                    new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, mpsatSettings, message));
 
         } catch (Throwable e) {
             return new Result<>(e);

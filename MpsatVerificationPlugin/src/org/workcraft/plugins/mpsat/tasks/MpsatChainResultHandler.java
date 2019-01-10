@@ -95,14 +95,14 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainOut
         case STG_REACHABILITY_OUTPUT_PERSISTENCY:
             SwingUtilities.invokeLater(new MpsatOutputPersistencyOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
             break;
+        case STG_REACHABILITY_OUTPUT_DETERMINACY:
+            SwingUtilities.invokeLater(new MpsatOutputDeterminacyOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
+            break;
         case STG_REACHABILITY_CONFORMATION:
             SwingUtilities.invokeLater(new MpsatConformationOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
             break;
         case STG_REACHABILITY_CONFORMATION_NWAY:
             SwingUtilities.invokeLater(new MpsatConformationNwayOutputHandler(wes, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
-            break;
-        case STG_REACHABILITY_OUTPUT_DETERMINACY:
-            SwingUtilities.invokeLater(new MpsatOutputDeterminacyOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
             break;
         case CSC_CONFLICT_DETECTION:
         case USC_CONFLICT_DETECTION:

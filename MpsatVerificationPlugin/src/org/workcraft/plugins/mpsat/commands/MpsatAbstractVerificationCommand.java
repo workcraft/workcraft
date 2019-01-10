@@ -51,14 +51,13 @@ public abstract class MpsatAbstractVerificationCommand extends AbstractVerificat
     }
 
     public boolean checkPrerequisites(WorkspaceEntry we) {
-        boolean result = false;
         if (isApplicableTo(we)) {
             PetriNetModel net = WorkspaceUtils.getAs(we, PetriNetModel.class);
             if (net != null) {
-                result = PetriUtils.checkSoundness(net, true);
+                return PetriUtils.checkSoundness(net, true);
             }
         }
-        return result;
+        return false;
     }
 
     public abstract MpsatParameters getSettings(WorkspaceEntry we);

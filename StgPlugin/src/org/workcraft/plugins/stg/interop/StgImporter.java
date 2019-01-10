@@ -5,7 +5,6 @@ import org.workcraft.exceptions.FormatException;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.plugins.shared.CommonDebugSettings;
-import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.jj.ParseException;
@@ -23,7 +22,9 @@ public class StgImporter implements Importer {
 
     @Override
     public ModelEntry importFrom(InputStream in) throws DeserialisationException {
-        return new ModelEntry(new StgDescriptor(), importStg(in));
+        StgModel stg = importStg(in);
+        PetriUtils.checkSoundness(stg, false);
+        return new ModelEntry(new StgDescriptor(), stg);
     }
 
     public StgModel importStg(InputStream in) throws DeserialisationException {
@@ -34,9 +35,7 @@ public class StgImporter implements Importer {
             } else {
                 parser.disable_tracing();
             }
-            Stg stg = parser.parse();
-            PetriUtils.checkSoundness(stg, false);
-            return stg;
+            return parser.parse();
         } catch (FormatException | ParseException e) {
             throw new DeserialisationException(e);
         }

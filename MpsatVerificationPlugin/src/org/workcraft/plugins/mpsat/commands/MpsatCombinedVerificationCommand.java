@@ -1,30 +1,29 @@
 package org.workcraft.plugins.mpsat.commands;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.mpsat.MpsatParameters;
-import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainOutput;
-import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainResultHandler;
-import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainTask;
-import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
+import org.workcraft.plugins.mpsat.tasks.*;
+import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 
 public class MpsatCombinedVerificationCommand extends AbstractVerificationCommand {
 
     @Override
     public String getDisplayName() {
-        return "Consistency, deadlock freeness, input properness, output persistency, and mutex implementability (reuse unfolding) [MPSat]";
+        return "Consistency, deadlock freeness, input properness, mutex implementability, output persistency, output determinacy [MPSat]";
     }
 
     @Override
@@ -58,30 +57,60 @@ public class MpsatCombinedVerificationCommand extends AbstractVerificationComman
     }
 
     private MpsatCombinedChainResultHandler queueVerification(WorkspaceEntry we) {
-        if (!isApplicableTo(we)) {
+
+        if (!checkPrerequisites(we)) {
             return null;
         }
-        MpsatCombinedChainResultHandler monitor = null;
-        Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        if (MpsatUtils.mutexStructuralCheck(stg, true)) {
-            Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
-            ArrayList<MpsatParameters> settingsList = new ArrayList<>();
-            settingsList.add(MpsatParameters.getConsistencySettings());
-            settingsList.add(MpsatParameters.getDeadlockSettings());
-            settingsList.add(MpsatParameters.getInputPropernessSettings());
-            settingsList.addAll(MpsatUtils.getMutexImplementabilitySettings(mutexes));
 
+        Stg stg = WorkspaceUtils.getAs(we, Stg.class);
+
+        boolean noDummies = stg.getDummyTransitions().isEmpty();
+        if (!noDummies) {
+            String msg = "Input properness and Output persistency\n" +
+                    "can currently be checked only for STGs without dummies.\n\n" +
+                    "Proceed with verification of other properties?";
+            if (!DialogUtils.showConfirmWarning(msg, "Verification", true)) {
+                return null;
+            }
+        }
+
+        if (!MpsatUtils.mutexStructuralCheck(stg, true)) {
+            return null;
+        }
+
+        Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
+        ArrayList<MpsatParameters> settingsList = new ArrayList<>();
+        settingsList.add(MpsatParameters.getConsistencySettings());
+        settingsList.add(MpsatParameters.getDeadlockSettings());
+        if (noDummies) {
+            settingsList.add(MpsatParameters.getInputPropernessSettings());
+        }
+
+        settingsList.addAll(MpsatUtils.getMutexImplementabilitySettings(mutexes));
+        if (noDummies) {
             LinkedList<Pair<String, String>> exceptions = MutexUtils.getMutexGrantPairs(stg);
             settingsList.add(MpsatParameters.getOutputPersistencySettings(exceptions));
-
-            TaskManager manager = Framework.getInstance().getTaskManager();
-            MpsatCombinedChainTask task = new MpsatCombinedChainTask(we, settingsList);
-            MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-            String description = MpsatUtils.getToolchainDescription(we.getTitle());
-            monitor = new MpsatCombinedChainResultHandler(task, mutexes);
-            manager.queue(task, description, monitor);
         }
+
+        MpsatOutputDeterminacyTask extraTask = new MpsatOutputDeterminacyTask(we);
+
+        TaskManager manager = Framework.getInstance().getTaskManager();
+        MpsatCombinedChainTask task = new MpsatCombinedChainTask(we, settingsList, extraTask);
+        MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
+        String description = MpsatUtils.getToolchainDescription(we.getTitle());
+        MpsatCombinedChainResultHandler monitor = new MpsatCombinedChainResultHandler(task, mutexes);
+        manager.queue(task, description, monitor);
         return monitor;
+    }
+
+    private boolean checkPrerequisites(WorkspaceEntry we) {
+        if (isApplicableTo(we)) {
+            Stg net = WorkspaceUtils.getAs(we, Stg.class);
+            if (net != null) {
+                return PetriUtils.checkSoundness(net, true);
+            }
+        }
+        return false;
     }
 
 }

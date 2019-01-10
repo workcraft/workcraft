@@ -4,7 +4,6 @@ import org.workcraft.Framework;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
-import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.*;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -29,12 +28,6 @@ import java.util.Set;
 
 public class CircuitCustomCheckTask extends MpsatChainTask {
 
-    private final MpsatParameters toolchainPreparationSettings = new MpsatParameters("Toolchain preparation of data",
-            MpsatMode.UNDEFINED, 0, null, 0);
-
-    private final MpsatParameters toolchainCompletionSettings = new MpsatParameters("Toolchain completion",
-            MpsatMode.UNDEFINED, 0, null, 0);
-
     public CircuitCustomCheckTask(WorkspaceEntry we, MpsatParameters settings) {
         super(we, settings);
     }
@@ -47,6 +40,7 @@ public class CircuitCustomCheckTask extends MpsatChainTask {
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         String stgFileExtension = StgFormat.getInstance().getExtension();
+        MpsatParameters preparationSettings = MpsatParameters.getToolchainPreparationSettings();
         try {
             // Common variables
             VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
@@ -74,7 +68,7 @@ public class CircuitCustomCheckTask extends MpsatChainTask {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new MpsatChainOutput(devExportResult, null, null, null, toolchainPreparationSettings));
+                        new MpsatChainOutput(devExportResult, null, null, null, preparationSettings));
             }
             monitor.progressUpdate(0.10);
 
@@ -92,7 +86,7 @@ public class CircuitCustomCheckTask extends MpsatChainTask {
                         return new Result<>(Outcome.CANCEL);
                     }
                     return new Result<>(Outcome.FAILURE,
-                            new MpsatChainOutput(envExportResult, null, null, null, toolchainPreparationSettings));
+                            new MpsatChainOutput(envExportResult, null, null, null, preparationSettings));
                 }
 
                 // Generating .g for the whole system (circuit and environment)
@@ -104,7 +98,7 @@ public class CircuitCustomCheckTask extends MpsatChainTask {
                         return new Result<>(Outcome.CANCEL);
                     }
                     return new Result<>(Outcome.FAILURE,
-                            new MpsatChainOutput(devExportResult, pcompResult, null, null, toolchainPreparationSettings));
+                            new MpsatChainOutput(devExportResult, pcompResult, null, null, preparationSettings));
                 }
             }
             monitor.progressUpdate(0.20);
@@ -120,7 +114,7 @@ public class CircuitCustomCheckTask extends MpsatChainTask {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new MpsatChainOutput(devExportResult, pcompResult, punfResult, null, toolchainPreparationSettings));
+                        new MpsatChainOutput(devExportResult, pcompResult, punfResult, null, preparationSettings));
             }
             monitor.progressUpdate(0.40);
 
@@ -151,7 +145,7 @@ public class CircuitCustomCheckTask extends MpsatChainTask {
 
             // Success
             return new Result<>(Outcome.SUCCESS,
-                    new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, toolchainCompletionSettings,
+                    new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, settings,
                             "Custom property holds"));
 
         } catch (Throwable e) {

@@ -1,15 +1,12 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.workcraft.Framework;
 import org.workcraft.PluginManager;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
+import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
@@ -17,28 +14,56 @@ import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExportTask;
 import org.workcraft.plugins.stg.interop.StgFormat;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.Result;
+import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.tasks.SubtaskMonitor;
-import org.workcraft.tasks.Task;
-import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 public class MpsatCombinedChainTask implements Task<MpsatCombinedChainOutput> {
+
     private final WorkspaceEntry we;
     private final List<MpsatParameters> settingsList;
+    private final Task<MpsatChainOutput> task;
 
-    public MpsatCombinedChainTask(WorkspaceEntry we, List<MpsatParameters> settingsList) {
+    public MpsatCombinedChainTask(WorkspaceEntry we, List<MpsatParameters> settingsList, Task<MpsatChainOutput> task) {
         this.we = we;
         this.settingsList = settingsList;
+        this.task = task;
     }
 
     @Override
     public Result<? extends MpsatCombinedChainOutput> run(ProgressMonitor<? super MpsatCombinedChainOutput> monitor) {
+        Result<? extends MpsatCombinedChainOutput> result = processSettingList(monitor);
+        if ((result.getOutcome() != Outcome.SUCCESS) || (task == null)) {
+            return result;
+        }
+
+        Result<? extends MpsatChainOutput> taskResult = processExtraTask(monitor);
+
+        if (taskResult.getOutcome() == Outcome.CANCEL) {
+            return new Result<>(Outcome.CANCEL);
+        }
+
+        MpsatChainOutput payload = taskResult.getPayload();
+
+        Result<? extends ExportOutput> exportResult = payload.getExportResult();
+        Result<? extends PcompOutput> pcompResult = payload.getPcompResult();
+        Result<? extends PunfOutput> punfResult = payload.getPunfResult();
+        List<Result<? extends MpsatOutput>> mpsatResultList = result.getPayload().getMpsatResultList();
+        mpsatResultList.add(payload.getMpsatResult());
+        settingsList.add(payload.getMpsatSettings());
+
+        return new Result<>(taskResult.getOutcome(),
+                new MpsatCombinedChainOutput(exportResult, pcompResult, punfResult, mpsatResultList, settingsList));
+    }
+
+    public Result<? extends MpsatCombinedChainOutput> processSettingList(ProgressMonitor<? super MpsatCombinedChainOutput> monitor) {
         Framework framework = Framework.getInstance();
         PluginManager pluginManager = framework.getPluginManager();
         TaskManager taskManager = framework.getTaskManager();
@@ -117,8 +142,12 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainOutput> {
         }
     }
 
-    public List<MpsatParameters> getSettingsList() {
-        return settingsList;
+    public Result<? extends MpsatChainOutput> processExtraTask(ProgressMonitor<? super MpsatCombinedChainOutput> monitor) {
+        Framework framework = Framework.getInstance();
+        TaskManager taskManager = framework.getTaskManager();
+        String description = MpsatUtils.getToolchainDescription(we.getTitle());
+        SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
+        return taskManager.execute(task, description, subtaskMonitor);
     }
 
     public WorkspaceEntry getWorkspaceEntry() {

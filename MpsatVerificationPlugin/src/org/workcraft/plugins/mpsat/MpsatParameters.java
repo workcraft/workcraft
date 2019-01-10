@@ -628,8 +628,10 @@ public class MpsatParameters {
 
     private static String getRefsAsString(Collection<String> refs) {
         String str = "";
-        for (String name : refs) {
-            str += "\"" + name + "\", ";
+        if (refs != null) {
+            for (String name : refs) {
+                str += "\"" + name + "\", ";
+            }
         }
         return str;
     }

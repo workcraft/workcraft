@@ -32,8 +32,6 @@ import java.io.File;
 import java.util.*;
 
 public class CircuitCheckTask extends MpsatChainTask {
-    private final MpsatParameters toolchainPreparationSettings = MpsatParameters.getToolchainPreparationSettings();
-    private final MpsatParameters toolchainCompletionSettings = MpsatParameters.getToolchainCompletionSettings();
 
     private final boolean checkConformation;
     private final boolean checkDeadlock;
@@ -54,6 +52,7 @@ public class CircuitCheckTask extends MpsatChainTask {
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         String stgFileExtension = StgFormat.getInstance().getExtension();
+        MpsatParameters preparationSettings = MpsatParameters.getToolchainPreparationSettings();
         try {
             // Common variables
             VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
@@ -97,7 +96,7 @@ public class CircuitCheckTask extends MpsatChainTask {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new MpsatChainOutput(devExportResult, null, null, null, toolchainPreparationSettings));
+                        new MpsatChainOutput(devExportResult, null, null, null, preparationSettings));
             }
             monitor.progressUpdate(0.1);
 
@@ -116,7 +115,7 @@ public class CircuitCheckTask extends MpsatChainTask {
                             return new Result<>(Outcome.CANCEL);
                         }
                         return new Result<>(Outcome.FAILURE,
-                                new MpsatChainOutput(envExportResult, null, null, null, toolchainPreparationSettings));
+                                new MpsatChainOutput(envExportResult, null, null, null, preparationSettings));
                     }
 
                     // Generating .g for the whole system (circuit and environment)
@@ -128,7 +127,7 @@ public class CircuitCheckTask extends MpsatChainTask {
                             return new Result<>(Outcome.CANCEL);
                         }
                         return new Result<>(Outcome.FAILURE,
-                                new MpsatChainOutput(devExportResult, pcompResult, null, null, toolchainPreparationSettings));
+                                new MpsatChainOutput(devExportResult, pcompResult, null, null, preparationSettings));
                     }
                 }
                 // Restore the original types of mutex grant in system STG
@@ -165,7 +164,7 @@ public class CircuitCheckTask extends MpsatChainTask {
                             return new Result<>(Outcome.CANCEL);
                         }
                         return new Result<>(Outcome.FAILURE,
-                                new MpsatChainOutput(envModExportResult, null, null, null, toolchainPreparationSettings));
+                                new MpsatChainOutput(envModExportResult, null, null, null, preparationSettings));
                     }
 
                     // Generating .g for the whole system (circuit and environment) without internal signals
@@ -177,7 +176,7 @@ public class CircuitCheckTask extends MpsatChainTask {
                             return new Result<>(Outcome.CANCEL);
                         }
                         return new Result<>(Outcome.FAILURE,
-                                new MpsatChainOutput(devExportResult, pcompModResult, null, null, toolchainPreparationSettings));
+                                new MpsatChainOutput(devExportResult, pcompModResult, null, null, preparationSettings));
                     }
                     // Restore the original types of mutex grant in modified system STG
                     Stg sysModStg = StgUtils.loadStg(sysModStgFile);
@@ -207,7 +206,7 @@ public class CircuitCheckTask extends MpsatChainTask {
                         return new Result<>(Outcome.CANCEL);
                     }
                     return new Result<>(Outcome.FAILURE,
-                            new MpsatChainOutput(devExportResult, pcompResult, punfResult, null, toolchainPreparationSettings));
+                            new MpsatChainOutput(devExportResult, pcompResult, punfResult, null, preparationSettings));
                 }
             }
 
@@ -227,7 +226,7 @@ public class CircuitCheckTask extends MpsatChainTask {
                             return new Result<>(Outcome.CANCEL);
                         }
                         return new Result<>(Outcome.FAILURE,
-                                new MpsatChainOutput(devExportResult, pcompModResult, punfModResult, null, toolchainPreparationSettings));
+                                new MpsatChainOutput(devExportResult, pcompModResult, punfModResult, null, preparationSettings));
                     }
                 }
             }
@@ -319,9 +318,10 @@ public class CircuitCheckTask extends MpsatChainTask {
 
             // Success
             Result<? extends MpsatOutput>  mpsatResult = new Result<>(Outcome.SUCCESS);
+            MpsatParameters completionSettings = MpsatParameters.getToolchainCompletionSettings();
             String message = getSuccessMessage(envFile);
             return new Result<>(Outcome.SUCCESS,
-                    new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, toolchainCompletionSettings, message));
+                    new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, completionSettings, message));
 
         } catch (Throwable e) {
             return new Result<>(e);

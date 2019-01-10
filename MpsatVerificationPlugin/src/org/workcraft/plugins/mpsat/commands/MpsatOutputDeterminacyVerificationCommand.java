@@ -26,12 +26,12 @@ public class MpsatOutputDeterminacyVerificationCommand extends AbstractVerificat
 
     @Override
     public int getPriority() {
-        return 3;
+        return 2;
     }
 
     @Override
     public Position getPosition() {
-        return Position.BOTTOM_MIDDLE;
+        return Position.TOP;
     }
 
 

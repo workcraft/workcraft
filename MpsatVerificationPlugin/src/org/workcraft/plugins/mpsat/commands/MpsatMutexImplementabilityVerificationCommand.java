@@ -33,7 +33,7 @@ public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerif
 
     @Override
     public int getPriority() {
-        return 3;
+        return 4;
     }
 
     @Override
@@ -66,7 +66,7 @@ public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerif
                 Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
                 MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
                 ArrayList<MpsatParameters> settingsList = MpsatUtils.getMutexImplementabilitySettings(mutexes);
-                MpsatCombinedChainTask task = new MpsatCombinedChainTask(we, settingsList);
+                MpsatCombinedChainTask task = new MpsatCombinedChainTask(we, settingsList, null);
                 String description = MpsatUtils.getToolchainDescription(we.getTitle());
                 monitor = new MpsatCombinedChainResultHandler(task, mutexes);
                 manager.queue(task, description, monitor);

@@ -1,10 +1,5 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import java.util.Collection;
-import java.util.List;
-
-import javax.swing.SwingUtilities;
-
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.PunfOutputParser.Cause;
@@ -19,6 +14,10 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import java.util.Collection;
+import java.util.List;
 
 public class MpsatCombinedChainResultHandler extends AbstractResultHandler<MpsatCombinedChainOutput> {
 
@@ -60,15 +59,18 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
         MpsatParameters violationMpsatSettings = null;
         String verifiedMessageDetailes = "";
         for (int index = 0; index < mpsatResultList.size(); ++index) {
-            Result<? extends MpsatOutput> mpsatResult = mpsatResultList.get(index);
-            MpsatOutput mpsatOutput = mpsatResult.getPayload();
             MpsatParameters mpsatSettings = mpsatSettingsList.get(index);
-            MpsatOutputParser mdp = new MpsatOutputParser(mpsatOutput);
-            List<MpsatSolution> solutions = mdp.getSolutions();
-            if (!MpsatUtils.hasTraces(solutions)) {
+            Result<? extends MpsatOutput> mpsatResult = mpsatResultList.get(index);
+            boolean hasSolutions = false;
+            if (mpsatResult != null) {
+                MpsatOutputParser mdp = new MpsatOutputParser(mpsatResult.getPayload());
+                List<MpsatSolution> solutions = mdp.getSolutions();
+                hasSolutions = MpsatUtils.hasTraces(solutions);
+            }
+            if (!hasSolutions) {
                 verifiedMessageDetailes += "\n * " + mpsatSettings.getName();
             } else {
-                violationMpsatOutput = mpsatOutput;
+                violationMpsatOutput = mpsatResult.getPayload();
                 violationMpsatSettings = mpsatSettings;
             }
         }
@@ -76,7 +78,7 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
             // No solution found in any of the MPSat tasks
             if ((mutexes != null) && mutexes.isEmpty()) {
                 // Add trivial mutex implementability result if no mutex places found
-                verifiedMessageDetailes += "\n * Mutex implementability (trivially)";
+                verifiedMessageDetailes += "\n * Mutex implementability (vacuously)";
             }
             DialogUtils.showInfo("The following checks passed:" + verifiedMessageDetailes);
         } else {
@@ -93,22 +95,25 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
             case STG_REACHABILITY:
             case NORMALCY:
             case ASSERTION:
-                SwingUtilities.invokeLater(new MpsatReachabilityOutputHandler(
-                        we, violationMpsatOutput, violationMpsatSettings));
+                SwingUtilities.invokeLater(new MpsatReachabilityOutputHandler(we, violationMpsatOutput, violationMpsatSettings));
                 break;
             case REACHABILITY_REDUNDANCY:
                 SwingUtilities.invokeLater(new MpsatRedundancyOutputHandler(we, violationMpsatOutput, violationMpsatSettings));
                 break;
             case DEADLOCK:
-                SwingUtilities.invokeLater(new MpsatDeadlockFreenessOutputHandler(
-                        we, exportOutput, pcompOutput, violationMpsatOutput, violationMpsatSettings));
+                SwingUtilities.invokeLater(new MpsatDeadlockFreenessOutputHandler(we, exportOutput, pcompOutput,
+                        violationMpsatOutput, violationMpsatSettings));
                 break;
             case STG_REACHABILITY_CONSISTENCY:
-                SwingUtilities.invokeLater(new MpsatConsistencyOutputHandler(
-                        we, exportOutput, pcompOutput, violationMpsatOutput, violationMpsatSettings));
+                SwingUtilities.invokeLater(new MpsatConsistencyOutputHandler(we, exportOutput, pcompOutput,
+                        violationMpsatOutput, violationMpsatSettings));
                 break;
             case STG_REACHABILITY_OUTPUT_PERSISTENCY:
                 SwingUtilities.invokeLater(new MpsatOutputPersistencyOutputHandler(
+                        we, exportOutput, pcompOutput, violationMpsatOutput, violationMpsatSettings));
+                break;
+            case STG_REACHABILITY_OUTPUT_DETERMINACY:
+                SwingUtilities.invokeLater(new MpsatOutputDeterminacyOutputHandler(
                         we, exportOutput, pcompOutput, violationMpsatOutput, violationMpsatSettings));
                 break;
             case STG_REACHABILITY_CONFORMATION:
