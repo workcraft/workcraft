@@ -1,8 +1,5 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import java.io.File;
-import java.util.Collection;
-
 import org.workcraft.Framework;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
@@ -12,10 +9,10 @@ import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExportTask;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.Signal;
+import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.plugins.stg.interop.StgFormat;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -25,6 +22,9 @@ import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.io.File;
+import java.util.Collection;
 
 public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainOutput> {
     private final WorkspaceEntry we;
@@ -66,12 +66,9 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainOutput> 
                 return new Result<>(Outcome.FAILURE,
                         new MpsatSynthesisChainOutput(exportResult, null, null, settings));
             }
-            if (!mutexes.isEmpty()) {
+            if ((mutexes != null) && !mutexes.isEmpty()) {
                 model = StgUtils.loadStg(netFile);
-                for (Mutex m: mutexes) {
-                    model.setSignalType(m.g1.name, Signal.Type.INPUT);
-                    model.setSignalType(m.g2.name, Signal.Type.INPUT);
-                }
+                MutexUtils.factoroutMutexs(model, mutexes);
                 filePrefix += StgUtils.MUTEX_FILE_SUFFIX;
                 netFile = new File(directory, filePrefix + stgFileExtension);
                 exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());

@@ -1,7 +1,5 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import java.util.Collection;
-
 import org.workcraft.Framework;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.stg.Mutex;
@@ -11,6 +9,8 @@ import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import java.util.Collection;
 
 public class MpsatCscConflictResolutionOutputHandler implements Runnable {
 
@@ -34,6 +34,7 @@ public class MpsatCscConflictResolutionOutputHandler implements Runnable {
             final String errorMessage = output.getErrorsHeadAndTail();
             DialogUtils.showWarning("Conflict resolution failed. MPSat output: \n" + errorMessage);
         } else {
+            MutexUtils.restoreMutexSignals(model, mutexes);
             MutexUtils.restoreMutexPlacesByName(model, mutexes);
             final ModelEntry me = new ModelEntry(new StgDescriptor(), model);
             final Path<String> path = we.getWorkspacePath();

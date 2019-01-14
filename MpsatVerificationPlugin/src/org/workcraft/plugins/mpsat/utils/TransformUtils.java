@@ -32,7 +32,10 @@ public class TransformUtils {
         File stgFile = new File(componentData.getFileName());
         Stg stg = StgUtils.loadStg(stgFile);
         Set<String> dstPlaceRefs = componentData.getDstPlaces();
-        for (String signalRef : stg.getSignalReferences(Signal.Type.OUTPUT)) {
+        Set<String> localSignals = new HashSet<>();
+        localSignals.addAll(stg.getSignalReferences(Signal.Type.OUTPUT));
+        localSignals.addAll(stg.getSignalReferences(Signal.Type.INTERNAL));
+        for (String signalRef : localSignals) {
             for (SignalTransition signalTransition : compStg.getSignalTransitions(signalRef)) {
                 Set<StgPlace> srcPlaces = new HashSet<>();
                 for (StgPlace place : compStg.getPreset(signalTransition, StgPlace.class)) {

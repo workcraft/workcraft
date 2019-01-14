@@ -1,7 +1,5 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import java.io.File;
-
 import org.workcraft.Framework;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
@@ -13,26 +11,35 @@ import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExportTask;
+import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.plugins.stg.MutexUtils;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.Result;
+import org.workcraft.plugins.stg.utils.StgUtils;
+import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.tasks.SubtaskMonitor;
-import org.workcraft.tasks.Task;
-import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
+import java.io.File;
+import java.util.Collection;
+
 public class MpsatChainTask implements Task<MpsatChainOutput> {
 
     private final WorkspaceEntry we;
     private final MpsatParameters settings;
+    private final Collection<Mutex> mutexes;
 
     public MpsatChainTask(WorkspaceEntry we, MpsatParameters settings) {
+        this(we, settings, null);
+    }
+
+    public MpsatChainTask(WorkspaceEntry we, MpsatParameters settings, Collection<Mutex> mutexes) {
         this.we = we;
         this.settings = settings;
+        this.mutexes = mutexes;
     }
 
     @Override
@@ -51,7 +58,7 @@ public class MpsatChainTask implements Task<MpsatChainOutput> {
             SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
 
             // Generate .g for the model
-            File netFile = new File(directory, "net" + format.getExtension());
+            File netFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + format.getExtension());
             ExportTask exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
             Result<? extends ExportOutput> exportResult = manager.execute(
                     exportTask, "Exporting .g", subtaskMonitor);
@@ -62,6 +69,21 @@ public class MpsatChainTask implements Task<MpsatChainOutput> {
                 }
                 return new Result<>(Outcome.FAILURE,
                         new MpsatChainOutput(exportResult, null, null, null, settings));
+            }
+            if ((mutexes != null) && !mutexes.isEmpty()) {
+                Stg stg = StgUtils.loadStg(netFile);
+                MutexUtils.factoroutMutexs(stg, mutexes);
+                netFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + format.getExtension());
+                exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
+                exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
+
+                if (exportResult.getOutcome() != Outcome.SUCCESS) {
+                    if (exportResult.getOutcome() == Outcome.CANCEL) {
+                        return new Result<>(Outcome.CANCEL);
+                    }
+                    return new Result<>(Outcome.FAILURE,
+                            new MpsatChainOutput(exportResult, null, null, null, settings));
+                }
             }
             monitor.progressUpdate(0.33);
 

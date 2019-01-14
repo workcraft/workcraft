@@ -30,12 +30,14 @@ public class PetrifyHideDummyConversionCommand extends PetrifyAbstractConversion
 
     @Override
     public WorkspaceEntry execute(WorkspaceEntry we) {
-        final PetrifyTransformationTask task = new PetrifyTransformationTask(we, "Dummy contraction", new String[] {"-hide", ".dummy" });
-        final Framework framework = Framework.getInstance();
-        final TaskManager taskManager = framework.getTaskManager();
-        boolean hasSignals = hasSignals(we);
         Collection<Mutex> mutexes = getMutexes(we);
-        final PetrifyTransformationResultHandler monitor = new PetrifyTransformationResultHandler(we, !hasSignals, mutexes);
+        PetrifyTransformationTask task = new PetrifyTransformationTask(
+                we, "Dummy contraction", new String[] {"-hide", ".dummy" }, mutexes);
+
+        boolean hasSignals = hasSignals(we);
+        PetrifyTransformationResultHandler monitor = new PetrifyTransformationResultHandler(we, !hasSignals, mutexes);
+
+        TaskManager taskManager = Framework.getInstance().getTaskManager();
         taskManager.execute(task, "Petrify dummy contraction", monitor);
         return monitor.waitForHandledResult();
     }

@@ -12,8 +12,12 @@ function size() {
     wc -c < $1
 }
 
+if [ -z "$@" ]; then
+    TEST_DIR_PATTERN="*"
+else
+    TEST_DIR_PATTERN="$@"
+fi
 DIR="integration-tests"
-TEST_DIR_PATTERN="hel*"
 REF_FILE_PATTERN="*.ref"
 SCRIPT_FILE="test.sh"
 LOG_FILE="workcraft.log"

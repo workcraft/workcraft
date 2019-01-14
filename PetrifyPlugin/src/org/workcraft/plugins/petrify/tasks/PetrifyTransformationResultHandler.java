@@ -5,8 +5,8 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.references.HierarchyReferenceManager;
+import org.workcraft.dom.references.NameManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.ExceptionDialog;
 import org.workcraft.gui.workspace.Path;
@@ -39,6 +39,7 @@ public class PetrifyTransformationResultHandler extends AbstractExtendedResultHa
         PetrifyTransformationOutput output = result.getPayload();
         if (result.getOutcome() == Outcome.SUCCESS) {
             StgModel stgModel = output.getStg();
+            MutexUtils.restoreMutexSignals(stgModel, mutexes);
             MutexUtils.restoreMutexPlacesByContext(stgModel, mutexes);
             PetriNetModel model = convertToPetriNet ? convertStgToPetriNet(stgModel) : stgModel;
             final ModelDescriptor modelDescriptor = convertToPetriNet ? new PetriNetDescriptor() : new StgDescriptor();

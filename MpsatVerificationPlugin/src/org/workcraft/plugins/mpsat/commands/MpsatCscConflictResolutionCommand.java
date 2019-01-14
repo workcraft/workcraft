@@ -64,11 +64,11 @@ public class MpsatCscConflictResolutionCommand implements ScriptableCommand<Work
         MpsatParameters settings = new MpsatParameters(TITLE,
                 MpsatMode.RESOLVE_ENCODING_CONFLICTS, 4, SolutionMode.MINIMUM_COST, 1);
 
-        Framework framework = Framework.getInstance();
-        TaskManager taskManager = framework.getTaskManager();
-        MpsatChainTask task = new MpsatChainTask(we, settings);
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
+        MpsatChainTask task = new MpsatChainTask(we, settings, mutexes);
+
+        TaskManager taskManager = Framework.getInstance().getTaskManager();
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
         MpsatChainResultHandler monitor = new MpsatChainResultHandler(we, mutexes);
         taskManager.queue(task, TITLE, monitor);

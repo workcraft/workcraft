@@ -462,19 +462,20 @@ public class MpsatParameters {
     private static final String REPLACEMENT_SHADOW_TRANSITIONS =
             "/* insert set of names of shadow transitions here */"; // For example: "x+/1", "x-", "y+", "y-/1"
 
-    private static final String REACH_SHADOW_ENABLENESS =
+    private static final String REACH_CONFORMATION_NWAY =
             "// Check whether several STGs conform to each other.\n" +
             "// The enabled-via-dummies semantics is assumed for @.\n" +
+            "// Configurations with maximal dummies are assumed to be allowed.\n" +
             "let\n" +
-            "    // set of phantom output transition names in the whole composed STG\n" +
+            "    // Set of phantom output transition names in the whole composed STG.\n" +
             "    SHADOW_OUTPUT_TRANSITIONS_NAMES = {" + REPLACEMENT_SHADOW_TRANSITIONS + "\"\"} \\ {\"\"},\n" +
             "    SHADOW_OUTPUT_TRANSITIONS = gather n in SHADOW_OUTPUT_TRANSITIONS_NAMES { T n }\n" +
             "{\n" +
-            "    // Optimisation: make sure phantom events are not in the configuration\n" +
+            "    // Optimisation: make sure phantom events are not in the configuration.\n" +
             "    forall e in ev SHADOW_OUTPUT_TRANSITIONS \\ CUTOFFS { ~$e }\n" +
             "    &\n" +
             "    // Check if some output signal is enabled due to phantom transitions only;\n" +
-            "    // this would mean that some component STG does not conform to the rest of the composition\n" +
+            "    // this would mean that some component STG does not conform to the rest of the composition.\n" +
             "    exists o in OUTPUTS {\n" +
             "        let tran_o = tran o {\n" +
             "            exists t in tran_o * SHADOW_OUTPUT_TRANSITIONS {\n" +
@@ -486,9 +487,6 @@ public class MpsatParameters {
             "    }\n" +
             "}\n";
 
-    private static final String REACH_CONFORMATION_NWAY =
-            "// Check whether several STGs conform to each other.\n" + REACH_SHADOW_ENABLENESS;
-
     public static MpsatParameters getConformationNwaySettings(Set<String> shadowTransitionNames) {
         String str = getRefsAsString(shadowTransitionNames);
         String reachConformationNway = REACH_CONFORMATION_NWAY.replace(REPLACEMENT_SHADOW_TRANSITIONS, str);
@@ -498,7 +496,31 @@ public class MpsatParameters {
     }
 
     private static final String REACH_OUTPUT_DETERMINACY =
-            "// Check whether an STG is output-determinate.\n" + REACH_SHADOW_ENABLENESS;
+            "// Check whether an STG is output-determinate.\n" +
+            "// The enabled-via-dummies semantics is assumed for @.\n" +
+            "// Configurations with maximal dummies are assumed to be allowed.\n" +
+            "let\n" +
+            "    // Set of phantom output transition names in the whole composed STG.\n" +
+            "    SHADOW_OUTPUT_TRANSITIONS_NAMES = {" + REPLACEMENT_SHADOW_TRANSITIONS + "\"\"} \\ {\"\"},\n" +
+            "    SHADOW_OUTPUT_TRANSITIONS = gather n in SHADOW_OUTPUT_TRANSITIONS_NAMES { T n }\n" +
+            "{\n" +
+            "    // Optimisation: make sure phantom events are not in the configuration.\n" +
+            "    forall e in ev SHADOW_OUTPUT_TRANSITIONS \\ CUTOFFS { ~$e }\n" +
+            "    &\n" +
+            "    // Check if some output signal in the composition is enabled due to phantom transitions only;\n" +
+            "    // this would mean that in the original STG there are two executions with the same visible\n" +
+            "    // traces, leading to two markings M1 and M2 such that M1 enables some output signal o\n" +
+            "    // but M2 does not enable o, so the output-determinacy is violated.\n" +
+            "    exists o in OUTPUTS {\n" +
+            "        let tran_o = tran o {\n" +
+            "            exists t in tran_o * SHADOW_OUTPUT_TRANSITIONS {\n" +
+            "                forall p in pre t { $p }\n" +
+            "            }\n" +
+            "            &\n" +
+            "            forall tt in tran_o \\ SHADOW_OUTPUT_TRANSITIONS { ~@tt }\n" +
+            "        }\n" +
+            "    }\n" +
+            "}\n";
 
     public static MpsatParameters getOutputDeterminacySettings(Collection<String> shadowTransitionRefs) {
         String str = getRefsAsString(shadowTransitionRefs);
@@ -606,8 +628,10 @@ public class MpsatParameters {
 
     private static String getRefsAsString(Collection<String> refs) {
         String str = "";
-        for (String name : refs) {
-            str += "\"" + name + "\", ";
+        if (refs != null) {
+            for (String name : refs) {
+                str += "\"" + name + "\", ";
+            }
         }
         return str;
     }

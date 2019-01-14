@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class CircuitStrictImplementationCheckTask extends MpsatChainTask {
-    private final MpsatParameters toolchainPreparationSettings = MpsatParameters.getToolchainPreparationSettings();
 
     public CircuitStrictImplementationCheckTask(WorkspaceEntry we) {
         super(we, null);
@@ -44,6 +43,7 @@ public class CircuitStrictImplementationCheckTask extends MpsatChainTask {
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         String stgFileExtension = StgFormat.getInstance().getExtension();
+        MpsatParameters preparationSettings = MpsatParameters.getToolchainPreparationSettings();
         try {
             // Common variables
             VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
@@ -65,7 +65,7 @@ public class CircuitStrictImplementationCheckTask extends MpsatChainTask {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new MpsatChainOutput(envExportResult, null, null, null, toolchainPreparationSettings));
+                        new MpsatChainOutput(envExportResult, null, null, null, preparationSettings));
             }
             monitor.progressUpdate(0.20);
 
@@ -82,7 +82,7 @@ public class CircuitStrictImplementationCheckTask extends MpsatChainTask {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new MpsatChainOutput(envExportResult, null, punfResult, null, toolchainPreparationSettings));
+                        new MpsatChainOutput(envExportResult, null, punfResult, null, preparationSettings));
             }
             monitor.progressUpdate(0.50);
 

@@ -1,13 +1,9 @@
 package org.workcraft.plugins.petrify.commands;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.plugins.petri.VisualTransition;
+import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.plugins.petrify.tasks.PetrifyTransformationResultHandler;
 import org.workcraft.plugins.petrify.tasks.PetrifyTransformationTask;
 import org.workcraft.plugins.stg.Mutex;
@@ -15,6 +11,10 @@ import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class PetrifyHideConversionCommand extends PetrifyAbstractConversionCommand {
 
@@ -61,12 +61,14 @@ public class PetrifyHideConversionCommand extends PetrifyAbstractConversionComma
             args.add(names);
         }
 
-        final Framework framework = Framework.getInstance();
-        final TaskManager taskManager = framework.getTaskManager();
-        final PetrifyTransformationTask task = new PetrifyTransformationTask(we, "Net synthesis", args.toArray(new String[args.size()]));
-        boolean hasSignals = hasSignals(we);
         Collection<Mutex> mutexes = getMutexes(we);
-        final PetrifyTransformationResultHandler monitor = new PetrifyTransformationResultHandler(we, !hasSignals, mutexes);
+        PetrifyTransformationTask task = new PetrifyTransformationTask(
+                we, "Net synthesis", args.toArray(new String[args.size()]), mutexes);
+
+        boolean hasSignals = hasSignals(we);
+        PetrifyTransformationResultHandler monitor = new PetrifyTransformationResultHandler(we, !hasSignals, mutexes);
+
+        TaskManager taskManager = Framework.getInstance().getTaskManager();
         taskManager.execute(task, "Petrify net synthesis", monitor);
         return monitor.waitForHandledResult();
     }

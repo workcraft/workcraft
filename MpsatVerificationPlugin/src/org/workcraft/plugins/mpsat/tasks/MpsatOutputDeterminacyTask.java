@@ -1,6 +1,7 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.Framework;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.utils.TransformUtils;
@@ -12,6 +13,7 @@ import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
+import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.StgUtils;
@@ -23,18 +25,9 @@ import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class MpsatOutputDeterminacyTask implements Task<MpsatChainOutput> {
-
-    private final MpsatParameters toolchainPreparationSettings = new MpsatParameters("Toolchain preparation of data",
-            MpsatMode.UNDEFINED, 0, null, 0);
-
-    private final MpsatParameters toolchainCompletionSettings = new MpsatParameters("Toolchain completion",
-            MpsatMode.UNDEFINED, 0, null, 0);
 
     private final WorkspaceEntry we;
 
@@ -50,11 +43,24 @@ public class MpsatOutputDeterminacyTask implements Task<MpsatChainOutput> {
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         String stgFileExtension = StgFormat.getInstance().getExtension();
+        MpsatParameters preparationSettings = new MpsatParameters("Toolchain preparation of data",
+                MpsatMode.UNDEFINED, 0, null, 0);
         try {
-            // Clone STG before converting its internal signals to dummies
+            // Clone STG before converting its internal signals to outputs
             ModelEntry me = framework.cloneModel(we.getModelEntry());
             Stg stg = WorkspaceUtils.getAs(me, Stg.class);
-            Map<String, String> dummy2InternalRefs = StgUtils.convertInternalSignalsToDummies(stg);
+            StgUtils.convertInternalSignalsToOutputs(stg);
+
+            // Structural check for vacuously held output-determinacy, i.e. there are no dummies
+            // and there are no choices between transitions of the same signal.
+            if (isVacuouslyOutputDeterminate(stg)) {
+                MpsatParameters vacuousSettings = new MpsatParameters("Output determinacy (vacuously)",
+                        MpsatMode.UNDEFINED, 0, null, 0);
+                return new Result<>(Outcome.SUCCESS,
+                        new MpsatChainOutput(null, null, null, null,
+                                vacuousSettings, "Output determinacy vacuously holds."));
+            }
+            monitor.progressUpdate(0.20);
 
             // Generating two copies of .g file for the model (dev and env)
             File devStgFile = new File(directory, StgUtils.DEVICE_FILE_PREFIX + stgFileExtension);
@@ -64,7 +70,7 @@ public class MpsatOutputDeterminacyTask implements Task<MpsatChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new MpsatChainOutput(devExportResult, null, null, null, toolchainPreparationSettings));
+                        new MpsatChainOutput(devExportResult, null, null, null, preparationSettings));
             }
 
             File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + stgFileExtension);
@@ -74,12 +80,11 @@ public class MpsatOutputDeterminacyTask implements Task<MpsatChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new MpsatChainOutput(envExportResult, null, null, null, toolchainPreparationSettings));
+                        new MpsatChainOutput(envExportResult, null, null, null, preparationSettings));
             }
 
             List<File> stgFiles = Arrays.asList(devStgFile, envStgFile);
-            List<Map<String, String>> substitutes = Arrays.asList(dummy2InternalRefs, dummy2InternalRefs);
-            Result<MultiSubExportOutput> multiExportResult = new Result<>(new MultiSubExportOutput(stgFiles, substitutes));
+            Result<MultiExportOutput> multiExportResult = new Result<>(new MultiExportOutput(stgFiles));
             monitor.progressUpdate(0.30);
 
             // Generating .g for the whole system (model and environment)
@@ -96,7 +101,7 @@ public class MpsatOutputDeterminacyTask implements Task<MpsatChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new MpsatChainOutput(multiExportResult, pcompResult, null, null, toolchainPreparationSettings));
+                        new MpsatChainOutput(multiExportResult, pcompResult, null, null, preparationSettings));
             }
             monitor.progressUpdate(0.50);
 
@@ -119,44 +124,61 @@ public class MpsatOutputDeterminacyTask implements Task<MpsatChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new MpsatChainOutput(modSysExportResult, pcompResult, punfResult, null, toolchainPreparationSettings));
+                        new MpsatChainOutput(modSysExportResult, pcompResult, punfResult, null, preparationSettings));
             }
             monitor.progressUpdate(0.60);
 
             // Check for output determinacy
-            MpsatParameters settings = MpsatParameters.getOutputDeterminacySettings(devShadowTransitions);
-            MpsatTask mpsatConformationTask = new MpsatTask(settings.getMpsatArguments(directory),
+            MpsatParameters mpsatSettings = MpsatParameters.getOutputDeterminacySettings(devShadowTransitions);
+            MpsatTask mpsatTask = new MpsatTask(mpsatSettings.getMpsatArguments(directory),
                     unfoldingFile, directory, sysStgFile);
-            Result<? extends MpsatOutput>  mpsatConformationResult = taskManager.execute(
-                    mpsatConformationTask, "Running output determinacy check [MPSat]", new SubtaskMonitor<>(monitor));
+            Result<? extends MpsatOutput>  mpsatResult = taskManager.execute(
+                    mpsatTask, "Running output determinacy check [MPSat]", new SubtaskMonitor<>(monitor));
 
-            if (mpsatConformationResult.getOutcome() != Outcome.SUCCESS) {
-                if (mpsatConformationResult.getOutcome() == Outcome.CANCEL) {
+            if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
+                if (mpsatResult.getOutcome() == Outcome.CANCEL) {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new MpsatChainOutput(modSysExportResult, pcompResult, punfResult, mpsatConformationResult, settings));
+                        new MpsatChainOutput(modSysExportResult, pcompResult, punfResult, mpsatResult, mpsatSettings));
             }
             monitor.progressUpdate(0.80);
 
-            MpsatOutputParser mpsatConformationParser = new MpsatOutputParser(mpsatConformationResult.getPayload());
-            if (!mpsatConformationParser.getSolutions().isEmpty()) {
+            MpsatOutputParser mpsatParser = new MpsatOutputParser(mpsatResult.getPayload());
+            if (!mpsatParser.getSolutions().isEmpty()) {
                 return new Result<>(Outcome.SUCCESS,
-                        new MpsatChainOutput(multiExportResult, pcompResult, punfResult, mpsatConformationResult, settings,
+                        new MpsatChainOutput(multiExportResult, pcompResult, punfResult, mpsatResult, mpsatSettings,
                                 "This model does is not output determinate."));
             }
             monitor.progressUpdate(1.0);
 
             // Success
             return new Result<>(Outcome.SUCCESS,
-                    new MpsatChainOutput(multiExportResult, pcompResult, punfResult, null,
-                            toolchainCompletionSettings, "Output determinacy holds."));
+                    new MpsatChainOutput(multiExportResult, pcompResult, punfResult, mpsatResult,
+                            mpsatSettings, "Output determinacy holds."));
 
         } catch (Throwable e) {
             return new Result<>(e);
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
         }
+    }
+
+    private boolean isVacuouslyOutputDeterminate(Stg stg) {
+        if (!stg.getDummyTransitions().isEmpty()) {
+            return false;
+        }
+        for (String signal : stg.getSignalReferences()) {
+            HashSet<MathNode> places = new HashSet<>();
+            for (SignalTransition t : stg.getSignalTransitions(signal)) {
+                Set<MathNode> preset = stg.getPreset(t);
+                if (!Collections.disjoint(places, preset)) {
+                    return false;
+                }
+                places.addAll(preset);
+            }
+        }
+        return true;
     }
 
 }

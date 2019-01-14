@@ -1,7 +1,6 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.Framework;
-import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.utils.TransformUtils;
 import org.workcraft.plugins.pcomp.CompositionData;
@@ -29,12 +28,6 @@ import java.util.Set;
 
 public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
 
-    private final MpsatParameters toolchainPreparationSettings = new MpsatParameters("Toolchain preparation of data",
-            MpsatMode.UNDEFINED, 0, null, 0);
-
-    private final MpsatParameters toolchainCompletionSettings = new MpsatParameters("Toolchain completion",
-            MpsatMode.UNDEFINED, 0, null, 0);
-
     private final ArrayList<WorkspaceEntry> wes;
 
     public MpsatConformationNwayTask(ArrayList<WorkspaceEntry> wes) {
@@ -49,6 +42,7 @@ public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
         String prefix = FileUtils.getTempPrefix("-pcomp");
         File directory = FileUtils.createTempDirectory(prefix);
         String stgFileExtension = StgFormat.getInstance().getExtension();
+        MpsatParameters preparationSettings = MpsatParameters.getToolchainPreparationSettings();
         try {
             List<File> stgFiles = new ArrayList<>();
             List<Map<String, String>> substitutes = new ArrayList<>();
@@ -69,7 +63,7 @@ public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
                         return new Result<>(Outcome.CANCEL);
                     }
                     return new Result<>(Outcome.FAILURE,
-                            new MpsatChainOutput(exportResult, null, null, null, toolchainPreparationSettings));
+                            new MpsatChainOutput(exportResult, null, null, null, preparationSettings));
                 }
             }
             Result<MultiSubExportOutput> multiExportResult = new Result<>(new MultiSubExportOutput(stgFiles, substitutes));
@@ -89,7 +83,7 @@ public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new MpsatChainOutput(multiExportResult, pcompResult, null, null, toolchainPreparationSettings));
+                        new MpsatChainOutput(multiExportResult, pcompResult, null, null, preparationSettings));
             }
             monitor.progressUpdate(0.50);
 
@@ -111,30 +105,30 @@ public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new MpsatChainOutput(modSysExportResult, pcompResult, punfResult, null, toolchainPreparationSettings));
+                        new MpsatChainOutput(modSysExportResult, pcompResult, punfResult, null, preparationSettings));
             }
             monitor.progressUpdate(0.60);
 
             // Check for conformation
-            MpsatParameters conformationSettings = MpsatParameters.getConformationNwaySettings(shadowTransitions);
-            MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
+            MpsatParameters mpsatSettings = MpsatParameters.getConformationNwaySettings(shadowTransitions);
+            MpsatTask mpsatTask = new MpsatTask(mpsatSettings.getMpsatArguments(directory),
                     unfoldingFile, directory, sysStgFile);
-            Result<? extends MpsatOutput>  mpsatConformationResult = taskManager.execute(
-                    mpsatConformationTask, "Running conformation check [MPSat]", new SubtaskMonitor<>(monitor));
+            Result<? extends MpsatOutput>  mpsatResult = taskManager.execute(
+                    mpsatTask, "Running conformation check [MPSat]", new SubtaskMonitor<>(monitor));
 
-            if (mpsatConformationResult.getOutcome() != Outcome.SUCCESS) {
-                if (mpsatConformationResult.getOutcome() == Outcome.CANCEL) {
+            if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
+                if (mpsatResult.getOutcome() == Outcome.CANCEL) {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new MpsatChainOutput(modSysExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings));
+                        new MpsatChainOutput(modSysExportResult, pcompResult, punfResult, mpsatResult, mpsatSettings));
             }
             monitor.progressUpdate(0.80);
 
-            MpsatOutputParser mpsatConformationParser = new MpsatOutputParser(mpsatConformationResult.getPayload());
-            if (!mpsatConformationParser.getSolutions().isEmpty()) {
+            MpsatOutputParser mpsatParser = new MpsatOutputParser(mpsatResult.getPayload());
+            if (!mpsatParser.getSolutions().isEmpty()) {
                 return new Result<>(Outcome.SUCCESS,
-                        new MpsatChainOutput(multiExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings,
+                        new MpsatChainOutput(multiExportResult, pcompResult, punfResult, mpsatResult, mpsatSettings,
                                 "This model does not conform to the environment."));
             }
             monitor.progressUpdate(1.0);
@@ -142,7 +136,7 @@ public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
             // Success
             String message = "N-way conformation holds.";
             return new Result<>(Outcome.SUCCESS,
-                    new MpsatChainOutput(multiExportResult, pcompResult, punfResult, null, toolchainCompletionSettings, message));
+                    new MpsatChainOutput(multiExportResult, pcompResult, punfResult, mpsatResult, mpsatSettings, message));
 
         } catch (Throwable e) {
             return new Result<>(e);

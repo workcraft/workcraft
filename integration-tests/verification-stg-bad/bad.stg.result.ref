@@ -1,8 +1,9 @@
 Combined check: false
 Consistency: true
-Deadlock-freeness: false
+Deadlock freeness: false
 Input properness: true
 Output persistency: false
+Output determinacy: true
 CSC: true
 USC: false
 DI interface: false
