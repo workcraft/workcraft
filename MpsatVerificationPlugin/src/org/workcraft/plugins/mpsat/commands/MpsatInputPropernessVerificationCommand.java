@@ -30,15 +30,15 @@ public class MpsatInputPropernessVerificationCommand extends MpsatAbstractVerifi
 
     @Override
     public boolean checkPrerequisites(WorkspaceEntry we) {
-        boolean result = super.checkPrerequisites(we);
-        if (result) {
-            StgModel stg = WorkspaceUtils.getAs(we, StgModel.class);
-            if (!stg.getDummyTransitions().isEmpty()) {
-                DialogUtils.showError("Input properness can currently be checked only for STGs without dummies.");
-                result = false;
-            }
+        if (!super.checkPrerequisites(we)) {
+            return false;
         }
-        return result;
+        StgModel stg = WorkspaceUtils.getAs(we, StgModel.class);
+        if (!stg.getDummyTransitions().isEmpty()) {
+            DialogUtils.showError("Input properness can currently be checked only for STGs without dummies.");
+            return false;
+        }
+        return true;
     }
 
     @Override

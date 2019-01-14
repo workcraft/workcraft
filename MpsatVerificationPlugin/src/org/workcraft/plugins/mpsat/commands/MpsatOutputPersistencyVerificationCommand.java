@@ -1,15 +1,15 @@
 package org.workcraft.plugins.mpsat.commands;
 
-import java.util.LinkedList;
-
 import org.workcraft.plugins.mpsat.MpsatParameters;
-import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
 import org.workcraft.plugins.stg.MutexUtils;
-import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.util.LinkedList;
 
 public class MpsatOutputPersistencyVerificationCommand extends MpsatAbstractVerificationCommand {
 
@@ -35,16 +35,20 @@ public class MpsatOutputPersistencyVerificationCommand extends MpsatAbstractVeri
 
     @Override
     public boolean checkPrerequisites(WorkspaceEntry we) {
-        boolean result = super.checkPrerequisites(we);
-        if (result) {
-            StgModel stg = WorkspaceUtils.getAs(we, StgModel.class);
-            if (!stg.getDummyTransitions().isEmpty()) {
-                DialogUtils.showError("Output persistency can currently be checked only for STGs without dummies.");
-                result = false;
-            }
+        if (!super.checkPrerequisites(we)) {
+            return false;
         }
-        return result;
+        Stg stg = WorkspaceUtils.getAs(we, Stg.class);
+        if (!stg.getDummyTransitions().isEmpty()) {
+            DialogUtils.showError("Output persistency can currently be checked only for STGs without dummies.");
+            return false;
+        }
+        if (!MpsatUtils.mutexStructuralCheck(stg, true)) {
+            return false;
+        }
+        return true;
     }
+
     @Override
     public MpsatParameters getSettings(WorkspaceEntry we) {
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
