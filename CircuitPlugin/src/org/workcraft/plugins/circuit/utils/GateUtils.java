@@ -12,10 +12,12 @@ import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
+import org.workcraft.util.Pair;
 
 import java.awt.geom.Point2D;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 public class GateUtils {
 
@@ -49,7 +51,7 @@ public class GateUtils {
             LogUtils.logWarning(e.getMessage());
         }
         for (VisualComponent succComponent: succComponents) {
-            VisualConnection connection = (VisualConnection) circuit.getConnection(predContact, succComponent);
+            VisualConnection connection = circuit.getConnection(predContact, succComponent);
             LinkedList<Point2D> suffixControlPoints = ConnectionHelper.getSuffixControlPoints(connection, pos);
             circuit.remove(connection);
             try {
@@ -220,8 +222,34 @@ public class GateUtils {
     }
 
     public static void propagateInitialState(Circuit circuit, FunctionComponent component) {
-        LinkedList<BooleanVariable> variables = new LinkedList<>();
-        LinkedList<BooleanFormula> values = new LinkedList<>();
+        Pair<List<BooleanVariable>, List<BooleanFormula>> variableAsignment = getVariableAssignment(circuit, component);
+        for (FunctionContact output : component.getFunctionOutputs()) {
+            BooleanFormula setFunction = BooleanUtils.replaceClever(output.getSetFunction(),
+                    variableAsignment.getFirst(), variableAsignment.getSecond());
+
+            boolean isOne = One.instance().equals(setFunction);
+            output.setInitToOne(isOne);
+        }
+    }
+
+    public static boolean isExcitedComponent(Circuit circuit, FunctionComponent component) {
+        Pair<List<BooleanVariable>, List<BooleanFormula>> variableAsignment = getVariableAssignment(circuit, component);
+        for (FunctionContact output : component.getFunctionOutputs()) {
+            BooleanFormula setFunction = BooleanUtils.replaceClever(output.getSetFunction(),
+                    variableAsignment.getFirst(), variableAsignment.getSecond());
+
+            if (One.instance().equals(setFunction) != output.getInitToOne()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static Pair<List<BooleanVariable>, List<BooleanFormula>> getVariableAssignment(
+            Circuit circuit, FunctionComponent component) {
+
+        List<BooleanVariable> variables = new LinkedList<>();
+        List<BooleanFormula> values = new LinkedList<>();
         for (FunctionContact input : component.getFunctionInputs()) {
             Contact driver = CircuitUtils.findDriver(circuit, input, false);
             if (driver != null) {
@@ -230,12 +258,7 @@ public class GateUtils {
                 values.add(initToOne);
             }
         }
-
-        for (FunctionContact output : component.getFunctionOutputs()) {
-            BooleanFormula setFunction = BooleanUtils.replaceClever(output.getSetFunction(), variables, values);
-            boolean isOne = One.instance().equals(setFunction);
-            output.setInitToOne(isOne);
-        }
+        return Pair.of(variables, values);
     }
 
 }

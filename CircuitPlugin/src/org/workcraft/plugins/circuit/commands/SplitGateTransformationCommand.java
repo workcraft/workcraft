@@ -129,7 +129,7 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
         boolean isRootGate = true;
         Direction direction = bigOutputContact.getDirection();
         LinkedList<VisualFunctionComponent> nonRootGates = new LinkedList<>();
-        for (BooleanFormula function: functions.getClauses()) {
+        for (BooleanFormula function : functions.getClauses()) {
             if (function instanceof BooleanVariable) {
                 connectTerminal(circuit, fromNodeConnectionIterator, toNodeConnectionsStack);
             } else {
@@ -156,7 +156,7 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
 
     private int getSplitGateCount(SplitForm functions) {
         int count = 0;
-        for (BooleanFormula function: functions.getClauses()) {
+        for (BooleanFormula function : functions.getClauses()) {
             if (function instanceof BooleanVariable) continue;
             count++;
         }
@@ -200,7 +200,7 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
 
         List<VisualContact> inputContacts = gate.getVisualInputs();
         Collections.reverse(inputContacts);
-        for (VisualContact inputContact: inputContacts) {
+        for (VisualContact inputContact : inputContacts) {
             Set<NodeConnectionPair> toNodes = new HashSet<>();
             toNodes.add(new NodeConnectionPair(inputContact, null));
             toNodeConnectionsStack.push(toNodes);
@@ -220,13 +220,11 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
 
     private List<NodeConnectionPair> getComponentDriverNodes(VisualCircuit circuit, VisualFunctionComponent component) {
         List<NodeConnectionPair> result = new LinkedList<>();
-        for (VisualContact inputContact: component.getOrderedVisualFunctionContacts()) {
+        for (VisualContact inputContact : component.getOrderedVisualFunctionContacts()) {
             VisualNode driver = null;
             VisualConnection visualConnection = null;
-            for (VisualConnection connection: circuit.getConnections(inputContact)) {
-                if (!(connection instanceof VisualConnection)) continue;
-                visualConnection = (VisualConnection) connection;
-                driver = visualConnection.getFirst();
+            for (VisualConnection connection : circuit.getConnections(inputContact)) {
+                driver = connection.getFirst();
                 break;
             }
             result.add(new NodeConnectionPair(driver, visualConnection));
@@ -236,11 +234,10 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
 
     private Set<NodeConnectionPair> getComponentNonLoopDrivenNodes(VisualCircuit circuit, VisualFunctionComponent component) {
         Set<NodeConnectionPair> result = new HashSet<>();
-        for (VisualContact outputContact: component.getVisualOutputs()) {
-            for (VisualConnection connection: circuit.getConnections(outputContact)) {
-                if (!CircuitUtils.isSelfLoop(connection) && (connection instanceof VisualConnection)) {
-                    VisualConnection visualConnection = (VisualConnection) connection;
-                    result.add(new NodeConnectionPair(visualConnection.getSecond(), visualConnection));
+        for (VisualContact outputContact : component.getVisualOutputs()) {
+            for (VisualConnection connection : circuit.getConnections(outputContact)) {
+                if (!CircuitUtils.isSelfLoop(connection)) {
+                    result.add(new NodeConnectionPair(connection.getSecond(), connection));
                 }
             }
         }
@@ -265,7 +262,7 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
     private void connectFanoutCopyFrom(VisualCircuit circuit, NodeConnectionPair fromNodeConnection,
             Set<NodeConnectionPair> toNodeConnections) {
 
-        for (NodeConnectionPair toNodeConnection: toNodeConnections) {
+        for (NodeConnectionPair toNodeConnection : toNodeConnections) {
             if ((fromNodeConnection != null) && (toNodeConnection != null)) {
                 try {
                     VisualNode fromNode = fromNodeConnection.getFirst();

@@ -66,6 +66,34 @@ public class DialogUtils {
         showMessage(msg, title, JOptionPane.ERROR_MESSAGE);
     }
 
+    public static boolean showConfirm(String msg, String title, boolean defaultChoice) {
+        return showConfirm(msg, title, JOptionPane.QUESTION_MESSAGE, defaultChoice);
+    }
+
+    public static boolean showConfirmInfo(String msg) {
+        return showConfirm(msg, TITLE_INFO, true);
+    }
+
+    public static boolean showConfirmInfo(String msg, String title, boolean defaultChoice) {
+        return showConfirm(msg, title, JOptionPane.INFORMATION_MESSAGE, defaultChoice);
+    }
+
+    public static boolean showConfirmWarning(String msg) {
+        return showConfirm(msg, TITLE_WARNING, JOptionPane.WARNING_MESSAGE, true);
+    }
+
+    public static boolean showConfirmWarning(String msg, String title, boolean defaultChoice) {
+        return showConfirm(msg, title, JOptionPane.WARNING_MESSAGE, defaultChoice);
+    }
+
+    public static boolean showConfirmError(String msg) {
+        return showConfirm(msg, TITLE_ERROR, JOptionPane.ERROR_MESSAGE, true);
+    }
+
+    public static boolean showConfirmError(String msg, String title, boolean defaultChoice) {
+        return showConfirm(msg, TITLE_ERROR, JOptionPane.ERROR_MESSAGE, defaultChoice);
+    }
+
     private static boolean showConfirm(String msg, String title, int messageType, boolean defaultChoice) {
         boolean result = defaultChoice;
         Framework framework = Framework.getInstance();
@@ -79,22 +107,6 @@ public class DialogUtils {
             result = answer == JOptionPane.YES_OPTION;
         }
         return result;
-    }
-
-    public static boolean showConfirm(String msg, String title, boolean defaultChoice) {
-        return showConfirm(msg, title, JOptionPane.QUESTION_MESSAGE, defaultChoice);
-    }
-
-    public static boolean showConfirmInfo(String msg, String title, boolean defaultChoice) {
-        return showConfirm(msg, title, JOptionPane.INFORMATION_MESSAGE, defaultChoice);
-    }
-
-    public static boolean showConfirmWarning(String msg, String title, boolean defaultChoice) {
-        return showConfirm(msg, title, JOptionPane.WARNING_MESSAGE, defaultChoice);
-    }
-
-    public static boolean showConfirmError(String msg, String title, boolean defaultChoice) {
-        return showConfirm(msg, title, JOptionPane.ERROR_MESSAGE, defaultChoice);
     }
 
     public static String showInput(String msg, String initial) {
