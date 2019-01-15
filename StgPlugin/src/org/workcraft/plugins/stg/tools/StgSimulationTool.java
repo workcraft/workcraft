@@ -7,24 +7,18 @@ import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.properties.FlatHeaderRenderer;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.Trace;
-import org.workcraft.gui.properties.BooleanCellEditor;
-import org.workcraft.gui.properties.BooleanCellRenderer;
-import org.workcraft.gui.properties.ColorCellEditor;
-import org.workcraft.gui.properties.ColorCellRenderer;
+import org.workcraft.gui.properties.*;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.dtd.DtdDescriptor;
 import org.workcraft.plugins.dtd.VisualDtd;
-import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petri.tools.PetriSimulationTool;
 import org.workcraft.plugins.shared.CommonSignalSettings;
 import org.workcraft.plugins.stg.*;
-import org.workcraft.plugins.stg.converters.SignalStg;
 import org.workcraft.plugins.stg.converters.StgToDtdConverter;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.util.ColorGenerator;
@@ -466,9 +460,19 @@ public class StgSimulationTool extends PetriSimulationTool {
     @Override
     public void activated(final GraphEditor editor) {
         super.activated(editor);
-        initialSignalState = calcInitialState();
+        initialSignalState = getInitialState();
         initialiseStateMap();
         setStatePaneVisibility(true);
+    }
+
+    private HashMap<String, Boolean> getInitialState() {
+        Stg stg = getUnderlyingStg();
+        HashMap<String, Boolean> result = StgUtils.guessInitialStateFromSignalPlaces(stg);
+        Set<String> signalRefs = stg.getSignalReferences();
+        if (result.size() < signalRefs.size()) {
+            result = StgUtils.getInitialState(stg, 500);
+        }
+        return result;
     }
 
     @Override
@@ -509,31 +513,6 @@ public class StgSimulationTool extends PetriSimulationTool {
                 final String path = NamespaceHelper.getReferencePath(ref);
                 result = path + nameWithoutInstance;
             }
-        }
-        return result;
-    }
-
-    public HashMap<String, Boolean> calcInitialState() {
-        HashMap<String, Boolean> result = new HashMap<>();
-        Stg stg = getUnderlyingStg();
-        // Try to figure out signal states from ZERO and ONE places of circuit STG.
-        Set<String> signalRefs = stg.getSignalReferences();
-        for (String signalRef: signalRefs) {
-            String zeroName = SignalStg.getLowName(signalRef);
-            Node zeroNode = getUnderlyingStg().getNodeByReference(zeroName);
-            if (zeroNode instanceof Place) {
-                Place zeroPlace = (Place) zeroNode;
-                result.put(signalRef, zeroPlace.getTokens() == 0);
-            }
-            String oneName = SignalStg.getHighName(signalRef);
-            Node oneNode = getUnderlyingStg().getNodeByReference(oneName);
-            if (oneNode instanceof Place) {
-                Place onePlace = (Place) oneNode;
-                result.put(signalRef, onePlace.getTokens() > 0);
-            }
-        }
-        if (result.size() < signalRefs.size()) {
-            result = StgUtils.getInitialState(stg, 500);
         }
         return result;
     }
