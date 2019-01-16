@@ -4,6 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.PluginManager;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualNode;
@@ -20,6 +21,7 @@ import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExportTask;
 import org.workcraft.plugins.stg.*;
+import org.workcraft.plugins.stg.converters.SignalStg;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.tasks.ProgressMonitor;
@@ -267,6 +269,77 @@ public class StgUtils {
         return taskManager.execute(exportTask, description, subtaskMonitor);
     }
 
+    public static HashMap<String, Boolean> guessInitialStateFromSignalPlaces(Stg stg) {
+        HashMap<String, Boolean> result = new HashMap<>();
+        // Try to figure out signal states from ZERO and ONE places of circuit STG.
+        Set<String> signalRefs = stg.getSignalReferences();
+        for (String signalRef: signalRefs) {
+            Node zeroNode = stg.getNodeByReference(SignalStg.getLowName(signalRef));
+            Node oneNode = stg.getNodeByReference(SignalStg.getHighName(signalRef));
+            if (!(zeroNode instanceof StgPlace) || !(oneNode instanceof StgPlace)) {
+                continue;
+            }
+
+            StgPlace zeroPlace = (StgPlace) zeroNode;
+            StgPlace onePlace = (StgPlace) oneNode;
+            if (zeroPlace.getTokens() + onePlace.getTokens() != 1) {
+                continue;
+            }
+
+            Collection<SignalTransition> signalTransitions = stg.getSignalTransitions(signalRef);
+
+            Set<MathNode> riseTransitions = new HashSet<>(signalTransitions);
+            riseTransitions.retainAll(stg.getPostset(zeroPlace));
+            riseTransitions.retainAll(stg.getPreset(onePlace));
+
+            Set<MathNode> fallTransitions = new HashSet<>(signalTransitions);
+            fallTransitions.retainAll(stg.getPostset(onePlace));
+            fallTransitions.retainAll(stg.getPreset(zeroPlace));
+
+            if (riseTransitions.isEmpty() || fallTransitions.isEmpty()) {
+                continue;
+            }
+
+            result.put(signalRef, onePlace.getTokens() > 0);
+        }
+        return result;
+    }
+
+    public static HashMap<String, Boolean> getInitialState(StgModel stg, int timeout) {
+        HashMap<String, Boolean> result = new HashMap<>();
+        stg = copyStgPreserveSignals(stg);
+        Set<String> signalRefs = stg.getSignalReferences();
+        HashSet<HashMap<Place, Integer>> visitedMarkings = new HashSet<>();
+        Queue<HashMap<Place, Integer>> queue = new LinkedList<>();
+        HashMap<Place, Integer> initialMarking = PetriUtils.getMarking(stg);
+        queue.add(initialMarking);
+        long endTime = System.currentTimeMillis() + timeout;
+        while (!queue.isEmpty() && !signalRefs.isEmpty() && System.currentTimeMillis() < endTime) {
+            HashMap<Place, Integer> curMarking = queue.remove();
+            visitedMarkings.add(curMarking);
+            PetriUtils.setMarking(stg, curMarking);
+            List<Transition> enabledTransitions = new ArrayList<>(PetriUtils.getEnabledTransitions(stg));
+            for (Transition transition : enabledTransitions) {
+                if (transition instanceof SignalTransition) {
+                    SignalTransition signalTransition = (SignalTransition) transition;
+                    String signalRef = stg.getSignalReference(signalTransition);
+                    if (signalRefs.remove(signalRef)) {
+                        result.put(signalRef, signalTransition.getDirection() == SignalTransition.Direction.MINUS);
+                    }
+                }
+                if (signalRefs.isEmpty() || (System.currentTimeMillis() >= endTime)) break;
+                stg.fire(transition);
+                HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
+                if (!visitedMarkings.contains(marking)) {
+                    queue.add(marking);
+                }
+                stg.unFire(transition);
+            }
+        }
+        PetriUtils.setMarking(stg, initialMarking);
+        return result;
+    }
+
     /**
      * Copy the given STG preserving the signal hierarchy and references. Note that
      * STG places are copied without their hierarchy and their names are not preserved.
@@ -308,41 +381,6 @@ public class StgUtils {
                 e.printStackTrace();
             }
         }
-        return result;
-    }
-
-    public static HashMap<String, Boolean> getInitialState(StgModel stg, int timeout) {
-        HashMap<String, Boolean> result = new HashMap<>();
-        stg = copyStgPreserveSignals(stg);
-        Set<String> signalRefs = stg.getSignalReferences();
-        HashSet<HashMap<Place, Integer>> visitedMarkings = new HashSet<>();
-        Queue<HashMap<Place, Integer>> queue = new LinkedList<>();
-        HashMap<Place, Integer> initialMarking = PetriUtils.getMarking(stg);
-        queue.add(initialMarking);
-        long endTime = System.currentTimeMillis() + timeout;
-        while (!queue.isEmpty() && !signalRefs.isEmpty() && System.currentTimeMillis() < endTime) {
-            HashMap<Place, Integer> curMarking = queue.remove();
-            visitedMarkings.add(curMarking);
-            PetriUtils.setMarking(stg, curMarking);
-            List<Transition> enabledTransitions = new ArrayList<>(PetriUtils.getEnabledTransitions(stg));
-            for (Transition transition : enabledTransitions) {
-                if (transition instanceof SignalTransition) {
-                    SignalTransition signalTransition = (SignalTransition) transition;
-                    String signalRef = stg.getSignalReference(signalTransition);
-                    if (signalRefs.remove(signalRef)) {
-                        result.put(signalRef, signalTransition.getDirection() == SignalTransition.Direction.MINUS);
-                    }
-                }
-                if (signalRefs.isEmpty() || (System.currentTimeMillis() >= endTime)) break;
-                stg.fire(transition);
-                HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
-                if (!visitedMarkings.contains(marking)) {
-                    queue.add(marking);
-                }
-                stg.unFire(transition);
-            }
-        }
-        PetriUtils.setMarking(stg, initialMarking);
         return result;
     }
 

@@ -59,6 +59,7 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
         boolean checkConformation = checkConformation();
         boolean checkDeadlock = checkDeadlock();
         boolean checkPersistency = checkPersistency();
+
         VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
         File envFile = visualCircuit.getEnvironmentFile();
         Stg envStg = StgUtils.loadStg(envFile);
@@ -73,8 +74,7 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
                 } else {
                     boolean proceed = DialogUtils.showConfirmWarning(messagePrefix
                                     + "The circuit conformation cannot be checked without environment STG.\n"
-                                    + "Proceed with verification of the other properties?\n",
-                            "Circuit verification", true);
+                                    + "Proceed with verification of the other properties?\n");
                     checkDeadlock &= proceed;
                     checkPersistency &= proceed;
                 }
