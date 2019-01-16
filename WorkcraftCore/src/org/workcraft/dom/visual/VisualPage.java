@@ -22,7 +22,6 @@ import java.util.Collection;
 
 public class VisualPage extends VisualComponent implements Collapsible, Container, ObservableHierarchy {
     public static final String PROPERTY_IS_COLLAPSED = "Is collapsed";
-    public static final String PROPERTY_REFERENCED_MODEL = "Referenced model";
 
     private boolean isCurrentLevelInside = false;
     private boolean isCollapsed = false;

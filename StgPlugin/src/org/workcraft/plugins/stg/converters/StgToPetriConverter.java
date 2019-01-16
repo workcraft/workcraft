@@ -48,12 +48,12 @@ public class StgToPetriConverter extends DefaultModelConverter<VisualStg, Visual
 
     @Override
     public String convertNodeName(String srcName, Container container) {
-        String dstCandidate = LabelParser.getTransitionName(srcName);
-        dstCandidate = dstCandidate.replace("+", "_PLUS").replace("-", "_MINUS").replace("~", "_TOGGLE");
+        String dstCandidate = LabelParser.getTransitionName(srcName)
+                .replace("+", "_PLUS")
+                .replace("-", "_MINUS")
+                .replace("~", "_TOGGLE");
 
-        HierarchyReferenceManager refManager
-                = (HierarchyReferenceManager) getDstModel().getPetriNet().getReferenceManager();
-
+        HierarchyReferenceManager refManager = getDstModel().getPetriNet().getReferenceManager();
         NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(container);
         NameManager nameManagerer = refManager.getNameManager(namespaceProvider);
         return nameManagerer.getDerivedName(null, dstCandidate);
