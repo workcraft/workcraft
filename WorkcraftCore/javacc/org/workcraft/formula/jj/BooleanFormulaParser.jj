@@ -25,15 +25,15 @@ import org.workcraft.util.Func;
 
 public class BooleanFormulaParser {
 
+    private BooleanWorker worker = new CleverBooleanWorker();
+    private Func<String, ? extends BooleanFormula> vars;
+
     public BooleanFormulaParser(Reader reader, Func<String, ? extends BooleanFormula> vars) {
         this(reader);
         this.vars = vars;
     }
 
-    BooleanWorker worker = new CleverBooleanWorker();
-    Func<String, ? extends BooleanFormula> vars;
-
-    BooleanFormula var(String name) throws ParseException {
+    private BooleanFormula var(String name) throws ParseException {
         BooleanFormula result = vars.eval(name);
         if (result == null) {
             throw new ParseException("Undefined variable: '" + name + "'");
@@ -41,31 +41,31 @@ public class BooleanFormulaParser {
         return result;
     }
 
-    BooleanFormula constant(String value) {
+    private BooleanFormula constant(String value) {
         return "0".equals(value) ? worker.zero() : worker.one();
     }
 
-    BooleanFormula and(BooleanFormula a, BooleanFormula b) {
+    private BooleanFormula and(BooleanFormula a, BooleanFormula b) {
         return worker.and(a, b);
     }
 
-    BooleanFormula or(BooleanFormula a, BooleanFormula b) {
+    private BooleanFormula or(BooleanFormula a, BooleanFormula b) {
         return worker.or(a, b);
     }
 
-    BooleanFormula eq(BooleanFormula a, BooleanFormula b) {
+    private BooleanFormula eq(BooleanFormula a, BooleanFormula b) {
         return worker.iff(a, b);
     }
 
-    BooleanFormula imply(BooleanFormula a, BooleanFormula b) {
+    private BooleanFormula imply(BooleanFormula a, BooleanFormula b) {
         return worker.imply(a, b);
     }
 
-    BooleanFormula xor(BooleanFormula a, BooleanFormula b) {
+    private BooleanFormula xor(BooleanFormula a, BooleanFormula b) {
         return worker.xor(a, b);
     }
 
-    BooleanFormula not(BooleanFormula a) {
+    private BooleanFormula not(BooleanFormula a) {
         return worker.not(a);
     }
 
@@ -85,10 +85,6 @@ public class BooleanFormulaParser {
                 return map.get(label);
             }
         });
-    }
-
-    public static void main(String [] args) throws Exception {
-        System.out.println(StringGenerator.toString(new BooleanFormulaParser(System.in).formula()));
     }
 
 }

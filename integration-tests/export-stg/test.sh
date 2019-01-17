@@ -25,4 +25,4 @@ report_file_header ${test_dir}/vme.stg.png 8 remove
 report_file_header ${test_dir}/vme.stg.pdf 9 remove
 report_file_header ${test_dir}/vme.stg.eps 24 remove
 report_file_header ${test_dir}/vme.stg.ps 14 remove
-report_file_header ${test_dir}/vme.stg.dot 86 remove
+report_file_header ${test_dir}/vme.stg.dot 127 remove

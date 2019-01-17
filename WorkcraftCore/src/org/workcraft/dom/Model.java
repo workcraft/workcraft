@@ -28,9 +28,9 @@ public interface Model<N extends Node, C extends Connection>  extends NodeContex
 
     // Methods for work with node references
     ReferenceManager getReferenceManager();
-    Node getNodeByReference(NamespaceProvider provider, String reference);
+    N getNodeByReference(NamespaceProvider provider, String reference);
     String getNodeReference(NamespaceProvider provider, Node node);
-    Node getNodeByReference(String reference);
+    N getNodeByReference(String reference);
     String getNodeReference(Node node);
 
     String getName(Node node);

@@ -1,9 +1,10 @@
 package org.workcraft.plugins.interop;
 
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.*;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
@@ -14,82 +15,73 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 
 public class DotExporter implements Exporter {
 
-    private class ExportNode {
-        public final String id;
-        public final double width;
-        public final double height;
-        public final Collection<String> destinations;
-        public final String comment;
-
-        ExportNode(String id, double width, double height, Collection<String> destinations, String comment) {
-            this.id = id;
-            this.width = width;
-            this.height = height;
-            this.destinations = destinations;
-            this.comment = comment;
-        }
-    }
-
-    public static void export(Collection<ExportNode> nodes, OutputStream outStream) throws IOException {
-        PrintStream out = new PrintStream(outStream);
-
-        out.println("digraph work {");
-        double nodesep = DotLayoutSettings.getNodesep();
-        double ranksep = DotLayoutSettings.getRanksep();
-        out.println("graph [overlap=\"false\", splines=\"true\", nodesep=\"" + nodesep + "\", ranksep=\"" + ranksep + "\"];");
-        //out.println("graph [overlap=\"false\", splines=\"ortho\", nodesep=\"" + nodesep + "\", ranksep=\"" + ranksep + "\"];");
-        out.println("rankdir=" + DotLayoutSettings.getRankdir().value);
-        out.println("node [shape=box];");
-
-        for (ExportNode node : nodes) {
-            out.println("\"" + node.id + "\" [width=\"" + node.width + "\", height=\"" + node.height + "\", fixedsize=\"true\"];  // " + node.comment);
-            for (String target : node.destinations) {
-                out.println("\"" + node.id + "\" -> \"" + target + "\";");
-            }
-        }
-        out.println("}");
-    }
+    private static final String INDENT = "  ";
 
     @Override
-    public void export(Model model, OutputStream outStream) throws IOException,
-            ModelValidationException, SerialisationException {
-
+    public void export(Model model, OutputStream outStream) throws IOException, ModelValidationException, SerialisationException {
         if (!(model instanceof VisualModel)) {
             throw new SerialisationException("Non-visual model cannot be exported to Graphviz DOT file.");
         }
-        VisualModel visualModel = (VisualModel) model;
-        final List<ExportNode> dotExportNodes = new ArrayList<>();
-        Collection<VisualComponent> components = Hierarchy.getChildrenOfType(visualModel.getRoot(), VisualComponent.class);
-        for (VisualComponent component: components) {
-            if (!component.getChildren().isEmpty()) {
-                throw new SerialisationException("Hierarchical model cannot be exported to Graphviz DOT file.");
+        for (VisualNode node : Hierarchy.getDescendantsOfType(model.getRoot(), VisualNode.class)) {
+            if ((node instanceof Container) && !(node instanceof VisualGroup) && !(node instanceof VisualPage)) {
+                throw new SerialisationException("Models with ports cannot be exported to Graphviz DOT file.");
             }
         }
-        for (VisualComponent component: components) {
-            String id = visualModel.getNodeReference(component);
-            Rectangle2D bb = component.getBoundingBoxInLocalSpace();
-            if ((id != null) && (bb != null)) {
-                List<String> destinations = new ArrayList<>();
-                Set<VisualNode> postset = visualModel.getPostset(component);
-                for (VisualNode target : postset) {
-                    String targetId = visualModel.getNodeReference(target);
-                    if (targetId != null) {
-                        destinations.add(targetId);
-                    }
-                }
-                String comment = visualModel.getNodeMathReference(component);
-                ExportNode dotExportNode = new ExportNode(id, bb.getWidth(), bb.getHeight(), destinations, comment);
-                dotExportNodes.add(dotExportNode);
+        exportGraph((VisualModel) model, new PrintStream(outStream));
+    }
+
+    private void exportGraph(VisualModel model, PrintStream out) {
+        double nodesep = DotLayoutSettings.getNodesep();
+        double ranksep = DotLayoutSettings.getRanksep();
+        String rankdir = DotLayoutSettings.getRankdir().value;
+        out.println("digraph work {");
+        out.println(INDENT + "graph [overlap=false, splines=true, " +
+                "nodesep=" + nodesep + ", ranksep=" + ranksep + ", " + "rankdir=" + rankdir + "];");
+
+        out.println(INDENT + "node [shape=box, fixedsize=true];");
+        out.println();
+        exportNodes(model, model.getRoot().getChildren(), out, INDENT);
+        out.println("}");
+    }
+
+    private void exportNodes(VisualModel model, Collection<Node> nodes, PrintStream out, String indent) {
+        for (Node node : nodes) {
+            if ((node instanceof VisualGroup) || (node instanceof VisualPage)) {
+                exportSubgraph(model, node, out, indent);
+            } else if (node instanceof VisualComponent) {
+                exportVertex(model, (VisualComponent) node, out, indent);
+            } else if (node instanceof VisualConnection) {
+                exportArc(model, (VisualConnection) node, out, indent);
             }
         }
-        export(dotExportNodes, outStream);
+    }
+
+    private void exportSubgraph(VisualModel model, Node parent, PrintStream out, String indent) {
+        out.println(indent + "subgraph cluster_" + model.getName(parent) + " {");
+        exportNodes(model, parent.getChildren(), out, indent + INDENT);
+        out.println(indent + "}");
+    }
+
+    private void exportVertex(VisualModel model, VisualComponent component, PrintStream out, String indent) {
+        String ref = model.getNodeReference(component);
+        Rectangle2D bb = component.getBoundingBoxInLocalSpace();
+        String w = String.format("%.3f", bb.getWidth());
+        String h = String.format("%.3f", bb.getHeight());
+        String comment = model.getNodeMathReference(component);
+        out.println(indent + ref + " [width=" + w + ", height=" + h + "];  // " + comment);
+    }
+
+    private void exportArc(VisualModel model, VisualConnection connection, PrintStream out, String indent) {
+        VisualNode first = connection.getFirst();
+        VisualNode second = connection.getSecond();
+        String firstRef = model.getNodeReference(first);
+        String secondRef = model.getNodeReference(second);
+        String comment = "(" + model.getNodeMathReference(first) + ", " + model.getNodeMathReference(second) + ")";
+        out.println(indent + firstRef + " -> " + secondRef + "; // " + comment);
     }
 
     @Override

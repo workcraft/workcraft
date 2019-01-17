@@ -11,21 +11,40 @@ options {
 PARSER_BEGIN(DotParser)
 package org.workcraft.plugins.layout.jj;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.ArrayList;
-
-import org.workcraft.dom.Node;
 import org.workcraft.util.Pair;
-import org.workcraft.util.Triple;
-import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.FormatException;
-import org.workcraft.exceptions.NotFoundException;
-import org.workcraft.plugins.layout.*;
+
+import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class DotParser {
+
+    public class Attributes extends HashMap<String, String> {};
+
+    private Map<String, Attributes> nodeAttributesMap = new HashMap<String, Attributes>();
+    private Map<Pair<String, String>, Attributes> edgeAttributesMap = new HashMap<Pair<String, String>, Attributes>();
+
+    public DotParser(String text) {
+        this(new StringReader(text.replace("\\\n", "")));
+    }
+
+    public Set<String> getNodes() {
+        return nodeAttributesMap.keySet();
+    }
+
+    public Set<Pair<String, String>> getEdges() {
+        return edgeAttributesMap.keySet();
+    }
+
+    public Attributes getNodeAttributes(String node) {
+        return nodeAttributesMap.get(node);
+    }
+
+    public Attributes getEdgeAttributes(Pair<String, String> edge) {
+        return edgeAttributesMap.get(edge);
+    }
+
 }
 PARSER_END(DotParser)
 
@@ -46,11 +65,9 @@ SKIP :
 
 TOKEN :
 {
-    "strict" | "graph" | "digraph" | "node" | "edge"
+    "strict" | "graph" | "digraph" | "subgraph" | "node" | "edge"
 |
     <NAME: (["_","A"-"Z","a"-"z","0"-"9"])+>
-|
-    <INTEGER: (["0"-"9"])+>
 |
     <QUOTED: "\""(~["\""] | "\\\"")*"\"">
 |
@@ -66,7 +83,7 @@ String id() :
     {
         return t.image.substring(1, t.image.length()-1);
     }
-|
+    |
     (
         t = <NAME>
     |
@@ -77,26 +94,71 @@ String id() :
     }
 }
 
-void graph(DotListener listener) :
+void parseGraph() :
 {
 }
 {
     ["strict"] ("graph" | "digraph") id() "{"
-    ( statement(listener) )* "}"
+    (
+        parseStatement()
+    )*
+    "}"
 }
 
-int integer() :
+void parseStatement() :
 {
-    Token token;
+    Token name;
+    Attributes attributes;
+    String i, j;
 }
 {
-    token = <INTEGER>
+    (
+        parseCommonAttributes()
+    |
+        "subgraph" id() "{"
+        (
+            parseStatement()
+        )*
+        "}"
+    |
+        i = id()
+        (
+            attributes = parseAttributes() ";"
+            {
+                nodeAttributesMap.put(i, attributes);
+            }
+        |
+            "->" j = id() attributes = parseAttributes() ";"
+            {
+                edgeAttributesMap.put(Pair.of(i, j), attributes);
+            }
+        )
+    )
+}
+
+void parseCommonAttributes() :
+{
+}
+{
+    ("graph"|"node"|"edge") parseAttributes() ";"
+}
+
+Attributes parseAttributes() :
+{
+      Attributes attributes = new Attributes();
+}
+{
+    "["
+    (
+        parseAttribute(attributes)
+    )*
+    "]"
     {
-      return Integer.parseInt(token.image);
+      return attributes;
     }
 }
 
-void attr(Map<String, String> attrs):
+void parseAttribute(Attributes attributes):
 {
     String name;
     String value = null;
@@ -104,58 +166,10 @@ void attr(Map<String, String> attrs):
 {
     name = id()
     ["="
-    (value = id())
+        value = id()
     ]
     [","]
     {
-        attrs.put(name, value);
+        attributes.put(name, value);
     }
-}
-
-Map<String, String> attr_list() :
-{
-      Map<String, String> result = new HashMap<String, String>();
-}
-{
-    "["
-    (
-      attr(result)
-    )*
-    "]"
-    {
-      return result;
-    }
-}
-
-void attr_statement() :
-{
-}
-{
-    ("graph"|"node"|"edge") attr_list()
-}
-
-void statement(DotListener listener) :
-{
-    Token name;
-    Map <String, String> prop;
-    String i, j;
-}
-{
-    (
-        attr_statement()
-    |
-        i = id()
-        (
-            prop = attr_list()
-            {
-                listener.node(i, prop);
-            }
-        |
-            "->" j = id() prop = attr_list()
-            {
-                listener.arc(i, j, prop);
-            }
-        )
-    )
-    ";"
 }

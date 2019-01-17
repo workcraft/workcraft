@@ -188,7 +188,7 @@ public abstract class AbstractModel<N extends Node, C extends Connection>  imple
     }
 
     @Override
-    public Node getNodeByReference(String reference) {
+    public N getNodeByReference(String reference) {
         return getNodeByReference(null, reference);
     }
 
@@ -198,8 +198,8 @@ public abstract class AbstractModel<N extends Node, C extends Connection>  imple
     }
 
     @Override
-    public Node getNodeByReference(NamespaceProvider provider, String reference) {
-        return mgr.getNodeByReference(provider, reference);
+    public N getNodeByReference(NamespaceProvider provider, String reference) {
+        return (N) mgr.getNodeByReference(provider, reference);
     }
 
     @Override

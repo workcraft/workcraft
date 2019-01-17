@@ -54,7 +54,8 @@ public class StgExportTests {
         String epsHeader = "%!PS-Adobe-3.0 EPSF-3.0";
         String psHeader = "%!PS-Adobe-3.0";
         String dotHeader = "digraph work {\n" +
-                "graph [overlap=\"false\", splines=\"true\", nodesep=\"1.0\", ranksep=\"1.0\"];";
+                "  graph [overlap=false, splines=true, nodesep=1.0, ranksep=1.0, rankdir=LR];\n" +
+                "  node [shape=box, fixedsize=true];\n";
 
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
         testCircuitExport(workName, gHeader, lpnHeader, svgHeader, pngHeader, pdfHeader, epsHeader, psHeader, dotHeader);

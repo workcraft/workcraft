@@ -335,7 +335,7 @@ public class Stg extends AbstractMathModel implements StgModel {
     }
 
     @Override
-    public Node getNodeByReference(NamespaceProvider provider, String reference) {
+    public MathNode getNodeByReference(NamespaceProvider provider, String reference) {
         Pair<String, String> implicitPlaceTransitions = LabelParser.parseImplicitPlaceReference(reference);
         if (implicitPlaceTransitions != null) {
             Node predNode = getReferenceManager().getNodeByReference(provider, implicitPlaceTransitions.getFirst());
