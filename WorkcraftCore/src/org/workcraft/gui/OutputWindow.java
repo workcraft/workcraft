@@ -9,13 +9,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultCaret;
-import javax.swing.text.DefaultHighlighter;
-import javax.swing.text.Highlighter;
+import javax.swing.*;
+import javax.swing.text.*;
 
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.shared.CommonLogSettings;
@@ -41,7 +36,7 @@ public class OutputWindow extends JPanel {
         txtStdOut.setLineWrap(true);
         txtStdOut.setEditable(false);
         txtStdOut.setWrapStyleWord(true);
-        txtStdOut.addMouseListener(new LogAreaMouseListener());
+        PopupUtils.setTextAreaPopup(txtStdOut);
 
         DefaultCaret caret = (DefaultCaret) txtStdOut.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
