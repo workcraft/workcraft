@@ -73,7 +73,8 @@ public class CircuitSelectionTool extends SelectionTool {
                 final VisualContact contact = (VisualContact) node;
                 if (contact.isPort()) {
                     AbstractInplaceEditor textEditor = new NameInplaceEditor(editor, contact);
-                    textEditor.edit(contact.getName(), contact.getNameFont(), contact.getNameOffset(), Alignment.CENTER, false);
+                    textEditor.edit(model.getMathName(contact), contact.getNameFont(),
+                            contact.getNameOffset(), Alignment.CENTER, false);
                     processed = true;
                 }
             }

@@ -1,28 +1,15 @@
 package org.workcraft.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Font;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.io.ByteArrayOutputStream;
-import java.io.FilterOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import org.workcraft.dom.visual.SizeHelper;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.DefaultCaret;
-
-import org.workcraft.dom.visual.SizeHelper;
+import java.awt.*;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.io.*;
 
 @SuppressWarnings("serial")
 public class ErrorWindow extends JPanel implements ComponentListener {
@@ -38,7 +25,7 @@ public class ErrorWindow extends JPanel implements ComponentListener {
         txtStdErr.setEditable(false);
         txtStdErr.setWrapStyleWord(true);
         txtStdErr.setForeground(Color.RED);
-        txtStdErr.addMouseListener(new LogAreaMouseListener());
+        PopupUtils.setTextAreaPopup(txtStdErr);
 
         DefaultCaret caret = (DefaultCaret) txtStdErr.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);

@@ -77,6 +77,7 @@ public class ToggleZeroDelayTransformationCommand extends AbstractTransformation
             } catch (RuntimeException e) {
                 LogUtils.logWarning(e.getMessage());
             }
+            model.addToSelection(component);
         }
     }
 

@@ -175,7 +175,7 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
             mutexNames.add(me.name);
         }
         for (final VisualFunctionComponent component: visualCircuit.getVisualFunctionComponents()) {
-            String componentRef = visualCircuit.getNodeMathReference(component);
+            String componentRef = visualCircuit.getMathReference(component);
             if (mutexNames.contains(componentRef)) {
                 component.setRenderType(RenderType.BOX);
             } else if (component.isSequentialGate()) {

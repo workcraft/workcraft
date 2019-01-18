@@ -18,8 +18,6 @@ import java.util.HashSet;
 
 public class DummyToSignalTransitionTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
-    private HashSet<VisualSignalTransition> signalTransitions = null;
-
     @Override
     public String getDisplayName() {
         return "Convert selected dummies to signal transitions";
@@ -67,24 +65,12 @@ public class DummyToSignalTransitionTransformationCommand extends AbstractTransf
     }
 
     @Override
-    public void transform(VisualModel model, Collection<? extends VisualNode> nodes) {
-        signalTransitions = new HashSet<>(nodes.size());
-        for (VisualNode node: nodes) {
-            transform(model, node);
-        }
-        model.select(signalTransitions);
-        signalTransitions = null;
-    }
-
-    @Override
     public void transform(VisualModel model, VisualNode node) {
         if ((model instanceof VisualStg) && (node instanceof VisualDummyTransition)) {
             VisualStg stg = (VisualStg) model;
             VisualDummyTransition dummyTransition = (VisualDummyTransition) node;
             VisualSignalTransition signalTransition = StgUtils.convertDummyToSignalTransition(stg, dummyTransition);
-            if (signalTransitions != null) {
-                signalTransitions.add(signalTransition);
-            }
+            model.addToSelection(signalTransition);
         }
     }
 

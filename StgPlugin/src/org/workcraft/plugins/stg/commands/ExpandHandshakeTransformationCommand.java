@@ -32,7 +32,6 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
 
     private static final String SUFFIX_REQ = "_req";
     private static final String SUFFIX_ACK = "_ack";
-    private HashSet<VisualNode> expandedNodes = null;
     private Pair<String, String> suffixPair = null;
 
     @Override
@@ -79,16 +78,12 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
     @Override
     public void transform(VisualModel model, Collection<? extends VisualNode> nodes) {
         if (model instanceof VisualStg) {
-            VisualStg stg = (VisualStg) model;
-            expandedNodes = new HashSet<>();
             suffixPair = getSufixes();
             if (suffixPair != null) {
                 for (VisualNode node: nodes) {
                     transform(model, node);
                 }
-                stg.select(expandedNodes);
             }
-            expandedNodes = null;
             suffixPair = null;
         }
     }
@@ -119,8 +114,8 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
                     VisualNode predNode = connection.getFirst();
                     VisualNode succNode = connection.getSecond();
                     if (connection instanceof VisualReadArc) {
-                        String predRef = stg.getNodeMathReference(predNode);
-                        String succRef = stg.getNodeMathReference(succNode);
+                        String predRef = stg.getMathReference(predNode);
+                        String succRef = stg.getMathReference(succNode);
                         LogUtils.logWarning("Read-arc between '" + predRef + "' and '" + succRef + "' is ignored.");
                         continue;
                     }
@@ -137,12 +132,10 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
                 }
             } catch (InvalidConnectionException e) {
             }
-            if (expandedNodes == null) {
-                expandedNodes.add(reqTransition);
-                expandedNodes.add(ackTransition);
-                if (midConnection != null) {
-                    expandedNodes.add(midConnection);
-                }
+            model.addToSelection(reqTransition);
+            model.addToSelection(ackTransition);
+            if (midConnection != null) {
+                model.addToSelection(midConnection);
             }
             stg.remove(transition);
         }

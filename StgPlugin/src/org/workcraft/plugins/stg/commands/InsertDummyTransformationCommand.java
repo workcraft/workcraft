@@ -103,6 +103,7 @@ public final class InsertDummyTransformationCommand extends AbstractTransformati
                 LogUtils.logWarning(e.getMessage());
             }
             stg.remove(connection);
+            model.addToSelection(dummy);
         }
     }
 

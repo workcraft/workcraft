@@ -14,11 +14,8 @@ import org.workcraft.workspace.WorkspaceUtils;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 
 public class SignalToDummyTransitionTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
-
-    private HashSet<VisualDummyTransition> dummyTransitions = null;
 
     @Override
     public String getDisplayName() {
@@ -67,27 +64,12 @@ public class SignalToDummyTransitionTransformationCommand extends AbstractTransf
     }
 
     @Override
-    public void transform(VisualModel model, Collection<? extends VisualNode> nodes) {
-        if (model instanceof VisualStg) {
-            VisualStg stg = (VisualStg) model;
-            dummyTransitions = new HashSet<>(nodes.size());
-            for (VisualNode node: nodes) {
-                transform(model, node);
-            }
-            stg.select(new LinkedList<>(dummyTransitions));
-            dummyTransitions = null;
-        }
-    }
-
-    @Override
     public void transform(VisualModel model, VisualNode node) {
         if ((model instanceof VisualStg) && (node instanceof VisualSignalTransition)) {
             VisualStg stg = (VisualStg) model;
             VisualSignalTransition signalTransition = (VisualSignalTransition) node;
             VisualDummyTransition dummyTransition = StgUtils.convertSignalToDummyTransition(stg, signalTransition);
-            if (dummyTransitions != null) {
-                dummyTransitions.add(dummyTransition);
-            }
+            model.addToSelection(dummyTransition);
         }
     }
 

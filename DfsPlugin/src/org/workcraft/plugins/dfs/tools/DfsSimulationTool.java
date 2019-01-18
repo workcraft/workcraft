@@ -87,7 +87,7 @@ public class DfsSimulationTool extends StgSimulationTool {
         editor.getWorkspaceEntry().saveMemento();
         VisualDfs dfs = (VisualDfs) editor.getModel();
         for (VisualLogic l : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualLogic.class)) {
-            String refC = DfsToStgConverter.nameC + dfs.getNodeMathReference(l) + DfsToStgConverter.name1;
+            String refC = DfsToStgConverter.nameC + dfs.getMathReference(l) + DfsToStgConverter.name1;
             Node nodeC = getUnderlyingStg().getNodeByReference(refC);
             if ((nodeC instanceof Place) && savedState.containsKey(nodeC)) {
                 boolean computed = savedState.get(nodeC) > 0;
@@ -95,7 +95,7 @@ public class DfsSimulationTool extends StgSimulationTool {
             }
         }
         for (VisualRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualRegister.class)) {
-            String refM = DfsToStgConverter.nameM + dfs.getNodeMathReference(r) + DfsToStgConverter.name1;
+            String refM = DfsToStgConverter.nameM + dfs.getMathReference(r) + DfsToStgConverter.name1;
             Node nodeM = getUnderlyingStg().getNodeByReference(refM);
             if ((nodeM instanceof Place) && savedState.containsKey(nodeM)) {
                 boolean marked = savedState.get(nodeM) > 0;
@@ -104,13 +104,13 @@ public class DfsSimulationTool extends StgSimulationTool {
             }
         }
         for (VisualCounterflowLogic l : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualCounterflowLogic.class)) {
-            String refFwC = DfsToStgConverter.nameFwC + dfs.getNodeMathReference(l) + DfsToStgConverter.name1;
+            String refFwC = DfsToStgConverter.nameFwC + dfs.getMathReference(l) + DfsToStgConverter.name1;
             Node nodeFwC = getUnderlyingStg().getNodeByReference(refFwC);
             if ((nodeFwC instanceof Place) && savedState.containsKey(nodeFwC)) {
                 boolean forwardComputed = savedState.get(nodeFwC) > 0;
                 l.getReferencedCounterflowLogic().setForwardComputed(forwardComputed);
             }
-            String refBwC = DfsToStgConverter.nameBwC + dfs.getNodeMathReference(l) + DfsToStgConverter.name1;
+            String refBwC = DfsToStgConverter.nameBwC + dfs.getMathReference(l) + DfsToStgConverter.name1;
             Node nodeBwC = getUnderlyingStg().getNodeByReference(refBwC);
             if ((nodeBwC instanceof Place) && savedState.containsKey(nodeBwC)) {
                 boolean backwardComputed = savedState.get(nodeBwC) > 0;
@@ -118,14 +118,14 @@ public class DfsSimulationTool extends StgSimulationTool {
             }
         }
         for (VisualCounterflowRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualCounterflowRegister.class)) {
-            String refOrM = DfsToStgConverter.nameOrM + dfs.getNodeMathReference(r) + DfsToStgConverter.name1;
+            String refOrM = DfsToStgConverter.nameOrM + dfs.getMathReference(r) + DfsToStgConverter.name1;
             Node nodeOrM = getUnderlyingStg().getNodeByReference(refOrM);
             if ((nodeOrM instanceof Place) && savedState.containsKey(nodeOrM)) {
                 boolean orMarked = savedState.get(nodeOrM) > 0;
                 r.getReferencedCounterflowRegister().setOrMarked(orMarked);
                 copyTokenColor(r, nodeOrM);
             }
-            String refAndM = DfsToStgConverter.nameAndM + dfs.getNodeMathReference(r) + DfsToStgConverter.name1;
+            String refAndM = DfsToStgConverter.nameAndM + dfs.getMathReference(r) + DfsToStgConverter.name1;
             Node nodeAndM = getUnderlyingStg().getNodeByReference(refAndM);
             if ((nodeAndM instanceof Place) && savedState.containsKey(nodeAndM)) {
                 boolean andMarked = savedState.get(nodeAndM) > 0;
@@ -135,7 +135,7 @@ public class DfsSimulationTool extends StgSimulationTool {
         }
         for (VisualBinaryRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualBinaryRegister.class)) {
             r.getReferencedBinaryRegister().setMarking(Marking.EMPTY);
-            String refTrueM = DfsToStgConverter.nameTrueM + dfs.getNodeMathReference(r) + DfsToStgConverter.name1;
+            String refTrueM = DfsToStgConverter.nameTrueM + dfs.getMathReference(r) + DfsToStgConverter.name1;
             Node nodeTrueM = getUnderlyingStg().getNodeByReference(refTrueM);
             if ((nodeTrueM instanceof Place) && savedState.containsKey(nodeTrueM)) {
                 if (savedState.get(nodeTrueM) > 0) {
@@ -143,7 +143,7 @@ public class DfsSimulationTool extends StgSimulationTool {
                 }
                 copyTokenColor(r, nodeTrueM);
             }
-            String refFalseM = DfsToStgConverter.nameFalseM + dfs.getNodeMathReference(r) + DfsToStgConverter.name1;
+            String refFalseM = DfsToStgConverter.nameFalseM + dfs.getMathReference(r) + DfsToStgConverter.name1;
             Node nodeFalseM = getUnderlyingStg().getNodeByReference(refFalseM);
             if ((nodeFalseM instanceof Place) && savedState.containsKey(nodeFalseM)) {
                 if (savedState.get(nodeFalseM) > 0) {

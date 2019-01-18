@@ -1,13 +1,20 @@
 package org.workcraft.plugins.dfs.commands;
 
 import org.workcraft.commands.ScriptableCommand;
-import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.dfs.Dfs;
 import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.plugins.dfs.VisualRegister;
 import org.workcraft.util.DialogUtils;
+import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class WaggingGeneratorCommand implements ScriptableCommand<Void> {
 
@@ -28,16 +35,8 @@ public class WaggingGeneratorCommand implements ScriptableCommand<Void> {
 
     @Override
     public final Void execute(WorkspaceEntry we) {
-        final VisualDfs dfs = WorkspaceUtils.getAs(we, VisualDfs.class);
-        int selectedRegisterCount = 0;
-        for (Node node: dfs.getSelection()) {
-            if (node instanceof VisualRegister) {
-                selectedRegisterCount++;
-            }
-        }
-        if (selectedRegisterCount < 1) {
-            DialogUtils.showError("Select at least one register for wagging.");
-        } else {
+        if (checkPrerequisites(we)) {
+            VisualDfs dfs = WorkspaceUtils.getAs(we, VisualDfs.class);
             int count = getWayCount();
             if (count < 2) {
                 DialogUtils.showError("Wagging cannot be less than 2-way.");
@@ -48,6 +47,52 @@ public class WaggingGeneratorCommand implements ScriptableCommand<Void> {
             }
         }
         return null;
+    }
+
+    private boolean checkPrerequisites(WorkspaceEntry we) {
+        if (!isApplicableTo(we)) {
+            return false;
+        }
+        VisualDfs dfs = WorkspaceUtils.getAs(we, VisualDfs.class);
+        Set<VisualNode> selection = new HashSet<>(dfs.getSelection());
+        return hasRegister(selection) && hasEntryRegister(dfs, selection);
+
+    }
+
+    private boolean hasRegister(Collection<VisualNode> nodes) {
+        int selectedRegisterCount = 0;
+        for (VisualNode node : nodes) {
+            if (node instanceof VisualRegister) {
+                selectedRegisterCount++;
+            }
+        }
+        if (selectedRegisterCount < 1) {
+            DialogUtils.showError("Select at least one register for wagging.");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean hasEntryRegister(VisualDfs dfs, Set<VisualNode> nodes) {
+        Collection<String> nonRegisterEntryRefs = new ArrayList<>();
+        for (VisualNode node : nodes) {
+            if (node instanceof VisualComponent) {
+                for (VisualNode predNode : dfs.getPreset(node)) {
+                    if ((node instanceof VisualRegister) || nodes.contains(predNode)) continue;
+                    nonRegisterEntryRefs.add(dfs.getMathReference(node));
+                }
+            }
+        }
+        if (!nonRegisterEntryRefs.isEmpty()) {
+            String msg = "It is advised to have registers at the entry to wagging slice.\n" +
+                    "This enables the token to propagate into the active slice with the\n" +
+                    "minimum delay and free the space for the next token.\n\n" +
+                    LogUtils.getTextWithRefs("Non-register entry component", nonRegisterEntryRefs) +
+                    "\n\nProceed anyway?";
+
+            return DialogUtils.showConfirmWarning(msg);
+        }
+        return true;
     }
 
     public int getWayCount() {

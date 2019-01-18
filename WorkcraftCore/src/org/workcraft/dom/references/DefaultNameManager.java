@@ -5,6 +5,7 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.ArgumentException;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.TwoWayMap;
 
 import java.util.HashMap;
@@ -44,16 +45,23 @@ public class DefaultNameManager implements NameManager {
     public void setName(Node node, String name) {
         Node occupant = getNode(name);
         if (node != occupant) {
-            if (isUnusedName(name)) {
-                if (Identifier.isName(name) || Identifier.isInternal(name)) {
-                    nodes.removeValue(node);
-                    nodes.put(name, node);
-                } else {
-                    throw new ArgumentException("The name '" + name + "' is invalid identifier.");
+            if (!isUnusedName(name)) {
+                String derivedName = getDerivedName(occupant, name);
+                String msg = "The name '" + name + "' is already taken by another node.\n" +
+                        "Rename that node to '" + derivedName + "' and continue?";
+                if (!DialogUtils.showConfirmWarning(msg)) {
+                    return;
                 }
-            } else {
-                throw new ArgumentException("The name '" + name + "' is already taken.");
+                setName(occupant, derivedName);
             }
+            if (!isUnusedName(name)) {
+                throw new ArgumentException("The name '" + name + "' is unavailable.");
+            }
+            if (!Identifier.isName(name) && !Identifier.isInternal(name)) {
+                throw new ArgumentException("The name '" + name + "' is invalid identifier.");
+            }
+            nodes.removeValue(node);
+            nodes.put(name, node);
         }
     }
 

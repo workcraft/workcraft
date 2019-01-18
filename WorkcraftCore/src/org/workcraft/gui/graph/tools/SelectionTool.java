@@ -327,7 +327,6 @@ public class SelectionTool extends AbstractGraphEditorTool {
         }
         if (!applicableTools.isEmpty()) {
             popup = new JPopupMenu();
-            popup.setFocusable(false);
             final Framework framework = Framework.getInstance();
             final MainWindow mainWindow = framework.getMainWindow();
             for (Command tool: applicableTools) {

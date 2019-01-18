@@ -42,10 +42,10 @@ public abstract class AbstractTransformationCommand implements ScriptableCommand
     }
 
     public void transform(VisualModel model, Collection<? extends VisualNode> nodes) {
+        model.selectNone();
         for (VisualNode node: nodes) {
             transform(model, node);
         }
-        model.selectNone();
     }
 
     public abstract void transform(VisualModel model, VisualNode node);

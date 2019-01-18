@@ -158,7 +158,7 @@ public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<M
             mutexNames.add(me.name);
         }
         for (final VisualFunctionComponent component: visualCircuit.getVisualFunctionComponents()) {
-            if (mutexNames.contains(visualCircuit.getNodeMathReference(component))) {
+            if (mutexNames.contains(visualCircuit.getMathReference(component))) {
                 component.setRenderType(RenderType.BOX);
             } else {
                 component.setRenderType(renderType);

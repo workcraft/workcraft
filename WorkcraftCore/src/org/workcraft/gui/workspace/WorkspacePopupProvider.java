@@ -190,4 +190,5 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
         }
         return popup;
     }
+
 }

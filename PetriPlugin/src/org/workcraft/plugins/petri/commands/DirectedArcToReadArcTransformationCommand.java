@@ -17,8 +17,6 @@ import java.util.HashSet;
 
 public class DirectedArcToReadArcTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
-    private HashSet<VisualReadArc> readArcs = null;
-
     @Override
     public String getDisplayName() {
         return "Convert selected arcs to read-arcs";
@@ -60,26 +58,12 @@ public class DirectedArcToReadArcTransformationCommand extends AbstractTransform
     }
 
     @Override
-    public void transform(VisualModel model, Collection<? extends VisualNode> nodes) {
-        readArcs = new HashSet<>();
-        for (VisualNode node: nodes) {
-            // Check that the arc was not removed because of a dual arc
-            if (node.getParent() != null) {
-                transform(model, node);
-            }
-        }
-        model.select(readArcs);
-        readArcs = null;
-    }
-
-    @Override
     public void transform(VisualModel model, VisualNode node) {
-        if (node instanceof VisualConnection) {
+        // Check that the arc was not removed because of a dual arc
+        if ((node instanceof VisualConnection) && (node.getParent() != null)) {
             VisualConnection connection = (VisualConnection) node;
             VisualReadArc readArc = PetriNetUtils.convertDirectedArcToReadArc(model, connection);
-            if ((readArcs != null) && (readArc != null)) {
-                readArcs.add(readArc);
-            }
+            model.addToSelection(readArc);
         }
     }
 

@@ -67,12 +67,6 @@ public class MirrorTransitionTransformationCommand extends AbstractTransformatio
     }
 
     @Override
-    public void transform(VisualModel model, Collection<? extends VisualNode> nodes) {
-        super.transform(model, nodes);
-        model.select(nodes);
-    }
-
-    @Override
     public void transform(VisualModel model, VisualNode node) {
         if ((model instanceof VisualStg) && (node instanceof VisualSignalTransition)) {
             VisualStg visualStg = (VisualStg) model;
@@ -81,6 +75,7 @@ public class MirrorTransitionTransformationCommand extends AbstractTransformatio
             SignalTransition transition = visualTransition.getReferencedTransition();
             SignalTransition.Direction direction = visualTransition.getDirection();
             stg.setDirection(transition, direction.mirror());
+            model.addToSelection(node);
         }
     }
 

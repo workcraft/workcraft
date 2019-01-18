@@ -61,7 +61,7 @@ public class StgSelectionTool extends SelectionTool {
                 if (node instanceof VisualNamedTransition) {
                     VisualNamedTransition transition = (VisualNamedTransition) node;
                     AbstractInplaceEditor textEditor = new NameInplaceEditor(editor, transition);
-                    textEditor.edit(transition.getName(), transition.getNameFont(),
+                    textEditor.edit(model.getMathName(transition), transition.getNameFont(),
                             transition.getNameOffset(), Alignment.CENTER, false);
                     return;
                 }
