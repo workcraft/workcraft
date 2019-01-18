@@ -149,6 +149,7 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
                     outputContact.copyStyle(bigOutputContact);
                     isRootGate = false;
                 }
+                circuit.addToSelection(gate);
             }
         }
         propagateInitValues(circuit, nonRootGates);

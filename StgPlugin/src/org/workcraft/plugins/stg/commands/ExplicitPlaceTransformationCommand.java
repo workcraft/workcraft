@@ -6,6 +6,7 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.plugins.stg.VisualStgPlace;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -64,7 +65,10 @@ public class ExplicitPlaceTransformationCommand extends AbstractTransformationCo
         if ((model instanceof VisualStg) && (node instanceof VisualImplicitPlaceArc)) {
             VisualStg stg = (VisualStg) model;
             VisualImplicitPlaceArc implicitArc = (VisualImplicitPlaceArc) node;
-            stg.makeExplicit(implicitArc);
+            VisualStgPlace place = stg.makeExplicit(implicitArc);
+            if (place != null) {
+                model.addToSelection(place);
+            }
         }
     }
 

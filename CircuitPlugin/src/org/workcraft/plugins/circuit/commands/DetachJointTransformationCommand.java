@@ -7,6 +7,7 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualContact;
+import org.workcraft.plugins.circuit.VisualJoint;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -88,7 +89,10 @@ public class DetachJointTransformationCommand extends AbstractTransformationComm
         if ((model instanceof VisualCircuit) && (node instanceof VisualContact)) {
             VisualCircuit circuit = (VisualCircuit) model;
             VisualContact driver = (VisualContact) node;
-            CircuitUtils.detachJoint(circuit, driver);
+            VisualJoint joint = CircuitUtils.detachJoint(circuit, driver);
+            if (joint != null) {
+                model.addToSelection(joint);
+            }
         }
     }
 

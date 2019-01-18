@@ -8,6 +8,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReadArc;
+import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -77,8 +78,15 @@ public class ProxyReadArcPlaceTransformationCommand extends AbstractTransformati
     @Override
     public void transform(VisualModel model, VisualNode node) {
         if (node instanceof VisualReadArc) {
-            VisualReadArc readArc = (VisualReadArc) node;
-            PetriNetUtils.replicateConnectedPlace(model, readArc);
+            VisualConnection connection = PetriNetUtils.replicateConnectedPlace(model, (VisualReadArc) node);
+            if (connection != null) {
+                if (connection.getFirst() instanceof VisualReplicaPlace) {
+                    model.addToSelection(connection.getFirst());
+                }
+                if (connection.getSecond() instanceof VisualReplicaPlace) {
+                    model.addToSelection(connection.getSecond());
+                }
+            }
         }
     }
 

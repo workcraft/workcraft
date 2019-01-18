@@ -8,6 +8,7 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -71,8 +72,15 @@ public class ProxyDirectedArcPlaceTransformationCommand extends AbstractTransfor
     @Override
     public void transform(VisualModel model, VisualNode node) {
         if (node instanceof VisualConnection) {
-            VisualConnection connection = (VisualConnection) node;
-            PetriNetUtils.replicateConnectedPlace(model, connection);
+            VisualConnection connection = PetriNetUtils.replicateConnectedPlace(model, (VisualConnection) node);
+            if (connection != null) {
+                if (connection.getFirst() instanceof VisualReplicaPlace) {
+                    model.addToSelection(connection.getFirst());
+                }
+                if (connection.getSecond() instanceof VisualReplicaPlace) {
+                    model.addToSelection(connection.getSecond());
+                }
+            }
         }
     }
 

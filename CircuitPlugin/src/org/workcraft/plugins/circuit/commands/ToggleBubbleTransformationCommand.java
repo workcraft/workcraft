@@ -140,6 +140,7 @@ public class ToggleBubbleTransformationCommand extends AbstractTransformationCom
                     component.setLabel("");
                 }
                 component.invalidateRenderingResult();
+                model.addToSelection(component);
             }
         }
     }

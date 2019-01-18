@@ -99,6 +99,7 @@ public class PropagateInversionTransformationCommand extends AbstractTransformat
             renameContacts(circuit.getMathModel(), gate.getReferencedFunctionComponent());
             String newGateStr = CircuitUtils.gateToString(circuit, gate);
             LogUtils.logInfo("Transforming gate " + gateStr + " into " + newGateStr);
+            circuit.addToSelection(gate);
         }
     }
 

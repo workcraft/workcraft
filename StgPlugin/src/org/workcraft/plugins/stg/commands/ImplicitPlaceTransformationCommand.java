@@ -6,6 +6,7 @@ import org.workcraft.dom.visual.Replica;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.petri.utils.PetriNetUtils;
+import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.VisualStgPlace;
 import org.workcraft.workspace.ModelEntry;
@@ -80,7 +81,10 @@ public class ImplicitPlaceTransformationCommand extends AbstractTransformationCo
         if ((model instanceof VisualStg) && (node instanceof VisualStgPlace)) {
             VisualStg stg = (VisualStg) model;
             VisualStgPlace place = (VisualStgPlace) node;
-            stg.maybeMakeImplicit(place, true);
+            VisualImplicitPlaceArc connection = stg.maybeMakeImplicit(place, true);
+            if (connection != null) {
+                model.addToSelection(connection);
+            }
         }
     }
 

@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class ReadArcToDualArcTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
-    private HashSet<VisualConnection> connections = null;
 
     @Override
     public String getDisplayName() {
@@ -61,27 +60,17 @@ public class ReadArcToDualArcTransformationCommand extends AbstractTransformatio
     }
 
     @Override
-    public void transform(VisualModel model, Collection<? extends VisualNode> nodes) {
-        connections = new HashSet<>(2 * nodes.size());
-        for (VisualNode node: nodes) {
-            transform(model, node);
-        }
-        model.select(connections);
-        connections.clear();
-    }
-
-    @Override
     public void transform(VisualModel model, VisualNode node) {
         if (node instanceof VisualReadArc) {
             VisualReadArc readArc = (VisualReadArc) node;
             Pair<VisualConnection, VisualConnection> dualArc = PetriNetUtils.converReadArcTotDualArc(model, readArc);
             VisualConnection consumingArc = dualArc.getFirst();
             if (consumingArc != null) {
-                connections.add(consumingArc);
+                model.addToSelection(consumingArc);
             }
             VisualConnection producingArc = dualArc.getSecond();
             if (producingArc != null) {
-                connections.add(producingArc);
+                model.addToSelection(producingArc);
             }
         }
     }
