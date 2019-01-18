@@ -142,8 +142,8 @@ public class VisualStg extends AbstractVisualModel {
             throws InvalidConnectionException {
 
         if (mConnection == null) {
-            MathNode firstRef = getMathReference(first);
-            MathNode secondRef = getMathReference(second);
+            MathNode firstRef = getReferencedComponent(first);
+            MathNode secondRef = getReferencedComponent(second);
             mConnection = getMathModel().connect(firstRef, secondRef);
         }
         VisualConnection connection = new VisualConnection(mConnection, first, second);
@@ -398,19 +398,19 @@ public class VisualStg extends AbstractVisualModel {
     }
 
     public String getSignalReference(VisualSignalTransition transition) {
-        String ref = getNodeMathReference(transition);
+        String ref = getMathReference(transition);
         String signalName = transition.getSignalName();
         String signalPath = NamespaceHelper.getParentReference(ref);
         return NamespaceHelper.getReference(signalPath, signalName);
     }
 
     @Override
-    public String getNodeMathReference(Node node) {
+    public String getMathReference(Node node) {
         if (node instanceof VisualImplicitPlaceArc) {
             VisualImplicitPlaceArc connection = (VisualImplicitPlaceArc) node;
             node = connection.getImplicitPlace();
         }
-        return super.getNodeMathReference(node);
+        return super.getMathReference(node);
     }
 
     @Override

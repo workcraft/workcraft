@@ -162,8 +162,8 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
 
         validateConnection(first, second);
         if (mConnection == null) {
-            MathNode mFirst = getMathReference(first);
-            MathNode mSecond = getMathReference(second);
+            MathNode mFirst = getReferencedComponent(first);
+            MathNode mSecond = getReferencedComponent(second);
             mConnection = getMathModel().connect(mFirst, mSecond);
         }
         VisualConnection vConnection = new VisualConnection(mConnection, first, second);
@@ -188,7 +188,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
         return connect(first, second, null);
     }
 
-    public MathNode getMathReference(Node node) {
+    public MathNode getReferencedComponent(Node node) {
         VisualComponent component = null;
         if (node instanceof VisualComponent) {
             component = (VisualComponent) node;
@@ -424,7 +424,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
     }
 
     @Override
-    public String getNodeMathReference(Node node) {
+    public String getMathReference(Node node) {
         if (node instanceof VisualComponent) {
             VisualComponent component = (VisualComponent) node;
             node = component.getReferencedComponent();

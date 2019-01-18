@@ -68,8 +68,8 @@ public class VisualXmas extends AbstractVisualModel {
 
         validateConnection(first, second);
         if (mConnection == null) {
-            MathNode mFirst = getMathReference(first);
-            MathNode mSecond = getMathReference(second);
+            MathNode mFirst = getReferencedComponent(first);
+            MathNode mSecond = getReferencedComponent(second);
             mConnection = getMathModel().connect(mFirst, mSecond);
         }
         VisualXmasConnection vConnection = new VisualXmasConnection(mConnection, first, second);

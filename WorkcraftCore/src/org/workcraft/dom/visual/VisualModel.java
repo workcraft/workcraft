@@ -28,7 +28,7 @@ public interface VisualModel extends Model<VisualNode, VisualConnection>, Observ
     void setCurrentLevel(Container group);
     Container getCurrentLevel();
 
-    String getNodeMathReference(Node node);
+    String getMathReference(Node node);
     String getMathName(Node node);
     void setMathName(Node node, String name);
 

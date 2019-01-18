@@ -192,7 +192,7 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
             @Override
             public Decoration getDecoration(Node node) {
                 if (node instanceof VisualNamedTransition) {
-                    String name = editor.getModel().getNodeMathReference(node);
+                    String name = editor.getModel().getMathReference(node);
                     boolean noColor = (selectedCores == null) && (density == null);
                     final Color color = noColor ? null : density.getColor(name);
 

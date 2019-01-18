@@ -94,7 +94,7 @@ public class PetrifyStgToFstConversionCommandTests {
         VisualFst fst = WorkspaceUtils.getAs(dstWe, VisualFst.class);
         for (String conflictStateSuffix: conflictStateSuffixes) {
             for (VisualState state: fst.getVisualStates()) {
-                String stateName = fst.getNodeMathReference(state);
+                String stateName = fst.getMathReference(state);
                 if (!stateName.endsWith(conflictStateSuffix)) continue;
                 Color conflictColor = conflictColorMap.get(conflictStateSuffix);
                 if (conflictColor != null) {

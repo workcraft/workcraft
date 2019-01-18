@@ -201,7 +201,7 @@ public class NamespaceHelper {
         Container root = model.getRoot();
         result.put("", root);
         for (VisualPage page: Hierarchy.getDescendantsOfType(root, VisualPage.class)) {
-            String ref = model.getNodeMathReference(page);
+            String ref = model.getMathReference(page);
             result.put(ref, page);
         }
         return result;

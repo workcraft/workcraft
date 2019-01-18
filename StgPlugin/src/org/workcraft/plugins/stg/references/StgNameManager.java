@@ -5,6 +5,7 @@ import org.workcraft.dom.references.DefaultNameManager;
 import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.plugins.stg.*;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.ListMap;
 import org.workcraft.util.Pair;
 import org.workcraft.util.Triple;
@@ -62,12 +63,11 @@ public class StgNameManager extends DefaultNameManager {
             direction = r.getSecond();
             instance = r.getThird();
         }
-        if (signalTransitions.get(signalName).isEmpty() && !isUnusedName(signalName)) {
-            throw new ArgumentException("Name '" + name + "' is unavailable.");
+        if (!signalTransitions.get(signalName).isEmpty() || isUnusedName(signalName) || renameOccupantIfDifferent(st, signalName)) {
+            instancedNameManager.assign(st, Pair.of(signalName + direction, instance), forceInstance);
+            st.setDirection(direction);
+            renameSignalTransition(st, signalName);
         }
-        instancedNameManager.assign(st, Pair.of(signalName + direction, instance), forceInstance);
-        st.setDirection(direction);
-        renameSignalTransition(st, signalName);
     }
 
     private void setDummyTransitionName(DummyTransition dt, String name, boolean forceInstance) {
@@ -76,16 +76,40 @@ public class StgNameManager extends DefaultNameManager {
             throw new ArgumentException("Name '" + name + "' is not a valid dummy label.");
         }
         String dummyName = r.getFirst();
-        if (dummyTransitions.get(dummyName).isEmpty() && !isUnusedName(dummyName)) {
-            throw new ArgumentException("Name '" + name + "' is unavailable.");
+        if (!dummyTransitions.get(dummyName).isEmpty() || isUnusedName(dummyName) || renameOccupantIfDifferent(dt, dummyName)) {
+            instancedNameManager.assign(dt, r, forceInstance);
+            renameDummyTransition(dt, dummyName);
         }
-        instancedNameManager.assign(dt, r, forceInstance);
-        renameDummyTransition(dt, dummyName);
+    }
+
+    private void setPlaceName(StgPlace p, String name) {
+        if (!p.isImplicit()) {
+            if (isUnusedName(name) || renameOccupantIfDifferent(p, name)) {
+                super.setName(p, name);
+            }
+        }
+    }
+
+    private boolean renameOccupantIfDifferent(Node node, String name) {
+        Node occupant = getNode(name);
+        if (occupant != node) {
+            if (!(occupant instanceof StgPlace)) {
+                throw new ArgumentException("Name '" + name + "' is unavailable.");
+            }
+            String derivedName = getDerivedName(occupant, name);
+            String msg = "The name '" + name + "' is already taken by a place.\n" +
+                    "Rename that place to '" + derivedName + "' and continue?";
+            if (!DialogUtils.showConfirmWarning(msg)) {
+                return false;
+            }
+            setName(occupant, derivedName);
+        }
+        return true;
     }
 
     public void setName(Node node, String name, boolean forceInstance) {
-        if ((node instanceof StgPlace) && ((StgPlace) node).isImplicit()) {
-            // Skip implicit places
+        if (node instanceof StgPlace) {
+            setPlaceName((StgPlace) node, name);
         } else if (node instanceof SignalTransition) {
             setSignalTransitionName((SignalTransition) node, name, forceInstance);
         } else if (node instanceof DummyTransition) {

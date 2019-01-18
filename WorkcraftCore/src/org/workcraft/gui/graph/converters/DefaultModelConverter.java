@@ -54,7 +54,7 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
     @Override
     public VisualPage convertPage(VisualPage srcPage) {
         VisualPage dstPage = null;
-        String ref = getSrcModel().getNodeMathReference(srcPage);
+        String ref = getSrcModel().getMathReference(srcPage);
         Container dstContainer = getRefToDstPage(ref);
         if (dstContainer instanceof VisualPage) {
             dstPage = (VisualPage) dstContainer;
@@ -67,7 +67,7 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
     @Override
     public VisualComponent convertComponent(VisualComponent srcComponent) {
         VisualComponent dstComponent = null;
-        String srcRef = getSrcModel().getNodeMathReference(srcComponent);
+        String srcRef = getSrcModel().getMathReference(srcComponent);
         if (srcRef != null) {
             Map<Class<? extends MathNode>, Class<? extends MathNode>> componentClassMap = getComponentClassMap();
             Class<? extends MathNode> dstMathNodeClass = componentClassMap.get(srcComponent.getReferencedComponent().getClass());

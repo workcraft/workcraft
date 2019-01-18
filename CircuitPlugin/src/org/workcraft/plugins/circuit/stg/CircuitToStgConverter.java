@@ -119,7 +119,7 @@ public class CircuitToStgConverter {
                 Container dstContainer = null;
                 Node srcParent = srcComponent.getParent();
                 if (srcParent instanceof VisualPage) {
-                    String containerRef = circuit.getNodeMathReference(srcParent);
+                    String containerRef = circuit.getMathReference(srcParent);
                     dstContainer = refToPageMapping.get(containerRef);
                 }
                 if (dstContainer == null) {
@@ -442,7 +442,7 @@ public class CircuitToStgConverter {
     private void positionDriverStgs(HashSet<VisualContact> drivers) {
         // Position STG pages according to the location circuit pages and components.
         for (VisualPage page: Hierarchy.getDescendantsOfType(stg.getRoot(), VisualPage.class)) {
-            String pageRef = stg.getNodeMathReference(page);
+            String pageRef = stg.getMathReference(page);
             VisualComponent circuitComponent = circuit.getVisualComponentByMathReference(pageRef, VisualComponent.class);
             if (circuitComponent != null) {
                 Point2D pos = circuitComponent.getRootSpacePosition();

@@ -135,7 +135,7 @@ public class ToggleBubbleTransformationCommand extends AbstractTransformationCom
                 VisualFunctionComponent component = (VisualFunctionComponent) parent;
                 String label = component.getLabel();
                 if (!label.isEmpty()) {
-                    String ref = model.getNodeMathReference(node);
+                    String ref = model.getMathReference(node);
                     LogUtils.logWarning("Label '" + label + "' is removed from component '" + ref + "'.");
                     component.setLabel("");
                 }

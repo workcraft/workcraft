@@ -71,7 +71,7 @@ public class DotExporter implements Exporter {
         Rectangle2D bb = component.getBoundingBoxInLocalSpace();
         String w = String.format("%.3f", bb.getWidth());
         String h = String.format("%.3f", bb.getHeight());
-        String comment = model.getNodeMathReference(component);
+        String comment = model.getMathReference(component);
         out.println(indent + ref + " [width=" + w + ", height=" + h + "];  // " + comment);
     }
 
@@ -80,7 +80,7 @@ public class DotExporter implements Exporter {
         VisualNode second = connection.getSecond();
         String firstRef = model.getNodeReference(first);
         String secondRef = model.getNodeReference(second);
-        String comment = "(" + model.getNodeMathReference(first) + ", " + model.getNodeMathReference(second) + ")";
+        String comment = "(" + model.getMathReference(first) + ", " + model.getMathReference(second) + ")";
         out.println(indent + firstRef + " -> " + secondRef + "; // " + comment);
     }
 

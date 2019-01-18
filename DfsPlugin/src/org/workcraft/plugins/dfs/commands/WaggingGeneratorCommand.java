@@ -79,7 +79,7 @@ public class WaggingGeneratorCommand implements ScriptableCommand<Void> {
             if (node instanceof VisualComponent) {
                 for (VisualNode predNode : dfs.getPreset(node)) {
                     if ((node instanceof VisualRegister) || nodes.contains(predNode)) continue;
-                    nonRegisterEntryRefs.add(dfs.getNodeMathReference(node));
+                    nonRegisterEntryRefs.add(dfs.getMathReference(node));
                 }
             }
         }

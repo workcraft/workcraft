@@ -367,7 +367,7 @@ public class CircuitUtils {
     }
 
     public static String gateToString(VisualCircuit circuit, VisualFunctionComponent gate) {
-        String result = circuit.getNodeMathReference(gate);
+        String result = circuit.getMathReference(gate);
 
         VisualFunctionContact outputContact = gate.getGateOutput();
         String outputName = outputContact.getName();

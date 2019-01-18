@@ -119,8 +119,8 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
                     VisualNode predNode = connection.getFirst();
                     VisualNode succNode = connection.getSecond();
                     if (connection instanceof VisualReadArc) {
-                        String predRef = stg.getNodeMathReference(predNode);
-                        String succRef = stg.getNodeMathReference(succNode);
+                        String predRef = stg.getMathReference(predNode);
+                        String succRef = stg.getMathReference(succNode);
                         LogUtils.logWarning("Read-arc between '" + predRef + "' and '" + succRef + "' is ignored.");
                         continue;
                     }

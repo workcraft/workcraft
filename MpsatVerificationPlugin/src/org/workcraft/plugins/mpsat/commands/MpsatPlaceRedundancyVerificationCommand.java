@@ -66,7 +66,7 @@ public class MpsatPlaceRedundancyVerificationCommand extends MpsatAbstractVerifi
         HashSet<String> placeNames = new HashSet<>();
         for (VisualNode node: model.getSelection()) {
             if ((node instanceof VisualPlace) || (node instanceof VisualImplicitPlaceArc)) {
-                String placeName = model.getNodeMathReference(node);
+                String placeName = model.getMathReference(node);
                 if (placeName != null) {
                     placeNames.add(placeName);
                 }

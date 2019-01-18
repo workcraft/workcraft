@@ -1,10 +1,10 @@
 package org.workcraft.plugins.stg;
 
-import java.util.Arrays;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.dom.math.PageNode;
+
+import java.util.Arrays;
 
 public class StgReparentTests {
 
@@ -16,13 +16,9 @@ public class StgReparentTests {
         Assert.assertEquals("ABC", stg.getNodeReference(place));
 
         // Cannot create transition with the same name as an existing place.
-        SignalTransition transition = null;
-        try {
-            transition = stg.createSignalTransition("ABC", stg.getRoot());
-            Assert.fail("Unexpected assignemnt of name 'ABC' that is already taken.");
-        } catch (Exception e) {
-        }
-        Assert.assertNull(transition);
+        SignalTransition transition = stg.createSignalTransition("ABC", stg.getRoot());
+        Assert.assertEquals("ABCa", stg.getNodeReference(place));
+        Assert.assertEquals("ABC~", stg.getNodeReference(transition));
 
         PageNode page1 = new PageNode();
         stg.add(page1);
@@ -40,11 +36,11 @@ public class StgReparentTests {
 
         boolean dummy1ReparentResult = stg.reparent(stg.getRoot(), stg, page1, Arrays.asList(dummy1));
         Assert.assertTrue(dummy1ReparentResult);
-        Assert.assertEquals("ABCa", stg.getNodeReference(dummy1));
+        Assert.assertEquals("ABCb", stg.getNodeReference(dummy1));
 
         boolean dummy2ReparentResult = stg.reparent(stg.getRoot(), stg, page2, Arrays.asList(dummy2));
         Assert.assertTrue(dummy2ReparentResult);
-        Assert.assertEquals("ABCb", stg.getNodeReference(dummy2));
+        Assert.assertEquals("ABCc", stg.getNodeReference(dummy2));
     }
 
     @Test
