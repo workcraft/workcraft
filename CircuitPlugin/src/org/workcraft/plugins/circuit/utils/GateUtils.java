@@ -9,15 +9,14 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
 import org.workcraft.formula.utils.BooleanUtils;
+import org.workcraft.formula.utils.LiteralsExtractor;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.Pair;
 
 import java.awt.geom.Point2D;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class GateUtils {
 
@@ -218,7 +217,7 @@ public class GateUtils {
     }
 
     public static void propagateInitialState(VisualCircuit circuit, VisualFunctionComponent component) {
-        propagateInitialState(circuit.getMathModel(), component.getReferencedFunctionComponent());
+        propagateInitialState(circuit.getMathModel(), component.getReferencedComponent());
     }
 
     public static void propagateInitialState(Circuit circuit, FunctionComponent component) {
@@ -259,6 +258,39 @@ public class GateUtils {
             }
         }
         return Pair.of(variables, values);
+    }
+
+    public static Set<BooleanVariable> getUsedPortVariables(Circuit circuit) {
+        Set<BooleanVariable> result = new HashSet();
+        for (Contact contact : circuit.getInputPorts()) {
+            if (!(contact instanceof FunctionContact)) continue;
+            FunctionContact inputPort = (FunctionContact) contact;
+            result.add(inputPort);
+            result.addAll(getUsedVariables(inputPort));
+        }
+        return result;
+    }
+
+    public static Set<BooleanVariable> getUsedVariables(FunctionComponent component) {
+        Set<BooleanVariable> result = new HashSet();
+        for (FunctionContact contact : component.getFunctionOutputs()) {
+            result.add(contact);
+            result.addAll(GateUtils.getUsedVariables(contact));
+        }
+        return result;
+    }
+
+    public static Set<BooleanVariable> getUsedVariables(FunctionContact contact) {
+        HashSet<BooleanVariable> literals = new HashSet<>();
+        BooleanFormula setFunction = contact.getSetFunction();
+        if (setFunction != null) {
+            literals.addAll(setFunction.accept(new LiteralsExtractor()));
+        }
+        BooleanFormula resetFunction = contact.getResetFunction();
+        if (resetFunction != null) {
+            literals.addAll(resetFunction.accept(new LiteralsExtractor()));
+        }
+        return literals;
     }
 
 }

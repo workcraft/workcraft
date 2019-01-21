@@ -10,6 +10,7 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.util.Hierarchy;
 
 import javax.swing.*;
@@ -58,6 +59,13 @@ public class CircuitSelectionTool extends SelectionTool {
                 component.centerPivotPoint(true, true);
             });
             popup.add(centerPivotPointMenuItem);
+            JMenuItem removeUnusedPinsMenuItem = new JMenuItem("Remove unused pins");
+            removeUnusedPinsMenuItem.addActionListener(event -> {
+                editor.getWorkspaceEntry().saveMemento();
+                VisualCircuit circuit = (VisualCircuit) editor.getModel();
+                CircuitUtils.removeUnusedPins(circuit, component);
+            });
+            popup.add(removeUnusedPinsMenuItem);
         }
         return popup;
     }

@@ -220,6 +220,11 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
     }
 
     @Override
+    public Contact getReferencedComponent() {
+        return (Contact) super.getReferencedComponent();
+    }
+
+    @Override
     public Shape getShape() {
         Contact contact = getReferencedContact();
         return ((contact != null) && contact.isPort()) ? getPortShape() : getContactShape();

@@ -1,10 +1,5 @@
 package org.workcraft.plugins.circuit;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
@@ -15,6 +10,11 @@ import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.Literal;
 import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 public class CircuitSignalInfo {
 
@@ -85,9 +85,7 @@ public class CircuitSignalInfo {
             }
             if (result != null) {
                 if (NamespaceHelper.isHierarchical(result)) {
-                    HierarchyReferenceManager refManager
-                            = (HierarchyReferenceManager) circuit.getReferenceManager();
-
+                    HierarchyReferenceManager refManager = circuit.getReferenceManager();
                     NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(circuit.getRoot());
                     NameManager nameManagerer = refManager.getNameManager(namespaceProvider);
                     String candidateName = NamespaceHelper.flattenReference(result);

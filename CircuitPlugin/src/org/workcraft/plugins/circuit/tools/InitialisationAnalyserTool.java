@@ -345,7 +345,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
             }
 
             if ((contact instanceof VisualFunctionContact) && contact.isDriver()) {
-                FunctionContact funcContact = ((VisualFunctionContact) contact).getReferencedFunctionContact();
+                FunctionContact funcContact = ((VisualFunctionContact) contact).getReferencedContact();
                 editor.getWorkspaceEntry().saveMemento();
                 funcContact.setForcedInit(!funcContact.getForcedInit());
                 processed = true;

@@ -180,7 +180,7 @@ public class ResetUtils {
             Collection<VisualFunctionContact> forceInitFuncContacts = new HashSet<>();
             for (VisualFunctionContact contact : component.getVisualFunctionContacts()) {
                 if (contact.isOutput() && contact.isPin() && contact.getForcedInit()) {
-                    if (isSimpleGate || contact.getReferencedFunctionContact().isSequential()) {
+                    if (isSimpleGate || contact.getReferencedContact().isSequential()) {
                         forceInitFuncContacts.add(contact);
                     } else {
                         forceInitGateContacts.add(contact);

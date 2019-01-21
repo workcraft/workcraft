@@ -135,7 +135,7 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
                     processed = true;
                 }
             } else if (node instanceof VisualCircuitComponent) {
-                CircuitComponent component = ((VisualCircuitComponent) node).getReferencedCircuitComponent();
+                CircuitComponent component = ((VisualCircuitComponent) node).getReferencedComponent();
                 component.setPathBreaker(!component.getPathBreaker());
                 processed = true;
             }

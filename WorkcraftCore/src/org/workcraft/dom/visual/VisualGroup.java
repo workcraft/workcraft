@@ -3,7 +3,6 @@ package org.workcraft.dom.visual;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
@@ -142,14 +141,6 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
             bb = new Rectangle2D.Double(-size / 2, -size / 2, size, size);
         }
         return BoundingBoxHelper.expand(bb, margin, margin);
-    }
-
-    public final Collection<VisualComponent> getComponents() {
-        return Hierarchy.getChildrenOfType(this, VisualComponent.class);
-    }
-
-    public final Collection<VisualConnection> getnections() {
-        return Hierarchy.getChildrenOfType(this, VisualConnection.class);
     }
 
     public Collection<VisualNode> unGroup() {

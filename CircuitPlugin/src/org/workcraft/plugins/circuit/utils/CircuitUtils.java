@@ -441,4 +441,16 @@ public class CircuitUtils {
         return true;
     }
 
+    public static void removeUnusedPins(VisualCircuit circuit, VisualFunctionComponent component) {
+        Set<BooleanVariable> usedVariables = GateUtils.getUsedVariables(component.getReferencedComponent());
+        for (VisualFunctionContact contact : component.getVisualFunctionContacts()) {
+            if (!usedVariables.contains(contact.getReferencedContact()) &&
+                    ((contact.isDriver() && circuit.getPostset(contact).isEmpty()) ||
+                    (contact.isDriven() && circuit.getPreset(contact).isEmpty()))) {
+
+                component.remove(contact);
+            }
+        }
+    }
+
 }

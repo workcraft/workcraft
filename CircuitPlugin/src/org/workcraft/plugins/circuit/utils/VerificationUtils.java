@@ -3,7 +3,6 @@ package org.workcraft.plugins.circuit.utils;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
-import org.workcraft.formula.utils.LiteralsExtractor;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
@@ -166,30 +165,11 @@ public class VerificationUtils {
 
     private static Set<String> getUnusedOutputSignals(Stg envStg, Circuit circuit) {
         Set<String> result = new HashSet();
+        Set<BooleanVariable> literals = GateUtils.getUsedPortVariables(circuit);
         for (Contact contact : circuit.getOutputPorts()) {
+            if (literals.contains(contact)) continue;
             String outputSignal = circuit.getNodeReference(contact);
             result.add(outputSignal);
-        }
-        for (Contact contact : circuit.getInputPorts()) {
-            if (!(contact instanceof FunctionContact)) continue;
-            FunctionContact inputPort = (FunctionContact) contact;
-
-            HashSet<BooleanVariable> literals = new HashSet<>();
-            BooleanFormula setFunction = inputPort.getSetFunction();
-            if (setFunction != null) {
-                literals.addAll(setFunction.accept(new LiteralsExtractor()));
-            }
-            BooleanFormula resetFunction = inputPort.getResetFunction();
-            if (resetFunction != null) {
-                literals.addAll(resetFunction.accept(new LiteralsExtractor()));
-            }
-
-            for (BooleanVariable literal : literals) {
-                if (!(literal instanceof FunctionContact)) continue;
-                FunctionContact outputPort = (FunctionContact) literal;
-                String outputSignal = circuit.getNodeReference(outputPort);
-                result.remove(outputSignal);
-            }
         }
         if (envStg != null) {
             result.removeAll(envStg.getSignalReferences(Signal.Type.OUTPUT));
