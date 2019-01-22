@@ -9,6 +9,7 @@ import org.workcraft.plugins.circuit.observers.FunctionConsistencySupervisor;
 import org.workcraft.plugins.circuit.observers.IOTypeConsistencySupervisor;
 import org.workcraft.plugins.circuit.observers.ZeroDelayConsistencySupervisor;
 import org.workcraft.plugins.circuit.references.CircuitReferenceManager;
+import org.workcraft.plugins.circuit.utils.EnvironmentUtils;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.MultiSet;
@@ -66,6 +67,13 @@ public class Circuit extends AbstractMathModel {
 
     public Collection<Contact> getDrivers() {
         return Hierarchy.getDescendantsOfType(getRoot(), Contact.class, contact -> contact.isDriver());
+    }
+
+    @Override
+    public void beforeSerialisation() {
+        super.beforeSerialisation();
+        // Update environment file in case the base directory has changed, e.g. if the work is saved in a new location.
+        EnvironmentUtils.updateEnvironmentFile(this);
     }
 
     @Override

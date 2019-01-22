@@ -1,16 +1,12 @@
 package org.workcraft.plugins.fsm.observers;
 
-import java.util.HashSet;
-
 import org.workcraft.dom.Node;
-import org.workcraft.observation.HierarchyEvent;
-import org.workcraft.observation.NodesDeletingEvent;
-import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.observation.StateEvent;
-import org.workcraft.observation.StateSupervisor;
+import org.workcraft.observation.*;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.Symbol;
+
+import java.util.HashSet;
 
 public class SymbolConsistencySupervisor extends StateSupervisor {
 
@@ -45,7 +41,7 @@ public class SymbolConsistencySupervisor extends StateSupervisor {
     }
 
     private void handleEventSymbolChange(Event event) {
-        HashSet<Node> unusedSymbols = new HashSet<Node>(fsm.getSymbols());
+        HashSet<Symbol> unusedSymbols = new HashSet<>(fsm.getSymbols());
         for (Event e: fsm.getEvents()) {
             Symbol symbol = e.getSymbol();
             unusedSymbols.remove(symbol);

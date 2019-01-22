@@ -1,16 +1,12 @@
 package org.workcraft.plugins.graph.observers;
 
-import java.util.HashSet;
-
 import org.workcraft.dom.Node;
-import org.workcraft.observation.HierarchyEvent;
-import org.workcraft.observation.NodesDeletingEvent;
-import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.observation.StateEvent;
-import org.workcraft.observation.StateSupervisor;
+import org.workcraft.observation.*;
 import org.workcraft.plugins.graph.Graph;
 import org.workcraft.plugins.graph.Symbol;
 import org.workcraft.plugins.graph.Vertex;
+
+import java.util.HashSet;
 
 public class SymbolConsistencySupervisor extends StateSupervisor {
     private final Graph graph;
@@ -44,7 +40,7 @@ public class SymbolConsistencySupervisor extends StateSupervisor {
     }
 
     private void handleVertexSymbolChange(Vertex vertex) {
-        HashSet<Node> unusedSymbols = new HashSet<Node>(graph.getSymbols());
+        HashSet<Symbol> unusedSymbols = new HashSet<>(graph.getSymbols());
         for (Vertex v: graph.getVertices()) {
             Symbol symbol = v.getSymbol();
             unusedSymbols.remove(symbol);

@@ -6,10 +6,14 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.CircuitDescriptor;
+import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.plugins.circuit.utils.EnvironmentUtils;
 import org.workcraft.plugins.mpsat.MpsatSynthesisMode;
 import org.workcraft.plugins.mpsat.MpsatSynthesisSettings;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
@@ -135,7 +139,7 @@ public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<M
                     if (!srcWe.getFile().exists()) {
                         DialogUtils.showError("Unsaved STG cannot be set as the circuit environment.");
                     } else {
-                        visualCircuit.setEnvironmentFile(srcWe.getFile());
+                        EnvironmentUtils.setEnvironmentFile(visualCircuit.getMathModel(), srcWe.getFile());
                         if (srcWe.isChanged()) {
                             DialogUtils.showWarning("The STG with unsaved changes is set as the circuit environment.");
                         }

@@ -42,12 +42,12 @@ public abstract class AbstractModel<N extends Node, C extends Connection>  imple
     }
 
     @Override
-    public void add(Node node) {
+    public void add(N node) {
         root.add(node);
     }
 
     @Override
-    public void remove(Node node) {
+    public void remove(N node) {
         if (node.getParent() instanceof Container) {
             ((Container) node.getParent()).remove(node);
         } else {
@@ -56,9 +56,9 @@ public abstract class AbstractModel<N extends Node, C extends Connection>  imple
     }
 
     @Override
-    public void remove(Collection<Node> nodes) {
-        LinkedList<Node> toRemove = new LinkedList<>(nodes);
-        for (Node node : toRemove) {
+    public void remove(Collection<? extends N> nodes) {
+        LinkedList<N> toRemove = new LinkedList<>(nodes);
+        for (N node : toRemove) {
             // some nodes may be removed as a result of removing other nodes in the list,
             // e.g. hanging connections so need to check
             if (node.getParent() != null) {

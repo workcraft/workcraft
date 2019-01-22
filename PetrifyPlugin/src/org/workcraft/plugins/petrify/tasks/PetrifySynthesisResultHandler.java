@@ -13,6 +13,7 @@ import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.plugins.circuit.utils.EnvironmentUtils;
 import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.utils.StgUtils;
@@ -152,7 +153,7 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
                     if (!we.getFile().exists()) {
                         DialogUtils.showError("Unsaved STG cannot be set as the circuit environment.");
                     } else {
-                        visualCircuit.setEnvironmentFile(we.getFile());
+                        EnvironmentUtils.setEnvironmentFile(visualCircuit.getMathModel(), we.getFile());
                         if (we.isChanged()) {
                             DialogUtils.showWarning("The STG with unsaved changes is set as the circuit environment.");
                         }

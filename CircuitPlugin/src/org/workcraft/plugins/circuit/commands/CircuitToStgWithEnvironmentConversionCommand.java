@@ -3,6 +3,7 @@ package org.workcraft.plugins.circuit.commands;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
+import org.workcraft.plugins.circuit.utils.EnvironmentUtils;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.stg.Signal;
@@ -27,7 +28,7 @@ public class CircuitToStgWithEnvironmentConversionCommand extends CircuitToStgCo
     @Override
     public CircuitToStgConverter getCircuitToStgConverter(final VisualCircuit circuit) {
         CircuitToStgConverter converter = new CircuitToStgConverter(circuit);
-        File envWorkFile = circuit.getEnvironmentFile();
+        File envWorkFile = EnvironmentUtils.getEnvironmentFile(circuit.getMathModel());
         if (envWorkFile == null) {
             DialogUtils.showWarning("Envioronment STG is not specified.");
         } else if (!envWorkFile.exists()) {

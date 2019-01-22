@@ -6,9 +6,9 @@ import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
-import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.tasks.CircuitStrictImplementationCheckTask;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.plugins.circuit.utils.EnvironmentUtils;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
@@ -83,8 +83,8 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
     }
 
     private boolean checkCircuitHasEnvironmentStrict(WorkspaceEntry we) {
-        VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
-        File envFile = visualCircuit.getEnvironmentFile();
+        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
+        File envFile = EnvironmentUtils.getEnvironmentFile(circuit);
         Stg envStg = StgUtils.loadStg(envFile);
         if (envStg == null) {
             String msg = "Strict implementation cannot be checked without an environment STG.";
