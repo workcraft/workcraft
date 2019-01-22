@@ -384,7 +384,7 @@ public class CircuitToStgConverter {
     }
 
     private void simplifyDriverStgs(HashSet<VisualContact> drivers) {
-        HashSet<Node> redundantTransitions = getDeadTransitions(drivers);
+        HashSet<VisualNode> redundantTransitions = getDeadTransitions(drivers);
         redundantTransitions.addAll(getDuplicateTransitions(drivers));
         for (VisualContact driver: drivers) {
             SignalStg signalStg = driverToStgMap.getValue(driver);
@@ -396,12 +396,12 @@ public class CircuitToStgConverter {
         stg.remove(redundantTransitions);
     }
 
-    private HashSet<Node> getDeadTransitions(HashSet<VisualContact> drivers) {
-        HashSet<Node> result = new HashSet<>();
+    private HashSet<VisualNode> getDeadTransitions(HashSet<VisualContact> drivers) {
+        HashSet<VisualNode> result = new HashSet<>();
         for (VisualContact driver: drivers) {
             SignalStg signalStg = driverToStgMap.getValue(driver);
             if (signalStg != null) {
-                HashSet<Node> deadPostset = new HashSet<>(stg.getPostset(signalStg.zero));
+                HashSet<VisualNode> deadPostset = new HashSet<>(stg.getPostset(signalStg.zero));
                 deadPostset.retainAll(stg.getPostset(signalStg.one));
                 result.addAll(deadPostset);
             }
@@ -409,8 +409,8 @@ public class CircuitToStgConverter {
         return result;
     }
 
-    private HashSet<Node> getDuplicateTransitions(HashSet<VisualContact> drivers) {
-        HashSet<Node> result = new HashSet<>();
+    private HashSet<VisualNode> getDuplicateTransitions(HashSet<VisualContact> drivers) {
+        HashSet<VisualNode> result = new HashSet<>();
         for (VisualContact driver: drivers) {
             SignalStg signalStg = driverToStgMap.getValue(driver);
             if (signalStg != null) {
@@ -421,8 +421,8 @@ public class CircuitToStgConverter {
         return result;
     }
 
-    private HashSet<Node> getDuplicates(Collection<VisualSignalTransition> transitions) {
-        HashSet<Node> result = new HashSet<>();
+    private HashSet<VisualSignalTransition> getDuplicates(Collection<VisualSignalTransition> transitions) {
+        HashSet<VisualSignalTransition> result = new HashSet<>();
         for (VisualSignalTransition t1: transitions) {
             if (result.contains(t1)) continue;
             for (VisualSignalTransition t2: transitions) {

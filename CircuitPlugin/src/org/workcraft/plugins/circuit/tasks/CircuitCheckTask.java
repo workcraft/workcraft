@@ -5,6 +5,7 @@ import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.plugins.circuit.utils.EnvironmentUtils;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.*;
 import org.workcraft.plugins.pcomp.ComponentData;
@@ -55,12 +56,12 @@ public class CircuitCheckTask extends MpsatChainTask {
         MpsatParameters preparationSettings = MpsatParameters.getToolchainPreparationSettings();
         try {
             // Common variables
-            VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
-            File envFile = visualCircuit.getEnvironmentFile();
+            VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
+            File envFile = EnvironmentUtils.getEnvironmentFile(circuit.getMathModel());
             LinkedList<Pair<String, String>> grantPairs = getMutexGrantPairs(we);
 
             // Load device STG
-            CircuitToStgConverter converter = new CircuitToStgConverter(visualCircuit);
+            CircuitToStgConverter converter = new CircuitToStgConverter(circuit);
             Stg devStg = (Stg) converter.getStg().getMathModel();
             // Convert mutex grants into inputs in device STG, but store the original signal type
             HashMap<String, Signal.Type> signalOriginalType = new HashMap<>();

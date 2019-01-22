@@ -69,8 +69,9 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         });
     }
 
-    public FunctionComponent getReferencedFunctionComponent() {
-        return (FunctionComponent) this.getReferencedComponent();
+    @Override
+    public FunctionComponent getReferencedComponent() {
+        return (FunctionComponent) super.getReferencedComponent();
     }
 
     public RenderType getRenderType() {
@@ -88,41 +89,41 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
     }
 
     public boolean getIsZeroDelay() {
-        return (getReferencedFunctionComponent() != null) && getReferencedFunctionComponent().getIsZeroDelay();
+        return (getReferencedComponent() != null) && getReferencedComponent().getIsZeroDelay();
     }
 
     public void setIsZeroDelay(boolean value) {
-        if (getReferencedFunctionComponent() != null) {
-            getReferencedFunctionComponent().setIsZeroDelay(value);
+        if (getReferencedComponent() != null) {
+            getReferencedComponent().setIsZeroDelay(value);
         }
     }
 
     public boolean isMapped() {
-        return (getReferencedFunctionComponent() != null) && getReferencedFunctionComponent().isMapped();
+        return (getReferencedComponent() != null) && getReferencedComponent().isMapped();
     }
 
     public boolean isGate() {
-        return (getReferencedFunctionComponent() != null) && getReferencedFunctionComponent().isGate();
+        return (getReferencedComponent() != null) && getReferencedComponent().isGate();
     }
 
     public boolean isBuffer() {
-        return (getReferencedFunctionComponent() != null) && getReferencedFunctionComponent().isBuffer();
+        return (getReferencedComponent() != null) && getReferencedComponent().isBuffer();
     }
 
     public boolean isInverter() {
-        return (getReferencedFunctionComponent() != null) && getReferencedFunctionComponent().isInverter();
+        return (getReferencedComponent() != null) && getReferencedComponent().isInverter();
     }
 
     public VisualFunctionContact getGateOutput() {
-        if (getReferencedFunctionComponent() != null) {
-            FunctionContact contact = getReferencedFunctionComponent().getGateOutput();
+        if (getReferencedComponent() != null) {
+            FunctionContact contact = getReferencedComponent().getGateOutput();
             return getVisualContact(contact);
         }
         return null;
     }
 
     public boolean isSequentialGate() {
-        return (getReferencedFunctionComponent() != null) && getReferencedFunctionComponent().isSequentialGate();
+        return (getReferencedComponent() != null) && getReferencedComponent().isSequentialGate();
     }
 
     public Collection<VisualFunctionContact> getVisualFunctionContacts() {
@@ -131,8 +132,8 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
     public List<VisualFunctionContact> getOrderedVisualFunctionContacts() {
         List<VisualFunctionContact> result = new LinkedList<>();
-        if (getReferencedFunctionComponent() != null) {
-            for (FunctionContact contact: getReferencedFunctionComponent().getOrderedFunctionContacts()) {
+        if (getReferencedComponent() != null) {
+            for (FunctionContact contact: getReferencedComponent().getOrderedFunctionContacts()) {
                 VisualFunctionContact visualContact = getVisualContact(contact);
                 if (visualContact == null) continue;
                 result.add(visualContact);

@@ -8,7 +8,7 @@ import org.workcraft.formula.utils.StringGenerator.Style;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitSignalInfo;
 import org.workcraft.plugins.circuit.FunctionComponent;
-import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.utils.EnvironmentUtils;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.*;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
@@ -46,9 +46,8 @@ public class CircuitStrictImplementationCheckTask extends MpsatChainTask {
         MpsatParameters preparationSettings = MpsatParameters.getToolchainPreparationSettings();
         try {
             // Common variables
-            VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
             Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-            File envFile = visualCircuit.getEnvironmentFile();
+            File envFile = EnvironmentUtils.getEnvironmentFile(circuit);
 
             // Load environment STG
             Stg envStg = StgUtils.loadStg(envFile);

@@ -4,6 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
+import org.workcraft.plugins.circuit.utils.EnvironmentUtils;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.*;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -43,11 +44,11 @@ public class CircuitCustomCheckTask extends MpsatChainTask {
         MpsatParameters preparationSettings = MpsatParameters.getToolchainPreparationSettings();
         try {
             // Common variables
-            VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
-            File envFile = visualCircuit.getEnvironmentFile();
+            VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
+            File envFile = EnvironmentUtils.getEnvironmentFile(circuit.getMathModel());
 
             // Load device STG
-            CircuitToStgConverter converter = new CircuitToStgConverter(visualCircuit);
+            CircuitToStgConverter converter = new CircuitToStgConverter(circuit);
             Stg devStg = (Stg) converter.getStg().getMathModel();
 
             // Load environment STG

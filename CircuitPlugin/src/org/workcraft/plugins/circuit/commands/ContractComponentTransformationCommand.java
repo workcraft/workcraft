@@ -49,7 +49,7 @@ public class ContractComponentTransformationCommand extends AbstractTransformati
         boolean result = false;
         if (node instanceof VisualCircuitComponent) {
             VisualCircuitComponent component = (VisualCircuitComponent) node;
-            result = component.getReferencedCircuitComponent().isSingleInputSingleOutput();
+            result = component.getReferencedComponent().isSingleInputSingleOutput();
         }
         return result;
     }

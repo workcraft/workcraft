@@ -21,8 +21,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class VisualCircuitComponent extends VisualComponent implements Container, CustomTouchable, StateObserver, ObservableHierarchy {
 
@@ -63,31 +63,32 @@ public class VisualCircuitComponent extends VisualComponent implements Container
                 this, Contact.PROPERTY_PATH_BREAKER, Boolean.class, true, true) {
             @Override
             public void setter(VisualCircuitComponent object, Boolean value) {
-                object.getReferencedCircuitComponent().setPathBreaker(value);
+                object.getReferencedComponent().setPathBreaker(value);
             }
             @Override
             public Boolean getter(VisualCircuitComponent object) {
-                return object.getReferencedCircuitComponent().getPathBreaker();
+                return object.getReferencedComponent().getPathBreaker();
             }
         });
 // TODO: Rename label to module name (?)
 //        renamePropertyDeclarationByName(PROPERTY_LABEL, CircuitComponent.PROPERTY_MODULE);
     }
 
-    public CircuitComponent getReferencedCircuitComponent() {
-        return (CircuitComponent) this.getReferencedComponent();
+    @Override
+    public CircuitComponent getReferencedComponent() {
+        return (CircuitComponent) super.getReferencedComponent();
     }
 
     public boolean getIsEnvironment() {
-        if (getReferencedCircuitComponent() != null) {
-            return getReferencedCircuitComponent().getIsEnvironment();
+        if (getReferencedComponent() != null) {
+            return getReferencedComponent().getIsEnvironment();
         }
         return false;
     }
 
     public void setIsEnvironment(boolean value) {
-        if (getReferencedCircuitComponent() != null) {
-            getReferencedCircuitComponent().setIsEnvironment(value);
+        if (getReferencedComponent() != null) {
+            getReferencedComponent().setIsEnvironment(value);
         }
     }
 
@@ -98,14 +99,11 @@ public class VisualCircuitComponent extends VisualComponent implements Container
                 list.add(vc);
             }
         }
-        Collections.sort(list, new Comparator<VisualContact>() {
-            @Override
-            public int compare(VisualContact vc1, VisualContact vc2) {
-                if ((dir == Direction.NORTH) || (dir == Direction.SOUTH)) {
-                    return (reverse ? -1 : 1) * Double.compare(vc1.getX(), vc2.getX());
-                } else {
-                    return (reverse ? -1 : 1) * Double.compare(vc1.getY(), vc2.getY());
-                }
+        Collections.sort(list, (vc1, vc2) -> {
+            if ((dir == Direction.NORTH) || (dir == Direction.SOUTH)) {
+                return (reverse ? -1 : 1) * Double.compare(vc1.getX(), vc2.getX());
+            } else {
+                return (reverse ? -1 : 1) * Double.compare(vc1.getY(), vc2.getY());
             }
         });
         return list;
@@ -681,12 +679,12 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
     @Override
     public String getLabel() {
-        return getReferencedCircuitComponent().getModule();
+        return getReferencedComponent().getModule();
     }
 
     @Override
     public void setLabel(String label) {
-        getReferencedCircuitComponent().setModule(label);
+        getReferencedComponent().setModule(label);
         super.setLabel(label);
     }
 

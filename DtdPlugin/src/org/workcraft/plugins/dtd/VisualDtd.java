@@ -1,7 +1,6 @@
 package org.workcraft.plugins.dtd;
 
 import org.workcraft.annotations.DisplayName;
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
@@ -24,9 +23,9 @@ import org.workcraft.util.Pair;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.util.*;
 import java.util.List;
 import java.util.Queue;
+import java.util.*;
 
 @DisplayName("Digital Timing Diagram")
 public class VisualDtd extends AbstractVisualModel {
@@ -359,7 +358,7 @@ public class VisualDtd extends AbstractVisualModel {
             throw new RuntimeException("Signal at unknown state cannot change.");
         }
         VisualExitEvent exit = signal.getVisualSignalExit();
-        Connection connection = getConnection(event, exit);
+        VisualConnection connection = getConnection(event, exit);
         if (connection != null) {
             remove(connection);
         }

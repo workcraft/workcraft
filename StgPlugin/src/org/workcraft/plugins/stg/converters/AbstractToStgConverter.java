@@ -1,27 +1,18 @@
 package org.workcraft.plugins.stg.converters;
 
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.Movable;
-import org.workcraft.dom.visual.Positioning;
-import org.workcraft.dom.visual.TransformHelper;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.util.Hierarchy;
+
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.util.*;
 
 public abstract class AbstractToStgConverter {
 
@@ -95,11 +86,11 @@ public abstract class AbstractToStgConverter {
     public VisualConnection createReadArc(VisualPlace p, VisualSignalTransition t, boolean propagateTokenColor) throws InvalidConnectionException {
         VisualConnection connection = null;
         if ((p != null) && (t != null)) {
-            Connection consumingArc = stg.getConnection(p, t);
+            VisualConnection consumingArc = stg.getConnection(p, t);
             if (consumingArc != null) {
                 stg.remove(consumingArc);
             }
-            Connection producingArc = stg.getConnection(t, p);
+            VisualConnection producingArc = stg.getConnection(t, p);
             if (producingArc != null) {
                 stg.remove(producingArc);
             }
@@ -118,7 +109,7 @@ public abstract class AbstractToStgConverter {
     }
 
     public void createReadArcs(VisualPlace p, Collection<VisualSignalTransition> ts, boolean propagateTokenColor) throws InvalidConnectionException {
-        for (VisualSignalTransition t : new HashSet<VisualSignalTransition>(ts)) {
+        for (VisualSignalTransition t : new HashSet<>(ts)) {
             createReadArc(p, t, propagateTokenColor);
         }
     }

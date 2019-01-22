@@ -3,8 +3,10 @@ package org.workcraft.plugins.circuit.utils;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
-import org.workcraft.formula.utils.LiteralsExtractor;
-import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.Contact;
+import org.workcraft.plugins.circuit.FunctionComponent;
+import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.utils.StgUtils;
@@ -22,8 +24,8 @@ import java.util.Set;
 public class VerificationUtils {
 
     public static Stg getEnvironmentStg(WorkspaceEntry we) {
-        VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
-        File envFile = visualCircuit.getEnvironmentFile();
+        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
+        File envFile = EnvironmentUtils.getEnvironmentFile(circuit);
         return StgUtils.loadStg(envFile);
     }
 
@@ -37,12 +39,11 @@ public class VerificationUtils {
     }
 
     public static boolean checkInterfaceInitialState(WorkspaceEntry we) {
-        VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
-        File envFile = visualCircuit.getEnvironmentFile();
+        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
+        File envFile = EnvironmentUtils.getEnvironmentFile(circuit);
         Stg envStg = StgUtils.loadStg(envFile);
         // Check initial state conformance of interface signals between the circuit and its environment STG (if present)
         if (envStg != null) {
-            Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
             Set<String> conflictSignals = getConflictingInterfaceSignals(circuit, envStg);
             if (!conflictSignals.isEmpty()) {
                 String msg = "The circuit and its environment have different initial state of interface signal";
@@ -72,8 +73,8 @@ public class VerificationUtils {
     }
 
     public static boolean checkInterfaceConstrains(WorkspaceEntry we, boolean skipEnvironmentCheck) {
-        VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
-        File envFile = visualCircuit.getEnvironmentFile();
+        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
+        File envFile = EnvironmentUtils.getEnvironmentFile(circuit);
         Stg envStg = StgUtils.loadStg(envFile);
         String msg = "";
         if (!skipEnvironmentCheck && (envStg == null)) {
@@ -84,7 +85,6 @@ public class VerificationUtils {
             }
         }
         // Restore signal types in the environment STG
-        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         if (envStg != null) {
             ArrayList<String> circuitInputSignals = ReferenceHelper.getReferenceList(circuit, circuit.getInputPorts());
             ArrayList<String> circuitOutputSignals = ReferenceHelper.getReferenceList(circuit, circuit.getOutputPorts());
@@ -166,30 +166,11 @@ public class VerificationUtils {
 
     private static Set<String> getUnusedOutputSignals(Stg envStg, Circuit circuit) {
         Set<String> result = new HashSet();
+        Set<BooleanVariable> literals = GateUtils.getUsedPortVariables(circuit);
         for (Contact contact : circuit.getOutputPorts()) {
+            if (literals.contains(contact)) continue;
             String outputSignal = circuit.getNodeReference(contact);
             result.add(outputSignal);
-        }
-        for (Contact contact : circuit.getInputPorts()) {
-            if (!(contact instanceof FunctionContact)) continue;
-            FunctionContact inputPort = (FunctionContact) contact;
-
-            HashSet<BooleanVariable> literals = new HashSet<>();
-            BooleanFormula setFunction = inputPort.getSetFunction();
-            if (setFunction != null) {
-                literals.addAll(setFunction.accept(new LiteralsExtractor()));
-            }
-            BooleanFormula resetFunction = inputPort.getResetFunction();
-            if (resetFunction != null) {
-                literals.addAll(resetFunction.accept(new LiteralsExtractor()));
-            }
-
-            for (BooleanVariable literal : literals) {
-                if (!(literal instanceof FunctionContact)) continue;
-                FunctionContact outputPort = (FunctionContact) literal;
-                String outputSignal = circuit.getNodeReference(outputPort);
-                result.remove(outputSignal);
-            }
         }
         if (envStg != null) {
             result.removeAll(envStg.getSignalReferences(Signal.Type.OUTPUT));

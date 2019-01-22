@@ -3,10 +3,7 @@ package org.workcraft.plugins.layout;
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractLayoutCommand;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.ConnectionHelper;
-import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.dom.visual.VisualTransformableNode;
+import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -109,6 +106,9 @@ public class DotLayoutCommand extends AbstractLayoutCommand {
             }
         } catch (ParseException e) {
             e.printStackTrace();
+        }
+        for (VisualPage page : Hierarchy.getDescendantsOfType(model.getRoot(), VisualPage.class)) {
+            page.centerPivotPoint(true, true);
         }
     }
 

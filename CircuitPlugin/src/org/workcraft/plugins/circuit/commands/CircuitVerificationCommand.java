@@ -3,8 +3,8 @@ package org.workcraft.plugins.circuit.commands;
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.tasks.CircuitCheckTask;
+import org.workcraft.plugins.circuit.utils.EnvironmentUtils;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
@@ -60,8 +60,8 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
         boolean checkDeadlock = checkDeadlock();
         boolean checkPersistency = checkPersistency();
 
-        VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
-        File envFile = visualCircuit.getEnvironmentFile();
+        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
+        File envFile = EnvironmentUtils.getEnvironmentFile(circuit);
         Stg envStg = StgUtils.loadStg(envFile);
         if (envStg == null) {
             String messagePrefix = "";

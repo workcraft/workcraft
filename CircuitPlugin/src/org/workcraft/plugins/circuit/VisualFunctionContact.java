@@ -56,13 +56,14 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
         super(contact);
     }
 
-    public FunctionContact getReferencedFunctionContact() {
-        return (FunctionContact) getReferencedComponent();
+    @Override
+    public FunctionContact getReferencedContact() {
+        return (FunctionContact) super.getReferencedComponent();
     }
 
     @NoAutoSerialisation
     public BooleanFormula getSetFunction() {
-        return getReferencedFunctionContact().getSetFunction();
+        return getReferencedContact().getSetFunction();
     }
 
     @NoAutoSerialisation
@@ -72,32 +73,32 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
             p.invalidateRenderingResult();
         }
         renderedSetFormula = null;
-        getReferencedFunctionContact().setSetFunction(setFunction);
+        getReferencedContact().setSetFunction(setFunction);
     }
 
     @NoAutoSerialisation
     public BooleanFormula getResetFunction() {
-        return getReferencedFunctionContact().getResetFunction();
+        return getReferencedContact().getResetFunction();
     }
 
     @NoAutoSerialisation
     public void setForcedInit(boolean value) {
-        getReferencedFunctionContact().setForcedInit(value);
+        getReferencedContact().setForcedInit(value);
     }
 
     @NoAutoSerialisation
     public boolean getForcedInit() {
-        return getReferencedFunctionContact().getForcedInit();
+        return getReferencedContact().getForcedInit();
     }
 
     @NoAutoSerialisation
     public void setInitToOne(boolean value) {
-        getReferencedFunctionContact().setInitToOne(value);
+        getReferencedContact().setInitToOne(value);
     }
 
     @NoAutoSerialisation
     public boolean getInitToOne() {
-        return getReferencedFunctionContact().getInitToOne();
+        return getReferencedContact().getInitToOne();
     }
 
     @NoAutoSerialisation
@@ -107,7 +108,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
             p.invalidateRenderingResult();
         }
         renderedResetFormula = null;
-        getReferencedFunctionContact().setResetFunction(resetFunction);
+        getReferencedContact().setResetFunction(resetFunction);
     }
 
     public void invalidateRenderedFormula() {

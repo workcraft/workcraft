@@ -46,9 +46,9 @@ public interface Model<N extends Node, C extends Connection>  extends NodeContex
     <T> Set<T> getPreset(N node, Class<T> type, Func<N, Boolean> through);
     <T> Set<T> getPostset(N node, Class<T> type, Func<N, Boolean> through);
 
-    void add(Node node);
-    void remove(Node node);
-    void remove(Collection<Node> nodes);
+    void add(N node);
+    void remove(N node);
+    void remove(Collection<? extends N> nodes);
 
     default void beforeSerialisation() {
     }
