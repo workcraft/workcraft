@@ -1,7 +1,5 @@
 package org.workcraft.plugins.stg.tools;
 
-import java.awt.event.MouseEvent;
-
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Alignment;
 import org.workcraft.dom.visual.HitMan;
@@ -14,13 +12,9 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.Signal;
-import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
-import org.workcraft.plugins.stg.VisualNamedTransition;
-import org.workcraft.plugins.stg.VisualSignalTransition;
-import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.plugins.stg.*;
+
+import java.awt.event.MouseEvent;
 
 public class StgSelectionTool extends SelectionTool {
 
@@ -61,7 +55,7 @@ public class StgSelectionTool extends SelectionTool {
                 if (node instanceof VisualNamedTransition) {
                     VisualNamedTransition transition = (VisualNamedTransition) node;
                     AbstractInplaceEditor textEditor = new NameInplaceEditor(editor, transition);
-                    textEditor.edit(model.getMathName(transition), transition.getNameFont(),
+                    textEditor.edit(transition.getName(), transition.getNameFont(),
                             transition.getNameOffset(), Alignment.CENTER, false);
                     return;
                 }
