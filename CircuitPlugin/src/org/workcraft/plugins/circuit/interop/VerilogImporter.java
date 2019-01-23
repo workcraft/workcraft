@@ -5,6 +5,7 @@ import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.references.ReferenceHelper;
@@ -305,9 +306,7 @@ public class VerilogImporter implements Importer {
     }
 
     private void setAssignComponentName(Circuit circuit, FunctionComponent component, String name) {
-        HierarchyReferenceManager refManager
-                = (HierarchyReferenceManager) circuit.getReferenceManager();
-
+        HierarchyReferenceManager refManager = circuit.getReferenceManager();
         NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(circuit.getRoot());
         NameManager nameManagerer = refManager.getNameManager(namespaceProvider);
         String candidateName = NamespaceHelper.flattenReference(name);
@@ -623,7 +622,7 @@ public class VerilogImporter implements Importer {
                         wire.sinks.remove(contact);
                         if ((wire.source != null) && (wire.source.getParent() instanceof FunctionComponent)) {
                             FunctionComponent component = (FunctionComponent) wire.source.getParent();
-                            circuit.setName(component, signal.name);
+                            renameComponent(circuit, component, signal.name);
                         }
                     }
                 }
@@ -631,16 +630,37 @@ public class VerilogImporter implements Importer {
         }
     }
 
+    private void renameComponent(Circuit circuit, FunctionComponent component, String ref) {
+        if (NamespaceHelper.isHierarchical(ref)) {
+            String parentRef = NamespaceHelper.getParentReference(ref);
+            PageNode page = getOrCreatePage(circuit, parentRef);
+            circuit.reparent(page, circuit, circuit.getRoot(), Arrays.asList(component));
+            ref = NamespaceHelper.getReferenceName(ref);
+        }
+        try {
+            circuit.setName(component, ref);
+        } catch (ArgumentException e) {
+            String componentRef = circuit.getNodeReference(component);
+            LogUtils.logWarning("Cannot set name '" + ref + "' for component '" + componentRef + "'.");
+        }
+    }
+
+    private PageNode getOrCreatePage(Circuit circuit, String ref) {
+        PageNode result = null;
+        Node parent = circuit.getNodeByReference(ref);
+        if (parent instanceof PageNode) {
+            result = (PageNode) parent;
+        } else {
+            result = circuit.createNodeWithHierarchy(ref, circuit.getRoot(), PageNode.class);
+        }
+        return result;
+    }
+
     private FunctionComponent createMutex(Circuit circuit, Mutex instance, Mutex module, HashMap<String, Wire> wires) {
         final FunctionComponent component = new FunctionComponent();
         component.setModule(module.name);
         circuit.add(component);
-        try {
-            circuit.setName(component, instance.name);
-        } catch (ArgumentException e) {
-            String componentRef = circuit.getNodeReference(component);
-            LogUtils.logWarning("Cannot set name '" + instance.name + "' for component '" + componentRef + "'.");
-        }
+        renameComponent(circuit, component, instance.name);
         addMutexPin(circuit, component, module.r1, instance.r1, wires);
         FunctionContact g1Contact = addMutexPin(circuit, component, module.g1, instance.g1, wires);
         addMutexPin(circuit, component, module.r2, instance.r2, wires);

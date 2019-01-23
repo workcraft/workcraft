@@ -57,7 +57,7 @@ public class AtacsSynthesisCommandsTests {
 
     @Test
     public void arbitrationComplexGateSynthesis() {
-        String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3.stg.work");
+        String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3-hierarchy.stg.work");
         testComplexGateSynthesisCommand(workName, 6);
     }
 
@@ -101,7 +101,7 @@ public class AtacsSynthesisCommandsTests {
 
     @Test
     public void arbitrationGeneralisedCelementSynthesis() {
-        String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3.stg.work");
+        String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3-hierarchy.stg.work");
         testGeneralisedCelementSynthesisCommand(workName, 6);
     }
 
@@ -145,7 +145,7 @@ public class AtacsSynthesisCommandsTests {
 
     @Test
     public void arbitrationStandardCelementSynthesis() {
-        String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3.stg.work");
+        String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3-hierarchy.stg.work");
         testStandardCelementSynthesisCommand(workName, 12);
     }
 
