@@ -1,19 +1,23 @@
 package org.workcraft.plugins.stg;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.Set;
-
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.plugins.petri.commands.MergePlaceTransformationCommand;
 import org.workcraft.plugins.stg.commands.*;
 import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Set;
 
 public class StgTransformationCommandTests {
 
@@ -284,12 +288,98 @@ public class StgTransformationCommandTests {
 
     private void selectVisualComponentsByMathRefs(VisualStg stg, String[] refs) {
         stg.selectNone();
-        for (String ref: refs) {
+        for (String ref : refs) {
             VisualComponent t = stg.getVisualComponentByMathReference(ref, VisualComponent.class);
             if (t != null) {
                 stg.addToSelection(t);
             }
         }
+    }
+
+    @Test
+    public void testTransitionTransformationCommand() throws DeserialisationException, InvalidConnectionException {
+        String workName = PackageUtils.getPackagePath(getClass(), "inv.stg.work");
+
+        final Framework framework = Framework.getInstance();
+        final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        URL url = classLoader.getResource(workName);
+
+        WorkspaceEntry we = framework.loadWork(url.getFile());
+        VisualStg stg = WorkspaceUtils.getAs(we, VisualStg.class);
+
+        Assert.assertEquals(1, stg.getVisualPlaces().size());
+        Assert.assertEquals(4, stg.getVisualSignalTransitions().size());
+        Assert.assertEquals(0, stg.getVisualDummyTransitions().size());
+
+        VisualSignalTransition outPlus = stg.getVisualComponentByMathReference("out+", VisualSignalTransition.class);
+        Assert.assertNotNull(outPlus);
+
+        VisualStgPlace p1 = stg.createVisualPlace("p1");
+        p1.getReferencedComponent().setTokens(1);
+
+        VisualSignalTransition intToggle = stg.createVisualSignalTransition("int", Signal.Type.INTERNAL, SignalTransition.Direction.TOGGLE);
+
+        VisualSignalTransition inPlus = stg.getVisualComponentByMathReference("in+", VisualSignalTransition.class);
+        Assert.assertNotNull(inPlus);
+
+        VisualStgPlace p0 = stg.getVisualComponentByMathReference("p0", VisualStgPlace.class);
+        Assert.assertNotNull(p0);
+
+        VisualConnection connection = stg.getConnection(p0, inPlus);
+        Assert.assertNotNull(connection);
+
+        stg.connect(outPlus, p1);
+        stg.connect(p1, intToggle);
+        stg.connect(intToggle, inPlus);
+
+        InsertDummyTransformationCommand insertDummyCommand = new InsertDummyTransformationCommand();
+        stg.select(connection);
+        insertDummyCommand.execute(we);
+
+        Assert.assertEquals(2, stg.getVisualPlaces().size());
+        Assert.assertEquals(5, stg.getVisualSignalTransitions().size());
+        Assert.assertEquals(1, stg.getVisualDummyTransitions().size());
+
+        DummyToSignalTransitionTransformationCommand dummyToSignalTransitionCommand = new DummyToSignalTransitionTransformationCommand();
+        VisualDummyTransition dummy = stg.getVisualComponentByMathReference("dum0", VisualDummyTransition.class);
+        Assert.assertNotNull(dummy);
+        stg.select(dummy);
+        dummyToSignalTransitionCommand.execute(we);
+
+        Assert.assertEquals(2, stg.getVisualPlaces().size());
+        Assert.assertEquals(6, stg.getVisualSignalTransitions().size());
+        Assert.assertEquals(0, stg.getVisualDummyTransitions().size());
+
+        MergePlaceTransformationCommand mergePlaceCommand = new MergePlaceTransformationCommand();
+        stg.select(Arrays.asList(p0, p1));
+        mergePlaceCommand.execute(we);
+
+        Assert.assertEquals(1, stg.getVisualPlaces().size());
+        Assert.assertEquals(6, stg.getVisualSignalTransitions().size());
+        Assert.assertEquals(0, stg.getVisualDummyTransitions().size());
+
+        MergeTransitionTransformationCommand mergeTransitionCommand = new MergeTransitionTransformationCommand();
+        VisualSignalTransition sigToggle = stg.getVisualComponentByMathReference("sig~", VisualSignalTransition.class);
+        Assert.assertNotNull(sigToggle);
+        stg.select(Arrays.asList(intToggle, sigToggle));
+        mergeTransitionCommand.execute(we);
+
+        Assert.assertEquals(1, stg.getVisualPlaces().size());
+        Assert.assertEquals(5, stg.getVisualSignalTransitions().size());
+        Assert.assertEquals(0, stg.getVisualDummyTransitions().size());
+
+        ContractNamedTransitionTransformationCommand contractTransitionCommand = new ContractNamedTransitionTransformationCommand();
+        VisualSignalTransition intsigToggle = stg.getVisualComponentByMathReference("int_sig~", VisualSignalTransition.class);
+        if (intsigToggle == null) {
+            intsigToggle = stg.getVisualComponentByMathReference("sig_int~", VisualSignalTransition.class);
+        }
+        Assert.assertNotNull(intsigToggle);
+        stg.select(intsigToggle);
+        contractTransitionCommand.execute(we);
+
+        Assert.assertEquals(1, stg.getVisualPlaces().size());
+        Assert.assertEquals(4, stg.getVisualSignalTransitions().size());
+        Assert.assertEquals(0, stg.getVisualDummyTransitions().size());
     }
 
 }
