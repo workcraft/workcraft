@@ -18,7 +18,7 @@ public class EpsExporter implements Exporter {
 
     @Override
     public void export(Model model, OutputStream out) throws IOException, SerialisationException {
-        InputStream svg = SvgExportUtils.stream(model);
+        InputStream svg = SvgExportUtils.streamTripleVote(model);
         Transcoder transcoder = new EPSTranscoder();
         TranscoderInput transcoderInput = new TranscoderInput(svg);
         TranscoderOutput transcoderOutput = new TranscoderOutput(out);

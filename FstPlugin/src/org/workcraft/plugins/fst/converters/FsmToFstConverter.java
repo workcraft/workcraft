@@ -1,22 +1,15 @@
 package org.workcraft.plugins.fst.converters;
 
-import java.util.Map;
-
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.graph.converters.DefaultModelConverter;
-import org.workcraft.plugins.fsm.Event;
-import org.workcraft.plugins.fsm.Fsm;
-import org.workcraft.plugins.fsm.State;
-import org.workcraft.plugins.fsm.Symbol;
-import org.workcraft.plugins.fsm.VisualEvent;
-import org.workcraft.plugins.fsm.VisualFsm;
-import org.workcraft.plugins.fsm.VisualState;
-import org.workcraft.plugins.fst.Fst;
+import org.workcraft.plugins.fsm.*;
 import org.workcraft.plugins.fst.Signal;
 import org.workcraft.plugins.fst.SignalEvent;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.fst.VisualSignalEvent;
+
+import java.util.Map;
 
 public class FsmToFstConverter extends DefaultModelConverter<VisualFsm, VisualFst> {
 
@@ -37,10 +30,8 @@ public class FsmToFstConverter extends DefaultModelConverter<VisualFsm, VisualFs
         if ((srcConnection instanceof VisualEvent) && (dstConnection instanceof VisualSignalEvent)) {
             Event srcEvent = (Event) srcConnection.getReferencedConnection();
             Symbol srcSymbol = srcEvent.getSymbol();
-            Fsm fsm = (Fsm) getSrcModel().getMathModel();
-            String name = fsm.getName(srcSymbol);
-            Fst fst = (Fst) getDstModel().getMathModel();
-            Signal dstSignal = fst.getOrCreateSignal(name, Signal.Type.DUMMY);
+            String name = (srcSymbol == null) ? Fsm.EPSILON_SERIALISATION : getSrcModel().getMathName(srcSymbol);
+            Signal dstSignal = getDstModel().getMathModel().getOrCreateSignal(name, Signal.Type.DUMMY);
             SignalEvent dstSignalEvent = (SignalEvent) dstConnection.getReferencedConnection();
             dstSignalEvent.setSymbol(dstSignal);
         }

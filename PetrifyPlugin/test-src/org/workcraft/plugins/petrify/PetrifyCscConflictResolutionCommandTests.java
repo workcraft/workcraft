@@ -46,7 +46,7 @@ public class PetrifyCscConflictResolutionCommandTests {
 
     @Test
     public void arbitrationCscConflictResolution() throws DeserialisationException {
-        String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3.stg.work");
+        String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3-hierarchy.stg.work");
         testCscConflictResolutionCommand(workName, new String[] {});
     }
 

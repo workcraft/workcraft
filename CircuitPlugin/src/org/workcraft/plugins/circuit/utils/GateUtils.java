@@ -237,8 +237,13 @@ public class GateUtils {
             BooleanFormula setFunction = BooleanUtils.replaceClever(output.getSetFunction(),
                     variableAsignment.getFirst(), variableAsignment.getSecond());
 
-            if (One.instance().equals(setFunction) != output.getInitToOne()) {
-                return true;
+            if ((setFunction != null) && (One.instance().equals(setFunction) != output.getInitToOne())) {
+                BooleanFormula resetFunction = BooleanUtils.replaceClever(output.getResetFunction(),
+                        variableAsignment.getFirst(), variableAsignment.getSecond());
+
+                if ((resetFunction == null) || (One.instance().equals(resetFunction) == output.getInitToOne())) {
+                    return true;
+                }
             }
         }
         return false;
