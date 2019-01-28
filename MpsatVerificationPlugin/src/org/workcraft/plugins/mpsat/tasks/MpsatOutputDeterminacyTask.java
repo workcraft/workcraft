@@ -109,7 +109,7 @@ public class MpsatOutputDeterminacyTask implements Task<MpsatChainOutput> {
             CompositionData compositionData = new CompositionData(detailFile);
             ComponentData devComponentData = compositionData.getComponentData(devStgFile);
             Stg modSysStg = StgUtils.loadStg(sysStgFile);
-            Set<String> devShadowTransitions = TransformUtils.generateShadowTransitions(modSysStg, devComponentData);
+            Set<String> devShadowTransitions = TransformUtils.generateShadows(modSysStg, devComponentData);
             File modSysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + stgFileExtension);
             Result<? extends ExportOutput> modSysExportResult = StgUtils.exportStg(modSysStg, modSysStgFile, monitor);
 

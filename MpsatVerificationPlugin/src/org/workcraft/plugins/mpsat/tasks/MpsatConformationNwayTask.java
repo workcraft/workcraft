@@ -90,7 +90,7 @@ public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
             // Insert shadow transitions into the composed STG
             CompositionData compositionData = new CompositionData(detailFile);
             Stg modSysStg = StgUtils.loadStg(sysStgFile);
-            Set<String> shadowTransitions = TransformUtils.generateShadowTransitions(modSysStg, compositionData);
+            Set<String> shadowTransitions = TransformUtils.generateShadows(modSysStg, compositionData);
             File modSysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + stgFileExtension);
             Result<? extends ExportOutput> modSysExportResult = StgUtils.exportStg(modSysStg, modSysStgFile, monitor);
 
