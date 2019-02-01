@@ -58,8 +58,8 @@ public class CircuitSimulationTool extends StgSimulationTool {
             editor.getWorkspaceEntry().saveMemento();
             Circuit circuit = (Circuit) model;
             for (FunctionContact contact: circuit.getFunctionContacts()) {
-                String contactName = CircuitUtils.getSignalName(circuit, contact);
-                String oneName = SignalStg.getHighName(contactName);
+                String contactName = CircuitUtils.getSignalReference(circuit, contact);
+                String oneName = SignalStg.appendHighSuffix(contactName);
                 Node underlyingOneNode = getUnderlyingStg().getNodeByReference(oneName);
                 if ((underlyingOneNode instanceof Place) && savedState.containsKey(underlyingOneNode)) {
                     boolean signalLevel = savedState.get(underlyingOneNode) > 0;

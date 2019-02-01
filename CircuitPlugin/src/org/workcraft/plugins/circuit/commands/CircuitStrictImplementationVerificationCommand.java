@@ -133,7 +133,7 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
         for (FunctionComponent component: circuit.getFunctionComponents()) {
             Collection<Contact> componentOutputs = component.getOutputs();
             for (Contact contact: componentOutputs) {
-                String signalName = CircuitUtils.getSignalName(circuit, contact);
+                String signalName = CircuitUtils.getSignalReference(circuit, contact);
                 circuitLocalSignals.add(signalName);
             }
         }

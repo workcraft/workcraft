@@ -51,12 +51,12 @@ public class SignalStg extends NodeStg {
         return Arrays.asList(zero, one);
     }
 
-    public static String getLowName(String signalName) {
-        return signalName + StgSettings.getLowLevelSuffix();
+    public static String appendLowSuffix(String ref) {
+        return ref + StgSettings.getLowLevelSuffix();
     }
 
-    public static String getHighName(String signalName) {
-        return signalName + StgSettings.getHighLevelSuffix();
+    public static String appendHighSuffix(String ref) {
+        return ref + StgSettings.getHighLevelSuffix();
     }
 
 }

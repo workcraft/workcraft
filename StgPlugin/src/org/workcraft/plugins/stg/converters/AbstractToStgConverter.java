@@ -186,13 +186,13 @@ public abstract class AbstractToStgConverter {
     }
 
     public SignalStg generateBasicSignalStg(String signalName, double x, double y, Signal.Type type) throws InvalidConnectionException {
-        VisualPlace zero = stg.createVisualPlace(SignalStg.getLowName(signalName));
+        VisualPlace zero = stg.createVisualPlace(SignalStg.appendLowSuffix(signalName));
         zero.getReferencedPlace().setTokens(1);
         zero.setNamePositioning(Positioning.BOTTOM);
         zero.setLabelPositioning(Positioning.TOP);
         setPosition(zero, x + 0.0, y + 2.0);
 
-        VisualPlace one = stg.createVisualPlace(SignalStg.getHighName(signalName));
+        VisualPlace one = stg.createVisualPlace(SignalStg.appendHighSuffix(signalName));
         one.getReferencedPlace().setTokens(0);
         one.setNamePositioning(Positioning.TOP);
         one.setLabelPositioning(Positioning.BOTTOM);
@@ -223,13 +223,13 @@ public abstract class AbstractToStgConverter {
             ySign = -1;
         }
 
-        VisualPlace zero = stg.createVisualPlace(SignalStg.getLowName(signalName));
+        VisualPlace zero = stg.createVisualPlace(SignalStg.appendLowSuffix(signalName));
         zero.getReferencedPlace().setTokens(1);
         zero.setNamePositioning((ySign < 0) ? Positioning.BOTTOM : Positioning.TOP);
         zero.setLabelPositioning((ySign < 0) ? Positioning.TOP : Positioning.BOTTOM);
         setPosition(zero, x + xSign * 4.0, y + ySign * 2.0);
 
-        VisualPlace one = stg.createVisualPlace(SignalStg.getHighName(signalName));
+        VisualPlace one = stg.createVisualPlace(SignalStg.appendHighSuffix(signalName));
         one.getReferencedPlace().setTokens(0);
         one.setNamePositioning((ySign < 0) ? Positioning.TOP : Positioning.BOTTOM);
         one.setLabelPositioning((ySign < 0) ? Positioning.BOTTOM : Positioning.TOP);
