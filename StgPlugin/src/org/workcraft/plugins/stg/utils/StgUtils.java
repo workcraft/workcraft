@@ -274,8 +274,8 @@ public class StgUtils {
         // Try to figure out signal states from ZERO and ONE places of circuit STG.
         Set<String> signalRefs = stg.getSignalReferences();
         for (String signalRef: signalRefs) {
-            Node zeroNode = stg.getNodeByReference(SignalStg.getLowName(signalRef));
-            Node oneNode = stg.getNodeByReference(SignalStg.getHighName(signalRef));
+            Node zeroNode = stg.getNodeByReference(SignalStg.appendLowSuffix(signalRef));
+            Node oneNode = stg.getNodeByReference(SignalStg.appendHighSuffix(signalRef));
             if (!(zeroNode instanceof StgPlace) || !(oneNode instanceof StgPlace)) {
                 continue;
             }

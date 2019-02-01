@@ -46,6 +46,7 @@ public class DefaultNameManager implements NameManager {
         Node occupant = getNode(name);
         if (node != occupant) {
             if (!isUnusedName(name)) {
+                System.out.println("this = " + this);
                 String derivedName = getDerivedName(occupant, name);
                 String msg = "The name '" + name + "' is already taken by another node.\n" +
                         "Rename that node to '" + derivedName + "' and continue?";

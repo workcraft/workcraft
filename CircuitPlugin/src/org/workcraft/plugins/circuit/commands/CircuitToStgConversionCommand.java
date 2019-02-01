@@ -35,8 +35,8 @@ public class CircuitToStgConversionCommand extends AbstractConversionCommand {
             }
         }
         for (String signalName: interfaceSignalNames) {
-            String oneName = SignalStg.getHighName(signalName);
-            String zeroName = SignalStg.getLowName(signalName);
+            String oneName = SignalStg.appendHighSuffix(signalName);
+            String zeroName = SignalStg.appendLowSuffix(signalName);
             if (interfaceSignalNames.contains(oneName) || interfaceSignalNames.contains(zeroName)) {
                 DialogUtils.showError("Complimentary STG places cannot be created for the interface signal '"
                                 + signalName + "' because of a name clash.\n"

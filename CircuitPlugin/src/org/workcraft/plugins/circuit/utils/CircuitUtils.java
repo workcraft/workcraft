@@ -167,25 +167,25 @@ public class CircuitUtils {
         return circuit.getVisualComponent(mathSignal, VisualContact.class);
     }
 
-    public static String getSignalName(Circuit circuit, Contact contact) {
+    public static String getSignalReference(Circuit circuit, Contact contact) {
         String result = null;
         if (contact.isPort() || contact.isInput()) {
-            result = getContactName(circuit, contact);
+            result = getContactReference(circuit, contact);
         } else {
-            result = getOutputContactName(circuit, contact);
+            result = getOutputContactReference(circuit, contact);
         }
         return result;
     }
 
-    public static String getSignalName(VisualCircuit circuit, VisualContact contact) {
-        return getSignalName(circuit.getMathModel(), contact.getReferencedContact());
+    public static String getSignalReference(VisualCircuit circuit, VisualContact contact) {
+        return getSignalReference(circuit.getMathModel(), contact.getReferencedContact());
     }
 
-    public static String getContactName(Circuit circuit, Contact contact) {
+    public static String getContactReference(Circuit circuit, Contact contact) {
         return circuit.getNodeReference(contact);
     }
 
-    private static String getOutputContactName(Circuit circuit, Contact contact) {
+    private static String getOutputContactReference(Circuit circuit, Contact contact) {
         String result = null;
         Node parent = contact.getParent();
         if (parent instanceof FunctionComponent) {

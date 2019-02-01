@@ -60,7 +60,7 @@ public class FstToStgConverter {
         Map<VisualState, VisualPlace> result = new HashMap<>();
         for (VisualState state: srcModel.getVisualStates()) {
             String name = srcModel.getMathModel().getNodeReference(state.getReferencedState());
-            VisualPlace place = dstModel.createVisualPlace(name, null);
+            VisualPlace place = dstModel.createVisualPlace(name);
             place.copyPosition(state);
             place.copyStyle(state);
             place.getReferencedPlace().setTokens(state.getReferencedState().isInitial() ? 1 : 0);
@@ -100,9 +100,9 @@ public class FstToStgConverter {
                 org.workcraft.plugins.stg.Signal.Type dstType = convertFstToStgType(srcType);
                 Direction srcDirection = signalEvent.getReferencedSignalEvent().getDirection();
                 org.workcraft.plugins.stg.SignalTransition.Direction dstDirection = convertFstToStgDirection(srcDirection);
-                transition = dstModel.createVisualSignalTransition(name, dstType, dstDirection, null);
+                transition = dstModel.createVisualSignalTransition(name, dstType, dstDirection);
             } else {
-                transition = dstModel.createVisualDummyTransition(name, null);
+                transition = dstModel.createVisualDummyTransition(name);
             }
             transition.setPosition(signalEvent.getCenter());
             transition.setForegroundColor(signalEvent.getColor());

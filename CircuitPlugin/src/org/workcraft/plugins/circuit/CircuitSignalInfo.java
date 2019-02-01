@@ -78,9 +78,9 @@ public class CircuitSignalInfo {
                     isAssignOutput = signal.isOutput() && !component.isMapped();
                 }
                 if (isAssignOutput) {
-                    result = CircuitUtils.getSignalName(circuit, signal);
+                    result = CircuitUtils.getSignalReference(circuit, signal);
                 } else {
-                    result = CircuitUtils.getContactName(circuit, signal);
+                    result = CircuitUtils.getContactReference(circuit, signal);
                 }
             }
             if (result != null) {

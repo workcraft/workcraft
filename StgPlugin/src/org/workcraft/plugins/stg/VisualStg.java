@@ -285,46 +285,51 @@ public class VisualStg extends AbstractVisualModel {
         return connection;
     }
 
-    public VisualStgPlace createVisualPlace(String mathRef) {
-        StgPlace mathPlace = getMathModel().createPlace(mathRef, null);
-        return createVisualComponent(mathPlace, VisualStgPlace.class);
+    public VisualStgPlace createVisualPlace(String mathName) {
+        return createVisualPlace(mathName, getRoot());
     }
 
-    public VisualStgPlace createVisualPlace(String mathRef, Container container) {
-        StgPlace mathPlace = getMathModel().createPlace(mathRef, null);
+    public VisualStgPlace createVisualPlace(String mathName, Container container) {
+        if (NamespaceHelper.isHierarchical(mathName)) {
+            throw new RuntimeException("Cannot create a place with the hierarchical name '" + mathName + "'.");
+        }
+        Container mathContainer = NamespaceHelper.getMathContainer(this, container);
+        StgPlace mathPlace = getMathModel().createPlace(mathName, mathContainer);
         return createVisualComponent(mathPlace, VisualStgPlace.class, container);
     }
 
-    public VisualDummyTransition createVisualDummyTransition(String mathRef) {
-        DummyTransition mathTransition = getMathModel().createDummyTransition(mathRef, null);
-        return createVisualComponent(mathTransition, VisualDummyTransition.class);
+    public VisualDummyTransition createVisualDummyTransition(String mathName) {
+        return createVisualDummyTransition(mathName, getRoot());
     }
 
-    public VisualDummyTransition createVisualDummyTransition(String mathRef, Container container) {
-        DummyTransition mathTransition = getMathModel().createDummyTransition(mathRef, null);
+    public VisualDummyTransition createVisualDummyTransition(String mathName, Container container) {
+        if (NamespaceHelper.isHierarchical(mathName)) {
+            throw new RuntimeException("Cannot create a dummy with the hierarchical name '" + mathName + "'.");
+        }
+        Container mathContainer = NamespaceHelper.getMathContainer(this, container);
+        DummyTransition mathTransition = getMathModel().createDummyTransition(mathName, mathContainer);
         return createVisualComponent(mathTransition, VisualDummyTransition.class, container);
     }
 
-    public VisualSignalTransition createVisualSignalTransition(String signalRef, Signal.Type type,
+    public VisualSignalTransition createVisualSignalTransition(String signalName, Signal.Type type,
             SignalTransition.Direction direction) {
 
-        String mathName = null;
-        if ((signalRef != null) && (direction != null)) {
-            mathName = signalRef + direction.toString();
-        }
-        SignalTransition mathTransition = getMathModel().createSignalTransition(mathName, null);
-        mathTransition.setSignalType(type);
-        return createVisualComponent(mathTransition, VisualSignalTransition.class);
+        return createVisualSignalTransition(signalName, type, direction, getRoot());
     }
 
-    public VisualSignalTransition createVisualSignalTransition(String signalRef, Signal.Type type,
+    public VisualSignalTransition createVisualSignalTransition(String signalName, Signal.Type type,
             SignalTransition.Direction direction, Container container) {
 
-        String mathName = null;
-        if ((signalRef != null) && (direction != null)) {
-            mathName = signalRef + direction.toString();
+        if (NamespaceHelper.isHierarchical(signalName)) {
+            throw new RuntimeException("Cannot create a transition of a signal with the hierarchical name '" + signalName + "'.");
         }
-        SignalTransition mathTransition = getMathModel().createSignalTransition(mathName, null);
+
+        String transitionName = null;
+        if ((signalName != null) && (direction != null)) {
+            transitionName = signalName + direction.toString();
+        }
+        Container mathContainer = NamespaceHelper.getMathContainer(this, container);
+        SignalTransition mathTransition = getMathModel().createSignalTransition(transitionName, mathContainer);
         mathTransition.setSignalType(type);
         return createVisualComponent(mathTransition, VisualSignalTransition.class, container);
     }

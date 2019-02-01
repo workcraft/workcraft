@@ -266,7 +266,7 @@ public class VerilogImporter implements Importer {
     private FunctionComponent createAssignGate(Circuit circuit, Assign assign, HashMap<String, Wire> wires) {
         final FunctionComponent component = new FunctionComponent();
         circuit.add(component);
-        setAssignComponentName(circuit, component, assign.name);
+        reparentAndRenameComponent(circuit, component, assign.name);
 
         AssignGate assignGate = null;
         if (sequentialAssign && isSequentialAssign(assign)) {
@@ -303,20 +303,6 @@ public class VerilogImporter implements Importer {
             }
         }
         return component;
-    }
-
-    private void setAssignComponentName(Circuit circuit, FunctionComponent component, String name) {
-        HierarchyReferenceManager refManager = circuit.getReferenceManager();
-        NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(circuit.getRoot());
-        NameManager nameManagerer = refManager.getNameManager(namespaceProvider);
-        String candidateName = NamespaceHelper.flattenReference(name);
-        String componentName = nameManagerer.getDerivedName(component, candidateName);
-        try {
-            circuit.setName(component, componentName);
-        } catch (ArgumentException e) {
-            String oldComponentName = circuit.getName(component);
-            LogUtils.logWarning("Cannot set name '" + componentName + "' for component '" + oldComponentName + "'.");
-        }
     }
 
     private boolean isSequentialAssign(Assign assign) {
@@ -622,7 +608,7 @@ public class VerilogImporter implements Importer {
                         wire.sinks.remove(contact);
                         if ((wire.source != null) && (wire.source.getParent() instanceof FunctionComponent)) {
                             FunctionComponent component = (FunctionComponent) wire.source.getParent();
-                            renameComponent(circuit, component, signal.name);
+                            reparentAndRenameComponent(circuit, component, signal.name);
                         }
                     }
                 }
@@ -630,37 +616,38 @@ public class VerilogImporter implements Importer {
         }
     }
 
-    private void renameComponent(Circuit circuit, FunctionComponent component, String ref) {
-        if (NamespaceHelper.isHierarchical(ref)) {
-            String parentRef = NamespaceHelper.getParentReference(ref);
-            PageNode page = getOrCreatePage(circuit, parentRef);
-            circuit.reparent(page, circuit, circuit.getRoot(), Arrays.asList(component));
-            ref = NamespaceHelper.getReferenceName(ref);
+    private void reparentAndRenameComponent(Circuit circuit, FunctionComponent component, String ref) {
+        String containerRef = NamespaceHelper.getParentReference(ref);
+        if (!containerRef.isEmpty()) {
+            PageNode container = null;
+            Node parent = circuit.getNodeByReference(containerRef);
+            if (parent instanceof PageNode) {
+                container = (PageNode) parent;
+            } else {
+                container = circuit.createNodeWithHierarchy(containerRef, circuit.getRoot(), PageNode.class);
+            }
+            if (container != component.getParent()) {
+                circuit.reparent(container, circuit, circuit.getRoot(), Arrays.asList(component));
+            }
         }
+        String name = NamespaceHelper.getReferenceName(ref);
         try {
-            circuit.setName(component, ref);
+            HierarchyReferenceManager refManager = circuit.getReferenceManager();
+            NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(component);
+            NameManager nameManagerer = refManager.getNameManager(namespaceProvider);
+            String derivedName = nameManagerer.getDerivedName(component, name);
+            circuit.setName(component, derivedName);
         } catch (ArgumentException e) {
             String componentRef = circuit.getNodeReference(component);
             LogUtils.logWarning("Cannot set name '" + ref + "' for component '" + componentRef + "'.");
         }
     }
 
-    private PageNode getOrCreatePage(Circuit circuit, String ref) {
-        PageNode result = null;
-        Node parent = circuit.getNodeByReference(ref);
-        if (parent instanceof PageNode) {
-            result = (PageNode) parent;
-        } else {
-            result = circuit.createNodeWithHierarchy(ref, circuit.getRoot(), PageNode.class);
-        }
-        return result;
-    }
-
     private FunctionComponent createMutex(Circuit circuit, Mutex instance, Mutex module, HashMap<String, Wire> wires) {
         final FunctionComponent component = new FunctionComponent();
         component.setModule(module.name);
         circuit.add(component);
-        renameComponent(circuit, component, instance.name);
+        reparentAndRenameComponent(circuit, component, instance.name);
         addMutexPin(circuit, component, module.r1, instance.r1, wires);
         FunctionContact g1Contact = addMutexPin(circuit, component, module.g1, instance.g1, wires);
         addMutexPin(circuit, component, module.r2, instance.r2, wires);
@@ -1030,7 +1017,7 @@ public class VerilogImporter implements Importer {
                     }
                 }
                 if (!hasNewContact) {
-                    circuit.connect(newOutputContact, (MathNode) toNode);
+                    circuit.connect(newOutputContact, toNode);
                 }
             } catch (InvalidConnectionException e) {
             }
@@ -1041,7 +1028,7 @@ public class VerilogImporter implements Importer {
             if (oldContact == null) continue;
             for (MathNode fromNode: circuit.getPreset(oldContact)) {
                 try {
-                    circuit.connect((MathNode) fromNode, newContact);
+                    circuit.connect(fromNode, newContact);
                 } catch (InvalidConnectionException e) {
                     throw new RuntimeException(e);
                 }

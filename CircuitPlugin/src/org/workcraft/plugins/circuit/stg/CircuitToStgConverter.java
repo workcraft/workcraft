@@ -200,16 +200,21 @@ public class CircuitToStgConverter {
             VisualContact signal = CircuitUtils.findSignal(circuit, driver, true);
             if (signal.isDriver() || signal.isPort()) {
                 boolean initToOne = signal.getReferencedContact().getInitToOne();
-                String signalName = CircuitUtils.getSignalName(circuit, signal);
+                String signalRef = CircuitUtils.getSignalReference(circuit, signal);
 
-                String zeroName = SignalStg.getLowName(signalName);
-                VisualPlace zeroPlace = stg.createVisualPlace(zeroName);
+                String parentRef = NamespaceHelper.getParentReference(signalRef);
+                VisualPage container = stg.getVisualComponentByMathReference(parentRef, VisualPage.class);
+
+                String signalName = NamespaceHelper.getReferenceName(signalRef);
+
+                String zeroName = SignalStg.appendLowSuffix(signalName);
+                VisualPlace zeroPlace = stg.createVisualPlace(zeroName, container);
                 if (!initToOne) {
                     zeroPlace.getReferencedPlace().setTokens(1);
                 }
 
-                String oneName = SignalStg.getHighName(signalName);
-                VisualPlace onePlace = stg.createVisualPlace(oneName);
+                String oneName = SignalStg.appendHighSuffix(signalName);
+                VisualPlace onePlace = stg.createVisualPlace(oneName, container);
                 if (initToOne) {
                     onePlace.getReferencedPlace().setTokens(1);
                 }
@@ -268,8 +273,11 @@ public class CircuitToStgConverter {
 
         clauses.addAll(dnf.getClauses());
 
-        String signalName = CircuitUtils.getSignalName(circuit, signal);
+        String signalRef = CircuitUtils.getSignalReference(circuit, signal);
+        String signalName = NamespaceHelper.getReferenceName(signalRef);
         Signal.Type signalType = CircuitUtils.getSignalType(circuit, signal);
+        String containerRef = NamespaceHelper.getParentReference(signalRef);
+        VisualPage container = stg.getVisualComponentByMathReference(containerRef, VisualPage.class);
         for (DnfClause clause : clauses) {
             // In self-looped signals the read-arcs will clash with producing/consuming arcs:
             // 1) a read-arc from a preset place is redundant (is superseded by a consuming arc);
@@ -297,7 +305,7 @@ public class CircuitToStgConverter {
             }
 
             if (!isDeadTransition) {
-                VisualSignalTransition transition = stg.createVisualSignalTransition(signalName, signalType, direction);
+                VisualSignalTransition transition = stg.createVisualSignalTransition(signalName, signalType, direction, container);
                 transition.setLabel(StringGenerator.toString(clause));
                 transitions.add(transition);
                 // Create read-arcs.
@@ -323,11 +331,11 @@ public class CircuitToStgConverter {
         TwoWayMap<VisualContact, SignalStg> result = new TwoWayMap<>();
 
         for (VisualContact driver: drivers) {
-            String signalRef = CircuitUtils.getSignalName(circuit, driver);
+            String signalRef = CircuitUtils.getSignalReference(circuit, driver);
 
-            String zeroRef = SignalStg.getLowName(signalRef);
+            String zeroRef = SignalStg.appendLowSuffix(signalRef);
             VisualPlace zeroPlace = stg.getVisualComponentByMathReference(zeroRef, VisualPlace.class);
-            String oneRef = SignalStg.getHighName(signalRef);
+            String oneRef = SignalStg.appendHighSuffix(signalRef);
             VisualPlace onePlace = stg.getVisualComponentByMathReference(oneRef, VisualPlace.class);
 
             if ((zeroPlace == null) || (onePlace == null)) {

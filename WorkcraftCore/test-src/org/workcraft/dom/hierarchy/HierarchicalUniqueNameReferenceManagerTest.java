@@ -1,23 +1,23 @@
 package org.workcraft.dom.hierarchy;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.workcraft.util.Pair;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import org.junit.Test;
-import org.workcraft.util.Pair;
+import static org.junit.Assert.assertEquals;
 
 public class HierarchicalUniqueNameReferenceManagerTest {
 
     static HashMap<String, Pair<String, String>> headTails = new HashMap<String, Pair<String, String>>() {
         private static final long serialVersionUID = -2931077011392124649L;
         {
-            put("abc", new Pair<String, String>("abc", ""));
-            put("abc.def", new Pair<String, String>("abc", "def"));
-            put("abc.def.ghi", new Pair<String, String>("abc", "def.ghi"));
-            put("abc/123.def.ghi", new Pair<String, String>("abc/123", "def.ghi"));
-            put("a.b.c+/123", new Pair<String, String>("a", "b.c+/123"));
+            put("abc", Pair.of("abc", ""));
+            put("abc.def", Pair.of("abc", "def"));
+            put("abc.def.ghi", Pair.of("abc", "def.ghi"));
+            put("abc/123.def.ghi", Pair.of("abc/123", "def.ghi"));
+            put("a.b.c+/123", Pair.of("a", "b.c+/123"));
         }
     };
 

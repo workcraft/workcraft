@@ -208,7 +208,7 @@ public class NamespaceHelper {
     }
 
     public static boolean isHierarchical(String ref) {
-        return (ref != null) && ref.substring(1).contains(HIERARCHY_SEPARATOR);
+        return (ref != null) && !ref.isEmpty() && ref.substring(1).contains(HIERARCHY_SEPARATOR);
     }
 
 }
