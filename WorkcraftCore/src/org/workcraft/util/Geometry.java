@@ -5,16 +5,16 @@ import org.workcraft.dom.visual.connections.ParametricCurve;
 import org.workcraft.dom.visual.connections.PartialCurveInfo;
 import org.workcraft.dom.visual.connections.VisualConnectionProperties;
 
-import java.awt.geom.AffineTransform;
-import java.awt.geom.CubicCurve2D;
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Point2D;
+import java.awt.geom.*;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Geometry {
 
     public static Point2D lerp(Point2D p1, Point2D p2, double t) {
         return new Point2D.Double(p1.getX() * (1 - t) + p2.getX() * t, p1.getY() * (1 - t) + p2.getY() * t);
     }
+
     public static Point2D middle(Point2D p1, Point2D p2) {
         return lerp(p1, p2, 0.5);
     }
@@ -199,6 +199,51 @@ public class Geometry {
         double y2 = q.getY();
 
         return x1 * y2 - y1 * x2;
+    }
+
+    public static Rectangle2D getBoundingBoxOfCubicCurve(CubicCurve2D curve) {
+        Path2D path = new Path2D.Double();
+        path.moveTo(curve.getX1(), curve.getY1());
+        // Cubic Bezier curve:
+        // B(t) = (1 - t)^3 * p0 + 3 * (1 - t)^2 * t * p1 + 3 * (1 - t) * t^2 * p2 + t^3 * p3
+        // Derivative:
+        // dx/dt =  3 * (p1.x - p0.x) * (1-t)^2 + 6 * (p2.x - p1.x) * (1-t) * t + 3 * (p3.x - p2.x) * t^2
+        //       =  (3 * p3.x - 9 * p2.x + 9 * p1.x - 3 * p0.x) * t^2 + (6 * p0.x - 12 * p1.x + 6 * p2.x) * t + 3 * (p1.x - p0.x)
+        for (Double t : getBezierRoots(curve.getP1(), curve.getCtrlP1(), curve.getCtrlP2(), curve.getP2())) {
+            if ((t > 0.0) && (t < 1.0)) {
+                Point2D p = getPointOnCubicCurve(curve, t);
+                path.lineTo(p.getX(), p.getY());
+            }
+
+        }
+        path.lineTo(curve.getX2(), curve.getY2());
+        return path.getBounds2D();
+    }
+
+    private static Set<Double> getBezierRoots(Point2D p0, Point2D p1, Point2D p2, Point2D p3) {
+        Set<Double> result = new HashSet<>();
+
+        double aX = 3.0 * p3.getX() - 9.0 * p2.getX() + 9.0 * p1.getX() - 3.0 * p0.getX();
+        double bX = 6.0 * p0.getX() - 12.0 * p1.getX() + 6.0 * p2.getX();
+        double cX = 3.0 * (p1.getX() - p0.getX());
+        result.addAll(getQuadraticRoots(aX, bX, cX));
+
+        double aY = 3.0 * p3.getY() - 9.0 * p2.getY() + 9.0 * p1.getY() - 3.0 * p0.getY();
+        double bY = 6.0 * p0.getY() - 12.0 * p1.getY() + 6.0 * p2.getY();
+        double cY = 3.0 * (p1.getY() - p0.getY());
+        result.addAll(getQuadraticRoots(aY, bY, cY));
+        return result;
+    }
+
+    private static Set<Double> getQuadraticRoots(double a, double b, double c) {
+        Set<Double> result = new HashSet<>();
+        double d2 = b * b - 4.0 * a * c;
+        if (d2 >= 0.0) {
+            double d = Math.sqrt(d2);
+            result.add(0.5 * (-b + d) / a);
+            result.add(0.5 * (-b - d) / a);
+        }
+        return result;
     }
 
 }

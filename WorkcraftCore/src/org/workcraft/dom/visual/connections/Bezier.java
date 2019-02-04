@@ -1,14 +1,5 @@
 package org.workcraft.dom.visual.connections;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.CubicCurve2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawHelper;
 import org.workcraft.dom.visual.DrawRequest;
@@ -18,6 +9,14 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Geometry.CurveSplitResult;
+
+import java.awt.*;
+import java.awt.geom.CubicCurve2D;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver, SelectionObserver {
 
@@ -98,11 +97,11 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
     public Rectangle2D getBoundingBox() {
         if (boundingBox == null) {
             CubicCurve2D curve = getCurve();
-            boundingBox = curve.getBounds2D();
-            boundingBox.add(boundingBox.getMinX() - VisualConnection.HIT_THRESHOLD, boundingBox.getMinY() - VisualConnection.HIT_THRESHOLD);
-            boundingBox.add(boundingBox.getMinX() - VisualConnection.HIT_THRESHOLD, boundingBox.getMaxY() + VisualConnection.HIT_THRESHOLD);
-            boundingBox.add(boundingBox.getMaxX() + VisualConnection.HIT_THRESHOLD, boundingBox.getMinY() - VisualConnection.HIT_THRESHOLD);
-            boundingBox.add(boundingBox.getMaxX() + VisualConnection.HIT_THRESHOLD, boundingBox.getMaxY() + VisualConnection.HIT_THRESHOLD);
+            boundingBox = Geometry.getBoundingBoxOfCubicCurve(curve);
+            boundingBox.add(boundingBox.getMinX() - VisualConnection.HIT_THRESHOLD,
+                    boundingBox.getMinY() - VisualConnection.HIT_THRESHOLD);
+            boundingBox.add(boundingBox.getMaxX() + VisualConnection.HIT_THRESHOLD,
+                    boundingBox.getMaxY() + VisualConnection.HIT_THRESHOLD);
         }
         return boundingBox;
     }
@@ -192,7 +191,6 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
                 nearest = samplePoint;
             }
         }
-
         return nearest;
     }
 
