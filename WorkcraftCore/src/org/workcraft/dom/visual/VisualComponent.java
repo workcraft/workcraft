@@ -474,7 +474,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
 
     @Override
     public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-        return getInternalBoundingBoxInLocalSpace().contains(pointInLocalSpace);
+        return getShape().contains(pointInLocalSpace);
     }
 
     @Override

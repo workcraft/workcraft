@@ -364,22 +364,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
             Point2D p2 = new Point2D.Double();
             p2.setLocation(pointInLocalSpace);
             if (!(getParent() instanceof VisualCircuitComponent)) {
-                AffineTransform rotateTransform = new AffineTransform();
-                // Rotate in the direction opposite to Direction.getDirectionTransform
-                switch (getDirection()) {
-                case WEST:
-                    rotateTransform.quadrantRotate(2);
-                    break;
-                case NORTH:
-                    rotateTransform.quadrantRotate(1);
-                    break;
-                case EAST:
-                    rotateTransform.setToIdentity();
-                    break;
-                case SOUTH:
-                    rotateTransform.quadrantRotate(3);
-                    break;
-                }
+                AffineTransform rotateTransform = getDirection().getTransform();
                 if (isInput()) {
                     rotateTransform.quadrantRotate(2);
                 }
