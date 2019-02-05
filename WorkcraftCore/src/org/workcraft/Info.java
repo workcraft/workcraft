@@ -13,7 +13,7 @@ public class Info {
     private static final String subtitle3 = "Return of the Hazard";
     private static final String subtitle4 = "Revenge of the Timing Assumption";
 
-    private static final Version version = new Version(3, 2, 2, Status.RELEASE);
+    private static final Version version = new Version(3, 2, 3, Status.ALPHA);
 
     private static final int startYear = 2006;
     private static final int currentYear = Calendar.getInstance().get(Calendar.YEAR);
@@ -29,7 +29,7 @@ public class Info {
     public static final String OPTION_HELP = "-help";
     private static final String help = "Usage:  java --classpath <CORE_AND_PLUGINS> org.workcraft.Console [OPTIONS]\n" +
             "    " + OPTION_DIR + "<PATH>\t - pass working directory\n" +
-            "    " + OPTION_EXEC + "<SCRIPT> - JavaScript to execute on startup\n" +
+            "    " + OPTION_EXEC + "<SCRIPT> - JavaScript file or one-liner to execute on startup\n" +
             "    " + OPTION_NOGUI + "\t - run in console mode\n" +
             "    " + OPTION_NOCONFIG + "\t - use default settings without overwriting user config\n" +
             "    " + OPTION_VERSION + "\t - report the version information and exit\n" +

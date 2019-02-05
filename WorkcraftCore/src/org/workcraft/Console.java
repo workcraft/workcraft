@@ -1,12 +1,5 @@
 package org.workcraft;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URISyntaxException;
-import java.util.LinkedList;
-
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.WrappedException;
@@ -16,6 +9,14 @@ import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.ResourceUtils;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.LinkedList;
 
 public class Console {
     static {
@@ -27,11 +28,10 @@ public class Console {
     }
 
     public static void main(String[] args) {
-        LinkedList<String> arglist = new LinkedList<>();
-        for (String s : args) {
-            arglist.push(s);
-        }
+        final Framework framework = Framework.getInstance();
+        LinkedList<String> arglist = new LinkedList<>(Arrays.asList(args));
 
+        // Process -version and -help options
         for (String arg : args) {
             if (arg.equals(Info.OPTION_VERSION)) {
                 System.out.println(Info.getVersion());
@@ -43,7 +43,7 @@ public class Console {
             }
         }
 
-        final Framework framework = Framework.getInstance();
+        // Process -nogui, -noconfig and -dir: options
         boolean startGui = true;
         boolean useConfig = true;
         for (String arg : args) {
@@ -96,14 +96,21 @@ public class Console {
             }
         }
 
+        // Process -exec: option
         for (String arg: args) {
             if (arg.startsWith(Info.OPTION_EXEC)) {
                 arglist.remove(arg);
                 framework.setArgs(arglist);
                 try {
-                    String scriptName = arg.substring(Info.OPTION_EXEC.length());
-                    LogUtils.logMessage("Executing " + scriptName + "...");
-                    framework.execJavaScriptFile(scriptName);
+                    String execParameter = arg.substring(Info.OPTION_EXEC.length());
+                    File execFile = framework.getFileByAbsoluteOrRelativePath(execParameter);
+                    if ((execFile != null) && execFile.exists() && execFile.isFile() && execFile.canRead()) {
+                        LogUtils.logMessage("Executing script file " + execParameter + "...");
+                        framework.execJavaScriptFile(execFile);
+                    } else {
+                        LogUtils.logMessage("Executing raw script:\n" + execParameter);
+                        framework.execJavaScript(execParameter);
+                    }
                 } catch (WrappedException e) {
                     e.getWrappedException().printStackTrace();
                     System.exit(1);

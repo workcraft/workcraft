@@ -489,6 +489,10 @@ public final class Framework {
      */
     public void execJavaScriptFile(String path) throws IOException {
         File file = getFileByAbsoluteOrRelativePath(path);
+        execJavaScriptFile(file);
+    }
+
+    public void execJavaScriptFile(File file) throws IOException {
         String script = FileUtils.readAllText(file);
         execJavaScript(script, globalScope);
     }
