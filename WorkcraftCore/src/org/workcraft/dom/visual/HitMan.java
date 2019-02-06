@@ -1,7 +1,5 @@
 package org.workcraft.dom.visual;
 
-import net.sf.jga.algorithms.Filter;
-import net.sf.jga.fn.UnaryFunctor;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.ControlPoint;
@@ -41,7 +39,7 @@ public class HitMan {
                 Math.abs(p1.getX() - p2.getX()),
                 Math.abs(p1.getY() - p2.getY()));
 
-        for (VisualNode node: Hierarchy.getChildrenOfType(container, VisualNode.class)) {
+        for (VisualNode node : Hierarchy.getChildrenOfType(container, VisualNode.class)) {
             if (node.isHidden()) continue;
             if (p1.getX() <= p2.getX()) {
                 if (TouchableHelper.insideRectangle(node, rect)) {
@@ -86,8 +84,7 @@ public class HitMan {
     public static Node hitFirstChild(Point2D point, Node parentNode, Func<Node, Boolean> filter) {
         Node result = null;
         Point2D pointInLocalSpace = transformToChildSpace(point, parentNode);
-        Iterable<Node> filteredChildren = getFilteredChildren(pointInLocalSpace, parentNode);
-        for (Node childNode: filteredChildren) {
+        for (Node childNode : reverse(parentNode.getChildren())) {
             if (filter.eval(childNode)) {
                 Node branchNode = hitBranch(pointInLocalSpace, childNode);
                 if (filter.eval(branchNode)) {
@@ -117,8 +114,7 @@ public class HitMan {
             }
         }
         Point2D pointInLocalSpace = transformToChildSpace(point, node);
-        Iterable<Node> filteredChildren = getFilteredChildren(pointInLocalSpace, node);
-        for (Node childNode: filteredChildren) {
+        for (Node childNode : reverse(node.getChildren())) {
             if (isBranchHit(pointInLocalSpace, childNode)) {
                 return true;
             }
@@ -157,8 +153,8 @@ public class HitMan {
 
     private static Node hitDeepest(Point2D point, Node node, final Func2<Point2D, Node, Boolean> filter) {
         Point2D pointInLocalSpace = transformToChildSpace(point, node);
-        Iterable<Node> filteredChildren = getFilteredChildren(pointInLocalSpace, node);
-        for (Node childNode: filteredChildren) {
+        //Iterable<Node> filteredChildren = getFilteredChildren(pointInLocalSpace, node);
+        for (Node childNode : node.getChildren()) {
             Node result = hitDeepest(pointInLocalSpace, childNode, filter);
             if (result != null) {
                 return result;
@@ -176,49 +172,24 @@ public class HitMan {
         return point;
     }
 
-    private static Iterable<Node> getFilteredChildren(Point2D pointInLocalSpace, Node node) {
-        Collection<Node> children = node.getChildren();
-        Iterable<Node> filterByBoundingBox = filterByBoundingBox(pointInLocalSpace, children);
-        return reverse(filterByBoundingBox);
-    }
-
-    @SuppressWarnings("serial")
-    private static <T extends Node> Iterable<T> filterByBoundingBox(final Point2D pointInLocalSpace, Iterable<T> nodes) {
-        return Filter.filter(nodes, new UnaryFunctor<T, Boolean>() {
-            @Override
-            public Boolean fn(T arg) {
-                if (!(arg instanceof Touchable)) {
-                    return true;
-                }
-                Rectangle2D boundingBox = ((Touchable) arg).getBoundingBox();
-                return (boundingBox != null) && boundingBox.contains(pointInLocalSpace);
-            }
-        });
-    }
-
     private static <T> Iterable<T> reverse(Iterable<T> original) {
         final ArrayList<T> list = new ArrayList<>();
         for (T node : original) {
             list.add(node);
         }
-        return new Iterable<T>() {
+        return () -> new Iterator<T>() {
+            private int cur = list.size();
             @Override
-            public Iterator<T> iterator() {
-                return new Iterator<T>() {
-                    private int cur = list.size();
-                    @Override
-                    public boolean hasNext() {
-                        return cur > 0;
-                    }
-                    @Override
-                    public T next() {
-                        return list.get(--cur);
-                    }
-                    @Override
-                    public void remove() {
-                        throw new RuntimeException("Not supported");
-                    }
-                };
+            public boolean hasNext() {
+                return cur > 0;
+            }
+            @Override
+            public T next() {
+                return list.get(--cur);
+            }
+            @Override
+            public void remove() {
+                throw new RuntimeException("Not supported");
             }
         };
     }

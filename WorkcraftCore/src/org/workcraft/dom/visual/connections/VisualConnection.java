@@ -603,4 +603,8 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
         setArrowWidth(CommonVisualSettings.getConnectionArrowWidth());
     }
 
+    public Set<Point2D> getIntersections(Rectangle2D rect) {
+        return graphic.getIntersections(rect);
+    }
+
 }

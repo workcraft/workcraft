@@ -623,7 +623,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
                 AffineTransform at = t.sender.getTransform();
                 double x = at.getTranslateX();
                 double y = at.getTranslateY();
-                Rectangle2D bb = getContactExpandedBox(); //getContactMinimalBox(); //getInternalBoundingBoxInLocalSpace();
+                Rectangle2D bb = getContactExpandedBox();
                 if ((x <= bb.getMinX()) && (y > bb.getMinY()) && (y < bb.getMaxY())) {
                     vc.setDirection(Direction.WEST);
                 }

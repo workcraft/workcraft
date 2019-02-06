@@ -6,10 +6,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import org.workcraft.dom.ArbitraryInsertionGroupImpl;
 import org.workcraft.dom.Container;
@@ -98,17 +95,26 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
     @Override
     public Rectangle2D getBoundingBox() {
         if (boundingBox == null) {
-            int segments = getSegmentCount();
-            for (int i = 0; i < segments; i++) {
-                Line2D seg = getSegment(i);
+            for (int i = 0; i < getSegmentCount(); i++) {
+                Line2D segment = getSegment(i);
                 if (i == 0) {
-                    boundingBox = getSegmentBoundsWithThreshold(seg);
+                    boundingBox = getSegmentBoundsWithThreshold(segment);
                 } else {
-                    boundingBox.add(getSegmentBoundsWithThreshold(seg));
+                    boundingBox.add(getSegmentBoundsWithThreshold(segment));
                 }
             }
         }
         return boundingBox;
+    }
+
+    @Override
+    public Set<Point2D> getIntersections(Rectangle2D rect) {
+        Set<Point2D> result = new HashSet<>();
+        for (int i = 0; i < getSegmentCount(); i++) {
+            Line2D segment = getSegment(i);
+            result.addAll(Geometry.getSegmentFrameIntersections(segment, rect));
+        }
+        return result;
     }
 
     @Override
@@ -207,8 +213,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
     }
 
     protected Line2D getSegment(int index) {
-        int segments = getSegmentCount();
-        if (index < segments) {
+        if (index < getSegmentCount()) {
             return new Line2D.Double(getAnchorPointLocation(index), getAnchorPointLocation(index + 1));
         } else {
             throw new RuntimeException("Segment index is greater than number of segments");
