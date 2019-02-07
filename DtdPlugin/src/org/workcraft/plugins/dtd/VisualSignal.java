@@ -115,11 +115,6 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
     }
 
     @Override
-    public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-        return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
-    }
-
-    @Override
     public Positioning getNamePositioning() {
         return Positioning.LEFT;
     }

@@ -1,11 +1,5 @@
 package org.workcraft.plugins.stg;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
@@ -17,6 +11,10 @@ import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.stg.tools.CoreDecoration;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
+
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 public class VisualNamedTransition extends VisualTransition implements StateObserver {
 
@@ -97,18 +95,7 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 
     @Override
     public Rectangle2D getInternalBoundingBoxInLocalSpace() {
-        return new Rectangle2D.Double(0.0, 0.0, 0.0, 0.0);
-    }
-
-    @Override
-    public Rectangle2D getBoundingBoxInLocalSpace() {
-        Rectangle2D bb = super.getBoundingBoxInLocalSpace();
-        return BoundingBoxHelper.expand(bb, 0.2, 0.2);
-    }
-
-    @Override
-    public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-        return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
+        return BoundingBoxHelper.expand(getNameBoundingBox(), 0.2, 0.2);
     }
 
     @Override

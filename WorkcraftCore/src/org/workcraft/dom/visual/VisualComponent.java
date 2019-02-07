@@ -251,11 +251,6 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         return result;
     }
 
-    @Override
-    public Point2D getCenterInLocalSpace() {
-        return new Point2D.Double(0, 0);
-    }
-
     public void centerPivotPoint(boolean horisontal, boolean vertical) {
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
         if (horisontal) {
@@ -438,12 +433,6 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         return getShape().getBounds2D();
     }
 
-    public Rectangle2D getInternalBoundingBoxInRootSpace() {
-        Point2D p = getRootSpaceTranslation();
-        Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-        return new Rectangle2D.Double(bb.getX() + p.getX(), bb.getY() + p.getY(), bb.getWidth(), bb.getHeight());
-    }
-
     @Override
     public Rectangle2D getBoundingBoxInLocalSpace() {
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
@@ -460,7 +449,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         if ((labelRenderedText != null) && !labelRenderedText.isEmpty()) {
             return labelRenderedText.getBoundingBox();
         } else {
-            return null;
+            return new Rectangle2D.Double();
         }
     }
 
@@ -468,13 +457,13 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         if ((nameRenderedText != null) && !nameRenderedText.isEmpty()) {
             return nameRenderedText.getBoundingBox();
         } else {
-            return null;
+            return new Rectangle2D.Double();
         }
     }
 
     @Override
     public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-        return getShape().contains(pointInLocalSpace);
+        return getInternalBoundingBoxInLocalSpace().contains(pointInLocalSpace);
     }
 
     @Override

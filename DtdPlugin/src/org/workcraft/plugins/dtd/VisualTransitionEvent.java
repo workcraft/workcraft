@@ -11,7 +11,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Path2D;
 import java.awt.geom.Path2D.Double;
-import java.awt.geom.Rectangle2D;
 
 @Hotkey(KeyEvent.VK_T)
 @DisplayName("Transition")
@@ -130,11 +129,6 @@ public class VisualTransitionEvent extends VisualEvent {
     @Override
     public BasicStroke getStroke() {
         return new BasicStroke((float) CommonVisualSettings.getStrokeWidth() / 2.0f);
-    }
-
-    @Override
-    public Rectangle2D getInternalBoundingBoxInLocalSpace() {
-        return getShape().getBounds2D();
     }
 
     public TransitionEvent getReferencedTransition() {

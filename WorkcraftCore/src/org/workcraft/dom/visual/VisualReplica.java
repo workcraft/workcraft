@@ -141,11 +141,6 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
         }
     }
 
-    @Override
-    public Point2D getCenterInLocalSpace() {
-        return new Point2D.Double(0, 0);
-    }
-
     public Point2D getOffset(Positioning positioning) {
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
         double xOffset = (positioning.xSign < 0) ? bb.getMinX() : (positioning.xSign > 0) ? bb.getMaxX() : bb.getCenterX();

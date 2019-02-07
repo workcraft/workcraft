@@ -1,12 +1,5 @@
 package org.workcraft.plugins.circuit;
 
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.event.KeyEvent;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
@@ -14,6 +7,12 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 @DisplayName("Joint")
 @Hotkey(KeyEvent.VK_J)
@@ -47,7 +46,7 @@ public class VisualJoint extends VisualComponent {
 
     @Override
     public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-        return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
+        return 4 * pointInLocalSpace.distanceSq(0, 0) < size * size;
     }
 
 }

@@ -1,16 +1,5 @@
 package org.workcraft.plugins.cpog;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.io.IOException;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
@@ -23,6 +12,12 @@ import org.workcraft.formula.utils.FormulaRenderingResult;
 import org.workcraft.formula.utils.FormulaToGraphics;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.plugins.cpog.formula.PrettifyBooleanReplacer;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
+import java.io.IOException;
 
 @Hotkey(KeyEvent.VK_R)
 @DisplayName("RhoClause")
@@ -97,12 +92,9 @@ public class VisualRhoClause extends VisualComponent {
         return getFormula().accept(new PrettifyBooleanReplacer());
     }
 
+    @Override
     public Rectangle2D getBoundingBoxInLocalSpace() {
         return boudingBox;
-    }
-
-    public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-        return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
     }
 
     public BooleanFormula getFormula() {

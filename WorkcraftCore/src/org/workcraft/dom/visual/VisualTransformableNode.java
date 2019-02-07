@@ -210,11 +210,9 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
         return transformToParentSpace(getBoundingBoxInLocalSpace());
     }
 
-    public abstract Point2D getCenterInLocalSpace();
-
     @Override
     public final Point2D getCenter() {
-        return getLocalToParentTransform().transform(getCenterInLocalSpace(), null);
+        return getLocalToParentTransform().transform(new Point2D.Double(0.0, 0.0), null);
     }
 
     protected Rectangle2D transformToParentSpace(Rectangle2D rect) {
