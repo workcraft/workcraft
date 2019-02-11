@@ -2,7 +2,7 @@ package org.workcraft.plugins.wtg;
 
 import org.workcraft.dom.ModelDescriptor;
 
-public class WtgDescriptor  implements ModelDescriptor {
+public class WtgDescriptor implements ModelDescriptor {
 
     @Override
     public String getDisplayName() {

@@ -1,6 +1,9 @@
 package org.workcraft.plugins.stg;
 
-import org.workcraft.*;
+import org.workcraft.CompatibilityManager;
+import org.workcraft.Framework;
+import org.workcraft.PluginManager;
+import org.workcraft.Version;
 import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.plugins.stg.commands.*;
 import org.workcraft.plugins.stg.interop.LpnExporter;
@@ -10,7 +13,7 @@ import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcDeserialiser;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcSerialiser;
 
-public class StgModule implements Module {
+public class StgModule implements org.workcraft.Module {
 
     @Override
     public String getDescription() {

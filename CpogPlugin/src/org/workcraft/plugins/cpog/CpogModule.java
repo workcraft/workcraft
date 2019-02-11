@@ -1,11 +1,14 @@
 package org.workcraft.plugins.cpog;
 
-import org.workcraft.*;
+import org.workcraft.CompatibilityManager;
+import org.workcraft.Framework;
+import org.workcraft.PluginManager;
+import org.workcraft.Version;
 import org.workcraft.plugins.cpog.commands.*;
 import org.workcraft.plugins.cpog.scenco.*;
 import org.workcraft.plugins.cpog.serialisation.*;
 
-public class CpogModule implements Module {
+public class CpogModule implements org.workcraft.Module {
 
     @Override
     public String getDescription() {

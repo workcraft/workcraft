@@ -1,13 +1,12 @@
 package org.workcraft.plugins.plato;
 
 import org.workcraft.Framework;
-import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.plugins.plato.commands.PlatoFstConversionCommand;
 import org.workcraft.plugins.plato.commands.PlatoStgConversionCommand;
 import org.workcraft.plugins.plato.interop.ConceptsImporter;
 
-public class PlatoModule implements Module {
+public class PlatoModule implements org.workcraft.Module {
 
     @Override
     public String getDescription() {

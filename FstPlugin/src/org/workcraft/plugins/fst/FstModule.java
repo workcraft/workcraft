@@ -1,6 +1,9 @@
 package org.workcraft.plugins.fst;
 
-import org.workcraft.*;
+import org.workcraft.CompatibilityManager;
+import org.workcraft.Framework;
+import org.workcraft.PluginManager;
+import org.workcraft.Version;
 import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.plugins.fst.commands.ExtractWindowsCommand;
 import org.workcraft.plugins.fst.commands.FsmToFstConversionCommand;
@@ -9,7 +12,7 @@ import org.workcraft.plugins.fst.commands.FstToStgConversionCommand;
 import org.workcraft.plugins.fst.interop.SgExporter;
 import org.workcraft.plugins.fst.interop.SgImporter;
 
-public class FstModule implements Module {
+public class FstModule implements org.workcraft.Module {
 
     @Override
     public String getDescription() {

@@ -1,11 +1,14 @@
 package org.workcraft.plugins.dfs;
 
-import org.workcraft.*;
+import org.workcraft.CompatibilityManager;
+import org.workcraft.Framework;
+import org.workcraft.PluginManager;
+import org.workcraft.Version;
 import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.plugins.dfs.commands.*;
 import org.workcraft.plugins.dfs.interop.VerilogExporter;
 
-public class DfsModule implements Module {
+public class DfsModule implements org.workcraft.Module {
 
     @Override
     public String getDescription() {

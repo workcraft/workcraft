@@ -9,7 +9,7 @@ import java.util.*;
 
 public class WorkspaceTree implements TreeSource<Path<String>> {
 
-    private final class WorkspaceListenerWrapper implements    WorkspaceListener {
+    private final class WorkspaceListenerWrapper implements WorkspaceListener {
         private final TreeListener<Path<String>> listener;
 
         private WorkspaceListenerWrapper(TreeListener<Path<String>> listener) {

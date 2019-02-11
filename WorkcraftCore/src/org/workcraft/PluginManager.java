@@ -51,9 +51,9 @@ public class PluginManager implements PluginProvider {
 
     private boolean initModules() {
         boolean result = true;
-        for (PluginInfo<? extends Module> info : getPlugins(Module.class)) {
+        for (PluginInfo<? extends org.workcraft.Module> info : getPlugins(Module.class)) {
             try {
-                final Module module = info.newInstance();
+                final org.workcraft.Module module = info.newInstance();
                 try {
                     LogUtils.logMessage("  Loading module: " + module.getDescription());
                     module.init();

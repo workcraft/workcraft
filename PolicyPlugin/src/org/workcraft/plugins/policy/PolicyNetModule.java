@@ -1,6 +1,9 @@
 package org.workcraft.plugins.policy;
 
-import org.workcraft.*;
+import org.workcraft.CompatibilityManager;
+import org.workcraft.Framework;
+import org.workcraft.PluginManager;
+import org.workcraft.Version;
 import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.plugins.policy.commands.BundleTransitionTransformationCommand;
 import org.workcraft.plugins.policy.commands.PetriToPolicyConversionCommand;
@@ -11,7 +14,7 @@ import org.workcraft.plugins.policy.serialisation.BundleSerialiser;
 import org.workcraft.plugins.policy.serialisation.VisualLocalityDeserialiser;
 import org.workcraft.plugins.policy.serialisation.VisualLocalitySerialiser;
 
-public class PolicyNetModule implements Module {
+public class PolicyNetModule implements org.workcraft.Module {
 
     @Override
     public String getDescription() {

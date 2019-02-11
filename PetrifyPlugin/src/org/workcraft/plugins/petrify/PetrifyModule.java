@@ -1,12 +1,11 @@
 package org.workcraft.plugins.petrify;
 
 import org.workcraft.Framework;
-import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.plugins.petrify.commands.*;
 
-public class PetrifyModule implements Module {
+public class PetrifyModule implements org.workcraft.Module {
 
     @Override
     public void init() {

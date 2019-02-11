@@ -1,9 +1,12 @@
 package org.workcraft.plugins.son;
 
-import org.workcraft.*;
+import org.workcraft.CompatibilityManager;
+import org.workcraft.Framework;
+import org.workcraft.PluginManager;
+import org.workcraft.Version;
 import org.workcraft.plugins.son.commands.*;
 
-public class SONModule implements Module {
+public class SONModule implements org.workcraft.Module {
 
     public String getDescription() {
         return "Structured Occurrence Nets";

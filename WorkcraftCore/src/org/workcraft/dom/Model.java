@@ -7,7 +7,7 @@ import org.workcraft.util.Func;
 import java.util.Collection;
 import java.util.Set;
 
-public interface Model<N extends Node, C extends Connection>  extends NodeContext<N, C> {
+public interface Model<N extends Node, C extends Connection> extends NodeContext<N, C> {
 
     void setTitle(String title);
     String getTitle();

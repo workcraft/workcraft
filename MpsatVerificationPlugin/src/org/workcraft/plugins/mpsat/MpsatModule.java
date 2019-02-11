@@ -1,12 +1,11 @@
 package org.workcraft.plugins.mpsat;
 
 import org.workcraft.Framework;
-import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.plugins.mpsat.commands.*;
 
-public class MpsatModule implements Module {
+public class MpsatModule implements org.workcraft.Module {
 
     @Override
     public void init() {
