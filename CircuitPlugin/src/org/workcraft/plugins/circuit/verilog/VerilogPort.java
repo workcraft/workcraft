@@ -2,7 +2,7 @@ package org.workcraft.plugins.circuit.verilog;
 
 import org.workcraft.util.Pair;
 
-public class Port {
+public class VerilogPort {
 
     public enum Type {
         INPUT("input"),
@@ -43,11 +43,11 @@ public class Port {
     public final Type type;
     public final Range range;
 
-    public Port(String name, Type type) {
+    public VerilogPort(String name, Type type) {
         this(name, type, null);
     }
 
-    public Port(String name, Type type, Range range) {
+    public VerilogPort(String name, Type type, Range range) {
         this.name = name;
         this.type = type;
         this.range = range;
