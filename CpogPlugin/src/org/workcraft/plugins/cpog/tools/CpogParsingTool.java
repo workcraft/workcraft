@@ -16,7 +16,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
 import java.awt.geom.Rectangle2D;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -87,7 +86,7 @@ public class CpogParsingTool {
     }
 
     public double positionNodes(double originalX, double originalY, ArrayList<ArrayList<VisualNode>> outer) {
-        Double centre = new Double(0, originalY);
+        Point2D centre = new Point2D.Double(0.0, originalY);
 
         double x = originalX;
         double y = 0;
@@ -111,7 +110,7 @@ public class CpogParsingTool {
                                         refMap.get(p.getLabel()).getVertMap().get(v.getLabel()).getY());
                         v.setPosition(newPosition);
                     } else {
-                        v.setPosition(new Double(x, y));
+                        v.setPosition(new Point2D.Double(x, y));
                     }
                 }
                 y += 1.5;
@@ -796,7 +795,7 @@ public class CpogParsingTool {
         }
     }
 
-    public Point2D.Double getLowestVertex(VisualCpog visualCpog) {
+    public Point2D getLowestVertex(VisualCpog visualCpog) {
         Collection<VisualVertex> vertices = visualCpog.getVertices(visualCpog.getCurrentLevel());
         vertices.removeAll(visualCpog.getSelection());
 
@@ -817,10 +816,10 @@ public class CpogParsingTool {
 
         pages.removeAll(visualCpog.getSelection());
 
-        Point2D.Double centre, startPoint = null;
+        Point2D centre, startPoint = null;
 
         for (VisualVertex vertex : vertices) {
-            centre = (Double) vertex.getCenter();
+            centre = vertex.getCenter();
             if (startPoint == null) {
                 startPoint = new Point2D.Double(centre.getX(), centre.getY());
             } else {

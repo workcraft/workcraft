@@ -28,7 +28,7 @@ public class AdjacencyList {
             Vector v = new Vector();
             for (int j = 0; j < adjacencyMatrix[i].length; j++) {
                 if (adjacencyMatrix[i][j]) {
-                    v.add(new Integer(j));
+                    v.add(Integer.valueOf(j));
                 }
             }
 

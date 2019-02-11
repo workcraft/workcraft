@@ -89,7 +89,7 @@ public class XmlUtils {
     public static void saveDocument(Document doc, File transform, File file) throws IOException {
         try {
             TransformerFactory tFactory = TransformerFactory.newInstance();
-            tFactory.setAttribute("indent-number", new Integer(2));
+            tFactory.setAttribute("indent-number", Integer.valueOf(2));
             Transformer transformer = tFactory.newTransformer(new StreamSource(transform));
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 

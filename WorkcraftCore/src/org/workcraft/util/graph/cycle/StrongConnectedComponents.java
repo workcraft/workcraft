@@ -86,7 +86,7 @@ public class StrongConnectedComponents {
             if (!this.visited[i]) {
                 this.getStrongConnectedComponents(i);
                 Vector nodes = this.getLowestIdComponent();
-                if (nodes != null && !nodes.contains(new Integer(node)) && !nodes.contains(new Integer(node + 1))) {
+                if ((nodes != null) && !nodes.contains(Integer.valueOf(node)) && !nodes.contains(Integer.valueOf(node + 1))) {
                     return this.getAdjacencyList(node + 1);
                 } else {
                     Vector[] adjacencyList = this.getAdjList(nodes);
@@ -117,7 +117,7 @@ public class StrongConnectedComponents {
             Vector successors = new Vector();
             for (int j = 0; j < this.adjListOriginal[i].length; j++) {
                 if (this.adjListOriginal[i][j] >= node) {
-                    successors.add(new Integer(this.adjListOriginal[i][j]));
+                    successors.add(Integer.valueOf(this.adjListOriginal[i][j]));
                 }
             }
             if (successors.size() > 0) {
@@ -171,8 +171,8 @@ public class StrongConnectedComponents {
                 int node = ((Integer) nodes.get(i)).intValue();
                 for (int j = 0; j < this.adjList[node].length; j++) {
                     int succ = this.adjList[node][j];
-                    if (nodes.contains(new Integer(succ))) {
-                        lowestIdAdjacencyList[node].add(new Integer(succ));
+                    if (nodes.contains(Integer.valueOf(succ))) {
+                        lowestIdAdjacencyList[node].add(Integer.valueOf(succ));
                     }
                 }
             }
@@ -191,7 +191,7 @@ public class StrongConnectedComponents {
         this.lowlink[root] = this.sccCounter;
         this.number[root] = this.sccCounter;
         this.visited[root] = true;
-        this.stack.add(new Integer(root));
+        this.stack.add(Integer.valueOf(root));
 
         for (int i = 0; i < this.adjList[root].length; i++) {
             int w = this.adjList[root][i];
@@ -199,7 +199,7 @@ public class StrongConnectedComponents {
                 this.getStrongConnectedComponents(w);
                 this.lowlink[root] = Math.min(lowlink[root], lowlink[w]);
             } else if (this.number[w] < this.number[root]) {
-                if (this.stack.contains(new Integer(w))) {
+                if (this.stack.contains(Integer.valueOf(w))) {
                     lowlink[root] = Math.min(this.lowlink[root], this.number[w]);
                 }
             }
@@ -213,7 +213,7 @@ public class StrongConnectedComponents {
             do {
                 next = ((Integer) this.stack.get(stack.size() - 1)).intValue();
                 this.stack.remove(stack.size() - 1);
-                scc.add(new Integer(next));
+                scc.add(Integer.valueOf(next));
             } while (this.number[next] > this.number[root]);
 
             // simple scc's with just one node will not be added

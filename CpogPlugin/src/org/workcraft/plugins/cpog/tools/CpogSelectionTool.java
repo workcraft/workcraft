@@ -33,7 +33,6 @@ import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -167,7 +166,7 @@ public class CpogSelectionTool extends SelectionTool {
     static final double minRadius = 2.0;
     static final double expandRadius = 2.0;
     double maxX = 0, maxY = 0;
-    Point2D.Double coordinate = new Point2D.Double(0, 0);
+    Point2D coordinate = new Point2D.Double(0, 0);
     int xpos = 0;
     boolean transitivesActive = true;
 
@@ -461,16 +460,16 @@ public class CpogSelectionTool extends SelectionTool {
         return normalForm;
     }
 
-    public void insertLoose(VisualCpog visualCpog, Double coordinate) {
+    public void insertLoose(VisualCpog visualCpog, Point2D coordinate) {
         for (VisualNode node : visualCpog.getSelection()) {
             if (node instanceof VisualVertex) {
                 VisualVertex v = (VisualVertex) node;
-                v.setPosition(new Double(v.getX(), v.getY() + coordinate.getY()));
+                v.setPosition(new Point2D.Double(v.getX(), v.getY() + coordinate.getY()));
             }
         }
     }
 
-    public VisualPage insertAsPage(VisualCpog visualCpog, String graphName, Double coordinate, GraphEditor editor) {
+    public VisualPage insertAsPage(VisualCpog visualCpog, String graphName, Point2D coordinate, GraphEditor editor) {
         HashSet<VisualScenarioPage> pageList = new HashSet<>();
         for (VisualNode n0 : visualCpog.getSelection()) {
             if (n0 instanceof VisualScenarioPage) {
@@ -532,11 +531,11 @@ public class CpogSelectionTool extends SelectionTool {
         for (VisualVertex v : vertexMap.values()) {
             double radius = Math.max(minRadius, expandRadius * n / Math.PI
                     / 2.0);
-            Double pos = new Double(maxX + radius
+            Point2D pos = new Point2D.Double(maxX + radius
                     * Math.cos(2.0 * Math.PI * i / n), y + radius * Math.sin(2.0 * Math.PI * i / n));
             v.setPosition(pos);
-            if (pos.y > highestY) {
-                highestY = pos.y;
+            if (pos.getY() > highestY) {
+                highestY = pos.getY();
             }
             i++;
         }
@@ -924,7 +923,7 @@ public class CpogSelectionTool extends SelectionTool {
 
     }
 
-    public Point2D.Double getLowestVertex(VisualCpog visualCpog) {
+    public Point2D getLowestVertex(VisualCpog visualCpog) {
         return parsingTool.getLowestVertex(visualCpog);
     }
 

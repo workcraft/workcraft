@@ -1,10 +1,10 @@
 package org.workcraft.plugins.stg;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
 import org.junit.Test;
 import org.workcraft.util.Triple;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class LabelParserTests {
 
@@ -23,7 +23,7 @@ public class LabelParserTests {
 
         assertEquals("a", result.getFirst());
         assertEquals(SignalTransition.Direction.PLUS, result.getSecond());
-        assertEquals(new Integer(4), result.getThird());
+        assertEquals(Integer.valueOf(4), result.getThird());
     }
 
     @Test
