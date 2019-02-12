@@ -1,12 +1,15 @@
 package org.workcraft.plugins.wtg;
 
-import org.workcraft.*;
+import org.workcraft.CompatibilityManager;
+import org.workcraft.Framework;
+import org.workcraft.PluginManager;
+import org.workcraft.Version;
 import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.plugins.wtg.commands.*;
 import org.workcraft.plugins.wtg.serialisation.GuardDeserialiser;
 import org.workcraft.plugins.wtg.serialisation.GuardSerialiser;
 
-public class WtgModule  implements Module {
+public class WtgModule implements org.workcraft.Module {
 
     @Override
     public String getDescription() {

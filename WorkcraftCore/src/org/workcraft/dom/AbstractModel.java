@@ -11,7 +11,7 @@ import java.util.*;
 /**
  * A base class for all interpreted graph models.
  */
-public abstract class AbstractModel<N extends Node, C extends Connection>  implements Model<N, C> {
+public abstract class AbstractModel<N extends Node, C extends Connection> implements Model<N, C> {
 
     private final Container root;
     private final ReferenceManager mgr;

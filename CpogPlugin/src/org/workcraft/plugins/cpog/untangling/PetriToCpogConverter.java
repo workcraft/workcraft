@@ -1,22 +1,22 @@
 package org.workcraft.plugins.cpog.untangling;
 
-import java.awt.geom.Point2D.Double;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.cpog.Cpog;
-import org.workcraft.plugins.cpog.commands.PetriToCpogParameters;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.VisualVertex;
 import org.workcraft.plugins.cpog.VisualVertex.RenderType;
+import org.workcraft.plugins.cpog.commands.PetriToCpogParameters;
 import org.workcraft.plugins.cpog.untangling.UntanglingNode.NodeType;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetriNet;
+
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 public class PetriToCpogConverter {
 
@@ -159,7 +159,7 @@ public class PetriToCpogConverter {
                 // if so do not create a new one but connect
                 // the one already available
                 if (nodes.containsKey(sourceName) == false) {
-                    sourceVertex.setPosition(new Double(xPos, yPos));
+                    sourceVertex.setPosition(new Point2D.Double(xPos, yPos));
                     xPos = xPos + 5;
                     nodes.put(sourceName, sourceVertex);
                 } else {
@@ -167,7 +167,7 @@ public class PetriToCpogConverter {
                 }
 
                 if (nodes.containsKey(targetName) == false) {
-                    targetVertex.setPosition(new Double(xPos, yPos));
+                    targetVertex.setPosition(new Point2D.Double(xPos, yPos));
                     xPos = xPos + 5;
                     nodes.put(targetName, targetVertex);
                 } else {
@@ -232,7 +232,7 @@ public class PetriToCpogConverter {
             }
 
             // set position of last vertex
-            vertex.setPosition(new Double(xPos, yPos));
+            vertex.setPosition(new Point2D.Double(xPos, yPos));
             return;
         }
 
@@ -263,7 +263,7 @@ public class PetriToCpogConverter {
                 VisualVertex postVertex = (VisualVertex) connection.getSecond();
 
                 // set the position to current vertex
-                vertex.setPosition(new Double(x, y));
+                vertex.setPosition(new Point2D.Double(x, y));
 
                 // increment horizontal position
                 x = x + 5;

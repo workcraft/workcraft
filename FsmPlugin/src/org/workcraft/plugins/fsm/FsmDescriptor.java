@@ -2,7 +2,7 @@ package org.workcraft.plugins.fsm;
 
 import org.workcraft.dom.ModelDescriptor;
 
-public class FsmDescriptor  implements ModelDescriptor {
+public class FsmDescriptor implements ModelDescriptor {
 
     @Override
     public String getDisplayName() {

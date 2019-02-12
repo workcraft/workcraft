@@ -1,10 +1,9 @@
 package org.workcraft.plugins.dtd;
 
 import org.workcraft.Framework;
-import org.workcraft.Module;
 import org.workcraft.PluginManager;
 
-public class DtdModule  implements Module {
+public class DtdModule implements org.workcraft.Module {
 
     @Override
     public String getDescription() {

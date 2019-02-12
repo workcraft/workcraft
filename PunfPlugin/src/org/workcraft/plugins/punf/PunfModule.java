@@ -1,10 +1,9 @@
 package org.workcraft.plugins.punf;
 
 import org.workcraft.Framework;
-import org.workcraft.Module;
 import org.workcraft.PluginManager;
 
-public class PunfModule implements Module {
+public class PunfModule implements org.workcraft.Module {
 
     @Override
     public void init() {

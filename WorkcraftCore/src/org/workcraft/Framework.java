@@ -828,8 +828,8 @@ public final class Framework {
             modelEntry.setStamp(stamp);
             modelEntry.setVersion(version);
             return modelEntry;
-        } catch (IOException | ParserConfigurationException | SAXException |
-                InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+        } catch (IOException | ParserConfigurationException | InstantiationException | IllegalAccessException
+                | SAXException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException e) {
             throw new DeserialisationException(e);
         }
     }

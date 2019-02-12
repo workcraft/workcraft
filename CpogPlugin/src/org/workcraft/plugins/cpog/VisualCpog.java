@@ -135,18 +135,14 @@ public class VisualCpog extends AbstractVisualModel {
         return scenario;
     }
 
-    // TODO: Add safe versions of these methods; see getVertices(Container root).
-    @Deprecated
     public Collection<VisualScenario> getGroups() {
         return Hierarchy.getChildrenOfType(getRoot(), VisualScenario.class);
     }
 
-    @Deprecated
     public Collection<VisualVariable> getVariables() {
         return Hierarchy.getChildrenOfType(getRoot(), VisualVariable.class);
     }
 
-    @Deprecated
     public Collection<VisualVertex> getVertices() {
         return Hierarchy.getChildrenOfType(getRoot(), VisualVertex.class);
     }

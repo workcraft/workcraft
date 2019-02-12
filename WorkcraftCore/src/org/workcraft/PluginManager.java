@@ -18,6 +18,7 @@ import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.FileHandler;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -51,9 +52,9 @@ public class PluginManager implements PluginProvider {
 
     private boolean initModules() {
         boolean result = true;
-        for (PluginInfo<? extends Module> info : getPlugins(Module.class)) {
+        for (PluginInfo<? extends org.workcraft.Module> info : getPlugins(Module.class)) {
             try {
-                final Module module = info.newInstance();
+                final org.workcraft.Module module = info.newInstance();
                 try {
                     LogUtils.logMessage("  Loading module: " + module.getDescription());
                     module.init();
@@ -195,16 +196,14 @@ public class PluginManager implements PluginProvider {
     private <T> void registerClass(Class<T> interf, final Class<? extends T> cls) {
         registerClass(interf, () -> {
             try {
-                return cls.newInstance();
-            } catch (InstantiationException e) {
+                return cls.getDeclaredConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                 Throwable q = e;
                 System.err.println(cls.getCanonicalName());
                 while (q != null) {
                     q.printStackTrace();
                     q = q.getCause();
                 }
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         });

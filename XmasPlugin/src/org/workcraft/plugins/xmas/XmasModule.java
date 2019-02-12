@@ -1,12 +1,15 @@
 package org.workcraft.plugins.xmas;
 
-import org.workcraft.*;
+import org.workcraft.CompatibilityManager;
+import org.workcraft.Framework;
+import org.workcraft.PluginManager;
+import org.workcraft.Version;
 import org.workcraft.plugins.xmas.commands.*;
 import org.workcraft.plugins.xmas.tools.XmasAnalysisTool;
 import org.workcraft.plugins.xmas.tools.XmasQueryTool;
 import org.workcraft.plugins.xmas.tools.XmasVerificationTool;
 
-public class XmasModule implements Module {
+public class XmasModule implements org.workcraft.Module {
 
     @Override
     public String getDescription() {

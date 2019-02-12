@@ -15,6 +15,7 @@ import org.workcraft.plugins.wtg.decorations.StateDecoration;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 @Hotkey(KeyEvent.VK_Q)
@@ -76,6 +77,12 @@ public class VisualState extends VisualComponent {
             bb = BoundingBoxHelper.union(bb, getInitialMarkerShape().getBounds2D());
         }
         return bb;
+    }
+
+    @Override
+    public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+        double size = CommonVisualSettings.getNodeSize() - CommonVisualSettings.getStrokeWidth();
+        return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
     }
 
     public State getReferencedState() {

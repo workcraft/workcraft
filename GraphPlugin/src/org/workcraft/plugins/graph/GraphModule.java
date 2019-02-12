@@ -1,7 +1,6 @@
 package org.workcraft.plugins.graph;
 
 import org.workcraft.Framework;
-import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.plugins.graph.commands.GraphReachabilityVerificationCommand;
@@ -9,7 +8,7 @@ import org.workcraft.plugins.graph.commands.GraphToPetriConversionCommand;
 import org.workcraft.plugins.graph.serialisation.VertexDeserialiser;
 import org.workcraft.plugins.graph.serialisation.VertexSerialiser;
 
-public class GraphModule implements Module {
+public class GraphModule implements org.workcraft.Module {
 
     @Override
     public String getDescription() {

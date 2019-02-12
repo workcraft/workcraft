@@ -37,7 +37,7 @@ import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.util.Step;
 
 @SuppressWarnings("rawtypes")
-public class ParallelSimDialog  extends JDialog {
+public class ParallelSimDialog extends JDialog {
 
     private static final long serialVersionUID = 1L;
 

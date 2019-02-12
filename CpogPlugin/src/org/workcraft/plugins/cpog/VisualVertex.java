@@ -184,11 +184,6 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
     }
 
     @Override
-    public Rectangle2D getInternalBoundingBoxInLocalSpace() {
-        return getShape().getBounds2D();
-    }
-
-    @Override
     public Rectangle2D getBoundingBoxInLocalSpace() {
         Rectangle2D bb = super.getBoundingBoxInLocalSpace();
         if (getLabelVisibility() && (conditionRenderedFormula != null) && !conditionRenderedFormula.isEmpty()) {

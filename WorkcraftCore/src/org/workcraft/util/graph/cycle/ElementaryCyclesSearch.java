@@ -107,7 +107,7 @@ public class ElementaryCyclesSearch {
      */
     private boolean findCycles(int v, int s, Vector[] adjList) {
         boolean f = false;
-        this.stack.add(new Integer(v));
+        this.stack.add(Integer.valueOf(v));
         this.blocked[v] = true;
 
         for (int i = 0; i < adjList[v].size(); i++) {
@@ -133,13 +133,13 @@ public class ElementaryCyclesSearch {
         } else {
             for (int i = 0; i < adjList[v].size(); i++) {
                 int w = ((Integer) adjList[v].get(i)).intValue();
-                if (!this.mB[w].contains(new Integer(v))) {
-                    this.mB[w].add(new Integer(v));
+                if (!this.mB[w].contains(Integer.valueOf(v))) {
+                    this.mB[w].add(Integer.valueOf(v));
                 }
             }
         }
 
-        this.stack.remove(new Integer(v));
+        this.stack.remove(Integer.valueOf(v));
         return f;
     }
 

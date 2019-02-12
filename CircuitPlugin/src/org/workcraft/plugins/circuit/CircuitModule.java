@@ -1,6 +1,9 @@
 package org.workcraft.plugins.circuit;
 
-import org.workcraft.*;
+import org.workcraft.CompatibilityManager;
+import org.workcraft.Framework;
+import org.workcraft.PluginManager;
+import org.workcraft.Version;
 import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.plugins.circuit.commands.*;
 import org.workcraft.plugins.circuit.interop.GenlibImporter;
@@ -10,7 +13,7 @@ import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.serialisation.FunctionDeserialiser;
 import org.workcraft.plugins.circuit.serialisation.FunctionSerialiser;
 
-public class CircuitModule implements Module {
+public class CircuitModule implements org.workcraft.Module {
 
     @Override
     public String getDescription() {

@@ -1,7 +1,6 @@
 package org.workcraft.plugins.mpsat;
 
 import org.workcraft.Framework;
-import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.plugins.mpsat.commands.MpsatComplexGateSynthesisCommand;
@@ -9,7 +8,7 @@ import org.workcraft.plugins.mpsat.commands.MpsatGeneralisedCelementSynthesisCom
 import org.workcraft.plugins.mpsat.commands.MpsatStandardCelementSynthesisCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatTechnologyMappingSynthesisCommand;
 
-public class MpsatSynthesisModule implements Module {
+public class MpsatSynthesisModule implements org.workcraft.Module {
 
     @Override
     public void init() {

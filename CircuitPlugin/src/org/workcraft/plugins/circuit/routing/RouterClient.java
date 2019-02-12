@@ -1,5 +1,6 @@
 package org.workcraft.plugins.circuit.routing;
 
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualContact;
@@ -8,6 +9,7 @@ import org.workcraft.plugins.circuit.routing.basic.*;
 import org.workcraft.plugins.circuit.routing.impl.RouterTask;
 import org.workcraft.util.TwoWayMap;
 
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Map.Entry;
 
@@ -22,7 +24,7 @@ public class RouterClient {
         contactToRouterPortMap.clear();
         RouterTask routerTask = new RouterTask();
         for (VisualFunctionComponent component: circuit.getVisualFunctionComponents()) {
-            Rectangle2D bb = component.getInternalBoundingBoxInRootSpace();
+            Rectangle2D bb = getBoundingBoxInRootSpace(component);
             Rectangle internalBoundingBox = new Rectangle(bb.getX(), bb.getY(), bb.getWidth(), bb.getHeight());
             routerTask.addRectangle(internalBoundingBox);
             for (VisualContact contact: component.getContacts()) {
@@ -36,7 +38,7 @@ public class RouterClient {
         }
 
         for (VisualContact port: circuit.getVisualPorts()) {
-            Rectangle2D bb = port.getInternalBoundingBoxInRootSpace();
+            Rectangle2D bb = getBoundingBoxInRootSpace(port);
             routerTask.addRectangle(new Rectangle(bb.getX(), bb.getY(), bb.getWidth(), bb.getHeight()));
             Point pos = new Point(bb.getCenterX(), bb.getCenterY());
             RouterPort routerPort = new RouterPort(getDirection(port), pos, true);
@@ -55,6 +57,11 @@ public class RouterClient {
             }
         }
         return routerTask;
+    }
+    private Rectangle2D getBoundingBoxInRootSpace(VisualComponent component) {
+        Point2D p = component.getRootSpaceTranslation();
+        Rectangle2D bb = component.getInternalBoundingBoxInLocalSpace();
+        return new Rectangle2D.Double(bb.getX() + p.getX(), bb.getY() + p.getY(), bb.getWidth(), bb.getHeight());
     }
 
     private PortDirection getDirection(VisualContact contact) {

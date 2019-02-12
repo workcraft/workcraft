@@ -1,12 +1,15 @@
 package org.workcraft.plugins.petri;
 
-import org.workcraft.*;
+import org.workcraft.CompatibilityManager;
+import org.workcraft.Framework;
+import org.workcraft.PluginManager;
+import org.workcraft.Version;
 import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.plugins.petri.commands.*;
 import org.workcraft.plugins.petri.serialization.ReadArcDeserialiser;
 import org.workcraft.plugins.petri.serialization.ReadArcSerialiser;
 
-public class PetriNetModule implements Module {
+public class PetriNetModule implements org.workcraft.Module {
 
     @Override
     public String getDescription() {

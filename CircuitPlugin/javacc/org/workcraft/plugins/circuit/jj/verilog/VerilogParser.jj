@@ -21,11 +21,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
 
-import org.workcraft.plugins.circuit.verilog.Module;
-import org.workcraft.plugins.circuit.verilog.Port;
-import org.workcraft.plugins.circuit.verilog.Assign;
-import org.workcraft.plugins.circuit.verilog.Instance;
-import org.workcraft.plugins.circuit.verilog.Pin;
+import org.workcraft.plugins.circuit.verilog.VerilogModule;
+import org.workcraft.plugins.circuit.verilog.VerilogPort;
+import org.workcraft.plugins.circuit.verilog.VerilogAssign;
+import org.workcraft.plugins.circuit.verilog.VerilogInstance;
+import org.workcraft.plugins.circuit.verilog.VerilogConnection;
 
 public class VerilogParser {
 }
@@ -144,9 +144,9 @@ TOKEN:
     "."
 }
 
-List<Module> parseCircuit() :
+List<VerilogModule> parseCircuit() :
 {
-    List<Module> modules;
+    List<VerilogModule> modules;
 }
 {
     modules = parseModules()
@@ -155,10 +155,10 @@ List<Module> parseCircuit() :
     }
 }
 
-List<Module> parseModules():
+List<VerilogModule> parseModules():
 {
-    Module module;
-    List<Module> modules = new LinkedList<Module>();
+    VerilogModule module;
+    List<VerilogModule> modules = new LinkedList<VerilogModule>();
 }
 {
     (
@@ -172,16 +172,16 @@ List<Module> parseModules():
     }
 }
 
-Module parseModule():
+VerilogModule parseModule():
 {
     String name;
-    List<Port> ports;
-    Assign assign;
-    List<Assign> assigns = new LinkedList<Assign>();
-    Instance instance;
-    List<Instance> instances = new LinkedList<Instance>();
-    List<Instance> group;
-    Set<List<Instance>> groups = new HashSet<List<Instance>>();
+    List<VerilogPort> ports;
+    VerilogAssign assign;
+    List<VerilogAssign> assigns = new LinkedList<VerilogAssign>();
+    VerilogInstance instance;
+    List<VerilogInstance> instances = new LinkedList<VerilogInstance>();
+    List<VerilogInstance> group;
+    Set<List<VerilogInstance>> groups = new HashSet<List<VerilogInstance>>();
     Map<String, Boolean> signalStates = null;
 }
 {
@@ -214,7 +214,7 @@ Module parseModule():
     ]
     <ENDMODULE>
     {
-        return new Module(name, ports, assigns, instances, signalStates, groups);
+        return new VerilogModule(name, ports, assigns, instances, signalStates, groups);
     }
 }
 
@@ -229,9 +229,9 @@ String parseModuleName():
     }
 }
 
-List<Port> parsePorts():
+List<VerilogPort> parsePorts():
 {
-    List<Port> ports;
+    List<VerilogPort> ports;
 }
 {
     (
@@ -245,10 +245,10 @@ List<Port> parsePorts():
     }
 }
 
-List<Port> parseCompactPorts():
+List<VerilogPort> parseCompactPorts():
 {
-    Port port;
-    List<Port> ports = new LinkedList<Port>();
+    VerilogPort port;
+    List<VerilogPort> ports = new LinkedList<VerilogPort>();
 }
 {
     [
@@ -267,52 +267,52 @@ List<Port> parseCompactPorts():
     }
 }
 
-Port parseCompactPort():
+VerilogPort parseCompactPort():
 {
-    Port.Type type;
-    Port.Range range = null;
+    VerilogPort.Type type;
+    VerilogPort.Range range = null;
     Token nameToken;
 }
 {
     type = parsePortType() [range = parseRange()] nameToken = <NAME>
     {
-        return new Port(nameToken.image, type, range);
+        return new VerilogPort(nameToken.image, type, range);
     }
 }
 
-Port.Type parsePortType():
+VerilogPort.Type parsePortType():
 {
 }
 {
     (
         <INPUT>
         {
-            return Port.Type.INPUT;
+            return VerilogPort.Type.INPUT;
         }
     |
         <OUTPUT>
         {
-            return Port.Type.OUTPUT;
+            return VerilogPort.Type.OUTPUT;
         }
     )
 }
 
-List<Port> parseComplexPorts():
+List<VerilogPort> parseComplexPorts():
 {
     List<String> declarations;
-    List<Port> definitions;
+    List<VerilogPort> definitions;
 }
 {
     declarations = parsePortsDeclaration()
     definitions = parsePortsDefinitions()
     {
-        HashMap<String, Port> nameToPort = new HashMap<String, Port>();
-        for (Port port: definitions) {
+        HashMap<String, VerilogPort> nameToPort = new HashMap<String, VerilogPort>();
+        for (VerilogPort port: definitions) {
             nameToPort.put(port.name, port);
         }
-        List<Port> ports = new LinkedList<Port>();
+        List<VerilogPort> ports = new LinkedList<VerilogPort>();
         for (String name: declarations) {
-            Port port = nameToPort.get(name);
+            VerilogPort port = nameToPort.get(name);
             if (port != null) {
                 ports.add(port);
             }
@@ -336,10 +336,10 @@ List<String> parsePortsDeclaration():
     }
 }
 
-List<Port> parsePortsDefinitions():
+List<VerilogPort> parsePortsDefinitions():
 {
-    List<Port> ports;
-    List<Port> allPorts = new LinkedList<Port>();
+    List<VerilogPort> ports;
+    List<VerilogPort> allPorts = new LinkedList<VerilogPort>();
 }
 {
     (
@@ -353,12 +353,12 @@ List<Port> parsePortsDefinitions():
     }
 }
 
-List<Port> parsePortsDefinition():
+List<VerilogPort> parsePortsDefinition():
 {
-    Port.Type type;
-    Port.Range range = null;
+    VerilogPort.Type type;
+    VerilogPort.Range range = null;
     List<String> names;
-    List<Port> ports = new LinkedList<Port>();
+    List<VerilogPort> ports = new LinkedList<VerilogPort>();
 }
 {
     (
@@ -367,7 +367,7 @@ List<Port> parsePortsDefinition():
         (type = parsePortType() [range = parseRange()] names = parseNames() ";")
         {
             for (String name: names) {
-                Port port = new Port(name, type, range);
+                VerilogPort port = new VerilogPort(name, type, range);
                 ports.add(port);
             }
         }
@@ -377,7 +377,7 @@ List<Port> parsePortsDefinition():
     }
 }
 
-Port.Range parseRange():
+VerilogPort.Range parseRange():
 {
     Token firstToken;
     Token secondToken;
@@ -387,7 +387,7 @@ Port.Range parseRange():
     {
         Integer first = Integer.parseInt(firstToken.image);
         Integer second = Integer.parseInt(secondToken.image);
-        return new Port.Range(first, second);
+        return new VerilogPort.Range(first, second);
     }
 }
 
@@ -438,10 +438,10 @@ Map<String, Boolean> parseInitialState():
     }
 }
 
-List<Assign> parseAssigns():
+List<VerilogAssign> parseAssigns():
 {
-    Assign assign;
-    List<Assign> assigns = new LinkedList<Assign>();
+    VerilogAssign assign;
+    List<VerilogAssign> assigns = new LinkedList<VerilogAssign>();
 }
 {
     (
@@ -455,7 +455,7 @@ List<Assign> parseAssigns():
     }
 }
 
-Assign parseAssign():
+VerilogAssign parseAssign():
 {
     Token nameToken;
     Token formulaToken;
@@ -468,14 +468,14 @@ Assign parseAssign():
                 .replaceAll(";$", "")  // end of assign expression
                 .replace("1'b0", "0")  // LOGIC0
                 .replace("1'b1", "1"); // LOGIC1
-        return new Assign(nameToken.image, formula);
+        return new VerilogAssign(nameToken.image, formula);
     }
 }
 
-List<Instance> parseInstances():
+List<VerilogInstance> parseInstances():
 {
-    Instance instance;
-    List<Instance> instances = new LinkedList<Instance>();
+    VerilogInstance instance;
+    List<VerilogInstance> instances = new LinkedList<VerilogInstance>();
 }
 {
     (
@@ -489,13 +489,13 @@ List<Instance> parseInstances():
     }
 }
 
-Instance parseInstance():
+VerilogInstance parseInstance():
 {
     boolean zeroDelay = false;
     String moduleName;
     Token nameToken = null;
     List<String> parameters;
-    List<Pin> pins;
+    List<VerilogConnection> connections;
 }
 {
     [
@@ -506,74 +506,74 @@ Instance parseInstance():
     ]
     moduleName = parseModuleName()
     [nameToken = <NAME>]
-    "(" pins = parsePins() ")" ";"
+    "(" connections = parseConnections() ")" ";"
     {
         String name = (nameToken == null ? null : nameToken.image);
-        return new Instance(name, moduleName, pins, zeroDelay);
+        return new VerilogInstance(name, moduleName, connections, zeroDelay);
     }
 }
 
-List<Pin> parsePins():
+List<VerilogConnection> parseConnections():
 {
-    List<Pin> pins;
+    List<VerilogConnection> connections;
 }
 {
     (
-        LOOKAHEAD(parseNamedPins())
-        pins = parseNamedPins()
+        LOOKAHEAD(parseNamedConnections())
+        connections = parseNamedConnections()
     |
-        pins = parseOrderedPins()
+        connections = parseOrderedConnections()
     )
     {
-        return pins;
+        return connections;
     }
 }
 
-List<Pin> parseNamedPins():
+List<VerilogConnection> parseNamedConnections():
 {
-    Pin pin;
-    List<Pin> pins = new LinkedList<Pin>();
+    VerilogConnection connection;
+    List<VerilogConnection> connections = new LinkedList<VerilogConnection>();
 }
 {
     (
-        pin = parseNamedPin()
+        connection = parseNamedConnection()
         {
-            pins.add(pin);
+            connections.add(connection);
         }
     )+
     {
-        return pins;
+        return connections;
     }
 }
 
-Pin parseNamedPin():
+VerilogConnection parseNamedConnection():
 {
     Token nameToken;
-    Pin wire;
+    VerilogConnection wire;
     Integer netIndex = null;
 }
 {
     "." nameToken = <NAME> "(" wire = parseWire() ")" [","]
     {
-        return new Pin(nameToken.image, wire.netName, wire.netIndex);
+        return new VerilogConnection(nameToken.image, wire.netName, wire.netIndex);
     }
 }
 
-List<Pin> parseOrderedPins():
+List<VerilogConnection> parseOrderedConnections():
 {
-    List<Pin> pins;
+    List<VerilogConnection> connections;
 }
 {
-    pins = parseWires()
+    connections = parseWires()
     {
-        return pins;
+        return connections;
     }
 }
 
-List<Pin> parseWires():
+List<VerilogConnection> parseWires():
 {
-    Pin wire;
-    List<Pin> wires = new LinkedList<Pin>();
+    VerilogConnection wire;
+    List<VerilogConnection> wires = new LinkedList<VerilogConnection>();
 }
 {
     (
@@ -587,7 +587,7 @@ List<Pin> parseWires():
     }
 }
 
-Pin parseWire():
+VerilogConnection parseWire():
 {
     Token nameToken;
     Integer index = null;
@@ -595,7 +595,7 @@ Pin parseWire():
 {
     nameToken = <NAME> [ index = parseIndex()]
     {
-        return new Pin(null, nameToken.image, index);
+        return new VerilogConnection(null, nameToken.image, index);
     }
 }
 

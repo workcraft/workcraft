@@ -1,14 +1,13 @@
 package org.workcraft.plugins.atacs;
 
 import org.workcraft.Framework;
-import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.plugins.atacs.commands.AtacsComplexGateSynthesisCommand;
 import org.workcraft.plugins.atacs.commands.AtacsGeneralisedCelementSynthesisCommand;
 import org.workcraft.plugins.atacs.commands.AtacsStandardCelementSynthesisCommand;
 
-public class AtacsModule implements Module {
+public class AtacsModule implements org.workcraft.Module {
 
     @Override
     public void init() {
