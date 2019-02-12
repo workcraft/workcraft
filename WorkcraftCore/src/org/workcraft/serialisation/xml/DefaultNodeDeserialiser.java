@@ -1,6 +1,11 @@
 package org.workcraft.serialisation.xml;
 
-import static org.workcraft.serialisation.xml.BeanInfoCache.getBeanInfo;
+import org.w3c.dom.Element;
+import org.workcraft.dom.visual.Dependent;
+import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.serialisation.ReferenceResolver;
+import org.workcraft.util.ConstructorParametersMatcher;
+import org.workcraft.util.XmlUtils;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -10,12 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 
-import org.w3c.dom.Element;
-import org.workcraft.dom.visual.Dependent;
-import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.serialisation.ReferenceResolver;
-import org.workcraft.util.ConstructorParametersMatcher;
-import org.workcraft.util.XmlUtils;
+import static org.workcraft.serialisation.xml.BeanInfoCache.getBeanInfo;
 
 class DefaultNodeDeserialiser {
     private final DeserialiserFactory fac;
@@ -28,10 +28,9 @@ class DefaultNodeDeserialiser {
         this.finaliser = finaliser;
     }
 
-    private void autoDeserialiseProperties(Element currentLevelElement,
-            Object instance, Class<?> currentLevel,
-            ReferenceResolver externalReferenceResolver)
+    private void autoDeserialiseProperties(Element currentLevelElement, Object instance, Class<?> currentLevel)
             throws DeserialisationException {
+
         if (currentLevel.getAnnotation(NoAutoSerialisation.class) != null) {
             return;
         }
@@ -51,27 +50,21 @@ class DefaultNodeDeserialiser {
                     continue;
                 }
 
-                if (desc.getPropertyType() == null) {
+                if ((desc.getPropertyType() == null) || (desc.getWriteMethod() == null) || (desc.getReadMethod() == null)) {
                     continue;
                 }
 
-                if (desc.getWriteMethod() == null || desc.getReadMethod() == null) {
+                // Property explicitly requested to be excluded from auto serialisation.
+                if ((desc.getReadMethod().getAnnotation(NoAutoSerialisation.class) != null)
+                        || (desc.getWriteMethod().getAnnotation(NoAutoSerialisation.class) != null)) {
                     continue;
                 }
 
-                // property explicitly requested to be excluded from auto serialisation
-                if (
-                        desc.getReadMethod().getAnnotation(NoAutoSerialisation.class) != null ||
-                        desc.getWriteMethod().getAnnotation(NoAutoSerialisation.class) != null
-                ) {
-                    continue;
-                }
-
-                // the property is writable and is not of array type, try to get a deserialiser
+                // The property is writable and is not of array type, try to get a deserialiser.
                 XMLDeserialiser deserialiser = fac.getDeserialiserFor(desc.getPropertyType().getName());
 
                 if (!(deserialiser instanceof BasicXMLDeserialiser)) {
-                    // no deserialiser, try to use the special case enum deserialiser
+                    // No deserialiser, try to use the special case enum deserialiser.
                     if (desc.getPropertyType().isEnum()) {
                         deserialiser = fac.getDeserialiserFor(Enum.class.getName());
                         if (deserialiser == null) {
@@ -87,47 +80,40 @@ class DefaultNodeDeserialiser {
 
                 desc.getWriteMethod().invoke(instance, value);
             }
-        } catch (IllegalArgumentException | IllegalAccessException | InstantiationException |
-                IntrospectionException e) {
+        } catch (IllegalArgumentException | IllegalAccessException | InstantiationException | IntrospectionException e) {
             throw new DeserialisationException(e);
         } catch (InvocationTargetException e) {
             throw new DeserialisationException(instance.getClass().getName() + " " + currentLevel.getName() + " " + e.getMessage(), e);
         }
     }
 
-    public Object initInstance(Element element, ReferenceResolver externalReferenceResolver, Object... constructorParameters) throws DeserialisationException {
-        String className = element.getAttribute("class");
+    public Object initInstance(Element element, ReferenceResolver externalReferenceResolver, Object... constructorParameters)
+            throws DeserialisationException {
 
+        String className = element.getAttribute("class");
         if (className == null || className.isEmpty()) {
             throw new DeserialisationException("Class name attribute is not set\n" + element.toString());
         }
 
-        //System.out.println("Initialising " + className);
-
         try {
             Class<?> cls = Class.forName(className);
             String shortClassName = cls.getSimpleName();
-
             Element currentLevelElement = XmlUtils.getChildElement(shortClassName, element);
-
             Object instance;
 
             // Check for a custom deserialiser first
             XMLDeserialiser deserialiser = fac.getDeserialiserFor(className);
 
             if (deserialiser instanceof CustomXMLDeserialiser) {
-                //System.out.println("Using custom deserialiser " + deserialiser);
-                instance = ((CustomXMLDeserialiser) deserialiser).createInstance(currentLevelElement, externalReferenceResolver, constructorParameters);
+                CustomXMLDeserialiser customDeserialiser = (CustomXMLDeserialiser) deserialiser;
+                instance = customDeserialiser.createInstance(currentLevelElement, externalReferenceResolver, constructorParameters);
             } else if (deserialiser instanceof BasicXMLDeserialiser) {
-                //System.out.println("Using basic deserialiser " + deserialiser);
-                instance = ((BasicXMLDeserialiser) deserialiser).deserialise(currentLevelElement);
+                BasicXMLDeserialiser basicDeserialiser = (BasicXMLDeserialiser) deserialiser;
+                instance = basicDeserialiser.deserialise(currentLevelElement);
             } else {
-                //System.out.println("Using default deserialiser " + deserialiser);
-
                 // Check for incoming parameters - these may be supplied when a custom deserialiser requests
                 // a sub-node to be deserialised which should know how to construct this class and pass
                 // the proper constructor arguments
-
                 if (constructorParameters.length != 0) {
                     Class<?>[] parameterTypes = new Class<?>[constructorParameters.length];
                     for (int i = 0; i < constructorParameters.length; i++) {
@@ -138,14 +124,13 @@ class DefaultNodeDeserialiser {
                 } else {
                     // Still don't know how to deserialise the class.
                     // Let's see if it is a dependent node.
-
                     if (Dependent.class.isAssignableFrom(cls)) {
                         // Check for the simple case when there is only one reference to the underlying model.
                         String ref = currentLevelElement.getAttribute("ref");
                         if (ref.isEmpty()) {
                             // Bad luck, we probably can't do anything.
                             // But let's try a default constructor just in case.
-                            instance = cls.newInstance();
+                            instance = cls.getDeclaredConstructor().newInstance();
                         } else {
                             // Hooray, we've got a reference, so there is likely an appropriate constructor.
                             Object refObject = externalReferenceResolver.getObject(ref);
@@ -154,15 +139,12 @@ class DefaultNodeDeserialiser {
                         }
                     } else {
                         // It is not a dependent node, so there should be a default constructor.
-                        instance = cls.newInstance();
+                        instance = cls.getDeclaredConstructor().newInstance();
                     }
                 }
             }
 
-            //System.out.println("Result = " + instance);
-
             doInitialisation(element, instance, instance.getClass(), externalReferenceResolver);
-
             return instance;
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException |
                 NoSuchMethodException | IllegalArgumentException | InvocationTargetException e) {
@@ -170,17 +152,20 @@ class DefaultNodeDeserialiser {
         }
     }
 
-    void doInitialisation(Element element, Object instance, Class<?> currentLevel, ReferenceResolver externalReferenceResolver) throws DeserialisationException {
+    void doInitialisation(Element element, Object instance, Class<?> currentLevel, ReferenceResolver externalReferenceResolver)
+            throws DeserialisationException {
+
         Element currentLevelElement = XmlUtils.getChildElement(currentLevel.getSimpleName(), element);
         if (currentLevelElement != null) {
-            autoDeserialiseProperties(currentLevelElement, instance, currentLevel, externalReferenceResolver);
+            autoDeserialiseProperties(currentLevelElement, instance, currentLevel);
         }
 
         try {
             XMLDeserialiser deserialiser = fac.getDeserialiserFor(currentLevel.getName());
 
             if (deserialiser instanceof CustomXMLDeserialiser) {
-                ((CustomXMLDeserialiser) deserialiser).initInstance(currentLevelElement, instance, externalReferenceResolver, initialiser);
+                CustomXMLDeserialiser customDeserialiser = (CustomXMLDeserialiser) deserialiser;
+                customDeserialiser.initInstance(currentLevelElement, instance, externalReferenceResolver, initialiser);
             }
         } catch (InstantiationException | IllegalAccessException e) {
             throw new DeserialisationException(e);
@@ -218,6 +203,7 @@ class DefaultNodeDeserialiser {
 
     public void finaliseInstance(Element element, Object instance, ReferenceResolver internalReferenceResolver,
             ReferenceResolver externalReferenceResolver) throws DeserialisationException {
+
         doFinalisation(element, instance, internalReferenceResolver, externalReferenceResolver, instance.getClass());
     }
 

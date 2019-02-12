@@ -19,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.zip.ZipEntry;
@@ -60,14 +61,13 @@ public class FrameworkUtils {
     }
 
     static ModelDescriptor loadMetaDescriptor(Document metaDoc)
-            throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+            throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         Element descriptorElement = XmlUtils.getChildElement(Framework.META_DESCRIPTOR_WORK_ELEMENT, metaDoc.getDocumentElement());
         String descriptorClass = XmlUtils.readStringAttr(descriptorElement, Framework.META_DESCRIPTOR_CLASS_WORK_ATTRIBUTE);
-        return (ModelDescriptor) Class.forName(descriptorClass).newInstance();
+        return (ModelDescriptor) Class.forName(descriptorClass).getDeclaredConstructor().newInstance();
     }
 
-    static Stamp loadMetaStamp(Document metaDoc)
-            throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    static Stamp loadMetaStamp(Document metaDoc) {
         Stamp stamp = null;
         Element stampElement = XmlUtils.getChildElement(Framework.META_STAMP_WORK_ELEMENT, metaDoc.getDocumentElement());
         if (stampElement != null) {
@@ -80,8 +80,7 @@ public class FrameworkUtils {
         return stamp;
     }
 
-    static Version loadMetaVersion(Document metaDoc)
-            throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    static Version loadMetaVersion(Document metaDoc) {
         Version version = null;
         Element versionElement = XmlUtils.getChildElement(Framework.META_VERSION_WORK_ELEMENT, metaDoc.getDocumentElement());
         if (versionElement != null) {

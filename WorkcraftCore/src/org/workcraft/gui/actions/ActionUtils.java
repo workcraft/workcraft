@@ -1,9 +1,8 @@
 package org.workcraft.gui.actions;
 
+import javax.swing.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-
-import javax.swing.KeyStroke;
 
 public class ActionUtils {
 
@@ -12,6 +11,7 @@ public class ActionUtils {
         KeyStroke keystroke = action.getKeyStroke();
         if (keystroke != null) {
             result += " (" + getKeystrokeString(keystroke) + ")";
+
         }
         return result;
     }
@@ -19,47 +19,18 @@ public class ActionUtils {
     public static String getKeystrokeString(KeyStroke keystroke) {
         String result = "";
         if (keystroke != null) {
-            int modifiers = keystroke.getModifiers();
-            boolean combo = false;
-            if ((modifiers & (InputEvent.CTRL_DOWN_MASK | InputEvent.CTRL_MASK)) != 0) {
-                if (combo) {
-                    result += "+";
-                }
-                result += "Ctrl";
-                combo = true;
-            }
-            if ((modifiers & (InputEvent.META_DOWN_MASK | InputEvent.META_MASK)) != 0) {
-                if (combo) {
-                    result += "+";
-                }
-                result += "Meta";
-                combo = true;
-            }
-            if ((modifiers & (InputEvent.ALT_DOWN_MASK | InputEvent.ALT_MASK)) != 0) {
-                if (combo) {
-                    result += "+";
-                }
-                result += "Alt";
-                combo = true;
-            }
-            if ((modifiers & (InputEvent.SHIFT_DOWN_MASK | InputEvent.SHIFT_MASK)) != 0) {
-                if (combo) {
-                    result += "+";
-                }
-                result += "Shift";
-                combo = true;
-            }
+            result = InputEvent.getModifiersExText(keystroke.getModifiers());
 
             switch (keystroke.getKeyEventType()) {
             case KeyEvent.KEY_TYPED:
-                if (combo) {
+                if (!result.isEmpty()) {
                     result += "-";
                 }
                 result += keystroke.getKeyChar();
                 break;
             case KeyEvent.KEY_PRESSED:
             case KeyEvent.KEY_RELEASED:
-                if (combo) {
+                if (!result.isEmpty()) {
                     result += "-";
                 }
                 int keyCode = keystroke.getKeyCode();
