@@ -12,6 +12,10 @@ matrix:
       env: TARGET=test
     - jdk: openjdk8
       env: TARGET=test
+    - jdk: oraclejdk11
+      env: TARGET=test
+    - jdk: openjdk11
+      env: TARGET=test
     - os: osx
       osx_image: xcode9.2
       env: TARGET=test
