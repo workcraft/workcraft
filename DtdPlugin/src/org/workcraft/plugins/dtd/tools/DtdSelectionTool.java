@@ -58,7 +58,7 @@ public class DtdSelectionTool extends SelectionTool {
         VisualModel model = editor.getModel();
         if (e.getButtonModifiers() == MouseEvent.BUTTON1_DOWN_MASK) {
             Node hitNode = HitMan.hitFirstInCurrentLevel(e.getStartPosition(), model);
-            if ((swappingSignal == null) && e.isShiftKeyDown() &&
+            if ((swappingSignal == null) && e.isExtendKeyDown() &&
                     (hitNode instanceof VisualSignal) && (model instanceof VisualDtd)) {
                 swappingSignal = (VisualSignal) hitNode;
             }
@@ -72,7 +72,7 @@ public class DtdSelectionTool extends SelectionTool {
         GraphEditor editor = e.getEditor();
         VisualModel model = editor.getModel();
         if (swappingSignal != null) {
-            if ((e.isShiftKeyDown()) && (e.getButtonModifiers() == MouseEvent.BUTTON1_DOWN_MASK)) {
+            if ((e.isExtendKeyDown()) && (e.getButtonModifiers() == MouseEvent.BUTTON1_DOWN_MASK)) {
                 Node node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
                 if (node instanceof VisualSignal) {
                     VisualSignal visualSignal = (VisualSignal) node;
@@ -124,8 +124,9 @@ public class DtdSelectionTool extends SelectionTool {
 
     @Override
     public String getHintText(final GraphEditor editor) {
-        return "Double-click on a signal to add an event. In unstable state hold Shift to rise, " +
-                DesktopApi.getMenuKeyName() + " to fall; in high/low state hold both keys to destabilise.";
+        return "Double-click on signal to add an event. In unstable state hold Shift to rise, " +
+                DesktopApi.getMenuKeyName() + " to fall; in high/low state hold Shift-" +
+                DesktopApi.getMenuKeyName() + " to destabilise. Hold Alt/AltGr to swap signals.";
     }
 
 }
