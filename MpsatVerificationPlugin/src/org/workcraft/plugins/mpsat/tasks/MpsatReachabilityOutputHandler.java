@@ -72,6 +72,9 @@ class MpsatReachabilityOutputHandler implements Runnable {
         return mrp.getSolutions();
     }
 
+    public void reportSolutions(List<MpsatSolution> solutions) {
+    }
+
     public List<MpsatSolution> processSolutions(WorkspaceEntry we, List<MpsatSolution> solutions) {
         List<MpsatSolution> result = new LinkedList<>();
         ComponentData data = getCompositionData(we);
@@ -173,6 +176,7 @@ class MpsatReachabilityOutputHandler implements Runnable {
             }
         } else {
             LogUtils.logWarning(message);
+            reportSolutions(solutions);
             List<MpsatSolution> processedSolutions = processSolutions(getWorkspaceEntry(), solutions);
             Framework framework = Framework.getInstance();
             if (framework.isInGuiMode()) {

@@ -18,8 +18,6 @@ import java.util.*;
 
 class MpsatConformationOutputHandler extends MpsatReachabilityOutputHandler {
 
-    private HashMap<MpsatSolution, Enabledness> solutionToEnabledness = null;
-
     MpsatConformationOutputHandler(WorkspaceEntry we, ExportOutput exportOutput,
             PcompOutput pcompOutput, MpsatOutput mpsatOutput, MpsatParameters settings) {
 
@@ -27,11 +25,24 @@ class MpsatConformationOutputHandler extends MpsatReachabilityOutputHandler {
     }
 
     @Override
+    public void reportSolutions(List<MpsatSolution> solutions) {
+        boolean needsMultiLineMessage = solutions.size() > 1;
+        if (needsMultiLineMessage) {
+            LogUtils.logMessage("Violation traces of the composition:");
+        }
+        for (MpsatSolution solution: solutions) {
+            Trace trace = solution.getMainTrace();
+            if (needsMultiLineMessage) {
+                LogUtils.logMessage("  " + trace.toText());
+            } else {
+                LogUtils.logMessage("Violation trace of the composition: " + trace.toText());
+            }
+        }
+    }
+
+    @Override
     public List<MpsatSolution> processSolutions(WorkspaceEntry we, List<MpsatSolution> solutions) {
         List<MpsatSolution> result = new LinkedList<>();
-
-        StgModel compStg = getMpsatOutput().getInputStg();
-        HashMap<MpsatSolution, Enabledness> solutionToCompEnabledness = getSolutionToEnabledness(compStg, solutions);
 
         StgModel stg = getSrcStg(we);
         ComponentData data = getCompositionData(we);
@@ -42,6 +53,9 @@ class MpsatConformationOutputHandler extends MpsatReachabilityOutputHandler {
         if (needsMultiLineMessage) {
             LogUtils.logMessage("Unique projection(s) to '" + we.getTitle() + "':");
         }
+
+        StgModel compStg = getMpsatOutput().getInputStg();
+        HashMap<MpsatSolution, Enabledness> solutionToCompEnabledness = getSolutionToEnabledness(compStg, solutions);
 
         for (MpsatSolution solution: solutions) {
             // Get unique projection trace
@@ -105,24 +119,13 @@ class MpsatConformationOutputHandler extends MpsatReachabilityOutputHandler {
     }
 
     private HashMap<MpsatSolution, Enabledness> getSolutionToEnabledness(StgModel stg, List<MpsatSolution> solutions) {
-        if (solutionToEnabledness == null) {
-            solutionToEnabledness = new HashMap<>();
-            boolean needsMultiLineMessage = solutions.size() > 1;
-            if (needsMultiLineMessage) {
-                LogUtils.logMessage("Violation traces of the composition:");
-            }
-            for (MpsatSolution solution: solutions) {
-                Trace trace = solution.getMainTrace();
-                if (needsMultiLineMessage) {
-                    LogUtils.logMessage("  " + trace.toText());
-                } else {
-                    LogUtils.logMessage("Violation trace of the composition: " + trace.toText());
-                }
-                Enabledness enabledness = EnablednessUtils.getOutputEnablednessAfterTrace(stg, trace);
-                solutionToEnabledness.put(solution, enabledness);
-            }
+        HashMap<MpsatSolution, Enabledness> result = new HashMap<>();
+        for (MpsatSolution solution: solutions) {
+            Trace trace = solution.getMainTrace();
+            Enabledness enabledness = EnablednessUtils.getOutputEnablednessAfterTrace(stg, trace);
+            result.put(solution, enabledness);
         }
-        return solutionToEnabledness;
+        return result;
     }
 
 }

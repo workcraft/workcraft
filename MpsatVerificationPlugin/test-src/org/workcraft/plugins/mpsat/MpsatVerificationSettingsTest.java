@@ -43,6 +43,9 @@ public class MpsatVerificationSettingsTest {
 
         Assert.assertEquals(Config.toString(MpsatVerificationSettings.getDebugCores()),
                 framework.getConfigVar(prefix + ".debugCores", false));
+
+        Assert.assertEquals(Config.toString(MpsatVerificationSettings.getConformationReportStyle()),
+                framework.getConfigVar(prefix + ".conformationReportStyle", false));
     }
 
 }
