@@ -54,6 +54,15 @@ public class PropertyEditorTable extends JTable {
 
     public void assign(Properties properties) {
         model.assign(properties);
+        update();
+    }
+
+    public void clear() {
+        model.clear();
+        update();
+    }
+
+    private void update() {
         cellRenderers = new TableCellRenderer[model.getRowCount()];
         cellEditors = new TableCellEditor[model.getRowCount()];
         for (int i = 0; i < model.getRowCount(); i++) {
@@ -79,10 +88,6 @@ public class PropertyEditorTable extends JTable {
                 }
             }
         }
-    }
-
-    public void clear() {
-        model.clear();
     }
 
     @Override
@@ -154,6 +159,7 @@ public class PropertyEditorTable extends JTable {
                 }
             } finally {
                 removeEditor();
+                update();
             }
         }
     }
