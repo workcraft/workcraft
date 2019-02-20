@@ -1,6 +1,7 @@
 package org.workcraft.serialisation.xml;
 
 import org.w3c.dom.Element;
+import org.workcraft.Framework;
 import org.workcraft.PluginProvider;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
@@ -50,11 +51,11 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
         Object instance = nodeDeserialiser.initInstance(element, state.getExternalReferences(), constructorParameters);
 
         state.setInstanceElement(instance, element);
-        String ref = element.getAttribute("ref");
+        String ref = element.getAttribute(Framework.COMMON_REF_WORK_ATTRIBUTE);
         state.setObject(ref, instance);
 
         if (instance instanceof Container) {
-            for (Element subNodeElement : XmlUtils.getChildElements("node", element)) {
+            for (Element subNodeElement : XmlUtils.getChildElements(Framework.COMMON_NODE_WORK_ATTRIBUTE, element)) {
                 Object subNode = initInstance(subNodeElement);
 
                 if (subNode instanceof Node) {
