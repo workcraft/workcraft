@@ -104,6 +104,11 @@ public class VisualComment extends VisualComponent {
     }
 
     @Override
+    public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+        return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
+    }
+
+    @Override
     public Rectangle2D getBoundingBoxInLocalSpace() {
         return BoundingBoxHelper.expand(super.getBoundingBoxInLocalSpace(), 0.2, 0.0);
     }
