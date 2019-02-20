@@ -1,0 +1,3 @@
+block1.stg block2.stg block3.stg : true
+block2.stg block3.stg block1-bad.stg : false
+block1-bad.stg : null

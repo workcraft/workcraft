@@ -28,9 +28,9 @@ import java.util.Set;
 
 public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
 
-    private final ArrayList<WorkspaceEntry> wes;
+    private final List<WorkspaceEntry> wes;
 
-    public MpsatConformationNwayTask(ArrayList<WorkspaceEntry> wes) {
+    public MpsatConformationNwayTask(List<WorkspaceEntry> wes) {
         this.wes = wes;
     }
 

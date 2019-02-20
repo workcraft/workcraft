@@ -38,3 +38,19 @@ framework.addJavaScriptHelp("setModelTitle", "work, title",
 function setModelTitle(work, title) {
     return work.getModelEntry().getModel().setTitle(title);
 }
+
+
+framework.addJavaScriptHelp("closeWork", "work",
+    "close the specified work");
+
+function closeWork(work) {
+    return framework.closeWork(work);
+}
+
+
+framework.addJavaScriptHelp("closeAllWorks", "",
+    "close all the open works");
+
+function closeAllWorks() {
+    return framework.closeAllWorks();
+}

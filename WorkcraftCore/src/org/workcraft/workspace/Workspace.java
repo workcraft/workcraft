@@ -158,7 +158,7 @@ public class Workspace {
     }
 
     public List<WorkspaceEntry> getWorks() {
-        return new ArrayList<WorkspaceEntry>(openFiles.values());
+        return new ArrayList<>(openFiles.values());
     }
 
     public void addListener(WorkspaceListener l) {

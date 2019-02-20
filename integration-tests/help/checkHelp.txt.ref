@@ -21,6 +21,7 @@ checkStgDiInterface(work) - check the STG 'work' for delay-insensitive interface
 checkStgInputProperness(work) - check the STG 'work' for input properness
 checkStgMutexImplementability(work) - check the STG 'work' for implementability of its mutex places
 checkStgNormalcy(work) - check the STG 'work' for normalcy
+checkStgNwayConformation(work) - check all the open STG works for N-way conformation ('null' should be passed as the parameter)
 checkStgOutputDeterminacy(work) - check the STG 'work' for output determinacy
 checkStgOutputPersistency(work) - check the STG 'work' for output persistency
 checkStgUsc(work) - check the STG 'work' for unique state coding
