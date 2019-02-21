@@ -9,6 +9,7 @@ import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.mpsat.commands.*;
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.punf.PunfSettings;
+import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -55,7 +56,8 @@ public class MpsatVerificationCommandTests {
                 null, // USC
                 null,  // DI interface
                 null, // normalcy
-                null,  // mutex implementability
+                null,  // mutex implementability (strict)
+                null,  // mutex implementability (relaxed)
                 null, null // conformation
         );
     }
@@ -74,7 +76,8 @@ public class MpsatVerificationCommandTests {
                 null, // USC
                 null,  // DI interface
                 null, // normalcy
-                null,  // mutex implementability
+                null,  // mutex implementability (strict)
+                null,  // mutex implementability (relaxed)
                 null, null // conformation
         );
     }
@@ -93,7 +96,8 @@ public class MpsatVerificationCommandTests {
                 false, // USC
                 true,  // DI interface
                 false, // normalcy
-                null,  // mutex implementability
+                null,  // mutex implementability (strict)
+                null,  // mutex implementability (relaxed)
                 null, null // conformation
         );
     }
@@ -112,7 +116,8 @@ public class MpsatVerificationCommandTests {
                 true,  // USC
                 false, // DI interface
                 false, // normalcy
-                true,  // mutex implementability
+                true,  // mutex implementability (strict)
+                false,  // mutex implementability (relaxed)
                 null, null // conformation
         );
     }
@@ -131,7 +136,8 @@ public class MpsatVerificationCommandTests {
                 false, // USC
                 false, // DI interface
                 false, // normalcy
-                null,  // mutex implementability
+                null,  // mutex implementability (strict)
+                null,  // mutex implementability (relaxed)
                 null, null // conformation
         );
     }
@@ -150,7 +156,8 @@ public class MpsatVerificationCommandTests {
                 true,  // USC
                 true,  // DI interface
                 true,  // normalcy
-                false, // mutex implementability
+                false,  // mutex implementability (strict)
+                false,  // mutex implementability (relaxed)
                 "org/workcraft/plugins/mpsat/charge.stg.work", true // conformation
         );
     }
@@ -160,7 +167,8 @@ public class MpsatVerificationCommandTests {
             Boolean inputProperness, Boolean outputPersistency, Boolean outputDeterminacy,
             Boolean csc, Boolean usc,
             Boolean diInterface, Boolean normalcy,
-            Boolean mutexImplementability,
+            Boolean mutexImplementabilityStrict,
+            Boolean mutexImplementabilityRelaxed,
             String envToConform, Boolean conformation)
             throws DeserialisationException {
 
@@ -197,7 +205,11 @@ public class MpsatVerificationCommandTests {
         Assert.assertEquals(normalcy, normalcyCommand.execute(we));
 
         MpsatMutexImplementabilityVerificationCommand mutexImplementabilityCommand = new MpsatMutexImplementabilityVerificationCommand();
-        Assert.assertEquals(mutexImplementability, mutexImplementabilityCommand.execute(we));
+        MpsatVerificationSettings.setMutexProtocol(Mutex.Protocol.RELAXED);
+        Assert.assertEquals(mutexImplementabilityRelaxed, mutexImplementabilityCommand.execute(we));
+
+        MpsatVerificationSettings.setMutexProtocol(Mutex.Protocol.STRICT);
+        Assert.assertEquals(mutexImplementabilityStrict, mutexImplementabilityCommand.execute(we));
 
         MpsatConformationVerificationCommand conformationCommand = new MpsatConformationVerificationCommand();
         if (envToConform != null) {

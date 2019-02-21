@@ -58,6 +58,7 @@ public class CircuitSettings implements Settings {
     private static final String keyNandbData = prefix + ".nandbData";
     private static final String keyNorbData = prefix + ".norbData";
     private static final String keyMutexData = prefix + ".mutexData";
+    private static final String keyMutexProtocol = prefix + ".mutexProtocol";
     private static final String keyBusSuffix = prefix + ".busSuffix";
     private static final String keyResetName = prefix + ".resetName";
 
@@ -81,6 +82,7 @@ public class CircuitSettings implements Settings {
     private static final String defaultNandbData = "NAND2B (AN, B, ON)";
     private static final String defaultNorbData = "NOR2B (AN, B, ON)";
     private static final String defaultMutexData = "MUTEX ((r1, g1), (r2, g2))";
+    private static Mutex.Protocol defaultMutexProtocol = Mutex.Protocol.STRICT;
     private static final String defaultBusSuffix = "__$";
     private static final String defaultResetName = "reset";
 
@@ -104,6 +106,7 @@ public class CircuitSettings implements Settings {
     private static String nandbData = defaultNandbData;
     private static String norbData = defaultNorbData;
     private static String mutexData = defaultMutexData;
+    private static Mutex.Protocol mutexProtocol = defaultMutexProtocol;
     private static String busSuffix = defaultBusSuffix;
     private static String resetName = defaultResetName;
 
@@ -380,6 +383,17 @@ public class CircuitSettings implements Settings {
             }
         });
 
+        properties.add(new PropertyDeclaration<CircuitSettings, Mutex.Protocol>(
+                this, "Mutex protocol for synthesis", Mutex.Protocol.class) {
+            @Override
+            public void setter(CircuitSettings object, Mutex.Protocol value) {
+                setMutexProtocol(value);
+            }
+            @Override
+            public Mutex.Protocol getter(CircuitSettings object) {
+                return getMutexProtocol();
+            }
+        });
         properties.add(new PropertyDeclaration<CircuitSettings, String>(
                 this, "Bus split suffix ($ is replaced by index)", String.class) {
             @Override
@@ -442,6 +456,7 @@ public class CircuitSettings implements Settings {
         setNandbData(config.getString(keyNandbData, defaultNandbData));
         setNorbData(config.getString(keyNorbData, defaultNorbData));
         setMutexData(config.getString(keyMutexData, defaultMutexData));
+        setMutexProtocol(config.getEnum(keyMutexProtocol, Mutex.Protocol.class, defaultMutexProtocol));
         setBusSuffix(config.getString(keyBusSuffix, defaultBusSuffix));
         setResetName(config.getString(keyResetName, defaultResetName));
     }
@@ -468,6 +483,7 @@ public class CircuitSettings implements Settings {
         config.set(keyNandbData, getNandbData());
         config.set(keyNorbData, getNorbData());
         config.set(keyMutexData, getMutexData());
+        config.setEnum(keyMutexProtocol, getMutexProtocol());
         config.set(keyBusSuffix, getBusSuffix());
         config.set(keyResetName, getResetName());
     }
@@ -664,6 +680,14 @@ public class CircuitSettings implements Settings {
         return parseMutexData(getMutexData());
     }
 
+    public static void setMutexProtocol(Mutex.Protocol value) {
+        mutexProtocol = value;
+    }
+
+    public static Mutex.Protocol getMutexProtocol() {
+        return mutexProtocol;
+    }
+
     public static String getBusSuffix() {
         return busSuffix;
     }
@@ -709,11 +733,12 @@ public class CircuitSettings implements Settings {
         Mutex result = null;
         Matcher matcher = MUTEX_DATA_PATTERN.matcher(str.replaceAll("\\s", ""));
         if (matcher.find()) {
+            String name = matcher.group(MUTEX_NAME_GROUP);
             Signal r1 = new Signal(matcher.group(MUTEX_R1_GROUP), Signal.Type.INPUT);
             Signal g1 = new Signal(matcher.group(MUTEX_G1_GROUP), Signal.Type.OUTPUT);
             Signal r2 = new Signal(matcher.group(MUTEX_R2_GROUP), Signal.Type.INPUT);
             Signal g2 = new Signal(matcher.group(MUTEX_G2_GROUP), Signal.Type.OUTPUT);
-            result = new Mutex(matcher.group(MUTEX_NAME_GROUP), r1, g1, r2, g2);
+            result = new Mutex(name, r1, g1, r2, g2);
         }
         return result;
     }

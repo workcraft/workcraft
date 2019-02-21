@@ -1,4 +1,9 @@
 work = load("arbitration-3.stg.work");
+
+setConfigVar("Tools.mpsatVerification.mutexProtocol", "RELAXED");
+mutexImplementabilityRelaxed = checkStgMutexImplementability(work);
+
+setConfigVar("Tools.mpsatVerification.mutexProtocol", "STRICT");
 write(
     "Combined check: " + checkStgCombined(work) + "\n" +
     "Consistency: " + checkStgConsistency(work) + "\n" +
@@ -10,6 +15,7 @@ write(
     "USC: " + checkStgUsc(work) + "\n" +
     "DI interface: " + checkStgDiInterface(work) + "\n" +
     "Normalcy: " + checkStgNormalcy(work) + "\n" +
-    "Mutex implementability: " + checkStgMutexImplementability(work) + "\n",
+    "Mutex implementability: " + checkStgMutexImplementability(work) + "\n" +
+    "Mutex implementability (relaxed): " + mutexImplementabilityRelaxed + "\n",
     "arbitration-3.stg.result");
 exit();

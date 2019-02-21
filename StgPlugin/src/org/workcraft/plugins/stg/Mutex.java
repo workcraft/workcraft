@@ -2,6 +2,22 @@ package org.workcraft.plugins.stg;
 
 public class Mutex {
 
+    public enum Protocol {
+        STRICT("Strict (forbid two grants)"),
+        RELAXED("Relaxed (allow two grants on reset)");
+
+        private final String name;
+
+        Protocol(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+
     public final String name;
     public final Signal r1;
     public final Signal g1;

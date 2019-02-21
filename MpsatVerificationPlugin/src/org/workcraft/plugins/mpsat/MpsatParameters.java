@@ -1,5 +1,6 @@
 package org.workcraft.plugins.mpsat;
 
+import org.jetbrains.annotations.NotNull;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.LogUtils;
@@ -220,9 +221,9 @@ public class MpsatParameters {
     private static final String REPLACEMENT_MUTEX_G1 = "/* insert g1 name here */";
     private static final String REPLACEMENT_MUTEX_R2 = "/* insert r2 name here */";
     private static final String REPLACEMENT_MUTEX_G2 = "/* insert g2 name here */";
-    private static final String REACH_MUTEX_IMPLEMENTABILITY =
+    private static final String REACH_MUTEX_IMPLEMENTABILITY_STRICT =
             "// For given signals r1, r2, g1, g2, check whether g1/g2 can be implemented\n" +
-            "// by a mutex with requests r1/r2 and grants g1/g2.\n" +
+            "// by a STRICT mutex with requests r1/r2 and grants g1/g2.\n" +
             "// The properties to check are:\n" +
             "//   r1&~g2 => nxt(g1)\n" +
             "//   ~r1 => ~nxt(g1)\n" +
@@ -231,7 +232,7 @@ public class MpsatParameters {
             "// Furthemore, the mutual exclusion of the critical sections is checked:\n" +
             "// ~( (r1&g1) & (r2&g2) )\n" +
             "// Note that the latter property does not follow from the above constraints\n" +
-            "// for the next state functions of the grants.\n" +
+            "// for the next state functions of the grants (e.g. in the initial state).\n" +
             "let\n" +
             "    r1s = S\"" + REPLACEMENT_MUTEX_R1 + "\",\n" +
             "    g1s = S\"" + REPLACEMENT_MUTEX_G1 + "\",\n" +
@@ -245,32 +246,70 @@ public class MpsatParameters {
             "    g2nxt = 'g2s\n" +
             "{\n" +
             "    // constraints on nxt(g1)\n" +
-            "    r1 & ~g2 & ~g1nxt // negation of r1&~g2 => nxt(g1)\n" +
+            "    r1 & ~g2 & ~g1nxt  // negation of r1&~g2 => nxt(g1)\n" +
             "    |\n" +
-            "    ~r1 & g1nxt // negation of ~r1 => ~nxt(g1)\n" +
+            "    ~r1 & g1nxt        // negation of ~r1 => ~nxt(g1)\n" +
             "    |\n" +
-            "    r2 & g2 & g1nxt // negation of r2&g2 => ~nxt(g1)\n" +
+            "    r2 & g2 & g1nxt    // negation of r2&g2 => ~nxt(g1)\n" +
             "    |\n" +
             "    // constraints on nxt(g2)\n" +
-            "    r2 & ~g1 & ~g2nxt // negation of r2&~g1 => nxt(g2)\n" +
+            "    r2 & ~g1 & ~g2nxt  // negation of r2&~g1 => nxt(g2)\n" +
             "    |\n" +
-            "    ~r2 & g2nxt // negation of ~r2 => ~nxt(g2)\n" +
+            "    ~r2 & g2nxt        // negation of ~r2 => ~nxt(g2)\n" +
             "    |\n" +
-            "    r1 & g1 & g2nxt // negation of r1&g1 => ~nxt(g2)\n" +
+            "    r1 & g1 & g2nxt    // negation of r1&g1 => ~nxt(g2)\n" +
             "    |\n" +
             "    // mutual exclusion of critical sections\n" +
             "    r1 & g1 & r2 & g2\n" +
             "}\n";
+    private static final String REACH_MUTEX_IMPLEMENTABILITY_RELAXED =
+            "// For given signals r1, r2, g1, g2, check whether g1/g2 can be implemented\n" +
+            "// by a RELAXED mutex with requests r1/r2 and grants g1/g2.\n" +
+            "// The properties to check are:\n" +
+            "//   nxt(g1) = r1 & (~r2 | ~g2)\n" +
+            "//   nxt(g2) = r2 & (~r1 | ~g1)\n" +
+            "// Furthemore, the mutual exclusion of the critical sections is checked:\n" +
+            "// ~( (r1&g1) & (r2&g2) )\n" +
+            "// Note that the latter property does not follow from the above constraints\n" +
+            "// for the next state functions of the grants (e.g. in the initial state).\n" +
+            "let\n" +
+            "    r1s = S\"" + REPLACEMENT_MUTEX_R1 + "\",\n" +
+            "    g1s = S\"" + REPLACEMENT_MUTEX_G1 + "\",\n" +
+            "    r2s = S\"" + REPLACEMENT_MUTEX_R2 + "\",\n" +
+            "    g2s = S\"" + REPLACEMENT_MUTEX_G2 + "\",\n" +
+            "    r1 = $r1s,\n" +
+            "    g1 = $g1s,\n" +
+            "    r2 = $r2s,\n" +
+            "    g2 = $g2s,\n" +
+            "    g1nxt = 'g1s,\n" +
+            "    g2nxt = 'g2s\n" +
+            "{\n" +
+            "    (g1nxt ^ (r1 & (~r2 | ~g2)))  // negated definition of nxt(g1)\n" +
+            "    |\n" +
+            "    (g2nxt ^ (r2 & (~r1 | ~g1)))  // negated definition of nxt(g2)\n" +
+            "    |\n" +
+            "    r1 & g1 & r2 & g2  // mutual exclusion of critical sections\n" +
+            "}\n";
 
     public static MpsatParameters getMutexImplementabilitySettings(Mutex mutex) {
-        String reach = REACH_MUTEX_IMPLEMENTABILITY
+        String propertName = "Mutex implementability for place '" + mutex.name + "'";
+
+        String reach = getMutexImplementabilityReach()
                 .replace(REPLACEMENT_MUTEX_R1, mutex.r1.name)
                 .replace(REPLACEMENT_MUTEX_G1, mutex.g1.name)
                 .replace(REPLACEMENT_MUTEX_R2, mutex.r2.name)
                 .replace(REPLACEMENT_MUTEX_G2, mutex.g2.name);
-        String propertName = "Mutex implementability for place '" + mutex.name + "'";
+
         return new MpsatParameters(propertName, MpsatMode.STG_REACHABILITY, 0,
                 MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount(), reach, true);
+    }
+
+    @NotNull
+    private static String getMutexImplementabilityReach() {
+        if (MpsatVerificationSettings.getMutexProtocol() == Mutex.Protocol.RELAXED) {
+            return REACH_MUTEX_IMPLEMENTABILITY_RELAXED;
+        }
+        return REACH_MUTEX_IMPLEMENTABILITY_STRICT;
     }
 
     private static final String REPLACEMENT_OUTPUT_PERSISTENCY_EXCEPTIONS =

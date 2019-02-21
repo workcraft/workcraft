@@ -653,8 +653,8 @@ public class VerilogImporter implements Importer {
         addMutexPin(circuit, component, module.r2, instance.r2, wires);
         FunctionContact g2Contact = addMutexPin(circuit, component, module.g2, instance.g2, wires);
         try {
-            setMutexFunctions(circuit, component, g1Contact, module.r1.name, module.g2.name);
-            setMutexFunctions(circuit, component, g2Contact, module.r2.name, module.g1.name);
+            setMutexFunctions(circuit, component, g1Contact, module.r1.name, module.r2.name, module.g2.name);
+            setMutexFunctions(circuit, component, g2Contact, module.r2.name, module.r1.name, module.g1.name);
         } catch (org.workcraft.formula.jj.ParseException e) {
             throw new RuntimeException(e);
         }
@@ -664,8 +664,11 @@ public class VerilogImporter implements Importer {
     }
 
     private void setMutexFunctions(Circuit circuit, final FunctionComponent component, FunctionContact grantContact,
-            String reqPinName, String otherGrantPinName) throws org.workcraft.formula.jj.ParseException {
+            String reqPinName, String otherReqPinName, String otherGrantPinName) throws org.workcraft.formula.jj.ParseException {
         String setString = reqPinName + " * " + otherGrantPinName + "'";
+        if (CircuitSettings.getMutexProtocol() == Mutex.Protocol.RELAXED) {
+            setString += " + " + reqPinName + " * " + otherReqPinName + "'";
+        }
         BooleanFormula setFormula = CircuitUtils.parsePinFuncton(circuit, component, setString);
         grantContact.setSetFunctionQuiet(setFormula);
         String resetString = reqPinName + "'";
