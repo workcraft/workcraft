@@ -105,7 +105,7 @@ public class VisualVertex extends VisualComponent {
         if (getRenderType() == RenderType.LABEL) {
             return getLabelBoundingBox().contains(pointInLocalSpace);
         }
-        return super.hitTestInLocalSpace(pointInLocalSpace);
+        return getShape().contains(pointInLocalSpace);
     }
 
     public RenderType getRenderType() {

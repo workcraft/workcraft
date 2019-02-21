@@ -6,6 +6,7 @@ import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.Settings;
 import org.workcraft.plugins.mpsat.MpsatParameters.SolutionMode;
+import org.workcraft.plugins.mpsat.tasks.MpsatConformationNwayOutputHandler.ConformationReportStyle;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class MpsatVerificationSettings implements Settings {
     private static final String keyPrintStderr = prefix + ".printStderr";
     private static final String keyDebugReach = prefix + ".debugReach";
     private static final String keyDebugCores = prefix + ".debugCores";
+    private static final String keyConformationReportStyle = prefix + ".conformationReportStyle";
 
     private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\UnfoldingTools\\mpsat.exe" : "tools/UnfoldingTools/mpsat";
     private static final SolutionMode defaultSolutionMode = SolutionMode.MINIMUM_COST;
@@ -32,6 +34,7 @@ public class MpsatVerificationSettings implements Settings {
     private static final Boolean defaultPrintStderr = true;
     private static final Boolean defaultDebugReach = false;
     private static final Boolean defaultDebugCores = false;
+    private static final ConformationReportStyle defaultConformationReportStyle = ConformationReportStyle.TABLE;
 
     private static String command = defaultCommand;
     private static SolutionMode solutionMode = defaultSolutionMode;
@@ -41,6 +44,7 @@ public class MpsatVerificationSettings implements Settings {
     private static Boolean printStderr = defaultPrintStderr;
     private static Boolean debugReach = defaultDebugReach;
     private static Boolean debugCores = defaultDebugCores;
+    private static ConformationReportStyle conformationReportStyle = defaultConformationReportStyle;
 
     public MpsatVerificationSettings() {
         properties.add(new PropertyDeclaration<MpsatVerificationSettings, String>(
@@ -138,6 +142,18 @@ public class MpsatVerificationSettings implements Settings {
                 return getDebugCores();
             }
         });
+
+        properties.add(new PropertyDeclaration<MpsatVerificationSettings, ConformationReportStyle>(
+                this, "Report style for conformation violation", ConformationReportStyle.class) {
+            @Override
+            public void setter(MpsatVerificationSettings object, ConformationReportStyle value) {
+                setConformationReportStyle(value);
+            }
+            @Override
+            public ConformationReportStyle getter(MpsatVerificationSettings object) {
+                return getConformationReportStyle();
+            }
+        });
     }
 
     @Override
@@ -155,6 +171,7 @@ public class MpsatVerificationSettings implements Settings {
         setPrintStderr(config.getBoolean(keyPrintStderr, defaultPrintStderr));
         setDebugReach(config.getBoolean(keyDebugReach, defaultDebugReach));
         setDebugCores(config.getBoolean(keyDebugCores, defaultDebugCores));
+        setConformationReportStyle(config.getEnum(keyConformationReportStyle, ConformationReportStyle.class, defaultConformationReportStyle));
     }
 
     @Override
@@ -167,6 +184,7 @@ public class MpsatVerificationSettings implements Settings {
         config.setBoolean(keyPrintStderr, getPrintStderr());
         config.setBoolean(keyDebugReach, getDebugReach());
         config.setBoolean(keyDebugCores, getDebugCores());
+        config.setEnum(keyConformationReportStyle, getConformationReportStyle());
     }
 
     @Override
@@ -245,6 +263,14 @@ public class MpsatVerificationSettings implements Settings {
 
     public static void setDebugCores(Boolean value) {
         debugCores = value;
+    }
+
+    public static void setConformationReportStyle(ConformationReportStyle value) {
+        conformationReportStyle = value;
+    }
+
+    public static ConformationReportStyle getConformationReportStyle() {
+        return conformationReportStyle;
     }
 
 }

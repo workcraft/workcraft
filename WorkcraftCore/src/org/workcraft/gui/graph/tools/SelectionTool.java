@@ -35,8 +35,8 @@ import java.util.*;
 
 public class SelectionTool extends AbstractGraphEditorTool {
 
-    private enum DrugState { NONE, MOVE, SELECT };
-    private enum SelectionMode { NONE, ADD, REMOVE, REPLACE };
+    public enum DrugState { NONE, MOVE, SELECT };
+    public enum SelectionMode { NONE, ADD, REMOVE, REPLACE };
 
     private DrugState dragState = DrugState.NONE;
     private boolean ignoreMouseButton1 = false;
@@ -47,9 +47,9 @@ public class SelectionTool extends AbstractGraphEditorTool {
     private Set<Point2D> snaps = new HashSet<>();
     private final DefaultAnchorGenerator anchorGenerator = new DefaultAnchorGenerator();
 
-    private final LinkedHashSet<VisualNode> selected = new LinkedHashSet<>();
     private SelectionMode selectionMode = SelectionMode.NONE;
     private Rectangle2D selectionBox = null;
+    private final LinkedHashSet<VisualNode> selected = new LinkedHashSet<>();
 
     private Point2D currentMousePosition = null;
     private VisualNode currentNode = null;
@@ -577,6 +577,14 @@ public class SelectionTool extends AbstractGraphEditorTool {
             e.getEditor().repaint();
         }
         return super.keyReleased(e);
+    }
+
+    public DrugState getDragState() {
+        return dragState;
+    }
+
+    public SelectionMode getSelectionMode() {
+        return selectionMode;
     }
 
     @Override

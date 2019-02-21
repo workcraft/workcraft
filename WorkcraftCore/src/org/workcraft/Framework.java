@@ -159,20 +159,6 @@ public final class Framework {
         }
     }
 
-    class CompileScriptAction implements ContextAction {
-        private final String source, sourceName;
-
-        CompileScriptAction(String source, String sourceName) {
-            this.source = source;
-            this.sourceName = sourceName;
-        }
-
-        @Override
-        public Object run(Context cx) {
-            return cx.compileString(source, sourceName, 1, null);
-        }
-    }
-
     class SetArgs implements ContextAction {
         Object[] args;
 
@@ -333,23 +319,20 @@ public final class Framework {
 
     private void initJavaScript() {
         LogUtils.logMessage("Initialising JavaScript...");
-        contextFactory.call(new ContextAction() {
-            @Override
-            public Object run(Context cx) {
-                ImporterTopLevel importer = new ImporterTopLevel();
-                importer.initStandardObjects(cx, false);
-                systemScope = importer;
+        contextFactory.call(cx -> {
+            ImporterTopLevel importer = new ImporterTopLevel();
+            importer.initStandardObjects(cx, false);
+            systemScope = importer;
 
-                Object frameworkScriptable = Context.javaToJS(Framework.this, systemScope);
-                ScriptableObject.putProperty(systemScope, FRAMEWORK_VARIABLE, frameworkScriptable);
-                systemScope.setAttributes(FRAMEWORK_VARIABLE, ScriptableObject.READONLY);
+            Object frameworkScriptable = Context.javaToJS(this, systemScope);
+            ScriptableObject.putProperty(systemScope, FRAMEWORK_VARIABLE, frameworkScriptable);
+            systemScope.setAttributes(FRAMEWORK_VARIABLE, ScriptableObject.READONLY);
 
-                globalScope = (ScriptableObject) cx.newObject(systemScope);
-                globalScope.setPrototype(systemScope);
-                globalScope.setParentScope(null);
+            globalScope = (ScriptableObject) cx.newObject(systemScope);
+            globalScope.setPrototype(systemScope);
+            globalScope.setParentScope(null);
 
-                return null;
-            }
+            return null;
         });
     }
 
@@ -395,6 +378,10 @@ public final class Framework {
         javascriptHelp.put(name, item);
     }
 
+    /**
+     * Used in core-help.js JavaScript wrapper.
+     */
+    @SuppressWarnings("unused")
     public String getJavaScriptHelp(String regex, boolean searchDescription) {
         ArrayList<String> result = new ArrayList<>();
         Pattern pattern = Pattern.compile(regex);
@@ -416,27 +403,24 @@ public final class Framework {
 
         deleteJavaScriptProperty(name, scope);
 
-        contextFactory.call(new ContextAction() {
-            @Override
-            public Object run(Context arg0) {
-                Object scriptable = Context.javaToJS(object, scope);
-                ScriptableObject.putProperty(scope, name, scriptable);
-                if (readOnly) {
-                    scope.setAttributes(name, ScriptableObject.READONLY);
-                }
-                return scriptable;
+        contextFactory.call(arg0 -> {
+            Object scriptable = Context.javaToJS(object, scope);
+            ScriptableObject.putProperty(scope, name, scriptable);
+            if (readOnly) {
+                scope.setAttributes(name, ScriptableObject.READONLY);
             }
+            return scriptable;
         });
     }
 
     public void deleteJavaScriptProperty(final String name, final ScriptableObject scope) {
-        contextFactory.call(new ContextAction() {
-            public Object run(Context arg0) {
-                return ScriptableObject.deleteProperty(scope, name);
-            }
-        });
+        contextFactory.call(arg0 -> ScriptableObject.deleteProperty(scope, name));
     }
 
+    /**
+     * Used in core-exec.js JavaScript wrapper.
+     */
+    @SuppressWarnings("unused")
     public Object execJavaScript(File file) throws FileNotFoundException {
         BufferedReader reader = new BufferedReader(new FileReader(file));
         return execJavaScript(compileJavaScript(reader, file.getPath()));
@@ -474,19 +458,15 @@ public final class Framework {
         }
     }
 
-    /**
-     * Used in functions.js JavaScript wrapper.
-     */
     public void execJavaScriptResource(String resourceName) throws IOException {
         String script = FileUtils.readAllTextFromSystemResource(resourceName);
         execJavaScript(script);
     }
 
     /**
-     * Used in functions.js JavaScript wrapper.
-     *
-     * @throws IOException
+     * Used in core-exec.js JavaScript wrapper.
      */
+    @SuppressWarnings("unused")
     public void execJavaScriptFile(String path) throws IOException {
         File file = getFileByAbsoluteOrRelativePath(path);
         execJavaScriptFile(file);
@@ -495,10 +475,6 @@ public final class Framework {
     public void execJavaScriptFile(File file) throws IOException {
         String script = FileUtils.readAllText(file);
         execJavaScript(script, globalScope);
-    }
-
-    public Script compileJavaScript(String source, String sourceName) {
-        return (Script) doContextAction(new CompileScriptAction(source, sourceName));
     }
 
     public Script compileJavaScript(BufferedReader source, String sourceName) {
@@ -527,14 +503,11 @@ public final class Framework {
             }
         }
 
-        contextFactory.call(new ContextAction() {
-            @Override
-            public Object run(Context cx) {
-                Object guiScriptable = Context.javaToJS(mainWindow, systemScope);
-                ScriptableObject.putProperty(systemScope, "mainWindow", guiScriptable);
-                systemScope.setAttributes("mainWindow", ScriptableObject.READONLY);
-                return null;
-            }
+        contextFactory.call(cx -> {
+            Object guiScriptable = Context.javaToJS(mainWindow, systemScope);
+            ScriptableObject.putProperty(systemScope, "mainWindow", guiScriptable);
+            systemScope.setAttributes("mainWindow", ScriptableObject.READONLY);
+            return null;
         });
 
         inGuiMode = true;
@@ -547,12 +520,9 @@ public final class Framework {
             mainWindow = null;
             inGuiMode = false;
 
-            contextFactory.call(new ContextAction() {
-                @Override
-                public Object run(Context cx) {
-                    ScriptableObject.deleteProperty(systemScope, "mainWindow");
-                    return null;
-                }
+            contextFactory.call(cx -> {
+                ScriptableObject.deleteProperty(systemScope, "mainWindow");
+                return null;
             });
         }
     }
@@ -600,8 +570,9 @@ public final class Framework {
     }
 
     /**
-     * Used in functions.js JavaScript wrapper.
+     * Used in core-exec.js JavaScript wrapper.
      */
+    @SuppressWarnings("unused")
     public void runCommand(WorkspaceEntry we, String className) {
         if (className != null) {
             for (Command command : Commands.getApplicableCommands(we)) {
@@ -615,8 +586,9 @@ public final class Framework {
     }
 
     /**
-     * Used in functions.js JavaScript wrapper.
+     * Used in core-exec.js JavaScript wrapper.
      */
+    @SuppressWarnings("unused")
     public <T> T executeCommand(WorkspaceEntry we, String className) {
         if ((className == null) || className.isEmpty()) {
             LogUtils.logError("Undefined command name.");
@@ -711,8 +683,9 @@ public final class Framework {
     }
 
     /**
-     * Used in functions.js JavaScript wrapper.
+     * Used in core-file.js JavaScript wrapper.
      */
+    @SuppressWarnings("unused")
     public WorkspaceEntry loadWork(String path) throws DeserialisationException {
         File file = getFileByAbsoluteOrRelativePath(path);
         if (FileUtils.checkAvailability(file, null, false)) {
@@ -766,8 +739,22 @@ public final class Framework {
         return we;
     }
 
+    /**
+     * Used in core-workspace.js JavaScript wrapper.
+     */
+    @SuppressWarnings("unused")
     public void closeWork(WorkspaceEntry we) {
         getWorkspace().removeWork(we);
+    }
+
+    /**
+     * Used in core-workspace.js JavaScript wrapper.
+     */
+    @SuppressWarnings("unused")
+    public void closeAllWorks() {
+        for (WorkspaceEntry we : getWorkspace().getWorks()) {
+            closeWork(we);
+        }
     }
 
     public ModelEntry loadModel(File file) throws DeserialisationException {
@@ -867,8 +854,9 @@ public final class Framework {
     }
 
     /**
-     * Used in functions.js JavaScript wrapper.
+     * Used in core-file.js JavaScript wrapper.
      */
+    @SuppressWarnings("unused")
     public void saveWork(WorkspaceEntry we, String path) throws SerialisationException {
         if (we == null) return;
         File destination = getFileByAbsoluteOrRelativePath(path);
@@ -1007,8 +995,9 @@ public final class Framework {
     }
 
     /**
-     * Used in functions.js JavaScript wrapper.
+     * Used in core-file.js JavaScript wrapper.
      */
+    @SuppressWarnings("unused")
     public void exportWork(WorkspaceEntry we, String path, String formatName) throws SerialisationException {
         File file = getFileByAbsoluteOrRelativePath(path);
         exportModel(we.getModelEntry(), file, formatName, null);

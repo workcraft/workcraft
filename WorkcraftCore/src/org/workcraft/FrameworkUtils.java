@@ -142,7 +142,7 @@ public class FrameworkUtils {
         // selection
         Element selectionElement = stateDoc.createElement(Framework.STATE_SELECTION_WORK_ELEMENT);
         for (Node node: visualModel.getSelection()) {
-            Element nodeElement = stateDoc.createElement("node");
+            Element nodeElement = stateDoc.createElement(Framework.COMMON_NODE_WORK_ATTRIBUTE);
             nodeElement.setAttribute(Framework.COMMON_REF_WORK_ATTRIBUTE, visualRefs.getReference(node));
             selectionElement.appendChild(nodeElement);
         }

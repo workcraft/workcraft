@@ -115,6 +115,11 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
     }
 
     @Override
+    public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+        return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
+    }
+
+    @Override
     public Positioning getNamePositioning() {
         return Positioning.LEFT;
     }
@@ -203,13 +208,9 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
             if (node instanceof VisualEvent) {
                 VisualEvent event = (VisualEvent) node;
                 double threshold = Math.min(0.1, event.getShape().getBounds2D().getWidth());
-                if (event.hitTest(pointInLocalSpace)) {
-                    return event;
-                }
-                if (event.hitTest(new Point2D.Double(pointInLocalSpace.getX() - threshold, pointInLocalSpace.getY()))) {
-                    return event;
-                }
-                if (event.hitTest(new Point2D.Double(pointInLocalSpace.getX() + threshold, pointInLocalSpace.getY()))) {
+                if (event.hitTest(pointInLocalSpace)
+                        || event.hitTest(new Point2D.Double(pointInLocalSpace.getX() - threshold, pointInLocalSpace.getY()))
+                        || event.hitTest(new Point2D.Double(pointInLocalSpace.getX() + threshold, pointInLocalSpace.getY()))) {
                     return event;
                 }
             }

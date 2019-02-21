@@ -18,6 +18,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainOutput> {
 
@@ -31,7 +32,7 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainOut
     private final WorkspaceEntry we;
     private final Collection<Mutex> mutexes;
 
-    public MpsatChainResultHandler(ArrayList<WorkspaceEntry> wes) {
+    public MpsatChainResultHandler(List<WorkspaceEntry> wes) {
         this(wes.get(0), null);
         this.wes.addAll(wes);
     }

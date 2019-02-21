@@ -39,12 +39,13 @@ public class MpsatModule implements org.workcraft.Module {
                 "check the STG 'work' for implementability of its mutex places");
         ScriptableCommandUtils.register(MpsatOutputDeterminacyVerificationCommand.class, "checkStgOutputDeterminacy",
                 "check the STG 'work' for output determinacy");
+        ScriptableCommandUtils.register(MpsatConformationNwayVerificationCommand.class, "checkStgNwayConformation",
+                "check all the open STG works for N-way conformation ('null' should be passed as the parameter)");
 
         // TODO: Need a way to pass the list of places from the JavaScript wrapper
         pm.registerCommand(MpsatPlaceRedundancyVerificationCommand.class);
         // TODO: Need a way to pass the environment file from the JavaScript wrapper
         pm.registerCommand(MpsatConformationVerificationCommand.class);
-        pm.registerCommand(MpsatConformationNwayVerificationCommand.class);
         pm.registerCommand(MpsatPropertyVerificationCommand.class);
         pm.registerCommand(MpsatAssertionVerificationCommand.class);
     }
