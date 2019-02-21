@@ -82,7 +82,7 @@ public class VisualCircuit extends AbstractVisualModel {
             throw new InvalidConnectionException("Merging connections is not allowed.");
         }
 
-        if (second instanceof VisualComponent) {
+        if ((second instanceof VisualContact) || (second instanceof VisualJoint)) {
             for (VisualConnection connection : getConnections(second)) {
                 if (connection.getSecond() == second) {
                     throw new InvalidConnectionException("Only one connection is allowed as a driver.");
@@ -122,7 +122,7 @@ public class VisualCircuit extends AbstractVisualModel {
             } else {
                 drivenSet.addAll(CircuitUtils.findDriven(circuit, firstConnection, true));
             }
-        } else if (first instanceof VisualComponent) {
+        } else if ((first instanceof VisualContact) || (first instanceof VisualJoint)) {
             MathNode firstComponent = ((VisualComponent) first).getReferencedComponent();
             driver = CircuitUtils.findDriver(circuit, firstComponent, true);
             if (driver != null) {
@@ -131,7 +131,8 @@ public class VisualCircuit extends AbstractVisualModel {
                 drivenSet.addAll(CircuitUtils.findDriven(circuit, firstComponent, true));
             }
         }
-        if (second instanceof VisualComponent) {
+
+        if ((second instanceof VisualContact) || (second instanceof VisualJoint)) {
             MathNode secondComponent = ((VisualComponent) second).getReferencedComponent();
             drivenSet.addAll(CircuitUtils.findDriven(circuit, secondComponent, true));
         }
@@ -171,6 +172,7 @@ public class VisualCircuit extends AbstractVisualModel {
     @Override
     public VisualConnection connect(VisualNode first, VisualNode second, MathConnection mConnection) throws InvalidConnectionException {
         validateConnection(first, second);
+
         if (first instanceof VisualConnection) {
             VisualConnection connection = (VisualConnection) first;
             Point2D splitPoint = connection.getSplitPoint();
@@ -191,6 +193,14 @@ public class VisualCircuit extends AbstractVisualModel {
             succConnection.copyStyle(connection);
 
             first = joint;
+        }
+
+        if (first instanceof VisualCircuitComponent) {
+            first = getOrCreateContact((VisualCircuitComponent) first, null, IOType.OUTPUT);
+
+        }
+        if (second instanceof VisualCircuitComponent) {
+            second = getOrCreateContact((VisualCircuitComponent) second, null, IOType.INPUT);
         }
 
         VisualCircuitConnection vConnection = null;

@@ -280,7 +280,7 @@ public class PetriNetUtils {
                     }
                 }
                 ConnectionHelper.addControlPoints(result, locationsInRootSpace);
-            } catch (InvalidConnectionException exeption) {
+            } catch (InvalidConnectionException e) {
             }
         }
         return result;

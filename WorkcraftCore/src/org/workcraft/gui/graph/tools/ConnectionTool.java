@@ -336,23 +336,20 @@ public class ConnectionTool extends AbstractGraphEditorTool {
 
     @Override
     public Decorator getDecorator(final GraphEditor editor) {
-        return new Decorator() {
-            @Override
-            public Decoration getDecoration(Node node) {
-                if (node == currentNode) {
-                    return Decoration.Highlighted.INSTANCE;
-                }
-                if (!allLevels) {
-                    VisualModel model = editor.getModel();
-                    if (node == model.getCurrentLevel()) {
-                        return Decoration.Empty.INSTANCE;
-                    }
-                    if (node == model.getRoot()) {
-                        return Decoration.Shaded.INSTANCE;
-                    }
-                }
-                return null;
+        return node -> {
+            if (node == currentNode) {
+                return Decoration.Highlighted.INSTANCE;
             }
+            if (!allLevels) {
+                VisualModel model = editor.getModel();
+                if (node == model.getCurrentLevel()) {
+                    return Decoration.Empty.INSTANCE;
+                }
+                if (node == model.getRoot()) {
+                    return Decoration.Shaded.INSTANCE;
+                }
+            }
+            return null;
         };
     }
 

@@ -5,7 +5,6 @@ import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.*;
-import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
@@ -154,17 +153,6 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
     public Collection<VisualContact> getContacts() {
         return Hierarchy.getChildrenOfType(this, VisualContact.class);
-    }
-
-    public Collection<VisualConnection> getRelevantConnections(Collection<VisualContact> contacts) {
-        Collection<VisualConnection> result = Collections.emptyList();
-        Node root = Hierarchy.getRoot(this);
-        if (root != null) {
-            final HashSet<VisualContact> contactSet = new HashSet<>(contacts);
-            result = Hierarchy.getDescendantsOfType(root, VisualConnection.class,
-                connection -> contactSet.contains(connection.getFirst()) || contactSet.contains(connection.getSecond()));
-        }
-        return result;
     }
 
     public void setContactsDefaultPosition() {
