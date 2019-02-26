@@ -35,15 +35,15 @@ public class CircuitSelectionTool extends SelectionTool {
             JMenuItem addOutputMenuItem = new JMenuItem("Add output pin");
             addOutputMenuItem.addActionListener(event -> {
                 editor.getWorkspaceEntry().saveMemento();
-                VisualCircuit circuit = (VisualCircuit) editor.getModel();
-                circuit.getOrCreateContact(component, null, IOType.OUTPUT);
+                VisualContact contact = component.createContact(IOType.OUTPUT);
+                component.setPositionByDirection(contact, VisualContact.Direction.EAST, false);
             });
             popup.add(addOutputMenuItem);
             JMenuItem addInputMenuItem = new JMenuItem("Add input pin");
             addInputMenuItem.addActionListener(event -> {
                 editor.getWorkspaceEntry().saveMemento();
-                VisualCircuit circuit = (VisualCircuit) editor.getModel();
-                circuit.getOrCreateContact(component, null, IOType.INPUT);
+                VisualContact contact = component.createContact(IOType.INPUT);
+                component.setPositionByDirection(contact, VisualContact.Direction.WEST, false);
             });
             popup.add(addInputMenuItem);
             popup.addSeparator();

@@ -189,7 +189,7 @@ public class ResetUtils {
             }
             VisualContact resetContact = null;
             if (!forceInitFuncContacts.isEmpty()) {
-                resetContact = circuit.getOrCreateContact(component, null, Contact.IOType.INPUT);
+                resetContact = component.createContact(Contact.IOType.INPUT);
                 try {
                     circuit.connect(resetPort, resetContact);
                 } catch (InvalidConnectionException e) {
@@ -212,7 +212,7 @@ public class ResetUtils {
         VisualFunctionContact result = null;
         VisualComponent component = circuit.getVisualComponentByMathReference(portName, VisualComponent.class);
         if (component == null) {
-            result = circuit.getOrCreateContact(null, portName, Contact.IOType.INPUT);
+            result = circuit.getOrCreatePort(portName, Contact.IOType.INPUT);
             if (result == null) {
                 DialogUtils.showError("Cannot create reset port '" + portName + "'.");
                 return null;

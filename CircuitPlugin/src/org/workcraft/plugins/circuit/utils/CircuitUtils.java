@@ -288,7 +288,7 @@ public class CircuitUtils {
         }
         return BooleanFormulaParser.parse(function, name -> {
             BooleanFormula result = null;
-            VisualFunctionContact port = circuit.getOrCreateContact(null, name, IOType.OUTPUT);
+            VisualFunctionContact port = circuit.getOrCreatePort(name, IOType.OUTPUT);
             if ((port != null) && (port.getReferencedContact() instanceof BooleanFormula)) {
                 result = port.getReferencedContact();
             }

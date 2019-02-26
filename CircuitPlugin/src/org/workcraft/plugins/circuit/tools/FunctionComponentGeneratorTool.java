@@ -1,7 +1,5 @@
 package org.workcraft.plugins.circuit.tools;
 
-import java.awt.geom.Point2D;
-
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.NodeCreationException;
@@ -9,11 +7,9 @@ import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.plugins.circuit.Contact.IOType;
-import org.workcraft.plugins.circuit.FunctionComponent;
-import org.workcraft.plugins.circuit.FunctionContact;
-import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.VisualFunctionComponent;
-import org.workcraft.plugins.circuit.VisualFunctionContact;
+import org.workcraft.plugins.circuit.*;
+
+import java.awt.geom.Point2D;
 
 public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
 
@@ -23,9 +19,8 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
             public VisualNode generate(VisualModel model, Point2D where) throws NodeCreationException {
                 VisualFunctionComponent component = (VisualFunctionComponent) super.generate(model, where);
                 VisualFunctionContact contact = new VisualFunctionContact(new FunctionContact(IOType.OUTPUT));
-                contact.setPosition(new Point2D.Double(0, 0));
-                component.addContact((VisualCircuit) model, contact);
-                model.setName(contact.getReferencedComponent(), "z");
+                component.addContact(contact);
+                component.setPositionByDirection(contact, VisualContact.Direction.EAST, false);
                 return component;
             }
         });

@@ -191,27 +191,6 @@ public class StgUtils {
         return result;
     }
 
-    public static Set<String> getNewSignals(StgModel srcStg, StgModel dstStg) {
-        Set<String> result = new HashSet<>();
-
-        Set<String> srcInputs = srcStg.getSignalReferences(Signal.Type.INPUT);
-        Set<String> dstInputs = dstStg.getSignalReferences(Signal.Type.INPUT);
-        dstInputs.removeAll(srcInputs);
-        result.addAll(dstInputs);
-
-        Set<String> srcOutputs = srcStg.getSignalReferences(Signal.Type.OUTPUT);
-        Set<String> dstOutputs = dstStg.getSignalReferences(Signal.Type.OUTPUT);
-        dstOutputs.removeAll(srcOutputs);
-        result.addAll(dstOutputs);
-
-        Set<String> srcInternal = srcStg.getSignalReferences(Signal.Type.INTERNAL);
-        Set<String> dstInternal = dstStg.getSignalReferences(Signal.Type.INTERNAL);
-        dstInternal.removeAll(srcInternal);
-        result.addAll(dstInternal);
-
-        return result;
-    }
-
     public static WorkspaceEntry createStgIfNewSignals(WorkspaceEntry srcWe, byte[] dstOutput) {
         WorkspaceEntry dstWe = null;
         if (dstOutput != null) {
@@ -219,7 +198,9 @@ public class StgUtils {
             try {
                 ByteArrayInputStream dstStream = new ByteArrayInputStream(dstOutput);
                 StgModel dstStg = new StgImporter().importStg(dstStream);
-                Set<String> newSignals = getNewSignals(srcStg, dstStg);
+                Set<String> newSignals = dstStg.getSignalReferences();
+                newSignals.removeAll(srcStg.getSignalReferences());
+
                 if (newSignals.isEmpty()) {
                     LogUtils.logInfo("No new signals are inserted in the STG");
                 } else {
