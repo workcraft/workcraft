@@ -158,12 +158,12 @@ public class CommonSignalSettings implements Settings {
         return dummyColor;
     }
 
-    public static boolean getShowToggle() {
-        return showToggle;
-    }
-
     public static void setShowToggle(boolean value) {
         showToggle = value;
+    }
+
+    public static boolean getShowToggle() {
+        return showToggle;
     }
 
 }

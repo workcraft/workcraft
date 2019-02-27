@@ -110,7 +110,7 @@ public class VisualStg extends AbstractVisualModel {
                 VisualStgPlace place = makeExplicit(con);
                 connection = connect(first, place);
             } else if ((second instanceof VisualStgPlace) || (second instanceof VisualReplicaPlace)) {
-                connection = createSimpleConnection((VisualNode) first, (VisualNode) second, mConnection);
+                connection = createSimpleConnection(first, second, mConnection);
             }
         } else if (first instanceof VisualImplicitPlaceArc) {
             if (second instanceof VisualNamedTransition) {
