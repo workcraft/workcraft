@@ -1,9 +1,8 @@
 package org.workcraft.dom.visual;
 
-import org.workcraft.NodeFactory;
 import org.workcraft.commands.AbstractLayoutCommand;
-import org.workcraft.dom.*;
 import org.workcraft.dom.Container;
+import org.workcraft.dom.*;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathModel;
@@ -15,24 +14,24 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
-import org.workcraft.gui.graph.tools.Decorator;
-import org.workcraft.gui.graph.tools.GraphEditorTool;
+import org.workcraft.gui.tools.Decorator;
+import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.observation.*;
-import org.workcraft.plugins.layout.DotLayoutCommand;
-import org.workcraft.serialisation.xml.NoAutoSerialisation;
-import org.workcraft.util.Func;
-import org.workcraft.util.Hierarchy;
-import org.workcraft.util.Pair;
+import org.workcraft.plugins.builtin.commands.DotLayoutCommand;
+import org.workcraft.serialisation.NoAutoSerialisation;
+import org.workcraft.types.Func;
+import org.workcraft.types.Pair;
+import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.*;
 import java.util.List;
 import java.util.Queue;
+import java.util.*;
 
 public abstract class AbstractVisualModel extends AbstractModel<VisualNode, VisualConnection> implements VisualModel {
 

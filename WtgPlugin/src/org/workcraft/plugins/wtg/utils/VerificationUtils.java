@@ -7,9 +7,9 @@ import org.workcraft.plugins.wtg.Guard;
 import org.workcraft.plugins.wtg.State;
 import org.workcraft.plugins.wtg.Waveform;
 import org.workcraft.plugins.wtg.Wtg;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.LogUtils;
-import org.workcraft.util.Pair;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.LogUtils;
+import org.workcraft.types.Pair;
 
 import java.util.*;
 

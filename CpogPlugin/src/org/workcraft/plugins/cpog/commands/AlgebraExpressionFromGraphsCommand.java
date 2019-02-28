@@ -8,14 +8,14 @@ import org.workcraft.Framework;
 import org.workcraft.commands.Command;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
-import org.workcraft.gui.graph.GraphEditorPanel;
+import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.gui.AlgebraExportDialog;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.plugins.cpog.tools.CpogSelectionTool;
-import org.workcraft.util.DialogUtils;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class AlgebraExpressionFromGraphsCommand implements Command {
 

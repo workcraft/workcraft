@@ -4,12 +4,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.gui.DesktopApi;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.plugins.atacs.commands.AtacsComplexGateSynthesisCommand;
 import org.workcraft.plugins.atacs.commands.AtacsGeneralisedCelementSynthesisCommand;
 import org.workcraft.plugins.atacs.commands.AtacsStandardCelementSynthesisCommand;
 import org.workcraft.plugins.circuit.CircuitTestUtils;
-import org.workcraft.util.PackageUtils;
+import org.workcraft.utils.PackageUtils;
 
 public class AtacsSynthesisCommandsTests {
 

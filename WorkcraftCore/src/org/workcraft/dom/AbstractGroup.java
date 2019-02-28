@@ -1,7 +1,7 @@
 package org.workcraft.dom;
 
 import org.workcraft.observation.*;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import java.util.Collection;
 import java.util.LinkedList;

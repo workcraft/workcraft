@@ -16,6 +16,7 @@ import javax.swing.KeyStroke;
 import org.mozilla.javascript.Context;
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.utils.DesktopApi;
 
 @SuppressWarnings("serial")
 public class JavaScriptWindow extends JPanel {

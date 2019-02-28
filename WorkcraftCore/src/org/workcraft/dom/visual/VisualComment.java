@@ -4,10 +4,10 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.math.CommentNode;
-import org.workcraft.gui.Coloriser;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.shared.CommonCommentSettings;
+import org.workcraft.plugins.builtin.settings.CommonCommentSettings;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;

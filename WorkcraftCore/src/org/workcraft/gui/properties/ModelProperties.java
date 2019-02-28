@@ -1,6 +1,6 @@
 package org.workcraft.gui.properties;
 
-import org.workcraft.util.Pair;
+import org.workcraft.types.Pair;
 
 import java.util.*;
 

@@ -13,12 +13,12 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
-import org.workcraft.gui.Coloriser;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.tools.ContainerDecoration;
-import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.graph.tools.Decorator;
-import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.gui.tools.ContainerDecoration;
+import org.workcraft.gui.tools.Decoration;
+import org.workcraft.gui.tools.Decorator;
+import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
@@ -30,12 +30,12 @@ import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualJoint;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.shared.CommonDecorationSettings;
+import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.converters.SignalStg;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
-import org.workcraft.util.Pair;
+import org.workcraft.types.Pair;
 
 public class CircuitSimulationTool extends StgSimulationTool {
 

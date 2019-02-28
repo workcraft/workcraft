@@ -4,7 +4,7 @@ import java.io.File;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
-import org.workcraft.commands.ScriptableCommandUtils;
+import org.workcraft.utils.ScriptableCommandUtils;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.MpsatSettingsSerialiser;
@@ -15,9 +15,9 @@ import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class MpsatPropertyVerificationCommand extends AbstractVerificationCommand {
 
@@ -47,7 +47,7 @@ public class MpsatPropertyVerificationCommand extends AbstractVerificationComman
         MpsatPresetManager pmgr = new MpsatPresetManager(presetFile, new MpsatSettingsSerialiser(), allowStgPresets);
         MpsatPropertyDialog dialog = new MpsatPropertyDialog(mainWindow, pmgr);
         dialog.pack();
-        GUI.centerToParent(dialog, mainWindow);
+        GuiUtils.centerToParent(dialog, mainWindow);
         dialog.setVisible(true);
         if (dialog.getModalResult() == 1) {
             TaskManager manager = framework.getTaskManager();

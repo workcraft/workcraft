@@ -20,10 +20,10 @@ import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.VisualStgPlace;
-import org.workcraft.util.Hierarchy;
-import org.workcraft.util.Pair;
+import org.workcraft.utils.Hierarchy;
+import org.workcraft.types.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class ContractNamedTransitionTransformationCommand extends ContractTransitionTransformationCommand {
 

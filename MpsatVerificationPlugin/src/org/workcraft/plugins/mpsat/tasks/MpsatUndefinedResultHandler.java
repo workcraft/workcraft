@@ -1,6 +1,6 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import org.workcraft.util.DialogUtils;
+import org.workcraft.utils.DialogUtils;
 
 final class MpsatUndefinedResultHandler implements Runnable {
 

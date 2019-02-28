@@ -18,8 +18,8 @@ import javax.swing.event.EventListenerList;
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.plugins.shared.CommonEditorSettings;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
+import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 
 class ColorComboBoxEditor implements ComboBoxEditor, ActionListener {
 

@@ -3,16 +3,16 @@ package org.workcraft.plugins.dfs.tools;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
-import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.graph.tools.Decorator;
-import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.gui.tools.AbstractGraphEditorTool;
+import org.workcraft.gui.tools.Decoration;
+import org.workcraft.gui.tools.Decorator;
+import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.dfs.VisualDelayComponent;
 import org.workcraft.plugins.dfs.VisualDfs;
-import org.workcraft.util.GUI;
-import org.workcraft.util.Hierarchy;
-import org.workcraft.util.IntDocument;
-import org.workcraft.util.graph.cycle.ElementaryCyclesSearch;
+import org.workcraft.plugins.dfs.cycle.ElementaryCyclesSearch;
+import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.Hierarchy;
+import org.workcraft.shared.IntDocument;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
@@ -23,8 +23,8 @@ import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.DecimalFormat;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class CycleAnalyserTool extends AbstractGraphEditorTool {
     // Infinity symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
@@ -191,7 +191,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     @Override
     public Icon getIcon() {
-        return GUI.createIconFromSVG("images/dfs-tool-cycle_analysis.svg");
+        return GuiUtils.createIconFromSVG("images/dfs-tool-cycle_analysis.svg");
     }
 
     @Override

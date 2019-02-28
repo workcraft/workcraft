@@ -2,8 +2,8 @@ package org.workcraft.dom.visual;
 
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.NotAnAncestorException;
-import org.workcraft.util.Geometry;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Geometry;
+import org.workcraft.utils.Hierarchy;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;

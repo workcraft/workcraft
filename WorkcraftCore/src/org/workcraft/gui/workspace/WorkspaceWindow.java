@@ -13,15 +13,14 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
-import org.workcraft.gui.FileFilters;
+import org.workcraft.workspace.FileFilters;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.MainWindowActions;
-import org.workcraft.gui.WorkspaceTreeDecorator;
 import org.workcraft.gui.actions.ActionMenuItem;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.trees.TreeWindow;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.Workspace;
 
 @SuppressWarnings("serial")
@@ -132,7 +131,7 @@ public class WorkspaceWindow extends JPanel {
         fc.setMultiSelectionEnabled(true);
         fc.addChoosableFileFilter(FileFilters.DOCUMENT_FILES);
         fc.setFileFilter(fc.getAcceptAllFileFilter());
-        GUI.sizeFileChooserToScreen(fc, mainWindow.getDisplayMode());
+        GuiUtils.sizeFileChooserToScreen(fc, mainWindow.getDisplayMode());
         if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             for (File file : fc.getSelectedFiles()) {
                 Path<String> pathName = Path.append(path, file.getName());
@@ -164,7 +163,7 @@ public class WorkspaceWindow extends JPanel {
         }
         fc.setDialogTitle(DIALOG_SAVE_WORKSPACE_AS);
         fc.setFileFilter(FileFilters.WORKSPACE_FILES);
-        GUI.sizeFileChooserToScreen(fc, mainWindow.getDisplayMode());
+        GuiUtils.sizeFileChooserToScreen(fc, mainWindow.getDisplayMode());
         File file;
         while (true) {
             if (fc.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {

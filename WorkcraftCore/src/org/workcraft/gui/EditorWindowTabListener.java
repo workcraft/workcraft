@@ -1,9 +1,10 @@
 package org.workcraft.gui;
 
-import javax.swing.JTabbedPane;
-
 import org.workcraft.Framework;
-import org.workcraft.gui.graph.GraphEditorPanel;
+import org.workcraft.gui.editor.GraphEditorPanel;
+import org.workcraft.gui.tabs.DockableWindowTabListener;
+
+import javax.swing.*;
 
 public class EditorWindowTabListener implements DockableWindowTabListener {
 

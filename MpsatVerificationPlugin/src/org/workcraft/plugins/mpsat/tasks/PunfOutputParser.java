@@ -3,9 +3,9 @@ package org.workcraft.plugins.mpsat.tasks;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.workcraft.gui.graph.tools.Trace;
+import org.workcraft.gui.tools.Trace;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
-import org.workcraft.util.Pair;
+import org.workcraft.types.Pair;
 
 public class PunfOutputParser {
 

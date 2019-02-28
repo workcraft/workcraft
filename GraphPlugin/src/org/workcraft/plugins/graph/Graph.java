@@ -9,7 +9,7 @@ import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.plugins.graph.observers.SymbolConsistencySupervisor;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import java.util.Collection;
 

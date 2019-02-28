@@ -1,15 +1,15 @@
 package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.MenuOrdering;
+import org.workcraft.commands.MenuOrdering;
 import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
-import org.workcraft.gui.graph.GraphEditorPanel;
+import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.tools.InitialisationAnalyserTool;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public abstract class CircuitAbstractInitialisationCommand implements ScriptableCommand<Void>, MenuOrdering {
 

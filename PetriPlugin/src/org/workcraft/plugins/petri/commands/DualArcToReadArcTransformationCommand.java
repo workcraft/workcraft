@@ -7,9 +7,9 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.utils.PetriNetUtils;
-import org.workcraft.util.Pair;
+import org.workcraft.types.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import java.util.Collection;
 import java.util.HashSet;

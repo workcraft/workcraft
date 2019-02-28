@@ -7,9 +7,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.plugins.statistics.BasicStatisticsCommand;
+import org.workcraft.plugins.builtin.commands.BasicStatisticsCommand;
 import org.workcraft.plugins.stg.commands.StgStatisticsCommand;
-import org.workcraft.util.PackageUtils;
+import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class StgStatisticsCommandTests {

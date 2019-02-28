@@ -9,7 +9,7 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.*;
@@ -19,7 +19,7 @@ import org.workcraft.plugins.son.util.Scenario;
 import org.workcraft.plugins.son.util.ScenarioRef;
 import org.workcraft.plugins.son.util.ScenarioSaveList;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import javax.swing.*;
 import java.awt.*;

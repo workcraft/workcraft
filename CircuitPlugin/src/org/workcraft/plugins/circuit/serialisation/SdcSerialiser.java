@@ -17,8 +17,8 @@ import org.workcraft.plugins.circuit.verilog.SubstitutionRule;
 import org.workcraft.plugins.circuit.verilog.SubstitutionUtils;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.Hierarchy;
 
 public class SdcSerialiser implements ModelSerialiser {
 

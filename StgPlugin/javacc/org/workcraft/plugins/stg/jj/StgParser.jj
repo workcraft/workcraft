@@ -26,10 +26,10 @@ import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.NamedTransition;
 import org.workcraft.plugins.stg.ImplicitPlaceConnection;
 import org.workcraft.plugins.stg.*;
-import org.workcraft.util.EnumUtils;
-import org.workcraft.util.LogUtils;
-import org.workcraft.util.Pair;
-import org.workcraft.util.Triple;
+import org.workcraft.utils.EnumUtils;
+import org.workcraft.utils.LogUtils;
+import org.workcraft.types.Pair;
+import org.workcraft.types.Triple;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.FormatException;
 

@@ -10,8 +10,8 @@ import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.serialisation.xml.NoAutoSerialisation;
+import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.serialisation.NoAutoSerialisation;
 
 import java.awt.*;
 import java.awt.geom.Point2D;

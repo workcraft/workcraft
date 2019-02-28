@@ -14,8 +14,8 @@ import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.converters.AbstractToStgConverter;
 import org.workcraft.plugins.stg.converters.NodeStg;
-import org.workcraft.util.ColorGenerator;
-import org.workcraft.util.ColorUtils;
+import org.workcraft.shared.ColorGenerator;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.geom.Point2D;

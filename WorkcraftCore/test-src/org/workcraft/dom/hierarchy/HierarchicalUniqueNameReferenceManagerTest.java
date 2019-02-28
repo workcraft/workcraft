@@ -1,7 +1,7 @@
 package org.workcraft.dom.hierarchy;
 
 import org.junit.Test;
-import org.workcraft.util.Pair;
+import org.workcraft.types.Pair;
 
 import java.util.HashMap;
 import java.util.Map.Entry;

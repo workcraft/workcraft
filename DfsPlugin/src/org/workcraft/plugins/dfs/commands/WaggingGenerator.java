@@ -13,8 +13,8 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.dfs.BinaryRegister.Marking;
 import org.workcraft.plugins.dfs.*;
 import org.workcraft.plugins.dfs.ControlRegister.SynchronisationType;
-import org.workcraft.util.Hierarchy;
-import org.workcraft.util.Pair;
+import org.workcraft.utils.Hierarchy;
+import org.workcraft.types.Pair;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;

@@ -6,7 +6,7 @@ import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesAddedEvent;
 import org.workcraft.observation.NodesDeletedEvent;
-import org.workcraft.util.TwoWayMap;
+import org.workcraft.types.TwoWayMap;
 
 public class FlatReferenceManager extends HierarchySupervisor implements ReferenceManager {
     private final IDGenerator idGenerator = new IDGenerator();

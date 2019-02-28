@@ -1,12 +1,12 @@
 package org.workcraft.dom.visual.connections;
 
-import static org.workcraft.util.Geometry.add;
-import static org.workcraft.util.Geometry.changeBasis;
-import static org.workcraft.util.Geometry.multiply;
-import static org.workcraft.util.Geometry.normalize;
-import static org.workcraft.util.Geometry.reduce;
-import static org.workcraft.util.Geometry.rotate90CCW;
-import static org.workcraft.util.Geometry.subtract;
+import static org.workcraft.utils.Geometry.add;
+import static org.workcraft.utils.Geometry.changeBasis;
+import static org.workcraft.utils.Geometry.multiply;
+import static org.workcraft.utils.Geometry.normalize;
+import static org.workcraft.utils.Geometry.reduce;
+import static org.workcraft.utils.Geometry.rotate90CCW;
+import static org.workcraft.utils.Geometry.subtract;
 
 import java.awt.geom.Point2D;
 import java.util.Collection;

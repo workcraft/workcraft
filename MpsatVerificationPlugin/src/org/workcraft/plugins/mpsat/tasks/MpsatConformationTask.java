@@ -1,9 +1,9 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.Framework;
-import org.workcraft.PluginManager;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
+import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.pcomp.ComponentData;
@@ -13,18 +13,16 @@ import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
-import org.workcraft.plugins.shared.tasks.ExportOutput;
-import org.workcraft.plugins.shared.tasks.ExportTask;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.ExportUtils;
-import org.workcraft.util.FileUtils;
+import org.workcraft.utils.ExportUtils;
+import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
 
 import java.io.File;
 import java.util.Set;

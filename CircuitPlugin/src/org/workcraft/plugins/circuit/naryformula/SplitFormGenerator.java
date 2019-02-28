@@ -14,7 +14,7 @@ import org.workcraft.formula.One;
 import org.workcraft.formula.Or;
 import org.workcraft.formula.Xor;
 import org.workcraft.formula.utils.BooleanUtils;
-import org.workcraft.util.Func2;
+import org.workcraft.types.Func2;
 
 public class SplitFormGenerator {
 

@@ -3,13 +3,13 @@ package org.workcraft.plugins.son.connections;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.utils.Coloriser;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.util.Interval;
-import org.workcraft.util.Geometry;
+import org.workcraft.utils.Geometry;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;

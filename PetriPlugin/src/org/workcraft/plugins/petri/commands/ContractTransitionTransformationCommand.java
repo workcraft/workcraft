@@ -1,7 +1,7 @@
 package org.workcraft.plugins.petri.commands;
 
-import org.workcraft.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
+import org.workcraft.commands.NodeTransformer;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
@@ -20,10 +20,10 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.*;
 import org.workcraft.plugins.petri.utils.PetriNetUtils;
-import org.workcraft.util.*;
+import org.workcraft.types.Pair;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
 
 import java.awt.geom.Point2D;
 import java.util.*;

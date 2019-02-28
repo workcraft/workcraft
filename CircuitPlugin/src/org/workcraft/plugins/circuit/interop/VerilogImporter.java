@@ -32,11 +32,11 @@ import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.StructureUtilsKt;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.plugins.circuit.verilog.*;
-import org.workcraft.plugins.shared.CommonDebugSettings;
+import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.LogUtils;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 
 import java.io.ByteArrayInputStream;

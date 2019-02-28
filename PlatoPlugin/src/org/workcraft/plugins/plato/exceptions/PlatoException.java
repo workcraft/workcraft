@@ -1,11 +1,11 @@
 package org.workcraft.plugins.plato.exceptions;
 
 import org.workcraft.plugins.plato.PlatoSettings;
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
+import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.LogUtils;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.LogUtils;
 
 @SuppressWarnings("serial")
 public class PlatoException extends Exception {

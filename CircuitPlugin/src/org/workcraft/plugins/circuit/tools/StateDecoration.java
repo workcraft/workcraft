@@ -2,7 +2,7 @@ package org.workcraft.plugins.circuit.tools;
 
 import java.awt.Color;
 
-import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.gui.tools.Decoration;
 
 public interface StateDecoration extends Decoration {
     boolean showForcedInit();

@@ -1,13 +1,14 @@
 package org.workcraft.gui;
 
 import org.workcraft.Framework;
-import org.workcraft.PluginManager;
-import org.workcraft.PluginUtils;
+import org.workcraft.plugins.PluginManager;
+import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.PluginUtils;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.PluginInfo;
-import org.workcraft.plugins.shared.CommonFavoriteSettings;
-import org.workcraft.util.GUI;
+import org.workcraft.plugins.builtin.settings.CommonFavoriteSettings;
+import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -96,11 +97,11 @@ public class CreateWorkDialog extends JDialog {
         fillModelList();
         JScrollPane modelScroll = getModelScroll();
 
-        okButton = GUI.createDialogButton("OK");
+        okButton = GuiUtils.createDialogButton("OK");
         okButton.setEnabled(false);
         okButton.addActionListener(event -> ok());
 
-        cancelButton = GUI.createDialogButton("Cancel");
+        cancelButton = GuiUtils.createDialogButton("Cancel");
         cancelButton.addActionListener(event -> cancel());
 
         JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));

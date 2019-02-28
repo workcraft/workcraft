@@ -6,7 +6,7 @@ import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.tools.SelectionTool;
+import org.workcraft.gui.tools.SelectionTool;
 import org.workcraft.plugins.petri.VisualPlace;
 
 public class PetriSelectionTool extends SelectionTool {

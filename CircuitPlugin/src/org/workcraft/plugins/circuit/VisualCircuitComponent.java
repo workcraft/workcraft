@@ -4,13 +4,13 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
-import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.utils.Coloriser;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.*;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
-import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
 import java.awt.font.FontRenderContext;

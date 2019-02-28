@@ -7,8 +7,8 @@ import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.RenderedText;
-import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.utils.Coloriser;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.plugins.son.SONSettings;
 

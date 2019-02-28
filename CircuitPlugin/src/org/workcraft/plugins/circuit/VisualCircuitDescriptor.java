@@ -1,11 +1,11 @@
 package org.workcraft.plugins.circuit;
 
-import org.workcraft.util.ValidationUtils;
+import org.workcraft.utils.ValidationUtils;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 public class VisualCircuitDescriptor implements VisualModelDescriptor {
 

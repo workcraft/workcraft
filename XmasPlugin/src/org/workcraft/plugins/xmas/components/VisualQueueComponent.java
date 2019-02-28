@@ -7,10 +7,10 @@ import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.exceptions.ArgumentException;
-import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.utils.Coloriser;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
-import org.workcraft.plugins.shared.CommonDecorationSettings;
+import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;

@@ -12,7 +12,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.DuplicateIDException;
 import org.workcraft.plugins.stg.references.InstanceManager;
-import org.workcraft.util.Pair;
+import org.workcraft.types.Pair;
 
 public class InstanceManagerTests {
 

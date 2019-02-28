@@ -3,14 +3,14 @@ package org.workcraft.plugins.petri.tools;
 import java.awt.Cursor;
 
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.gui.DesktopApi;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
-import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.gui.graph.tools.NodeGeneratorTool;
+import org.workcraft.dom.generators.DefaultNodeGenerator;
+import org.workcraft.gui.tools.GraphEditor;
+import org.workcraft.gui.tools.NodeGeneratorTool;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class PetriPlaceGeneratorTool extends NodeGeneratorTool {
@@ -40,9 +40,9 @@ public class PetriPlaceGeneratorTool extends NodeGeneratorTool {
     @Override
     public Cursor getCursor(boolean menuKeyDown, boolean shiftKeyDown, boolean altKeyDown) {
         if (menuKeyDown) {
-            return GUI.createCursorFromSVG("images/petri-node-place-marked.svg");
+            return GuiUtils.createCursorFromSVG("images/petri-node-place-marked.svg");
         } else {
-            return GUI.createCursorFromSVG("images/petri-node-place-empty.svg");
+            return GuiUtils.createCursorFromSVG("images/petri-node-place-empty.svg");
         }
     }
 

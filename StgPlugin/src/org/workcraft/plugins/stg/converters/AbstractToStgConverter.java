@@ -8,7 +8,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.stg.*;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;

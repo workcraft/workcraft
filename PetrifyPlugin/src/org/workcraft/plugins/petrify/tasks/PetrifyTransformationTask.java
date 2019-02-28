@@ -17,10 +17,10 @@ import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.petrify.PetrifyUtils;
-import org.workcraft.plugins.shared.tasks.ExportOutput;
-import org.workcraft.plugins.shared.tasks.ExportTask;
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
-import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
+import org.workcraft.tasks.ExportOutput;
+import org.workcraft.tasks.ExportTask;
+import org.workcraft.tasks.ExternalProcessOutput;
+import org.workcraft.tasks.ExternalProcessTask;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.interop.StgImporter;
@@ -30,7 +30,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
-import org.workcraft.util.*;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.ByteArrayInputStream;
@@ -60,7 +60,7 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationOutp
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
-        String toolName = ToolUtils.getAbsoluteCommandPath(PetrifySettings.getCommand());
+        String toolName = ExecutableUtils.getAbsoluteCommandPath(PetrifySettings.getCommand());
         command.add(toolName);
 
         // Built-in arguments

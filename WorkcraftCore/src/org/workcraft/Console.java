@@ -4,11 +4,11 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.WrappedException;
 import org.workcraft.exceptions.OperationCancelledException;
-import org.workcraft.gui.DesktopApi;
-import org.workcraft.gui.FileFilters;
+import org.workcraft.utils.DesktopApi;
+import org.workcraft.workspace.FileFilters;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.util.LogUtils;
-import org.workcraft.util.ResourceUtils;
+import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.ResourceUtils;
 
 import java.io.BufferedReader;
 import java.io.File;

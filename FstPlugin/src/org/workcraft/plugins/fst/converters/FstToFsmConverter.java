@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.gui.graph.converters.DefaultModelConverter;
+import org.workcraft.dom.converters.DefaultModelConverter;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;

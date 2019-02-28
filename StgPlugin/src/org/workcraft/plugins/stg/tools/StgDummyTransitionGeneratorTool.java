@@ -1,7 +1,7 @@
 package org.workcraft.plugins.stg.tools;
 
-import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
-import org.workcraft.gui.graph.tools.NodeGeneratorTool;
+import org.workcraft.dom.generators.DefaultNodeGenerator;
+import org.workcraft.gui.tools.NodeGeneratorTool;
 import org.workcraft.plugins.stg.DummyTransition;
 
 public class StgDummyTransitionGeneratorTool extends NodeGeneratorTool {

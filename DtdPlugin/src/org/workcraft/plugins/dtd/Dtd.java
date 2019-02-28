@@ -6,7 +6,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.plugins.dtd.utils.DtdUtils;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import java.util.Collection;
 

@@ -12,7 +12,7 @@ import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionContact;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 public class FunctionConsistencySupervisor extends HierarchySupervisor {
 

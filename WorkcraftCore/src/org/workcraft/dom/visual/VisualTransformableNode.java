@@ -6,9 +6,9 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
-import org.workcraft.serialisation.xml.NoAutoSerialisation;
-import org.workcraft.util.Geometry;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.serialisation.NoAutoSerialisation;
+import org.workcraft.utils.Geometry;
+import org.workcraft.utils.Hierarchy;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;

@@ -1,7 +1,7 @@
 package org.workcraft.plugins.circuit;
 
 import org.workcraft.Config;
-import org.workcraft.gui.DesktopApi;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.Settings;
@@ -9,7 +9,7 @@ import org.workcraft.plugins.circuit.utils.Gate2;
 import org.workcraft.plugins.circuit.utils.Gate3;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
-import org.workcraft.util.DialogUtils;
+import org.workcraft.utils.DialogUtils;
 
 import java.awt.*;
 import java.util.Collection;

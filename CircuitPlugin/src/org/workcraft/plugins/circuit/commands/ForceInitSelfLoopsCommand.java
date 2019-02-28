@@ -4,9 +4,9 @@ import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.utils.ResetUtils;
-import org.workcraft.util.LogUtils;
+import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;

@@ -8,7 +8,7 @@ import org.workcraft.dom.visual.Replicable;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletedEvent;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 public class DefaultReplicaRemover extends HierarchySupervisor {
     private final NodeContext nct;

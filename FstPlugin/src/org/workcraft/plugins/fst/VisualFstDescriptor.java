@@ -1,6 +1,6 @@
 package org.workcraft.plugins.fst;
 
-import org.workcraft.util.ValidationUtils;
+import org.workcraft.utils.ValidationUtils;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.exceptions.VisualModelInstantiationException;

@@ -9,11 +9,11 @@ import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.utils.StringGenerator;
-import org.workcraft.gui.DesktopApi;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.plugins.cpog.*;
-import org.workcraft.util.DialogUtils;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;

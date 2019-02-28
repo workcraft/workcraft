@@ -1,8 +1,8 @@
 package org.workcraft.gui.events;
 
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.gui.DesktopApi;
-import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.utils.DesktopApi;
+import org.workcraft.gui.tools.GraphEditor;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;

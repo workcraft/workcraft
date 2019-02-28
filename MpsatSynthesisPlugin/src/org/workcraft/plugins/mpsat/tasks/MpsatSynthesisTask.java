@@ -8,17 +8,17 @@ import java.util.regex.Pattern;
 
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.mpsat.MpsatSynthesisSettings;
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
-import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
+import org.workcraft.tasks.ExternalProcessOutput;
+import org.workcraft.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.FileUtils;
-import org.workcraft.util.LogUtils;
-import org.workcraft.util.ToolUtils;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.ExecutableUtils;
 
 public class MpsatSynthesisTask implements Task<MpsatSynthesisOutput> {
 
@@ -52,7 +52,7 @@ public class MpsatSynthesisTask implements Task<MpsatSynthesisOutput> {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
-        String toolName = ToolUtils.getAbsoluteCommandPath(MpsatSynthesisSettings.getCommand());
+        String toolName = ExecutableUtils.getAbsoluteCommandPath(MpsatSynthesisSettings.getCommand());
         command.add(toolName);
 
         // Built-in arguments

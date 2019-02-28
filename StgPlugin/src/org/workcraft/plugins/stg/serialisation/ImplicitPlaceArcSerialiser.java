@@ -3,8 +3,8 @@ package org.workcraft.plugins.stg.serialisation;
 import org.w3c.dom.Element;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.serialisation.xml.CustomXMLSerialiser;
-import org.workcraft.serialisation.xml.NodeSerialiser;
+import org.workcraft.serialisation.CustomXMLSerialiser;
+import org.workcraft.serialisation.NodeSerialiser;
 
 public class ImplicitPlaceArcSerialiser implements CustomXMLSerialiser<VisualImplicitPlaceArc> {
 

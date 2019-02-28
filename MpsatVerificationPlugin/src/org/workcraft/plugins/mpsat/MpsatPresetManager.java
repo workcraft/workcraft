@@ -2,8 +2,8 @@ package org.workcraft.plugins.mpsat;
 
 import java.io.File;
 
-import org.workcraft.plugins.shared.presets.PresetManager;
-import org.workcraft.plugins.shared.presets.SettingsSerialiser;
+import org.workcraft.presets.PresetManager;
+import org.workcraft.presets.SettingsSerialiser;
 
 public class MpsatPresetManager extends PresetManager<MpsatParameters> {
 

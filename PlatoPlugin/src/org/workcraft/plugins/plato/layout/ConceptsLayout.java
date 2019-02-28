@@ -23,7 +23,7 @@ import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 public class ConceptsLayout {
 

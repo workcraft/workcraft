@@ -1,7 +1,7 @@
 package org.workcraft.plugins.plato;
 
 import org.workcraft.Config;
-import org.workcraft.gui.DesktopApi;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.Settings;

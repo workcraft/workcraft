@@ -7,7 +7,7 @@ import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.FstDescriptor;
 import org.workcraft.plugins.fst.jj.ParseException;
 import org.workcraft.plugins.fst.jj.SgParser;
-import org.workcraft.plugins.shared.CommonDebugSettings;
+import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
 import org.workcraft.workspace.ModelEntry;
 
 import java.io.InputStream;

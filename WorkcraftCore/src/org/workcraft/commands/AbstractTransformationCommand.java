@@ -1,10 +1,9 @@
 package org.workcraft.commands;
 
-import org.workcraft.MenuOrdering;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import java.util.Collection;
 import java.util.HashSet;

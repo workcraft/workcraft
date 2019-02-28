@@ -3,8 +3,8 @@ package org.workcraft.plugins.mpsat.tasks;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
-import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
+import org.workcraft.tasks.ExternalProcessOutput;
+import org.workcraft.tasks.ExternalProcessTask;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.tasks.ProgressMonitor;
@@ -12,9 +12,9 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.FileUtils;
-import org.workcraft.util.ToolUtils;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.ExecutableUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -88,7 +88,7 @@ public class MpsatTask implements Task<MpsatOutput> {
         String toolPrefix = MpsatVerificationSettings.getCommand();
         String unfoldingFileName = unfoldingFile.getName();
         String toolSuffix = unfoldingFileName.endsWith(PunfTask.MCI_FILE_EXTENSION) ? PunfTask.LEGACY_TOOL_SUFFIX : "";
-        String toolName = ToolUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
+        String toolName = ExecutableUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
         command.add(toolName);
 
         // Built-in arguments

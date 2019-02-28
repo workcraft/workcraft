@@ -27,16 +27,16 @@ import javax.swing.KeyStroke;
 
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.gui.DesktopApi;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.MpsatParameters.SolutionMode;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
-import org.workcraft.plugins.shared.gui.PresetManagerPanel;
-import org.workcraft.plugins.shared.presets.Preset;
-import org.workcraft.plugins.shared.presets.SettingsToControlsMapper;
-import org.workcraft.util.GUI;
-import org.workcraft.util.IntDocument;
+import org.workcraft.presets.PresetManagerPanel;
+import org.workcraft.presets.Preset;
+import org.workcraft.presets.SettingsToControlsMapper;
+import org.workcraft.utils.GuiUtils;
+import org.workcraft.shared.IntDocument;
 
 import info.clearthought.layout.TableLayout;
 
@@ -149,7 +149,7 @@ public class MpsatPropertyDialog extends JDialog {
         }
         modeCombo.addItem(MpsatMode.REACHABILITY);
 
-        optionsPanel.add(GUI.createWideLabeledComponent(modeCombo, "  Mode:      "), BorderLayout.NORTH);
+        optionsPanel.add(GuiUtils.createWideLabeledComponent(modeCombo, "  Mode:      "), BorderLayout.NORTH);
 
         JPanel solutionModePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
         solutionModePanel.add(new JLabel("Solution:"));
@@ -219,19 +219,19 @@ public class MpsatPropertyDialog extends JDialog {
     private void createButtonsPanel() {
         buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        JButton runButton = GUI.createDialogButton("Run");
+        JButton runButton = GuiUtils.createDialogButton("Run");
         runButton.addActionListener(event -> {
             modalResult = 1;
             setVisible(false);
         });
 
-        JButton cancelButton = GUI.createDialogButton("Cancel");
+        JButton cancelButton = GuiUtils.createDialogButton("Cancel");
         cancelButton.addActionListener(event -> {
             modalResult = 0;
             setVisible(false);
         });
 
-        JButton helpButton = GUI.createDialogButton("Help");
+        JButton helpButton = GuiUtils.createDialogButton("Help");
         helpButton.addActionListener(event -> DesktopApi.open(new File("help/reach.html")));
 
         buttonsPanel.add(runButton);

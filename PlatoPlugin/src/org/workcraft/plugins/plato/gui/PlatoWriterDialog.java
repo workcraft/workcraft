@@ -27,8 +27,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.GuiUtils;
 
 @SuppressWarnings("serial")
 public class PlatoWriterDialog extends JDialog {
@@ -111,11 +111,11 @@ public class PlatoWriterDialog extends JDialog {
     }
 
     private void createFileBtnPanel() {
-        JButton openFileBtn = GUI.createDialogButton("Open file");
-        JButton saveFileBtn = GUI.createDialogButton("Save to file");
-        JButton componentBtn = GUI.createDialogButton("New component");
-        JButton systemBtn = GUI.createDialogButton("New system");
-        JButton includeBtn = GUI.createDialogButton("Included files");
+        JButton openFileBtn = GuiUtils.createDialogButton("Open file");
+        JButton saveFileBtn = GuiUtils.createDialogButton("Save to file");
+        JButton componentBtn = GuiUtils.createDialogButton("New component");
+        JButton systemBtn = GuiUtils.createDialogButton("New system");
+        JButton includeBtn = GuiUtils.createDialogButton("Included files");
         dotLayoutCheckBox = new JCheckBox("Use dot layout");
         JPanel fileBtnPanel = new JPanel();
         fileBtnPanel.add(openFileBtn);
@@ -193,8 +193,8 @@ public class PlatoWriterDialog extends JDialog {
     }
 
     private void createFinalBtnPanel() {
-        JButton translateBtn = GUI.createDialogButton("Translate");
-        JButton cancelBtn = GUI.createDialogButton("Cancel");
+        JButton translateBtn = GuiUtils.createDialogButton("Translate");
+        JButton cancelBtn = GuiUtils.createDialogButton("Cancel");
         JPanel finalBtnPanel = new JPanel();
 
         translateBtn.addActionListener(event -> {

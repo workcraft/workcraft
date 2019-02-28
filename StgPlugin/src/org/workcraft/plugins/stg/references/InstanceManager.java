@@ -10,9 +10,9 @@ import org.workcraft.exceptions.DuplicateIDException;
 import org.workcraft.exceptions.NotFoundException;
 import org.workcraft.plugins.stg.DummyTransition;
 import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.util.GeneralTwoWayMap;
-import org.workcraft.util.Pair;
-import org.workcraft.util.TwoWayMap;
+import org.workcraft.types.GeneralTwoWayMap;
+import org.workcraft.types.Pair;
+import org.workcraft.types.TwoWayMap;
 
 public class InstanceManager {
 

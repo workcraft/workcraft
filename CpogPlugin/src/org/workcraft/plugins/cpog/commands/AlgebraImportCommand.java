@@ -10,9 +10,9 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.tools.CpogSelectionTool;
-import org.workcraft.util.LogUtils;
+import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class AlgebraImportCommand implements Command {
 

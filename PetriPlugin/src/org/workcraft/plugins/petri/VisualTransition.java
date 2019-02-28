@@ -4,8 +4,8 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.util.ColorGenerator;
+import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.shared.ColorGenerator;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;

@@ -5,11 +5,11 @@ import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.graph.GraphEditorPanel;
+import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.plugins.policy.VisualPolicyNet;
 import org.workcraft.plugins.policy.tools.PolicyToPetriConverter;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class BundleTransitionTransformationCommand extends AbstractTransformationCommand {
 

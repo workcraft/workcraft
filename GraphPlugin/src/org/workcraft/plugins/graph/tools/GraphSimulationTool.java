@@ -11,9 +11,9 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.graph.tools.Decorator;
-import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.gui.tools.Decoration;
+import org.workcraft.gui.tools.Decorator;
+import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.graph.VisualGraph;
 import org.workcraft.plugins.graph.VisualVertex;
 import org.workcraft.plugins.graph.converters.GraphToPetriConverter;
@@ -23,7 +23,7 @@ import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petri.tools.PetriSimulationTool;
-import org.workcraft.plugins.shared.CommonDecorationSettings;
+import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
 
 public class GraphSimulationTool extends PetriSimulationTool {
 

@@ -11,8 +11,8 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualReplica;
-import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.utils.Coloriser;
+import org.workcraft.gui.tools.Decoration;
 
 @DisplayName("Proxy place")
 @SVGIcon("images/petri-node-proxy.svg")

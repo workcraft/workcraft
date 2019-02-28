@@ -1,7 +1,7 @@
 package org.workcraft.plugins.xmas.tools;
 
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.gui.graph.tools.ConnectionTool;
+import org.workcraft.gui.tools.ConnectionTool;
 import org.workcraft.plugins.xmas.components.VisualXmasConnection;
 
 public class XmasConnectionTool extends ConnectionTool {

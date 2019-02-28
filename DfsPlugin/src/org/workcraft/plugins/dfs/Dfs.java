@@ -5,7 +5,7 @@ import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import java.util.Collection;
 import java.util.HashSet;

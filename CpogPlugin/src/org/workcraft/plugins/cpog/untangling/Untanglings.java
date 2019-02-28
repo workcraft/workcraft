@@ -18,7 +18,7 @@ import org.jbpt.petri.untangling.ReductionBasedRepresentativeUntangling;
 import org.jbpt.petri.untangling.SignificanceCheckType;
 import org.jbpt.petri.untangling.UntanglingSetup;
 import org.workcraft.plugins.cpog.commands.PetriToCpogParameters;
-import org.workcraft.util.LogUtils;
+import org.workcraft.utils.LogUtils;
 
 public class Untanglings {
 

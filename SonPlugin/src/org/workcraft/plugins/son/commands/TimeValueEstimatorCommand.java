@@ -5,7 +5,7 @@ import org.workcraft.gui.Toolbox;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.tools.TimeValueSetterTool;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class TimeValueEstimatorCommand implements Command {
 

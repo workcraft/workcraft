@@ -19,7 +19,7 @@ import org.workcraft.plugins.fst.SignalEvent;
 import org.workcraft.plugins.fst.interop.SgFormat;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.util.ExportUtils;
+import org.workcraft.utils.ExportUtils;
 
 public class SgSerialiser implements ModelSerialiser {
 

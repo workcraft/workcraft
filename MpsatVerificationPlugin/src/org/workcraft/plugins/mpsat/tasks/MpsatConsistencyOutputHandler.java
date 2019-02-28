@@ -4,15 +4,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.workcraft.gui.graph.tools.Trace;
+import org.workcraft.gui.tools.Trace;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
-import org.workcraft.plugins.shared.tasks.ExportOutput;
+import org.workcraft.tasks.ExportOutput;
 import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.util.LogUtils;
-import org.workcraft.util.Triple;
+import org.workcraft.utils.LogUtils;
+import org.workcraft.types.Triple;
 import org.workcraft.workspace.WorkspaceEntry;
 
 class MpsatConsistencyOutputHandler extends MpsatReachabilityOutputHandler {

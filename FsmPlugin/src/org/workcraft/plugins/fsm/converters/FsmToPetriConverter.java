@@ -16,7 +16,7 @@ import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 public class FsmToPetriConverter {
     private final VisualFsm srcModel;

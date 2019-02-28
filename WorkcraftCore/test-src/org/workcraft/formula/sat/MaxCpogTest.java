@@ -7,8 +7,8 @@ import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.encoding.Encoding;
 import org.workcraft.formula.encoding.onehot.OneHotIntBooleanFormula;
 import org.workcraft.formula.encoding.onehot.OneHotNumberProvider;
-import org.workcraft.plugins.shared.CommonSatSettings;
-import org.workcraft.plugins.shared.CommonSatSettings.SatSolver;
+import org.workcraft.plugins.builtin.settings.CommonSatSettings;
+import org.workcraft.plugins.builtin.settings.CommonSatSettings.SatSolver;
 
 public class MaxCpogTest {
 

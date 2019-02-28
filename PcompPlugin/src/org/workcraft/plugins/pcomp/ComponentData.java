@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 
 import org.w3c.dom.Element;
-import org.workcraft.util.XmlUtils;
+import org.workcraft.utils.XmlUtils;
 
 public class ComponentData {
 

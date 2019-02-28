@@ -4,8 +4,8 @@ import org.junit.BeforeClass;
 import org.workcraft.formula.BinaryIntBooleanFormula;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.encoding.BinaryNumberProvider;
-import org.workcraft.plugins.shared.CommonSatSettings;
-import org.workcraft.plugins.shared.CommonSatSettings.SatSolver;
+import org.workcraft.plugins.builtin.settings.CommonSatSettings;
+import org.workcraft.plugins.builtin.settings.CommonSatSettings.SatSolver;
 
 public class BinarySolverTests extends SolverTests {
 

@@ -1,6 +1,6 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import org.workcraft.gui.graph.tools.Trace;
+import org.workcraft.gui.tools.Trace;
 
 public class MpsatSolution {
     private final Trace mainTrace;

@@ -1,7 +1,7 @@
 package org.workcraft.plugins.mpsat.utils;
 
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.gui.graph.tools.Trace;
+import org.workcraft.gui.tools.Trace;
 import org.workcraft.plugins.mpsat.tasks.Enabledness;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;

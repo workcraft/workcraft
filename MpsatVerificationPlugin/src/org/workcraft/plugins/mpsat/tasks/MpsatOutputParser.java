@@ -1,6 +1,6 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import org.workcraft.gui.graph.tools.Trace;
+import org.workcraft.gui.tools.Trace;
 
 import java.util.Collections;
 import java.util.LinkedList;

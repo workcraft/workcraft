@@ -1,6 +1,6 @@
 package org.workcraft.plugins.cpog.formula;
 
-import org.workcraft.util.Func;
+import org.workcraft.types.Func;
 
 public interface GraphFunc<Arg, Result> extends Func<Arg, Result> {
 

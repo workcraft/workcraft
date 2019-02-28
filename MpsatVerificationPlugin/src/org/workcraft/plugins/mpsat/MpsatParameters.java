@@ -2,9 +2,9 @@ package org.workcraft.plugins.mpsat;
 
 import org.jetbrains.annotations.NotNull;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.util.FileUtils;
-import org.workcraft.util.LogUtils;
-import org.workcraft.util.Pair;
+import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.LogUtils;
+import org.workcraft.types.Pair;
 
 import java.io.File;
 import java.io.IOException;

@@ -12,10 +12,10 @@ import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.gui.Coloriser;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.gui.ExceptionDialog;
-import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.gui.graph.tools.SimulationTool;
+import org.workcraft.gui.tools.GraphEditor;
+import org.workcraft.gui.tools.SimulationTool;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.plugins.petri.Place;
@@ -24,8 +24,8 @@ import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.util.ColorGenerator;
-import org.workcraft.util.LogUtils;
+import org.workcraft.shared.ColorGenerator;
+import org.workcraft.utils.LogUtils;
 
 public class PetriSimulationTool extends SimulationTool {
 

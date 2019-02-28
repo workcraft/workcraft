@@ -3,8 +3,8 @@ package org.workcraft.plugins.cpog.tasks;
 import java.util.ArrayList;
 
 import org.workcraft.interop.ExternalProcessListener;
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
-import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
+import org.workcraft.tasks.ExternalProcessOutput;
+import org.workcraft.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;

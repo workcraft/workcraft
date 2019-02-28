@@ -1,6 +1,6 @@
 package org.workcraft.plugins.dfs.decorations;
 
-import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.gui.tools.Decoration;
 
 public interface CounterflowLogicDecoration extends Decoration {
     boolean isForwardComputed();

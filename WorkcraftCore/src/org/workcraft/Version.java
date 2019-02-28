@@ -1,6 +1,6 @@
 package org.workcraft;
 
-import org.workcraft.util.EnumUtils;
+import org.workcraft.utils.EnumUtils;
 
 public class Version implements Comparable<Version> {
 

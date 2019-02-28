@@ -6,7 +6,7 @@ import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualContact;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import java.awt.geom.Rectangle2D;
 

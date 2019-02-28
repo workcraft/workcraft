@@ -2,10 +2,10 @@ package org.workcraft.plugins.stg.tools;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
-import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.graph.tools.Decorator;
-import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.gui.tools.AbstractGraphEditorTool;
+import org.workcraft.gui.tools.Decoration;
+import org.workcraft.gui.tools.Decorator;
+import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.stg.VisualNamedTransition;
 import org.workcraft.workspace.WorkspaceEntry;
 

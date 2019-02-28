@@ -2,7 +2,7 @@ package org.workcraft.plugins.mpsat.gui;
 
 import info.clearthought.layout.TableLayout;
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.gui.graph.tools.Trace;
+import org.workcraft.gui.tools.Trace;
 import org.workcraft.plugins.mpsat.tasks.MpsatSolution;
 import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
 import org.workcraft.workspace.WorkspaceEntry;

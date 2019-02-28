@@ -2,7 +2,7 @@ package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class CircuitLayoutRoutingCommand extends CircuitLayoutCommand {
 

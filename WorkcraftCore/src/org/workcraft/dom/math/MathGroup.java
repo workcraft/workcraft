@@ -8,7 +8,7 @@ import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import java.util.ArrayList;
 import java.util.Collection;

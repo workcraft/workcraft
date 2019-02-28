@@ -11,9 +11,9 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.stg.commands.PetriToStgConversionCommand;
 import org.workcraft.plugins.stg.commands.StgToPetriConversionCommand;
-import org.workcraft.util.PackageUtils;
+import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class StgConversionCommandTests {
 

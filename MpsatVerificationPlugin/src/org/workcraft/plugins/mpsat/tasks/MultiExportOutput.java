@@ -1,6 +1,6 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import org.workcraft.plugins.shared.tasks.ExportOutput;
+import org.workcraft.tasks.ExportOutput;
 
 import java.io.File;
 import java.util.List;

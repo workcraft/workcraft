@@ -13,8 +13,8 @@ import javax.swing.*;
 import javax.swing.text.*;
 
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.plugins.shared.CommonLogSettings;
-import org.workcraft.util.LogUtils;
+import org.workcraft.plugins.builtin.settings.CommonLogSettings;
+import org.workcraft.utils.LogUtils;
 
 @SuppressWarnings("serial")
 public class OutputWindow extends JPanel {

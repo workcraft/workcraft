@@ -3,8 +3,8 @@ package org.workcraft.plugins.stg.tools;
 import java.awt.Color;
 import java.util.HashSet;
 
-import org.workcraft.gui.graph.tools.Trace;
-import org.workcraft.util.MultiSet;
+import org.workcraft.gui.tools.Trace;
+import org.workcraft.types.MultiSet;
 
 @SuppressWarnings("serial")
 public class Core extends HashSet<String> {

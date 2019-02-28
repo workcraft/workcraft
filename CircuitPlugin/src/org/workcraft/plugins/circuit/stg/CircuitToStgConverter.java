@@ -21,10 +21,10 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.converters.SignalStg;
-import org.workcraft.util.Geometry;
-import org.workcraft.util.Hierarchy;
-import org.workcraft.util.Pair;
-import org.workcraft.util.TwoWayMap;
+import org.workcraft.utils.Geometry;
+import org.workcraft.utils.Hierarchy;
+import org.workcraft.types.Pair;
+import org.workcraft.types.TwoWayMap;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;

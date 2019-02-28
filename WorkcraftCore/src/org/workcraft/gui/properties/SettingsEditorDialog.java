@@ -2,12 +2,12 @@ package org.workcraft.gui.properties;
 
 import org.workcraft.Config;
 import org.workcraft.Framework;
-import org.workcraft.PluginManager;
+import org.workcraft.plugins.PluginManager;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.PluginInfo;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -69,7 +69,7 @@ public class SettingsEditorDialog extends JDialog {
 
         Dimension minSize = new Dimension(500, 200);
         setMinimumSize(minSize);
-        GUI.centerAndSizeToParent(this, owner);
+        GuiUtils.centerAndSizeToParent(this, owner);
 
         initComponents();
         loadSections();
@@ -207,13 +207,13 @@ public class SettingsEditorDialog extends JDialog {
         splitPane.setDividerLocation((int) Math.round(0.3 * getWidth()));
         splitPane.setResizeWeight(0.1);
 
-        JButton okButton = GUI.createDialogButton("OK");
+        JButton okButton = GuiUtils.createDialogButton("OK");
         okButton.addActionListener(event -> actionOk());
 
-        JButton cancelButton = GUI.createDialogButton("Cancel");
+        JButton cancelButton = GuiUtils.createDialogButton("Cancel");
         cancelButton.addActionListener(event -> actionCancel());
 
-        restoreButton = GUI.createDialogButton("Restore defaults (all)");
+        restoreButton = GuiUtils.createDialogButton("Restore defaults (all)");
         restoreButton.addActionListener(event -> actionRestore());
 
         JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));

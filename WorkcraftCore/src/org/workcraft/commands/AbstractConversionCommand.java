@@ -1,7 +1,6 @@
 package org.workcraft.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.MenuOrdering;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;

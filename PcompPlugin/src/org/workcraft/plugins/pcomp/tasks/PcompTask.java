@@ -4,14 +4,14 @@ import java.io.File;
 import java.util.ArrayList;
 
 import org.workcraft.plugins.pcomp.PcompSettings;
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
-import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
+import org.workcraft.tasks.ExternalProcessOutput;
+import org.workcraft.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
-import org.workcraft.util.ToolUtils;
+import org.workcraft.utils.ExecutableUtils;
 
 public class PcompTask implements Task<PcompOutput> {
 
@@ -45,7 +45,7 @@ public class PcompTask implements Task<PcompOutput> {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
-        String toolName = ToolUtils.getAbsoluteCommandPath(PcompSettings.getCommand());
+        String toolName = ExecutableUtils.getAbsoluteCommandPath(PcompSettings.getCommand());
         command.add(toolName);
 
         // Built-in arguments

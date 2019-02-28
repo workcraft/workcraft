@@ -2,14 +2,14 @@ package org.workcraft.plugins.circuit;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
-import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.utils.Coloriser;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.circuit.tools.StateDecoration;
-import org.workcraft.serialisation.xml.NoAutoSerialisation;
+import org.workcraft.serialisation.NoAutoSerialisation;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;

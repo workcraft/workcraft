@@ -20,7 +20,7 @@ import javax.swing.KeyStroke;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.layouts.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.commands.PetriToCpogParameters;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.GuiUtils;
 
 import info.clearthought.layout.TableLayout;
 
@@ -132,7 +132,7 @@ public class PetriToCpogDialog extends JDialog {
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
         // run the converter
-        JButton runButton = GUI.createDialogButton("Run");
+        JButton runButton = GuiUtils.createDialogButton("Run");
         runButton.addActionListener(event -> {
             setVisible(false);
             settings.setReduce(reduceCheck.isSelected() ? true : false);
@@ -143,7 +143,7 @@ public class PetriToCpogDialog extends JDialog {
         });
 
         // close the converter
-        JButton closeButton = GUI.createDialogButton("Close");
+        JButton closeButton = GuiUtils.createDialogButton("Close");
         closeButton.addActionListener(event -> setVisible(false));
         buttonPanel.add(runButton);
         buttonPanel.add(closeButton);

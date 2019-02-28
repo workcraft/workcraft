@@ -12,9 +12,9 @@ import org.workcraft.plugins.circuit.commands.ContractJointTransformationCommand
 import org.workcraft.plugins.circuit.commands.DetachJointTransformationCommand;
 import org.workcraft.plugins.circuit.commands.DissolveJointTransformationCommand;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
-import org.workcraft.util.PackageUtils;
+import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class CircuitJointTransformationCommandTests {
 

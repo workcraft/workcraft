@@ -7,7 +7,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.plugins.xmas.components.XmasContact.IOType;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import java.util.ArrayList;
 import java.util.Collection;

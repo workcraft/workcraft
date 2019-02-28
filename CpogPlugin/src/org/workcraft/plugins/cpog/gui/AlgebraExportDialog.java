@@ -14,7 +14,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import org.workcraft.Framework;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.GuiUtils;
 
 @SuppressWarnings("serial")
 public class AlgebraExportDialog extends JDialog {
@@ -31,7 +31,7 @@ public class AlgebraExportDialog extends JDialog {
         filePath = new JTextField(" ", 30);
         filePath.setEditable(true);
 
-        selectFileBtn = GUI.createDialogButton("Select export location");
+        selectFileBtn = GuiUtils.createDialogButton("Select export location");
 
         selectFileBtn.addActionListener(event -> actionSelectFile());
 
@@ -52,10 +52,10 @@ public class AlgebraExportDialog extends JDialog {
         optionPanel.add(pasteRB);
         optionPanel.add(exportRB);
 
-        JButton okButton = GUI.createDialogButton("OK");
+        JButton okButton = GuiUtils.createDialogButton("OK");
         okButton.addActionListener(event -> actionOk());
 
-        JButton cancelButton = GUI.createDialogButton("Cancel");
+        JButton cancelButton = GuiUtils.createDialogButton("Cancel");
         cancelButton.addActionListener(event -> actionCancel());
 
         JPanel okPanel = new JPanel();

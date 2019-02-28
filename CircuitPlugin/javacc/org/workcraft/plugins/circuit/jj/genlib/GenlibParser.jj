@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.LinkedList;
 
 import org.workcraft.dom.Node;
-import org.workcraft.util.Pair;
-import org.workcraft.util.Triple;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.NotFoundException;
@@ -87,7 +85,8 @@ TOKEN :
 }
 
 <MODULE_NAME_EXPECTED> TOKEN :
-{    <MODULE_SIMPLE_NAME : ["A"-"Z", "a"-"z", "_"] (["A"-"Z", "a"-"z", "_", "0"-"9"])*> : DEFAULT
+{
+    <MODULE_SIMPLE_NAME : ["A"-"Z", "a"-"z", "_"] (["A"-"Z", "a"-"z", "_", "0"-"9"])*> : DEFAULT
 |
     <MODULE_QUOTED_NAME : "\"" (<CHAR> | <ESCAPESEQ>)* "\""> : DEFAULT
 |

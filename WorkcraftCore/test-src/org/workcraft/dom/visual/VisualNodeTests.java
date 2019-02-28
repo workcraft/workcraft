@@ -9,7 +9,7 @@ import org.workcraft.exceptions.NotAnAncestorException;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.TransformChangedEvent;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 public class VisualNodeTests {
 

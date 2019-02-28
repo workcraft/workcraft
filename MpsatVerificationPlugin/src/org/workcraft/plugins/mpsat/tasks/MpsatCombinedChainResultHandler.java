@@ -5,14 +5,14 @@ import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.PunfOutputParser.Cause;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
-import org.workcraft.plugins.shared.tasks.ExportOutput;
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
+import org.workcraft.tasks.ExportOutput;
+import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.tasks.AbstractResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.Pair;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.types.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;

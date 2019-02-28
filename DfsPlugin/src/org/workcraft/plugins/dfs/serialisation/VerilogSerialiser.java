@@ -8,8 +8,8 @@ import org.workcraft.plugins.dfs.*;
 import org.workcraft.plugins.dfs.interop.VerilogFormat;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.util.LogUtils;
-import org.workcraft.util.Pair;
+import org.workcraft.utils.LogUtils;
+import org.workcraft.types.Pair;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;

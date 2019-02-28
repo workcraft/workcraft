@@ -1,7 +1,7 @@
 package org.workcraft.gui.actions;
 
 import org.workcraft.Framework;
-import org.workcraft.NodeTransformer;
+import org.workcraft.commands.NodeTransformer;
 import org.workcraft.commands.Command;
 
 public class PopupToolAction extends Action {

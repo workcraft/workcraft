@@ -4,9 +4,9 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.StructureVerifySettings;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -122,7 +122,7 @@ public class StructureVerifyDialog extends JDialog {
         typeCombo.addItem(new TypeMode(4, "Temporal Structured Occurrence Nets"));
 
         typePanel = new JPanel();
-        typePanel.add(GUI.createLabeledComponent(typeCombo, "Types:"));
+        typePanel.add(GuiUtils.createLabeledComponent(typeCombo, "Types:"));
 
     }
 

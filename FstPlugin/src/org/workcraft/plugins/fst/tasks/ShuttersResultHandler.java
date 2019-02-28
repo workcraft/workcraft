@@ -8,7 +8,7 @@ import org.workcraft.Framework;
 import org.workcraft.tasks.BasicProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.FileUtils;
+import org.workcraft.utils.FileUtils;
 
 public class ShuttersResultHandler extends BasicProgressMonitor<ShuttersResult>  {
 

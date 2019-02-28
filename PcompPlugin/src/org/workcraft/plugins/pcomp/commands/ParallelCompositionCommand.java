@@ -1,12 +1,12 @@
 package org.workcraft.plugins.pcomp.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.PluginManager;
 import org.workcraft.commands.Command;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
+import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.pcomp.gui.PcompDialog;
 import org.workcraft.plugins.pcomp.tasks.PcompResultHandler;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
@@ -16,10 +16,9 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.*;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,7 +55,7 @@ public class ParallelCompositionCommand implements Command {
         MainWindow mainWindow = framework.getMainWindow();
         PcompDialog dialog = new PcompDialog(mainWindow);
         dialog.checkAll();
-        GUI.centerToParent(dialog, mainWindow);
+        GuiUtils.centerToParent(dialog, mainWindow);
         Collection<Mutex> mutexes = new HashSet<>();
         if (!dialog.run()) {
             return;

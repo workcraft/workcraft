@@ -7,10 +7,10 @@ import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.serialisation.ReferenceResolver;
-import org.workcraft.serialisation.xml.CustomXMLDeserialiser;
-import org.workcraft.serialisation.xml.NodeFinaliser;
-import org.workcraft.serialisation.xml.NodeInitialiser;
-import org.workcraft.util.Func;
+import org.workcraft.serialisation.CustomXMLDeserialiser;
+import org.workcraft.serialisation.NodeFinaliser;
+import org.workcraft.serialisation.NodeInitialiser;
+import org.workcraft.types.Func;
 
 public abstract class BooleanFunctionDeserialiser<T> implements CustomXMLDeserialiser<T> {
 

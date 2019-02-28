@@ -2,7 +2,7 @@ package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
-import org.workcraft.commands.ScriptableCommandUtils;
+import org.workcraft.utils.ScriptableCommandUtils;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.tasks.CircuitCustomCheckTask;
@@ -14,9 +14,9 @@ import org.workcraft.plugins.mpsat.gui.MpsatPropertyDialog;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import java.io.File;
 
@@ -54,7 +54,7 @@ public class CircuitPropertyVerificationCommand extends AbstractVerificationComm
         MpsatPresetManager pmgr = new MpsatPresetManager(presetFile, new MpsatSettingsSerialiser(), true);
         MpsatPropertyDialog dialog = new MpsatPropertyDialog(mainWindow, pmgr);
         dialog.pack();
-        GUI.centerToParent(dialog, mainWindow);
+        GuiUtils.centerToParent(dialog, mainWindow);
         dialog.setVisible(true);
         if (dialog.getModalResult() == 1) {
             TaskManager manager = framework.getTaskManager();

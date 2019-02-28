@@ -11,7 +11,7 @@ import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public abstract class PetrifyAbstractConversionCommand extends AbstractConversionCommand {
 

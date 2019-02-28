@@ -9,9 +9,9 @@ import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import java.net.URL;
 import java.util.HashSet;

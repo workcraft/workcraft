@@ -18,11 +18,11 @@ import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.stg.Signal;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.Hierarchy;
-import org.workcraft.util.LogUtils;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import java.util.*;
 

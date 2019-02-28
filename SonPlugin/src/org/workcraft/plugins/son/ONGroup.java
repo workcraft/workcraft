@@ -11,7 +11,7 @@ import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.elements.TransitionNode;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
 import java.util.ArrayList;

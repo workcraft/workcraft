@@ -23,7 +23,7 @@ import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.GuiUtils;
 
 import info.clearthought.layout.TableLayout;
 
@@ -113,10 +113,10 @@ public class SingleSequentialScencoDialog extends AbstractScencoDialog {
 
         buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        JButton runButton = GUI.createDialogButton("Run");
+        JButton runButton = GuiUtils.createDialogButton("Run");
         runButton.addActionListener(event -> actionRun(string));
 
-        JButton closeButton = GUI.createDialogButton("Close");
+        JButton closeButton = GuiUtils.createDialogButton("Close");
         closeButton.addActionListener(event -> setVisible(false));
 
         buttonsPanel.add(runButton);

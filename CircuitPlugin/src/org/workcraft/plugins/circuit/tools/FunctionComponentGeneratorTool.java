@@ -3,9 +3,9 @@ package org.workcraft.plugins.circuit.tools;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.NodeCreationException;
-import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
-import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.gui.graph.tools.NodeGeneratorTool;
+import org.workcraft.dom.generators.DefaultNodeGenerator;
+import org.workcraft.gui.tools.GraphEditor;
+import org.workcraft.gui.tools.NodeGeneratorTool;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.*;
 

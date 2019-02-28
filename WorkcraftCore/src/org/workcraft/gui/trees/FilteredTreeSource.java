@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.util.Func;
+import org.workcraft.types.Func;
 
 public class FilteredTreeSource<T> implements TreeSource<T> {
     private final TreeSource<T> source;

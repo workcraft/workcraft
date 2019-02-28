@@ -1,15 +1,15 @@
 package org.workcraft.plugins.stg.serialisation;
 
 import org.junit.Test;
-import org.workcraft.PluginProvider;
-import org.workcraft.plugins.layout.RandomLayoutCommand;
-import org.workcraft.plugins.serialisation.XMLModelDeserialiser;
-import org.workcraft.plugins.serialisation.XMLModelSerialiser;
+import org.workcraft.plugins.PluginProvider;
+import org.workcraft.plugins.builtin.commands.RandomLayoutCommand;
+import org.workcraft.plugins.builtin.serialisation.XMLModelDeserialiser;
+import org.workcraft.plugins.builtin.serialisation.XMLModelSerialiser;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.serialisation.DeserialisationResult;
 import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.util.DataAccumulator;
+import org.workcraft.shared.DataAccumulator;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 

@@ -5,7 +5,7 @@ import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.tools.GraphEditorMouseListener;
+import org.workcraft.gui.tools.GraphEditorMouseListener;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class DefaultAnchorGenerator implements GraphEditorMouseListener {

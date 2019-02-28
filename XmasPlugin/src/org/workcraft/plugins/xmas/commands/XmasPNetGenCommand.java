@@ -20,9 +20,9 @@ import org.workcraft.plugins.xmas.components.FunctionComponent;
 import org.workcraft.plugins.xmas.components.SinkComponent;
 import org.workcraft.plugins.xmas.components.SourceComponent;
 import org.workcraft.plugins.xmas.components.SwitchComponent;
-import org.workcraft.util.LogUtils;
+import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class XmasPNetGenCommand implements Command {
 

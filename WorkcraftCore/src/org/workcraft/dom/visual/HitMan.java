@@ -4,10 +4,10 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.util.Func;
-import org.workcraft.util.Func2;
-import org.workcraft.util.Geometry;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.types.Func;
+import org.workcraft.types.Func2;
+import org.workcraft.utils.Geometry;
+import org.workcraft.utils.Hierarchy;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;

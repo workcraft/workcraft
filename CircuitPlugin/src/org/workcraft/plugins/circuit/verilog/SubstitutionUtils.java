@@ -11,9 +11,9 @@ import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.jj.substitution.ParseException;
 import org.workcraft.plugins.circuit.jj.substitution.SubstitutionParser;
-import org.workcraft.plugins.shared.CommonDebugSettings;
-import org.workcraft.util.FileUtils;
-import org.workcraft.util.LogUtils;
+import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
+import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.LogUtils;
 
 public class SubstitutionUtils {
 

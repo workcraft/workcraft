@@ -11,10 +11,10 @@ import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.petrify.PetrifyUtils;
-import org.workcraft.plugins.shared.tasks.ExportOutput;
-import org.workcraft.plugins.shared.tasks.ExportTask;
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
-import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
+import org.workcraft.tasks.ExportOutput;
+import org.workcraft.tasks.ExportTask;
+import org.workcraft.tasks.ExternalProcessOutput;
+import org.workcraft.tasks.ExternalProcessTask;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
@@ -25,12 +25,12 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.ExportUtils;
-import org.workcraft.util.FileUtils;
-import org.workcraft.util.ToolUtils;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.ExportUtils;
+import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.ExecutableUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,7 +54,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisOutput>, Exter
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
-        String toolName = ToolUtils.getAbsoluteCommandPath(PetrifySettings.getCommand());
+        String toolName = ExecutableUtils.getAbsoluteCommandPath(PetrifySettings.getCommand());
         command.add(toolName);
 
         // Built-in arguments

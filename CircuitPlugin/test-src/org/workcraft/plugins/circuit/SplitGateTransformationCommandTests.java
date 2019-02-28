@@ -8,9 +8,9 @@ import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.commands.SplitGateTransformationCommand;
-import org.workcraft.util.PackageUtils;
+import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class SplitGateTransformationCommandTests {
 

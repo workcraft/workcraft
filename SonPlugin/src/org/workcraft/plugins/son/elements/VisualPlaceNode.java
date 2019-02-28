@@ -1,11 +1,11 @@
 package org.workcraft.plugins.son.elements;
 
 import org.workcraft.dom.visual.*;
-import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.utils.Coloriser;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.tools.PlaceNodeDecoration;
 import org.workcraft.plugins.son.util.Interval;

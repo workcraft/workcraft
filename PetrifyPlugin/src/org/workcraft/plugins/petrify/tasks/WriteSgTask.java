@@ -7,14 +7,14 @@ import java.util.List;
 
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.petrify.PetrifySettings;
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
-import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
+import org.workcraft.tasks.ExternalProcessOutput;
+import org.workcraft.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
-import org.workcraft.util.DataAccumulator;
-import org.workcraft.util.ToolUtils;
+import org.workcraft.shared.DataAccumulator;
+import org.workcraft.utils.ExecutableUtils;
 
 public class WriteSgTask implements Task<ExternalProcessOutput>, ExternalProcessListener {
     private final List<String> options;
@@ -40,7 +40,7 @@ public class WriteSgTask implements Task<ExternalProcessOutput>, ExternalProcess
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
-        String toolName = ToolUtils.getAbsoluteCommandPath(PetrifySettings.getCommand());
+        String toolName = ExecutableUtils.getAbsoluteCommandPath(PetrifySettings.getCommand());
         command.add(toolName);
         command.add("-write_sg");
 

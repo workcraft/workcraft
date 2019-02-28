@@ -8,7 +8,7 @@ import org.workcraft.plugins.graph.GraphDescriptor;
 import org.workcraft.plugins.graph.VisualGraph;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class FsmToGraphConversionCommand extends AbstractConversionCommand {
 

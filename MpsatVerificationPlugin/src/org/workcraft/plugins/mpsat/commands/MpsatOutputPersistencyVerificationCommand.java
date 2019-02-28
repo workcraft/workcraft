@@ -4,10 +4,10 @@ import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
 import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.Pair;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.types.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import java.util.LinkedList;
 

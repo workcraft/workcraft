@@ -7,9 +7,9 @@ import org.workcraft.plugins.cpog.Variable;
 import org.workcraft.plugins.cpog.VariableState;
 import org.workcraft.plugins.cpog.VisualScenario;
 import org.workcraft.serialisation.ReferenceResolver;
-import org.workcraft.serialisation.xml.CustomXMLDeserialiser;
-import org.workcraft.serialisation.xml.NodeFinaliser;
-import org.workcraft.serialisation.xml.NodeInitialiser;
+import org.workcraft.serialisation.CustomXMLDeserialiser;
+import org.workcraft.serialisation.NodeFinaliser;
+import org.workcraft.serialisation.NodeInitialiser;
 
 public class VisualCPOGGroupDeserialiser implements CustomXMLDeserialiser<VisualScenario> {
 

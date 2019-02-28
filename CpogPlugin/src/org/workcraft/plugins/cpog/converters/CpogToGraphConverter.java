@@ -3,7 +3,7 @@ package org.workcraft.plugins.cpog.converters;
 import java.util.Map;
 
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.gui.graph.converters.DefaultModelConverter;
+import org.workcraft.dom.converters.DefaultModelConverter;
 import org.workcraft.plugins.cpog.Vertex;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.graph.VisualGraph;

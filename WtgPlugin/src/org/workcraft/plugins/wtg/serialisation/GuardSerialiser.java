@@ -2,7 +2,7 @@ package org.workcraft.plugins.wtg.serialisation;
 
 import org.w3c.dom.Element;
 import org.workcraft.plugins.wtg.Guard;
-import org.workcraft.serialisation.xml.BasicXMLSerialiser;
+import org.workcraft.serialisation.BasicXMLSerialiser;
 
 public class GuardSerialiser implements BasicXMLSerialiser<Guard> {
 

@@ -3,13 +3,13 @@ package org.workcraft.plugins.fsm;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.utils.Coloriser;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.shared.CommonEditorSettings;
-import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.util.Geometry;
+import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
+import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.utils.Geometry;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;

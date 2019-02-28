@@ -17,7 +17,7 @@ import javax.swing.KeyStroke;
 
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.mpsat.tasks.MpsatSolution;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
@@ -37,7 +37,7 @@ public class MpsatReachibilityDialog extends JDialog {
         scrollPane.setViewportView(solutionsPanel);
 
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton closeButton = GUI.createDialogButton("Close");
+        JButton closeButton = GuiUtils.createDialogButton("Close");
         getRootPane().setDefaultButton(closeButton);
 
         closeButton.addActionListener(event -> close());

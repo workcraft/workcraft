@@ -4,7 +4,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.CustomTouchable;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.gui.Coloriser;
+import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
 import java.awt.geom.Point2D;

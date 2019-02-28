@@ -19,7 +19,7 @@ import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class MpsatCscConflictResolutionCommand implements ScriptableCommand<WorkspaceEntry> {
 

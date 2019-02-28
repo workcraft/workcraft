@@ -10,11 +10,11 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
-import org.workcraft.gui.graph.tools.*;
+import org.workcraft.dom.generators.DefaultNodeGenerator;
+import org.workcraft.gui.tools.*;
 import org.workcraft.plugins.dfs.tools.CycleAnalyserTool;
 import org.workcraft.plugins.dfs.tools.DfsSimulationTool;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import java.util.*;
 

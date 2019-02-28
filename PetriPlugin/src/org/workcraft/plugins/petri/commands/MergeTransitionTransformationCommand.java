@@ -7,7 +7,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public final class MergeTransitionTransformationCommand extends AbstractMergeTransformationCommand {
 

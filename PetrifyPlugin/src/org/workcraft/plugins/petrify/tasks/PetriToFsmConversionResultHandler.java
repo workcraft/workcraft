@@ -12,7 +12,7 @@ import org.workcraft.plugins.fst.converters.FstToFsmConverter;
 import org.workcraft.tasks.AbstractExtendedResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.DialogUtils;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 

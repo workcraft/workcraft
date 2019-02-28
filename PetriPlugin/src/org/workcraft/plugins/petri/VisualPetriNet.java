@@ -9,11 +9,11 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.gui.graph.tools.CommentGeneratorTool;
-import org.workcraft.gui.graph.tools.GraphEditorTool;
+import org.workcraft.gui.tools.CommentGeneratorTool;
+import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.plugins.petri.tools.*;
 import org.workcraft.plugins.petri.utils.PetriNetUtils;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import java.util.ArrayList;
 import java.util.Collection;

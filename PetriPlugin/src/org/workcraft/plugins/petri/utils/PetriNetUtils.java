@@ -10,8 +10,8 @@ import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.*;
-import org.workcraft.util.Hierarchy;
-import org.workcraft.util.Pair;
+import org.workcraft.utils.Hierarchy;
+import org.workcraft.types.Pair;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;

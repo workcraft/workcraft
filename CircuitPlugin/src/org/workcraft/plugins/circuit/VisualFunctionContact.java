@@ -24,14 +24,14 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.utils.FormulaRenderingResult;
 import org.workcraft.formula.utils.FormulaToGraphics;
-import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.utils.Coloriser;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
-import org.workcraft.serialisation.xml.NoAutoSerialisation;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.serialisation.NoAutoSerialisation;
+import org.workcraft.utils.Hierarchy;
 
 @DisplayName("Input/output port")
 @Hotkey(KeyEvent.VK_P)

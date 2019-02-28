@@ -5,14 +5,14 @@ import java.util.ArrayList;
 
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.fst.ProcessWindowsSettings;
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
-import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
+import org.workcraft.tasks.ExternalProcessOutput;
+import org.workcraft.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
-import org.workcraft.util.FileUtils;
+import org.workcraft.utils.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class LtscatTask implements Task<LtscatResult>, ExternalProcessListener {

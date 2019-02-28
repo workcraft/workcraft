@@ -5,10 +5,10 @@ import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.gui.Coloriser;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
 import java.awt.font.GlyphVector;

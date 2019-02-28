@@ -9,7 +9,7 @@ import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.plugins.stg.utils.StgUtils;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import java.io.File;
 import java.util.HashSet;

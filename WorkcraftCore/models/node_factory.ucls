@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <class-diagram version="1.2.2" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
   associations="true" dependencies="false" nesting-relationships="true" router="FAN">  
-  <class id="1" language="java" name="org.workcraft.NodeFactory" project="WorkcraftCore" 
+  <class id="1" language="java" name="org.workcraft.dom.NodeFactory" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/NodeFactory.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="584" y="132"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
@@ -10,7 +10,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="2" language="java" name="org.workcraft.gui.graph.generators.AbstractNodeGenerator" project="WorkcraftCore" 
+  <class id="2" language="java" name="org.workcraft.dom.generators.AbstractNodeGenerator" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/gui/graph/generators/AbstractNodeGenerator.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="354" y="134"/>    
@@ -20,7 +20,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="3" language="java" name="org.workcraft.gui.graph.generators.DefaultNodeGenerator" project="WorkcraftCore" 
+  <class id="3" language="java" name="org.workcraft.dom.generators.DefaultNodeGenerator" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/gui/graph/generators/DefaultNodeGenerator.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="516" y="203"/>    
@@ -30,7 +30,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <interface id="4" language="java" name="org.workcraft.gui.graph.generators.NodeGenerator" project="WorkcraftCore" 
+  <interface id="4" language="java" name="org.workcraft.dom.generators.NodeGenerator" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/gui/graph/generators/NodeGenerator.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="353" y="24"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
@@ -39,7 +39,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <class id="5" language="java" name="org.workcraft.gui.graph.tools.NodeGeneratorTool" project="WorkcraftCore" 
+  <class id="5" language="java" name="org.workcraft.gui.tools.NodeGeneratorTool" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/gui/graph/tools/NodeGeneratorTool.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="199" y="201"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
@@ -48,7 +48,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="6" language="java" name="org.workcraft.gui.graph.tools.PageGeneratorTool" project="WorkcraftCore" 
+  <class id="6" language="java" name="org.workcraft.gui.tools.PageGeneratorTool" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/gui/graph/tools/PageGeneratorTool.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="668" y="307"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
@@ -57,7 +57,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="7" language="java" name="org.workcraft.gui.graph.tools.CommentGeneratorTool" project="WorkcraftCore" 
+  <class id="7" language="java" name="org.workcraft.gui.tools.CommentGeneratorTool" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/gui/graph/tools/CommentGeneratorTool.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="354" y="307"/>    

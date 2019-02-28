@@ -7,8 +7,8 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
 import org.workcraft.plugins.circuit.*;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.Hierarchy;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;

@@ -31,9 +31,9 @@ import org.workcraft.plugins.xmas.components.VisualSourceComponent;
 import org.workcraft.plugins.xmas.components.VisualSwitchComponent;
 import org.workcraft.plugins.xmas.components.VisualSyncComponent;
 import org.workcraft.plugins.xmas.components.XmasContact;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class JsonExportCommand implements Command {
 

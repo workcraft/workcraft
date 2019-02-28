@@ -6,8 +6,8 @@ import java.util.ArrayList;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.graph.tools.Decorator;
+import org.workcraft.gui.tools.Decoration;
+import org.workcraft.gui.tools.Decorator;
 
 final class DrawMan {
     private final Graphics2D graphics;

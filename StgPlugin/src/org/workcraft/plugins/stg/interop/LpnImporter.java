@@ -5,7 +5,7 @@ import java.io.InputStream;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.interop.Importer;
-import org.workcraft.plugins.shared.CommonDebugSettings;
+import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.jj.ParseException;

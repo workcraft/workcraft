@@ -2,10 +2,10 @@ package org.workcraft.plugins.stg;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.util.Func;
+import org.workcraft.types.Func;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class StgWorkspaceFilter implements Func<Path<String>, Boolean> {
 

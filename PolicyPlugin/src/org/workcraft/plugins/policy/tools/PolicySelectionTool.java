@@ -13,15 +13,15 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.gui.DesktopApi;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.gui.graph.tools.SelectionTool;
+import org.workcraft.gui.tools.GraphEditor;
+import org.workcraft.gui.tools.SelectionTool;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.policy.VisualBundledTransition;
 import org.workcraft.plugins.policy.VisualPolicyNet;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.GuiUtils;
 
 public class PolicySelectionTool extends SelectionTool {
 
@@ -33,14 +33,14 @@ public class PolicySelectionTool extends SelectionTool {
     public void updateControlsToolbar(JToolBar toolbar, final GraphEditor editor) {
         super.updateControlsToolbar(toolbar, editor);
 
-        JButton bundleButton = GUI.createIconButton(
-                GUI.createIconFromSVG("images/policy-selection-bundle.svg"),
+        JButton bundleButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/policy-selection-bundle.svg"),
                 "Bundle selected transitions (" + DesktopApi.getMenuKeyName() + "-B)");
         bundleButton.addActionListener(event -> selectionBundle(editor));
         toolbar.add(bundleButton);
 
-        JButton unbundleButton = GUI.createIconButton(
-                GUI.createIconFromSVG("images/policy-selection-unbundle.svg"),
+        JButton unbundleButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/policy-selection-unbundle.svg"),
                 "Unbundle selected transitions (" + DesktopApi.getMenuKeyName() + "+Shift-B)");
         unbundleButton.addActionListener(event -> selectionUnbundle(editor));
         toolbar.add(unbundleButton);

@@ -5,7 +5,7 @@ import javax.swing.SwingUtilities;
 import org.workcraft.tasks.BasicProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.DialogUtils;
+import org.workcraft.utils.DialogUtils;
 
 public class TaskFailureNotifier extends BasicProgressMonitor<Object> {
     private final String description;

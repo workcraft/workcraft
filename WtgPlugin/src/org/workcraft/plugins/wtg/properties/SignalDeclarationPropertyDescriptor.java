@@ -3,7 +3,7 @@ package org.workcraft.plugins.wtg.properties;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.exceptions.NodeCreationException;
-import org.workcraft.gui.graph.tools.GraphEditorTool;
+import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.dtd.DtdSettings;

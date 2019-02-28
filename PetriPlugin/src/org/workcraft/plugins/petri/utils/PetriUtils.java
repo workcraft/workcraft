@@ -5,12 +5,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.workcraft.dom.Node;
-import org.workcraft.gui.graph.tools.Trace;
+import org.workcraft.gui.tools.Trace;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.LogUtils;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.LogUtils;
 
 public class PetriUtils {
 

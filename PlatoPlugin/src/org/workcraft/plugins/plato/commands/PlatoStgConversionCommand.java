@@ -9,10 +9,10 @@ import org.workcraft.plugins.plato.tasks.PlatoResultHandler;
 import org.workcraft.plugins.plato.tasks.PlatoTask;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.FileUtils;
+import org.workcraft.utils.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class PlatoStgConversionCommand extends AbstractConversionCommand {
 

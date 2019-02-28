@@ -3,19 +3,19 @@ package org.workcraft.plugins.fst.tasks;
 import java.io.File;
 import java.util.ArrayList;
 
-import org.workcraft.gui.DesktopApi;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.fst.ProcessWindowsSettings;
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
-import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
+import org.workcraft.tasks.ExternalProcessOutput;
+import org.workcraft.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.FileUtils;
-import org.workcraft.util.LogUtils;
-import org.workcraft.util.ToolUtils;
+import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.ExecutableUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class ShuttersTask implements Task<ShuttersResult>, ExternalProcessListener {
@@ -94,14 +94,14 @@ public class ShuttersTask implements Task<ShuttersResult>, ExternalProcessListen
         ArrayList<String> args = new ArrayList<String>();
         File f = null;
 
-        args.add(ToolUtils.getAbsoluteCommandPath(ProcessWindowsSettings.getShuttersCommand()));
+        args.add(ExecutableUtils.getAbsoluteCommandPath(ProcessWindowsSettings.getShuttersCommand()));
         args.add(tmpDir.getAbsolutePath()
                 + (DesktopApi.getOs().isWindows() ? "\\" : "/")
                 + we.getTitle()
                 + ProcessWindowsSettings.getMarkingsExtension());
 
         // Espresso related arguments
-        f = new File(ToolUtils.getAbsoluteCommandPath(ProcessWindowsSettings.getEspressoCommand()));
+        f = new File(ExecutableUtils.getAbsoluteCommandPath(ProcessWindowsSettings.getEspressoCommand()));
         if (!f.exists() || f.isDirectory()) {
             FileUtils.deleteOnExitRecursively(tmpDir);
             args.add("ERROR");
@@ -113,7 +113,7 @@ public class ShuttersTask implements Task<ShuttersResult>, ExternalProcessListen
         args.add(f.getAbsolutePath());
 
         // ABC related arguments
-        f = new File(ToolUtils.getAbsoluteCommandPath(ProcessWindowsSettings.getAbcCommand()));
+        f = new File(ExecutableUtils.getAbsoluteCommandPath(ProcessWindowsSettings.getAbcCommand()));
         if (f.exists() && !f.isDirectory()) {
             args.add("-a");
             args.add(f.getAbsolutePath());

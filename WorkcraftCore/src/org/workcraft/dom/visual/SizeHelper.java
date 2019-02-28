@@ -1,6 +1,6 @@
 package org.workcraft.dom.visual;
 
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 
 import javax.swing.*;
 import javax.swing.border.Border;

@@ -18,10 +18,10 @@ import org.workcraft.plugins.circuit.routing.impl.Router;
 import org.workcraft.plugins.circuit.routing.impl.RouterTask;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.StructureUtilsKt;
-import org.workcraft.plugins.transform.StraightenConnectionTransformationCommand;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.plugins.builtin.commands.StraightenConnectionTransformationCommand;
+import org.workcraft.utils.Hierarchy;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;

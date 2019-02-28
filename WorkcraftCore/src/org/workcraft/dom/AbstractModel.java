@@ -4,7 +4,7 @@ import org.workcraft.annotations.Annotations;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
-import org.workcraft.util.Func;
+import org.workcraft.types.Func;
 
 import java.util.*;
 

@@ -6,7 +6,7 @@ import org.workcraft.gui.trees.TreeWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.gui.workspace.WorkspaceChooser;
 import org.workcraft.plugins.stg.StgWorkspaceFilter;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -43,10 +43,10 @@ public class NwayDialog extends JDialog {
         outputOptions.setBorder(SizeHelper.getTitledBorder("Outputs"));
 
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton runButton = GUI.createDialogButton("Run");
+        JButton runButton = GuiUtils.createDialogButton("Run");
         runButton.addActionListener(event -> actionRun());
 
-        JButton cancelButton = GUI.createDialogButton("Cancel");
+        JButton cancelButton = GuiUtils.createDialogButton("Cancel");
         cancelButton.addActionListener(event -> actionCancel());
 
         buttonsPanel.add(runButton);

@@ -4,7 +4,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import org.workcraft.util.Geometry;
+import org.workcraft.utils.Geometry;
 
 public class TouchableTransformer implements Touchable {
 

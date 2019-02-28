@@ -13,9 +13,9 @@ import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.genlib.Gate;
 import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.Library;
-import org.workcraft.util.MultiSet;
+import org.workcraft.types.MultiSet;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class CircuitStatisticsCommand extends AbstractStatisticsCommand {
 

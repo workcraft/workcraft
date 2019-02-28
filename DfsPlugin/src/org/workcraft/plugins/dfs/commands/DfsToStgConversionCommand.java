@@ -7,7 +7,7 @@ import org.workcraft.plugins.dfs.stg.DfsToStgConverter;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class DfsToStgConversionCommand extends AbstractConversionCommand {
 

@@ -2,12 +2,12 @@ package org.workcraft.plugins.xmas.components;
 
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.utils.Coloriser;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.XmasContact.IOType;
 

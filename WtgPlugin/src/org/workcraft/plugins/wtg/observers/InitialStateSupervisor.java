@@ -7,7 +7,7 @@ import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateSupervisor;
 import org.workcraft.plugins.wtg.State;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 public class InitialStateSupervisor extends StateSupervisor {
 

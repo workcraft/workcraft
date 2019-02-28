@@ -20,8 +20,8 @@ import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.AbstractExtendedResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.LogUtils;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 

@@ -1,7 +1,5 @@
 package org.workcraft.commands;
 
-import org.workcraft.MenuOrdering;
-
 public abstract class AbstractTimingCommand implements ScriptableCommand<Boolean>, MenuOrdering {
 
     @Override

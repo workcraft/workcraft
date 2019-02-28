@@ -3,7 +3,7 @@ package org.workcraft.dom.visual;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.workcraft.util.Func;
+import org.workcraft.types.Func;
 
 public class NodeHelper {
 

@@ -3,7 +3,7 @@ package org.workcraft.gui;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import org.workcraft.util.DialogUtils;
+import org.workcraft.utils.DialogUtils;
 
 public class ExceptionDialog {
 

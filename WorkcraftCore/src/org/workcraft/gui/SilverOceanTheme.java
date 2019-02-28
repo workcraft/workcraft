@@ -23,6 +23,7 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.metal.OceanTheme;
 
 import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.utils.DesktopApi;
 
 public class SilverOceanTheme extends OceanTheme {
 

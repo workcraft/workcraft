@@ -12,9 +12,9 @@ import org.workcraft.plugins.cpog.tasks.PGMinerResultHandler;
 import org.workcraft.plugins.cpog.tasks.PGMinerTask;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.DialogUtils;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class ExtractSelectedGraphsPGMinerCommand implements Command {
 
