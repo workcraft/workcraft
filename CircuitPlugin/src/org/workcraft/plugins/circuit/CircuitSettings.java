@@ -1,7 +1,6 @@
 package org.workcraft.plugins.circuit;
 
 import org.workcraft.Config;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.Settings;
@@ -9,6 +8,8 @@ import org.workcraft.plugins.circuit.utils.Gate2;
 import org.workcraft.plugins.circuit.utils.Gate3;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
+import org.workcraft.plugins.stg.StgSettings;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.DialogUtils;
 
 import java.awt.*;
@@ -58,7 +59,6 @@ public class CircuitSettings implements Settings {
     private static final String keyNandbData = prefix + ".nandbData";
     private static final String keyNorbData = prefix + ".norbData";
     private static final String keyMutexData = prefix + ".mutexData";
-    private static final String keyMutexProtocol = prefix + ".mutexProtocol";
     private static final String keyBusSuffix = prefix + ".busSuffix";
     private static final String keyResetName = prefix + ".resetName";
 
@@ -82,7 +82,6 @@ public class CircuitSettings implements Settings {
     private static final String defaultNandbData = "NAND2B (AN, B, ON)";
     private static final String defaultNorbData = "NOR2B (AN, B, ON)";
     private static final String defaultMutexData = "MUTEX ((r1, g1), (r2, g2))";
-    private static Mutex.Protocol defaultMutexProtocol = Mutex.Protocol.STRICT;
     private static final String defaultBusSuffix = "__$";
     private static final String defaultResetName = "reset";
 
@@ -106,7 +105,6 @@ public class CircuitSettings implements Settings {
     private static String nandbData = defaultNandbData;
     private static String norbData = defaultNorbData;
     private static String mutexData = defaultMutexData;
-    private static Mutex.Protocol mutexProtocol = defaultMutexProtocol;
     private static String busSuffix = defaultBusSuffix;
     private static String resetName = defaultResetName;
 
@@ -384,16 +382,17 @@ public class CircuitSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, Mutex.Protocol>(
-                this, "Mutex protocol for synthesis", Mutex.Protocol.class) {
+                this, "Mutex protocol", Mutex.Protocol.class) {
             @Override
             public void setter(CircuitSettings object, Mutex.Protocol value) {
-                setMutexProtocol(value);
+                StgSettings.setMutexProtocol(value);
             }
             @Override
             public Mutex.Protocol getter(CircuitSettings object) {
-                return getMutexProtocol();
+                return StgSettings.getMutexProtocol();
             }
         });
+
         properties.add(new PropertyDeclaration<CircuitSettings, String>(
                 this, "Bus split suffix ($ is replaced by index)", String.class) {
             @Override
@@ -456,7 +455,6 @@ public class CircuitSettings implements Settings {
         setNandbData(config.getString(keyNandbData, defaultNandbData));
         setNorbData(config.getString(keyNorbData, defaultNorbData));
         setMutexData(config.getString(keyMutexData, defaultMutexData));
-        setMutexProtocol(config.getEnum(keyMutexProtocol, Mutex.Protocol.class, defaultMutexProtocol));
         setBusSuffix(config.getString(keyBusSuffix, defaultBusSuffix));
         setResetName(config.getString(keyResetName, defaultResetName));
     }
@@ -483,7 +481,6 @@ public class CircuitSettings implements Settings {
         config.set(keyNandbData, getNandbData());
         config.set(keyNorbData, getNorbData());
         config.set(keyMutexData, getMutexData());
-        config.setEnum(keyMutexProtocol, getMutexProtocol());
         config.set(keyBusSuffix, getBusSuffix());
         config.set(keyResetName, getResetName());
     }
@@ -678,14 +675,6 @@ public class CircuitSettings implements Settings {
 
     public static Mutex parseMutexData() {
         return parseMutexData(getMutexData());
-    }
-
-    public static void setMutexProtocol(Mutex.Protocol value) {
-        mutexProtocol = value;
-    }
-
-    public static Mutex.Protocol getMutexProtocol() {
-        return mutexProtocol;
     }
 
     public static String getBusSuffix() {

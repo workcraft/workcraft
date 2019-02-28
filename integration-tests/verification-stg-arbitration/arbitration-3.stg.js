@@ -1,9 +1,9 @@
 work = load("arbitration-3.stg.work");
 
-setConfigVar("Tools.mpsatVerification.mutexProtocol", "RELAXED");
+setConfigVar("StgSettings.mutexProtocol", "RELAXED");
 mutexImplementabilityRelaxed = checkStgMutexImplementability(work);
 
-setConfigVar("Tools.mpsatVerification.mutexProtocol", "STRICT");
+setConfigVar("StgSettings.mutexProtocol", "STRICT");
 write(
     "Combined check: " + checkStgCombined(work) + "\n" +
     "Consistency: " + checkStgConsistency(work) + "\n" +

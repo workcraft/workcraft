@@ -80,9 +80,6 @@ public class CircuitSettingsTest {
         Assert.assertEquals(Config.toString(CircuitSettings.getMutexData()),
                 framework.getConfigVar(prefix + ".mutexData", false));
 
-        Assert.assertEquals(Config.toString(CircuitSettings.getMutexProtocol()),
-                framework.getConfigVar(prefix + ".mutexProtocol", false));
-
         Assert.assertEquals(Config.toString(CircuitSettings.getBusSuffix()),
                 framework.getConfigVar(prefix + ".busSuffix", false));
 

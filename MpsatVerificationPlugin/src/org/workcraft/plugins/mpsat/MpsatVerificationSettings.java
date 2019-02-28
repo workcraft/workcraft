@@ -1,13 +1,12 @@
 package org.workcraft.plugins.mpsat;
 
 import org.workcraft.Config;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.Settings;
 import org.workcraft.plugins.mpsat.MpsatParameters.SolutionMode;
 import org.workcraft.plugins.mpsat.tasks.MpsatConformationNwayOutputHandler.ConformationReportStyle;
-import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.utils.DesktopApi;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -26,7 +25,6 @@ public class MpsatVerificationSettings implements Settings {
     private static final String keyDebugReach = prefix + ".debugReach";
     private static final String keyDebugCores = prefix + ".debugCores";
     private static final String keyConformationReportStyle = prefix + ".conformationReportStyle";
-    private static final String keyMutexProtocol = prefix + ".mutexProtocol";
 
     private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\UnfoldingTools\\mpsat.exe" : "tools/UnfoldingTools/mpsat";
     private static final SolutionMode defaultSolutionMode = SolutionMode.MINIMUM_COST;
@@ -37,7 +35,6 @@ public class MpsatVerificationSettings implements Settings {
     private static final Boolean defaultDebugReach = false;
     private static final Boolean defaultDebugCores = false;
     private static final ConformationReportStyle defaultConformationReportStyle = ConformationReportStyle.TABLE;
-    private static Mutex.Protocol defaultMutexProtocol = Mutex.Protocol.STRICT;
 
     private static String command = defaultCommand;
     private static SolutionMode solutionMode = defaultSolutionMode;
@@ -48,7 +45,6 @@ public class MpsatVerificationSettings implements Settings {
     private static Boolean debugReach = defaultDebugReach;
     private static Boolean debugCores = defaultDebugCores;
     private static ConformationReportStyle conformationReportStyle = defaultConformationReportStyle;
-    private static Mutex.Protocol mutexProtocol = defaultMutexProtocol;
 
     public MpsatVerificationSettings() {
         properties.add(new PropertyDeclaration<MpsatVerificationSettings, String>(
@@ -158,18 +154,6 @@ public class MpsatVerificationSettings implements Settings {
                 return getConformationReportStyle();
             }
         });
-
-        properties.add(new PropertyDeclaration<MpsatVerificationSettings, Mutex.Protocol>(
-                this, "Mutex protocol for implementability check", Mutex.Protocol.class) {
-            @Override
-            public void setter(MpsatVerificationSettings object, Mutex.Protocol value) {
-                setMutexProtocol(value);
-            }
-            @Override
-            public Mutex.Protocol getter(MpsatVerificationSettings object) {
-                return getMutexProtocol();
-            }
-        });
     }
 
     @Override
@@ -188,7 +172,6 @@ public class MpsatVerificationSettings implements Settings {
         setDebugReach(config.getBoolean(keyDebugReach, defaultDebugReach));
         setDebugCores(config.getBoolean(keyDebugCores, defaultDebugCores));
         setConformationReportStyle(config.getEnum(keyConformationReportStyle, ConformationReportStyle.class, defaultConformationReportStyle));
-        setMutexProtocol(config.getEnum(keyMutexProtocol, Mutex.Protocol.class, defaultMutexProtocol));
     }
 
     @Override
@@ -202,7 +185,6 @@ public class MpsatVerificationSettings implements Settings {
         config.setBoolean(keyDebugReach, getDebugReach());
         config.setBoolean(keyDebugCores, getDebugCores());
         config.setEnum(keyConformationReportStyle, getConformationReportStyle());
-        config.setEnum(keyMutexProtocol, getMutexProtocol());
     }
 
     @Override
@@ -289,14 +271,6 @@ public class MpsatVerificationSettings implements Settings {
 
     public static ConformationReportStyle getConformationReportStyle() {
         return conformationReportStyle;
-    }
-
-    public static void setMutexProtocol(Mutex.Protocol value) {
-        mutexProtocol = value;
-    }
-
-    public static Mutex.Protocol getMutexProtocol() {
-        return mutexProtocol;
     }
 
 }

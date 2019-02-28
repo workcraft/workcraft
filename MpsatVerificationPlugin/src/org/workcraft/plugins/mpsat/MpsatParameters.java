@@ -2,6 +2,7 @@ package org.workcraft.plugins.mpsat;
 
 import org.jetbrains.annotations.NotNull;
 import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.types.Pair;
@@ -306,7 +307,7 @@ public class MpsatParameters {
 
     @NotNull
     private static String getMutexImplementabilityReach() {
-        if (MpsatVerificationSettings.getMutexProtocol() == Mutex.Protocol.RELAXED) {
+        if (StgSettings.getMutexProtocol() == Mutex.Protocol.RELAXED) {
             return REACH_MUTEX_IMPLEMENTABILITY_RELAXED;
         }
         return REACH_MUTEX_IMPLEMENTABILITY_STRICT;

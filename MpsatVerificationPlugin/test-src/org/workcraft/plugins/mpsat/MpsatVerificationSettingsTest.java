@@ -46,9 +46,6 @@ public class MpsatVerificationSettingsTest {
 
         Assert.assertEquals(Config.toString(MpsatVerificationSettings.getConformationReportStyle()),
                 framework.getConfigVar(prefix + ".conformationReportStyle", false));
-
-        Assert.assertEquals(Config.toString(MpsatVerificationSettings.getMutexProtocol()),
-                framework.getConfigVar(prefix + ".mutexProtocol", false));
     }
 
 }

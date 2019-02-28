@@ -17,6 +17,7 @@ import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.interop.Importer;
+import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.expression.Expression;
@@ -32,9 +33,9 @@ import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.StructureUtilsKt;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.plugins.circuit.verilog.*;
-import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
+import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.ModelEntry;
@@ -666,7 +667,7 @@ public class VerilogImporter implements Importer {
     private void setMutexFunctions(Circuit circuit, final FunctionComponent component, FunctionContact grantContact,
             String reqPinName, String otherReqPinName, String otherGrantPinName) throws org.workcraft.formula.jj.ParseException {
         String setString = reqPinName + " * " + otherGrantPinName + "'";
-        if (CircuitSettings.getMutexProtocol() == Mutex.Protocol.RELAXED) {
+        if (StgSettings.getMutexProtocol() == Mutex.Protocol.RELAXED) {
             setString += " + " + reqPinName + " * " + otherReqPinName + "'";
         }
         BooleanFormula setFormula = CircuitUtils.parsePinFuncton(circuit, component, setString);

@@ -5,6 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.plugins.mpsat.commands.*;
 import org.workcraft.plugins.pcomp.PcompSettings;
@@ -205,10 +206,10 @@ public class MpsatVerificationCommandTests {
         Assert.assertEquals(normalcy, normalcyCommand.execute(we));
 
         MpsatMutexImplementabilityVerificationCommand mutexImplementabilityCommand = new MpsatMutexImplementabilityVerificationCommand();
-        MpsatVerificationSettings.setMutexProtocol(Mutex.Protocol.RELAXED);
+        StgSettings.setMutexProtocol(Mutex.Protocol.RELAXED);
         Assert.assertEquals(mutexImplementabilityRelaxed, mutexImplementabilityCommand.execute(we));
 
-        MpsatVerificationSettings.setMutexProtocol(Mutex.Protocol.STRICT);
+        StgSettings.setMutexProtocol(Mutex.Protocol.STRICT);
         Assert.assertEquals(mutexImplementabilityStrict, mutexImplementabilityCommand.execute(we));
 
         MpsatConformationVerificationCommand conformationCommand = new MpsatConformationVerificationCommand();

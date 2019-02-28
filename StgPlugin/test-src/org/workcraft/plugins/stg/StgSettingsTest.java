@@ -34,6 +34,9 @@ public class StgSettingsTest {
 
         Assert.assertEquals(Config.toString(StgSettings.getShowTransitionInstance()),
                 framework.getConfigVar(prefix + ".showTransitionInstance", false));
+
+        Assert.assertEquals(Config.toString(StgSettings.getMutexProtocol()),
+                framework.getConfigVar(prefix + ".mutexProtocol", false));
     }
 
 }

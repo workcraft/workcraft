@@ -18,18 +18,21 @@ public class StgSettings implements Settings {
     private static final String keyHighLevelSuffix = prefix + ".highLevelSuffix";
     private static final String keyGroupSignalConversion = prefix + ".groupSignalConversion";
     private static final String keyShowTransitionInstance = prefix + ".showTransitionInstance";
+    private static final String keyMutexProtocol = prefix + ".mutexProtocol";
 
     private static final Integer defaultDensityMapLevelLimit = 5;
     private static final String defaultLowLevelSuffix = "_LOW";
     private static final String defaultHighLevelSuffix = "_HIGH";
     private static final Boolean defaultGroupSignalConversion = false;
     private static final Boolean defaultShowTransitionInstance = false;
+    private static final Mutex.Protocol defaultMutexProtocol = Mutex.Protocol.STRICT;
 
     private static Integer densityMapLevelLimit = defaultDensityMapLevelLimit;
     private static String lowLevelSuffix = defaultLowLevelSuffix;
     private static String highLevelSuffix = defaultHighLevelSuffix;
     private static Boolean groupSignalConversion = defaultGroupSignalConversion;
     private static Boolean showTransitionInstance = defaultShowTransitionInstance;
+    private static Mutex.Protocol mutexProtocol = defaultMutexProtocol;
 
     public StgSettings() {
         properties.add(new PropertyDeclaration<StgSettings, Integer>(
@@ -141,6 +144,7 @@ public class StgSettings implements Settings {
         setHighLevelSuffix(config.getString(keyHighLevelSuffix, defaultHighLevelSuffix));
         setGroupSignalConversion(config.getBoolean(keyGroupSignalConversion, defaultGroupSignalConversion));
         setShowTransitionInstance(config.getBoolean(keyShowTransitionInstance, defaultShowTransitionInstance));
+        setMutexProtocol(config.getEnum(keyMutexProtocol, Mutex.Protocol.class, defaultMutexProtocol));
     }
 
     @Override
@@ -150,6 +154,7 @@ public class StgSettings implements Settings {
         config.set(keyHighLevelSuffix, getHighLevelSuffix());
         config.setBoolean(keyGroupSignalConversion, getGroupSignalConversion());
         config.setBoolean(keyShowTransitionInstance, getShowTransitionInstance());
+        config.setEnum(keyMutexProtocol, StgSettings.getMutexProtocol());
     }
 
     @Override
@@ -204,6 +209,14 @@ public class StgSettings implements Settings {
 
     public static void setShowTransitionInstance(Boolean value) {
         showTransitionInstance = value;
+    }
+
+    public static Mutex.Protocol getMutexProtocol() {
+        return mutexProtocol;
+    }
+
+    public static void setMutexProtocol(Mutex.Protocol value) {
+        mutexProtocol = value;
     }
 
 }
