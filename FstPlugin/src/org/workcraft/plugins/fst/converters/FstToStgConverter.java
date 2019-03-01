@@ -13,7 +13,7 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.VisualNamedTransition;
 import org.workcraft.plugins.stg.VisualStg;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import java.util.HashMap;
 import java.util.Map;

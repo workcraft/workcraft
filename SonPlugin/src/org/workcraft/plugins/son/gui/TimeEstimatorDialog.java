@@ -22,7 +22,7 @@ import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.TimeEstimatorSettings;
 import org.workcraft.plugins.son.algorithm.BFSEntireEstimationAlg;

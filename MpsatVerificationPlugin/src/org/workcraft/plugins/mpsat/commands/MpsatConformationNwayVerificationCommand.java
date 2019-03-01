@@ -12,11 +12,11 @@ import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +74,7 @@ public class MpsatConformationNwayVerificationCommand extends AbstractVerificati
             MainWindow mainWindow = framework.getMainWindow();
             NwayDialog dialog = new NwayDialog(mainWindow);
             dialog.checkAll();
-            GUI.centerToParent(dialog, mainWindow);
+            GuiUtils.centerToParent(dialog, mainWindow);
             if (!dialog.run()) {
                 return null;
             }

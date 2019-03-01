@@ -2,8 +2,8 @@ package org.workcraft.plugins.mpsat;
 
 import org.w3c.dom.Element;
 import org.workcraft.plugins.mpsat.MpsatParameters.SolutionMode;
-import org.workcraft.plugins.shared.presets.SettingsSerialiser;
-import org.workcraft.util.XmlUtils;
+import org.workcraft.presets.SettingsSerialiser;
+import org.workcraft.utils.XmlUtils;
 
 public class MpsatSettingsSerialiser implements SettingsSerialiser<MpsatParameters> {
 

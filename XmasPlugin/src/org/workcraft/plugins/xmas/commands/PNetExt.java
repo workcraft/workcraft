@@ -13,7 +13,7 @@ import org.workcraft.plugins.xmas.components.FunctionComponent;
 import org.workcraft.plugins.xmas.components.SinkComponent;
 import org.workcraft.plugins.xmas.components.SourceComponent;
 import org.workcraft.plugins.xmas.components.SwitchComponent;
-import org.workcraft.util.LogUtils;
+import org.workcraft.utils.LogUtils;
 
 public class PNetExt {
 

@@ -3,9 +3,9 @@ package org.workcraft.plugins.wtg.commands;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.wtg.Wtg;
 import org.workcraft.plugins.wtg.utils.VerificationUtils;
-import org.workcraft.util.DialogUtils;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class WtgInputPropernessVerificationCommand extends AbstractVerificationCommand {
 

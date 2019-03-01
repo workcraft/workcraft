@@ -6,6 +6,11 @@ import org.apache.log4j.Logger;
 import org.mozilla.javascript.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.workcraft.plugins.builtin.commands.DotLayoutCommand;
+import org.workcraft.plugins.builtin.commands.RandomLayoutCommand;
+import org.workcraft.plugins.builtin.serialisation.XMLModelDeserialiser;
+import org.workcraft.plugins.builtin.serialisation.XMLModelSerialiser;
+import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
 import org.workcraft.commands.AbstractLayoutCommand;
 import org.workcraft.commands.Command;
 import org.workcraft.commands.ScriptableCommand;
@@ -18,8 +23,6 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.*;
-import org.workcraft.gui.DesktopApi;
-import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.properties.Settings;
 import org.workcraft.gui.workspace.Path;
@@ -28,18 +31,16 @@ import org.workcraft.interop.Format;
 import org.workcraft.interop.Importer;
 import org.workcraft.observation.ModelModifiedEvent;
 import org.workcraft.observation.StateObserver;
+import org.workcraft.plugins.CompatibilityManager;
 import org.workcraft.plugins.PluginInfo;
-import org.workcraft.plugins.layout.DotLayoutCommand;
-import org.workcraft.plugins.layout.RandomLayoutCommand;
-import org.workcraft.plugins.serialisation.XMLModelDeserialiser;
-import org.workcraft.plugins.serialisation.XMLModelSerialiser;
-import org.workcraft.plugins.shared.CommonEditorSettings;
+import org.workcraft.plugins.PluginManager;
 import org.workcraft.serialisation.DeserialisationResult;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
+import org.workcraft.shared.DataAccumulator;
 import org.workcraft.tasks.ExtendedTaskManager;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.*;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.*;
 import org.xml.sax.SAXException;
 
@@ -58,12 +59,10 @@ public final class Framework {
 
     private static final String SETTINGS_DIRECTORY_NAME = "workcraft";
     private static final String CONFIG_FILE_NAME = "config.xml";
-    private static final String PLUGINS_FILE_NAME = "plugins.xml";
     private static final String UILAYOUT_FILE_NAME = "uilayout.xml";
 
     public static final String SETTINGS_DIRECTORY_PATH = DesktopApi.getConfigPath() + File.separator + SETTINGS_DIRECTORY_NAME;
     public static final String CONFIG_FILE_PATH = SETTINGS_DIRECTORY_PATH + File.separator + CONFIG_FILE_NAME;
-    public static final String PLUGINS_FILE_PATH = SETTINGS_DIRECTORY_PATH + File.separator + PLUGINS_FILE_NAME;
     public static final String UILAYOUT_FILE_PATH = SETTINGS_DIRECTORY_PATH + File.separator + UILAYOUT_FILE_NAME;
 
     private static final String FRAMEWORK_VARIABLE = "framework";
@@ -575,10 +574,10 @@ public final class Framework {
     @SuppressWarnings("unused")
     public void runCommand(WorkspaceEntry we, String className) {
         if (className != null) {
-            for (Command command : Commands.getApplicableCommands(we)) {
+            for (Command command : CommandUtils.getApplicableCommands(we)) {
                 String commandClassName = command.getClass().getSimpleName();
                 if (className.equals(commandClassName)) {
-                    Commands.run(we, command);
+                    CommandUtils.run(we, command);
                     break;
                 }
             }
@@ -595,14 +594,14 @@ public final class Framework {
         } else {
             boolean found = false;
             boolean scriptable = false;
-            for (Command command : Commands.getCommands()) {
+            for (Command command : CommandUtils.getCommands()) {
                 String commandClassName = command.getClass().getSimpleName();
                 if (!className.equals(commandClassName)) continue;
                 found = true;
                 if (command instanceof ScriptableCommand) {
                     scriptable = true;
                     ScriptableCommand<T> scriptableCommand = (ScriptableCommand<T>) command;
-                    return Commands.execute(we, scriptableCommand);
+                    return CommandUtils.execute(we, scriptableCommand);
                 }
             }
             if (!found) {

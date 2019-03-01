@@ -5,13 +5,13 @@ import org.workcraft.interop.Importer;
 import org.workcraft.plugins.plato.exceptions.PlatoException;
 import org.workcraft.plugins.plato.tasks.PlatoResultHandler;
 import org.workcraft.plugins.plato.tasks.PlatoTask;
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
+import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.FileUtils;
+import org.workcraft.utils.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 
 import java.io.ByteArrayInputStream;

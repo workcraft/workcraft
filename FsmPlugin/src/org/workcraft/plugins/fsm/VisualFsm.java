@@ -10,15 +10,15 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
-import org.workcraft.gui.graph.tools.*;
+import org.workcraft.dom.generators.DefaultNodeGenerator;
+import org.workcraft.gui.tools.*;
 import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.fsm.observers.FirstStateSupervisor;
 import org.workcraft.plugins.fsm.tools.FsmSimulationTool;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import java.util.ArrayList;
 import java.util.Collection;

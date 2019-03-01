@@ -14,9 +14,9 @@ import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.expression.ExpressionUtils;
 import org.workcraft.plugins.circuit.jj.genlib.GenlibParser;
-import org.workcraft.plugins.shared.CommonDebugSettings;
-import org.workcraft.util.FileUtils;
-import org.workcraft.util.LogUtils;
+import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
+import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.LogUtils;
 
 public class GenlibUtils {
 

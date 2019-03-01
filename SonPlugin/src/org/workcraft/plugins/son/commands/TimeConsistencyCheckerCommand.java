@@ -9,9 +9,9 @@ import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.gui.TimeConsistencyDialog;
 import org.workcraft.plugins.son.tasks.TimeConsistencyTask;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class TimeConsistencyCheckerCommand implements Command {
 
@@ -40,7 +40,7 @@ public class TimeConsistencyCheckerCommand implements Command {
         BlockConnector.blockBoundingConnector(visualNet);
         net.refreshAllColor();
         TimeConsistencyDialog dialog = new TimeConsistencyDialog(mainWindow, we);
-        GUI.centerToParent(dialog, mainWindow);
+        GuiUtils.centerToParent(dialog, mainWindow);
         dialog.setVisible(true);
 
         if (dialog.getRun() == 1) {

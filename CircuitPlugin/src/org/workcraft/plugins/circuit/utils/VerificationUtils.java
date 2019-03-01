@@ -10,10 +10,10 @@ import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.utils.StgUtils;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.LogUtils;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import java.io.File;
 import java.util.ArrayList;

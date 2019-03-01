@@ -6,8 +6,8 @@ import org.workcraft.plugins.cpog.Variable;
 import org.workcraft.plugins.cpog.VariableState;
 import org.workcraft.plugins.cpog.VisualScenario;
 import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.serialisation.xml.CustomXMLSerialiser;
-import org.workcraft.serialisation.xml.NodeSerialiser;
+import org.workcraft.serialisation.CustomXMLSerialiser;
+import org.workcraft.serialisation.NodeSerialiser;
 
 import java.util.Map;
 

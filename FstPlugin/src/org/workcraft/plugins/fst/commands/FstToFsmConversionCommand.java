@@ -8,7 +8,7 @@ import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.fst.converters.FstToFsmConverter;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class FstToFsmConversionCommand extends AbstractConversionCommand {
 

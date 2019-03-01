@@ -7,14 +7,14 @@ import org.workcraft.dom.visual.*;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
-import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.utils.Coloriser;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.cpog.formula.CpogFormulaVariable;
 import org.workcraft.plugins.cpog.formula.CpogVisitor;
 import org.workcraft.plugins.cpog.formula.PrettifyBooleanReplacer;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;

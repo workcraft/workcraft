@@ -3,10 +3,10 @@ package org.workcraft.plugins.son.tools;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.graph.tools.Decorator;
-import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.plugins.shared.CommonDecorationSettings;
+import org.workcraft.gui.tools.Decoration;
+import org.workcraft.gui.tools.Decorator;
+import org.workcraft.gui.tools.GraphEditor;
+import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
 import org.workcraft.plugins.son.BlockConnector;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.VisualSON;
@@ -16,10 +16,9 @@ import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.exception.InvalidStructureException;
-import org.workcraft.plugins.son.gui.SONGUI;
 import org.workcraft.plugins.son.gui.ScenarioTable;
 import org.workcraft.plugins.son.util.*;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
@@ -73,12 +72,12 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
         net = (SON) visualNet.getMathModel();
         net.refreshAllColor();
 
-        startButton = SONGUI.createIconToggleButton(GUI.createIconFromSVG("images/son-scenario-start.svg"), "Generate");
-        resetButton = GUI.createIconButton(GUI.createIconFromSVG("images/son-scenario-reset.svg"), "Reset");
-        saveButton = GUI.createIconButton(GUI.createIconFromSVG("images/son-scenario-save.svg"), "Save");
-        removeButton = GUI.createIconButton(GUI.createIconFromSVG("images/son-scenario-delete.svg"), "Remove");
-        importButton = GUI.createIconButton(GUI.createIconFromSVG("images/son-scenario-import.svg"), "Import scenarios");
-        exportButton = GUI.createIconButton(GUI.createIconFromSVG("images/son-scenario-export.svg"), "Export scenarios");
+        startButton = GuiUtils.createIconToggleButton(GuiUtils.createIconFromSVG("images/son-scenario-start.svg"), "Generate");
+        resetButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG("images/son-scenario-reset.svg"), "Reset");
+        saveButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG("images/son-scenario-save.svg"), "Save");
+        removeButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG("images/son-scenario-delete.svg"), "Remove");
+        importButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG("images/son-scenario-import.svg"), "Import scenarios");
+        exportButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG("images/son-scenario-export.svg"), "Export scenarios");
 
         int buttonWidth = (int) Math.round(startButton.getPreferredSize().getWidth() + 5);
         int buttonHeight = (int) Math.round(startButton.getPreferredSize().getHeight() + 5);
@@ -379,7 +378,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
 
     @Override
     public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
-        GUI.drawEditorMessage(editor, g, Color.BLACK, "Click on the highlight node to choose a scenario.");
+        GuiUtils.drawEditorMessage(editor, g, Color.BLACK, "Click on the highlight node to choose a scenario.");
     }
 
     @Override
@@ -389,7 +388,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
 
     @Override
     public Icon getIcon() {
-        return GUI.createIconFromSVG("images/son-tool-scenario.svg");
+        return GuiUtils.createIconFromSVG("images/son-tool-scenario.svg");
     }
 
     @Override

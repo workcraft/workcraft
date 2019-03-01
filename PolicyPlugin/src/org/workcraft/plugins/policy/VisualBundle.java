@@ -18,12 +18,12 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.utils.Coloriser;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.util.ColorUtils;
-import org.workcraft.util.Pair;
+import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.utils.ColorUtils;
+import org.workcraft.types.Pair;
 
 @DisplayName ("Bundle")
 public class VisualBundle extends VisualNode implements Drawable, Dependent {

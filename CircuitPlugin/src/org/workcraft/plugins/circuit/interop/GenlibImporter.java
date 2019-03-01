@@ -11,7 +11,7 @@ import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.Library;
 import org.workcraft.plugins.circuit.jj.genlib.GenlibParser;
 import org.workcraft.plugins.circuit.jj.genlib.ParseException;
-import org.workcraft.plugins.shared.CommonDebugSettings;
+import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
 import org.workcraft.workspace.ModelEntry;
 
 public class GenlibImporter implements Importer {

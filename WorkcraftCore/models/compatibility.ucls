@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <class-diagram version="1.2.2" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
   associations="true" dependencies="false" nesting-relationships="true" router="FAN">  
-  <class id="1" language="java" name="org.workcraft.CompatibilityManager" project="WorkcraftCore" 
+  <class id="1" language="java" name="org.workcraft.plugins.CompatibilityManager" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/CompatibilityManager.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="189" y="85"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
@@ -10,7 +10,7 @@
       <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="2" language="java" name="org.workcraft.CompatibilityManager.ReplacementData" project="WorkcraftCore" 
+  <class id="2" language="java" name="org.workcraft.plugins.CompatibilityManager.ReplacementData" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/CompatibilityManager.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="64" y="220"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
@@ -19,7 +19,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="3" language="java" name="org.workcraft.CompatibilityManager.NestedContextualReplacement" 
+  <class id="3" language="java" name="org.workcraft.plugins.CompatibilityManager.NestedContextualReplacement"
     project="WorkcraftCore" file="/WorkcraftCore/src/org/workcraft/CompatibilityManager.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="345" y="325"/>    
@@ -29,7 +29,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="4" language="java" name="org.workcraft.CompatibilityManager.ContextualReplacement" project="WorkcraftCore" 
+  <class id="4" language="java" name="org.workcraft.plugins.CompatibilityManager.ContextualReplacement" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/CompatibilityManager.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="548" y="325"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
@@ -38,7 +38,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="5" language="java" name="org.workcraft.CompatibilityManager.VersionedReplacementData" 
+  <class id="5" language="java" name="org.workcraft.plugins.CompatibilityManager.VersionedReplacementData"
     project="WorkcraftCore" file="/WorkcraftCore/src/org/workcraft/CompatibilityManager.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="530" y="220"/>    
@@ -48,7 +48,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="6" language="java" name="org.workcraft.CompatibilityManager.Replacement" project="WorkcraftCore" 
+  <class id="6" language="java" name="org.workcraft.plugins.CompatibilityManager.Replacement" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/CompatibilityManager.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="184" y="325"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 

@@ -4,7 +4,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.plugins.cpog.observers.ConditionConsistencySupervisor;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import java.util.Collection;
 

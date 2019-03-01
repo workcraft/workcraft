@@ -24,7 +24,7 @@ import org.workcraft.formula.One;
 import org.workcraft.formula.Or;
 import org.workcraft.formula.Xor;
 import org.workcraft.formula.Zero;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 
 public class FormulaToGraphics {
 

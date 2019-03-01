@@ -23,8 +23,8 @@ import org.workcraft.plugins.circuit.verilog.SubstitutionRule;
 import org.workcraft.plugins.circuit.verilog.SubstitutionUtils;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.util.ExportUtils;
-import org.workcraft.util.LogUtils;
+import org.workcraft.utils.ExportUtils;
+import org.workcraft.utils.LogUtils;
 
 public class VerilogSerialiser implements ModelSerialiser {
 

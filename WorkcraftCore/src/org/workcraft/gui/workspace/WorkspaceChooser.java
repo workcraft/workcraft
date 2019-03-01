@@ -9,12 +9,11 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.gui.WorkspaceTreeDecorator;
 import org.workcraft.gui.trees.FilteredTreeSource;
 import org.workcraft.gui.trees.TreeWindow;
 import org.workcraft.gui.trees.TreeWindow.CheckBoxMode;
-import org.workcraft.util.Func;
-import org.workcraft.util.GUI;
+import org.workcraft.types.Func;
+import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.Workspace;
 
 import info.clearthought.layout.TableLayout;
@@ -62,7 +61,7 @@ public class WorkspaceChooser extends JPanel {
             }
         });
 
-        this.add(GUI.createWideLabeledComponent(nameFilter, "Search: "), "0 0");
+        this.add(GuiUtils.createWideLabeledComponent(nameFilter, "Search: "), "0 0");
 
         filteredSource = new FilteredTreeSource<>(workspace.getTree(), filter);
 

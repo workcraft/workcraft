@@ -7,7 +7,7 @@ import java.io.IOException;
 
 import javax.swing.JPanel;
 
-import org.workcraft.util.GUI;
+import org.workcraft.utils.GuiUtils;
 
 @SuppressWarnings("serial")
 public class DocumentPlaceholder extends JPanel {
@@ -38,7 +38,7 @@ public class DocumentPlaceholder extends JPanel {
     private BufferedImage getImage() {
         if (logoImage == null) {
             try {
-                logoImage = GUI.loadImageFromResource("images/logo.png");
+                logoImage = GuiUtils.loadImageFromResource("images/logo.png");
             } catch (IOException e) {
                 logoImage = null;
             }

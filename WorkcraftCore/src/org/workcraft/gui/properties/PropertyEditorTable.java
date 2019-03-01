@@ -1,10 +1,10 @@
 package org.workcraft.gui.properties;
 
 import org.workcraft.Framework;
-import org.workcraft.PluginManager;
+import org.workcraft.plugins.PluginManager;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.PluginInfo;
-import org.workcraft.util.DialogUtils;
+import org.workcraft.utils.DialogUtils;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

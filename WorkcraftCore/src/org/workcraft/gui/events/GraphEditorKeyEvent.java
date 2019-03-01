@@ -5,8 +5,8 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.gui.DesktopApi;
-import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.utils.DesktopApi;
+import org.workcraft.gui.tools.GraphEditor;
 
 public class GraphEditorKeyEvent {
     GraphEditor editor;

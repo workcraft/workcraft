@@ -8,9 +8,9 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.dtd.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.wtg.commands.WtgToStgConversionCommand;
-import org.workcraft.util.PackageUtils;
+import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import java.net.URL;
 import java.util.HashSet;

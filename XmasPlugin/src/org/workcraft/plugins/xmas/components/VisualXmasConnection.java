@@ -4,10 +4,10 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.utils.Coloriser;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.xmas.XmasSettings;
-import org.workcraft.util.Geometry;
+import org.workcraft.utils.Geometry;
 
 import java.awt.*;
 import java.awt.geom.Line2D;

@@ -27,10 +27,10 @@ import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
-import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.graph.tools.Decorator;
-import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.gui.tools.AbstractGraphEditorTool;
+import org.workcraft.gui.tools.Decoration;
+import org.workcraft.gui.tools.Decorator;
+import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
@@ -57,7 +57,7 @@ import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
 import org.workcraft.plugins.son.gui.TimeEstimatorDialog;
 import org.workcraft.plugins.son.gui.TimeInputFilter;
 import org.workcraft.plugins.son.util.Interval;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class TimeValueSetterTool extends AbstractGraphEditorTool {
@@ -118,7 +118,7 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
             visualNet.setForegroundColor(selection, selectedColor);
             final Framework framework = Framework.getInstance();
             final MainWindow mainWindow = framework.getMainWindow();
-            GUI.centerToParent(estimator, mainWindow);
+            GuiUtils.centerToParent(estimator, mainWindow);
             estimator.setVisible(true);
             if (estimator.getRun() == 1) {
                 updateTimePanel(editor, visualSelection);
@@ -609,7 +609,7 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
 
     @Override
     public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
-        GUI.drawEditorMessage(editor, g, Color.BLACK, "Click on the node to set time value in tool controls panel.");
+        GuiUtils.drawEditorMessage(editor, g, Color.BLACK, "Click on the node to set time value in tool controls panel.");
     }
 
     @Override
@@ -619,7 +619,7 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
 
     @Override
     public Icon getIcon() {
-        return GUI.createIconFromSVG("images/son-tool-time.svg");
+        return GuiUtils.createIconFromSVG("images/son-tool-time.svg");
     }
 
     @Override

@@ -3,8 +3,8 @@ package org.workcraft.plugins.graph.serialisation;
 import org.w3c.dom.Element;
 import org.workcraft.plugins.graph.Vertex;
 import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.serialisation.xml.CustomXMLSerialiser;
-import org.workcraft.serialisation.xml.NodeSerialiser;
+import org.workcraft.serialisation.CustomXMLSerialiser;
+import org.workcraft.serialisation.NodeSerialiser;
 
 public class VertexSerialiser implements CustomXMLSerialiser<Vertex> {
 

@@ -1,6 +1,6 @@
 package org.workcraft.plugins.dtd;
 
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 
 import java.awt.*;
 import java.awt.geom.Path2D;

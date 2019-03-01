@@ -4,13 +4,13 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.tools.ConnectionTool;
+import org.workcraft.gui.tools.ConnectionTool;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petri.utils.PetriNetUtils;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
@@ -35,7 +35,7 @@ public class ReadArcConnectionTool extends ConnectionTool {
 
     @Override
     public Icon getIcon() {
-        return GUI.createIconFromSVG("images/petri-tool-readarc.svg");
+        return GuiUtils.createIconFromSVG("images/petri-tool-readarc.svg");
     }
 
     @Override

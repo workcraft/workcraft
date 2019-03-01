@@ -11,8 +11,8 @@ import org.workcraft.plugins.circuit.observers.ZeroDelayConsistencySupervisor;
 import org.workcraft.plugins.circuit.references.CircuitReferenceManager;
 import org.workcraft.plugins.circuit.utils.EnvironmentUtils;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Hierarchy;
-import org.workcraft.util.MultiSet;
+import org.workcraft.utils.Hierarchy;
+import org.workcraft.types.MultiSet;
 
 import java.util.Collection;
 

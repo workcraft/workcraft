@@ -6,7 +6,7 @@ import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.tasks.ReachabilityTask;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class ReachabilityCommand implements Command {
 

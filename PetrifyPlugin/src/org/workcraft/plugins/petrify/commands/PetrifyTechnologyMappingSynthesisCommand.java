@@ -1,13 +1,13 @@
 package org.workcraft.plugins.petrify.commands;
 
 import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.util.ToolUtils;
+import org.workcraft.utils.ExecutableUtils;
 
 public class PetrifyTechnologyMappingSynthesisCommand extends PetrifyAbstractSynthesisCommand {
 
     @Override
     public String[] getSynthesisParameter() {
-        String gateLibrary = ToolUtils.getAbsoluteCommandPath(CircuitSettings.getGateLibrary());
+        String gateLibrary = ExecutableUtils.getAbsoluteCommandPath(CircuitSettings.getGateLibrary());
         if ((gateLibrary == null) || gateLibrary.isEmpty()) {
             return new String[] {"-tm"};
         } else {

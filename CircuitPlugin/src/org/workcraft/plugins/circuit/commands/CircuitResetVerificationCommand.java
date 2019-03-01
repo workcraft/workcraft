@@ -5,10 +5,10 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.utils.InitialisationState;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.LogUtils;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import java.util.HashSet;
 

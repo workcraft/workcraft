@@ -9,9 +9,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.workcraft.gui.DockableWindow;
-import org.workcraft.gui.DockableWindowContentPanel;
-import org.workcraft.gui.DockableWindowContentPanel.ViewAction;
+import org.workcraft.gui.tabs.DockableWindowContentPanel.ViewAction;
 import org.workcraft.gui.actions.ScriptedActionListener;
 
 @SuppressWarnings("serial")

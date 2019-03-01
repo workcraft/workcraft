@@ -1,7 +1,7 @@
 package org.workcraft.plugins.stg;
 
 import org.junit.Test;
-import org.workcraft.util.Triple;
+import org.workcraft.types.Triple;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

@@ -7,8 +7,8 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Hierarchy;
-import org.workcraft.util.MultiSet;
+import org.workcraft.utils.Hierarchy;
+import org.workcraft.types.MultiSet;
 
 import java.util.Collection;
 import java.util.HashMap;

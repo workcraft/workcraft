@@ -2,7 +2,7 @@ package org.workcraft.tasks;
 
 import java.io.IOException;
 
-import org.workcraft.util.DataAccumulator;
+import org.workcraft.shared.DataAccumulator;
 
 public class SubtaskMonitor<T> extends BasicProgressMonitor<T> {
     private final ProgressMonitor<?> parent;

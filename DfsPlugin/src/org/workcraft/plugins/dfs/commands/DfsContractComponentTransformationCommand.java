@@ -3,7 +3,7 @@ package org.workcraft.plugins.dfs.commands;
 import org.workcraft.commands.AbstractContractTransformationCommand;
 import org.workcraft.plugins.dfs.Dfs;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class DfsContractComponentTransformationCommand extends AbstractContractTransformationCommand {
     @Override

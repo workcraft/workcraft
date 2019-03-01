@@ -5,7 +5,7 @@ import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.algorithm.TimeAlg;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class TimeValueDisablerCommand implements Command {
 

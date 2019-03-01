@@ -7,7 +7,7 @@ import org.workcraft.plugins.policy.VisualPolicyNet;
 import org.workcraft.plugins.policy.tools.PolicyToPetriConverter;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class PolicyToPetriConversionCommand extends AbstractConversionCommand {
 

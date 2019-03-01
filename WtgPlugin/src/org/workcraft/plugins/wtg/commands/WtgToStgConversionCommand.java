@@ -8,7 +8,7 @@ import org.workcraft.plugins.wtg.converter.WtgToStgConverter;
 import org.workcraft.plugins.wtg.utils.VerificationUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class WtgToStgConversionCommand extends AbstractConversionCommand {
 

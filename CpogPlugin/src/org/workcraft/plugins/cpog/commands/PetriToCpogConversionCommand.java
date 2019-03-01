@@ -8,12 +8,12 @@ import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.gui.PetriToCpogDialog;
 import org.workcraft.plugins.cpog.untangling.PetriToCpogConverter;
 import org.workcraft.plugins.petri.VisualPetriNet;
-import org.workcraft.util.GUI;
-import org.workcraft.util.Hierarchy;
-import org.workcraft.util.DialogUtils;
+import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class PetriToCpogConversionCommand extends AbstractConversionCommand {
 
@@ -37,7 +37,7 @@ public class PetriToCpogConversionCommand extends AbstractConversionCommand {
         }
         PetriToCpogParameters settings = new PetriToCpogParameters();
         PetriToCpogDialog dialog = new PetriToCpogDialog(mainWindow, settings);
-        GUI.centerToParent(dialog, mainWindow);
+        GuiUtils.centerToParent(dialog, mainWindow);
         dialog.setVisible(true);
         if (dialog.getModalResult() != 1) {
             return null;

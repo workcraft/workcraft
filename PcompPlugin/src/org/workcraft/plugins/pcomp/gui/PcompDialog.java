@@ -10,7 +10,7 @@ import org.workcraft.gui.workspace.WorkspaceChooser;
 import org.workcraft.plugins.pcomp.commands.ParallelCompositionCommand;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.stg.StgWorkspaceFilter;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -91,10 +91,10 @@ public class PcompDialog extends JDialog {
 
         content.add(options, "1 0");
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton runButton = GUI.createDialogButton("Run");
+        JButton runButton = GuiUtils.createDialogButton("Run");
         runButton.addActionListener(event -> actionRun());
 
-        JButton cancelButton = GUI.createDialogButton("Cancel");
+        JButton cancelButton = GuiUtils.createDialogButton("Cancel");
         cancelButton.addActionListener(event -> actionCancel());
 
         buttonsPanel.add(runButton);

@@ -10,9 +10,9 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.commands.MergePlaceTransformationCommand;
 import org.workcraft.plugins.stg.commands.*;
-import org.workcraft.util.PackageUtils;
+import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import java.io.IOException;
 import java.net.URL;

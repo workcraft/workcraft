@@ -37,8 +37,8 @@ import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.VisualScenario;
 import org.workcraft.plugins.cpog.VisualScenarioPage;
 import org.workcraft.plugins.cpog.VisualVertex;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.Geometry;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.Geometry;
 
 public class ScencoExecutionSupport {
 

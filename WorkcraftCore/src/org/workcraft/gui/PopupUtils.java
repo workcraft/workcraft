@@ -1,5 +1,7 @@
 package org.workcraft.gui;
 
+import org.workcraft.utils.DesktopApi;
+
 import javax.swing.*;
 import javax.swing.text.DefaultEditorKit;
 import java.awt.event.KeyEvent;

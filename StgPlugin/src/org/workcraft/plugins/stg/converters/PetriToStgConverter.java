@@ -8,7 +8,7 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualReplica;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.gui.graph.converters.DefaultModelConverter;
+import org.workcraft.dom.converters.DefaultModelConverter;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetriNet;

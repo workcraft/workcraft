@@ -4,12 +4,12 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.gui.graph.tools.Trace;
+import org.workcraft.gui.tools.Trace;
 import org.workcraft.plugins.dtd.*;
 import org.workcraft.plugins.dtd.VisualDtd.SignalEvent;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.util.Pair;
+import org.workcraft.types.Pair;
 
 import java.awt.*;
 import java.awt.geom.Point2D;

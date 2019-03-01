@@ -8,12 +8,12 @@ import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.graph.tools.SelectionTool;
+import org.workcraft.gui.tools.SelectionTool;
 import org.workcraft.plugins.graph.Graph;
 import org.workcraft.plugins.graph.Vertex;
-import org.workcraft.util.DialogUtils;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import java.util.HashSet;
 import java.util.LinkedList;

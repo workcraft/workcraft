@@ -9,15 +9,15 @@ import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.graph.tools.SelectionTool;
+import org.workcraft.gui.tools.SelectionTool;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.Symbol;
 import org.workcraft.plugins.fsm.VisualFsm;
-import org.workcraft.util.DialogUtils;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class FsmDeterminismVerificationCommand extends AbstractVerificationCommand {
 

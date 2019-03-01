@@ -8,10 +8,10 @@ import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.converters.SignalStg;
-import org.workcraft.util.DialogUtils;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class CircuitToStgConversionCommand extends AbstractConversionCommand {
 

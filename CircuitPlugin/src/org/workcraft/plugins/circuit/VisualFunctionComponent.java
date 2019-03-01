@@ -10,8 +10,8 @@ import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
-import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.utils.Coloriser;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
@@ -21,7 +21,7 @@ import org.workcraft.plugins.circuit.renderers.CElementRenderingResult;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.circuit.renderers.GateRenderer;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -310,8 +310,8 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
     }
 
     @Override
-    public void addContact(VisualCircuit vcircuit, VisualContact vc) {
-        super.addContact(vcircuit, vc);
+    public void addContact(VisualContact vc) {
+        super.addContact(vc);
         invalidateRenderingResult();
     }
 
@@ -382,28 +382,38 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
             Point2D labelPosition = cr.getLabelPosition();
             if (labelPosition != null) {
                 at.transform(labelPosition, labelPosition);
-                Arc2D cShape = new Arc2D.Double(labelPosition.getX() - 0.15, labelPosition.getY() - 0.15, 0.30, 0.30, 60, 240, Arc2D.OPEN);
-                g.draw(cShape);
+                g.draw(getCShape(labelPosition));
             }
 
             Point2D plusPosition = cr.getPlusPosition();
             if (plusPosition != null) {
                 at.transform(plusPosition, plusPosition);
-                Path2D plusShape = new Path2D.Double();
-                plusShape.moveTo(plusPosition.getX() - 0.10, plusPosition.getY());
-                plusShape.lineTo(plusPosition.getX() + 0.10, plusPosition.getY());
-                plusShape.moveTo(plusPosition.getX(), plusPosition.getY() - 0.10);
-                plusShape.lineTo(plusPosition.getX(), plusPosition.getY() + 0.10);
-                g.draw(plusShape);
+                g.draw(getPlusShape(plusPosition));
             }
 
             Point2D minusPosition = cr.getMinusPosition();
             if (minusPosition != null) {
                 at.transform(minusPosition, minusPosition);
-                Line2D minusShape = new Line2D.Double(minusPosition.getX() - 0.10, minusPosition.getY(), minusPosition.getX() + 0.10, minusPosition.getY());
-                g.draw(minusShape);
+                g.draw(getMinusShape(minusPosition));
             }
         }
+    }
+
+    private Arc2D.Double getCShape(Point2D pos) {
+        return new Arc2D.Double(pos.getX() - 0.15, pos.getY() - 0.15, 0.30, 0.30, 60, 240, Arc2D.OPEN);
+    }
+
+    private Path2D getPlusShape(Point2D pos) {
+        Path2D plusShape = new Path2D.Double();
+        plusShape.moveTo(pos.getX() - 0.10, pos.getY());
+        plusShape.lineTo(pos.getX() + 0.10, pos.getY());
+        plusShape.moveTo(pos.getX(), pos.getY() - 0.10);
+        plusShape.lineTo(pos.getX(), pos.getY() + 0.10);
+        return plusShape;
+    }
+
+    private Line2D getMinusShape(Point2D pos) {
+        return new Line2D.Double(pos.getX() - 0.10, pos.getY(), pos.getX() + 0.10, pos.getY());
     }
 
     private void drawBypass(Graphics2D g, ComponentRenderingResult rr, AffineTransform at) {

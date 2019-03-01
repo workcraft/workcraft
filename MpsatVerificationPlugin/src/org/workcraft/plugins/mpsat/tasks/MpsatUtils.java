@@ -10,8 +10,8 @@ import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
-import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.gui.graph.tools.SimulationTool;
+import org.workcraft.gui.editor.GraphEditorPanel;
+import org.workcraft.gui.tools.SimulationTool;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.PunfOutputParser.Cause;
@@ -22,9 +22,9 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.LogUtils;
-import org.workcraft.util.Pair;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.LogUtils;
+import org.workcraft.types.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatUtils {

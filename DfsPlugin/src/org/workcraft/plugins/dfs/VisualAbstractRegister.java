@@ -3,7 +3,7 @@ package org.workcraft.plugins.dfs;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 
 import java.awt.*;
 

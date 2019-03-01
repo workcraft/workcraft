@@ -1,7 +1,6 @@
 package org.workcraft.plugins.circuit;
 
 import org.workcraft.Config;
-import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.Settings;
@@ -9,7 +8,9 @@ import org.workcraft.plugins.circuit.utils.Gate2;
 import org.workcraft.plugins.circuit.utils.Gate3;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
-import org.workcraft.util.DialogUtils;
+import org.workcraft.plugins.stg.StgSettings;
+import org.workcraft.utils.DesktopApi;
+import org.workcraft.utils.DialogUtils;
 
 import java.awt.*;
 import java.util.Collection;
@@ -380,6 +381,18 @@ public class CircuitSettings implements Settings {
             }
         });
 
+        properties.add(new PropertyDeclaration<CircuitSettings, Mutex.Protocol>(
+                this, "Mutex protocol", Mutex.Protocol.class) {
+            @Override
+            public void setter(CircuitSettings object, Mutex.Protocol value) {
+                StgSettings.setMutexProtocol(value);
+            }
+            @Override
+            public Mutex.Protocol getter(CircuitSettings object) {
+                return StgSettings.getMutexProtocol();
+            }
+        });
+
         properties.add(new PropertyDeclaration<CircuitSettings, String>(
                 this, "Bus split suffix ($ is replaced by index)", String.class) {
             @Override
@@ -709,11 +722,12 @@ public class CircuitSettings implements Settings {
         Mutex result = null;
         Matcher matcher = MUTEX_DATA_PATTERN.matcher(str.replaceAll("\\s", ""));
         if (matcher.find()) {
+            String name = matcher.group(MUTEX_NAME_GROUP);
             Signal r1 = new Signal(matcher.group(MUTEX_R1_GROUP), Signal.Type.INPUT);
             Signal g1 = new Signal(matcher.group(MUTEX_G1_GROUP), Signal.Type.OUTPUT);
             Signal r2 = new Signal(matcher.group(MUTEX_R2_GROUP), Signal.Type.INPUT);
             Signal g2 = new Signal(matcher.group(MUTEX_G2_GROUP), Signal.Type.OUTPUT);
-            result = new Mutex(matcher.group(MUTEX_NAME_GROUP), r1, g1, r2, g2);
+            result = new Mutex(name, r1, g1, r2, g2);
         }
         return result;
     }

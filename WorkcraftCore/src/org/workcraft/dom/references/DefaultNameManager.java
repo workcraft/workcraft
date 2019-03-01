@@ -5,8 +5,8 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.ArgumentException;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.TwoWayMap;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.types.TwoWayMap;
 
 import java.util.HashMap;
 import java.util.Map;

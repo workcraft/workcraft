@@ -5,9 +5,9 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.petri.Place;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.LogUtils;
-import org.workcraft.util.Pair;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.LogUtils;
+import org.workcraft.types.Pair;
 
 import java.util.*;
 import java.util.stream.Collectors;

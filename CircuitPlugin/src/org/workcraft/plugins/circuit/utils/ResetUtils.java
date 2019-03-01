@@ -7,8 +7,8 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
 import org.workcraft.plugins.circuit.*;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.Hierarchy;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -189,7 +189,7 @@ public class ResetUtils {
             }
             VisualContact resetContact = null;
             if (!forceInitFuncContacts.isEmpty()) {
-                resetContact = circuit.getOrCreateContact(component, null, Contact.IOType.INPUT);
+                resetContact = component.createContact(Contact.IOType.INPUT);
                 try {
                     circuit.connect(resetPort, resetContact);
                 } catch (InvalidConnectionException e) {
@@ -212,7 +212,7 @@ public class ResetUtils {
         VisualFunctionContact result = null;
         VisualComponent component = circuit.getVisualComponentByMathReference(portName, VisualComponent.class);
         if (component == null) {
-            result = circuit.getOrCreateContact(null, portName, Contact.IOType.INPUT);
+            result = circuit.getOrCreatePort(portName, Contact.IOType.INPUT);
             if (result == null) {
                 DialogUtils.showError("Cannot create reset port '" + portName + "'.");
                 return null;

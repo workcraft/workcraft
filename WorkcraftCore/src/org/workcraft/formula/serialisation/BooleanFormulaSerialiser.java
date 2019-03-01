@@ -8,8 +8,8 @@ import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.formula.utils.StringGenerator.PrinterSuite;
 import org.workcraft.formula.utils.StringGenerator.Void;
 import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.serialisation.xml.CustomXMLSerialiser;
-import org.workcraft.serialisation.xml.NodeSerialiser;
+import org.workcraft.serialisation.CustomXMLSerialiser;
+import org.workcraft.serialisation.NodeSerialiser;
 import org.workcraft.dom.references.Identifier;
 
 public abstract class BooleanFormulaSerialiser<T> implements CustomXMLSerialiser<T> {

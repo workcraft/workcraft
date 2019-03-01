@@ -4,14 +4,14 @@ import java.awt.Cursor;
 
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.NodeCreationException;
-import org.workcraft.gui.DesktopApi;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
-import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.gui.graph.tools.NodeGeneratorTool;
+import org.workcraft.dom.generators.DefaultNodeGenerator;
+import org.workcraft.gui.tools.GraphEditor;
+import org.workcraft.gui.tools.NodeGeneratorTool;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.GuiUtils;
 
 public class StgSignalTransitionGeneratorTool extends NodeGeneratorTool {
 
@@ -49,15 +49,15 @@ public class StgSignalTransitionGeneratorTool extends NodeGeneratorTool {
     public Cursor getCursor(boolean menuKeyDown, boolean shiftKeyDown, boolean altKeyDown) {
         if (shiftKeyDown) {
             if (menuKeyDown) {
-                return GUI.createCursorFromSVG("images/stg-node-signal_transition-input_minus.svg");
+                return GuiUtils.createCursorFromSVG("images/stg-node-signal_transition-input_minus.svg");
             } else {
-                return GUI.createCursorFromSVG("images/stg-node-signal_transition-input_plus.svg");
+                return GuiUtils.createCursorFromSVG("images/stg-node-signal_transition-input_plus.svg");
             }
         } else {
             if (menuKeyDown) {
-                return GUI.createCursorFromSVG("images/stg-node-signal_transition-output_minus.svg");
+                return GuiUtils.createCursorFromSVG("images/stg-node-signal_transition-output_minus.svg");
             } else {
-                return GUI.createCursorFromSVG("images/stg-node-signal_transition-output_plus.svg");
+                return GuiUtils.createCursorFromSVG("images/stg-node-signal_transition-output_plus.svg");
             }
         }
     }

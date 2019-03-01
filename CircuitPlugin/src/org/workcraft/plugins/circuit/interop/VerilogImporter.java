@@ -17,6 +17,7 @@ import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.interop.Importer;
+import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.expression.Expression;
@@ -32,11 +33,11 @@ import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.StructureUtilsKt;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.plugins.circuit.verilog.*;
-import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.LogUtils;
+import org.workcraft.plugins.stg.StgSettings;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 
 import java.io.ByteArrayInputStream;
@@ -653,8 +654,8 @@ public class VerilogImporter implements Importer {
         addMutexPin(circuit, component, module.r2, instance.r2, wires);
         FunctionContact g2Contact = addMutexPin(circuit, component, module.g2, instance.g2, wires);
         try {
-            setMutexFunctions(circuit, component, g1Contact, module.r1.name, module.g2.name);
-            setMutexFunctions(circuit, component, g2Contact, module.r2.name, module.g1.name);
+            setMutexFunctions(circuit, component, g1Contact, module.r1.name, module.r2.name, module.g2.name);
+            setMutexFunctions(circuit, component, g2Contact, module.r2.name, module.r1.name, module.g1.name);
         } catch (org.workcraft.formula.jj.ParseException e) {
             throw new RuntimeException(e);
         }
@@ -664,8 +665,11 @@ public class VerilogImporter implements Importer {
     }
 
     private void setMutexFunctions(Circuit circuit, final FunctionComponent component, FunctionContact grantContact,
-            String reqPinName, String otherGrantPinName) throws org.workcraft.formula.jj.ParseException {
+            String reqPinName, String otherReqPinName, String otherGrantPinName) throws org.workcraft.formula.jj.ParseException {
         String setString = reqPinName + " * " + otherGrantPinName + "'";
+        if (StgSettings.getMutexProtocol() == Mutex.Protocol.RELAXED) {
+            setString += " + " + reqPinName + " * " + otherReqPinName + "'";
+        }
         BooleanFormula setFormula = CircuitUtils.parsePinFuncton(circuit, component, setString);
         grantContact.setSetFunctionQuiet(setFormula);
         String resetString = reqPinName + "'";

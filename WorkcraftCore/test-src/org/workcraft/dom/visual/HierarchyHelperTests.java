@@ -5,7 +5,7 @@ import java.util.Collection;
 import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.dom.Node;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 public class HierarchyHelperTests {
 

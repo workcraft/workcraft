@@ -4,7 +4,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.serialisation.xml.NoAutoSerialisation;
+import org.workcraft.serialisation.NoAutoSerialisation;
 
 @DisplayName("Dummy transition")
 @IdentifierPrefix("dum")

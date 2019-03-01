@@ -9,14 +9,14 @@ import java.util.List;
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
-import org.workcraft.gui.graph.GraphEditorPanel;
+import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.stg.tools.Core;
 import org.workcraft.plugins.stg.tools.EncodingConflictAnalyserTool;
-import org.workcraft.util.ColorGenerator;
-import org.workcraft.util.ColorUtils;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.LogUtils;
+import org.workcraft.shared.ColorGenerator;
+import org.workcraft.utils.ColorUtils;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 final class MpsatEncodingConflictOutputHandler implements Runnable {

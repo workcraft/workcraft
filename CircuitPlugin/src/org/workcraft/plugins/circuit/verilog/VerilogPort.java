@@ -1,6 +1,6 @@
 package org.workcraft.plugins.circuit.verilog;
 
-import org.workcraft.util.Pair;
+import org.workcraft.types.Pair;
 
 public class VerilogPort {
 

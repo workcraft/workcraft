@@ -11,7 +11,7 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualTransformableNode;
-import org.workcraft.gui.Coloriser;
+import org.workcraft.utils.Coloriser;
 
 public class ControlPoint extends VisualTransformableNode implements Drawable, Touchable {
 

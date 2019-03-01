@@ -1,6 +1,6 @@
 package org.workcraft.plugins.petri.commands;
 
-import org.workcraft.NodeTransformer;
+import org.workcraft.commands.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
@@ -8,10 +8,10 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.utils.PetriNetUtils;
-import org.workcraft.util.Pair;
+import org.workcraft.types.Pair;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import java.util.Collection;
 import java.util.HashSet;

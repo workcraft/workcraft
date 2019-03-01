@@ -7,10 +7,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.gui.DesktopApi;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.plugins.circuit.commands.CircuitStatisticsCommand;
-import org.workcraft.plugins.statistics.BasicStatisticsCommand;
-import org.workcraft.util.PackageUtils;
+import org.workcraft.plugins.builtin.commands.BasicStatisticsCommand;
+import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class CircuitStatisticsCommandTests {

@@ -5,14 +5,14 @@ import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.gui.DesktopApi;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.gui.graph.tools.GraphEditorTool;
-import org.workcraft.gui.graph.tools.SelectionTool;
+import org.workcraft.gui.editor.GraphEditorPanel;
+import org.workcraft.gui.tools.GraphEditor;
+import org.workcraft.gui.tools.GraphEditorTool;
+import org.workcraft.gui.tools.SelectionTool;
 import org.workcraft.plugins.son.VisualONGroup;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
@@ -21,8 +21,8 @@ import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.plugins.son.elements.VisualChannelPlace;
 import org.workcraft.plugins.son.elements.VisualCondition;
 import org.workcraft.plugins.son.elements.VisualEvent;
-import org.workcraft.util.GUI;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.Hierarchy;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
@@ -41,65 +41,65 @@ public class SONSelectionTool extends SelectionTool {
     @Override
     public void updateControlsToolbar(JToolBar toolbar, final GraphEditor editor) {
         //Create groupButton
-        final JButton groupButton = GUI.createIconButton(
-                GUI.createIconFromSVG("images/son-selection-group.svg"),
+        final JButton groupButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/son-selection-group.svg"),
                 "Group selection (" + DesktopApi.getMenuKeyName() + "-G)");
         groupButton.addActionListener(event -> groupSelection(editor));
         toolbar.add(groupButton);
 
         //Create blockButton
-        JButton blockButton = GUI.createIconButton(
-                GUI.createIconFromSVG("images/son-selection-block.svg"),
+        JButton blockButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/son-selection-block.svg"),
                 "Group selection into a block (Alt-B)");
         blockButton.addActionListener(event -> selectionBlock(editor));
         toolbar.add(blockButton);
 
         //Create pageButton
-        JButton groupPageButton = GUI.createIconButton(
-                GUI.createIconFromSVG("images/son-selection-page.svg"),
+        JButton groupPageButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/son-selection-page.svg"),
                 "Group selection into a page (Alt-G)");
         groupPageButton.addActionListener(event -> pageSelection(editor));
         toolbar.add(groupPageButton);
 
         //Create ungroupButton
-        JButton ungroupButton = GUI.createIconButton(
-                GUI.createIconFromSVG("images/son-selection-ungroup.svg"),
+        JButton ungroupButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/son-selection-ungroup.svg"),
                 "Ungroup selection (" + DesktopApi.getMenuKeyName() + "+Shift-G)");
         ungroupButton.addActionListener(event -> ungroupSelection(editor));
         toolbar.add(ungroupButton);
 
-        JButton levelUpButton = GUI.createIconButton(
-                GUI.createIconFromSVG("images/son-selection-level_up.svg"), "Level up (PageUp)");
+        JButton levelUpButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/son-selection-level_up.svg"), "Level up (PageUp)");
         levelUpButton.addActionListener(event -> changeLevelUp(editor));
         toolbar.add(levelUpButton);
 
-        JButton levelDownButton = GUI.createIconButton(
-                GUI.createIconFromSVG("images/son-selection-level_down.svg"), "Level down (PageDown)");
+        JButton levelDownButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/son-selection-level_down.svg"), "Level down (PageDown)");
         levelDownButton.addActionListener(event -> changeLevelDown(editor));
         toolbar.add(levelDownButton);
 
         toolbar.addSeparator();
 
-        JButton flipHorizontalButton = GUI.createIconButton(
-                GUI.createIconFromSVG("images/son-selection-flip_horizontal.svg"),
+        JButton flipHorizontalButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/son-selection-flip_horizontal.svg"),
                 "Flip horizontal (" + DesktopApi.getMenuKeyName() + "-F)");
         flipHorizontalButton.addActionListener(event -> flipSelectionHorizontal(editor));
         toolbar.add(flipHorizontalButton);
 
-        JButton flipVerticalButton = GUI.createIconButton(
-                GUI.createIconFromSVG("images/son-selection-flip_vertical.svg"),
+        JButton flipVerticalButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/son-selection-flip_vertical.svg"),
                 "Flip vertical (" + DesktopApi.getMenuKeyName() + "+Shift-F)");
         flipVerticalButton.addActionListener(event -> flipSelectionVertical(editor));
         toolbar.add(flipVerticalButton);
 
-        JButton rotateClockwiseButton = GUI.createIconButton(
-                GUI.createIconFromSVG("images/son-selection-rotate_clockwise.svg"),
+        JButton rotateClockwiseButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/son-selection-rotate_clockwise.svg"),
                 "Rotate clockwise (" + DesktopApi.getMenuKeyName() + "-R)");
         rotateClockwiseButton.addActionListener(event -> rotateSelectionClockwise(editor));
         toolbar.add(rotateClockwiseButton);
 
-        JButton rotateCounterclockwiseButton = GUI.createIconButton(
-                GUI.createIconFromSVG("images/son-selection-rotate_counterclockwise.svg"),
+        JButton rotateCounterclockwiseButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/son-selection-rotate_counterclockwise.svg"),
                 "Rotate counterclockwise (" + DesktopApi.getMenuKeyName() + "+Shift-R)");
         rotateCounterclockwiseButton.addActionListener(event -> rotateSelectionCounterclockwise(editor));
         toolbar.add(rotateCounterclockwiseButton);

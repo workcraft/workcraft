@@ -4,13 +4,14 @@ import org.workcraft.Framework;
 import org.workcraft.Info;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.actions.Action;
-import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.plugins.shared.CommonEditorSettings;
-import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.util.FileUtils;
-import org.workcraft.util.GUI;
-import org.workcraft.util.LogUtils;
+import org.workcraft.gui.editor.GraphEditorPanel;
+import org.workcraft.gui.tools.GraphEditor;
+import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
+import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.utils.DesktopApi;
+import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.LogUtils;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -635,7 +636,7 @@ public class MainWindowActions {
             final Framework framework = Framework.getInstance();
             final MainWindow mainWindow = framework.getMainWindow();
             final AboutDialog about = new AboutDialog(mainWindow);
-            GUI.centerToParent(about, mainWindow);
+            GuiUtils.centerToParent(about, mainWindow);
             about.setVisible(true);
         }
     };

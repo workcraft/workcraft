@@ -22,7 +22,7 @@ import org.workcraft.formula.One;
 import org.workcraft.formula.Or;
 import org.workcraft.formula.Xor;
 import org.workcraft.formula.Zero;
-import org.workcraft.util.Pair;
+import org.workcraft.types.Pair;
 
 public class CElementRenderer extends GateRenderer {
 

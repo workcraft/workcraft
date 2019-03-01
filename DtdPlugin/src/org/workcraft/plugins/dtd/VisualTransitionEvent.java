@@ -4,8 +4,8 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.gui.properties.PropertyDeclaration;
-import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.serialisation.xml.NoAutoSerialisation;
+import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.serialisation.NoAutoSerialisation;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;

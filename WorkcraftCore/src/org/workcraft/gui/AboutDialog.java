@@ -27,7 +27,8 @@ import javax.swing.event.HyperlinkListener;
 
 import org.workcraft.Info;
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.DesktopApi;
+import org.workcraft.utils.GuiUtils;
 
 public class AboutDialog extends JDialog {
     private static final long serialVersionUID = 1L;
@@ -47,7 +48,7 @@ public class AboutDialog extends JDialog {
         BufferedImage logoImage = null;
         JLabel logoLabel;
         try {
-            logoImage = GUI.loadImageFromResource("images/logo.png");
+            logoImage = GuiUtils.loadImageFromResource("images/logo.png");
             logoLabel = new JLabel(new ImageIcon(logoImage), SwingConstants.CENTER);
         } catch (IOException e) {
             logoLabel = new JLabel("Workcraft", SwingConstants.CENTER);
@@ -85,7 +86,7 @@ public class AboutDialog extends JDialog {
             }
         });
 
-        JButton okButton = GUI.createDialogButton("OK");
+        JButton okButton = GuiUtils.createDialogButton("OK");
         okButton.addActionListener(event -> ok());
 
         JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));

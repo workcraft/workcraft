@@ -9,10 +9,10 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.editors.AbstractInplaceEditor;
-import org.workcraft.gui.graph.editors.LabelInplaceEditor;
-import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.gui.graph.tools.SelectionTool;
+import org.workcraft.gui.tools.editors.AbstractInplaceEditor;
+import org.workcraft.gui.tools.editors.LabelInplaceEditor;
+import org.workcraft.gui.tools.GraphEditor;
+import org.workcraft.gui.tools.SelectionTool;
 import org.workcraft.observation.*;
 import org.workcraft.plugins.cpog.*;
 import org.workcraft.plugins.cpog.formula.CpogConnector;
@@ -23,10 +23,10 @@ import org.workcraft.plugins.cpog.formula.jj.CpogFormulaParser;
 import org.workcraft.plugins.cpog.formula.jj.ParseException;
 import org.workcraft.plugins.cpog.formula.jj.TokenMgrError;
 import org.workcraft.plugins.cpog.observers.CpogHangingConnectionRemover;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
@@ -212,7 +212,7 @@ public class CpogSelectionTool extends SelectionTool {
         panel.add(expressionScroll, BorderLayout.CENTER);
         panel.add(buttonPanel, BorderLayout.SOUTH);
 
-        JButton groupPageButton = GUI.createIconButton(GUI.createIconFromSVG(
+        JButton groupPageButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG(
                 "images/selection-page.svg"), "Combine selection as a scenario (Alt-G)");
         groupPageButton.addActionListener(event -> actionGroupPage(editor));
         JPanel groupPanel = getGroupPanel();

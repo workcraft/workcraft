@@ -3,9 +3,9 @@ package org.workcraft.commands;
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.graph.GraphEditorPanel;
+import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public abstract class AbstractLayoutCommand implements ScriptableCommand<Void> {
 

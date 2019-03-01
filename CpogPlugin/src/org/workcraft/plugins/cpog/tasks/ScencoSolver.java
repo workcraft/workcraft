@@ -25,11 +25,11 @@ import org.workcraft.plugins.cpog.VisualScenario;
 import org.workcraft.plugins.cpog.VisualVariable;
 import org.workcraft.plugins.cpog.VisualVertex;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
-import org.workcraft.util.FileUtils;
-import org.workcraft.util.Hierarchy;
-import org.workcraft.util.ToolUtils;
+import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.ExecutableUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class ScencoSolver {
 
@@ -291,7 +291,7 @@ public class ScencoSolver {
         }
 
         //Adding arguments to list
-        scencoCommand = ToolUtils.getAbsoluteCommandPath(CpogSettings.getScencoCommand());
+        scencoCommand = ExecutableUtils.getAbsoluteCommandPath(CpogSettings.getScencoCommand());
         if (scencoCommand != null && !scencoCommand.isEmpty()) args.add(scencoCommand);
         if (scenarioFile.getAbsolutePath() != null && !scenarioFile.getAbsolutePath().isEmpty()) args.add(scenarioFile.getAbsolutePath());
         args.add("-m");
@@ -471,8 +471,8 @@ public class ScencoSolver {
     }
 
     private void instantiateParameters(int elements, int scenarios) {
-        scencoCommand = ToolUtils.getAbsoluteCommandPath(CpogSettings.getScencoCommand());
-        espressoCommand = ToolUtils.getAbsoluteCommandPath(CpogSettings.getEspressoCommand());
+        scencoCommand = ExecutableUtils.getAbsoluteCommandPath(CpogSettings.getScencoCommand());
+        espressoCommand = ExecutableUtils.getAbsoluteCommandPath(CpogSettings.getEspressoCommand());
         abcTool = CpogSettings.getAbcTool();
         File f = new File(CircuitSettings.getGateLibrary());
         gatesLibrary = f.getAbsolutePath();

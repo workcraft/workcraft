@@ -9,10 +9,10 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.utils.Coloriser;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.circuit.tools.StateDecoration;
-import org.workcraft.util.Geometry;
+import org.workcraft.utils.Geometry;
 
 public class VisualCircuitConnection extends VisualConnection {
 

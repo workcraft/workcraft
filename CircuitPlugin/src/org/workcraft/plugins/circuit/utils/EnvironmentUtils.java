@@ -3,7 +3,7 @@ package org.workcraft.plugins.circuit.utils;
 import org.workcraft.Framework;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Environment;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;

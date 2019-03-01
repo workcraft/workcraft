@@ -15,7 +15,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 import org.workcraft.dom.Node;
-import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.util.ScenarioRef;
 import org.workcraft.plugins.son.util.ScenarioSaveList;

@@ -13,8 +13,8 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.GuiUtils;
 
 @SuppressWarnings("serial")
 public class PlatoIncludesDialog extends JDialog {
@@ -53,9 +53,9 @@ public class PlatoIncludesDialog extends JDialog {
     }
 
     private void createBtnPanel() {
-        JButton addBtn = GUI.createDialogButton("Add");
-        JButton removeBtn = GUI.createDialogButton("Remove");
-        JButton okBtn = GUI.createDialogButton("OK");
+        JButton addBtn = GuiUtils.createDialogButton("Add");
+        JButton removeBtn = GuiUtils.createDialogButton("Remove");
+        JButton okBtn = GuiUtils.createDialogButton("OK");
 
         btnPanel.add(addBtn);
         btnPanel.add(removeBtn);

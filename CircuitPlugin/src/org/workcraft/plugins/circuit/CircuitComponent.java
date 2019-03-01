@@ -4,7 +4,7 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import java.util.ArrayList;
 import java.util.Collection;

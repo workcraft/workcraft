@@ -8,13 +8,13 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
-import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.graph.tools.Decorator;
-import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.gui.tools.AbstractGraphEditorTool;
+import org.workcraft.gui.tools.Decoration;
+import org.workcraft.gui.tools.Decorator;
+import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.StructureUtilsKt;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
@@ -42,7 +42,7 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
 
     @Override
     public Icon getIcon() {
-        return GUI.createIconFromSVG("images/circuit-tool-loop_analysis.svg");
+        return GuiUtils.createIconFromSVG("images/circuit-tool-loop_analysis.svg");
     }
 
     @Override

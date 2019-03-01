@@ -1,6 +1,6 @@
 package org.workcraft.interop;
 
-import org.workcraft.util.LogUtils;
+import org.workcraft.utils.LogUtils;
 
 import java.io.File;
 import java.io.IOException;

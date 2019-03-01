@@ -8,7 +8,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.policy.observers.BundleConsistencySupervisor;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import java.util.ArrayList;
 import java.util.Collection;

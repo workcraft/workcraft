@@ -3,7 +3,7 @@ package org.workcraft;
 import java.util.Calendar;
 
 import org.workcraft.Version.Status;
-import org.workcraft.plugins.shared.CommonDebugSettings;
+import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
 
 public class Info {
 

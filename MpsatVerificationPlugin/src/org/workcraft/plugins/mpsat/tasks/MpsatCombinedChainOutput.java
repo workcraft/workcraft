@@ -5,7 +5,7 @@ import java.util.List;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
-import org.workcraft.plugins.shared.tasks.ExportOutput;
+import org.workcraft.tasks.ExportOutput;
 import org.workcraft.tasks.Result;
 
 public class MpsatCombinedChainOutput {

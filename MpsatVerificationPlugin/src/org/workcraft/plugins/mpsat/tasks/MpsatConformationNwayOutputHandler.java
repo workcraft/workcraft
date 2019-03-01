@@ -3,24 +3,24 @@ package org.workcraft.plugins.mpsat.tasks;
 import org.workcraft.Framework;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.graph.tools.Trace;
+import org.workcraft.gui.tools.Trace;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat.gui.MpsatReachibilityDialog;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
-import org.workcraft.plugins.shared.tasks.ExportOutput;
+import org.workcraft.tasks.ExportOutput;
 import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.GUI;
-import org.workcraft.util.LogUtils;
-import org.workcraft.util.Pair;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.LogUtils;
+import org.workcraft.types.Pair;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import java.util.*;
 
@@ -100,7 +100,7 @@ public class MpsatConformationNwayOutputHandler extends MpsatConformationOutputH
                     String extendedMessage = extendMessage(message);
                     MpsatReachibilityDialog solutionsDialog = new MpsatReachibilityDialog(
                             we, title, extendedMessage, processedSolutions);
-                    GUI.centerToParent(solutionsDialog, mainWindow);
+                    GuiUtils.centerToParent(solutionsDialog, mainWindow);
                     solutionsDialog.setVisible(true);
                 }
             }

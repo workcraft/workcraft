@@ -22,7 +22,7 @@ import org.workcraft.plugins.graph.VisualVertex;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 public class GraphToPetriConverter {
     private final VisualGraph srcModel;

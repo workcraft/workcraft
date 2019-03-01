@@ -1,6 +1,6 @@
 package org.workcraft.plugins.circuit.commands;
 
-import org.workcraft.NodeTransformer;
+import org.workcraft.commands.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.ConnectionHelper;
@@ -10,11 +10,11 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
-import org.workcraft.util.Hierarchy;
-import org.workcraft.util.LogUtils;
+import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;

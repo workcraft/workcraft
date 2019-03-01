@@ -8,9 +8,9 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.tools.*;
+import org.workcraft.gui.tools.*;
 import org.workcraft.gui.layouts.WrapLayout;
-import org.workcraft.plugins.shared.CommonDecorationSettings;
+import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
 import org.workcraft.plugins.son.BlockConnector;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
@@ -20,12 +20,11 @@ import org.workcraft.plugins.son.elements.*;
 import org.workcraft.plugins.son.exception.InvalidStructureException;
 import org.workcraft.plugins.son.exception.UnboundedException;
 import org.workcraft.plugins.son.gui.ParallelSimDialog;
-import org.workcraft.plugins.son.gui.SONGUI;
 import org.workcraft.plugins.son.util.Phase;
 import org.workcraft.plugins.son.util.Step;
 import org.workcraft.plugins.son.util.StepRef;
 import org.workcraft.plugins.son.util.Trace;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
@@ -95,7 +94,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
 
     @Override
     public Icon getIcon() {
-        return GUI.createIconFromSVG("images/son-tool-simulation.svg");
+        return GuiUtils.createIconFromSVG("images/son-tool-simulation.svg");
     }
 
     @Override
@@ -104,29 +103,29 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
             return panel;
         }
 
-        playButton = GUI.createIconButton(GUI.createIconFromSVG("images/son-simulation-play.svg"),
+        playButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG("images/son-simulation-play.svg"),
                 "Automatic trace playback");
-        stopButton = GUI.createIconButton(GUI.createIconFromSVG("images/son-simulation-stop.svg"),
+        stopButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG("images/son-simulation-stop.svg"),
                 "Reset trace playback");
-        backwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/son-simulation-backward.svg"),
+        backwardButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG("images/son-simulation-backward.svg"),
                 "Step backward");
-        forwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/son-simulation-forward.svg"),
+        forwardButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG("images/son-simulation-forward.svg"),
                 "Step forward");
-        reverseButton = GUI.createIconButton(GUI.createIconFromSVG("images/son-simulation-progress.svg"),
+        reverseButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG("images/son-simulation-progress.svg"),
                 "Switch to reverse simulation");
-        autoSimuButton = SONGUI.createIconToggleButton(GUI.createIconFromSVG("images/son-simulation-auto.svg"),
+        autoSimuButton = GuiUtils.createIconToggleButton(GuiUtils.createIconFromSVG("images/son-simulation-auto.svg"),
                 "Automatic simulation");
-        errorButton = GUI.createIconButton(GUI.createIconFromSVG("images/son-simulation-trace-error.svg"),
+        errorButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG("images/son-simulation-trace-error.svg"),
                 "Enable/Disable error tracing");
 
         speedSlider = new JSlider(-1000, 1000, 0);
         speedSlider.setToolTipText("Simulation playback speed");
 
-        copyStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/son-simulation-trace-copy.svg"),
+        copyStateButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG("images/son-simulation-trace-copy.svg"),
                 "Copy trace to clipboard");
-        pasteStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/son-simulation-trace-paste.svg"),
+        pasteStateButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG("images/son-simulation-trace-paste.svg"),
                 "Paste trace from clipboard");
-        mergeTraceButton = GUI.createIconButton(GUI.createIconFromSVG("images/son-simulation-trace-merge.svg"),
+        mergeTraceButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG("images/son-simulation-trace-merge.svg"),
                 "Merge branch into trace");
 
         int buttonWidth = (int) Math.round(playButton.getPreferredSize().getWidth() + 5);
@@ -362,13 +361,13 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
 
     public void updateState(final GraphEditor editor) {
         if (timer == null) {
-            playButton.setIcon(GUI.createIconFromSVG("images/son-simulation-play.svg"));
+            playButton.setIcon(GuiUtils.createIconFromSVG("images/son-simulation-play.svg"));
         } else {
             if (branchTrace.canProgress() || (branchTrace.isEmpty() && mainTrace.canProgress())) {
-                playButton.setIcon(GUI.createIconFromSVG("images/son-simulation-pause.svg"));
+                playButton.setIcon(GuiUtils.createIconFromSVG("images/son-simulation-pause.svg"));
                 timer.setDelay(getAnimationDelay());
             } else {
-                playButton.setIcon(GUI.createIconFromSVG("images/son-simulation-play.svg"));
+                playButton.setIcon(GuiUtils.createIconFromSVG("images/son-simulation-play.svg"));
                 timer.stop();
                 timer = null;
             }
@@ -379,10 +378,10 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         forwardButton.setEnabled(branchTrace.canProgress() || (branchTrace.isEmpty() && mainTrace.canProgress()));
         traceTable.tableChanged(new TableModelEvent(traceTable.getModel()));
         if (!isRev) {
-            reverseButton.setIcon(GUI.createIconFromSVG("images/son-simulation-progress.svg"));
+            reverseButton.setIcon(GuiUtils.createIconFromSVG("images/son-simulation-progress.svg"));
             reverseButton.setToolTipText("Switch to reverse simulation");
         } else {
-            reverseButton.setIcon(GUI.createIconFromSVG("images/son-simulation-reverse.svg"));
+            reverseButton.setIcon(GuiUtils.createIconFromSVG("images/son-simulation-reverse.svg"));
             reverseButton.setToolTipText("Switch to forward simulation");
         }
         editor.repaint();
@@ -895,7 +894,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
                 e.getEditor().requestFocus();
                 ParallelSimDialog dialog = new ParallelSimDialog(mainWindow,
                         net, possibleFire, minFire, select, isRev, sync);
-                GUI.centerToParent(dialog, mainWindow);
+                GuiUtils.centerToParent(dialog, mainWindow);
                 dialog.setVisible(true);
 
                 if (dialog.getRun() == 1) {

@@ -7,7 +7,7 @@ import org.workcraft.plugins.dtd.*;
 import org.workcraft.plugins.dtd.Signal;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.wtg.*;
-import org.workcraft.util.Pair;
+import org.workcraft.types.Pair;
 
 import java.util.*;
 

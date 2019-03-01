@@ -12,17 +12,17 @@ import org.workcraft.plugins.policy.VisualPolicyNet;
 import org.workcraft.plugins.policy.tools.PolicyToPetriConverter;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
-import org.workcraft.plugins.shared.tasks.ExportOutput;
-import org.workcraft.plugins.shared.tasks.ExportTask;
+import org.workcraft.tasks.ExportOutput;
+import org.workcraft.tasks.ExportTask;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
-import org.workcraft.util.ExportUtils;
-import org.workcraft.util.FileUtils;
+import org.workcraft.utils.ExportUtils;
+import org.workcraft.utils.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import java.io.File;
 

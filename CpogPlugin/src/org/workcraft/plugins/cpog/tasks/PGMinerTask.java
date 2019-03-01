@@ -4,14 +4,14 @@ import java.io.File;
 import java.util.ArrayList;
 
 import org.workcraft.plugins.cpog.CpogSettings;
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
-import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
+import org.workcraft.tasks.ExternalProcessOutput;
+import org.workcraft.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
-import org.workcraft.util.ToolUtils;
+import org.workcraft.utils.ExecutableUtils;
 
 public class PGMinerTask implements Task<ExternalProcessOutput> {
 
@@ -28,7 +28,7 @@ public class PGMinerTask implements Task<ExternalProcessOutput> {
         //Build the commands for PGMiner
         try {
             ArrayList<String> command = new ArrayList<>();
-            String toolName = ToolUtils.getAbsoluteCommandPath(CpogSettings.getPgminerCommand());
+            String toolName = ExecutableUtils.getAbsoluteCommandPath(CpogSettings.getPgminerCommand());
             command.add(toolName);
 
             command.add(inputFile.getAbsolutePath());

@@ -16,9 +16,9 @@ import java.util.Random;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.workcraft.CompatibilityManager;
+import org.workcraft.plugins.CompatibilityManager;
 import org.workcraft.Framework;
-import org.workcraft.PluginManager;
+import org.workcraft.plugins.PluginManager;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
@@ -26,7 +26,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
 import org.workcraft.exceptions.SerialisationException;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 import org.workcraft.workspace.ModelEntry;
 
 public class SaveLoadTests {

@@ -20,9 +20,9 @@ import javax.swing.JPanel;
 import org.workcraft.commands.Command;
 import org.workcraft.plugins.xmas.Xmas;
 import org.workcraft.plugins.xmas.XmasSettings;
-import org.workcraft.util.LogUtils;
+import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class XmasConfigureCommand implements Command {
 

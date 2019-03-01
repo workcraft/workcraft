@@ -10,8 +10,8 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.gui.graph.tools.CommentGeneratorTool;
-import org.workcraft.gui.graph.tools.GraphEditorTool;
+import org.workcraft.gui.tools.CommentGeneratorTool;
+import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
@@ -19,8 +19,8 @@ import org.workcraft.plugins.petri.*;
 import org.workcraft.plugins.petri.tools.ReadArcConnectionTool;
 import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.plugins.stg.tools.*;
-import org.workcraft.util.Hierarchy;
-import org.workcraft.util.Pair;
+import org.workcraft.utils.Hierarchy;
+import org.workcraft.types.Pair;
 
 import java.awt.geom.Point2D;
 import java.util.*;
@@ -110,7 +110,7 @@ public class VisualStg extends AbstractVisualModel {
                 VisualStgPlace place = makeExplicit(con);
                 connection = connect(first, place);
             } else if ((second instanceof VisualStgPlace) || (second instanceof VisualReplicaPlace)) {
-                connection = createSimpleConnection((VisualNode) first, (VisualNode) second, mConnection);
+                connection = createSimpleConnection(first, second, mConnection);
             }
         } else if (first instanceof VisualImplicitPlaceArc) {
             if (second instanceof VisualNamedTransition) {

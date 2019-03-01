@@ -5,10 +5,10 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
-import org.workcraft.gui.graph.tools.CommentGeneratorTool;
-import org.workcraft.gui.graph.tools.GraphEditorTool;
-import org.workcraft.gui.graph.tools.NodeGeneratorTool;
+import org.workcraft.dom.generators.DefaultNodeGenerator;
+import org.workcraft.gui.tools.CommentGeneratorTool;
+import org.workcraft.gui.tools.GraphEditorTool;
+import org.workcraft.gui.tools.NodeGeneratorTool;
 import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
@@ -21,7 +21,7 @@ import org.workcraft.plugins.wtg.tools.WtgSelectionTool;
 import org.workcraft.plugins.wtg.tools.WtgSignalGeneratorTool;
 import org.workcraft.plugins.wtg.tools.WtgSimulationTool;
 import org.workcraft.plugins.wtg.utils.WtgUtils;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import java.util.*;
 

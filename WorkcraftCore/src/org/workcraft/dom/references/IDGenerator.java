@@ -4,7 +4,7 @@ import java.util.Comparator;
 import java.util.TreeSet;
 
 import org.workcraft.exceptions.DuplicateIDException;
-import org.workcraft.util.Pair;
+import org.workcraft.types.Pair;
 
 public class IDGenerator {
     private static final Comparator<? super Pair<Integer, Integer>> comparator = new Comparator<Pair<Integer, Integer>>() {

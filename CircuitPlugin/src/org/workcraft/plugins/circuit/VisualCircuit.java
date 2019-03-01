@@ -14,14 +14,12 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.utils.StringGenerator;
-import org.workcraft.gui.graph.tools.CommentGeneratorTool;
-import org.workcraft.gui.graph.tools.Decorator;
-import org.workcraft.gui.graph.tools.GraphEditorTool;
+import org.workcraft.gui.tools.CommentGeneratorTool;
+import org.workcraft.gui.tools.Decorator;
+import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.plugins.circuit.Contact.IOType;
-import org.workcraft.plugins.circuit.VisualContact.Direction;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
 import org.workcraft.plugins.circuit.routing.RouterClient;
@@ -31,7 +29,7 @@ import org.workcraft.plugins.circuit.routing.impl.RouterTask;
 import org.workcraft.plugins.circuit.tools.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.EnvironmentUtils;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -82,7 +80,7 @@ public class VisualCircuit extends AbstractVisualModel {
             throw new InvalidConnectionException("Merging connections is not allowed.");
         }
 
-        if (second instanceof VisualComponent) {
+        if ((second instanceof VisualContact) || (second instanceof VisualJoint)) {
             for (VisualConnection connection : getConnections(second)) {
                 if (connection.getSecond() == second) {
                     throw new InvalidConnectionException("Only one connection is allowed as a driver.");
@@ -122,7 +120,7 @@ public class VisualCircuit extends AbstractVisualModel {
             } else {
                 drivenSet.addAll(CircuitUtils.findDriven(circuit, firstConnection, true));
             }
-        } else if (first instanceof VisualComponent) {
+        } else if ((first instanceof VisualContact) || (first instanceof VisualJoint)) {
             MathNode firstComponent = ((VisualComponent) first).getReferencedComponent();
             driver = CircuitUtils.findDriver(circuit, firstComponent, true);
             if (driver != null) {
@@ -131,7 +129,8 @@ public class VisualCircuit extends AbstractVisualModel {
                 drivenSet.addAll(CircuitUtils.findDriven(circuit, firstComponent, true));
             }
         }
-        if (second instanceof VisualComponent) {
+
+        if ((second instanceof VisualContact) || (second instanceof VisualJoint)) {
             MathNode secondComponent = ((VisualComponent) second).getReferencedComponent();
             drivenSet.addAll(CircuitUtils.findDriven(circuit, secondComponent, true));
         }
@@ -169,8 +168,9 @@ public class VisualCircuit extends AbstractVisualModel {
     }
 
     @Override
-    public VisualConnection connect(VisualNode first, VisualNode second, MathConnection mConnection) throws InvalidConnectionException {
+    public VisualCircuitConnection connect(VisualNode first, VisualNode second, MathConnection mConnection) throws InvalidConnectionException {
         validateConnection(first, second);
+
         if (first instanceof VisualConnection) {
             VisualConnection connection = (VisualConnection) first;
             Point2D splitPoint = connection.getSplitPoint();
@@ -179,7 +179,7 @@ public class VisualCircuit extends AbstractVisualModel {
 
             Container container = (Container) connection.getParent();
             VisualJoint joint = createJoint(container);
-            joint.setPosition(splitPoint);
+            joint.setPosition(TransformHelper.snapP5(splitPoint));
             remove(connection);
 
             VisualConnection predConnection = connect(connection.getFirst(), joint);
@@ -191,6 +191,14 @@ public class VisualCircuit extends AbstractVisualModel {
             succConnection.copyStyle(connection);
 
             first = joint;
+        }
+
+        if (first instanceof VisualCircuitComponent) {
+            first = ((VisualCircuitComponent) first).createContact(Contact.IOType.OUTPUT);
+        }
+
+        if (second instanceof VisualCircuitComponent) {
+            second = ((VisualCircuitComponent) second).createContact(Contact.IOType.INPUT);
         }
 
         VisualCircuitConnection vConnection = null;
@@ -221,47 +229,42 @@ public class VisualCircuit extends AbstractVisualModel {
         return Hierarchy.getDescendantsOfType(getRoot(), VisualFunctionComponent.class);
     }
 
-    public VisualFunctionContact getOrCreateContact(Container container, String name, IOType ioType) {
-        // here "parent" is a container of a visual model
-        if (name != null) {
-            if (container == null) {
-                container = getRoot();
-            }
-            for (Node n: container.getChildren()) {
-                if (n instanceof VisualFunctionContact) {
-                    VisualFunctionContact contact = (VisualFunctionContact) n;
-                    String contactName = getMathModel().getName(contact.getReferencedContact());
-                    if (name.equals(contactName)) {
-                        return contact;
-                    }
-                } // TODO: if found something else with that name, return null or exception?
-            }
-        }
-
-        Direction direction = Direction.WEST;
-        if (ioType == null) {
-            ioType = IOType.OUTPUT;
-        }
-        if (ioType == IOType.OUTPUT) {
-            direction = Direction.EAST;
-        }
-
-        VisualFunctionContact vc = new VisualFunctionContact(new FunctionContact(ioType));
-        vc.setDirection(direction);
-
-        if (container instanceof VisualFunctionComponent) {
-            VisualFunctionComponent component = (VisualFunctionComponent) container;
-            component.addContact(this, vc);
-        } else {
+    public VisualFunctionContact getOrCreatePort(String name, Contact.IOType ioType) {
+        VisualFunctionContact result = getVisualComponentByMathReference(name, VisualFunctionContact.class);
+        if (result == null) {
+            result = new VisualFunctionContact(new FunctionContact(ioType));
+            result.setDefaultDirection();
             Container mathContainer = NamespaceHelper.getMathContainer(this, getRoot());
-            mathContainer.add(vc.getReferencedComponent());
-            add(vc);
+            mathContainer.add(result.getReferencedComponent());
+            add(result);
+            setMathName(result, name);
         }
-        if (name != null) {
-            getMathModel().setName(vc.getReferencedComponent(), name);
+        return result;
+    }
+
+    public VisualFunctionContact getOrCreateContact(VisualFunctionComponent component, String name, Contact.IOType ioType) {
+        for (VisualFunctionContact contact : component.getVisualFunctionContacts()) {
+            String contactName = getMathModel().getName(contact.getReferencedContact());
+            if (name.equals(contactName)) {
+                return contact;
+            }
         }
-        vc.setPosition(new Point2D.Double(0.0, 0.0));
-        return vc;
+        VisualFunctionContact result = new VisualFunctionContact(new FunctionContact(ioType));
+        result.setDefaultDirection();
+        component.addContact(result);
+        setMathName(result, name);
+        return result;
+    }
+
+    public VisualFunctionComponent createFunctionComponent(Container container) {
+        if (container == null) {
+            container = getRoot();
+        }
+        VisualFunctionComponent component = new VisualFunctionComponent(new FunctionComponent());
+        Container mathContainer = NamespaceHelper.getMathContainer(this, container);
+        mathContainer.add(component.getReferencedComponent());
+        container.add(component);
+        return component;
     }
 
     public VisualJoint createJoint(Container container) {

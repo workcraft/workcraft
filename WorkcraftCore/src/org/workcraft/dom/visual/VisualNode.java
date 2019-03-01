@@ -8,7 +8,7 @@ import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.ObservableStateImpl;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
-import org.workcraft.serialisation.xml.NoAutoSerialisation;
+import org.workcraft.serialisation.NoAutoSerialisation;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;

@@ -1,6 +1,6 @@
 package org.workcraft.plugins.stg.commands;
 
-import org.workcraft.util.Pair;
+import org.workcraft.types.Pair;
 
 public class ExpandHandshakeReqAckTransformationCommand extends ExpandHandshakeTransformationCommand {
 

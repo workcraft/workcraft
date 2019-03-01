@@ -13,9 +13,9 @@ import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.graph.tools.Decorator;
-import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.gui.tools.Decoration;
+import org.workcraft.gui.tools.Decorator;
+import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.dfs.BinaryRegister.Marking;
 import org.workcraft.plugins.dfs.VisualAbstractRegister;
 import org.workcraft.plugins.dfs.VisualBinaryRegister;
@@ -41,10 +41,10 @@ import org.workcraft.plugins.dfs.stg.RegisterStg;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.plugins.shared.CommonDecorationSettings;
+import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 public class DfsSimulationTool extends StgSimulationTool {
     private DfsToStgConverter converter;

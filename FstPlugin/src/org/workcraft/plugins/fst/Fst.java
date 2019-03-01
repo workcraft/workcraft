@@ -8,7 +8,7 @@ import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.Symbol;
 import org.workcraft.plugins.fst.observers.SignalConsistencySupervisor;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import java.util.Collection;
 

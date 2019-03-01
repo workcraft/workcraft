@@ -18,9 +18,9 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.DialogUtils;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import java.io.File;
 import java.util.ArrayList;

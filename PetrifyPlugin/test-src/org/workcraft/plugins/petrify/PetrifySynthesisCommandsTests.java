@@ -4,14 +4,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.gui.DesktopApi;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.CircuitTestUtils;
 import org.workcraft.plugins.petrify.commands.PetrifyComplexGateSynthesisCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyGeneralisedCelementSynthesisCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyStandardCelementSynthesisCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyTechnologyMappingSynthesisCommand;
-import org.workcraft.util.PackageUtils;
+import org.workcraft.utils.PackageUtils;
 
 public class PetrifySynthesisCommandsTests {
 

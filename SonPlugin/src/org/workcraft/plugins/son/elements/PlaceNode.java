@@ -2,7 +2,7 @@ package org.workcraft.plugins.son.elements;
 
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 import org.workcraft.plugins.son.util.Interval;
 
 import java.awt.*;

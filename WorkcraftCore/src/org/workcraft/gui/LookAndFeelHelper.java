@@ -12,6 +12,7 @@ import javax.swing.text.DefaultEditorKit;
 
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.api.SubstanceConstants.TabContentPaneBorderKind;
+import org.workcraft.utils.DesktopApi;
 
 public class LookAndFeelHelper {
 

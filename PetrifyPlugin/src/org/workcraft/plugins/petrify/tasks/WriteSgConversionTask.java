@@ -16,20 +16,20 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.interop.SgImporter;
 import org.workcraft.plugins.petri.PetriNetModel;
-import org.workcraft.plugins.shared.tasks.ExportOutput;
-import org.workcraft.plugins.shared.tasks.ExportTask;
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
+import org.workcraft.tasks.ExportOutput;
+import org.workcraft.tasks.ExportTask;
+import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.ExportUtils;
-import org.workcraft.util.FileUtils;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.ExportUtils;
+import org.workcraft.utils.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class WriteSgConversionTask implements Task<WriteSgConversionOutput> {
 

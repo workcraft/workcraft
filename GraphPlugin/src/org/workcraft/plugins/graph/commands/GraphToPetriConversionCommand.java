@@ -9,7 +9,7 @@ import org.workcraft.plugins.petri.PetriNetDescriptor;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class GraphToPetriConversionCommand extends AbstractConversionCommand {
 

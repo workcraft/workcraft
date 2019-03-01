@@ -7,7 +7,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public final class FsmMergeStateTransformationCommand extends AbstractMergeTransformationCommand {
 

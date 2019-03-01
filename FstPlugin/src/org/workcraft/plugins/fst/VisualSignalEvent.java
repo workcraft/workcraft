@@ -7,7 +7,7 @@ import org.workcraft.dom.visual.Stylable;
 import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.plugins.fst.SignalEvent.Direction;
-import org.workcraft.plugins.shared.CommonSignalSettings;
+import org.workcraft.plugins.builtin.settings.CommonSignalSettings;
 
 public class VisualSignalEvent extends VisualEvent {
 

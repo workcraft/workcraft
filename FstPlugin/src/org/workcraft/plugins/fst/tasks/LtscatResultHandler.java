@@ -7,7 +7,7 @@ import java.io.InputStream;
 import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
-import org.workcraft.gui.DesktopApi;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fst.ProcessWindowsSettings;
 import org.workcraft.plugins.stg.StgDescriptor;
@@ -17,7 +17,7 @@ import org.workcraft.tasks.AbstractResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.FileUtils;
+import org.workcraft.utils.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 

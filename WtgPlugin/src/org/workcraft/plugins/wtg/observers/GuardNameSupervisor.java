@@ -6,7 +6,7 @@ import org.workcraft.observation.StateSupervisor;
 import org.workcraft.plugins.wtg.Guard;
 import org.workcraft.plugins.wtg.Waveform;
 import org.workcraft.plugins.wtg.Wtg;
-import org.workcraft.util.DialogUtils;
+import org.workcraft.utils.DialogUtils;
 
 import java.util.Collection;
 

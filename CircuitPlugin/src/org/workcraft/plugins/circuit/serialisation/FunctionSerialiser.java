@@ -4,8 +4,8 @@ import org.w3c.dom.Element;
 import org.workcraft.formula.serialisation.BooleanFormulaSerialiser;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.serialisation.xml.CustomXMLSerialiser;
-import org.workcraft.serialisation.xml.NodeSerialiser;
+import org.workcraft.serialisation.CustomXMLSerialiser;
+import org.workcraft.serialisation.NodeSerialiser;
 
 public class FunctionSerialiser implements CustomXMLSerialiser<FunctionContact> {
 

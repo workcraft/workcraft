@@ -10,7 +10,7 @@ import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.plugins.son.util.ScenarioRef;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

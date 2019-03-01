@@ -17,8 +17,8 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import org.workcraft.Framework;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.GuiUtils;
 
 @SuppressWarnings("serial")
 public class PGMinerImportDialog extends JDialog {
@@ -35,7 +35,7 @@ public class PGMinerImportDialog extends JDialog {
         filePath = new JTextField("", 25);
         filePath.setEditable(true);
 
-        JButton selectFileBtn = GUI.createDialogButton("Browse for file");
+        JButton selectFileBtn = GuiUtils.createDialogButton("Browse for file");
 
         selectFileBtn.addActionListener(event -> actionSelect());
 
@@ -57,10 +57,10 @@ public class PGMinerImportDialog extends JDialog {
         optionPanel.add(extractConcurrencyCB);
         optionPanel.add(splitCB);
 
-        JButton importButton = GUI.createDialogButton("Import");
+        JButton importButton = GuiUtils.createDialogButton("Import");
         importButton.addActionListener(event -> actionImport());
 
-        JButton cancelButton = GUI.createDialogButton("Cancel");
+        JButton cancelButton = GuiUtils.createDialogButton("Cancel");
         cancelButton.addActionListener(event -> actionCancel());
 
         JPanel btnPanel = new JPanel();

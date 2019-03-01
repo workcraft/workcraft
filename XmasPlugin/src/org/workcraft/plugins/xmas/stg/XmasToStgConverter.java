@@ -29,8 +29,8 @@ import org.workcraft.plugins.xmas.components.VisualSourceComponent;
 import org.workcraft.plugins.xmas.components.VisualSwitchComponent;
 import org.workcraft.plugins.xmas.components.VisualXmasComponent;
 import org.workcraft.plugins.xmas.components.VisualXmasContact;
-import org.workcraft.util.Hierarchy;
-import org.workcraft.util.LogUtils;
+import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.LogUtils;
 
 public class XmasToStgConverter extends AbstractToStgConverter {
 

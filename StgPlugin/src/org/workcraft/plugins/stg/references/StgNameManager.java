@@ -5,10 +5,10 @@ import org.workcraft.dom.references.DefaultNameManager;
 import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.plugins.stg.*;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.ListMap;
-import org.workcraft.util.Pair;
-import org.workcraft.util.Triple;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.types.ListMap;
+import org.workcraft.types.Pair;
+import org.workcraft.types.Triple;
 
 public class StgNameManager extends DefaultNameManager {
 

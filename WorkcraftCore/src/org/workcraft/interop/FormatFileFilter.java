@@ -4,7 +4,7 @@ import java.io.File;
 
 import javax.swing.filechooser.FileFilter;
 
-import org.workcraft.util.FileUtils;
+import org.workcraft.utils.FileUtils;
 
 public class FormatFileFilter extends FileFilter {
 

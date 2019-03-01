@@ -4,7 +4,7 @@ import org.workcraft.commands.Command;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class ErrTracingDisableCommand implements Command {
 

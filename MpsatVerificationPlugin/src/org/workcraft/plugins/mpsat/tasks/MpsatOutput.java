@@ -1,6 +1,6 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
+import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.StgModel;
 
 public class MpsatOutput extends ExternalProcessOutput {

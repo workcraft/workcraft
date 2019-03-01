@@ -13,7 +13,7 @@ import org.workcraft.plugins.dfs.VisualPopRegister;
 import org.workcraft.plugins.dfs.VisualPushRegister;
 import org.workcraft.plugins.dfs.VisualRegister;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public final class DfsMergeComponentTransformationCommand extends AbstractMergeTransformationCommand {
 

@@ -7,7 +7,7 @@ import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.routing.basic.*;
 import org.workcraft.plugins.circuit.routing.impl.RouterTask;
-import org.workcraft.util.TwoWayMap;
+import org.workcraft.types.TwoWayMap;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;

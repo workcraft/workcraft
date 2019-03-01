@@ -10,8 +10,8 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
-import org.workcraft.util.Func;
-import org.workcraft.util.GUI;
+import org.workcraft.types.Func;
+import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -41,10 +41,10 @@ public class WorkspaceChooserDialog extends JDialog {
         WorkspaceChooser chooser = new WorkspaceChooser(workspace, filter);
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        JButton runButton = GUI.createDialogButton("OK");
+        JButton runButton = GuiUtils.createDialogButton("OK");
         runButton.addActionListener(event -> setVisible(false));
 
-        JButton cancelButton = GUI.createDialogButton("Cancel");
+        JButton cancelButton = GuiUtils.createDialogButton("Cancel");
         cancelButton.addActionListener(event -> setVisible(false));
 
         buttonsPanel.add(cancelButton);

@@ -18,7 +18,10 @@ import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.observers.SignalTypeConsistencySupervisor;
 import org.workcraft.plugins.stg.references.StgReferenceManager;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.*;
+import org.workcraft.types.MultiSet;
+import org.workcraft.types.Pair;
+import org.workcraft.types.Triple;
+import org.workcraft.utils.*;
 
 import java.util.Collection;
 import java.util.HashSet;

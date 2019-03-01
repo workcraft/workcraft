@@ -7,8 +7,8 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.observation.StateObserver;
-import org.workcraft.plugins.shared.CommonSignalSettings;
-import org.workcraft.serialisation.xml.NoAutoSerialisation;
+import org.workcraft.plugins.builtin.settings.CommonSignalSettings;
+import org.workcraft.serialisation.NoAutoSerialisation;
 
 @Hotkey(KeyEvent.VK_D)
 @DisplayName("Dummy Transition")

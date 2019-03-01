@@ -1,15 +1,16 @@
 package org.workcraft.gui;
 
 import org.workcraft.Framework;
-import org.workcraft.MenuOrdering.Position;
-import org.workcraft.PluginManager;
+import org.workcraft.commands.MenuOrdering.Position;
+import org.workcraft.gui.tabs.DockableWindow;
+import org.workcraft.plugins.PluginManager;
 import org.workcraft.commands.Command;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.actions.*;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Format;
 import org.workcraft.plugins.PluginInfo;
-import org.workcraft.util.Commands;
+import org.workcraft.utils.CommandUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
@@ -397,8 +398,8 @@ public class MainMenu extends JMenuBar {
     private void createCommandsMenu(final WorkspaceEntry we) {
         removeCommandsMenu();
 
-        List<Command> applicableVisibleCommands = Commands.getApplicableVisibleCommands(we);
-        List<String> sections = Commands.getSections(applicableVisibleCommands);
+        List<Command> applicableVisibleCommands = CommandUtils.getApplicableVisibleCommands(we);
+        List<String> sections = CommandUtils.getSections(applicableVisibleCommands);
 
         JMenu mnCommands = new JMenu("Tools");
         mnCommandsList.clear();
@@ -415,11 +416,11 @@ public class MainMenu extends JMenuBar {
                     mnCommandsList.addFirst(mnCommands);
                 }
             }
-            List<Command> sectionCommands = Commands.getSectionCommands(section, applicableVisibleCommands);
+            List<Command> sectionCommands = CommandUtils.getSectionCommands(section, applicableVisibleCommands);
             List<List<Command>> sectionCommandsPartitions = new LinkedList<>();
-            sectionCommandsPartitions.add(Commands.getUnpositionedCommands(sectionCommands));
+            sectionCommandsPartitions.add(CommandUtils.getUnpositionedCommands(sectionCommands));
             for (Position position: Position.values()) {
-                sectionCommandsPartitions.add(Commands.getPositionedCommands(sectionCommands, position));
+                sectionCommandsPartitions.add(CommandUtils.getPositionedCommands(sectionCommands, position));
             }
             boolean needSeparator = false;
             for (List<Command> sectionCommandsPartition : sectionCommandsPartitions) {

@@ -18,7 +18,7 @@ import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 @IdentifierPrefix("g")
 @VisualClass(org.workcraft.plugins.circuit.VisualFunctionComponent.class)

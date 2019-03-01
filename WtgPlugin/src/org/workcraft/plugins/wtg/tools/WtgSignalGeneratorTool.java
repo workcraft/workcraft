@@ -5,10 +5,10 @@ import java.awt.Graphics2D;
 
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.dtd.tools.DtdSignalGeneratorTool;
 import org.workcraft.plugins.wtg.VisualWaveform;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.GuiUtils;
 
 public class WtgSignalGeneratorTool extends DtdSignalGeneratorTool {
 
@@ -26,7 +26,7 @@ public class WtgSignalGeneratorTool extends DtdSignalGeneratorTool {
         if (model.getCurrentLevel() instanceof VisualWaveform) {
             super.drawInScreenSpace(editor, g);
         } else {
-            GUI.drawEditorMessage(editor, g, Color.RED, "Signals can only be created inside waveforms.");
+            GuiUtils.drawEditorMessage(editor, g, Color.RED, "Signals can only be created inside waveforms.");
         }
     }
 

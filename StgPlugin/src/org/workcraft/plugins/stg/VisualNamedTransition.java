@@ -3,14 +3,14 @@ package org.workcraft.plugins.stg;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
-import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.utils.Coloriser;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.plugins.shared.CommonEditorSettings;
+import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
 import org.workcraft.plugins.stg.tools.CoreDecoration;
-import org.workcraft.serialisation.xml.NoAutoSerialisation;
+import org.workcraft.serialisation.NoAutoSerialisation;
 
 import java.awt.*;
 import java.awt.geom.Point2D;

@@ -4,17 +4,17 @@ import java.io.IOException;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.workcraft.PluginProvider;
+import org.workcraft.plugins.PluginProvider;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
-import org.workcraft.plugins.serialisation.XMLModelDeserialiser;
-import org.workcraft.plugins.serialisation.XMLModelSerialiser;
+import org.workcraft.plugins.builtin.serialisation.XMLModelDeserialiser;
+import org.workcraft.plugins.builtin.serialisation.XMLModelSerialiser;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.util.DataAccumulator;
+import org.workcraft.shared.DataAccumulator;
 
 public class MathModelSerialisation {
 

@@ -8,11 +8,11 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.formula.One;
-import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.utils.Coloriser;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
-import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.serialisation.xml.NoAutoSerialisation;
+import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.serialisation.NoAutoSerialisation;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;

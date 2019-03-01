@@ -1,8 +1,8 @@
 package org.workcraft.plugins.cpog;
 
 import org.w3c.dom.Element;
-import org.workcraft.plugins.shared.presets.SettingsSerialiser;
-import org.workcraft.util.XmlUtils;
+import org.workcraft.presets.SettingsSerialiser;
+import org.workcraft.utils.XmlUtils;
 
 public class EncoderSettingsSerialiser implements SettingsSerialiser<EncoderSettings> {
 

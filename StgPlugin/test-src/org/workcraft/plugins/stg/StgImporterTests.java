@@ -13,9 +13,9 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.interop.StgImporter;
-import org.workcraft.util.Hierarchy;
-import org.workcraft.util.ImportUtils;
-import org.workcraft.util.PackageUtils;
+import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.ImportUtils;
+import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.ModelEntry;
 
 public class StgImporterTests {

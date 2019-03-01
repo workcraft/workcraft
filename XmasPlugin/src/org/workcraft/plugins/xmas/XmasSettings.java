@@ -1,11 +1,11 @@
 package org.workcraft.plugins.xmas;
 
 import org.workcraft.Config;
-import org.workcraft.gui.DesktopApi;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.Settings;
-import org.workcraft.util.FileUtils;
+import org.workcraft.utils.FileUtils;
 
 import java.io.File;
 import java.io.IOException;

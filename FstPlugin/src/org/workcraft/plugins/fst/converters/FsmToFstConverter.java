@@ -2,7 +2,7 @@ package org.workcraft.plugins.fst.converters;
 
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.gui.graph.converters.DefaultModelConverter;
+import org.workcraft.dom.converters.DefaultModelConverter;
 import org.workcraft.plugins.fsm.*;
 import org.workcraft.plugins.fst.Signal;
 import org.workcraft.plugins.fst.SignalEvent;

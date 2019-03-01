@@ -1,6 +1,5 @@
 package org.workcraft.commands;
 
-import org.workcraft.MenuOrdering;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public abstract class AbstractSynthesisCommand implements ScriptableCommand<WorkspaceEntry>, MenuOrdering {

@@ -11,7 +11,7 @@ options {
 PARSER_BEGIN(DotParser)
 package org.workcraft.plugins.layout.jj;
 
-import org.workcraft.util.Pair;
+import org.workcraft.types.Pair;
 
 import java.io.StringReader;
 import java.util.HashMap;

@@ -1,6 +1,5 @@
 package org.workcraft.dom.math;
 
-import org.workcraft.NodeFactory;
 import org.workcraft.dom.*;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
@@ -10,8 +9,8 @@ import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Hierarchy;
-import org.workcraft.util.MultiSet;
+import org.workcraft.types.MultiSet;
+import org.workcraft.utils.Hierarchy;
 
 import java.util.Collection;
 import java.util.HashSet;

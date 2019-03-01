@@ -9,7 +9,7 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateSupervisor;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 public class InitialStateSupervisor extends StateSupervisor {
 

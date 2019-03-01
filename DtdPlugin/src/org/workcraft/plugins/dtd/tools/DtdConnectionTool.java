@@ -2,7 +2,7 @@ package org.workcraft.plugins.dtd.tools;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.gui.graph.tools.ConnectionTool;
+import org.workcraft.gui.tools.ConnectionTool;
 import org.workcraft.plugins.dtd.VisualEvent;
 
 public class DtdConnectionTool extends ConnectionTool {

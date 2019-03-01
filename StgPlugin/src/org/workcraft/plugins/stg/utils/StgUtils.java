@@ -1,7 +1,7 @@
 package org.workcraft.plugins.stg.utils;
 
 import org.workcraft.Framework;
-import org.workcraft.PluginManager;
+import org.workcraft.plugins.PluginManager;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -18,8 +18,8 @@ import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.utils.PetriUtils;
-import org.workcraft.plugins.shared.tasks.ExportOutput;
-import org.workcraft.plugins.shared.tasks.ExportTask;
+import org.workcraft.tasks.ExportOutput;
+import org.workcraft.tasks.ExportTask;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.converters.SignalStg;
 import org.workcraft.plugins.stg.interop.StgFormat;
@@ -28,11 +28,11 @@ import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.ExportUtils;
-import org.workcraft.util.LogUtils;
+import org.workcraft.utils.ExportUtils;
+import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -191,27 +191,6 @@ public class StgUtils {
         return result;
     }
 
-    public static Set<String> getNewSignals(StgModel srcStg, StgModel dstStg) {
-        Set<String> result = new HashSet<>();
-
-        Set<String> srcInputs = srcStg.getSignalReferences(Signal.Type.INPUT);
-        Set<String> dstInputs = dstStg.getSignalReferences(Signal.Type.INPUT);
-        dstInputs.removeAll(srcInputs);
-        result.addAll(dstInputs);
-
-        Set<String> srcOutputs = srcStg.getSignalReferences(Signal.Type.OUTPUT);
-        Set<String> dstOutputs = dstStg.getSignalReferences(Signal.Type.OUTPUT);
-        dstOutputs.removeAll(srcOutputs);
-        result.addAll(dstOutputs);
-
-        Set<String> srcInternal = srcStg.getSignalReferences(Signal.Type.INTERNAL);
-        Set<String> dstInternal = dstStg.getSignalReferences(Signal.Type.INTERNAL);
-        dstInternal.removeAll(srcInternal);
-        result.addAll(dstInternal);
-
-        return result;
-    }
-
     public static WorkspaceEntry createStgIfNewSignals(WorkspaceEntry srcWe, byte[] dstOutput) {
         WorkspaceEntry dstWe = null;
         if (dstOutput != null) {
@@ -219,7 +198,9 @@ public class StgUtils {
             try {
                 ByteArrayInputStream dstStream = new ByteArrayInputStream(dstOutput);
                 StgModel dstStg = new StgImporter().importStg(dstStream);
-                Set<String> newSignals = getNewSignals(srcStg, dstStg);
+                Set<String> newSignals = dstStg.getSignalReferences();
+                newSignals.removeAll(srcStg.getSignalReferences());
+
                 if (newSignals.isEmpty()) {
                     LogUtils.logInfo("No new signals are inserted in the STG");
                 } else {

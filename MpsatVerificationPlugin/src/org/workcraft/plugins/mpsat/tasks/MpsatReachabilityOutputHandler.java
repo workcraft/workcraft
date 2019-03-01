@@ -2,18 +2,18 @@ package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.graph.tools.Trace;
+import org.workcraft.gui.tools.Trace;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.gui.MpsatReachibilityDialog;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
-import org.workcraft.plugins.shared.tasks.ExportOutput;
+import org.workcraft.tasks.ExportOutput;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.utils.StgUtils;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.GUI;
-import org.workcraft.util.LogUtils;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
@@ -184,7 +184,7 @@ class MpsatReachabilityOutputHandler implements Runnable {
                 MpsatReachibilityDialog solutionsDialog = new MpsatReachibilityDialog(
                         getWorkspaceEntry(), TITLE, message, processedSolutions);
                 MainWindow mainWindow = framework.getMainWindow();
-                GUI.centerToParent(solutionsDialog, mainWindow);
+                GuiUtils.centerToParent(solutionsDialog, mainWindow);
                 solutionsDialog.setVisible(true);
             }
         }

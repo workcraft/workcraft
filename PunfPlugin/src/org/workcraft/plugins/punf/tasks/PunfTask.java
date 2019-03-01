@@ -1,14 +1,14 @@
 package org.workcraft.plugins.punf.tasks;
 
 import org.workcraft.plugins.punf.PunfSettings;
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
-import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
+import org.workcraft.tasks.ExternalProcessOutput;
+import org.workcraft.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
-import org.workcraft.util.ToolUtils;
+import org.workcraft.utils.ExecutableUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ public class PunfTask implements Task<PunfOutput> {
         // Name of the executable
         String toolPrefix = PunfSettings.getCommand();
         String toolSuffix = useLegacyMci ? LEGACY_TOOL_SUFFIX : "";
-        String toolName = ToolUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
+        String toolName = ExecutableUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
         command.add(toolName);
 
         // Extra arguments (should go before the file parameters)

@@ -7,11 +7,11 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.ConnectionUtils;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
-import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.gui.graph.tools.SelectionTool;
+import org.workcraft.gui.tools.GraphEditor;
+import org.workcraft.gui.tools.SelectionTool;
 import org.workcraft.plugins.xmas.components.VisualSyncComponent;
 import org.workcraft.plugins.xmas.components.VisualXmasComponent;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import javax.swing.*;
 import java.util.*;

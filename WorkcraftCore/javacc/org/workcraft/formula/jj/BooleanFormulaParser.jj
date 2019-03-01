@@ -21,7 +21,7 @@ import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.BooleanWorker;
 import org.workcraft.formula.CleverBooleanWorker;
 import org.workcraft.formula.utils.StringGenerator;
-import org.workcraft.util.Func;
+import org.workcraft.types.Func;
 
 public class BooleanFormulaParser {
 

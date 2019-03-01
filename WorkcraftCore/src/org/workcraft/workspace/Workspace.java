@@ -6,7 +6,8 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.util.*;
+import org.workcraft.types.LinkedTwoWayMap;
+import org.workcraft.utils.*;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;

@@ -4,8 +4,8 @@ import org.w3c.dom.Element;
 import org.workcraft.plugins.policy.Locality;
 import org.workcraft.plugins.policy.VisualLocality;
 import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.serialisation.xml.CustomXMLSerialiser;
-import org.workcraft.serialisation.xml.NodeSerialiser;
+import org.workcraft.serialisation.CustomXMLSerialiser;
+import org.workcraft.serialisation.NodeSerialiser;
 
 public class VisualLocalitySerialiser implements CustomXMLSerialiser<VisualLocality> {
 

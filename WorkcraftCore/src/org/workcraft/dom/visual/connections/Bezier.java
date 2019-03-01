@@ -3,12 +3,12 @@ package org.workcraft.dom.visual.connections;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawHelper;
 import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.gui.Coloriser;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.observation.SelectionChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
-import org.workcraft.util.Geometry;
-import org.workcraft.util.Geometry.CurveSplitResult;
+import org.workcraft.utils.Geometry;
+import org.workcraft.utils.Geometry.CurveSplitResult;
 
 import java.awt.*;
 import java.awt.geom.CubicCurve2D;

@@ -13,7 +13,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawHelper;
 import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.gui.Coloriser;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.NodesAddedEvent;
@@ -22,8 +22,8 @@ import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.SelectionChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
-import org.workcraft.util.Geometry;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Geometry;
+import org.workcraft.utils.Hierarchy;
 
 public class Polyline implements ConnectionGraphic, Container, StateObserver,
         HierarchyObserver, ObservableHierarchy, SelectionObserver {

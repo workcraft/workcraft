@@ -13,7 +13,7 @@ import org.workcraft.plugins.wtg.observers.InitialStateSupervisor;
 import org.workcraft.plugins.wtg.observers.SignalTypeConsistencySupervisor;
 import org.workcraft.plugins.wtg.utils.WtgUtils;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import java.util.Collection;
 import java.util.HashSet;

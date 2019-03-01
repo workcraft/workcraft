@@ -5,10 +5,10 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.formula.utils.FormulaRenderingResult;
 import org.workcraft.formula.utils.FormulaToGraphics;
-import org.workcraft.gui.Coloriser;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;

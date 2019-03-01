@@ -3,7 +3,7 @@ package org.workcraft.plugins.fsm.converters;
 import java.util.Map;
 
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.gui.graph.converters.DefaultModelConverter;
+import org.workcraft.dom.converters.DefaultModelConverter;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.graph.Vertex;

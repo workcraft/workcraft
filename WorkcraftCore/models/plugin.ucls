@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <class-diagram version="1.2.2" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
   associations="true" dependencies="false" nesting-relationships="true" router="FAN">  
-  <class id="1" language="java" name="org.workcraft.PluginManager" project="WorkcraftCore" 
+  <class id="1" language="java" name="org.workcraft.plugins.PluginManager" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/PluginManager.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="91" y="160"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
@@ -10,7 +10,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <interface id="2" language="java" name="org.workcraft.Plugin" project="WorkcraftCore" 
+  <interface id="2" language="java" name="org.workcraft.plugins.Plugin" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/Plugin.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="39" y="26"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
@@ -19,7 +19,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <interface id="3" language="java" name="org.workcraft.PluginProvider" project="WorkcraftCore" 
+  <interface id="3" language="java" name="org.workcraft.plugins.PluginProvider" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/PluginProvider.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="163" y="94"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
@@ -28,7 +28,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <interface id="4" language="java" name="org.workcraft.Module" project="WorkcraftCore" 
+  <interface id="4" language="java" name="org.workcraft.plugins.Plugin" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/Module.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="39" y="94"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 

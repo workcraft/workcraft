@@ -2,7 +2,7 @@ package org.workcraft.dom.visual;
 
 import java.awt.geom.AffineTransform;
 
-import org.workcraft.util.Geometry;
+import org.workcraft.utils.Geometry;
 
 public class MovableHelper {
 

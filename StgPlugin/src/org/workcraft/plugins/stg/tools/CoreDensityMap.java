@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.workcraft.plugins.stg.StgSettings;
-import org.workcraft.util.ColorUtils;
+import org.workcraft.utils.ColorUtils;
 
 public class CoreDensityMap {
     private static final float DENSITY_MAP_BRIGHTNESS_TOP = 0.5f;

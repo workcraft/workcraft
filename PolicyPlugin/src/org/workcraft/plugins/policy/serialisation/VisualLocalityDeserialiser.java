@@ -4,9 +4,9 @@ import org.w3c.dom.Element;
 import org.workcraft.plugins.policy.Locality;
 import org.workcraft.plugins.policy.VisualLocality;
 import org.workcraft.serialisation.ReferenceResolver;
-import org.workcraft.serialisation.xml.CustomXMLDeserialiser;
-import org.workcraft.serialisation.xml.NodeFinaliser;
-import org.workcraft.serialisation.xml.NodeInitialiser;
+import org.workcraft.serialisation.CustomXMLDeserialiser;
+import org.workcraft.serialisation.NodeFinaliser;
+import org.workcraft.serialisation.NodeInitialiser;
 
 public class VisualLocalityDeserialiser implements CustomXMLDeserialiser<VisualLocality> {
 

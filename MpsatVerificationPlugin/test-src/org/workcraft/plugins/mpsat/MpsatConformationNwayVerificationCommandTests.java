@@ -5,11 +5,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.gui.DesktopApi;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.plugins.mpsat.commands.MpsatConformationNwayVerificationCommand;
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.punf.PunfSettings;
-import org.workcraft.util.PackageUtils;
+import org.workcraft.utils.PackageUtils;
 
 import java.net.URL;
 

@@ -3,7 +3,7 @@ package org.workcraft.plugins.son.commands;
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
-import org.workcraft.gui.graph.GraphEditorPanel;
+import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class ToolManager {

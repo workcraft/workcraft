@@ -2,7 +2,7 @@ package org.workcraft.dom;
 
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.ReferenceManager;
-import org.workcraft.util.Func;
+import org.workcraft.types.Func;
 
 import java.util.Collection;
 import java.util.Set;

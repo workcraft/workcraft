@@ -3,34 +3,36 @@ package org.workcraft.plugins.stg.serialisation;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.workcraft.Initialiser;
-import org.workcraft.LegacyPluginInfo;
-import org.workcraft.PluginManager;
-import org.workcraft.PluginProvider;
+import org.workcraft.plugins.Initialiser;
+import org.workcraft.plugins.LegacyPluginInfo;
+import org.workcraft.plugins.PluginManager;
+import org.workcraft.plugins.PluginProvider;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.serialisation.xml.AffineTransformDeserialiser;
-import org.workcraft.plugins.serialisation.xml.AffineTransformSerialiser;
-import org.workcraft.plugins.serialisation.xml.BooleanDeserialiser;
-import org.workcraft.plugins.serialisation.xml.BooleanSerialiser;
-import org.workcraft.plugins.serialisation.xml.ConnectionDeserialiser;
-import org.workcraft.plugins.serialisation.xml.ConnectionSerialiser;
-import org.workcraft.plugins.serialisation.xml.DoubleDeserialiser;
-import org.workcraft.plugins.serialisation.xml.DoubleSerialiser;
-import org.workcraft.plugins.serialisation.xml.EnumDeserialiser;
-import org.workcraft.plugins.serialisation.xml.EnumSerialiser;
-import org.workcraft.plugins.serialisation.xml.IntDeserialiser;
-import org.workcraft.plugins.serialisation.xml.IntSerialiser;
-import org.workcraft.plugins.serialisation.xml.StringDeserialiser;
-import org.workcraft.plugins.serialisation.xml.StringSerialiser;
-import org.workcraft.plugins.serialisation.xml.VisualConnectionDeserialiser;
-import org.workcraft.plugins.serialisation.xml.VisualConnectionSerialiser;
+import org.workcraft.plugins.builtin.serialisation.xml.AffineTransformDeserialiser;
+import org.workcraft.plugins.builtin.serialisation.xml.AffineTransformSerialiser;
+import org.workcraft.plugins.builtin.serialisation.xml.BooleanDeserialiser;
+import org.workcraft.plugins.builtin.serialisation.xml.BooleanSerialiser;
+import org.workcraft.plugins.builtin.serialisation.xml.ConnectionDeserialiser;
+import org.workcraft.plugins.builtin.serialisation.xml.ConnectionSerialiser;
+import org.workcraft.plugins.builtin.serialisation.xml.DoubleDeserialiser;
+import org.workcraft.plugins.builtin.serialisation.xml.DoubleSerialiser;
+import org.workcraft.plugins.builtin.serialisation.xml.EnumDeserialiser;
+import org.workcraft.plugins.builtin.serialisation.xml.EnumSerialiser;
+import org.workcraft.plugins.builtin.serialisation.xml.IntDeserialiser;
+import org.workcraft.plugins.builtin.serialisation.xml.IntSerialiser;
+import org.workcraft.plugins.builtin.serialisation.xml.StringDeserialiser;
+import org.workcraft.plugins.builtin.serialisation.xml.StringSerialiser;
+import org.workcraft.plugins.builtin.serialisation.xml.VisualConnectionDeserialiser;
+import org.workcraft.plugins.builtin.serialisation.xml.VisualConnectionSerialiser;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.serialisation.XMLDeserialiser;
+import org.workcraft.serialisation.XMLSerialiser;
 
 public class XMLSerialisationTestingUtils {
 
@@ -48,7 +50,7 @@ public class XMLSerialisationTestingUtils {
 
         public LegacyPluginInfo[] getLegacyPlugins(Class<?> interfaceType) {
 
-            if (interfaceType.equals(org.workcraft.serialisation.xml.XMLSerialiser.class)) {
+            if (interfaceType.equals(XMLSerialiser.class)) {
                 return new LegacyPluginInfo[] {
                         new LegacyPluginInfo(IntSerialiser.class),
                         new LegacyPluginInfo(BooleanSerialiser.class),
@@ -61,7 +63,7 @@ public class XMLSerialisationTestingUtils {
                         new LegacyPluginInfo(VisualConnectionSerialiser.class),
                         new LegacyPluginInfo(ImplicitPlaceArcSerialiser.class),
                 };
-            } else if (interfaceType.equals(org.workcraft.serialisation.xml.XMLDeserialiser.class)) {
+            } else if (interfaceType.equals(XMLDeserialiser.class)) {
                 return new LegacyPluginInfo[] {
                         new LegacyPluginInfo(IntDeserialiser.class),
                         new LegacyPluginInfo(BooleanDeserialiser.class),

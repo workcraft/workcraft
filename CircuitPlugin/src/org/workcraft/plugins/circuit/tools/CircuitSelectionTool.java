@@ -4,14 +4,14 @@ import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.ConnectionUtils;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.editors.AbstractInplaceEditor;
-import org.workcraft.gui.graph.editors.NameInplaceEditor;
-import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.gui.graph.tools.SelectionTool;
+import org.workcraft.gui.tools.editors.AbstractInplaceEditor;
+import org.workcraft.gui.tools.editors.NameInplaceEditor;
+import org.workcraft.gui.tools.GraphEditor;
+import org.workcraft.gui.tools.SelectionTool;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
@@ -35,15 +35,15 @@ public class CircuitSelectionTool extends SelectionTool {
             JMenuItem addOutputMenuItem = new JMenuItem("Add output pin");
             addOutputMenuItem.addActionListener(event -> {
                 editor.getWorkspaceEntry().saveMemento();
-                VisualCircuit circuit = (VisualCircuit) editor.getModel();
-                circuit.getOrCreateContact(component, null, IOType.OUTPUT);
+                VisualContact contact = component.createContact(IOType.OUTPUT);
+                component.setPositionByDirection(contact, VisualContact.Direction.EAST, false);
             });
             popup.add(addOutputMenuItem);
             JMenuItem addInputMenuItem = new JMenuItem("Add input pin");
             addInputMenuItem.addActionListener(event -> {
                 editor.getWorkspaceEntry().saveMemento();
-                VisualCircuit circuit = (VisualCircuit) editor.getModel();
-                circuit.getOrCreateContact(component, null, IOType.INPUT);
+                VisualContact contact = component.createContact(IOType.INPUT);
+                component.setPositionByDirection(contact, VisualContact.Direction.WEST, false);
             });
             popup.add(addInputMenuItem);
             popup.addSeparator();

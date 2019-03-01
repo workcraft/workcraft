@@ -7,8 +7,8 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.workcraft.formula.encoding.Encoding;
-import org.workcraft.plugins.shared.CommonSatSettings;
-import org.workcraft.plugins.shared.CommonSatSettings.SatSolver;
+import org.workcraft.plugins.builtin.settings.CommonSatSettings;
+import org.workcraft.plugins.builtin.settings.CommonSatSettings.SatSolver;
 
 public abstract class SolverTests {
 

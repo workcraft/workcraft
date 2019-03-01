@@ -5,12 +5,12 @@ import java.awt.Cursor;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
-import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.gui.graph.tools.NodeGeneratorTool;
+import org.workcraft.dom.generators.DefaultNodeGenerator;
+import org.workcraft.gui.tools.GraphEditor;
+import org.workcraft.gui.tools.NodeGeneratorTool;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.FunctionContact;
-import org.workcraft.util.GUI;
+import org.workcraft.utils.GuiUtils;
 
 public class ContactGeneratorTool extends NodeGeneratorTool {
 
@@ -42,9 +42,9 @@ public class ContactGeneratorTool extends NodeGeneratorTool {
     @Override
     public Cursor getCursor(boolean menuKeyDown, boolean shiftKeyDown, boolean altKeyDown) {
         if (shiftKeyDown) {
-            return GUI.createCursorFromSVG("images/circuit-node-port-input.svg");
+            return GuiUtils.createCursorFromSVG("images/circuit-node-port-input.svg");
         } else {
-            return GUI.createCursorFromSVG("images/circuit-node-port-output.svg");
+            return GuiUtils.createCursorFromSVG("images/circuit-node-port-output.svg");
         }
     }
 

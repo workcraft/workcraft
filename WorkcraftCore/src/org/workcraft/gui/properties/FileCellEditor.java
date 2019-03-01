@@ -2,8 +2,8 @@ package org.workcraft.gui.properties;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.util.GUI;
+import org.workcraft.gui.editor.GraphEditorPanel;
+import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
@@ -83,7 +83,7 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
             }
         }
         fc.setDialogTitle("Select file");
-        GUI.sizeFileChooserToScreen(fc, mainWindow.getDisplayMode());
+        GuiUtils.sizeFileChooserToScreen(fc, mainWindow.getDisplayMode());
         if (fc.showDialog(mainWindow, "Open") == JFileChooser.APPROVE_OPTION) {
             file = fc.getSelectedFile();
         }

@@ -1,6 +1,6 @@
 package org.workcraft.plugins.stg.commands;
 
-import org.workcraft.NodeTransformer;
+import org.workcraft.commands.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.visual.ConnectionHelper;
@@ -12,10 +12,10 @@ import org.workcraft.plugins.petri.utils.PetriNetUtils;
 import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualStg;
-import org.workcraft.util.LogUtils;
+import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import java.awt.geom.Point2D;
 import java.util.Collection;

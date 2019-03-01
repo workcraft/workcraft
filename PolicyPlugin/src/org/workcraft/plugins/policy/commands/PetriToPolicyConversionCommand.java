@@ -7,11 +7,11 @@ import org.workcraft.plugins.policy.PolicyNet;
 import org.workcraft.plugins.policy.PolicyNetDescriptor;
 import org.workcraft.plugins.policy.VisualPolicyNet;
 import org.workcraft.plugins.policy.tools.PetriToPolicyConverter;
-import org.workcraft.util.Hierarchy;
-import org.workcraft.util.DialogUtils;
+import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public class PetriToPolicyConversionCommand extends AbstractConversionCommand {
 

@@ -1,18 +1,17 @@
 package org.workcraft.gui.workspace;
 
 import org.workcraft.Framework;
-import org.workcraft.MenuOrdering.Position;
-import org.workcraft.PluginManager;
 import org.workcraft.commands.Command;
+import org.workcraft.commands.MenuOrdering.Position;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.OperationCancelledException;
-import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.MainMenu;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.trees.TreePopupProvider;
 import org.workcraft.plugins.PluginInfo;
-import org.workcraft.util.Commands;
-import org.workcraft.util.DialogUtils;
+import org.workcraft.plugins.PluginManager;
+import org.workcraft.utils.CommandUtils;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.*;
 
 import javax.swing.*;
@@ -135,8 +134,8 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                     popup.add(miSaveAs);
                     popup.add(miOpenView);
 
-                    List<Command> applicableVisibleCommands = Commands.getApplicableVisibleCommands(we);
-                    List<String> sections = Commands.getSections(applicableVisibleCommands);
+                    List<Command> applicableVisibleCommands = CommandUtils.getApplicableVisibleCommands(we);
+                    List<String> sections = CommandUtils.getSections(applicableVisibleCommands);
 
                     if (!sections.isEmpty()) {
                         popup.addSeparator();
@@ -145,11 +144,11 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                         String sectionMenuName = MainMenu.getMenuNameFromSection(section);
                         JMenu sectionMenu = new JMenu(sectionMenuName);
 
-                        List<Command> sectionCommands = Commands.getSectionCommands(section, applicableVisibleCommands);
+                        List<Command> sectionCommands = CommandUtils.getSectionCommands(section, applicableVisibleCommands);
                         List<List<Command>> sectionCommandsPartitions = new LinkedList<>();
-                        sectionCommandsPartitions.add(Commands.getUnpositionedCommands(sectionCommands));
+                        sectionCommandsPartitions.add(CommandUtils.getUnpositionedCommands(sectionCommands));
                         for (Position position: Position.values()) {
-                            sectionCommandsPartitions.add(Commands.getPositionedCommands(sectionCommands, position));
+                            sectionCommandsPartitions.add(CommandUtils.getPositionedCommands(sectionCommands, position));
                         }
                         boolean needSeparator = false;
                         for (List<Command> sectionCommandsPartition: sectionCommandsPartitions) {
@@ -162,7 +161,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                                 isFirstItem = false;
                                 JMenuItem item = new JMenuItem(command.getDisplayName().trim());
                                 commands.put(item, command);
-                                item.addActionListener(event -> Commands.run(we, commands.get(event.getSource())));
+                                item.addActionListener(event -> CommandUtils.run(we, commands.get(event.getSource())));
                                 sectionMenu.add(item);
                             }
                         }

@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import javax.swing.Icon;
 import javax.swing.JToggleButton;
 
-import org.workcraft.util.GUI;
+import org.workcraft.utils.GuiUtils;
 
 @SuppressWarnings("serial")
 public class ActionToggle extends JToggleButton implements Actor {
@@ -37,7 +37,7 @@ public class ActionToggle extends JToggleButton implements Actor {
     public ActionToggle(Action action, Icon icon) {
         super();
         String toolTip = ActionUtils.getActionTooltip(action);
-        GUI.decorateButton(this, icon, toolTip);
+        GuiUtils.decorateButton(this, icon, toolTip);
         this.action = action;
         action.addActor(this);
         setEnabled(action.isEnabled());

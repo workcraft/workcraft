@@ -14,7 +14,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualPage;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 import org.workcraft.dom.references.Identifier;
 
 public class NamespaceHelper {

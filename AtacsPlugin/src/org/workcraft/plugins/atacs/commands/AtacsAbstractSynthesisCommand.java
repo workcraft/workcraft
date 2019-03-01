@@ -7,9 +7,9 @@ import org.workcraft.plugins.atacs.tasks.AtacsSynthesisResultHandler;
 import org.workcraft.plugins.atacs.tasks.AtacsSynthesisTask;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.DialogUtils;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import java.util.HashSet;
 import java.util.LinkedList;

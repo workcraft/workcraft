@@ -9,7 +9,7 @@ import org.workcraft.plugins.wtg.commands.WtgInputPropernessVerificationCommand;
 import org.workcraft.plugins.wtg.commands.WtgReachabilityVerificationCommand;
 import org.workcraft.plugins.wtg.commands.WtgSoundnessVerificationCommand;
 import org.workcraft.plugins.wtg.commands.WtgSynthesisGuidelinesVerificationCommand;
-import org.workcraft.util.PackageUtils;
+import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;

@@ -7,9 +7,9 @@ import org.workcraft.gui.layouts.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.GUI;
-import org.workcraft.util.IntDocument;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.GuiUtils;
+import org.workcraft.shared.IntDocument;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -284,10 +284,10 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
     private void createButtonPanel(final int mode) {
         buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        JButton saveButton = GUI.createDialogButton("Run");
+        JButton saveButton = GuiUtils.createDialogButton("Run");
         saveButton.addActionListener(event -> actionSave(mode));
 
-        JButton closeButton = GUI.createDialogButton("Close");
+        JButton closeButton = GuiUtils.createDialogButton("Close");
         closeButton.addActionListener(e -> setVisible(false));
 
         buttonsPanel.add(saveButton);

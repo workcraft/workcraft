@@ -37,7 +37,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <class id="5" language="java" name="org.workcraft.serialisation.xml.XMLDeserialisationManager" project="WorkcraftCore" 
+  <class id="5" language="java" name="XMLDeserialisationManager" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/serialisation/xml/XMLDeserialisationManager.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="653" y="298"/>    
@@ -47,7 +47,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="6" language="java" name="org.workcraft.plugins.serialisation.XMLModelDeserialiser" project="WorkcraftCore" 
+  <class id="6" language="java" name="org.workcraft.plugins.builtin.serialisation.XMLModelDeserialiser" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/plugins/serialisation/XMLModelDeserialiser.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="560" y="380"/>    
@@ -57,7 +57,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="7" language="java" name="org.workcraft.plugins.serialisation.XMLModelSerialiser" project="WorkcraftCore" 
+  <class id="7" language="java" name="org.workcraft.plugins.builtin.serialisation.XMLModelSerialiser" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/plugins/serialisation/XMLModelSerialiser.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="296" y="380"/>    
@@ -67,7 +67,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="8" language="java" name="org.workcraft.serialisation.xml.XMLSerialisationManager" project="WorkcraftCore" 
+  <class id="8" language="java" name="XMLSerialisationManager" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/serialisation/xml/XMLSerialisationManager.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="195" y="308"/>    
@@ -77,7 +77,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <interface id="9" language="java" name="org.workcraft.serialisation.xml.XMLSerialiser" project="WorkcraftCore" 
+  <interface id="9" language="java" name="XMLSerialiser" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/serialisation/xml/XMLSerialiser.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="84" y="31"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
@@ -86,7 +86,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <interface id="10" language="java" name="org.workcraft.serialisation.xml.XMLDeserialiser" project="WorkcraftCore" 
+  <interface id="10" language="java" name="XMLDeserialiser" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/serialisation/xml/XMLDeserialiser.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="880" y="31"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
@@ -95,7 +95,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <class id="11" language="java" name="org.workcraft.serialisation.xml.XMLDeserialiserState" project="WorkcraftCore" 
+  <class id="11" language="java" name="XMLDeserialiserState" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/serialisation/xml/XMLDeserialiserState.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="663" y="144"/>    
@@ -105,7 +105,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="12" language="java" name="org.workcraft.serialisation.xml.XMLSerialiserState" project="WorkcraftCore" 
+  <class id="12" language="java" name="XMLSerialiserState" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/serialisation/xml/XMLSerialiserState.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="299" y="134"/>    
@@ -115,7 +115,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <interface id="13" language="java" name="org.workcraft.serialisation.xml.SerialiserFactory" project="WorkcraftCore" 
+  <interface id="13" language="java" name="SerialiserFactory" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/serialisation/xml/SerialiserFactory.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="231" y="31"/>    
@@ -125,7 +125,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <interface id="14" language="java" name="org.workcraft.serialisation.xml.DeserialiserFactory" project="WorkcraftCore" 
+  <interface id="14" language="java" name="DeserialiserFactory" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/serialisation/xml/DeserialiserFactory.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="720" y="29"/>    
@@ -135,7 +135,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <class id="15" language="java" name="org.workcraft.serialisation.xml.DefaultNodeSerialiser" project="WorkcraftCore" 
+  <class id="15" language="java" name="DefaultNodeSerialiser" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/serialisation/xml/DefaultNodeSerialiser.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="84" y="213"/>    
@@ -145,7 +145,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="16" language="java" name="org.workcraft.serialisation.xml.DefaultNodeDeserialiser" project="WorkcraftCore" 
+  <class id="16" language="java" name="DefaultNodeDeserialiser" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/serialisation/xml/DefaultNodeDeserialiser.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="880" y="173"/>    
@@ -155,7 +155,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <interface id="17" language="java" name="org.workcraft.serialisation.xml.CustomXMLSerialiser" project="WorkcraftCore" 
+  <interface id="17" language="java" name="CustomXMLSerialiser" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/serialisation/xml/CustomXMLSerialiser.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="84" y="135"/>    
@@ -165,7 +165,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <interface id="18" language="java" name="org.workcraft.serialisation.xml.CustomXMLDeserialiser" 
+  <interface id="18" language="java" name="CustomXMLDeserialiser"
     project="WorkcraftCore" file="/WorkcraftCore/src/org/workcraft/serialisation/xml/CustomXMLDeserialiser.java" 
     binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="880" y="110"/>    
@@ -175,7 +175,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <interface id="19" language="java" name="org.workcraft.serialisation.xml.NodeSerialiser" project="WorkcraftCore" 
+  <interface id="19" language="java" name="NodeSerialiser" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/serialisation/xml/NodeSerialiser.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="84" y="380"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
@@ -184,7 +184,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <interface id="20" language="java" name="org.workcraft.serialisation.xml.NodeDeserialiser" project="WorkcraftCore" 
+  <interface id="20" language="java" name="NodeDeserialiser" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/serialisation/xml/NodeDeserialiser.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="880" y="380"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
@@ -193,7 +193,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <annotation id="21" language="java" name="org.workcraft.serialisation.xml.NoAutoSerialisation" project="WorkcraftCore" 
+  <annotation id="21" language="java" name="NoAutoSerialisation" project="WorkcraftCore"
     file="/WorkcraftCore/src/org/workcraft/serialisation/xml/NoAutoSerialisation.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="-198" y="501"/>    

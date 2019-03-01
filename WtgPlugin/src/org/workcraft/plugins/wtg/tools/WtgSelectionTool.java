@@ -4,7 +4,7 @@ import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.dtd.tools.DtdSelectionTool;
 import org.workcraft.plugins.wtg.VisualState;
 import org.workcraft.plugins.wtg.VisualWaveform;

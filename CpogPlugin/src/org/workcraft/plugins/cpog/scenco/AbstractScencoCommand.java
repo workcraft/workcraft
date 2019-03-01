@@ -11,10 +11,10 @@ import org.workcraft.plugins.cpog.tasks.ScencoResultHandler;
 import org.workcraft.plugins.cpog.tasks.ScencoSolver;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.GUI;
-import org.workcraft.util.DialogUtils;
+import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public abstract class AbstractScencoCommand implements Command {
 
@@ -38,7 +38,7 @@ public abstract class AbstractScencoCommand implements Command {
             DialogUtils.showError(ScencoSolver.MSG_TOO_MANY_SCENARIOS);
         } else {
             AbstractScencoDialog dialog = createDialog(mainWindow, we);
-            GUI.centerToParent(dialog, mainWindow);
+            GuiUtils.centerToParent(dialog, mainWindow);
             dialog.setVisible(true);
             if (dialog.isDone()) {
                 final ScencoSolver solver = new ScencoSolver(dialog.getSettings(), we);

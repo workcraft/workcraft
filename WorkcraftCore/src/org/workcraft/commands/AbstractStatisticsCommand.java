@@ -1,9 +1,9 @@
 package org.workcraft.commands;
 
 import org.workcraft.dom.math.AbstractMathModel;
-import org.workcraft.util.DialogUtils;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 public abstract class AbstractStatisticsCommand implements ScriptableCommand<String> {
 

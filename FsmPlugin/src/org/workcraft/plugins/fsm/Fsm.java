@@ -11,7 +11,7 @@ import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.plugins.fsm.observers.InitialStateSupervisor;
 import org.workcraft.plugins.fsm.observers.SymbolConsistencySupervisor;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 import java.util.Collection;
 

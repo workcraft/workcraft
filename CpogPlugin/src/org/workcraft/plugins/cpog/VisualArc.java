@@ -21,10 +21,10 @@ import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
 import org.workcraft.formula.utils.FormulaRenderingResult;
 import org.workcraft.formula.utils.FormulaToGraphics;
-import org.workcraft.gui.Coloriser;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.plugins.cpog.formula.PrettifyBooleanReplacer;
-import org.workcraft.serialisation.xml.NoAutoSerialisation;
-import org.workcraft.util.Geometry;
+import org.workcraft.serialisation.NoAutoSerialisation;
+import org.workcraft.utils.Geometry;
 
 public class VisualArc extends VisualConnection {
 

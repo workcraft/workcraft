@@ -8,17 +8,17 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
-import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.graph.tools.Decorator;
-import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.gui.tools.AbstractGraphEditorTool;
+import org.workcraft.gui.tools.Decoration;
+import org.workcraft.gui.tools.Decorator;
+import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.InitialisationState;
 import org.workcraft.plugins.circuit.utils.ResetUtils;
-import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.GUI;
-import org.workcraft.util.LogUtils;
+import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
@@ -88,33 +88,33 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         forceTable.setTableHeader(null);
         JScrollPane forceScrollPane = new JScrollPane(forceTable);
 
-        JButton clearAllForceInitButton = GUI.createIconButton(
-                GUI.createIconFromSVG("images/circuit-initialisation-clear_all.svg"),
+        JButton clearAllForceInitButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-initialisation-clear_all.svg"),
                 "Clear force init from all input ports and component outputs");
         clearAllForceInitButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.setForceInit(c, false)));
 
-        JButton toggleForceInitInputPortsButton = GUI.createIconButton(
-                GUI.createIconFromSVG("images/circuit-initialisation-input_port.svg"),
+        JButton toggleForceInitInputPortsButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-initialisation-input_port.svg"),
                 "Toggle force init for all input ports (environment responsibility)");
         toggleForceInitInputPortsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.toggleForceInitInputPorts(c)));
 
-        JButton toggleForceInitSelfLoopsButton = GUI.createIconButton(
-                GUI.createIconFromSVG("images/circuit-initialisation-self_loop.svg"),
+        JButton toggleForceInitSelfLoopsButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-initialisation-self_loop.svg"),
                 "Toggle force init for all self-loops");
         toggleForceInitSelfLoopsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.toggleForceInitSelfLoops(c)));
 
-        JButton toggleForceInitSequentialGatesButton = GUI.createIconButton(
-                GUI.createIconFromSVG("images/circuit-initialisation-sequential_gate.svg"),
+        JButton toggleForceInitSequentialGatesButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-initialisation-sequential_gate.svg"),
                 "Toggle force init for all sequential gates");
         toggleForceInitSequentialGatesButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.toggleForceInitSequentialGates(c)));
 
-        JButton untagRedundantForceInitPinsButton = GUI.createIconButton(
-                GUI.createIconFromSVG("images/circuit-initialisation-untag_redundant.svg"),
+        JButton untagRedundantForceInitPinsButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-initialisation-untag_redundant.svg"),
                 "Remove force init from pins if redundant for initialisation");
         untagRedundantForceInitPinsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.untagRedundantForceInitPins(c)));
 
-        JButton addNecessaryForceInitPinsButton = GUI.createIconButton(
-                GUI.createIconFromSVG("images/circuit-initialisation-tag_necessary.svg"),
+        JButton addNecessaryForceInitPinsButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-initialisation-tag_necessary.svg"),
                 "Add force init to pins if necessary to complete initialisation");
         addNecessaryForceInitPinsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagNecessaryForceInitPins(c)));
 
@@ -288,7 +288,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
     @Override
     public Icon getIcon() {
-        return GUI.createIconFromSVG("images/circuit-tool-initialisation_analysis.svg");
+        return GuiUtils.createIconFromSVG("images/circuit-tool-initialisation_analysis.svg");
     }
 
     @Override

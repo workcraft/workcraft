@@ -2,7 +2,7 @@ package org.workcraft.plugins.pcomp.tasks;
 
 import java.io.File;
 
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
+import org.workcraft.tasks.ExternalProcessOutput;
 
 public class PcompOutput extends ExternalProcessOutput {
 

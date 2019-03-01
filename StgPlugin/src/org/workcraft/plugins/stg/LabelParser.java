@@ -3,8 +3,8 @@ package org.workcraft.plugins.stg;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.workcraft.util.Pair;
-import org.workcraft.util.Triple;
+import org.workcraft.types.Pair;
+import org.workcraft.types.Triple;
 
 public class LabelParser {
     private static final Pattern signalTransitionPattern =

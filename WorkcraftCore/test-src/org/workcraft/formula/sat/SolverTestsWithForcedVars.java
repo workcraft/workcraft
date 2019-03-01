@@ -11,8 +11,8 @@ import org.workcraft.formula.encoding.Encoding;
 import org.workcraft.formula.encoding.onehot.OneHotIntBooleanFormula;
 import org.workcraft.formula.encoding.onehot.OneHotNumberProvider;
 import org.workcraft.formula.utils.StringGenerator;
-import org.workcraft.plugins.shared.CommonSatSettings;
-import org.workcraft.plugins.shared.CommonSatSettings.SatSolver;
+import org.workcraft.plugins.builtin.settings.CommonSatSettings;
+import org.workcraft.plugins.builtin.settings.CommonSatSettings.SatSolver;
 
 @Ignore // This only works with MINISAT solver which is not supported in Travis OSX
 public class SolverTestsWithForcedVars {

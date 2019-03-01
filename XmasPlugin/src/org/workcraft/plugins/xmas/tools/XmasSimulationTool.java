@@ -12,13 +12,13 @@ import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualTransformableNode;
-import org.workcraft.gui.Coloriser;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.gui.graph.tools.Decorator;
-import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.gui.tools.Decoration;
+import org.workcraft.gui.tools.Decorator;
+import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.shared.CommonDecorationSettings;
+import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.plugins.xmas.VisualXmas;
@@ -46,7 +46,7 @@ import org.workcraft.plugins.xmas.stg.SlotStg;
 import org.workcraft.plugins.xmas.stg.SourceStg;
 import org.workcraft.plugins.xmas.stg.SwitchStg;
 import org.workcraft.plugins.xmas.stg.XmasToStgConverter;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.utils.Hierarchy;
 
 public class XmasSimulationTool extends StgSimulationTool {
 

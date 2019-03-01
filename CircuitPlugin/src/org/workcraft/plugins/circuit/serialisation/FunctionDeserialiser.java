@@ -7,9 +7,9 @@ import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.serialisation.BooleanFunctionDeserialiser;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.serialisation.ReferenceResolver;
-import org.workcraft.serialisation.xml.CustomXMLDeserialiser;
-import org.workcraft.serialisation.xml.NodeFinaliser;
-import org.workcraft.serialisation.xml.NodeInitialiser;
+import org.workcraft.serialisation.CustomXMLDeserialiser;
+import org.workcraft.serialisation.NodeFinaliser;
+import org.workcraft.serialisation.NodeInitialiser;
 
 public class FunctionDeserialiser implements CustomXMLDeserialiser<FunctionContact> {
 

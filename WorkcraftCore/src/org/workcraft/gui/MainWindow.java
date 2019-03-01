@@ -18,7 +18,8 @@ import org.flexdock.plaf.common.border.ShadowBorder;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.api.SubstanceConstants.TabContentPaneBorderKind;
 import org.workcraft.Framework;
-import org.workcraft.PluginManager;
+import org.workcraft.gui.tabs.*;
+import org.workcraft.plugins.PluginManager;
 import org.workcraft.commands.Command;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.VisualModelDescriptor;
@@ -29,8 +30,8 @@ import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.actions.ScriptedActionListener;
-import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.gui.editor.GraphEditorPanel;
+import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.layouts.MultiBorderLayout;
 import org.workcraft.gui.properties.SettingsEditorDialog;
 import org.workcraft.gui.tasks.TaskFailureNotifier;
@@ -42,10 +43,12 @@ import org.workcraft.interop.Format;
 import org.workcraft.interop.FormatFileFilter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginInfo;
-import org.workcraft.plugins.shared.CommonEditorSettings;
-import org.workcraft.plugins.shared.tasks.ExportTask;
+import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
+import org.workcraft.tasks.ExportTask;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.*;
+import org.workcraft.types.ListMap;
+import org.workcraft.utils.*;
+import org.workcraft.workspace.FileFilters;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -300,7 +303,7 @@ public class MainWindow extends JFrame {
             FontRenderContext frc = new FontRenderContext(new AffineTransform(), true, true);
             font.createGlyphVector(frc, TITLE_PLACEHOLDER);
             // Force SVG rendering classes to load.
-            GUI.createIconFromSVG("images/icon.svg");
+            GuiUtils.createIconFromSVG("images/icon.svg");
         }).start();
     }
 
@@ -743,7 +746,7 @@ public class MainWindow extends JFrame {
     public void createWork(Path<String> directory) throws OperationCancelledException {
         CreateWorkDialog dialog = new CreateWorkDialog(this);
         dialog.pack();
-        GUI.centerToParent(dialog, this);
+        GuiUtils.centerToParent(dialog, this);
         dialog.setVisible(true);
         if (dialog.getModalResult() == 0) {
             throw new OperationCancelledException("Create operation cancelled by user.");
@@ -818,7 +821,7 @@ public class MainWindow extends JFrame {
         JFileChooser fc = new JFileChooser();
         fc.setDialogType(JFileChooser.OPEN_DIALOG);
         fc.setDialogTitle(title);
-        GUI.sizeFileChooserToScreen(fc, getDisplayMode());
+        GuiUtils.sizeFileChooserToScreen(fc, getDisplayMode());
         fc.setCurrentDirectory(getLastDirectory());
         fc.setAcceptAllFileFilterUsed(false);
         fc.setMultiSelectionEnabled(multiSelection);
@@ -838,7 +841,7 @@ public class MainWindow extends JFrame {
         JFileChooser fc = new JFileChooser();
         fc.setDialogType(JFileChooser.SAVE_DIALOG);
         fc.setDialogTitle(title);
-        GUI.sizeFileChooserToScreen(fc, getDisplayMode());
+        GuiUtils.sizeFileChooserToScreen(fc, getDisplayMode());
         // Set working directory
         fc.setSelectedFile(file);
         if (file.exists()) {
@@ -858,7 +861,7 @@ public class MainWindow extends JFrame {
 
     public void runCommand(Command command) {
         WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
-        Commands.run(we, command);
+        CommandUtils.run(we, command);
     }
 
     public void openWork() throws OperationCancelledException {

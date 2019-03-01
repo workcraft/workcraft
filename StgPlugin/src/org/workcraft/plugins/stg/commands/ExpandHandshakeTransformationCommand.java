@@ -1,6 +1,6 @@
 package org.workcraft.plugins.stg.commands;
 
-import org.workcraft.NodeTransformer;
+import org.workcraft.commands.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.visual.MixUtils;
@@ -14,13 +14,13 @@ import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
-import org.workcraft.util.DialogUtils;
-import org.workcraft.util.Hierarchy;
-import org.workcraft.util.LogUtils;
-import org.workcraft.util.Pair;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.LogUtils;
+import org.workcraft.types.Pair;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
+import org.workcraft.utils.WorkspaceUtils;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;

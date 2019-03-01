@@ -9,7 +9,7 @@ import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;

@@ -3,16 +3,14 @@ package org.workcraft.plugins.circuit;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.*;
-import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.utils.Coloriser;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.*;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
-import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
 import java.awt.font.FontRenderContext;
@@ -31,9 +29,10 @@ public class VisualCircuitComponent extends VisualComponent implements Container
     private static final Color inputColor = VisualContact.inputColor;
     private static final Color outputColor = VisualContact.outputColor;
 
-    double marginSize = 0.2;
+    double labelMargin = 0.2;
     double contactLength = 0.5;
     double contactStep = 1.0;
+    double contactMargin = 0.5;
 
     public Rectangle2D internalBB = null;
     public DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
@@ -92,18 +91,19 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         }
     }
 
-    private LinkedList<VisualContact> getOrderedContacts(final Direction dir, final boolean reverse) {
+    private LinkedList<VisualContact> getOrderedOutsideContacts(Direction dir) {
         LinkedList<VisualContact> list = new LinkedList<>();
-        for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-            if (vc.getDirection() == dir) {
+        Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+        for (VisualContact vc : Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+            if ((vc.getDirection() == dir) && !bb.contains(vc.getX(), vc.getY())) {
                 list.add(vc);
             }
         }
         Collections.sort(list, (vc1, vc2) -> {
             if ((dir == Direction.NORTH) || (dir == Direction.SOUTH)) {
-                return (reverse ? -1 : 1) * Double.compare(vc1.getX(), vc2.getX());
+                return Double.compare(vc1.getX(), vc2.getX());
             } else {
-                return (reverse ? -1 : 1) * Double.compare(vc1.getY(), vc2.getY());
+                return Double.compare(vc1.getY(), vc2.getY());
             }
         });
         return list;
@@ -156,17 +156,6 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         return Hierarchy.getChildrenOfType(this, VisualContact.class);
     }
 
-    public Collection<VisualConnection> getRelevantConnections(Collection<VisualContact> contacts) {
-        Collection<VisualConnection> result = Collections.emptyList();
-        Node root = Hierarchy.getRoot(this);
-        if (root != null) {
-            final HashSet<VisualContact> contactSet = new HashSet<>(contacts);
-            result = Hierarchy.getDescendantsOfType(root, VisualConnection.class,
-                connection -> contactSet.contains(connection.getFirst()) || contactSet.contains(connection.getSecond()));
-        }
-        return result;
-    }
-
     public void setContactsDefaultPosition() {
         spreadContactsEvenly();
 
@@ -198,41 +187,93 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         invalidateBoundingBox();
     }
 
-    public void addContact(VisualCircuit vcircuit, VisualContact vc) {
-        if (!getChildren().contains(vc)) {
-            LinkedList<VisualContact> sameSideContacts = getOrderedContacts(vc.getDirection(), true);
-            Container container = NamespaceHelper.getMathContainer(vcircuit, this);
-            container.add(vc.getReferencedComponent());
-            add(vc);
+    public VisualContact createContact(Contact.IOType ioType) {
+        VisualFunctionContact vc = new VisualFunctionContact(new FunctionContact(ioType));
+        addContact(vc);
+        return vc;
+    }
 
-            Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-            switch (vc.getDirection()) {
-            case WEST:
-                vc.setX(TransformHelper.snapP5(bb.getMinX() - contactLength));
-                if (sameSideContacts.size() > 0) {
-                    vc.setY(sameSideContacts.getFirst().getY() + contactLength);
+    public void addContact(VisualContact vc) {
+        if (!getChildren().contains(vc)) {
+            getReferencedComponent().add(vc.getReferencedComponent());
+            add(vc);
+        }
+    }
+
+    public void setPositionByDirection(VisualContact vc, Direction direction, boolean reverseProgression) {
+        vc.setDirection(direction);
+        Rectangle2D bb = getContactExpandedBox();
+        switch (vc.getDirection()) {
+        case WEST:
+            vc.setX(TransformHelper.snapP5(bb.getMinX() - contactLength));
+            positionVertical(vc, reverseProgression);
+            break;
+        case NORTH:
+            vc.setY(TransformHelper.snapP5(bb.getMinY() - contactLength));
+            positionHorizontal(vc, reverseProgression);
+            break;
+        case EAST:
+            vc.setX(TransformHelper.snapP5(bb.getMaxX() + contactLength));
+            positionVertical(vc, reverseProgression);
+            break;
+        case SOUTH:
+            vc.setY(TransformHelper.snapP5(bb.getMaxY() + contactLength));
+            positionHorizontal(vc, reverseProgression);
+            break;
+        }
+        centerPivotPoint(true, true);
+        invalidateBoundingBox();
+    }
+
+    private void positionHorizontal(VisualContact vc, boolean reverseProgression) {
+        LinkedList<VisualContact> contacts = getOrderedOutsideContacts(vc.getDirection());
+        contacts.remove(vc);
+        if (contacts.size() == 0) {
+            vc.setX(0);
+        } else {
+            if (reverseProgression) {
+                double x = TransformHelper.snapP5(contacts.getFirst().getX() - contactStep);
+                for (VisualContact contact : getOrderedOutsideContacts(Direction.WEST)) {
+                    if (contact.getX() > x - contactMargin - contactLength) {
+                        contact.setX(x - contactMargin - contactLength);
+                    }
                 }
-                break;
-            case NORTH:
-                vc.setY(TransformHelper.snapP5(bb.getMinY() - contactLength));
-                if (sameSideContacts.size() > 0) {
-                    vc.setX(sameSideContacts.getFirst().getX() + contactLength);
+                vc.setX(x);
+            } else {
+                double x = TransformHelper.snapP5(contacts.getLast().getX() + contactStep);
+                for (VisualContact contact : getOrderedOutsideContacts(Direction.EAST)) {
+                    if (contact.getX() < x + contactMargin + contactLength) {
+                        contact.setX(x + contactMargin + contactLength);
+                    }
                 }
-                break;
-            case EAST:
-                vc.setX(TransformHelper.snapP5(bb.getMaxX() + contactLength));
-                if (sameSideContacts.size() > 0) {
-                    vc.setY(sameSideContacts.getFirst().getY() + contactLength);
-                }
-                break;
-            case SOUTH:
-                vc.setY(TransformHelper.snapP5(bb.getMaxY() + contactLength));
-                if (sameSideContacts.size() > 0) {
-                    vc.setX(sameSideContacts.getFirst().getX() + contactLength);
-                }
-                break;
+                vc.setX(x);
             }
-            invalidateBoundingBox();
+        }
+    }
+
+    private void positionVertical(VisualContact vc, boolean reverseProgression) {
+        LinkedList<VisualContact> contacts = getOrderedOutsideContacts(vc.getDirection());
+        contacts.remove(vc);
+        if (contacts.size() == 0) {
+            vc.setY(0);
+        } else {
+            if (reverseProgression) {
+                double y = TransformHelper.snapP5(contacts.getFirst().getY() - contactStep);
+                for (VisualContact contact : getOrderedOutsideContacts(Direction.NORTH)) {
+                    if (contact.getY() > y - contactMargin - contactLength) {
+                        contact.setY(y - contactMargin - contactLength);
+                    }
+                }
+                vc.setY(y);
+            } else {
+                double y = TransformHelper.snapP5(contacts.getLast().getY() + contactStep);
+                for (VisualContact contact : getOrderedOutsideContacts(Direction.SOUTH)) {
+                    if (contact.getY() < y + contactMargin + contactLength) {
+                        contact.setY(y + contactMargin + contactLength);
+                    }
+                }
+                vc.setY(y);
+            }
         }
     }
 
@@ -242,39 +283,39 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
     private Rectangle2D getContactMinimalBox() {
         double size = CommonVisualSettings.getNodeSize();
-        double x1 = -size / 2;
-        double y1 = -size / 2;
-        double x2 = size / 2;
-        double y2 = size / 2;
+        double xMin = -size / 2;
+        double yMin = -size / 2;
+        double xMax = size / 2;
+        double yMax = size / 2;
         for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
             switch (vc.getDirection()) {
             case WEST:
-                double westX = vc.getX() + contactLength;
-                if ((westX < -size / 2) && (westX > x1)) {
-                    x1 = westX;
+                double xWest = vc.getX() + contactLength;
+                if ((xWest < -size / 2) && (xWest > xMin)) {
+                    xMin = xWest;
                 }
                 break;
             case NORTH:
-                double northY = vc.getY() + contactLength;
-                if ((northY < -size / 2) && (northY > y1)) {
-                    y1 = northY;
+                double yNorth = vc.getY() + contactLength;
+                if ((yNorth < -size / 2) && (yNorth > yMin)) {
+                    yMin = yNorth;
                 }
                 break;
             case EAST:
-                double eastX = vc.getX() - contactLength;
-                if ((eastX > size / 2) && (eastX < x2)) {
-                    x2 = eastX;
+                double xEast = vc.getX() - contactLength;
+                if ((xEast > size / 2) && (xEast < xMax)) {
+                    xMax = xEast;
                 }
                 break;
             case SOUTH:
-                double southY = vc.getY() - contactLength;
-                if ((southY > size / 2) && (southY < y2)) {
-                    y2 = southY;
+                double ySouth = vc.getY() - contactLength;
+                if ((ySouth > size / 2) && (ySouth < yMax)) {
+                    yMax = ySouth;
                 }
                 break;
             }
         }
-        return new Rectangle2D.Double(x1, y1, x2 - x1, y2 - y1);
+        return new Rectangle2D.Double(xMin, yMin, xMax - xMin, yMax - yMin);
     }
 
     private Rectangle2D getContactExpandedBox() {
@@ -289,26 +330,26 @@ public class VisualCircuitComponent extends VisualComponent implements Container
             switch (vc.getDirection()) {
             case WEST:
                 if (vc.getX() < minBox.getMinX()) {
-                    y1 = Math.min(y1, y - contactStep / 2);
-                    y2 = Math.max(y2, y + contactStep / 2);
+                    y1 = Math.min(y1, y - contactMargin);
+                    y2 = Math.max(y2, y + contactMargin);
                 }
                 break;
             case NORTH:
                 if (vc.getY() < minBox.getMinY()) {
-                    x1 = Math.min(x1, x - contactStep / 2);
-                    x2 = Math.max(x2, x + contactStep / 2);
+                    x1 = Math.min(x1, x - contactMargin);
+                    x2 = Math.max(x2, x + contactMargin);
                 }
                 break;
             case EAST:
                 if (vc.getX() > minBox.getMaxX()) {
-                    y1 = Math.min(y1, y - contactStep / 2);
-                    y2 = Math.max(y2, y + contactStep / 2);
+                    y1 = Math.min(y1, y - contactMargin);
+                    y2 = Math.max(y2, y + contactMargin);
                 }
                 break;
             case SOUTH:
                 if (vc.getY() > minBox.getMaxY()) {
-                    x1 = Math.min(x1, x - contactStep / 2);
-                    x2 = Math.max(x2, x + contactStep / 2);
+                    x1 = Math.min(x1, x - contactMargin);
+                    x2 = Math.max(x2, x + contactMargin);
                 }
                 break;
             }
@@ -440,19 +481,19 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         float labelY = 0.0f;
         switch (vc.getDirection()) {
         case NORTH:
-            labelX = (float) (-bb.getMinY() - marginSize - labelBB.getWidth());
+            labelX = (float) (-bb.getMinY() - labelMargin - labelBB.getWidth());
             labelY = (float) (vc.getX() + labelBB.getHeight() / 2);
             break;
         case EAST:
-            labelX = (float) (bb.getMaxX() - marginSize - labelBB.getWidth());
+            labelX = (float) (bb.getMaxX() - labelMargin - labelBB.getWidth());
             labelY = (float) (vc.getY() + labelBB.getHeight() / 2);
             break;
         case SOUTH:
-            labelX = (float) (-bb.getMaxY() + marginSize);
+            labelX = (float) (-bb.getMaxY() + labelMargin);
             labelY = (float) (vc.getX() + labelBB.getHeight() / 2);
             break;
         case WEST:
-            labelX = (float) (bb.getMinX() + marginSize);
+            labelX = (float) (bb.getMinX() + labelMargin);
             labelY = (float) (vc.getY() + labelBB.getHeight() / 2);
             break;
         }
@@ -474,6 +515,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
         for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class,
                 contact -> (contact.getDirection() == Direction.NORTH) || (contact.getDirection() == Direction.SOUTH))) {
+
             drawContactLabel(r, vc);
         }
 
@@ -485,11 +527,10 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         if ((groupImpl != null) && (internalBB == null)) {
             internalBB = getContactBestBox();
         }
-        Rectangle2D bb = BoundingBoxHelper.copy(internalBB);
-        if (bb == null) {
-            bb = super.getInternalBoundingBoxInLocalSpace();
+        if (internalBB != null) {
+            return BoundingBoxHelper.copy(internalBB);
         }
-        return bb;
+        return super.getInternalBoundingBoxInLocalSpace();
     }
 
     @Override

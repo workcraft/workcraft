@@ -1,14 +1,14 @@
 package org.workcraft.gui;
 
 import org.workcraft.Framework;
-import org.workcraft.PluginManager;
+import org.workcraft.plugins.PluginManager;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
-import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.gui.graph.tools.GraphEditorKeyListener;
-import org.workcraft.gui.graph.tools.GraphEditorTool;
-import org.workcraft.gui.graph.tools.ToolProvider;
+import org.workcraft.gui.editor.GraphEditorPanel;
+import org.workcraft.gui.tools.GraphEditorKeyListener;
+import org.workcraft.gui.tools.GraphEditorTool;
+import org.workcraft.gui.tools.ToolProvider;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.workspace.WorkspaceEntry;
 
