@@ -1,123 +1,110 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <class-diagram version="1.2.2" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
   associations="true" dependencies="false" nesting-relationships="true" router="FAN">  
-  <class id="1" language="java" name="org.workcraft.plugins.PluginManager" project="WorkcraftCore"
-    file="/WorkcraftCore/src/org/workcraft/PluginManager.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="91" y="160"/>    
+  <class id="1" language="java" name="org.workcraft.plugins.PluginManager" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/plugins/PluginManager.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="93" y="82"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false" static="true"/>      
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <interface id="2" language="java" name="org.workcraft.plugins.Plugin" project="WorkcraftCore"
-    file="/WorkcraftCore/src/org/workcraft/Plugin.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="39" y="26"/>    
+  <interface id="2" language="java" name="org.workcraft.plugins.PluginProvider" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/plugins/PluginProvider.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="165" y="21"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false" static="true"/>      
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <interface id="3" language="java" name="org.workcraft.plugins.PluginProvider" project="WorkcraftCore"
-    file="/WorkcraftCore/src/org/workcraft/PluginProvider.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="163" y="94"/>    
+  <interface id="3" language="java" name="org.workcraft.plugins.Plugin" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/plugins/Plugin.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="41" y="21"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false" static="true"/>      
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <interface id="4" language="java" name="org.workcraft.plugins.Plugin" project="WorkcraftCore"
-    file="/WorkcraftCore/src/org/workcraft/Module.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="39" y="94"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
-      sort-features="false" accessors="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
-      <operations public="false" package="false" protected="false" private="false" static="true"/>    
-    </display>  
-  </interface>  
-  <interface id="5" language="java" name="org.workcraft.dom.VisualModelDescriptor" project="WorkcraftCore" 
+  <interface id="4" language="java" name="org.workcraft.dom.VisualModelDescriptor" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/dom/VisualModelDescriptor.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="491" y="94"/>    
+    <position height="-1" width="-1" x="491" y="82"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false" static="true"/>      
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <enumeration id="6" language="java" name="org.workcraft.dom.ModelDescriptor.Rating" project="WorkcraftCore" 
+  <enumeration id="5" language="java" name="org.workcraft.dom.ModelDescriptor.Rating" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/dom/ModelDescriptor.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="316" y="156"/>    
+    <position height="-1" width="-1" x="315" y="144"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false" static="true"/>      
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </enumeration>  
-  <interface id="7" language="java" name="org.workcraft.dom.ModelDescriptor" project="WorkcraftCore" 
+  <interface id="6" language="java" name="org.workcraft.dom.ModelDescriptor" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/dom/ModelDescriptor.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="315" y="94"/>    
+    <position height="-1" width="-1" x="314" y="82"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false" static="true"/>      
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <interface id="8" language="java" name="org.workcraft.dom.math.MathModel" project="WorkcraftCore" 
+  <interface id="7" language="java" name="org.workcraft.dom.math.MathModel" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/dom/math/MathModel.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="316" y="33"/>    
+    <position height="-1" width="-1" x="315" y="21"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false" static="true"/>      
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <interface id="9" language="java" name="org.workcraft.dom.visual.VisualModel" project="WorkcraftCore" 
+  <interface id="8" language="java" name="org.workcraft.dom.visual.VisualModel" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/dom/visual/VisualModel.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="492" y="30"/>    
+    <position height="-1" width="-1" x="491" y="21"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false" static="true"/>      
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <dependency id="10">    
-    <end type="SOURCE" refId="5"/>    
-    <end type="TARGET" refId="9"/>  
+  <dependency id="9">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="7"/>  
   </dependency>  
+  <nesting id="10">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="5"/>  
+  </nesting>  
   <dependency id="11">    
-    <end type="SOURCE" refId="7"/>    
-    <end type="TARGET" refId="8"/>  
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="6"/>  
   </dependency>  
   <dependency id="12">    
-    <end type="SOURCE" refId="9"/>    
-    <end type="TARGET" refId="8"/>  
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="3"/>  
   </dependency>  
   <dependency id="13">    
-    <end type="SOURCE" refId="1"/>    
+    <end type="SOURCE" refId="8"/>    
     <end type="TARGET" refId="7"/>  
   </dependency>  
   <dependency id="14">    
-    <end type="SOURCE" refId="1"/>    
-    <end type="TARGET" refId="4"/>  
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="7"/>  
   </dependency>  
   <realization id="15">    
     <end type="SOURCE" refId="1"/>    
-    <end type="TARGET" refId="3"/>  
+    <end type="TARGET" refId="2"/>  
   </realization>  
   <dependency id="16">    
-    <end type="SOURCE" refId="5"/>    
+    <end type="SOURCE" refId="4"/>    
     <end type="TARGET" refId="8"/>  
   </dependency>  
-  <generalization id="17">    
-    <end type="SOURCE" refId="4"/>    
-    <end type="TARGET" refId="2"/>  
-  </generalization>  
-  <nesting id="18">    
-    <end type="SOURCE" refId="7"/>    
-    <end type="TARGET" refId="6"/>  
-  </nesting>  
   <classifier-display autosize="true" stereotype="false" package="false" initial-value="false" signature="true" 
     sort-features="false" accessors="true" visibility="true">    
     <attributes public="false" package="false" protected="false" private="false" static="true"/>    
