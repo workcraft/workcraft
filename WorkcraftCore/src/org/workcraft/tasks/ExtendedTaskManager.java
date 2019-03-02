@@ -1,9 +1,9 @@
 package org.workcraft.tasks;
 
-import javax.swing.SwingUtilities;
-
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
+
+import javax.swing.*;
 
 public class ExtendedTaskManager extends DefaultTaskManager {
 

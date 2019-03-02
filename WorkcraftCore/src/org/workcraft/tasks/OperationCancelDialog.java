@@ -1,16 +1,12 @@
 package org.workcraft.tasks;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Window;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
-import javax.swing.JDialog;
-import javax.swing.SwingUtilities;
-
 import org.workcraft.gui.tasks.TaskControl;
 import org.workcraft.utils.GuiUtils;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 final class OperationCancelDialog<T> extends JDialog implements ProgressMonitor<T> {
 
