@@ -1,13 +1,12 @@
 package org.workcraft.plugins.circuit;
 
-import org.workcraft.plugins.CompatibilityManager;
 import org.workcraft.Framework;
 import org.workcraft.Version;
+import org.workcraft.plugins.CompatibilityManager;
 import org.workcraft.plugins.Plugin;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.circuit.commands.*;
 import org.workcraft.plugins.circuit.interop.GenlibImporter;
-import org.workcraft.plugins.circuit.interop.SdcExporter;
 import org.workcraft.plugins.circuit.interop.VerilogExporter;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.serialisation.FunctionDeserialiser;
@@ -39,7 +38,6 @@ public class CircuitPlugin implements Plugin {
         pm.registerExporter(VerilogExporter.class);
         pm.registerImporter(VerilogImporter.class);
         pm.registerImporter(GenlibImporter.class);
-        pm.registerExporter(SdcExporter.class);
 
         ScriptableCommandUtils.register(CircuitLayoutCommand.class, "layoutCircuit",
                 "place components and route wires of the Circuit 'work'");
@@ -111,6 +109,11 @@ public class CircuitPlugin implements Plugin {
 
         ScriptableCommandUtils.register(CircuitResetVerificationCommand.class, "checkCircuitReset",
                 "check if the Circuit 'work' is correctly initialised via input ports");
+
+        ScriptableCommandUtils.register(CircuitInsertLoopbreakerBuffersCommand.class, "insertCircuitLoopbreakerBuffers",
+                "insert loop breaker buffers into the Circuit 'work'");
+        ScriptableCommandUtils.register(CircuitInsertPathbreakerScanCommand.class, "insertCircuitScan",
+                "insert scan for path breaker components into the Circuit 'work' ");
     }
 
     private void initCompatibilityManager() {

@@ -14,7 +14,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.Collection;
 
-public class CircuitPathbreakerInsertBuffersCommand extends CircuitAbstractPathbreakerCommand {
+public class CircuitInsertLoopbreakerBuffersCommand extends CircuitAbstractPathbreakerCommand {
 
     @Override
     public String getDisplayName() {
