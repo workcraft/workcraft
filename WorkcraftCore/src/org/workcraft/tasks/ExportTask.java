@@ -5,6 +5,7 @@ import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.interop.Exporter;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.utils.ExportUtils;
 import org.workcraft.utils.LogUtils;
 
 import java.io.File;
@@ -29,13 +30,7 @@ public class ExportTask implements Task<ExportOutput> {
 
     @Override
     public Result<? extends ExportOutput> run(ProgressMonitor<? super ExportOutput> monitor) {
-        String message = "Exporting model ";
-        String title = model.getTitle();
-        if (!title.isEmpty()) {
-            message += "\'" + title + "\' ";
-        }
-        message += "to file \'" + file.getAbsolutePath() + "\'.";
-        LogUtils.logInfo(message);
+        LogUtils.logInfo(ExportUtils.getExportMessage(model, file));
 
         FileOutputStream fos;
         try {

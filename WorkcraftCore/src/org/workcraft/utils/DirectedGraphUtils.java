@@ -211,4 +211,36 @@ public class DirectedGraphUtils {
         }
     }
 
+    public static <T> Set<T> findFeedbackVertices(Map<T, Set<T>> graph) {
+        if (graph == null) {
+            return null;
+        }
+        Set<T> result = findSelfloopVertices(graph);
+        Set<T> vertices = new HashSet<>(graph.keySet());
+        while (!graph.isEmpty()) {
+            vertices.removeAll(result);
+            graph = project(graph, vertices);
+            for (Set<T> component : findStronglyConnectedComponents(graph)) {
+                if (component.size() == 1) {
+                    vertices.removeAll(component);
+                } else {
+                    Map<T, Set<T>> subgraph = project(graph, component);
+                    T bestVertex = null;
+                    int bestCount = -1;
+                    for (T vertex : component) {
+                        int count = subgraph.get(vertex).size();
+                        if (count > bestCount) {
+                            bestVertex = vertex;
+                            bestCount = count;
+                        }
+                    }
+                    if (bestVertex != null) {
+                        result.add(bestVertex);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
 }

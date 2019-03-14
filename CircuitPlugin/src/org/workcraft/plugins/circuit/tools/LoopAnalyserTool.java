@@ -1,35 +1,201 @@
 package org.workcraft.plugins.circuit.tools;
 
+import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.visual.HitMan;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.exceptions.OperationCancelledException;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.tools.AbstractGraphEditorTool;
-import org.workcraft.gui.tools.Decoration;
-import org.workcraft.gui.tools.Decorator;
-import org.workcraft.gui.tools.GraphEditor;
+import org.workcraft.gui.tools.*;
+import org.workcraft.interop.Format;
+import org.workcraft.interop.FormatFileFilter;
 import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.circuit.serialisation.PathbreakConstraintExporter;
+import org.workcraft.plugins.circuit.utils.LoopUtils;
+import org.workcraft.plugins.circuit.utils.ScanUtils;
 import org.workcraft.plugins.circuit.utils.StructureUtilsKt;
+import org.workcraft.types.Pair;
+import org.workcraft.utils.ExportUtils;
 import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.io.File;
+import java.util.List;
 import java.util.Queue;
+import java.util.*;
 
 public class LoopAnalyserTool extends AbstractGraphEditorTool {
 
-    private HashSet<Node> loopSet;
+    private JTable breakTable;
+    private HashSet<MathNode> loopSet;
+    private final List<String> breakers = new ArrayList<>();
 
+    @Override
+    public JPanel getControlsPanel(final GraphEditor editor) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(getLegendControlsPanel(editor), BorderLayout.NORTH);
+        panel.add(getBreakControlsPanel(editor), BorderLayout.CENTER);
+        panel.add(getScanControlsPanel(editor), BorderLayout.SOUTH);
+        panel.setPreferredSize(new Dimension(0, 0));
+        return panel;
+    }
+
+    private JPanel getLegendControlsPanel(final GraphEditor editor) {
+        ColorLegendTableModel legendTableModel = new ColorLegendTableModel(Arrays.asList(
+                Pair.of(CircuitSettings.getWithinCycleGateColor(), "Within cycle"),
+                Pair.of(CircuitSettings.getBreakCycleGateColor(), "Path breaker"),
+                Pair.of(CircuitSettings.getOutsideCycleGateColor(), "Outside cycle")
+        ));
+
+        JTable legendTable = new JTable(legendTableModel);
+        legendTable.setFocusable(false);
+        legendTable.setRowSelectionAllowed(false);
+        legendTable.setRowHeight(SizeHelper.getComponentHeightFromFont(legendTable.getFont()));
+        legendTable.setDefaultRenderer(Color.class, new ColorDataRenderer());
+        legendTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        // Make the table transparent
+        legendTable.setShowGrid(false);
+        legendTable.setOpaque(false);
+        DefaultTableCellRenderer legendRenderer = (DefaultTableCellRenderer) legendTable.getDefaultRenderer(Object.class);
+        legendRenderer.setOpaque(false);
+        // Set the color cells square shape
+        TableColumnModel columnModel = legendTable.getColumnModel();
+        int colorCellSize = legendTable.getRowHeight();
+        TableColumn colorLegendColumn = columnModel.getColumn(0);
+        colorLegendColumn.setMinWidth(colorCellSize);
+        colorLegendColumn.setMaxWidth(colorCellSize);
+
+        JPanel legendPanel = new JPanel(new BorderLayout());
+        legendPanel.setBorder(SizeHelper.getTitledBorder("Highlight legend"));
+        legendPanel.add(legendTable, BorderLayout.CENTER);
+        return legendPanel;
+    }
+
+    private JPanel getBreakControlsPanel(final GraphEditor editor) {
+        BasicTableModel<String> breakTableModel = new BasicTableModel<>(breakers);
+        breakTable = new JTable(breakTableModel);
+        breakTable.setFocusable(false);
+        breakTable.setRowSelectionAllowed(false);
+        breakTable.setRowHeight(SizeHelper.getComponentHeightFromFont(breakTable.getFont()));
+        breakTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        breakTable.setTableHeader(null);
+        JScrollPane forceScrollPane = new JScrollPane(breakTable);
+
+        JButton clearPathBreakersButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-loopbreaker-clear_all.svg"),
+                "Clear path breaker contacts and components");
+        clearPathBreakersButton.addActionListener(l -> clearPathBreakers(editor));
+
+        JButton insertLoopBreakerBuffersButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-loopbreaker-insert_buffers.svg"),
+                "Insert loop breaker buffers");
+        insertLoopBreakerBuffersButton.addActionListener(l -> insertLoopBreakerBuffers(editor));
+
+        FlowLayout flowLayout = new FlowLayout();
+        int buttonWidth = (int) Math.round(insertLoopBreakerBuffersButton.getPreferredSize().getWidth() + flowLayout.getHgap());
+        int buttonHeight = (int) Math.round(insertLoopBreakerBuffersButton.getPreferredSize().getHeight() + flowLayout.getVgap());
+        Dimension panelSize = new Dimension(buttonWidth * 5 + flowLayout.getHgap(), buttonHeight + flowLayout.getVgap());
+
+        JPanel btnPanel = new JPanel();
+        btnPanel.setLayout(flowLayout);
+        btnPanel.setPreferredSize(panelSize);
+        btnPanel.setMaximumSize(panelSize);
+        btnPanel.add(clearPathBreakersButton);
+        btnPanel.add(insertLoopBreakerBuffersButton);
+
+        JPanel forcePanel = new JPanel(new BorderLayout());
+        forcePanel.setBorder(SizeHelper.getTitledBorder("Path breakers"));
+        forcePanel.add(forceScrollPane, BorderLayout.CENTER);
+        forcePanel.add(btnPanel, BorderLayout.SOUTH);
+        return forcePanel;
+    }
+
+    private void clearPathBreakers(final GraphEditor editor) {
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        we.captureMemento();
+        Circuit circuit = (Circuit) editor.getModel().getMathModel();
+        Collection<? extends FunctionComponent> changedComponents = LoopUtils.clearPathBreakerComponents(circuit);
+        Collection<? extends Contact> changedContacts = LoopUtils.clearPathBreakerContacts(circuit);
+        if (changedComponents.isEmpty() && changedContacts.isEmpty()) {
+            we.cancelMemento();
+        } else {
+            we.saveMemento();
+        }
+        circuit = (Circuit) editor.getModel().getMathModel();
+        updateState(circuit);
+        editor.requestFocus();
+    }
+
+    private void insertLoopBreakerBuffers(final GraphEditor editor) {
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        we.captureMemento();
+        VisualCircuit circuit = (VisualCircuit) editor.getModel();
+        Collection<VisualFunctionComponent> loopbreakGates = LoopUtils.insertLoopBreakerBuffers(circuit);
+        if (loopbreakGates.isEmpty()) {
+            we.cancelMemento();
+        } else {
+            we.saveMemento();
+        }
+        circuit = (VisualCircuit) editor.getModel();
+        updateState(circuit.getMathModel());
+        editor.requestFocus();
+    }
+
+    private JPanel getScanControlsPanel(final GraphEditor editor) {
+        JButton insertScanButton = new JButton("Insert scan");
+        insertScanButton.addActionListener(l -> insertScan(editor));
+
+        JButton writePathbreakConstraintsButton = new JButton("Write SDC");
+        writePathbreakConstraintsButton.addActionListener(l -> writePathbreakConstraints(editor));
+
+        JPanel scanPanel = new JPanel();
+        scanPanel.add(insertScanButton);
+        scanPanel.add(writePathbreakConstraintsButton);
+        return scanPanel;
+    }
+
+    private void insertScan(GraphEditor editor) {
+        VisualCircuit circuit = (VisualCircuit) editor.getModel();
+        Collection<VisualFunctionComponent> components = Hierarchy.getDescendantsOfType(circuit.getRoot(),
+                VisualFunctionComponent.class, component -> component.getReferencedComponent().getPathBreaker());
+
+        if (!components.isEmpty()) {
+            editor.getWorkspaceEntry().saveMemento();
+            ScanUtils.insertScan(circuit, components);
+        }
+    }
+
+    private void writePathbreakConstraints(final GraphEditor editor) {
+        JFileChooser fc = new JFileChooser();
+        fc.setDialogType(JFileChooser.SAVE_DIALOG);
+        fc.setDialogTitle("Save path breaker SDC constraints");
+        Circuit circuit = WorkspaceUtils.getAs(editor.getWorkspaceEntry(), Circuit.class);
+        PathbreakConstraintExporter exporter = new PathbreakConstraintExporter();
+        Format format = exporter.getFormat();
+        fc.setFileFilter(new FormatFileFilter(format));
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        GuiUtils.sizeFileChooserToScreen(fc, mainWindow.getDisplayMode());
+        fc.setCurrentDirectory(mainWindow.getLastDirectory());
+        try {
+            String path = ExportUtils.getValidSavePath(fc, format);
+            File file = new File(path);
+            exporter.export(circuit, file);
+        } catch (OperationCancelledException e) {
+        }
+        mainWindow.setLastDirectory(fc.getCurrentDirectory());
+    }
     @Override
     public String getLabel() {
         return "Loop analyser";
@@ -52,7 +218,7 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
 
     @Override
     public String getHintText(final GraphEditor editor) {
-        return "Click on a driven contact to toggle its break path state.";
+        return "Click on a driven contact or a component to toggle its path breaker state.";
     }
 
     @Override
@@ -66,6 +232,7 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
     public void deactivated(final GraphEditor editor) {
         super.deactivated(editor);
         loopSet = null;
+        breakers.clear();
     }
 
     @Override
@@ -76,25 +243,27 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
         we.setCanCopy(false);
     }
 
-    @Override
-    public boolean requiresPropertyEditor() {
-        return true;
-    }
 
     private void updateState(Circuit circuit) {
         loopSet = new HashSet<>();
+        breakers.clear();
         HashMap<MathNode, HashSet<CircuitComponent>> presets = new HashMap<>();
         for (FunctionComponent component: circuit.getFunctionComponents()) {
-            if (component.getPathBreaker()) continue;
-            HashSet<CircuitComponent> componentPreset = new HashSet<>();
-            for (Contact contact: component.getInputs()) {
-                if (!contact.getPathBreaker()) {
-                    HashSet<CircuitComponent> contactPreset = StructureUtilsKt.getPresetComponents(circuit, contact);
-                    componentPreset.addAll(contactPreset);
-                    presets.put(contact, contactPreset);
+            if (component.getPathBreaker()) {
+                breakers.add(circuit.getNodeReference(component));
+            } else {
+                HashSet<CircuitComponent> componentPreset = new HashSet<>();
+                for (Contact contact : component.getInputs()) {
+                    if (contact.getPathBreaker()) {
+                        breakers.add(circuit.getNodeReference(contact));
+                    } else {
+                        HashSet<CircuitComponent> contactPreset = StructureUtilsKt.getPresetComponents(circuit, contact);
+                        componentPreset.addAll(contactPreset);
+                        presets.put(contact, contactPreset);
+                    }
                 }
+                presets.put(component, componentPreset);
             }
-            presets.put(component, componentPreset);
         }
         for (FunctionComponent component: circuit.getFunctionComponents()) {
             for (Contact contact: component.getInputs()) {
@@ -118,6 +287,8 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
                 }
             }
         }
+        Collections.sort(breakers);
+        breakTable.tableChanged(new TableModelEvent(breakTable.getModel()));
     }
 
     @Override
@@ -126,7 +297,7 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
         GraphEditor editor = e.getEditor();
         VisualModel model = e.getModel();
         if (e.getButton() == MouseEvent.BUTTON1) {
-            VisualNode node = (VisualNode) HitMan.hitDeepest(e.getPosition(), editor.getModel());
+            VisualNode node = HitMan.hitDeepest(e.getPosition(), editor.getModel());
             if (node instanceof VisualContact) {
                 Contact contact = ((VisualContact) node).getReferencedContact();
                 if (contact.isDriven()) {
@@ -136,6 +307,7 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
                 }
             } else if (node instanceof VisualCircuitComponent) {
                 CircuitComponent component = ((VisualCircuitComponent) node).getReferencedComponent();
+                editor.getWorkspaceEntry().saveMemento();
                 component.setPathBreaker(!component.getPathBreaker());
                 processed = true;
             }
@@ -174,8 +346,9 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private Decoration getContactDecoration(Contact contact) {
-        final Color color = contact.getPathBreaker() ? CircuitSettings.getPropagatedInitGateColor()
-                : loopSet.contains(contact) ? CircuitSettings.getConflictInitGateColor() : null;
+        final Color color = contact.getPathBreaker() ? CircuitSettings.getBreakCycleGateColor()
+                : loopSet.contains(contact) ? CircuitSettings.getWithinCycleGateColor()
+                : null;
 
         return new Decoration() {
             @Override
@@ -190,8 +363,9 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private Decoration getComponentDecoration(FunctionComponent component) {
-        final Color color = component.getPathBreaker() ? CircuitSettings.getPropagatedInitGateColor()
-                : loopSet.contains(component) ? CircuitSettings.getConflictInitGateColor() : null;
+        final Color color = component.getPathBreaker() ? CircuitSettings.getBreakCycleGateColor()
+                : loopSet.contains(component) ? CircuitSettings.getWithinCycleGateColor()
+                : CircuitSettings.getOutsideCycleGateColor();
 
         return new Decoration() {
             @Override

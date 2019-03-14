@@ -36,7 +36,7 @@ public final class ColorLegendTableModel extends AbstractTableModel {
 
     @Override
     public int getRowCount() {
-        return 3;
+        return items.size();
     }
 
     @Override

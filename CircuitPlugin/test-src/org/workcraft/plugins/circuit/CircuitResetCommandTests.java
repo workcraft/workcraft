@@ -89,7 +89,7 @@ public class CircuitResetCommandTests {
     private int getForceInitCount(WorkspaceEntry we) {
         int result = 0;
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-        for (FunctionContact contact :circuit.getFunctionContacts()) {
+        for (FunctionContact contact : circuit.getFunctionContacts()) {
             if (contact.isForcedDriver()) {
                 result++;
             }
