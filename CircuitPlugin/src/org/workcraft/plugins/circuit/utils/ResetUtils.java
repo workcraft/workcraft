@@ -1,19 +1,11 @@
 package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.references.Identifier;
-import org.workcraft.dom.visual.*;
-import org.workcraft.dom.visual.connections.ConnectionUtils;
-import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
 import org.workcraft.plugins.circuit.*;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.Hierarchy;
 
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 
 public class ResetUtils {
@@ -158,7 +150,7 @@ public class ResetUtils {
     }
 
     public static void insertReset(VisualCircuit circuit, String portName, boolean activeLow) {
-        VisualFunctionContact resetPort = getOrCreateResetPort(circuit, portName);
+        VisualFunctionContact resetPort = CircuitUtils.getOrCreatePort(circuit, portName, Contact.IOType.INPUT);
         if (resetPort == null) {
             return;
         }
@@ -204,31 +196,8 @@ public class ResetUtils {
                 insertResetGate(circuit, resetPort, contact, activeLow);
             }
         }
-        positionResetPort(circuit, resetPort);
+        SpaceUtils.positionPort(circuit, resetPort);
         forceInitResetCircuit(circuit, resetPort, activeLow);
-    }
-
-    private static VisualFunctionContact getOrCreateResetPort(VisualCircuit circuit, String portName) {
-        VisualFunctionContact result = null;
-        VisualComponent component = circuit.getVisualComponentByMathReference(portName, VisualComponent.class);
-        if (component == null) {
-            result = circuit.getOrCreatePort(portName, Contact.IOType.INPUT);
-            if (result == null) {
-                DialogUtils.showError("Cannot create reset port '" + portName + "'.");
-                return null;
-            }
-        } else if (component instanceof VisualFunctionContact) {
-            result = (VisualFunctionContact) component;
-            if (result.isOutput()) {
-                DialogUtils.showError("Cannot reuse existing output port '" + portName + "' for circuit reset.");
-                return null;
-            }
-            DialogUtils.showWarning("Reusing existing input port '" + portName + "' for circuit reset.");
-        } else {
-            DialogUtils.showError("Cannot insert reset port '" + portName + "' because a component with the same name already exists.");
-            return null;
-        }
-        return result;
     }
 
     private static void resetBuffer(VisualCircuit circuit, VisualFunctionComponent component,
@@ -357,20 +326,7 @@ public class ResetUtils {
     }
 
     private static void insertResetGate(VisualCircuit circuit, VisualContact resetPort, VisualFunctionContact contact, boolean activeLow) {
-        // Change connection scale mode to LOCK_RELATIVELY for cleaner relocation of components
-        Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualConnection.class);
-        HashMap<VisualConnection, VisualConnection.ScaleMode> connectionToScaleModeMap
-                = ConnectionUtils.replaceConnectionScaleMode(connections, VisualConnection.ScaleMode.LOCK_RELATIVELY);
-
-        double gateSpace = 3.0;
-        SpaceUtils.makeSpaceAfterContact(circuit, contact, gateSpace + 1.0);
-        VisualJoint joint = CircuitUtils.detachJoint(circuit, contact);
-        if (joint != null) {
-            joint.setRootSpacePosition(getOffsetContactPosition(contact, gateSpace));
-        }
-        // Restore connection scale mode
-        ConnectionUtils.restoreConnectionScaleMode(connectionToScaleModeMap);
-
+        SpaceUtils.makeSpaceAfterContact(circuit, contact, 3.0);
         VisualFunctionComponent resetGate = createResetGate(circuit, contact.getInitToOne(), activeLow);
         GateUtils.insertGateAfter(circuit, resetGate, contact);
         connectHangingInputs(circuit, resetPort, resetGate);
@@ -383,13 +339,6 @@ public class ResetUtils {
         } else {
             return initToOne ? GateUtils.createOrGate(circuit) : GateUtils.createNorbGate(circuit);
         }
-    }
-
-    private static Point2D getOffsetContactPosition(VisualContact contact, double space) {
-        double d = contact.isPort() ? -space : space;
-        double x = contact.getRootSpaceX() + d * contact.getDirection().getGradientX();
-        double y = contact.getRootSpaceY() + d * contact.getDirection().getGradientY();
-        return new Point2D.Double(x, y);
     }
 
     private static void connectHangingInputs(VisualCircuit circuit, VisualContact port, VisualFunctionComponent component) {
@@ -412,27 +361,6 @@ public class ResetUtils {
             if (contact.isPin() && contact.isOutput()) {
                 contact.setForcedInit(false);
             }
-        }
-    }
-
-    private static void positionResetPort(VisualCircuit circuit, VisualFunctionContact resetPort) {
-        Collection<Touchable> nodes = new HashSet<>();
-        nodes.addAll(Hierarchy.getChildrenOfType(circuit.getRoot(), VisualConnection.class));
-        for (VisualConnection resetConnection : circuit.getConnections(resetPort)) {
-            nodes.remove(resetConnection);
-        }
-        nodes.addAll(Hierarchy.getChildrenOfType(circuit.getRoot(), VisualCircuitComponent.class));
-        nodes.addAll(Hierarchy.getChildrenOfType(circuit.getRoot(), VisualJoint.class));
-        Rectangle2D modelBox = BoundingBoxHelper.mergeBoundingBoxes(nodes);
-        Collection<VisualContact> driven = CircuitUtils.findDriven(circuit, resetPort, false);
-        double x = modelBox.getMinX();
-        double y = driven.isEmpty() ? modelBox.getCenterY() : MixUtils.middleRootspacePosition(driven).getY();
-        Point2D.Double pos = new Point2D.Double(TransformHelper.snapP5(x), TransformHelper.snapP5(y));
-        resetPort.setRootSpacePosition(pos);
-
-        VisualJoint joint = CircuitUtils.detachJoint(circuit, resetPort);
-        if (joint != null) {
-            joint.setRootSpacePosition(getOffsetContactPosition(resetPort, 0.5));
         }
     }
 

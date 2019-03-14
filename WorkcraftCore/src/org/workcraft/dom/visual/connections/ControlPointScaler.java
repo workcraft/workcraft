@@ -1,15 +1,9 @@
 package org.workcraft.dom.visual.connections;
 
-import static org.workcraft.utils.Geometry.add;
-import static org.workcraft.utils.Geometry.changeBasis;
-import static org.workcraft.utils.Geometry.multiply;
-import static org.workcraft.utils.Geometry.normalize;
-import static org.workcraft.utils.Geometry.reduce;
-import static org.workcraft.utils.Geometry.rotate90CCW;
-import static org.workcraft.utils.Geometry.subtract;
-
 import java.awt.geom.Point2D;
 import java.util.Collection;
+
+import static org.workcraft.utils.Geometry.*;
 
 public class ControlPointScaler {
     private static final double THRESHOLD = 0.00001;
@@ -32,16 +26,7 @@ public class ControlPointScaler {
             int n = controlPoints.size();
             int i = 0;
             for (ControlPoint cp : controlPoints) {
-                Point2D delta;
-                if (i < n / 2) {
-                    delta = dC1;
-                } else {
-                    if (i > (n - 1) / 2) {
-                        delta = dC2;
-                    } else {
-                        delta = multiply(add(dC1, dC2), 0.5);
-                    }
-                }
+                Point2D delta = (i < n / 2) ? dC1 : dC2;
                 cp.setPosition(add(cp.getPosition(), delta));
                 i++;
             }
