@@ -54,9 +54,9 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     private JPanel getLegendControlsPanel(final GraphEditor editor) {
         ColorLegendTableModel legendTableModel = new ColorLegendTableModel(Arrays.asList(
-                Pair.of(CircuitSettings.getWithinCycleGateColor(), "Within cycle"),
+                Pair.of(CircuitSettings.getWithinCycleGateColor(), "Within a cycle"),
                 Pair.of(CircuitSettings.getBreakCycleGateColor(), "Path breaker"),
-                Pair.of(CircuitSettings.getOutsideCycleGateColor(), "Outside cycle")
+                Pair.of(CircuitSettings.getOutsideCycleGateColor(), "Outside of all cycles")
         ));
 
         JTable legendTable = new JTable(legendTableModel);
@@ -129,7 +129,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         Collection<? extends FunctionComponent> changedComponents = CycleUtils.clearPathBreakerComponents(circuit);
         Collection<? extends Contact> changedContacts = CycleUtils.clearPathBreakerContacts(circuit);
         if (changedComponents.isEmpty() && changedContacts.isEmpty()) {
-            we.cancelMemento();
+            we.uncaptureMemento();
         } else {
             we.saveMemento();
         }
@@ -144,7 +144,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         VisualCircuit circuit = (VisualCircuit) editor.getModel();
         Collection<VisualFunctionComponent> gates = CycleUtils.insertCycleBreakerBuffers(circuit);
         if (gates.isEmpty()) {
-            we.cancelMemento();
+            we.uncaptureMemento();
         } else {
             we.saveMemento();
         }
@@ -157,7 +157,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         JButton insertScanButton = new JButton("Insert scan");
         insertScanButton.addActionListener(l -> insertScan(editor));
 
-        JButton writePathbreakConstraintsButton = new JButton("Write SDC");
+        JButton writePathbreakConstraintsButton = new JButton("Write SDC...");
         writePathbreakConstraintsButton.addActionListener(l -> writePathbreakConstraints(editor));
 
         JPanel scanPanel = new JPanel();
@@ -196,6 +196,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         }
         mainWindow.setLastDirectory(fc.getCurrentDirectory());
     }
+
     @Override
     public String getLabel() {
         return "Cycle analyser";
@@ -203,7 +204,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     @Override
     public int getHotKeyCode() {
-        return KeyEvent.VK_L;
+        return KeyEvent.VK_A;
     }
 
     @Override
@@ -243,12 +244,11 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         we.setCanCopy(false);
     }
 
-
     private void updateState(Circuit circuit) {
         cycleSet = new HashSet<>();
         breakers.clear();
         HashMap<MathNode, HashSet<CircuitComponent>> presets = new HashMap<>();
-        for (FunctionComponent component: circuit.getFunctionComponents()) {
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
             if (component.getPathBreaker()) {
                 breakers.add(circuit.getNodeReference(component));
             } else {
@@ -265,8 +265,8 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
                 presets.put(component, componentPreset);
             }
         }
-        for (FunctionComponent component: circuit.getFunctionComponents()) {
-            for (Contact contact: component.getInputs()) {
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            for (Contact contact : component.getInputs()) {
                 HashSet<CircuitComponent> contactPreset = presets.get(contact);
                 if (contactPreset == null) continue;
                 HashSet<CircuitComponent> visited = new HashSet<>();
@@ -300,7 +300,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
             VisualNode node = HitMan.hitDeepest(e.getPosition(), editor.getModel());
             if (node instanceof VisualContact) {
                 Contact contact = ((VisualContact) node).getReferencedContact();
-                if (contact.isDriven()) {
+                if (contact.isInput() && contact.isPin()) {
                     editor.getWorkspaceEntry().saveMemento();
                     contact.setPathBreaker(!contact.getPathBreaker());
                     processed = true;
@@ -355,6 +355,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
             public Color getColorisation() {
                 return color;
             }
+
             @Override
             public Color getBackground() {
                 return color;
@@ -372,6 +373,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
             public Color getColorisation() {
                 return color;
             }
+
             @Override
             public Color getBackground() {
                 return color;

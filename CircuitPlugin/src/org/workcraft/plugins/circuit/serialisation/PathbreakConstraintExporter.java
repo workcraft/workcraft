@@ -25,13 +25,13 @@ public class PathbreakConstraintExporter implements PathbreakExporter {
 
     @Override
     public void export(Circuit circuit, File file) {
-        String instancePrefix = DialogUtils.showInput("Prefix to add to all instance names:", "");
-        if (instancePrefix != null) {
+        String prefix = DialogUtils.showInput("Prefix to add to all instance names:", "");
+        if (prefix != null) {
             LogUtils.logInfo(ExportUtils.getExportMessage(circuit, file, "Writing path breaker constraints for the circuit "));
             PathbreakConstraintSerialiser serialiser = new PathbreakConstraintSerialiser();
             try {
                 FileOutputStream out = new FileOutputStream(file);
-                serialiser.serialise(circuit, instancePrefix, out);
+                serialiser.serialise(circuit, prefix, out);
                 out.close();
             } catch (IOException e) {
                 LogUtils.logError("Could not write into file '" + file.getAbsolutePath() + "'");

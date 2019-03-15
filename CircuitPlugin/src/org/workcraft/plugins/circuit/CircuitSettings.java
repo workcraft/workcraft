@@ -391,7 +391,7 @@ public class CircuitSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, Color>(
-                this, "Gate with conflict of initialisation", Color.class) {
+                this, "Initialisation analyser: Conflict of initialisation", Color.class) {
             @Override
             public void setter(CircuitSettings object, Color value) {
                 setConflictInitGateColor(value);
@@ -403,7 +403,7 @@ public class CircuitSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, Color>(
-                this, "Gate with forced initial state", Color.class) {
+                this, "Initialisation analyser: Forced initial state", Color.class) {
             @Override
             public void setter(CircuitSettings object, Color value) {
                 setForcedInitGateColor(value);
@@ -415,7 +415,7 @@ public class CircuitSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, Color>(
-                this, "Gate with propagated initial state", Color.class) {
+                this, "Initialisation analyser: Propagated initial state", Color.class) {
             @Override
             public void setter(CircuitSettings object, Color value) {
                 setPropagatedInitGateColor(value);
@@ -439,7 +439,7 @@ public class CircuitSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, Color>(
-                this, "Gate within cycles", Color.class) {
+                this, "Cycle analyser: Within a cycle", Color.class) {
             @Override
             public void setter(CircuitSettings object, Color value) {
                 setWithinCycleGateColor(value);
@@ -451,7 +451,7 @@ public class CircuitSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, Color>(
-                this, "Gate breaking cycles", Color.class) {
+                this, "Cycle analyser: Path breaker", Color.class) {
             @Override
             public void setter(CircuitSettings object, Color value) {
                 setBreakCycleGateColor(value);
@@ -463,7 +463,7 @@ public class CircuitSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, Color>(
-                this, "Gate outside of cycles", Color.class) {
+                this, "Cycle analyser: Outside of all cycles", Color.class) {
             @Override
             public void setter(CircuitSettings object, Color value) {
                 setOutsideCycleGateColor(value);

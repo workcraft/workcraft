@@ -29,7 +29,7 @@ public class ClearForceInitCommand extends CircuitAbstractInitialisationCommand 
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         HashSet<? extends Contact> changedContacts = ResetUtils.setForceInit(circuit, false);
         if (changedContacts.isEmpty()) {
-            we.cancelMemento();
+            we.uncaptureMemento();
         } else {
             we.saveMemento();
             ArrayList<String> refs = ReferenceHelper.getReferenceList(circuit, changedContacts);

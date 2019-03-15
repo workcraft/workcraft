@@ -7,6 +7,7 @@ import org.workcraft.Framework;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.commands.CircuitCycleFreenessVerificationCommand;
+import org.workcraft.plugins.circuit.commands.ClearPathBreakerCommand;
 import org.workcraft.plugins.circuit.commands.InsertCycleBreakerBuffersCommand;
 import org.workcraft.plugins.circuit.commands.InsertPathBreakerScanCommand;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
@@ -45,13 +46,11 @@ public class CircuitCycleCommandTests {
         WorkspaceEntry we = framework.loadWork(url.getFile());
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
 
+        new ClearPathBreakerCommand().execute(we);
+        Assert.assertEquals(0, countPathBreaker(circuit));
+
         new InsertCycleBreakerBuffersCommand().execute(we);
-        int count = 0;
-        for (FunctionComponent component : circuit.getFunctionComponents()) {
-            if (component.getPathBreaker()) {
-                count++;
-            }
-        }
+        int count = countPathBreaker(circuit);
         Assert.assertEquals(breakCount, count);
 
         if (count > 0) {
@@ -80,6 +79,21 @@ public class CircuitCycleCommandTests {
         Assert.assertEquals(pass, new CircuitCycleFreenessVerificationCommand().execute(we));
 
         framework.closeWork(we);
+    }
+
+    private int countPathBreaker(Circuit circuit) {
+        int result = 0;
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            if (component.getPathBreaker()) {
+                result++;
+            }
+            for (Contact contact : component.getInputs()) {
+                if (contact.getPathBreaker()) {
+                    result++;
+                }
+            }
+        }
+        return result;
     }
 
 }

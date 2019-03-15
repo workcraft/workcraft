@@ -147,7 +147,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         Circuit circuit = (Circuit) editor.getModel().getMathModel();
         Collection<? extends Contact> changedContacts = func.apply(circuit);
         if (changedContacts.isEmpty()) {
-            we.cancelMemento();
+            we.uncaptureMemento();
         } else {
             we.saveMemento();
         }
