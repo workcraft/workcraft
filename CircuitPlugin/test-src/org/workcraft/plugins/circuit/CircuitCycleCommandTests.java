@@ -7,8 +7,8 @@ import org.workcraft.Framework;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.commands.CircuitCycleFreenessVerificationCommand;
-import org.workcraft.plugins.circuit.commands.CircuitInsertLoopbreakerBuffersCommand;
-import org.workcraft.plugins.circuit.commands.CircuitInsertPathbreakerScanCommand;
+import org.workcraft.plugins.circuit.commands.InsertCycleBreakerBuffersCommand;
+import org.workcraft.plugins.circuit.commands.InsertPathBreakerScanCommand;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.utils.WorkspaceUtils;
@@ -45,7 +45,7 @@ public class CircuitCycleCommandTests {
         WorkspaceEntry we = framework.loadWork(url.getFile());
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
 
-        new CircuitInsertLoopbreakerBuffersCommand().execute(we);
+        new InsertCycleBreakerBuffersCommand().execute(we);
         int count = 0;
         for (FunctionComponent component : circuit.getFunctionComponents()) {
             if (component.getPathBreaker()) {
@@ -55,7 +55,7 @@ public class CircuitCycleCommandTests {
         Assert.assertEquals(breakCount, count);
 
         if (count > 0) {
-            new CircuitInsertPathbreakerScanCommand().execute(we);
+            new InsertPathBreakerScanCommand().execute(we);
 
 
             Iterator<String> portNameIterator = CircuitSettings.parseScanPorts().iterator();

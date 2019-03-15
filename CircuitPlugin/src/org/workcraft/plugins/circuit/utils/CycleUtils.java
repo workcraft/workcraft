@@ -6,7 +6,7 @@ import org.workcraft.utils.DirectedGraphUtils;
 
 import java.util.*;
 
-public class LoopUtils {
+public class CycleUtils {
 
     public static Set<FunctionComponent> clearPathBreakerComponents(Circuit circuit) {
         Set<FunctionComponent> result = new HashSet<>();
@@ -32,7 +32,7 @@ public class LoopUtils {
         return result;
     }
 
-    public static Collection<VisualFunctionComponent> insertLoopBreakerBuffers(VisualCircuit circuit) {
+    public static Collection<VisualFunctionComponent> insertCycleBreakerBuffers(VisualCircuit circuit) {
         clearPathBreakerContacts(circuit.getMathModel());
         Map<Contact, Set<Contact>> graph = buildGraph(circuit.getMathModel());
         Set<Contact> feedbackContacts = DirectedGraphUtils.findFeedbackVertices(graph);

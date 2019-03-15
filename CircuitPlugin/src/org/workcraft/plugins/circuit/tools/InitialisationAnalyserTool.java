@@ -157,7 +157,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private JPanel getResetControlsPanel(final GraphEditor editor) {
-        JButton insertResetButton = new JButton("Insert reset logic");
+        JButton insertResetButton = new JButton("Insert reset logic...");
         insertResetButton.addActionListener(l -> insertReset(editor));
 
         JPanel resetPanel = new JPanel();

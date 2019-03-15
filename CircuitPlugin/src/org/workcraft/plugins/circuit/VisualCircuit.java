@@ -61,7 +61,7 @@ public class VisualCircuit extends AbstractVisualModel {
         tools.add(new ContactGeneratorTool());
         tools.add(new CircuitSimulationTool());
         tools.add(new InitialisationAnalyserTool());
-        tools.add(new LoopAnalyserTool());
+        tools.add(new CycleAnalyserTool());
         setGraphEditorTools(tools);
     }
 

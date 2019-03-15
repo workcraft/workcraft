@@ -112,10 +112,10 @@ public class CircuitPlugin implements Plugin {
         ScriptableCommandUtils.register(CircuitCycleFreenessVerificationCommand.class, "checkCircuitCycles",
                 "check if the Circuit 'work' is free from cyclic paths");
 
-        ScriptableCommandUtils.register(CircuitInsertLoopbreakerBuffersCommand.class, "insertCircuitLoopbreakerBuffers",
-                "insert loop breaker buffers into the Circuit 'work'");
-        ScriptableCommandUtils.register(CircuitInsertPathbreakerScanCommand.class, "insertCircuitScan",
-                "insert scan for path breaker components into the Circuit 'work' ");
+        ScriptableCommandUtils.register(InsertCycleBreakerBuffersCommand.class, "insertCircuitCycleBreakerBuffers",
+                "insert path breaker buffers into the Circuit 'work' for eliminating cycles");
+        ScriptableCommandUtils.register(InsertPathBreakerScanCommand.class, "insertCircuitPathBreakerScan",
+                "insert scan for path breaker components into the Circuit 'work'");
     }
 
     private void initCompatibilityManager() {

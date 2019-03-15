@@ -13,7 +13,7 @@ import org.workcraft.interop.Format;
 import org.workcraft.interop.FormatFileFilter;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.serialisation.PathbreakConstraintExporter;
-import org.workcraft.plugins.circuit.utils.LoopUtils;
+import org.workcraft.plugins.circuit.utils.CycleUtils;
 import org.workcraft.plugins.circuit.utils.ScanUtils;
 import org.workcraft.plugins.circuit.utils.StructureUtilsKt;
 import org.workcraft.types.Pair;
@@ -36,10 +36,10 @@ import java.util.List;
 import java.util.Queue;
 import java.util.*;
 
-public class LoopAnalyserTool extends AbstractGraphEditorTool {
+public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     private JTable breakTable;
-    private HashSet<MathNode> loopSet;
+    private HashSet<MathNode> cycleSet;
     private final List<String> breakers = new ArrayList<>();
 
     @Override
@@ -94,26 +94,26 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
         JScrollPane forceScrollPane = new JScrollPane(breakTable);
 
         JButton clearPathBreakersButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-loopbreaker-clear_all.svg"),
+                GuiUtils.createIconFromSVG("images/circuit-pathbreaker-clear_all.svg"),
                 "Clear path breaker contacts and components");
         clearPathBreakersButton.addActionListener(l -> clearPathBreakers(editor));
 
-        JButton insertLoopBreakerBuffersButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-loopbreaker-insert_buffers.svg"),
-                "Insert loop breaker buffers");
-        insertLoopBreakerBuffersButton.addActionListener(l -> insertLoopBreakerBuffers(editor));
+        JButton insertCycleBreakerBuffersButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-pathbreaker-insert_buffers.svg"),
+                "Insert cycle breaker buffers");
+        insertCycleBreakerBuffersButton.addActionListener(l -> insertCycleBreakerBuffers(editor));
 
         FlowLayout flowLayout = new FlowLayout();
-        int buttonWidth = (int) Math.round(insertLoopBreakerBuffersButton.getPreferredSize().getWidth() + flowLayout.getHgap());
-        int buttonHeight = (int) Math.round(insertLoopBreakerBuffersButton.getPreferredSize().getHeight() + flowLayout.getVgap());
-        Dimension panelSize = new Dimension(buttonWidth * 5 + flowLayout.getHgap(), buttonHeight + flowLayout.getVgap());
+        int buttonWidth = (int) Math.round(insertCycleBreakerBuffersButton.getPreferredSize().getWidth() + flowLayout.getHgap());
+        int buttonHeight = (int) Math.round(insertCycleBreakerBuffersButton.getPreferredSize().getHeight() + flowLayout.getVgap());
+        Dimension panelSize = new Dimension(buttonWidth * 2 + flowLayout.getHgap(), buttonHeight + flowLayout.getVgap());
 
         JPanel btnPanel = new JPanel();
         btnPanel.setLayout(flowLayout);
         btnPanel.setPreferredSize(panelSize);
         btnPanel.setMaximumSize(panelSize);
         btnPanel.add(clearPathBreakersButton);
-        btnPanel.add(insertLoopBreakerBuffersButton);
+        btnPanel.add(insertCycleBreakerBuffersButton);
 
         JPanel forcePanel = new JPanel(new BorderLayout());
         forcePanel.setBorder(SizeHelper.getTitledBorder("Path breakers"));
@@ -126,8 +126,8 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
         WorkspaceEntry we = editor.getWorkspaceEntry();
         we.captureMemento();
         Circuit circuit = (Circuit) editor.getModel().getMathModel();
-        Collection<? extends FunctionComponent> changedComponents = LoopUtils.clearPathBreakerComponents(circuit);
-        Collection<? extends Contact> changedContacts = LoopUtils.clearPathBreakerContacts(circuit);
+        Collection<? extends FunctionComponent> changedComponents = CycleUtils.clearPathBreakerComponents(circuit);
+        Collection<? extends Contact> changedContacts = CycleUtils.clearPathBreakerContacts(circuit);
         if (changedComponents.isEmpty() && changedContacts.isEmpty()) {
             we.cancelMemento();
         } else {
@@ -138,12 +138,12 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
         editor.requestFocus();
     }
 
-    private void insertLoopBreakerBuffers(final GraphEditor editor) {
+    private void insertCycleBreakerBuffers(final GraphEditor editor) {
         WorkspaceEntry we = editor.getWorkspaceEntry();
         we.captureMemento();
         VisualCircuit circuit = (VisualCircuit) editor.getModel();
-        Collection<VisualFunctionComponent> loopbreakGates = LoopUtils.insertLoopBreakerBuffers(circuit);
-        if (loopbreakGates.isEmpty()) {
+        Collection<VisualFunctionComponent> gates = CycleUtils.insertCycleBreakerBuffers(circuit);
+        if (gates.isEmpty()) {
             we.cancelMemento();
         } else {
             we.saveMemento();
@@ -198,7 +198,7 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
     }
     @Override
     public String getLabel() {
-        return "Loop analyser";
+        return "Cycle analyser";
     }
 
     @Override
@@ -208,7 +208,7 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
 
     @Override
     public Icon getIcon() {
-        return GuiUtils.createIconFromSVG("images/circuit-tool-loop_analysis.svg");
+        return GuiUtils.createIconFromSVG("images/circuit-tool-cycle_analysis.svg");
     }
 
     @Override
@@ -231,7 +231,7 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
     @Override
     public void deactivated(final GraphEditor editor) {
         super.deactivated(editor);
-        loopSet = null;
+        cycleSet = null;
         breakers.clear();
     }
 
@@ -245,7 +245,7 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
 
 
     private void updateState(Circuit circuit) {
-        loopSet = new HashSet<>();
+        cycleSet = new HashSet<>();
         breakers.clear();
         HashMap<MathNode, HashSet<CircuitComponent>> presets = new HashMap<>();
         for (FunctionComponent component: circuit.getFunctionComponents()) {
@@ -276,8 +276,8 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
                     if (visited.contains(predComponent)) continue;
                     visited.add(predComponent);
                     if (predComponent == component) {
-                        loopSet.add(component);
-                        loopSet.add(contact);
+                        cycleSet.add(component);
+                        cycleSet.add(contact);
                         break;
                     }
                     HashSet<CircuitComponent> componentPreset = presets.get(predComponent);
@@ -347,7 +347,7 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
 
     private Decoration getContactDecoration(Contact contact) {
         final Color color = contact.getPathBreaker() ? CircuitSettings.getBreakCycleGateColor()
-                : loopSet.contains(contact) ? CircuitSettings.getWithinCycleGateColor()
+                : cycleSet.contains(contact) ? CircuitSettings.getWithinCycleGateColor()
                 : null;
 
         return new Decoration() {
@@ -364,7 +364,7 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
 
     private Decoration getComponentDecoration(FunctionComponent component) {
         final Color color = component.getPathBreaker() ? CircuitSettings.getBreakCycleGateColor()
-                : loopSet.contains(component) ? CircuitSettings.getWithinCycleGateColor()
+                : cycleSet.contains(component) ? CircuitSettings.getWithinCycleGateColor()
                 : CircuitSettings.getOutsideCycleGateColor();
 
         return new Decoration() {

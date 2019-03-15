@@ -9,7 +9,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.Collection;
 
-public class CircuitInsertPathbreakerScanCommand extends CircuitAbstractPathbreakerCommand {
+public class InsertPathBreakerScanCommand extends CircuitAbstractPathbreakerCommand {
 
     @Override
     public String getDisplayName() {

@@ -7,7 +7,7 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.tools.LoopAnalyserTool;
+import org.workcraft.plugins.circuit.tools.CycleAnalyserTool;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -45,7 +45,7 @@ public abstract class CircuitAbstractPathbreakerCommand implements ScriptableCom
             MainWindow mainWindow = framework.getMainWindow();
             GraphEditorPanel currentEditor = mainWindow.getEditor(we);
             Toolbox toolbox = currentEditor.getToolBox();
-            toolbox.selectTool(toolbox.getToolInstance(LoopAnalyserTool.class));
+            toolbox.selectTool(toolbox.getToolInstance(CycleAnalyserTool.class));
         }
         return null;
     }

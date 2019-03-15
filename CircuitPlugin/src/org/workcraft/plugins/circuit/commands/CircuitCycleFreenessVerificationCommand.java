@@ -4,7 +4,7 @@ import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.FunctionComponent;
-import org.workcraft.plugins.circuit.utils.LoopUtils;
+import org.workcraft.plugins.circuit.utils.CycleUtils;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
@@ -37,7 +37,7 @@ public class CircuitCycleFreenessVerificationCommand extends AbstractVerificatio
             return null;
         }
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-        Collection<FunctionComponent> cycledComponents = LoopUtils.getCycledComponents(circuit);
+        Collection<FunctionComponent> cycledComponents = CycleUtils.getCycledComponents(circuit);
         if (cycledComponents.isEmpty()) {
             DialogUtils.showInfo("The circuit does not have unbroken cycles.");
             return true;
