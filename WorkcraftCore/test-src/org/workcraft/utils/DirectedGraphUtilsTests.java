@@ -84,6 +84,12 @@ public class DirectedGraphUtilsTests {
     }
 
     @Test
+    public void findLoopedVerticesTest() {
+        Set<Integer> loopedVertices = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 8, 9));
+        Assert.assertEquals(loopedVertices, DirectedGraphUtils.findLoopedVertices(graph));
+    }
+
+    @Test
     public void findSimpleCyclesTest() {
         Set<List<Integer>> cycles = new HashSet<>();
         cycles.add(Arrays.asList(1, 2, 3));
@@ -104,6 +110,7 @@ public class DirectedGraphUtilsTests {
         Assert.assertEquals(new HashSet<>(), DirectedGraphUtils.findStronglyConnectedComponents(emptyGraph));
         Assert.assertEquals(new HashSet<>(), DirectedGraphUtils.findSelfloopVertices(emptyGraph));
         Assert.assertEquals(new HashSet<>(), DirectedGraphUtils.findFeedbackVertices(emptyGraph));
+        Assert.assertEquals(new HashSet<>(), DirectedGraphUtils.findLoopedVertices(emptyGraph));
         Assert.assertEquals(new HashSet<>(), DirectedGraphUtils.findSimpleCycles(emptyGraph));
     }
 
@@ -114,6 +121,7 @@ public class DirectedGraphUtilsTests {
         Assert.assertEquals(null, DirectedGraphUtils.findStronglyConnectedComponents(null));
         Assert.assertEquals(null, DirectedGraphUtils.findSelfloopVertices(null));
         Assert.assertEquals(null, DirectedGraphUtils.findFeedbackVertices(null));
+        Assert.assertEquals(null, DirectedGraphUtils.findLoopedVertices(null));
         Assert.assertEquals(null, DirectedGraphUtils.findSimpleCycles(null));
     }
 

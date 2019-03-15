@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.plugins.circuit.commands.CircuitCycleFreenessVerificationCommand;
 import org.workcraft.plugins.circuit.commands.CircuitInsertLoopbreakerBuffersCommand;
 import org.workcraft.plugins.circuit.commands.CircuitInsertPathbreakerScanCommand;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
@@ -16,7 +17,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.net.URL;
 import java.util.Iterator;
 
-public class CircuitLoopbreakerCommandTests {
+public class CircuitCycleCommandTests {
 
     @BeforeClass
     public static void init() {
@@ -27,16 +28,16 @@ public class CircuitLoopbreakerCommandTests {
     @Test
     public void testCycleTmCircuitLoopbreakerCommand() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "cycle-tm.circuit.work");
-        testCircuitLoopbreakerCommand(workName, 0);
+        testCircuitLoopbreakerCommand(workName, 0, true);
     }
 
     @Test
     public void testChargeTmCircuitLoopbreakerCommand() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "charge-tm.circuit.work");
-        testCircuitLoopbreakerCommand(workName, 3);
+        testCircuitLoopbreakerCommand(workName, 3, true);
     }
 
-    private void testCircuitLoopbreakerCommand(String workName, int expLoopbreakerCount)
+    private void testCircuitLoopbreakerCommand(String workName, int breakCount, boolean pass)
             throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
@@ -45,15 +46,15 @@ public class CircuitLoopbreakerCommandTests {
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
 
         new CircuitInsertLoopbreakerBuffersCommand().execute(we);
-        int loopbreakerCount = 0;
+        int count = 0;
         for (FunctionComponent component : circuit.getFunctionComponents()) {
             if (component.getPathBreaker()) {
-                loopbreakerCount++;
+                count++;
             }
         }
-        Assert.assertEquals(expLoopbreakerCount, loopbreakerCount);
+        Assert.assertEquals(breakCount, count);
 
-        if (loopbreakerCount > 0) {
+        if (count > 0) {
             new CircuitInsertPathbreakerScanCommand().execute(we);
 
 
@@ -75,6 +76,8 @@ public class CircuitLoopbreakerCommandTests {
                 }
             }
         }
+
+        Assert.assertEquals(pass, new CircuitCycleFreenessVerificationCommand().execute(we));
 
         framework.closeWork(we);
     }

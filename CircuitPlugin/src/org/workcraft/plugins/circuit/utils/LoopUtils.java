@@ -71,12 +71,25 @@ public class LoopUtils {
         return result;
     }
 
+    public static Collection<FunctionComponent> getCycledComponents(Circuit circuit) {
+        Collection<FunctionComponent> result = new HashSet<>();
+        Map<Contact, Set<Contact>> graph = buildGraph(circuit);
+        for (Contact contact : DirectedGraphUtils.findLoopedVertices(graph)) {
+            Node parent = contact.getParent();
+            if (parent instanceof FunctionComponent) {
+                result.add((FunctionComponent) parent);
+            }
+        }
+        return result;
+    }
+
     private static Map<Contact, Set<Contact>> buildGraph(Circuit circuit) {
         Map<Contact, Set<Contact>> contactToDriversMap = new HashMap<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
             if (component.getPathBreaker()) continue;
             HashSet<Contact> drivers = new HashSet<>();
             for (Contact contact : component.getInputs()) {
+                if (contact.getPathBreaker()) continue;
                 Contact driver = CircuitUtils.findDriver(circuit, contact, true);
                 if (driver.isPin()) {
                     drivers.add(driver);

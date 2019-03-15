@@ -109,6 +109,8 @@ public class CircuitPlugin implements Plugin {
 
         ScriptableCommandUtils.register(CircuitResetVerificationCommand.class, "checkCircuitReset",
                 "check if the Circuit 'work' is correctly initialised via input ports");
+        ScriptableCommandUtils.register(CircuitCycleFreenessVerificationCommand.class, "checkCircuitCycles",
+                "check if the Circuit 'work' is free from cyclic paths");
 
         ScriptableCommandUtils.register(CircuitInsertLoopbreakerBuffersCommand.class, "insertCircuitLoopbreakerBuffers",
                 "insert loop breaker buffers into the Circuit 'work'");

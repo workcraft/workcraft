@@ -243,4 +243,20 @@ public class DirectedGraphUtils {
         return result;
     }
 
+    public static <T> Set<T> findLoopedVertices(Map<T, Set<T>> graph) {
+        if (graph == null) {
+            return null;
+        }
+        Set<T> result = findSelfloopVertices(graph);
+        Set<T> vertices = new HashSet<>(graph.keySet());
+        vertices.removeAll(result);
+        graph = project(graph, vertices);
+        for (Set<T> component : findStronglyConnectedComponents(graph)) {
+            if (component.size() > 1) {
+                result.addAll(component);
+            }
+        }
+        return result;
+    }
+
 }
