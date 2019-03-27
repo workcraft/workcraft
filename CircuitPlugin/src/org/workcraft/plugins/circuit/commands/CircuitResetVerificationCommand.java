@@ -1,14 +1,17 @@
 package org.workcraft.plugins.circuit.commands;
 
+import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
+import org.workcraft.gui.Toolbox;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.FunctionContact;
+import org.workcraft.plugins.circuit.tools.InitialisationAnalyserTool;
 import org.workcraft.plugins.circuit.utils.InitialisationState;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.HashSet;
 
@@ -49,8 +52,14 @@ public class CircuitResetVerificationCommand extends AbstractVerificationCommand
             DialogUtils.showInfo("The circuit is fully initialised via forced inputs");
             return true;
         } else {
+            final Framework framework = Framework.getInstance();
+            if (framework.isInGuiMode()) {
+                final Toolbox toolbox = framework.getMainWindow().getCurrentToolbox();
+                toolbox.selectTool(toolbox.getToolInstance(InitialisationAnalyserTool.class));
+            }
             String msg = "The circuit cannot be initialised via forced inputs.\n" +
                     LogUtils.getTextWithRefs("Problematic signal", incorrectlyInitialisedComponentRefs);
+
             DialogUtils.showError(msg);
             return false;
         }

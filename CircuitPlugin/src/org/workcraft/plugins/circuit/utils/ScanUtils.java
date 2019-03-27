@@ -1,25 +1,68 @@
 package org.workcraft.plugins.circuit.utils;
 
+import org.workcraft.dom.Node;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
+import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class ScanUtils {
 
-    public static void insertScan(VisualCircuit circuit, Collection<VisualFunctionComponent> components) {
+    public static void insertScan(VisualCircuit circuit) {
+        Set<VisualFunctionComponent> components = new HashSet<>();
+        for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {
+            for (VisualContact contact : component.getVisualOutputs()) {
+                if (contact.getReferencedContact().getPathBreaker()) {
+                    contact.getReferencedContact().setPathBreaker(false);
+                    VisualFunctionComponent buffer = insertOrReuseBuffer(circuit, contact);
+                    components.add(buffer);
+                }
+            }
+        }
+        if (!components.isEmpty()) {
+            insertScan(circuit, components);
+        }
+    }
+
+    private static VisualFunctionComponent insertOrReuseBuffer(VisualCircuit circuit, VisualContact contact) {
+        VisualFunctionComponent result = null;
+        Node parent = contact.getParent();
+        if (parent instanceof VisualFunctionComponent) {
+            VisualFunctionComponent component = (VisualFunctionComponent) parent;
+            if (isBuffer(component.getReferencedComponent())) {
+                result = component;
+            }
+        }
+        if ((result == null) && contact.isOutput()) {
+            Collection<VisualContact> drivenContacts = CircuitUtils.findDriven(circuit, contact, false);
+            if (drivenContacts.size() == 1) {
+                VisualContact drivenContact = drivenContacts.iterator().next();
+                result = insertOrReuseBuffer(circuit, drivenContact);
+            }
+        }
+        if ((result == null) && contact.isOutput()) {
+            SpaceUtils.makeSpaceAfterContact(circuit, contact, 3.0);
+            result = GateUtils.createBufferGate(circuit);
+            GateUtils.insertGateAfter(circuit, result, contact);
+            GateUtils.propagateInitialState(circuit, result);
+            result.getGateOutput().getReferencedContact().setPathBreaker(true);
+        }
+        return result;
+    }
+
+    private static void insertScan(VisualCircuit circuit, Collection<VisualFunctionComponent> components) {
         List<VisualFunctionContact> ports = new ArrayList<>();
         for (String name : CircuitSettings.parseScanPorts()) {
             ports.add(CircuitUtils.getOrCreatePort(circuit, name, Contact.IOType.INPUT));
         }
 
         for (VisualFunctionComponent component : components) {
-            if (component.getReferencedComponent().getPathBreaker()) {
+            if (hasPathBreakerOutput(component.getReferencedComponent())) {
                 insertScan(circuit, component, ports);
             }
         }
@@ -30,7 +73,7 @@ public class ScanUtils {
         }
     }
 
-    public static void insertScan(VisualCircuit circuit, VisualFunctionComponent component, List<VisualFunctionContact> ports) {
+    private static void insertScan(VisualCircuit circuit, VisualFunctionComponent component, List<VisualFunctionContact> ports) {
         String moduleName = component.getReferencedComponent().getModule();
         String suffix = CircuitSettings.getScanSuffix();
         if (!moduleName.isEmpty() && !suffix.isEmpty()) {
@@ -50,6 +93,35 @@ public class ScanUtils {
                 }
             }
         }
+    }
+
+    public static boolean hasPathBreakerOutput(CircuitComponent component) {
+        for (Contact outputContact : component.getOutputs()) {
+            if (outputContact.getPathBreaker()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isBuffer(FunctionComponent component) {
+        boolean result = false;
+        Collection<FunctionContact> contacts = component.getFunctionContacts();
+        FunctionContact inputContact = null;
+        FunctionContact outputContact = null;
+        if (contacts.size() > 1) {
+            inputContact = (FunctionContact) component.getFirstInput();
+            outputContact = (FunctionContact) component.getFirstOutput();
+        }
+        if ((inputContact != null) && (outputContact != null)) {
+            BooleanFormula setFunction = outputContact.getSetFunction();
+            if ((setFunction != null) && (outputContact.getResetFunction() == null)) {
+                BooleanFormula zeroReplace = BooleanUtils.replaceClever(setFunction, inputContact, Zero.instance());
+                BooleanFormula oneReplace = BooleanUtils.replaceClever(setFunction, inputContact, One.instance());
+                result = (zeroReplace == Zero.instance()) && (oneReplace == One.instance());
+            }
+        }
+        return result;
     }
 
 }

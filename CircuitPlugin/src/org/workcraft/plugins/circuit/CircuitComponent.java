@@ -14,12 +14,10 @@ public class CircuitComponent extends MathGroup {
 
     public static final String PROPERTY_MODULE = "Module";
     public static final String PROPERTY_IS_ENVIRONMENT = "Treat as environment";
-    public static final String PROPERTY_PATH_BREAKER = "Path breaker";
 
     private String name = "";
     private String module = "";
     private boolean isEnvironment = false;
-    private boolean pathBreaker = false;
 
     public void setName(String value) {
         if (value == null) value = "";
@@ -58,17 +56,6 @@ public class CircuitComponent extends MathGroup {
 
     public boolean getIsEnvironment() {
         return isEnvironment;
-    }
-
-    public boolean getPathBreaker() {
-        return pathBreaker;
-    }
-
-    public void setPathBreaker(boolean value) {
-        if (pathBreaker != value) {
-            pathBreaker = value;
-            sendNotification(new PropertyChangedEvent(this, PROPERTY_PATH_BREAKER));
-        }
     }
 
     public Collection<Contact> getContacts() {

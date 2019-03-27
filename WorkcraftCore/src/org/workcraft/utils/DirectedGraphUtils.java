@@ -225,10 +225,11 @@ public class DirectedGraphUtils {
                     vertices.removeAll(component);
                 } else {
                     Map<T, Set<T>> subgraph = project(graph, component);
+                    Map<T, Set<T>> reverseSubgraph = reverse(graph);
                     T bestVertex = null;
                     int bestCount = -1;
                     for (T vertex : component) {
-                        int count = subgraph.get(vertex).size();
+                        int count = subgraph.get(vertex).size() + reverseSubgraph.get(vertex).size();
                         if (count > bestCount) {
                             bestVertex = vertex;
                             bestCount = count;

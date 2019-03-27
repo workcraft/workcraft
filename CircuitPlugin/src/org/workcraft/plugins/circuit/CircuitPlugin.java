@@ -113,9 +113,9 @@ public class CircuitPlugin implements Plugin {
                 "check if the Circuit 'work' is free from cyclic paths");
 
         ScriptableCommandUtils.register(ClearPathBreakerCommand.class, "testCircuitClearPathBreaker",
-                "clear path breaker for all pins and components in the Circuit 'work'");
-        ScriptableCommandUtils.register(InsertCycleBreakerBuffersCommand.class, "testCircuitInsertCycleBreakerBuffers",
-                "insert path breaker buffers into the Circuit 'work' for eliminating cycles");
+                "clear path breaker from all pins in the Circuit 'work'");
+        ScriptableCommandUtils.register(ProcessNecessaryPathBreakerCommand.class, "resetCircuitProcessNecessaryPathBreakerPins",
+                "add path breaker to pins if necessary to complete cycle breaking in the Circuit 'work'");
         ScriptableCommandUtils.register(InsertPathBreakerScanCommand.class, "testCircuitInsertPathBreakerScan",
                 "insert scan for path breaker components into the Circuit 'work'");
     }

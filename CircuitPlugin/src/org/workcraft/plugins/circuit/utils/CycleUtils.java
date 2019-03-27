@@ -1,28 +1,22 @@
 package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.Contact;
+import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.utils.DirectedGraphUtils;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class CycleUtils {
 
-    public static Set<FunctionComponent> clearPathBreakerComponents(Circuit circuit) {
-        Set<FunctionComponent> result = new HashSet<>();
+    public static Set<? extends Contact> clearPathBreakers(Circuit circuit) {
+        Set<Contact> result = new HashSet<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
-            if (component.getPathBreaker()) {
-                result.add(component);
-                component.setPathBreaker(false);
-            }
-        }
-        return result;
-    }
-
-    public static Set<FunctionContact> clearPathBreakerContacts(Circuit circuit) {
-        Set<FunctionContact> result = new HashSet<>();
-        for (FunctionComponent component : circuit.getFunctionComponents()) {
-            for (FunctionContact contact : component.getFunctionContacts()) {
+            for (Contact contact : component.getContacts()) {
                 if (contact.getPathBreaker()) {
                     result.add(contact);
                     contact.setPathBreaker(false);
@@ -32,47 +26,72 @@ public class CycleUtils {
         return result;
     }
 
-    public static Collection<VisualFunctionComponent> insertCycleBreakerBuffers(VisualCircuit circuit) {
-        clearPathBreakerContacts(circuit.getMathModel());
-        Map<Contact, Set<Contact>> graph = buildGraph(circuit.getMathModel());
+    public static Set<? extends Contact> setSelfLoopPathBreakers(Circuit circuit) {
+        Set<Contact> result = new HashSet<>();
+        for (Contact contact : getSelfloopDrivers(circuit)) {
+            if (!contact.getPathBreaker()) {
+                contact.setPathBreaker(true);
+                result.add(contact);
+            }
+        }
+        return result;
+    }
+
+    public static Set<? extends Contact> tagNecessaryPathBreakers(Circuit circuit) {
+        Map<Contact, Set<Contact>> graph = buildGraph(circuit);
         Set<Contact> feedbackContacts = DirectedGraphUtils.findFeedbackVertices(graph);
-        Collection<VisualFunctionComponent> result = new HashSet<>();
+        Set<Contact> result = new HashSet<>();
         for (Contact feedbackContact : feedbackContacts) {
-            VisualContact contact = circuit.getVisualComponent(feedbackContact, VisualContact.class);
-            VisualFunctionComponent buffer = insertOrReuseBuffer(circuit, contact);
-            buffer.getReferencedComponent().setPathBreaker(true);
-            result.add(buffer);
+            feedbackContact.setPathBreaker(true);
+            result.add(feedbackContact);
         }
         return result;
     }
 
-    private static VisualFunctionComponent insertOrReuseBuffer(VisualCircuit circuit, VisualContact contact) {
-        VisualFunctionComponent result = null;
-        Node parent = contact.getParent();
-        if (parent instanceof VisualFunctionComponent) {
-            VisualFunctionComponent component = (VisualFunctionComponent) parent;
-            if (component.isBuffer()) {
-                result = component;
+    public static Set<? extends Contact> untagRedundantPathBreakers(Circuit circuit) {
+        Set<Contact> result = new HashSet<>();
+        boolean progress = true;
+        int initCount = getCycledDrivers(circuit).size();
+        while (progress) {
+            progress = false;
+            for (Contact contact : getPathBreakerDrivers(circuit)) {
+                contact.setPathBreaker(false);
+                int curCount = getCycledDrivers(circuit).size();
+                if (curCount == initCount) {
+                    result.add(contact);
+                    progress = true;
+                } else {
+                    contact.setPathBreaker(true);
+                }
             }
-        }
-        if ((result == null) && contact.isOutput()) {
-            Collection<VisualContact> drivenContacts = CircuitUtils.findDriven(circuit, contact, false);
-            if (drivenContacts.size() == 1) {
-                VisualContact drivenContact = drivenContacts.iterator().next();
-                result = insertOrReuseBuffer(circuit, drivenContact);
-            }
-        }
-        if ((result == null) && contact.isOutput()) {
-            SpaceUtils.makeSpaceAfterContact(circuit, contact, 3.0);
-            result = GateUtils.createBufferGate(circuit);
-            GateUtils.insertGateAfter(circuit, result, contact);
-            GateUtils.propagateInitialState(circuit, result);
         }
         return result;
     }
 
-    public static Collection<FunctionComponent> getCycledComponents(Circuit circuit) {
-        Collection<FunctionComponent> result = new HashSet<>();
+    public static Set<Contact> getPathBreakerDrivers(Circuit circuit) {
+        Set<Contact> result = new HashSet<>();
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            for (Contact contact : component.getOutputs()) {
+                if (contact.getPathBreaker()) {
+                    result.add(contact);
+                }
+            }
+        }
+        return result;
+    }
+
+    public static Set<Contact> getSelfloopDrivers(Circuit circuit) {
+        Map<Contact, Set<Contact>> graph = buildGraph(circuit);
+        return DirectedGraphUtils.findSelfloopVertices(graph);
+    }
+
+    public static Set<Contact> getCycledDrivers(Circuit circuit) {
+        Map<Contact, Set<Contact>> graph = buildGraph(circuit);
+        return DirectedGraphUtils.findLoopedVertices(graph);
+    }
+
+    public static Set<FunctionComponent> getCycledComponents(Circuit circuit) {
+        Set<FunctionComponent> result = new HashSet<>();
         Map<Contact, Set<Contact>> graph = buildGraph(circuit);
         for (Contact contact : DirectedGraphUtils.findLoopedVertices(graph)) {
             Node parent = contact.getParent();
@@ -84,22 +103,22 @@ public class CycleUtils {
     }
 
     private static Map<Contact, Set<Contact>> buildGraph(Circuit circuit) {
-        Map<Contact, Set<Contact>> contactToDriversMap = new HashMap<>();
+        Map<Contact, Set<Contact>> result = new HashMap<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
-            if (component.getPathBreaker()) continue;
             HashSet<Contact> drivers = new HashSet<>();
             for (Contact contact : component.getInputs()) {
                 if (contact.getPathBreaker()) continue;
                 Contact driver = CircuitUtils.findDriver(circuit, contact, true);
-                if (driver.isPin()) {
+                if (driver.isPin() && !driver.getPathBreaker()) {
                     drivers.add(driver);
                 }
             }
             for (Contact contact : component.getOutputs()) {
-                contactToDriversMap.put(contact, drivers);
+                if (contact.getPathBreaker()) continue;
+                result.put(contact, drivers);
             }
         }
-        return contactToDriversMap;
+        return result;
     }
 
 }

@@ -2,8 +2,10 @@ package org.workcraft.plugins.circuit.tools;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.visual.*;
+import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.MainWindow;
@@ -13,13 +15,12 @@ import org.workcraft.interop.Format;
 import org.workcraft.interop.FormatFileFilter;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.serialisation.PathbreakConstraintExporter;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.CycleUtils;
 import org.workcraft.plugins.circuit.utils.ScanUtils;
-import org.workcraft.plugins.circuit.utils.StructureUtilsKt;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.ExportUtils;
 import org.workcraft.utils.GuiUtils;
-import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -33,13 +34,14 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
-import java.util.Queue;
 import java.util.*;
+import java.util.function.Function;
 
 public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     private JTable breakTable;
-    private HashSet<MathNode> cycleSet;
+    private Set<Contact> cycleContacts;
+    private Set<FunctionComponent> cycleComponents;
     private final List<String> breakers = new ArrayList<>();
 
     @Override
@@ -94,26 +96,39 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         JScrollPane forceScrollPane = new JScrollPane(breakTable);
 
         JButton clearPathBreakersButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-pathbreaker-clear_all.svg"),
+                GuiUtils.createIconFromSVG("images/circuit-cycle-clear_all.svg"),
                 "Clear path breaker contacts and components");
-        clearPathBreakersButton.addActionListener(l -> clearPathBreakers(editor));
+        clearPathBreakersButton.addActionListener(l -> changeForceInit(editor, c -> CycleUtils.clearPathBreakers(c)));
 
-        JButton insertCycleBreakerBuffersButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-pathbreaker-insert_buffers.svg"),
-                "Insert cycle breaker buffers");
-        insertCycleBreakerBuffersButton.addActionListener(l -> insertCycleBreakerBuffers(editor));
+        JButton tagNecessaryPathBreakersButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-cycle-tag_necessary.svg"),
+                "Add path breakers if necessary for cycle breaking");
+        tagNecessaryPathBreakersButton.addActionListener(l -> changeForceInit(editor, c -> CycleUtils.tagNecessaryPathBreakers(c)));
+
+        JButton untagRedundantPathBreakersButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-cycle-untag_redundant.svg"),
+                "Remove path breakers if redundant for cycle breaking");
+        untagRedundantPathBreakersButton.addActionListener(l -> changeForceInit(editor, c -> CycleUtils.untagRedundantPathBreakers(c)));
+
+        JButton setSelfLoopsPathBreakersButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-cycle-self_loop.svg"),
+                "Add path breaker for all self-loops");
+        setSelfLoopsPathBreakersButton.addActionListener(l -> changeForceInit(editor, c -> CycleUtils.setSelfLoopPathBreakers(c)));
 
         FlowLayout flowLayout = new FlowLayout();
-        int buttonWidth = (int) Math.round(insertCycleBreakerBuffersButton.getPreferredSize().getWidth() + flowLayout.getHgap());
-        int buttonHeight = (int) Math.round(insertCycleBreakerBuffersButton.getPreferredSize().getHeight() + flowLayout.getVgap());
-        Dimension panelSize = new Dimension(buttonWidth * 2 + flowLayout.getHgap(), buttonHeight + flowLayout.getVgap());
+        Dimension buttonSize = clearPathBreakersButton.getPreferredSize();
+        int buttonWidth = (int) Math.round(buttonSize.getWidth() + flowLayout.getHgap());
+        int buttonHeight = (int) Math.round(buttonSize.getHeight() + flowLayout.getVgap());
+        Dimension panelSize = new Dimension(buttonWidth * 3 + flowLayout.getHgap(), buttonHeight + flowLayout.getVgap());
 
         JPanel btnPanel = new JPanel();
         btnPanel.setLayout(flowLayout);
         btnPanel.setPreferredSize(panelSize);
         btnPanel.setMaximumSize(panelSize);
+        btnPanel.add(setSelfLoopsPathBreakersButton);
+        btnPanel.add(tagNecessaryPathBreakersButton);
+        btnPanel.add(untagRedundantPathBreakersButton);
         btnPanel.add(clearPathBreakersButton);
-        btnPanel.add(insertCycleBreakerBuffersButton);
 
         JPanel forcePanel = new JPanel(new BorderLayout());
         forcePanel.setBorder(SizeHelper.getTitledBorder("Path breakers"));
@@ -122,34 +137,18 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         return forcePanel;
     }
 
-    private void clearPathBreakers(final GraphEditor editor) {
+    private void changeForceInit(final GraphEditor editor, Function<Circuit, Collection<? extends Contact>> func) {
         WorkspaceEntry we = editor.getWorkspaceEntry();
         we.captureMemento();
         Circuit circuit = (Circuit) editor.getModel().getMathModel();
-        Collection<? extends FunctionComponent> changedComponents = CycleUtils.clearPathBreakerComponents(circuit);
-        Collection<? extends Contact> changedContacts = CycleUtils.clearPathBreakerContacts(circuit);
-        if (changedComponents.isEmpty() && changedContacts.isEmpty()) {
+        Collection<? extends Contact> changedContacts = func.apply(circuit);
+        if (changedContacts.isEmpty()) {
             we.uncaptureMemento();
         } else {
             we.saveMemento();
         }
         circuit = (Circuit) editor.getModel().getMathModel();
         updateState(circuit);
-        editor.requestFocus();
-    }
-
-    private void insertCycleBreakerBuffers(final GraphEditor editor) {
-        WorkspaceEntry we = editor.getWorkspaceEntry();
-        we.captureMemento();
-        VisualCircuit circuit = (VisualCircuit) editor.getModel();
-        Collection<VisualFunctionComponent> gates = CycleUtils.insertCycleBreakerBuffers(circuit);
-        if (gates.isEmpty()) {
-            we.uncaptureMemento();
-        } else {
-            we.saveMemento();
-        }
-        circuit = (VisualCircuit) editor.getModel();
-        updateState(circuit.getMathModel());
         editor.requestFocus();
     }
 
@@ -167,14 +166,10 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private void insertScan(GraphEditor editor) {
+        editor.getWorkspaceEntry().saveMemento();
         VisualCircuit circuit = (VisualCircuit) editor.getModel();
-        Collection<VisualFunctionComponent> components = Hierarchy.getDescendantsOfType(circuit.getRoot(),
-                VisualFunctionComponent.class, component -> component.getReferencedComponent().getPathBreaker());
-
-        if (!components.isEmpty()) {
-            editor.getWorkspaceEntry().saveMemento();
-            ScanUtils.insertScan(circuit, components);
-        }
+        ScanUtils.insertScan(circuit);
+        updateState(((VisualCircuit) editor.getModel()).getMathModel());
     }
 
     private void writePathbreakConstraints(final GraphEditor editor) {
@@ -232,7 +227,8 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     @Override
     public void deactivated(final GraphEditor editor) {
         super.deactivated(editor);
-        cycleSet = null;
+        cycleContacts = null;
+        cycleComponents = null;
         breakers.clear();
     }
 
@@ -245,44 +241,24 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private void updateState(Circuit circuit) {
-        cycleSet = new HashSet<>();
-        breakers.clear();
-        HashMap<MathNode, HashSet<CircuitComponent>> presets = new HashMap<>();
-        for (FunctionComponent component : circuit.getFunctionComponents()) {
-            if (component.getPathBreaker()) {
-                breakers.add(circuit.getNodeReference(component));
-            } else {
-                HashSet<CircuitComponent> componentPreset = new HashSet<>();
-                for (Contact contact : component.getInputs()) {
-                    if (contact.getPathBreaker()) {
-                        breakers.add(circuit.getNodeReference(contact));
-                    } else {
-                        HashSet<CircuitComponent> contactPreset = StructureUtilsKt.getPresetComponents(circuit, contact);
-                        componentPreset.addAll(contactPreset);
-                        presets.put(contact, contactPreset);
-                    }
-                }
-                presets.put(component, componentPreset);
+        cycleContacts = CycleUtils.getCycledDrivers(circuit);
+        cycleComponents = new HashSet<>();
+        for (Contact contact : cycleContacts) {
+            Node parent = contact.getParent();
+            if (parent instanceof FunctionComponent) {
+                cycleComponents.add((FunctionComponent) parent);
             }
         }
+
+        breakers.clear();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
-            for (Contact contact : component.getInputs()) {
-                HashSet<CircuitComponent> contactPreset = presets.get(contact);
-                if (contactPreset == null) continue;
-                HashSet<CircuitComponent> visited = new HashSet<>();
-                Queue<CircuitComponent> queue = new LinkedList<>(contactPreset);
-                while (!queue.isEmpty()) {
-                    CircuitComponent predComponent = queue.remove();
-                    if (visited.contains(predComponent)) continue;
-                    visited.add(predComponent);
-                    if (predComponent == component) {
-                        cycleSet.add(component);
-                        cycleSet.add(contact);
-                        break;
-                    }
-                    HashSet<CircuitComponent> componentPreset = presets.get(predComponent);
-                    if (componentPreset != null) {
-                        queue.addAll(componentPreset);
+            for (Contact contact : component.getContacts()) {
+                if (contact.getPathBreaker()) {
+                    breakers.add(circuit.getNodeReference(contact));
+                } else if (contact.isInput()) {
+                    Contact driver = CircuitUtils.findDriver(circuit, contact, true);
+                    if (cycleContacts.contains(driver)) {
+                        cycleContacts.add(contact);
                     }
                 }
             }
@@ -297,18 +273,21 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         GraphEditor editor = e.getEditor();
         VisualModel model = e.getModel();
         if (e.getButton() == MouseEvent.BUTTON1) {
-            VisualNode node = HitMan.hitDeepest(e.getPosition(), editor.getModel());
-            if (node instanceof VisualContact) {
-                Contact contact = ((VisualContact) node).getReferencedContact();
-                if (contact.isInput() && contact.isPin()) {
-                    editor.getWorkspaceEntry().saveMemento();
-                    contact.setPathBreaker(!contact.getPathBreaker());
-                    processed = true;
-                }
-            } else if (node instanceof VisualCircuitComponent) {
-                CircuitComponent component = ((VisualCircuitComponent) node).getReferencedComponent();
+            Node deepestNode = HitMan.hitDeepest(e.getPosition(), model.getRoot(),
+                    node -> (node instanceof VisualFunctionComponent) || (node instanceof VisualContact));
+
+            VisualContact contact = null;
+            if (deepestNode instanceof VisualContact) {
+                contact = (VisualContact) deepestNode;
+            } else if (deepestNode instanceof VisualCircuitComponent) {
+                VisualFunctionComponent component = (VisualFunctionComponent) deepestNode;
+                contact = component.getMainVisualOutput();
+
+            }
+            if ((contact != null) && contact.isPin()) {
+                FunctionContact mathContact = ((VisualFunctionContact) contact).getReferencedContact();
                 editor.getWorkspaceEntry().saveMemento();
-                component.setPathBreaker(!component.getPathBreaker());
+                mathContact.setPathBreaker(!mathContact.getPathBreaker());
                 processed = true;
             }
         }
@@ -347,8 +326,8 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     private Decoration getContactDecoration(Contact contact) {
         final Color color = contact.getPathBreaker() ? CircuitSettings.getBreakCycleGateColor()
-                : cycleSet.contains(contact) ? CircuitSettings.getWithinCycleGateColor()
-                : null;
+                : cycleContacts.contains(contact) ? CircuitSettings.getWithinCycleGateColor()
+                : contact.isPin() ? CircuitSettings.getOutsideCycleGateColor() : null;
 
         return new Decoration() {
             @Override
@@ -364,8 +343,8 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private Decoration getComponentDecoration(FunctionComponent component) {
-        final Color color = component.getPathBreaker() ? CircuitSettings.getBreakCycleGateColor()
-                : cycleSet.contains(component) ? CircuitSettings.getWithinCycleGateColor()
+        final Color color = ScanUtils.hasPathBreakerOutput(component) ? CircuitSettings.getBreakCycleGateColor()
+                : cycleComponents.contains(component) ? CircuitSettings.getWithinCycleGateColor()
                 : CircuitSettings.getOutsideCycleGateColor();
 
         return new Decoration() {

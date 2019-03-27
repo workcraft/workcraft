@@ -3,9 +3,7 @@ package org.workcraft.plugins.circuit.commands;
 import org.workcraft.Framework;
 import org.workcraft.commands.MenuOrdering;
 import org.workcraft.commands.ScriptableCommand;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
-import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.tools.CycleAnalyserTool;
 import org.workcraft.utils.WorkspaceUtils;
@@ -40,11 +38,9 @@ public abstract class CircuitAbstractPathbreakerCommand implements ScriptableCom
 
     @Override
     public Void execute(WorkspaceEntry we) {
-        Framework framework = Framework.getInstance();
+        final Framework framework = Framework.getInstance();
         if (framework.isInGuiMode()) {
-            MainWindow mainWindow = framework.getMainWindow();
-            GraphEditorPanel currentEditor = mainWindow.getEditor(we);
-            Toolbox toolbox = currentEditor.getToolBox();
+            final Toolbox toolbox = framework.getMainWindow().getEditor(we).getToolBox();
             toolbox.selectTool(toolbox.getToolInstance(CycleAnalyserTool.class));
         }
         return null;

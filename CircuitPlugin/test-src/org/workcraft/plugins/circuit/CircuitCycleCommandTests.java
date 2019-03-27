@@ -8,9 +8,10 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.commands.CircuitCycleFreenessVerificationCommand;
 import org.workcraft.plugins.circuit.commands.ClearPathBreakerCommand;
-import org.workcraft.plugins.circuit.commands.InsertCycleBreakerBuffersCommand;
 import org.workcraft.plugins.circuit.commands.InsertPathBreakerScanCommand;
+import org.workcraft.plugins.circuit.commands.ProcessNecessaryPathBreakerCommand;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.plugins.circuit.utils.ScanUtils;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -49,7 +50,7 @@ public class CircuitCycleCommandTests {
         new ClearPathBreakerCommand().execute(we);
         Assert.assertEquals(0, countPathBreaker(circuit));
 
-        new InsertCycleBreakerBuffersCommand().execute(we);
+        new ProcessNecessaryPathBreakerCommand().execute(we);
         int count = countPathBreaker(circuit);
         Assert.assertEquals(breakCount, count);
 
@@ -67,7 +68,7 @@ public class CircuitCycleCommandTests {
 
                 String pinName = pinNameIterator.next();
                 for (FunctionComponent component : circuit.getFunctionComponents()) {
-                    if (component.getPathBreaker()) {
+                    if (ScanUtils.hasPathBreakerOutput(component)) {
                         MathNode pin = circuit.getNodeByReference(component, pinName);
                         Assert.assertTrue(pin instanceof FunctionContact);
                         Assert.assertEquals(port, CircuitUtils.findDriver(circuit, pin, false));
@@ -84,7 +85,7 @@ public class CircuitCycleCommandTests {
     private int countPathBreaker(Circuit circuit) {
         int result = 0;
         for (FunctionComponent component : circuit.getFunctionComponents()) {
-            if (component.getPathBreaker()) {
+            if (ScanUtils.hasPathBreakerOutput(component)) {
                 result++;
             }
             for (Contact contact : component.getInputs()) {

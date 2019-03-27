@@ -1,15 +1,7 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.List;
-
 import org.workcraft.Framework;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
-import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.stg.tools.Core;
 import org.workcraft.plugins.stg.tools.EncodingConflictAnalyserTool;
@@ -18,6 +10,11 @@ import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 final class MpsatEncodingConflictOutputHandler implements Runnable {
 
@@ -41,22 +38,17 @@ final class MpsatEncodingConflictOutputHandler implements Runnable {
         if (!MpsatUtils.hasTraces(solutions)) {
             DialogUtils.showInfo("No encoding conflicts.", "Verification results");
         } else if (framework.isInGuiMode()) {
-            final MainWindow mainWindow = framework.getMainWindow();
-            GraphEditorPanel currentEditor = mainWindow.getEditor(we);
-            final Toolbox toolbox = currentEditor.getToolBox();
+            ArrayList<Core> cores = new ArrayList<>(convertSolutionsToCores(solutions));
+            Collections.sort(cores, (c1, c2) -> {
+                if (c1.size() > c2.size()) return 1;
+                if (c1.size() < c2.size()) return -1;
+                if (c1.toString().length() > c2.toString().length()) return 1;
+                if (c1.toString().length() < c2.toString().length()) return -1;
+                return 0;
+            });
+            final Toolbox toolbox = framework.getMainWindow().getEditor(we).getToolBox();
             final EncodingConflictAnalyserTool tool = toolbox.getToolInstance(EncodingConflictAnalyserTool.class);
             toolbox.selectTool(tool);
-            ArrayList<Core> cores = new ArrayList<>(convertSolutionsToCores(solutions));
-            Collections.sort(cores, new Comparator<Core>() {
-                @Override
-                public int compare(Core c1, Core c2) {
-                    if (c1.size() > c2.size()) return 1;
-                    if (c1.size() < c2.size()) return -1;
-                    if (c1.toString().length() > c2.toString().length()) return 1;
-                    if (c1.toString().length() < c2.toString().length()) return -1;
-                    return 0;
-                }
-            });
             tool.setCores(cores);
         }
     }

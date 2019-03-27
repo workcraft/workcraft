@@ -11,29 +11,24 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.util.ArrayList;
 import java.util.Set;
 
-public class ClearPathBreakerCommand extends CircuitAbstractPathbreakerCommand {
+public class ProcessNecessaryPathBreakerCommand extends CircuitAbstractPathbreakerCommand {
 
     @Override
     public String getDisplayName() {
-        return "Clear path breakers";
-    }
-
-    @Override
-    public Position getPosition() {
-        return Position.TOP;
+        return "Add path breaker to pins if necessary to complete breaking cycles";
     }
 
     @Override
     public Void execute(WorkspaceEntry we) {
         we.captureMemento();
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-        Set<? extends Contact> changedContacts = CycleUtils.clearPathBreakers(circuit);
+        Set<? extends Contact> changedContacts = CycleUtils.tagNecessaryPathBreakers(circuit);
         if (changedContacts.isEmpty()) {
-            we.uncaptureMemento();
+            we.cancelMemento();
         } else {
             we.saveMemento();
             ArrayList<String> refs = ReferenceHelper.getReferenceList(circuit, changedContacts);
-            LogUtils.logInfo(LogUtils.getTextWithRefs("Path breaker is cleared for contact", refs));
+            LogUtils.logInfo(LogUtils.getTextWithRefs("Path breaker pin", refs));
         }
         return super.execute(we);
     }

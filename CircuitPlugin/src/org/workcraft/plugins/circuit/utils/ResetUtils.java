@@ -10,11 +10,11 @@ import java.util.HashSet;
 
 public class ResetUtils {
 
-    public static HashSet<Contact> setForceInit(Circuit circuit, boolean value) {
+    public static HashSet<Contact> clearForceInit(Circuit circuit) {
         HashSet<Contact> result = new HashSet<>();
         for (Contact contact : circuit.getFunctionContacts()) {
-            if (contact.isDriver() && contact.getForcedInit() != value) {
-                contact.setForcedInit(value);
+            if (contact.isDriver() && contact.getForcedInit()) {
+                contact.setForcedInit(false);
                 result.add(contact);
             }
         }

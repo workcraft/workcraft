@@ -91,7 +91,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         JButton clearAllForceInitButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/circuit-initialisation-clear_all.svg"),
                 "Clear force init from all input ports and component outputs");
-        clearAllForceInitButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.setForceInit(c, false)));
+        clearAllForceInitButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.clearForceInit(c)));
 
         JButton toggleForceInitInputPortsButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/circuit-initialisation-input_port.svg"),
@@ -113,10 +113,10 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
                 "Remove force init from pins if redundant for initialisation");
         untagRedundantForceInitPinsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.untagRedundantForceInitPins(c)));
 
-        JButton addNecessaryForceInitPinsButton = GuiUtils.createIconButton(
+        JButton tagNecessaryForceInitPinsButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/circuit-initialisation-tag_necessary.svg"),
                 "Add force init to pins if necessary to complete initialisation");
-        addNecessaryForceInitPinsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagNecessaryForceInitPins(c)));
+        tagNecessaryForceInitPinsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagNecessaryForceInitPins(c)));
 
         FlowLayout flowLayout = new FlowLayout();
         int buttonWidth = (int) Math.round(toggleForceInitInputPortsButton.getPreferredSize().getWidth() + flowLayout.getHgap());
@@ -132,7 +132,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         btnPanel.add(toggleForceInitSelfLoopsButton);
         btnPanel.add(toggleForceInitSequentialGatesButton);
         btnPanel.add(untagRedundantForceInitPinsButton);
-        btnPanel.add(addNecessaryForceInitPinsButton);
+        btnPanel.add(tagNecessaryForceInitPinsButton);
 
         JPanel forcePanel = new JPanel(new BorderLayout());
         forcePanel.setBorder(SizeHelper.getTitledBorder("Force init pins"));
@@ -277,9 +277,9 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
             }
 
             if ((contact instanceof VisualFunctionContact) && contact.isDriver()) {
-                FunctionContact funcContact = ((VisualFunctionContact) contact).getReferencedContact();
+                FunctionContact mathContact = ((VisualFunctionContact) contact).getReferencedContact();
                 editor.getWorkspaceEntry().saveMemento();
-                funcContact.setForcedInit(!funcContact.getForcedInit());
+                mathContact.setForcedInit(!mathContact.getForcedInit());
                 processed = true;
             }
         }

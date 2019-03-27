@@ -1,9 +1,12 @@
 package org.workcraft.plugins.circuit.commands;
 
+import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.dom.references.ReferenceHelper;
+import org.workcraft.gui.Toolbox;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.FunctionComponent;
+import org.workcraft.plugins.circuit.tools.CycleAnalyserTool;
 import org.workcraft.plugins.circuit.utils.CycleUtils;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.utils.DialogUtils;
@@ -42,9 +45,15 @@ public class CircuitCycleFreenessVerificationCommand extends AbstractVerificatio
             DialogUtils.showInfo("The circuit does not have unbroken cycles.");
             return true;
         } else {
+            final Framework framework = Framework.getInstance();
+            if (framework.isInGuiMode()) {
+                final Toolbox toolbox = framework.getMainWindow().getCurrentToolbox();
+                toolbox.selectTool(toolbox.getToolInstance(CycleAnalyserTool.class));
+            }
             List<String> loopedComponentRefs = ReferenceHelper.getReferenceList(circuit, cycledComponents);
             String msg = "The circuit has unbroken cycles.\n" +
                     LogUtils.getTextWithRefs("Problematic components", loopedComponentRefs);
+
             DialogUtils.showError(msg);
             return false;
         }

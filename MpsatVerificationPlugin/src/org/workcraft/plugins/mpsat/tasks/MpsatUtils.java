@@ -1,14 +1,8 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.gui.tools.SimulationTool;
@@ -22,10 +16,15 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
-import org.workcraft.types.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 public class MpsatUtils {
 
@@ -158,17 +157,18 @@ public class MpsatUtils {
 
     public static void playSolution(WorkspaceEntry we, MpsatSolution solution) {
         final Framework framework = Framework.getInstance();
-        final MainWindow mainWindow = framework.getMainWindow();
-        GraphEditorPanel editor = mainWindow.getEditor(we);
-        final Toolbox toolbox = editor.getToolBox();
-        final SimulationTool tool = toolbox.getToolInstance(SimulationTool.class);
-        toolbox.selectTool(tool);
-        tool.setTrace(solution.getMainTrace(), solution.getBranchTrace(), editor);
-        String comment = solution.getComment();
-        if ((comment != null) && !comment.isEmpty()) {
-            String traceText = solution.getMainTrace().toText();
-            String message = comment.replaceAll("\\<.*?>", "") + " after trace: " + traceText;
-            LogUtils.logWarning(message);
+        if (framework.isInGuiMode()) {
+            GraphEditorPanel editor = framework.getMainWindow().getEditor(we);
+            final Toolbox toolbox = editor.getToolBox();
+            final SimulationTool tool = toolbox.getToolInstance(SimulationTool.class);
+            toolbox.selectTool(tool);
+            tool.setTrace(solution.getMainTrace(), solution.getBranchTrace(), editor);
+            String comment = solution.getComment();
+            if ((comment != null) && !comment.isEmpty()) {
+                String traceText = solution.getMainTrace().toText();
+                String message = comment.replaceAll("\\<.*?>", "") + " after trace: " + traceText;
+                LogUtils.logWarning(message);
+            }
         }
     }
 

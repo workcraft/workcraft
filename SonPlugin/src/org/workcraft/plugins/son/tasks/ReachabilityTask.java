@@ -125,7 +125,6 @@ public class ReachabilityTask implements Task<VerificationResult> {
         toolbox.selectTool(tool);
         result = tool.reachabilitySimulator(tool.getGraphEditor(), causalPredecessorRefs, markingRefs);
         tool.mergeTrace(tool.getGraphEditor());
-
         return result;
     }
 

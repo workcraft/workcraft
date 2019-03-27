@@ -106,7 +106,7 @@ public class CircuitVerificationCommandTests {
 
     @Test
     public void mappedAbcdVerification() throws DeserialisationException {
-        String workName = PackageUtils.getPackagePath(getClass(), "abcd-tm.circuit.work");
+        String workName = PackageUtils.getPackagePath(getClass(), "abcd-bad-tm.circuit.work");
         testCircuitVerificationCommands(workName,
                 false,  // combined
                 false,  // conformation
