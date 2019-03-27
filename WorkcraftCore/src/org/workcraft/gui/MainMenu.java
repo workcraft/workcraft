@@ -44,6 +44,8 @@ public class MainMenu extends JMenuBar {
 
     private void addFileMenu() {
         JMenu mnFile = new JMenu("File");
+        mnFile.setMnemonic(KeyEvent.VK_F);
+        add(mnFile);
 
         ActionMenuItem miNewModel = new ActionMenuItem(MainWindowActions.CREATE_WORK_ACTION);
         miNewModel.setMnemonic(KeyEvent.VK_N);
@@ -121,8 +123,6 @@ public class MainMenu extends JMenuBar {
         ActionMenuItem miExit = new ActionMenuItem(MainWindowActions.EXIT_ACTION);
         miExit.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnFile.add(miExit);
-
-        add(mnFile);
     }
 
     private void addExportSeparator(String text) {
@@ -142,6 +142,8 @@ public class MainMenu extends JMenuBar {
 
     private void addEditMenu() {
         JMenu mnEdit = new JMenu("Edit");
+        mnEdit.setMnemonic(KeyEvent.VK_E);
+        add(mnEdit);
 
         ActionMenuItem miUndo = new ActionMenuItem(MainWindowActions.EDIT_UNDO_ACTION);
         miUndo.setMnemonic(KeyEvent.VK_U);
@@ -207,12 +209,12 @@ public class MainMenu extends JMenuBar {
         ActionMenuItem miProperties = new ActionMenuItem(MainWindowActions.EDIT_SETTINGS_ACTION);
         miProperties.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnEdit.add(miProperties);
-
-        add(mnEdit);
     }
 
     private void addViewMenu() {
         JMenu mnView = new JMenu("View");
+        mnView.setMnemonic(KeyEvent.VK_V);
+        add(mnView);
 
         ActionMenuItem miZoomIn = new ActionMenuItem(MainWindowActions.VIEW_ZOOM_IN);
         miZoomIn.addScriptedActionListener(mainWindow.getDefaultActionListener());
@@ -260,13 +262,12 @@ public class MainMenu extends JMenuBar {
         ActionMenuItem miResetLayout = new ActionMenuItem(MainWindowActions.RESET_GUI_ACTION);
         miResetLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnView.add(miResetLayout);
-
-        add(mnView);
     }
 
     private void addHelpMenu() {
-        //JMenu mnHelp = new JMenu();
         mnHelp.setText("Help");
+        mnHelp.setMnemonic(KeyEvent.VK_H);
+        add(mnHelp);
 
         ActionMenuItem miOverview = new ActionMenuItem(MainWindowActions.HELP_OVERVIEW_ACTION);
         miOverview.addScriptedActionListener(mainWindow.getDefaultActionListener());
@@ -295,9 +296,6 @@ public class MainMenu extends JMenuBar {
         ActionMenuItem miAbout = new ActionMenuItem(MainWindowActions.HELP_ABOUT_ACTION);
         miAbout.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnHelp.add(miAbout);
-
-        add(mnHelp);
-
     }
 
     private void setExportMenu(final WorkspaceEntry we) {
@@ -402,6 +400,7 @@ public class MainMenu extends JMenuBar {
         List<String> sections = CommandUtils.getSections(applicableVisibleCommands);
 
         JMenu mnCommands = new JMenu("Tools");
+        mnCommands.setMnemonic(KeyEvent.VK_T);
         mnCommandsList.clear();
         for (String section : sections) {
             JMenu mnSection = mnCommands;
