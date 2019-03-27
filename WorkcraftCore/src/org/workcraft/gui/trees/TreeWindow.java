@@ -13,19 +13,28 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class TreeWindow<Node> extends JPanel {
 
-    private final class TreeSourceAdapterImplementation extends TreeSourceAdapter<Node> {
-        private final TreeDecorator<Node> decorator;
-        private final TreeSource<Node> source;
+    public static final String TRICKY_PREFIX = "!";
 
-        private TreeSourceAdapterImplementation(TreeSource<Node> source, TreeDecorator<Node> decorator) {
+    private JTree tree;
+    private final TreePopupProvider<Node> popupProvider;
+    private final Set<Node> checkedNodes = new HashSet<>();
+    private CheckBoxMode checkBoxMode = CheckBoxMode.NONE;
+    private JCheckBox checkBox;
+    private boolean externalExpanded = false;
+
+    public enum CheckBoxMode { NONE, LEAF, ALL }
+
+    private final class DecorationTreeSourceAdapter extends TreeSourceAdapter<Node> {
+        private final TreeDecorator<Node> decorator;
+
+        private DecorationTreeSourceAdapter(TreeSource<Node> source, TreeDecorator<Node> decorator) {
             super(source);
             this.decorator = decorator;
-            this.source = source;
         }
 
         @Override
@@ -42,9 +51,9 @@ public class TreeWindow<Node> extends JPanel {
                     }
 
                     if (!externalExpanded) {
-                        for (Node n : source.getChildren(getRoot())) {
+                        for (Node n : getChildren(getRoot())) {
                             if (Workspace.EXTERNAL_PATH.equals(decorator.getName(n))) {
-                                expanded.add(new TreePath(Path.getPath(source.getPath(n)).toArray()));
+                                expanded.add(new TreePath(Path.getPath(getPath(n)).toArray()));
                                 externalExpanded = true;
                             }
                         }
@@ -147,33 +156,32 @@ public class TreeWindow<Node> extends JPanel {
                 Object value, boolean sel, boolean expanded, boolean leaf,
                 int row, boolean hasFocus) {
 
-            @SuppressWarnings("unchecked")
             Node node = (Node) value;
-
             String name = decorator.getName(node);
-            boolean tricky = name.startsWith("!");
+            boolean tricky = name.startsWith(TRICKY_PREFIX);
             if (tricky) {
-                name = name.substring(1);
+                name = name.substring(TRICKY_PREFIX.length());
             }
-            Component res = super.getTreeCellRendererComponent(tree, name, sel, expanded, leaf, row, hasFocus);
+
+            Component result = super.getTreeCellRendererComponent(tree, name, sel, expanded, leaf, row, hasFocus);
 
             if (tricky) {
-                res.setFont(res.getFont().deriveFont(Font.ITALIC));
-            } else {
-                res.setFont(res.getFont().deriveFont(Font.PLAIN));
+                result.setFont(result.getFont().deriveFont(Font.ITALIC));
             }
+
             Icon icon = decorator.getIcon(node);
             if (icon != null) {
                 setIcon(icon);
             }
+
             cellRenderer.removeAll();
-            if ((checkBoxMode == CheckBoxMode.NONE) || ((checkBoxMode == CheckBoxMode.LEAF) && !source.isLeaf(node))) {
-                return res;
+            if ((checkBoxMode == CheckBoxMode.ALL) || ((checkBoxMode == CheckBoxMode.LEAF) && source.isLeaf(node))) {
+                cellRenderer.add(checkBox, "0 0");
+                cellRenderer.add(result, "1 0");
+                checkBox.setSelected(checkedNodes.contains(node));
+                result = cellRenderer;
             }
-            cellRenderer.add(checkBox, "0 0");
-            cellRenderer.add(res, "1 0");
-            checkBox.setSelected(checkedNodes.contains(node));
-            return cellRenderer;
+            return result;
         }
     }
 
@@ -192,18 +200,6 @@ public class TreeWindow<Node> extends JPanel {
             }
         }
     }
-
-    public enum CheckBoxMode {
-        NONE,
-        LEAF,
-        ALL
-    }
-
-    private JTree tree;
-    private final TreePopupProvider<Node> popupProvider;
-    private final Set<Node> checkedNodes = new HashSet<>();
-    private CheckBoxMode checkBoxMode = CheckBoxMode.NONE;
-    private JCheckBox checkBox;
 
     public TreeWindow(TreeSource<Node> source, TreeDecorator<Node> decorator, TreePopupProvider<Node> popupProvider) {
         this.popupProvider = popupProvider;
@@ -235,8 +231,6 @@ public class TreeWindow<Node> extends JPanel {
         return Collections.unmodifiableSet(checkedNodes);
     }
 
-    boolean externalExpanded = false;
-
     public void startup(final TreeSource<Node> source, final TreeDecorator<Node> decorator) {
         tree = new JTree();
         tree.setFocusable(true);
@@ -246,7 +240,7 @@ public class TreeWindow<Node> extends JPanel {
         checkBox.setBackground(tree.getBackground());
         checkBox.setMargin(SizeHelper.getTreeCheckboxMargin());
 
-        sourceWithRestructuredTrapped = new TreeSourceAdapterImplementation(source, decorator);
+        sourceWithRestructuredTrapped = new DecorationTreeSourceAdapter(source, decorator);
 
         tree.setModel(new TreeModelWrapper<>(sourceWithRestructuredTrapped));
         if (popupProvider != null) {

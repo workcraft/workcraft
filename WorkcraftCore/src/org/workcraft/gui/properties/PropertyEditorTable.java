@@ -126,8 +126,7 @@ public class PropertyEditorTable extends JTable {
                     Font font = label.getFont();
                     PropertyDescriptor descriptor = model.getRowDeclaration(row);
                     if ((descriptor.getValue() == null) && descriptor.isCombinable()) {
-                        Font boldFont = font.deriveFont(Font.BOLD);
-                        label.setFont(boldFont);
+                        label.setFont(font.deriveFont(Font.BOLD));
                     }
 
                     int availableWidth = table.getColumnModel().getColumn(column).getWidth();
