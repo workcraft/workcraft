@@ -6,7 +6,7 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.plugins.circuit.CircuitTestUtils;
+import org.workcraft.plugins.circuit.TestUtils;
 import org.workcraft.plugins.mpsat.commands.MpsatComplexGateSynthesisCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatGeneralisedCelementSynthesisCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatStandardCelementSynthesisCommand;
@@ -78,7 +78,7 @@ public class MpsatSynthesisCommandsTests {
 
     private void testComplexGateSynthesisCommand(String workName, int expectedGateCount) {
         try {
-            CircuitTestUtils.testSynthesisCommand(MpsatComplexGateSynthesisCommand.class, workName, expectedGateCount);
+            TestUtils.testSynthesisCommand(MpsatComplexGateSynthesisCommand.class, workName, expectedGateCount);
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -104,7 +104,7 @@ public class MpsatSynthesisCommandsTests {
 
     private void testGeneralisedCelementSynthesisCommand(String workName, int expectedGateCount) {
         try {
-            CircuitTestUtils.testSynthesisCommand(MpsatGeneralisedCelementSynthesisCommand.class, workName, expectedGateCount);
+            TestUtils.testSynthesisCommand(MpsatGeneralisedCelementSynthesisCommand.class, workName, expectedGateCount);
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -130,7 +130,7 @@ public class MpsatSynthesisCommandsTests {
 
     private void testStandardCelementSynthesisCommand(String workName, int expectedGateCount) {
         try {
-            CircuitTestUtils.testSynthesisCommand(MpsatStandardCelementSynthesisCommand.class, workName, expectedGateCount);
+            TestUtils.testSynthesisCommand(MpsatStandardCelementSynthesisCommand.class, workName, expectedGateCount);
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -174,7 +174,7 @@ public class MpsatSynthesisCommandsTests {
 
     private void testTechnologyMappingSynthesisCommand(String workName, int expectedGateCount) {
         try {
-            CircuitTestUtils.testSynthesisCommand(MpsatTechnologyMappingSynthesisCommand.class, workName, expectedGateCount);
+            TestUtils.testSynthesisCommand(MpsatTechnologyMappingSynthesisCommand.class, workName, expectedGateCount);
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }

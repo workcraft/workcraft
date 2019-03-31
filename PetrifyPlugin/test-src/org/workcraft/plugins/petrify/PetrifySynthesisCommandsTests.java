@@ -6,7 +6,7 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.plugins.circuit.CircuitTestUtils;
+import org.workcraft.plugins.circuit.TestUtils;
 import org.workcraft.plugins.petrify.commands.PetrifyComplexGateSynthesisCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyGeneralisedCelementSynthesisCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyStandardCelementSynthesisCommand;
@@ -74,7 +74,7 @@ public class PetrifySynthesisCommandsTests {
 
     private void testComplexGateSynthesisCommand(String workName, int expectedGateCount) {
         try {
-            CircuitTestUtils.testSynthesisCommand(PetrifyComplexGateSynthesisCommand.class, workName, expectedGateCount);
+            TestUtils.testSynthesisCommand(PetrifyComplexGateSynthesisCommand.class, workName, expectedGateCount);
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -99,7 +99,7 @@ public class PetrifySynthesisCommandsTests {
 
     private void testGeneralisedCelementSynthesisCommand(String workName, int expectedGateCount) {
         try {
-            CircuitTestUtils.testSynthesisCommand(PetrifyGeneralisedCelementSynthesisCommand.class, workName, expectedGateCount);
+            TestUtils.testSynthesisCommand(PetrifyGeneralisedCelementSynthesisCommand.class, workName, expectedGateCount);
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -129,7 +129,7 @@ public class PetrifySynthesisCommandsTests {
 
     private void testStandardCelementSynthesisCommand(String workName, int minGateCount, int maxGateCount) {
         try {
-            CircuitTestUtils.testSynthesisCommand(PetrifyStandardCelementSynthesisCommand.class, workName,
+            TestUtils.testSynthesisCommand(PetrifyStandardCelementSynthesisCommand.class, workName,
                     minGateCount, maxGateCount);
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
@@ -174,7 +174,7 @@ public class PetrifySynthesisCommandsTests {
 
     private void testTechnologyMappingSynthesisCommand(String workName, int expectedGateCount) {
         try {
-            CircuitTestUtils.testSynthesisCommand(PetrifyTechnologyMappingSynthesisCommand.class, workName, expectedGateCount);
+            TestUtils.testSynthesisCommand(PetrifyTechnologyMappingSynthesisCommand.class, workName, expectedGateCount);
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }

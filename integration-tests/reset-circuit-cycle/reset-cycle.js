@@ -1,10 +1,10 @@
 work = load("cycle-tm.circuit.work");
 
-resetCircuitClearForceInit(work);
+modifyCircuitForceInitClearAll(work);
 
-resetCircuitProcessNecessaryForceInitPins(work);
+modifyCircuitForceInitTagNecessary(work);
 
-resetCircuitInsertActiveHigh(work);
+insertCircuitResetActiveHigh(work);
 
 write(
     "Initialisation check: " + checkCircuitReset(work) + "\n" +

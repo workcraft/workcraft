@@ -1,10 +1,10 @@
 work = load("charge-tm.circuit.work");
 
-testCircuitClearPathBreaker(work);
+modifyCircuitPathBreakerClearAll(work);
 
-testCircuitInsertCycleBreakerBuffers(work);
+modifyCircuitPathBreakerTagNecessary(work);
 
-testCircuitInsertPathBreakerScan(work);
+insertCircuitScan(work);
 
 write(
     "Cycle absence check: " + checkCircuitCycles(work) + "\n" +

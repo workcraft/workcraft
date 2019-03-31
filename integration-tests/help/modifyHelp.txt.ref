@@ -1,0 +1,10 @@
+modifyCircuitForceInitClearAll(work) - clear force init for all input ports and output pins in the Circuit 'work'
+modifyCircuitForceInitClearRedundant(work) - remove force init from pins if redundant for initialisation of the Circuit 'work'
+modifyCircuitForceInitTagInputPorts(work) - force init all input ports in the Circuit 'work'  (environment must initialise them)
+modifyCircuitForceInitTagNecessary(work) - add force init to pins if necessary to complete initialisation of the Circuit 'work'
+modifyCircuitForceInitTagSelfLoops(work) - force init all self-loops in the Circuit 'work'
+modifyCircuitForceInitTagSequentialGates(work) - force init all sequential gates in the Circuit 'work'
+modifyCircuitPathBreakerClearAll(work) - clear path breaker property from all pins in the Circuit 'work'
+modifyCircuitPathBreakerClearRedundant(work) - remove path breaker from pins if redundant for cycle breaking in the Circuit 'work'
+modifyCircuitPathBreakerTagNecessary(work) - add path breaker to pins if necessary to complete cycle breaking in the Circuit 'work'
+modifyCircuitPathBreakerTagSelfLoops(work) - path breaker all self-loops in the Circuit 'work'

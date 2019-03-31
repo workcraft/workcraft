@@ -10,12 +10,9 @@ public class ScriptableCommandUtils {
         DialogUtils.showError("Command '" + commandName + "' requires GUI and cannot be scripted.");
     }
 
-    public static void register(Class<? extends ScriptableCommand> command) {
-        register(command, command.getSimpleName());
-    }
-
     public static void register(Class<? extends ScriptableCommand> command, String jsName) {
-        String help = "wrapper for framework.executeCommand(work, '" + jsName + "')";
+        String canonicalName = command.getCanonicalName();
+        String help = "wrapper for framework.executeCommand(work, '" + canonicalName + "')";
         register(command, jsName, help);
     }
 
@@ -23,10 +20,10 @@ public class ScriptableCommandUtils {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
         pm.registerCommand(command);
-        String commandName = command.getSimpleName();
+        String canonicalName = command.getCanonicalName();
         framework.registerJavaScriptFunction(
                 "function " + jsName + "(work) {\n" +
-                "    return framework.executeCommand(work, '" + commandName + "');\n" +
+                "    return framework.executeCommand(work, '" + canonicalName + "');\n" +
                 "}", jsHelp);
     }
 

@@ -79,7 +79,7 @@ public class CircuitTransformationCommandTests {
         Assert.assertEquals(expMappedGateCount, dstMappedGateCount);
         Assert.assertEquals(expUnmappedGateCount, dstUnmappedGateCount);
 
-        CircuitVerificationCommand verificationCommand = new CircuitVerificationCommand();
+        CombinedVerificationCommand verificationCommand = new CombinedVerificationCommand();
         Assert.assertEquals(true, verificationCommand.execute(we));
 
         VisualFunctionContact contact = circuit.getVisualComponentByMathReference("OUT_BUBBLE2.ON", VisualFunctionContact.class);

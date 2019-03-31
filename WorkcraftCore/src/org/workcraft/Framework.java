@@ -595,13 +595,15 @@ public final class Framework {
             boolean found = false;
             boolean scriptable = false;
             for (Command command : CommandUtils.getCommands()) {
-                String commandClassName = command.getClass().getSimpleName();
-                if (!className.equals(commandClassName)) continue;
-                found = true;
-                if (command instanceof ScriptableCommand) {
-                    scriptable = true;
-                    ScriptableCommand<T> scriptableCommand = (ScriptableCommand<T>) command;
-                    return CommandUtils.execute(we, scriptableCommand);
+                String simpleClassName = command.getClass().getSimpleName();
+                String canonicalClassName = command.getClass().getCanonicalName();
+                if (className.equals(simpleClassName) || className.endsWith(canonicalClassName)) {
+                    found = true;
+                    if (command instanceof ScriptableCommand) {
+                        scriptable = true;
+                        ScriptableCommand<T> scriptableCommand = (ScriptableCommand<T>) command;
+                        return CommandUtils.execute(we, scriptableCommand);
+                    }
                 }
             }
             if (!found) {

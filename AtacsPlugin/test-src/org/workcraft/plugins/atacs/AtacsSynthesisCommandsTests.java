@@ -8,7 +8,7 @@ import org.workcraft.utils.DesktopApi;
 import org.workcraft.plugins.atacs.commands.AtacsComplexGateSynthesisCommand;
 import org.workcraft.plugins.atacs.commands.AtacsGeneralisedCelementSynthesisCommand;
 import org.workcraft.plugins.atacs.commands.AtacsStandardCelementSynthesisCommand;
-import org.workcraft.plugins.circuit.CircuitTestUtils;
+import org.workcraft.plugins.circuit.TestUtils;
 import org.workcraft.utils.PackageUtils;
 
 public class AtacsSynthesisCommandsTests {
@@ -69,7 +69,7 @@ public class AtacsSynthesisCommandsTests {
 
     private void testComplexGateSynthesisCommand(String workName, int expectedGateCount) {
         try {
-            CircuitTestUtils.testSynthesisCommand(AtacsComplexGateSynthesisCommand.class, workName, expectedGateCount);
+            TestUtils.testSynthesisCommand(AtacsComplexGateSynthesisCommand.class, workName, expectedGateCount);
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -113,7 +113,7 @@ public class AtacsSynthesisCommandsTests {
 
     private void testGeneralisedCelementSynthesisCommand(String workName, int expectedGateCount) {
         try {
-            CircuitTestUtils.testSynthesisCommand(AtacsGeneralisedCelementSynthesisCommand.class, workName, expectedGateCount);
+            TestUtils.testSynthesisCommand(AtacsGeneralisedCelementSynthesisCommand.class, workName, expectedGateCount);
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -157,7 +157,7 @@ public class AtacsSynthesisCommandsTests {
 
     private void testStandardCelementSynthesisCommand(String workName, int expectedGateCount) {
         try {
-            CircuitTestUtils.testSynthesisCommand(AtacsStandardCelementSynthesisCommand.class, workName, expectedGateCount);
+            TestUtils.testSynthesisCommand(AtacsStandardCelementSynthesisCommand.class, workName, expectedGateCount);
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }

@@ -12,7 +12,7 @@ public abstract class AbstractTransformationCommand implements ScriptableCommand
 
     @Override
     public final String getSection() {
-        return "!   Transformations";  // 3 spaces - positions 2nd
+        return "!   Transformation";  // 3 spaces - positions 2nd
     }
 
     @Override
