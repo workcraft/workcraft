@@ -3,9 +3,9 @@ package org.workcraft.plugins;
 import org.workcraft.commands.Command;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.exceptions.PluginInstantiationException;
-import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.gui.properties.PropertyClassProvider;
 import org.workcraft.gui.properties.Settings;
+import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.builtin.*;
@@ -182,7 +182,7 @@ public class PluginManager implements PluginProvider {
                 return cls.getDeclaredConstructor().newInstance();
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                 Throwable q = e;
-                System.err.println(cls.getCanonicalName());
+                System.err.println(cls.getName());
                 while (q != null) {
                     q.printStackTrace();
                     q = q.getCause();
