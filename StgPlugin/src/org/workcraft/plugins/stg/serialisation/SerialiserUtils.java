@@ -8,7 +8,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.FormatException;
-import org.workcraft.plugins.petri.PetriNetModel;
+import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.*;
@@ -36,10 +36,10 @@ public class SerialiserUtils {
     public enum Style { STG, LPN };
 
     public static void writeModel(Model model, OutputStream out, Style style) {
-        if (!(model instanceof PetriNetModel)) {
+        if (!(model instanceof PetriModel)) {
             throw new ArgumentException("Model class not supported: " + model.getClass().getName());
         }
-        PetriNetModel petriModel = (PetriNetModel) model;
+        PetriModel petriModel = (PetriModel) model;
 
         PrintWriter writer = new PrintWriter(out);
         writeIntro(writer, petriModel, style);
@@ -53,7 +53,7 @@ public class SerialiserUtils {
         writer.close();
     }
 
-    private static void writeIntro(PrintWriter writer, PetriNetModel petri, Style style) {
+    private static void writeIntro(PrintWriter writer, PetriModel petri, Style style) {
         String prefix = (style == Style.LPN) ? "# LPN file " : "# STG file ";
         writer.write(Info.getGeneratedByText(prefix, "\n"));
 
@@ -79,7 +79,7 @@ public class SerialiserUtils {
         }
     }
 
-    private static boolean hasInstanceNumbers(PetriNetModel petriModel) {
+    private static boolean hasInstanceNumbers(PetriModel petriModel) {
         if (petriModel instanceof StgModel) {
             StgModel stg = (StgModel) petriModel;
             for (SignalTransition st: stg.getSignalTransitions()) {
@@ -236,7 +236,7 @@ public class SerialiserUtils {
         }
     }
 
-    private static void writePN(PrintWriter out, PetriNetModel petriModel) {
+    private static void writePN(PrintWriter out, PetriModel petriModel) {
         LinkedList<String> transitions = new LinkedList<>();
         for (Transition t : petriModel.getTransitions()) {
             String transitionRef = petriModel.getNodeReference(t);

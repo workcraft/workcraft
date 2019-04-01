@@ -3,10 +3,10 @@ package org.workcraft.plugins.atacs;
 import org.workcraft.Framework;
 import org.workcraft.plugins.Plugin;
 import org.workcraft.plugins.PluginManager;
+import org.workcraft.plugins.atacs.commands.ComplexGateSynthesisCommand;
+import org.workcraft.plugins.atacs.commands.GeneralisedCelementSynthesisCommand;
+import org.workcraft.plugins.atacs.commands.StandardCelementSynthesisCommand;
 import org.workcraft.utils.ScriptableCommandUtils;
-import org.workcraft.plugins.atacs.commands.AtacsComplexGateSynthesisCommand;
-import org.workcraft.plugins.atacs.commands.AtacsGeneralisedCelementSynthesisCommand;
-import org.workcraft.plugins.atacs.commands.AtacsStandardCelementSynthesisCommand;
 
 @SuppressWarnings("unused")
 public class AtacsPlugin implements Plugin {
@@ -23,11 +23,11 @@ public class AtacsPlugin implements Plugin {
 
         pm.registerSettings(AtacsSettings.class);
 
-        ScriptableCommandUtils.register(AtacsComplexGateSynthesisCommand.class, "synthComplexGateAtacs",
+        ScriptableCommandUtils.register(ComplexGateSynthesisCommand.class, "synthComplexGateAtacs",
                 "logic synthesis of the STG 'work' into a complex gate Circuit work using ATACS backend");
-        ScriptableCommandUtils.register(AtacsGeneralisedCelementSynthesisCommand.class, "synthGeneralisedCelementAtacs",
+        ScriptableCommandUtils.register(GeneralisedCelementSynthesisCommand.class, "synthGeneralisedCelementAtacs",
                 "synthesis of the STG 'work' into a generalised C-element Circuit work using ATACS");
-        ScriptableCommandUtils.register(AtacsStandardCelementSynthesisCommand.class, "synthStandardCelementAtacs",
+        ScriptableCommandUtils.register(StandardCelementSynthesisCommand.class, "synthStandardCelementAtacs",
                 "synthesis of the STG 'work' into a standard C-element Circuit work using ATACS backend");
     }
 

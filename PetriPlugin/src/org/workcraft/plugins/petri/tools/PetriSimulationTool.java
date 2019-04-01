@@ -1,31 +1,25 @@
 package org.workcraft.plugins.petri.tools;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.utils.Coloriser;
 import org.workcraft.gui.ExceptionDialog;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.tools.SimulationTool;
-import org.workcraft.plugins.petri.PetriNetModel;
+import org.workcraft.plugins.petri.*;
 import org.workcraft.plugins.petri.utils.PetriUtils;
-import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.petri.VisualPetriNet;
-import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.plugins.petri.VisualReplicaPlace;
-import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.shared.ColorGenerator;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.utils.LogUtils;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 public class PetriSimulationTool extends SimulationTool {
 
@@ -37,8 +31,8 @@ public class PetriSimulationTool extends SimulationTool {
         super(enableTraceGraph);
     }
 
-    public PetriNetModel getUnderlyingPetri() {
-        return (PetriNetModel) getUnderlyingModel().getMathModel();
+    public PetriModel getUnderlyingPetri() {
+        return (PetriModel) getUnderlyingModel().getMathModel();
     }
 
     @Override
@@ -79,8 +73,8 @@ public class PetriSimulationTool extends SimulationTool {
             return;
         }
         MathModel model = editor.getModel().getMathModel();
-        if (model instanceof PetriNetModel) {
-            PetriNetModel petri = (PetriNetModel) model;
+        if (model instanceof PetriModel) {
+            PetriModel petri = (PetriModel) model;
             editor.getWorkspaceEntry().saveMemento();
             for (Place place: petri.getPlaces()) {
                 String ref = petri.getNodeReference(place);
@@ -96,7 +90,7 @@ public class PetriSimulationTool extends SimulationTool {
     @Override
     public boolean isEnabledNode(Node node) {
         boolean result = false;
-        PetriNetModel petri = getUnderlyingPetri();
+        PetriModel petri = getUnderlyingPetri();
         if ((petri != null) && (node instanceof Transition)) {
             Transition transition = (Transition) node;
             result = petri.isEnabled(transition);
@@ -119,7 +113,7 @@ public class PetriSimulationTool extends SimulationTool {
     public boolean fire(String ref) {
         boolean result = false;
         Transition transition = null;
-        PetriNetModel petri = getUnderlyingPetri();
+        PetriModel petri = getUnderlyingPetri();
         if (ref != null) {
             final Node node = petri.getNodeByReference(ref);
             if (node instanceof Transition) {
@@ -175,7 +169,7 @@ public class PetriSimulationTool extends SimulationTool {
     }
 
     protected void coloriseTokens(Transition transition) {
-        VisualPetriNet model = (VisualPetriNet) getUnderlyingModel();
+        VisualPetri model = (VisualPetri) getUnderlyingModel();
         VisualTransition vt = model.getVisualTransition(transition);
         if (vt == null) return;
         Color tokenColor = Color.black;

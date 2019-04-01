@@ -1,15 +1,15 @@
 package org.workcraft.plugins.mpsat;
 
 import org.w3c.dom.Element;
-import org.workcraft.plugins.mpsat.MpsatParameters.SolutionMode;
+import org.workcraft.plugins.mpsat.VerificationParameters.SolutionMode;
 import org.workcraft.presets.SettingsSerialiser;
 import org.workcraft.utils.XmlUtils;
 
-public class MpsatSettingsSerialiser implements SettingsSerialiser<MpsatParameters> {
+public class MpsatSettingsSerialiser implements SettingsSerialiser<VerificationParameters> {
 
-    public MpsatParameters fromXML(Element element) {
+    public VerificationParameters fromXML(Element element) {
         String name = XmlUtils.readStringAttr(element, "name");
-        MpsatMode mode = MpsatMode.getModeByArgument(element.getAttribute("mode"));
+        VerificationMode mode = VerificationMode.getModeByArgument(element.getAttribute("mode"));
         int verbosity = XmlUtils.readIntAttr(element, "verbosity", 0);
         int solutionNumberLimit = XmlUtils.readIntAttr(element, "solutionNumberLimit", -1);
         SolutionMode solutionMode = SolutionMode.valueOf(XmlUtils.readStringAttr(element, "solutionMode"));
@@ -18,10 +18,10 @@ public class MpsatSettingsSerialiser implements SettingsSerialiser<MpsatParamete
         String reach = re.getTextContent();
         boolean inversePredicate = XmlUtils.readBoolAttr(element, "inversePredicate");
 
-        return new MpsatParameters(name, mode, verbosity, solutionMode, solutionNumberLimit, reach, inversePredicate);
+        return new VerificationParameters(name, mode, verbosity, solutionMode, solutionNumberLimit, reach, inversePredicate);
     }
 
-    public void toXML(MpsatParameters settings, Element parent) {
+    public void toXML(VerificationParameters settings, Element parent) {
         Element e = parent.getOwnerDocument().createElement("settings");
         e.setAttribute("name", settings.getName());
         e.setAttribute("mode", settings.getMode().getArgument());

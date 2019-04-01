@@ -51,7 +51,7 @@ public class SaveLoadTests {
         final CompatibilityManager compatibilityManager = framework.getCompatibilityManager();
         ByteArrayInputStream bis = compatibilityManager.process(new Base16Reader(testDataMathModel), null);
         ModelEntry modelEntry = framework.loadModel(bis);
-        PetriNet petri = (PetriNet) modelEntry.getModel();
+        Petri petri = (Petri) modelEntry.getModel();
 
         Assert.assertNotNull(petri);
 
@@ -66,18 +66,18 @@ public class SaveLoadTests {
         final CompatibilityManager compatibilityManager = framework.getCompatibilityManager();
         ByteArrayInputStream bis = compatibilityManager.process(new Base16Reader(testDataVisualModel), null);
         ModelEntry modelEntry = framework.loadModel(bis);
-        VisualPetriNet petriVisual = (VisualPetriNet) modelEntry.getModel();
-        PetriNet petri = (PetriNet) petriVisual.getMathModel();
+        VisualPetri petriVisual = (VisualPetri) modelEntry.getModel();
+        Petri petri = (Petri) petriVisual.getMathModel();
 
         Assert.assertNotNull(petriVisual);
         Assert.assertNotNull(petri);
 
-        VisualPetriNet sample = buildSampleVisualPetri();
-        assertPetriEquals(petri, (PetriNet) sample.getMathModel());
+        VisualPetri sample = buildSampleVisualPetri();
+        assertPetriEquals(petri, (Petri) sample.getMathModel());
         assertVisualPetriEquals(petriVisual, sample);
     }
 
-    private void assertVisualPetriEquals(VisualPetriNet petriVisual, VisualPetriNet sample) {
+    private void assertVisualPetriEquals(VisualPetri petriVisual, VisualPetri sample) {
     }
 
     @Test
@@ -93,7 +93,7 @@ public class SaveLoadTests {
         pm.initPlugins();
 
         StringWriter writer = new StringWriter();
-        framework.saveModel(new ModelEntry(new PetriNetDescriptor(), model), new Base16Writer(writer));
+        framework.saveModel(new ModelEntry(new PetriDescriptor(), model), new Base16Writer(writer));
         String generatedValue = writer.toString();
         if (currentValue.equals(generatedValue)) {
             return;
@@ -107,17 +107,17 @@ public class SaveLoadTests {
         System.out.println(generatedValue);
     }
 
-    private Collection<MathNode> getComponents(PetriNet net) {
+    private Collection<MathNode> getComponents(Petri net) {
         ArrayList<MathNode> result = new ArrayList<MathNode>(net.getTransitions());
         result.addAll(net.getPlaces());
         return result;
     }
 
-    private Collection<MathConnection> getConnections(PetriNet net) {
+    private Collection<MathConnection> getConnections(Petri net) {
         return Hierarchy.getChildrenOfType(net.getRoot(), MathConnection.class);
     }
 
-    private void assertPetriEquals(PetriNet expected, PetriNet actual) {
+    private void assertPetriEquals(Petri expected, Petri actual) {
         Assert.assertEquals(getComponents(expected).size(), getComponents(actual).size());
         for (MathNode component : getComponents(expected)) {
             assertComponentEquals(component, (MathNode) actual.getNodeByReference(expected.getNodeReference(component)));
@@ -220,12 +220,12 @@ public class SaveLoadTests {
         Assert.assertEquals(expected.getTokens(), actual.getTokens());
     }
 
-    private PetriNet buildSamplePetri() throws Exception {
-        return (PetriNet) buildSampleVisualPetri().getMathModel();
+    private Petri buildSamplePetri() throws Exception {
+        return (Petri) buildSampleVisualPetri().getMathModel();
     }
 
-    private VisualPetriNet buildSampleVisualPetri() throws Exception {
-        PetriNet petri = new PetriNet();
+    private VisualPetri buildSampleVisualPetri() throws Exception {
+        Petri petri = new Petri();
 
         Place place1 = new Place();
         place1.setTokens(5);
@@ -253,7 +253,7 @@ public class SaveLoadTests {
         petri.connect(trans1, place3);
         petri.connect(place3, trans2);
 
-        VisualPetriNet visual = new VisualPetriNet(petri);
+        VisualPetri visual = new VisualPetri(petri);
 /*        VisualPlace vp1 = new VisualPlace(place1);
         VisualPlace vp2 = new VisualPlace(place2);
         VisualPlace vp3 = new VisualPlace(place3);

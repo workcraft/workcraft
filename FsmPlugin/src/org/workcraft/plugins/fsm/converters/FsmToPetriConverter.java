@@ -13,20 +13,20 @@ import org.workcraft.plugins.fsm.Symbol;
 import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fsm.VisualState;
-import org.workcraft.plugins.petri.VisualPetriNet;
+import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.utils.Hierarchy;
 
 public class FsmToPetriConverter {
     private final VisualFsm srcModel;
-    private final VisualPetriNet dstModel;
+    private final VisualPetri dstModel;
 
     private final Map<VisualState, VisualPlace> stateToPlaceMap;
     private final Map<VisualEvent, VisualTransition> eventToTransitionMap;
     private final Map<String, String> refToSymbolMap;
 
-    public FsmToPetriConverter(VisualFsm srcModel, VisualPetriNet dstModel) {
+    public FsmToPetriConverter(VisualFsm srcModel, VisualPetri dstModel) {
         this.srcModel = srcModel;
         this.dstModel = dstModel;
         stateToPlaceMap = convertStates();
@@ -112,7 +112,7 @@ public class FsmToPetriConverter {
         return srcModel;
     }
 
-    public VisualPetriNet getDstModel() {
+    public VisualPetri getDstModel() {
         return dstModel;
     }
 

@@ -3,8 +3,8 @@ package org.workcraft.plugins.policy.tools;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.petri.PetriNet;
-import org.workcraft.plugins.petri.VisualPetriNet;
+import org.workcraft.plugins.petri.Petri;
+import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.policy.*;
@@ -17,16 +17,16 @@ import java.util.HashSet;
 import java.util.Map;
 
 public class PolicyToPetriConverter {
-    private final VisualPolicyNet policyNet;
-    private final VisualPetriNet petriNet;
+    private final VisualPolicy policyNet;
+    private final VisualPetri petriNet;
 
     private final Map<VisualPlace, VisualPlace> placeMap;
     private final Map<VisualBundledTransition, VisualTransition> transitionMap;
     private final Map<VisualBundle, VisualTransition> bundleMap;
 
-    public PolicyToPetriConverter(VisualPolicyNet policyNet) {
+    public PolicyToPetriConverter(VisualPolicy policyNet) {
         this.policyNet = policyNet;
-        this.petriNet = new VisualPetriNet(new PetriNet());
+        this.petriNet = new VisualPetri(new Petri());
         placeMap = convertPlaces();
         transitionMap = convertTransitions();
         bundleMap = convertBundles();
@@ -170,11 +170,11 @@ public class PolicyToPetriConverter {
         }
     }
 
-    public VisualPolicyNet getPolicyNet() {
+    public VisualPolicy getPolicyNet() {
         return policyNet;
     }
 
-    public VisualPetriNet getPetriNet() {
+    public VisualPetri getPetriNet() {
         return petriNet;
     }
 

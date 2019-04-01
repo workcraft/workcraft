@@ -2,13 +2,13 @@ package org.workcraft.plugins.policy.observers;
 
 import org.workcraft.observation.*;
 import org.workcraft.plugins.policy.VisualBundle;
-import org.workcraft.plugins.policy.VisualPolicyNet;
+import org.workcraft.plugins.policy.VisualPolicy;
 
 public class SpanningTreeInvalidator extends StateSupervisor {
 
-    private final VisualPolicyNet policy;
+    private final VisualPolicy policy;
 
-    public SpanningTreeInvalidator(VisualPolicyNet policy) {
+    public SpanningTreeInvalidator(VisualPolicy policy) {
         this.policy = policy;
     }
 

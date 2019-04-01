@@ -19,7 +19,7 @@ import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.*;
-import org.workcraft.plugins.petri.utils.PetriNetUtils;
+import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.*;
 import org.workcraft.workspace.ModelEntry;
@@ -44,7 +44,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, VisualPetriNet.class);
+        return WorkspaceUtils.isApplicable(we, VisualPetri.class);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
     @Override
     public Collection<VisualNode> collect(VisualModel model) {
         Collection<VisualNode> transitions = new HashSet<>();
-        transitions.addAll(PetriNetUtils.getVisualTransitions(model));
+        transitions.addAll(ConversionUtils.getVisualTransitions(model));
         transitions.retainAll(model.getSelection());
         return transitions;
     }
@@ -87,7 +87,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
     @Override
     public void transform(VisualModel model, VisualNode node) {
         if (node instanceof VisualTransition) {
-            PetriNetModel mathModel = (PetriNetModel) model.getMathModel();
+            PetriModel mathModel = (PetriModel) model.getMathModel();
             VisualTransition transition = (VisualTransition) node;
             Transition mathTransition = transition.getReferencedTransition();
             if (hasSelfLoop(mathModel, mathTransition)) {
@@ -106,7 +106,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
         }
     }
 
-    private boolean needsWaitedArcs(PetriNetModel model, Transition transition) {
+    private boolean needsWaitedArcs(PetriModel model, Transition transition) {
         HashSet<MathNode> predPredNodes = new HashSet<>();
         HashSet<MathNode> predSuccNodes = new HashSet<>();
         for (MathNode predNode: model.getPreset(transition)) {
@@ -124,18 +124,18 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
         return !(predPredNodes.isEmpty() && predSuccNodes.isEmpty());
     }
 
-    private boolean hasSelfLoop(PetriNetModel model, Transition transition) {
+    private boolean hasSelfLoop(PetriModel model, Transition transition) {
         HashSet<MathNode> connectedNodes = new HashSet<>(model.getPreset(transition));
         connectedNodes.retainAll(model.getPostset(transition));
         return !connectedNodes.isEmpty();
     }
 
-    private boolean isLanguageChanging(PetriNetModel model, Transition transition) {
+    private boolean isLanguageChanging(PetriModel model, Transition transition) {
         return !isType1Secure(model, transition) && !isType2Secure(model, transition);
     }
 
     // There are no choice places in the preset (preset can be empty).
-    private boolean isType1Secure(PetriNetModel model, Transition transition) {
+    private boolean isType1Secure(PetriModel model, Transition transition) {
         Set<MathNode> predNodes = model.getPreset(transition);
         for (MathNode predNode: predNodes) {
             HashSet<MathNode> predSuccNodes = new HashSet<>(model.getPostset(predNode));
@@ -148,7 +148,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
     }
 
     // There is at least one unmarked place in the postset AND there are no merge places in the postset (the postset cannot be empty).
-    private boolean isType2Secure(PetriNetModel model, Transition transition) {
+    private boolean isType2Secure(PetriModel model, Transition transition) {
         Set<MathNode> succNodes = model.getPostset(transition);
         int markedPlaceCount = 0;
         for (MathNode succNode: succNodes) {
@@ -170,12 +170,12 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
         return true;
     }
 
-    private boolean isSafenessViolationg(PetriNetModel model, Transition transition) {
+    private boolean isSafenessViolationg(PetriModel model, Transition transition) {
         return !isType1Safe(model, transition) && !isType2Safe(model, transition) && !isType3Safe(model, transition);
     }
 
     // The only place in the postset is unmarked AND it is not a merge.
-    private boolean isType1Safe(PetriNetModel model, Transition transition) {
+    private boolean isType1Safe(PetriModel model, Transition transition) {
         Set<MathNode> succNodes = model.getPostset(transition);
         if (succNodes.size() != 1) {
             return false;
@@ -195,7 +195,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
     }
 
     // There is a single place in the preset AND all the postset places are unmarked and not merge places (the postset cannot be empty).
-    private boolean isType2Safe(PetriNetModel model, Transition transition) {
+    private boolean isType2Safe(PetriModel model, Transition transition) {
         Set<MathNode> predNodes = model.getPreset(transition);
         if (predNodes.size() != 1) {
             return false;
@@ -219,7 +219,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
     }
 
     // The only preset place is not a choice.
-    private boolean isType3Safe(PetriNetModel model, Transition transition) {
+    private boolean isType3Safe(PetriModel model, Transition transition) {
         Set<MathNode> predNodes = model.getPreset(transition);
         if (predNodes.size() != 1) {
             return false;
@@ -391,7 +391,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
             }
         }
         for (VisualReplicaPlace replica: replicaPlaces) {
-            VisualConnection newConnection = PetriNetUtils.collapseReplicaPlace(visualModel, replica);
+            VisualConnection newConnection = ConversionUtils.collapseReplicaPlace(visualModel, replica);
             convertedReplicaConnections.add(newConnection);
         }
     }
@@ -424,7 +424,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
             }
         }
         for (VisualConnection replicaPlaceConnection: replicaPlaceConnections) {
-            PetriNetUtils.replicateConnectedPlace(visualModel, replicaPlaceConnection);
+            ConversionUtils.replicateConnectedPlace(visualModel, replicaPlaceConnection);
         }
     }
 

@@ -16,7 +16,7 @@ import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.plugins.dtd.observers.DtdStateSupervisor;
 import org.workcraft.plugins.dtd.tools.DtdConnectionTool;
 import org.workcraft.plugins.dtd.tools.DtdSelectionTool;
-import org.workcraft.plugins.dtd.tools.DtdSignalGeneratorTool;
+import org.workcraft.plugins.dtd.tools.SignalGeneratorTool;
 import org.workcraft.plugins.dtd.utils.DtdUtils;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.types.Pair;
@@ -60,7 +60,7 @@ public class VisualDtd extends AbstractVisualModel {
         tools.add(new DtdSelectionTool());
         tools.add(new CommentGeneratorTool());
         tools.add(new DtdConnectionTool());
-        tools.add(new DtdSignalGeneratorTool());
+        tools.add(new SignalGeneratorTool());
         setGraphEditorTools(tools);
     }
 

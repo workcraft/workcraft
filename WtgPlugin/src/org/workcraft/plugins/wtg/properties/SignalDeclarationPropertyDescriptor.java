@@ -10,7 +10,7 @@ import org.workcraft.plugins.dtd.DtdSettings;
 import org.workcraft.plugins.dtd.Signal;
 import org.workcraft.plugins.dtd.VisualSignal;
 import org.workcraft.plugins.wtg.*;
-import org.workcraft.plugins.wtg.tools.WtgSignalGeneratorTool;
+import org.workcraft.plugins.wtg.tools.SignalGeneratorTool;
 
 import java.awt.geom.Point2D;
 import java.util.*;
@@ -68,12 +68,12 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor<B
 
     private void insertNewSignal() {
         for (GraphEditorTool tool : visualWtg.getGraphEditorTools()) {
-            if (tool instanceof WtgSignalGeneratorTool) {
+            if (tool instanceof SignalGeneratorTool) {
                 Point2D position = newSignalPosition();
                 VisualSignal newSignal;
                 try {
                     newSignal = (VisualSignal)
-                            ((WtgSignalGeneratorTool) tool).generateNode(visualWtg, position);
+                            ((SignalGeneratorTool) tool).generateNode(visualWtg, position);
                 } catch (NodeCreationException e1) {
                     throw new RuntimeException(e1);
                 }

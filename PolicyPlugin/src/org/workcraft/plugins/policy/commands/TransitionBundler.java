@@ -3,7 +3,7 @@ package org.workcraft.plugins.policy.commands;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.petri.*;
 import org.workcraft.plugins.policy.VisualBundledTransition;
-import org.workcraft.plugins.policy.VisualPolicyNet;
+import org.workcraft.plugins.policy.VisualPolicy;
 import org.workcraft.plugins.policy.tools.PolicyToPetriConverter;
 
 import java.util.*;
@@ -18,15 +18,15 @@ public class TransitionBundler {
     private class Marking extends HashMap<Place, Integer> {
     }
 
-    private final VisualPolicyNet policyNet;
-    private final PetriNet model;
+    private final VisualPolicy policyNet;
+    private final Petri model;
     final Step unbundled;
 
     private final HashMap<Transition, VisualBundledTransition> t2vbt;
 
     public TransitionBundler(PolicyToPetriConverter converter) {
         policyNet = converter.getPolicyNet();
-        VisualPetriNet petriNet = converter.getPetriNet();
+        VisualPetri petriNet = converter.getPetriNet();
         model = petriNet.getPetriNet();
         unbundled = new Step();
 

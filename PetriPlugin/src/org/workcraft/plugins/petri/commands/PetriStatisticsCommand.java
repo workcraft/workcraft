@@ -3,10 +3,10 @@ package org.workcraft.plugins.petri.commands;
 import org.workcraft.commands.AbstractStatisticsCommand;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.plugins.petri.PetriNet;
+import org.workcraft.plugins.petri.Petri;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.petri.utils.PetriNetChecker;
+import org.workcraft.plugins.petri.utils.CheckUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
 
@@ -23,12 +23,12 @@ public class PetriStatisticsCommand extends AbstractStatisticsCommand {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, PetriNet.class);
+        return WorkspaceUtils.isApplicable(we, Petri.class);
     }
 
     @Override
     public String getStatistics(WorkspaceEntry we) {
-        PetriNet petri = WorkspaceUtils.getAs(we, PetriNet.class);
+        Petri petri = WorkspaceUtils.getAs(we, Petri.class);
 
         Collection<Transition> transitions = petri.getTransitions();
         Collection<Place> places = petri.getPlaces();
@@ -136,11 +136,11 @@ public class PetriStatisticsCommand extends AbstractStatisticsCommand {
                 + "\n  Token count / marked places -  " + tokenCount + " / " + markedCount
                 + "\n  Isolated transitions / places -  " + isolatedTransitionCount + " / " + isolatedPlaceCount
                 + "\n  Net type:"
-                + "\n    * Marked graph -  " + PetriNetChecker.isMarkedGraph(petri)
-                + "\n    * State machine -  " + PetriNetChecker.isStateMachine(petri)
-                + "\n    * Free choice -  " + PetriNetChecker.isFreeChoice(petri)
-                + "\n    * Extended free choice -  " + PetriNetChecker.isExtendedFreeChoice(petri)
-                + "\n    * Pure -  " + PetriNetChecker.isPure(petri)
+                + "\n    * Marked graph -  " + CheckUtils.isMarkedGraph(petri)
+                + "\n    * State machine -  " + CheckUtils.isStateMachine(petri)
+                + "\n    * Free choice -  " + CheckUtils.isFreeChoice(petri)
+                + "\n    * Extended free choice -  " + CheckUtils.isExtendedFreeChoice(petri)
+                + "\n    * Pure -  " + CheckUtils.isPure(petri)
                 + "\n";
     }
 

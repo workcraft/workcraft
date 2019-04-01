@@ -6,7 +6,7 @@ import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.interop.SgImporter;
-import org.workcraft.plugins.petri.PetriNetModel;
+import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.*;
@@ -70,7 +70,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionOutput> {
         try {
             // Common variables
             monitor.progressUpdate(0.05);
-            PetriNetModel petri = WorkspaceUtils.getAs(we, PetriNetModel.class);
+            PetriModel petri = WorkspaceUtils.getAs(we, PetriModel.class);
             StgFormat format = StgFormat.getInstance();
             Exporter petriExporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), petri, format);
             if (petriExporter == null) {

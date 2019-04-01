@@ -9,10 +9,9 @@ import org.workcraft.plugins.circuit.tasks.CustomCheckTask;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.MpsatSettingsSerialiser;
-import org.workcraft.plugins.mpsat.commands.MpsatAssertionVerificationCommand;
-import org.workcraft.plugins.mpsat.gui.MpsatAssertionDialog;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
-import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
+import org.workcraft.plugins.mpsat.gui.AssertionDialog;
+import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
+import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -50,9 +49,11 @@ public class AssertionVerificationCommand extends AbstractVerificationCommand {
         }
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
-        File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, MpsatAssertionVerificationCommand.MPSAT_ASSERTION_PRESETS_FILE);
+        File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH,
+                org.workcraft.plugins.mpsat.commands.AssertionVerificationCommand.MPSAT_ASSERTION_PRESETS_FILE);
+
         MpsatPresetManager pmgr = new MpsatPresetManager(presetFile, new MpsatSettingsSerialiser(), true);
-        MpsatAssertionDialog dialog = new MpsatAssertionDialog(mainWindow, pmgr);
+        AssertionDialog dialog = new AssertionDialog(mainWindow, pmgr);
         dialog.pack();
         GuiUtils.centerToParent(dialog, mainWindow);
         dialog.setVisible(true);
@@ -60,7 +61,7 @@ public class AssertionVerificationCommand extends AbstractVerificationCommand {
             TaskManager manager = framework.getTaskManager();
             CustomCheckTask task = new CustomCheckTask(we, dialog.getSettings());
             String description = MpsatUtils.getToolchainDescription(we.getTitle());
-            MpsatChainResultHandler monitor = new MpsatChainResultHandler(we);
+            VerificationChainResultHandler monitor = new VerificationChainResultHandler(we);
             manager.queue(task, description, monitor);
         }
     }

@@ -11,8 +11,8 @@ public class ScriptableCommandUtils {
     }
 
     public static void register(Class<? extends ScriptableCommand> command, String jsName) {
-        String canonicalName = command.getCanonicalName();
-        String help = "wrapper for framework.executeCommand(work, '" + canonicalName + "')";
+        String name = command.getName();
+        String help = "wrapper for framework.executeCommand(work, '" + name + "')";
         register(command, jsName, help);
     }
 
@@ -20,10 +20,10 @@ public class ScriptableCommandUtils {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
         pm.registerCommand(command);
-        String canonicalName = command.getCanonicalName();
+        String name = command.getName();
         framework.registerJavaScriptFunction(
                 "function " + jsName + "(work) {\n" +
-                "    return framework.executeCommand(work, '" + canonicalName + "');\n" +
+                "    return framework.executeCommand(work, '" + name + "');\n" +
                 "}", jsHelp);
     }
 

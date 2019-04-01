@@ -10,9 +10,9 @@ import org.workcraft.plugins.circuit.tasks.StrictImplementationCheckTask;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.EnvironmentUtils;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
-import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
+import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
+import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
+import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.utils.StgUtils;
@@ -52,22 +52,22 @@ public class StrictImplementationVerificationCommand extends AbstractVerificatio
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        MpsatChainResultHandler monitor = queueVerification(we);
-        Result<? extends MpsatChainOutput> result = null;
+        VerificationChainResultHandler monitor = queueVerification(we);
+        Result<? extends VerificationChainOutput> result = null;
         if (monitor != null) {
             result = monitor.waitResult();
         }
         return MpsatUtils.getChainOutcome(result);
     }
 
-    private MpsatChainResultHandler queueVerification(WorkspaceEntry we) {
-        MpsatChainResultHandler monitor = null;
+    private VerificationChainResultHandler queueVerification(WorkspaceEntry we) {
+        VerificationChainResultHandler monitor = null;
         if (checkPrerequisites(we)) {
             Framework framework = Framework.getInstance();
             TaskManager manager = framework.getTaskManager();
             StrictImplementationCheckTask task = new StrictImplementationCheckTask(we);
             String description = MpsatUtils.getToolchainDescription(we.getTitle());
-            monitor = new MpsatChainResultHandler(we);
+            monitor = new VerificationChainResultHandler(we);
             manager.queue(task, description, monitor);
         }
         return monitor;

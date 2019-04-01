@@ -5,9 +5,9 @@ import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.plugins.petri.PetriNetModel;
+import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.VisualReadArc;
-import org.workcraft.plugins.petri.utils.PetriNetUtils;
+import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
@@ -29,12 +29,12 @@ public class DirectedArcToReadArcTransformationCommand extends AbstractTransform
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, PetriNetModel.class);
+        return WorkspaceUtils.isApplicable(we, PetriModel.class);
     }
 
     @Override
     public boolean isApplicableTo(VisualNode node) {
-        return PetriNetUtils.isVisualConsumingArc(node) || PetriNetUtils.isVisualProducingArc(node);
+        return ConversionUtils.isVisualConsumingArc(node) || ConversionUtils.isVisualProducingArc(node);
     }
 
     @Override
@@ -50,8 +50,8 @@ public class DirectedArcToReadArcTransformationCommand extends AbstractTransform
     @Override
     public Collection<VisualNode> collect(VisualModel model) {
         Collection<VisualNode> arcs = new HashSet<>();
-        arcs.addAll(PetriNetUtils.getVisualConsumingArcs(model));
-        arcs.addAll(PetriNetUtils.getVisualProducingArcs(model));
+        arcs.addAll(ConversionUtils.getVisualConsumingArcs(model));
+        arcs.addAll(ConversionUtils.getVisualProducingArcs(model));
         Collection<VisualNode> selection = model.getSelection();
         arcs.retainAll(selection);
         return arcs;
@@ -62,7 +62,7 @@ public class DirectedArcToReadArcTransformationCommand extends AbstractTransform
         // Check that the arc was not removed because of a dual arc
         if ((node instanceof VisualConnection) && (node.getParent() != null)) {
             VisualConnection connection = (VisualConnection) node;
-            VisualReadArc readArc = PetriNetUtils.convertDirectedArcToReadArc(model, connection);
+            VisualReadArc readArc = ConversionUtils.convertDirectedArcToReadArc(model, connection);
             model.addToSelection(readArc);
         }
     }

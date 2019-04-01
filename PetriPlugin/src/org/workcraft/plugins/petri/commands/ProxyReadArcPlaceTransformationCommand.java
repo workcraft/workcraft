@@ -5,11 +5,11 @@ import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.plugins.petri.PetriNetModel;
+import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
-import org.workcraft.plugins.petri.utils.PetriNetUtils;
+import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
@@ -31,7 +31,7 @@ public class ProxyReadArcPlaceTransformationCommand extends AbstractTransformati
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, PetriNetModel.class);
+        return WorkspaceUtils.isApplicable(we, PetriModel.class);
     }
 
     @Override
@@ -56,12 +56,12 @@ public class ProxyReadArcPlaceTransformationCommand extends AbstractTransformati
     @Override
     public Collection<VisualNode> collect(VisualModel model) {
         Collection<VisualNode> readArcs = new HashSet<>();
-        readArcs.addAll(PetriNetUtils.getVisualReadArcs(model));
+        readArcs.addAll(ConversionUtils.getVisualReadArcs(model));
         Collection<VisualNode> selection = model.getSelection();
         if (!selection.isEmpty()) {
             readArcs.retainAll(selection);
         }
-        HashSet<VisualPlace> places = PetriNetUtils.getVisualPlaces(model);
+        HashSet<VisualPlace> places = ConversionUtils.getVisualPlaces(model);
         if (!selection.isEmpty()) {
             places.retainAll(selection);
         }
@@ -78,7 +78,7 @@ public class ProxyReadArcPlaceTransformationCommand extends AbstractTransformati
     @Override
     public void transform(VisualModel model, VisualNode node) {
         if (node instanceof VisualReadArc) {
-            VisualConnection connection = PetriNetUtils.replicateConnectedPlace(model, (VisualReadArc) node);
+            VisualConnection connection = ConversionUtils.replicateConnectedPlace(model, (VisualReadArc) node);
             if (connection != null) {
                 if (connection.getFirst() instanceof VisualReplicaPlace) {
                     model.addToSelection(connection.getFirst());

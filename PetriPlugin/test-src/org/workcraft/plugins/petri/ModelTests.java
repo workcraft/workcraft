@@ -9,7 +9,7 @@ public class ModelTests {
 
     @Test
     public void testTransitionsAndPlacesCollections() {
-        PetriNet petriNet = new PetriNet();
+        Petri petriNet = new Petri();
 
         Transition tr = new Transition();
         assertEquals(0, petriNet.getTransitions().size());

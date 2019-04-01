@@ -6,15 +6,15 @@ import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.plugins.policy.Bundle;
 import org.workcraft.plugins.policy.BundledTransition;
-import org.workcraft.plugins.policy.PolicyNet;
+import org.workcraft.plugins.policy.Policy;
 
 import java.util.ArrayList;
 
 public class BundleConsistencySupervisor extends HierarchySupervisor {
 
-    private final PolicyNet policy;
+    private final Policy policy;
 
-    public BundleConsistencySupervisor(PolicyNet policy) {
+    public BundleConsistencySupervisor(Policy policy) {
         this.policy = policy;
     }
 

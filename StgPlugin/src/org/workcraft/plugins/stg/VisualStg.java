@@ -17,7 +17,7 @@ import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.petri.*;
 import org.workcraft.plugins.petri.tools.ReadArcConnectionTool;
-import org.workcraft.plugins.petri.utils.PetriNetUtils;
+import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.plugins.stg.tools.*;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.types.Pair;
@@ -41,8 +41,8 @@ public class VisualStg extends AbstractVisualModel {
     public void createDefaultStructure() {
         super.createDefaultStructure();
         // Convert dual producer-consumer arcs into read-arcs
-        HashSet<Pair<VisualConnection, VisualConnection>> dualArcs = PetriNetUtils.getSelectedOrAllDualArcs(this);
-        PetriNetUtils.convertDualArcsToReadArcs(this, dualArcs);
+        HashSet<Pair<VisualConnection, VisualConnection>> dualArcs = ConversionUtils.getSelectedOrAllDualArcs(this);
+        ConversionUtils.convertDualArcsToReadArcs(this, dualArcs);
 
         // Hide implicit places
         // FIXME: Implicit places should not appear in the first place.
@@ -60,9 +60,9 @@ public class VisualStg extends AbstractVisualModel {
         tools.add(new CommentGeneratorTool());
         tools.add(new StgConnectionTool());
         tools.add(new ReadArcConnectionTool());
-        tools.add(new StgPlaceGeneratorTool());
-        tools.add(new StgSignalTransitionGeneratorTool());
-        tools.add(new StgDummyTransitionGeneratorTool());
+        tools.add(new PlaceGeneratorTool());
+        tools.add(new SignalTransitionGeneratorTool());
+        tools.add(new DummyTransitionGeneratorTool());
         tools.add(new StgSimulationTool());
         tools.add(new EncodingConflictAnalyserTool());
         setGraphEditorTools(tools);
@@ -81,16 +81,16 @@ public class VisualStg extends AbstractVisualModel {
                 && ((second instanceof VisualStgPlace) || (second instanceof VisualReplicaPlace) || (second instanceof VisualImplicitPlaceArc))) {
             throw new InvalidConnectionException("Arcs between places are not allowed.");
         }
-        if (PetriNetUtils.hasReadArcConnection(this, first, second) || PetriNetUtils.hasReadArcConnection(this, second, first)) {
+        if (ConversionUtils.hasReadArcConnection(this, first, second) || ConversionUtils.hasReadArcConnection(this, second, first)) {
             throw new InvalidConnectionException("Nodes are already connected by a read-arc.");
         }
-        if (PetriNetUtils.hasProducingArcConnection(this, first, second)) {
+        if (ConversionUtils.hasProducingArcConnection(this, first, second)) {
             throw new InvalidConnectionException("This producing arc already exists.");
         }
-        if (PetriNetUtils.hasConsumingArcConnection(this, first, second)) {
+        if (ConversionUtils.hasConsumingArcConnection(this, first, second)) {
             throw new InvalidConnectionException("This consuming arc already exists.");
         }
-        if (PetriNetUtils.hasImplicitPlaceArcConnection(this, first, second)) {
+        if (ConversionUtils.hasImplicitPlaceArcConnection(this, first, second)) {
             throw new InvalidConnectionException("This implicit place arc already exists.");
         }
     }
@@ -164,12 +164,12 @@ public class VisualStg extends AbstractVisualModel {
         if ((first instanceof VisualTransition) && (second instanceof VisualTransition)) {
             throw new InvalidConnectionException("Read-arcs between transitions are not allowed.");
         }
-        if (PetriNetUtils.hasReadArcConnection(this, first, second)
-                || PetriNetUtils.hasReadArcConnection(this, second, first)
-                || PetriNetUtils.hasProducingArcConnection(this, first, second)
-                || PetriNetUtils.hasProducingArcConnection(this, second, first)
-                || PetriNetUtils.hasConsumingArcConnection(this, first, second)
-                || PetriNetUtils.hasConsumingArcConnection(this, second, first)) {
+        if (ConversionUtils.hasReadArcConnection(this, first, second)
+                || ConversionUtils.hasReadArcConnection(this, second, first)
+                || ConversionUtils.hasProducingArcConnection(this, first, second)
+                || ConversionUtils.hasProducingArcConnection(this, second, first)
+                || ConversionUtils.hasConsumingArcConnection(this, first, second)
+                || ConversionUtils.hasConsumingArcConnection(this, second, first)) {
             throw new InvalidConnectionException("Nodes are already connected.");
         }
     }
@@ -255,7 +255,7 @@ public class VisualStg extends AbstractVisualModel {
         if ((preset.size() == 1) && (postset.size() == 1) && replicas.isEmpty()) {
             VisualComponent first = (VisualComponent) preset.iterator().next();
             VisualComponent second = (VisualComponent) postset.iterator().next();
-            if (!PetriNetUtils.hasImplicitPlaceArcConnection(this, first, second)) {
+            if (!ConversionUtils.hasImplicitPlaceArcConnection(this, first, second)) {
                 final StgPlace stgPlace = (StgPlace) place.getReferencedPlace();
                 stgPlace.setImplicit(true);
 

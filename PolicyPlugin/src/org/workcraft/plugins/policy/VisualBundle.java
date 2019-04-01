@@ -64,7 +64,7 @@ public class VisualBundle extends VisualNode implements Drawable, Dependent {
 
         if (spanningTree == null) {
             HashSet<Point2D> points = new HashSet<>();
-            Collection<VisualBundledTransition> transitions = ((VisualPolicyNet) r.getModel()).getTransitionsOfBundle(this);
+            Collection<VisualBundledTransition> transitions = ((VisualPolicy) r.getModel()).getTransitionsOfBundle(this);
             for (VisualBundledTransition t: transitions) {
                 Point2D point = TransformHelper.getTransformToRoot(t).transform(t.getCenter(), null);
                 points.add(point);

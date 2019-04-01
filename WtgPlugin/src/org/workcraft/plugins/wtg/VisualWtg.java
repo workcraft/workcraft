@@ -18,7 +18,7 @@ import org.workcraft.plugins.dtd.VisualSignal;
 import org.workcraft.plugins.wtg.properties.SignalDeclarationPropertyDescriptor;
 import org.workcraft.plugins.wtg.tools.WtgConnectionTool;
 import org.workcraft.plugins.wtg.tools.WtgSelectionTool;
-import org.workcraft.plugins.wtg.tools.WtgSignalGeneratorTool;
+import org.workcraft.plugins.wtg.tools.SignalGeneratorTool;
 import org.workcraft.plugins.wtg.tools.WtgSimulationTool;
 import org.workcraft.plugins.wtg.utils.WtgUtils;
 import org.workcraft.utils.Hierarchy;
@@ -44,7 +44,7 @@ public class VisualWtg extends VisualDtd {
         tools.add(new WtgConnectionTool());
         tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(State.class), true));
         tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(Waveform.class), true));
-        tools.add(new WtgSignalGeneratorTool());
+        tools.add(new SignalGeneratorTool());
         tools.add(new WtgSimulationTool());
         setGraphEditorTools(tools);
     }

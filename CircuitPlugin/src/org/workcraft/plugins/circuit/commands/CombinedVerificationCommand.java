@@ -6,9 +6,9 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.tasks.CheckTask;
 import org.workcraft.plugins.circuit.utils.EnvironmentUtils;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
-import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
+import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
+import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
+import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.Result;
@@ -43,15 +43,15 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand {
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        MpsatChainResultHandler monitor = queueVerification(we);
-        Result<? extends MpsatChainOutput> result = null;
+        VerificationChainResultHandler monitor = queueVerification(we);
+        Result<? extends VerificationChainOutput> result = null;
         if (monitor != null) {
             result = monitor.waitResult();
         }
         return MpsatUtils.getChainOutcome(result);
     }
 
-    private MpsatChainResultHandler queueVerification(WorkspaceEntry we) {
+    private VerificationChainResultHandler queueVerification(WorkspaceEntry we) {
         if (!checkPrerequisites(we)) {
             return null;
         }
@@ -88,7 +88,7 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand {
         TaskManager manager = framework.getTaskManager();
         CheckTask task = new CheckTask(we, checkConformation, checkDeadlock, checkPersistency);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
-        MpsatChainResultHandler monitor = new MpsatChainResultHandler(we);
+        VerificationChainResultHandler monitor = new VerificationChainResultHandler(we);
         manager.queue(task, description, monitor);
         return monitor;
     }

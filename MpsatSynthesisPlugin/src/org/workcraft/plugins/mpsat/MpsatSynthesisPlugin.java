@@ -4,10 +4,10 @@ import org.workcraft.Framework;
 import org.workcraft.plugins.Plugin;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.utils.ScriptableCommandUtils;
-import org.workcraft.plugins.mpsat.commands.MpsatComplexGateSynthesisCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatGeneralisedCelementSynthesisCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatStandardCelementSynthesisCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatTechnologyMappingSynthesisCommand;
+import org.workcraft.plugins.mpsat.commands.ComplexGateSynthesisCommand;
+import org.workcraft.plugins.mpsat.commands.GeneralisedCelementSynthesisCommand;
+import org.workcraft.plugins.mpsat.commands.StandardCelementSynthesisCommand;
+import org.workcraft.plugins.mpsat.commands.TechnologyMappingSynthesisCommand;
 
 @SuppressWarnings("unused")
 public class MpsatSynthesisPlugin implements Plugin {
@@ -18,13 +18,13 @@ public class MpsatSynthesisPlugin implements Plugin {
         PluginManager pm = framework.getPluginManager();
         pm.registerSettings(MpsatSynthesisSettings.class);
 
-        ScriptableCommandUtils.register(MpsatComplexGateSynthesisCommand.class, "synthComplexGateMpsat",
+        ScriptableCommandUtils.register(ComplexGateSynthesisCommand.class, "synthComplexGateMpsat",
                 "logic synthesis of the STG 'work' into a complex gate Circuit work using MPSat backend");
-        ScriptableCommandUtils.register(MpsatGeneralisedCelementSynthesisCommand.class, "synthGeneralisedCelementMpsat",
+        ScriptableCommandUtils.register(GeneralisedCelementSynthesisCommand.class, "synthGeneralisedCelementMpsat",
                 "synthesis of the STG 'work' into a generalised C-element Circuit work using MPSat backend");
-        ScriptableCommandUtils.register(MpsatStandardCelementSynthesisCommand.class, "synthStandardCelementMpsat",
+        ScriptableCommandUtils.register(StandardCelementSynthesisCommand.class, "synthStandardCelementMpsat",
                 "synthesis of the STG 'work' into a standard C-element Circuit work using MPSat backend");
-        ScriptableCommandUtils.register(MpsatTechnologyMappingSynthesisCommand.class, "synthTechnologyMappingMpsat",
+        ScriptableCommandUtils.register(TechnologyMappingSynthesisCommand.class, "synthTechnologyMappingMpsat",
                 "technology mapping of the STG 'work' into a Circuit work using MPSat backend");
     }
 

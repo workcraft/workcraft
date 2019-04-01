@@ -20,7 +20,7 @@ import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.tools.SelectionTool;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.policy.VisualBundledTransition;
-import org.workcraft.plugins.policy.VisualPolicyNet;
+import org.workcraft.plugins.policy.VisualPolicy;
 import org.workcraft.utils.GuiUtils;
 
 public class PolicySelectionTool extends SelectionTool {
@@ -94,7 +94,7 @@ public class PolicySelectionTool extends SelectionTool {
 
     protected Collection<VisualBundledTransition> getSelectedTransitions(final GraphEditor editor) {
         Set<VisualBundledTransition> transitions = new HashSet<>();
-        VisualPolicyNet visualModel = (VisualPolicyNet) editor.getModel();
+        VisualPolicy visualModel = (VisualPolicy) editor.getModel();
         for (Node node : visualModel.getSelection()) {
             if (node instanceof VisualBundledTransition) {
                 transitions.add((VisualBundledTransition) node);
@@ -107,7 +107,7 @@ public class PolicySelectionTool extends SelectionTool {
         Collection<VisualBundledTransition> transitions = getSelectedTransitions(editor);
         if (!transitions.isEmpty()) {
             editor.getWorkspaceEntry().saveMemento();
-            VisualPolicyNet visualModel = (VisualPolicyNet) editor.getModel();
+            VisualPolicy visualModel = (VisualPolicy) editor.getModel();
             visualModel.bundleTransitions(transitions);
         }
     }
@@ -116,7 +116,7 @@ public class PolicySelectionTool extends SelectionTool {
         Collection<VisualBundledTransition> transitions = getSelectedTransitions(editor);
         if (!transitions.isEmpty()) {
             editor.getWorkspaceEntry().saveMemento();
-            VisualPolicyNet visualModel = (VisualPolicyNet) editor.getModel();
+            VisualPolicy visualModel = (VisualPolicy) editor.getModel();
             visualModel.unbundleTransitions(transitions);
         }
     }

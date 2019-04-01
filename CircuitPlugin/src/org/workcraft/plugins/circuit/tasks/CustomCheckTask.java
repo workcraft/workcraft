@@ -5,7 +5,7 @@ import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.circuit.utils.EnvironmentUtils;
-import org.workcraft.plugins.mpsat.MpsatParameters;
+import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.tasks.*;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
@@ -27,21 +27,21 @@ import org.workcraft.utils.WorkspaceUtils;
 import java.io.File;
 import java.util.Set;
 
-public class CustomCheckTask extends MpsatChainTask {
+public class CustomCheckTask extends VerificationChainTask {
 
-    public CustomCheckTask(WorkspaceEntry we, MpsatParameters settings) {
+    public CustomCheckTask(WorkspaceEntry we, VerificationParameters settings) {
         super(we, settings);
     }
 
     @Override
-    public Result<? extends MpsatChainOutput> run(ProgressMonitor<? super MpsatChainOutput> monitor) {
+    public Result<? extends VerificationChainOutput> run(ProgressMonitor<? super VerificationChainOutput> monitor) {
         Framework framework = Framework.getInstance();
         TaskManager manager = framework.getTaskManager();
         WorkspaceEntry we = getWorkspaceEntry();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         String stgFileExtension = StgFormat.getInstance().getExtension();
-        MpsatParameters preparationSettings = MpsatParameters.getToolchainPreparationSettings();
+        VerificationParameters preparationSettings = VerificationParameters.getToolchainPreparationSettings();
         try {
             // Common variables
             VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
@@ -69,7 +69,7 @@ public class CustomCheckTask extends MpsatChainTask {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new MpsatChainOutput(devExportResult, null, null, null, preparationSettings));
+                        new VerificationChainOutput(devExportResult, null, null, null, preparationSettings));
             }
             monitor.progressUpdate(0.10);
 
@@ -87,7 +87,7 @@ public class CustomCheckTask extends MpsatChainTask {
                         return new Result<>(Outcome.CANCEL);
                     }
                     return new Result<>(Outcome.FAILURE,
-                            new MpsatChainOutput(envExportResult, null, null, null, preparationSettings));
+                            new VerificationChainOutput(envExportResult, null, null, null, preparationSettings));
                 }
 
                 // Generating .g for the whole system (circuit and environment)
@@ -99,7 +99,7 @@ public class CustomCheckTask extends MpsatChainTask {
                         return new Result<>(Outcome.CANCEL);
                     }
                     return new Result<>(Outcome.FAILURE,
-                            new MpsatChainOutput(devExportResult, pcompResult, null, null, preparationSettings));
+                            new VerificationChainOutput(devExportResult, pcompResult, null, null, preparationSettings));
                 }
             }
             monitor.progressUpdate(0.20);
@@ -115,38 +115,38 @@ public class CustomCheckTask extends MpsatChainTask {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new MpsatChainOutput(devExportResult, pcompResult, punfResult, null, preparationSettings));
+                        new VerificationChainOutput(devExportResult, pcompResult, punfResult, null, preparationSettings));
             }
             monitor.progressUpdate(0.40);
 
             // Check custom property (if requested)
-            MpsatParameters settings = getSettings();
-            MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory),
+            VerificationParameters settings = getSettings();
+            VerificationTask verificationTask = new VerificationTask(settings.getMpsatArguments(directory),
                     unfoldingFile, directory, sysStgFile);
             SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
-            Result<? extends MpsatOutput> mpsatResult = manager.execute(
-                    mpsatTask, "Running custom property check [MPSat]", mpsatMonitor);
+            Result<? extends VerificationOutput> mpsatResult = manager.execute(
+                    verificationTask, "Running custom property check [MPSat]", mpsatMonitor);
 
             if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
                 if (mpsatResult.getOutcome() == Outcome.CANCEL) {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, settings));
+                        new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, settings));
             }
             monitor.progressUpdate(0.50);
 
-            MpsatOutputParser mpsatParser = new MpsatOutputParser(mpsatResult.getPayload());
+            VerificationOutputParser mpsatParser = new VerificationOutputParser(mpsatResult.getPayload());
             if (!mpsatParser.getSolutions().isEmpty()) {
                 return new Result<>(Outcome.SUCCESS,
-                        new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, settings,
+                        new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, settings,
                                 "Custom property is violated after the following trace(s):"));
             }
             monitor.progressUpdate(1.00);
 
             // Success
             return new Result<>(Outcome.SUCCESS,
-                    new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, settings,
+                    new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, settings,
                             "Custom property holds"));
 
         } catch (Throwable e) {

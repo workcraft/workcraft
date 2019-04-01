@@ -17,9 +17,9 @@ import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petri.tools.PetriSimulationTool;
 import org.workcraft.plugins.petri.tools.PlaceDecoration;
 import org.workcraft.plugins.policy.Bundle;
-import org.workcraft.plugins.policy.PolicyNet;
+import org.workcraft.plugins.policy.Policy;
 import org.workcraft.plugins.policy.VisualBundledTransition;
-import org.workcraft.plugins.policy.VisualPolicyNet;
+import org.workcraft.plugins.policy.VisualPolicy;
 import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
 
 import java.awt.*;
@@ -37,7 +37,7 @@ public class PolicySimulationTool extends PetriSimulationTool {
 
     @Override
     public void generateUnderlyingModel(VisualModel model) {
-        converter = new PolicyToPetriConverter((VisualPolicyNet) model);
+        converter = new PolicyToPetriConverter((VisualPolicy) model);
         setUnderlyingModel(converter.getPetriNet());
     }
 
@@ -178,7 +178,7 @@ public class PolicySimulationTool extends PetriSimulationTool {
     public String getTraceLabelByReference(String ref) {
         String label = null;
         if (ref != null) {
-            PolicyNet policy = converter.getPolicyNet().getMathModel();
+            Policy policy = converter.getPolicyNet().getMathModel();
             Node node = policy.getNodeByReference(ref);
             if (node instanceof Bundle) {
                 Bundle bundle = (Bundle) node;

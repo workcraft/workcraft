@@ -5,9 +5,9 @@ import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.plugins.petri.PetriNetModel;
+import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.VisualReadArc;
-import org.workcraft.plugins.petri.utils.PetriNetUtils;
+import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.types.Pair;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -30,7 +30,7 @@ public class ReadArcToDualArcTransformationCommand extends AbstractTransformatio
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, PetriNetModel.class);
+        return WorkspaceUtils.isApplicable(we, PetriModel.class);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class ReadArcToDualArcTransformationCommand extends AbstractTransformatio
     @Override
     public Collection<VisualNode> collect(VisualModel model) {
         Collection<VisualNode> readArcs = new HashSet<>();
-        readArcs.addAll(PetriNetUtils.getVisualReadArcs(model));
+        readArcs.addAll(ConversionUtils.getVisualReadArcs(model));
         Collection<VisualNode> selection = model.getSelection();
         if (!selection.isEmpty()) {
             readArcs.retainAll(selection);
@@ -63,7 +63,7 @@ public class ReadArcToDualArcTransformationCommand extends AbstractTransformatio
     public void transform(VisualModel model, VisualNode node) {
         if (node instanceof VisualReadArc) {
             VisualReadArc readArc = (VisualReadArc) node;
-            Pair<VisualConnection, VisualConnection> dualArc = PetriNetUtils.converReadArcTotDualArc(model, readArc);
+            Pair<VisualConnection, VisualConnection> dualArc = ConversionUtils.converReadArcTotDualArc(model, readArc);
             VisualConnection consumingArc = dualArc.getFirst();
             if (consumingArc != null) {
                 model.addToSelection(consumingArc);

@@ -6,7 +6,7 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.editor.GraphEditorPanel;
-import org.workcraft.plugins.policy.VisualPolicyNet;
+import org.workcraft.plugins.policy.VisualPolicy;
 import org.workcraft.plugins.policy.tools.PolicyToPetriConverter;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
@@ -25,14 +25,14 @@ public class BundleTransitionTransformationCommand extends AbstractTransformatio
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, VisualPolicyNet.class);
+        return WorkspaceUtils.isApplicable(we, VisualPolicy.class);
     }
 
     @Override
     public Void execute(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         we.saveMemento();
-        final VisualPolicyNet policy = WorkspaceUtils.getAs(we, VisualPolicyNet.class);
+        final VisualPolicy policy = WorkspaceUtils.getAs(we, VisualPolicy.class);
         policy.unbundleTransitions(policy.getVisualBundledTransitions());
         final PolicyToPetriConverter converter = new PolicyToPetriConverter(policy);
         final TransitionBundler bundler = new TransitionBundler(converter);

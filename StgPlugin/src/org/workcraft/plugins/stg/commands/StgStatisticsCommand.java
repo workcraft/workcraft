@@ -5,7 +5,7 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.petri.utils.PetriNetChecker;
+import org.workcraft.plugins.petri.utils.CheckUtils;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
@@ -184,11 +184,11 @@ public class StgStatisticsCommand extends AbstractStatisticsCommand {
                 + "\n  Token count / marked places -  " + tokenCount + " / " + markedCount
                 + "\n  Isolated transitions / places -  " + isolatedTransitionCount + " / " + isolatedPlaceCount
                 + "\n  Net type:"
-                + "\n    * Marked graph -  " + PetriNetChecker.isMarkedGraph(stg)
-                + "\n    * State machine -  " + PetriNetChecker.isStateMachine(stg)
-                + "\n    * Free choice -  " + PetriNetChecker.isFreeChoice(stg)
-                + "\n    * Extended free choice -  " + PetriNetChecker.isExtendedFreeChoice(stg)
-                + "\n    * Pure -  " + PetriNetChecker.isPure(stg)
+                + "\n    * Marked graph -  " + CheckUtils.isMarkedGraph(stg)
+                + "\n    * State machine -  " + CheckUtils.isStateMachine(stg)
+                + "\n    * Free choice -  " + CheckUtils.isFreeChoice(stg)
+                + "\n    * Extended free choice -  " + CheckUtils.isExtendedFreeChoice(stg)
+                + "\n    * Pure -  " + CheckUtils.isPure(stg)
                 + "\n";
     }
 

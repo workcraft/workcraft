@@ -8,7 +8,7 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.petri.utils.PetriNetUtils;
+import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualStg;
@@ -42,8 +42,8 @@ public final class InsertDummyTransformationCommand extends AbstractTransformati
     @Override
     public boolean isApplicableTo(VisualNode node) {
         return (node instanceof VisualImplicitPlaceArc)
-                || PetriNetUtils.isVisualConsumingArc(node)
-                || PetriNetUtils.isVisualProducingArc(node);
+                || ConversionUtils.isVisualConsumingArc(node)
+                || ConversionUtils.isVisualProducingArc(node);
     }
 
     @Override
@@ -67,8 +67,8 @@ public final class InsertDummyTransformationCommand extends AbstractTransformati
         if (model instanceof VisualStg) {
             VisualStg stg = (VisualStg) model;
             arcs.addAll(stg.getVisualImplicitPlaceArcs());
-            arcs.addAll(PetriNetUtils.getVisualConsumingArcs(stg));
-            arcs.addAll(PetriNetUtils.getVisualProducingArcs(stg));
+            arcs.addAll(ConversionUtils.getVisualConsumingArcs(stg));
+            arcs.addAll(ConversionUtils.getVisualProducingArcs(stg));
             arcs.retainAll(stg.getSelection());
         }
         return arcs;

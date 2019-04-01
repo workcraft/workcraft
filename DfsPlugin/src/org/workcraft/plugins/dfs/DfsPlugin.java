@@ -33,16 +33,16 @@ public class DfsPlugin implements Plugin {
         ScriptableCommandUtils.register(DfsToStgConversionCommand.class, "convertDfsToStg",
                 "convert the given DFS 'work' into a new STG work");
 
-        ScriptableCommandUtils.register(DfsDeadlockFreenessVerificationCommand.class, "checkDfsDeadlockFreeness",
+        ScriptableCommandUtils.register(DeadlockFreenessVerificationCommand.class, "checkDfsDeadlockFreeness",
                 "check the DFS 'work' for deadlock freeness");
-        ScriptableCommandUtils.register(DfsOutputPersisitencyVerificationCommand.class, "checkDfsOutputPersistency",
+        ScriptableCommandUtils.register(OutputPersisitencyVerificationCommand.class, "checkDfsOutputPersistency",
                 "check the DFS 'work' for output persistency");
-        ScriptableCommandUtils.register(DfsCombinedVerificationCommand.class, "checkDfsCombined",
+        ScriptableCommandUtils.register(CombinedVerificationCommand.class, "checkDfsCombined",
                 " combined check of the DFS 'work' for deadlock freeness and output persistency");
 
-        ScriptableCommandUtils.register(DfsMergeComponentTransformationCommand.class, "transformDfsMergeComponent",
+        ScriptableCommandUtils.register(MergeComponentTransformationCommand.class, "transformDfsMergeComponent",
                 " transform the given DFS 'work' by merging selected components");
-        ScriptableCommandUtils.register(DfsContractComponentTransformationCommand.class, "transformDfsContractComponent",
+        ScriptableCommandUtils.register(ContractComponentTransformationCommand.class, "transformDfsContractComponent",
                 " transform the given DFS 'work' by contracting selected components");
         ScriptableCommandUtils.register(WaggingGenerator2WayCommand.class, "transformDfsWagging2Way",
                 "transform the given DFS 'work' by applying 2-way wagging to the selected pipeline section");
