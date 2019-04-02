@@ -1,17 +1,17 @@
 package org.workcraft.plugins.circuit;
 
-import java.net.URL;
-
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.utils.DesktopApi;
-import org.workcraft.plugins.circuit.commands.StatisticsCommand;
 import org.workcraft.plugins.builtin.commands.BasicStatisticsCommand;
+import org.workcraft.plugins.circuit.commands.StatisticsCommand;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import java.net.URL;
 
 public class StatisticsCommandTests {
 
@@ -34,9 +34,9 @@ public class StatisticsCommandTests {
     }
 
     @Test
-    public void testBufferTmCircuitStatisticsCommand() throws DeserialisationException {
+    public void testBufferTmStatisticsCommand() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer-tm.circuit.work");
-        testCircuitStatisticsCommand(workName,
+        testStatisticsCommand(workName,
                 "Component count:"
                         + "\n  Component -  1"
                         + "\n  Port -  2"
@@ -55,9 +55,9 @@ public class StatisticsCommandTests {
     }
 
     @Test
-    public void testCelementDecomposedTmCircuitStatisticsCommand() throws DeserialisationException {
+    public void testCelementDecomposedTmStatisticsCommand() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "celement-decomposed-tm.circuit.work");
-        testCircuitStatisticsCommand(workName,
+        testStatisticsCommand(workName,
                 "Component count:"
                         + "\n  Component -  5"
                         + "\n  Port -  3"
@@ -76,9 +76,9 @@ public class StatisticsCommandTests {
     }
 
     @Test
-    public void testVmeTmCircuitStatisticsCommand() throws DeserialisationException {
+    public void testVmeTmStatisticsCommand() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
-        testCircuitStatisticsCommand(workName,
+        testStatisticsCommand(workName,
                 "Component count:"
                         + "\n  Component -  21"
                         + "\n  Port -  6"
@@ -96,7 +96,7 @@ public class StatisticsCommandTests {
                         + "\n");
     }
 
-    private void testCircuitStatisticsCommand(String workName, String expectedBasicStatistics, String expectedAdvancedStatistics)
+    private void testStatisticsCommand(String workName, String expectedBasicStatistics, String expectedAdvancedStatistics)
             throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();

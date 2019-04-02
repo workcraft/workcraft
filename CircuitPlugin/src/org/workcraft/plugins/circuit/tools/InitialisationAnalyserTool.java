@@ -88,51 +88,51 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         forceTable.setTableHeader(null);
         JScrollPane forceScrollPane = new JScrollPane(forceTable);
 
-        JButton clearAllForceInitButton = GuiUtils.createIconButton(
+        JButton tagForceInitInputPortsButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-initialisation-input_ports.svg"),
+                "Force init all input ports (environment responsibility)");
+        tagForceInitInputPortsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitInputPorts(c)));
+
+        JButton tagForceInitSequentialGatesButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-initialisation-sequential_pins.svg"),
+                "Force init all sequential gates");
+        tagForceInitSequentialGatesButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitSequentialPins(c)));
+
+        JButton tagForceInitSelfloopGatesButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-initialisation-selfloop_pins.svg"),
+                "Force init all self-loops");
+        tagForceInitSelfloopGatesButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitSelfloopGates(c)));
+
+        JButton tagForceInitAutoAppendButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-initialisation-auto_append.svg"),
+                "Auto-append force init pins as necessary to complete initialisation");
+        tagForceInitAutoAppendButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitAutoAppend(c)));
+
+        JButton tagForceInitAutoDiscardButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-initialisation-auto_discard.svg"),
+                "Auto-discard force init pins that are redundant for initialisation");
+        tagForceInitAutoDiscardButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitAutoDiscard(c)));
+
+        JButton tagForceInitClearAllButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/circuit-initialisation-clear_all.svg"),
-                "Clear force init from all input ports and component outputs");
-        clearAllForceInitButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.clearForceInit(c)));
-
-        JButton toggleForceInitInputPortsButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-initialisation-input_port.svg"),
-                "Toggle force init for all input ports (environment responsibility)");
-        toggleForceInitInputPortsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.toggleForceInitInputPorts(c)));
-
-        JButton toggleForceInitSelfLoopsButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-initialisation-self_loop.svg"),
-                "Toggle force init for all self-loops");
-        toggleForceInitSelfLoopsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.toggleForceInitSelfLoops(c)));
-
-        JButton toggleForceInitSequentialGatesButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-initialisation-sequential_gate.svg"),
-                "Toggle force init for all sequential gates");
-        toggleForceInitSequentialGatesButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.toggleForceInitSequentialGates(c)));
-
-        JButton untagRedundantForceInitPinsButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-initialisation-untag_redundant.svg"),
-                "Remove force init from pins if redundant for initialisation");
-        untagRedundantForceInitPinsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.untagRedundantForceInitPins(c)));
-
-        JButton tagNecessaryForceInitPinsButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-initialisation-tag_necessary.svg"),
-                "Add force init to pins if necessary to complete initialisation");
-        tagNecessaryForceInitPinsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagNecessaryForceInitPins(c)));
+                "Clear all force init ports and pins");
+        tagForceInitClearAllButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitClearAll(c)));
 
         FlowLayout flowLayout = new FlowLayout();
-        int buttonWidth = (int) Math.round(toggleForceInitInputPortsButton.getPreferredSize().getWidth() + flowLayout.getHgap());
-        int buttonHeight = (int) Math.round(toggleForceInitInputPortsButton.getPreferredSize().getHeight() + flowLayout.getVgap());
+        int buttonWidth = (int) Math.round(tagForceInitInputPortsButton.getPreferredSize().getWidth() + flowLayout.getHgap());
+        int buttonHeight = (int) Math.round(tagForceInitInputPortsButton.getPreferredSize().getHeight() + flowLayout.getVgap());
         Dimension panelSize = new Dimension(buttonWidth * 5 + flowLayout.getHgap(), buttonHeight + flowLayout.getVgap());
 
         JPanel btnPanel = new JPanel();
         btnPanel.setLayout(flowLayout);
         btnPanel.setPreferredSize(panelSize);
         btnPanel.setMaximumSize(panelSize);
-        btnPanel.add(clearAllForceInitButton);
-        btnPanel.add(toggleForceInitInputPortsButton);
-        btnPanel.add(toggleForceInitSelfLoopsButton);
-        btnPanel.add(toggleForceInitSequentialGatesButton);
-        btnPanel.add(untagRedundantForceInitPinsButton);
-        btnPanel.add(tagNecessaryForceInitPinsButton);
+        btnPanel.add(tagForceInitInputPortsButton);
+        btnPanel.add(tagForceInitSequentialGatesButton);
+        btnPanel.add(tagForceInitSelfloopGatesButton);
+        btnPanel.add(tagForceInitAutoAppendButton);
+        btnPanel.add(tagForceInitAutoDiscardButton);
+        btnPanel.add(tagForceInitClearAllButton);
 
         JPanel forcePanel = new JPanel(new BorderLayout());
         forcePanel.setBorder(SizeHelper.getTitledBorder("Force init pins"));

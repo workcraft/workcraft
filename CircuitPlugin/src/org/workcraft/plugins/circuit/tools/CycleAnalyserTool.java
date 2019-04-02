@@ -95,28 +95,28 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         breakTable.setTableHeader(null);
         JScrollPane forceScrollPane = new JScrollPane(breakTable);
 
-        JButton clearPathBreakersButton = GuiUtils.createIconButton(
+        JButton tagPathBreakerSelfloopPinsButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-cycle-selfloop_pins.svg"),
+                "Path breaker all self-loops");
+        tagPathBreakerSelfloopPinsButton.addActionListener(l -> changePathBreaker(editor, c -> CycleUtils.tagPathBreakerSelfloopPins(c)));
+
+        JButton tagPathBreakerAutoAppendButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-cycle-auto_append.svg"),
+                "Auto-append path breaker pins as necessary to complete cycle breaking");
+        tagPathBreakerAutoAppendButton.addActionListener(l -> changePathBreaker(editor, c -> CycleUtils.tagPathBreakerAutoAppend(c)));
+
+        JButton tagPathBreakerAutoDiscardButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-cycle-auto_discard.svg"),
+                "Auto-discard path breaker pins that are redundant for cycle breaking");
+        tagPathBreakerAutoDiscardButton.addActionListener(l -> changePathBreaker(editor, c -> CycleUtils.tagPathBreakerAutoDiscard(c)));
+
+        JButton tagPathBreakerClearAllButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/circuit-cycle-clear_all.svg"),
-                "Clear path breaker contacts and components");
-        clearPathBreakersButton.addActionListener(l -> changeForceInit(editor, c -> CycleUtils.clearPathBreakers(c)));
-
-        JButton tagNecessaryPathBreakersButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-cycle-tag_necessary.svg"),
-                "Add path breakers if necessary for cycle breaking");
-        tagNecessaryPathBreakersButton.addActionListener(l -> changeForceInit(editor, c -> CycleUtils.tagNecessaryPathBreakers(c)));
-
-        JButton untagRedundantPathBreakersButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-cycle-untag_redundant.svg"),
-                "Remove path breakers if redundant for cycle breaking");
-        untagRedundantPathBreakersButton.addActionListener(l -> changeForceInit(editor, c -> CycleUtils.untagRedundantPathBreakers(c)));
-
-        JButton setSelfLoopsPathBreakersButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-cycle-self_loop.svg"),
-                "Add path breaker for all self-loops");
-        setSelfLoopsPathBreakersButton.addActionListener(l -> changeForceInit(editor, c -> CycleUtils.setSelfLoopPathBreakers(c)));
+                "Clear all path breaker pins");
+        tagPathBreakerClearAllButton.addActionListener(l -> changePathBreaker(editor, c -> CycleUtils.tagPathBreakerClearAll(c)));
 
         FlowLayout flowLayout = new FlowLayout();
-        Dimension buttonSize = clearPathBreakersButton.getPreferredSize();
+        Dimension buttonSize = tagPathBreakerClearAllButton.getPreferredSize();
         int buttonWidth = (int) Math.round(buttonSize.getWidth() + flowLayout.getHgap());
         int buttonHeight = (int) Math.round(buttonSize.getHeight() + flowLayout.getVgap());
         Dimension panelSize = new Dimension(buttonWidth * 3 + flowLayout.getHgap(), buttonHeight + flowLayout.getVgap());
@@ -125,10 +125,10 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         btnPanel.setLayout(flowLayout);
         btnPanel.setPreferredSize(panelSize);
         btnPanel.setMaximumSize(panelSize);
-        btnPanel.add(setSelfLoopsPathBreakersButton);
-        btnPanel.add(tagNecessaryPathBreakersButton);
-        btnPanel.add(untagRedundantPathBreakersButton);
-        btnPanel.add(clearPathBreakersButton);
+        btnPanel.add(tagPathBreakerSelfloopPinsButton);
+        btnPanel.add(tagPathBreakerAutoAppendButton);
+        btnPanel.add(tagPathBreakerAutoDiscardButton);
+        btnPanel.add(tagPathBreakerClearAllButton);
 
         JPanel forcePanel = new JPanel(new BorderLayout());
         forcePanel.setBorder(SizeHelper.getTitledBorder("Path breakers"));
@@ -137,7 +137,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         return forcePanel;
     }
 
-    private void changeForceInit(final GraphEditor editor, Function<Circuit, Collection<? extends Contact>> func) {
+    private void changePathBreaker(final GraphEditor editor, Function<Circuit, Collection<? extends Contact>> func) {
         WorkspaceEntry we = editor.getWorkspaceEntry();
         we.captureMemento();
         Circuit circuit = (Circuit) editor.getModel().getMathModel();

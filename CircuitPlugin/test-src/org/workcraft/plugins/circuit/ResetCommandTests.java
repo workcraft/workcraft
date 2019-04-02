@@ -21,19 +21,19 @@ public class ResetCommandTests {
     }
 
     @Test
-    public void testCycleTmCircuitResetCommand() throws DeserialisationException {
+    public void testCycleTmResetCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "cycle-tm.circuit.work");
-        testCircuitResetCommand(workName, 2, -1, 0, 0, 0, 2, 1, true, true);
+        testResetCommands(workName, 2, -1, 0, 0, 0, 2, 1, true, true);
     }
 
     @Test
-    public void testChargeTmCircuitResetCommand() throws DeserialisationException {
+    public void testChargeTmResetCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "charge-tm.circuit.work");
-        testCircuitResetCommand(workName, 5, 5, 8, 9, 7, 7, 6, false, true);
+        testResetCommands(workName, 5, 5, 8, 9, 7, 7, 6, false, true);
     }
 
-    private void testCircuitResetCommand(String workName, int initNum, int inputNum, int loopNum, int seqNum, int clearNum,
-            int completeNum, int finalNum, boolean activeLow, boolean pass)
+    private void testResetCommands(String workName, int initNum, int inputNum, int loopNum, int seqNum,
+            int autoDiscardNum, int autoAppendNum, int finalNum, boolean activeLow, boolean pass)
             throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
@@ -44,32 +44,32 @@ public class ResetCommandTests {
             Assert.assertEquals(initNum, getForceInitCount(we));
         }
 
-        new ForceInitClearAllModificationCommand().execute(we);
+        new ForceInitClearAllTagCommand().execute(we);
         Assert.assertEquals(0, getForceInitCount(we));
 
         if (inputNum >= 0) {
-            new ForceInitTagInputPortsModificationCommand().execute(we);
+            new ForceInitInputPortsTagCommand().execute(we);
             Assert.assertEquals(inputNum, getForceInitCount(we));
         }
 
         if (loopNum >= 0) {
-            new ForceInitTagSelfLoopsModificationCommand().execute(we);
+            new ForceInitSelfloopPinsTagCommand().execute(we);
             Assert.assertEquals(loopNum, getForceInitCount(we));
         }
 
         if (seqNum >= 0) {
-            new ForceInitTagSequentialGatesModificationCommand().execute(we);
+            new ForceInitSequentialPinsTagCommand().execute(we);
             Assert.assertEquals(seqNum, getForceInitCount(we));
         }
 
-        if (clearNum >= 0) {
-            new ForceInitClearRedundantModificationCommand().execute(we);
-            Assert.assertEquals(clearNum, getForceInitCount(we));
+        if (autoDiscardNum >= 0) {
+            new ForceInitAutoDiscardTagCommand().execute(we);
+            Assert.assertEquals(autoDiscardNum, getForceInitCount(we));
         }
 
-        if (completeNum >= 0) {
-            new ForceInitTagNecessaryModificationCommand().execute(we);
-            Assert.assertEquals(completeNum, getForceInitCount(we));
+        if (autoAppendNum >= 0) {
+            new ForceInitAutoAppendTagCommand().execute(we);
+            Assert.assertEquals(autoAppendNum, getForceInitCount(we));
         }
 
         if (finalNum >= 0) {

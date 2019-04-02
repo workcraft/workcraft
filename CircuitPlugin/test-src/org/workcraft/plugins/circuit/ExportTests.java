@@ -31,7 +31,7 @@ public class ExportTests {
     }
 
     @Test
-    public void testVmeCircuitExport()
+    public void testVmeExport()
             throws DeserialisationException, IOException, SerialisationException {
         String vHeader = Info.getGeneratedByText("// Verilog netlist ", "\n") +
                 "module vme (d, lds, dtack, dsr, dsw, ldtack);\n" +
@@ -46,10 +46,10 @@ public class ExportTests {
         String psHeader = "%!PS-Adobe-3.0";
 
         String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
-        testCircuitExport(workName, vHeader, svgHeader, pngHeader, pdfHeader, epsHeader, psHeader);
+        testExport(workName, vHeader, svgHeader, pngHeader, pdfHeader, epsHeader, psHeader);
     }
 
-    private void testCircuitExport(String workName, String vHeader,
+    private void testExport(String workName, String vHeader,
             String svgHeader, String pngHeader, String pdfHeader, String epsHeader, String psHeader)
                     throws DeserialisationException, IOException, SerialisationException {
 

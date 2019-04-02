@@ -47,7 +47,7 @@ public class VerificationCommandTests {
     @Test
     public void bufferVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer.circuit.work");
-        testCircuitVerificationCommands(workName,
+        testVerificationCommands(workName,
                 true,  // combined
                 true,  // conformation
                 true,  // deadlock freeness
@@ -59,7 +59,7 @@ public class VerificationCommandTests {
     @Test
     public void withoutEnvironmentVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer-without_environment.circuit.work");
-        testCircuitVerificationCommands(workName,
+        testVerificationCommands(workName,
                 false, // combined
                 null,  // conformation
                 true,  // deadlock freeness
@@ -71,7 +71,7 @@ public class VerificationCommandTests {
     @Test
     public void celementVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "celement.circuit.work");
-        testCircuitVerificationCommands(workName,
+        testVerificationCommands(workName,
                 true,  // combined
                 true,  // conformation
                 true,  // deadlock freeness
@@ -81,9 +81,9 @@ public class VerificationCommandTests {
     }
 
     @Test
-    public void mappedCelementVerification() throws DeserialisationException {
+    public void mappedCelementDecomposedVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "celement-decomposed-tm.circuit.work");
-        testCircuitVerificationCommands(workName,
+        testVerificationCommands(workName,
                 true,  // combined
                 true,  // conformation
                 true,  // deadlock freeness
@@ -95,7 +95,7 @@ public class VerificationCommandTests {
     @Test
     public void mappedVmeVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
-        testCircuitVerificationCommands(workName,
+        testVerificationCommands(workName,
                 true,  // combined
                 true,  // conformation
                 true,  // deadlock freeness
@@ -105,9 +105,9 @@ public class VerificationCommandTests {
     }
 
     @Test
-    public void mappedAbcdVerification() throws DeserialisationException {
+    public void mappedAbcdBadVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "abcd-bad-tm.circuit.work");
-        testCircuitVerificationCommands(workName,
+        testVerificationCommands(workName,
                 false,  // combined
                 false,  // conformation
                 true,  // deadlock freeness
@@ -116,7 +116,7 @@ public class VerificationCommandTests {
         );
     }
 
-    private void testCircuitVerificationCommands(String workName, Boolean combined,
+    private void testVerificationCommands(String workName, Boolean combined,
             Boolean conformation, Boolean deadlockFreeness, Boolean outputPersistency,
             Boolean strictImplementation) throws DeserialisationException {
 

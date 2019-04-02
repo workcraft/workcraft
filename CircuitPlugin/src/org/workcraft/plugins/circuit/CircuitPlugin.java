@@ -89,18 +89,18 @@ public class CircuitPlugin implements Plugin {
         pm.registerCommand(AssertionVerificationCommand.class);
 
         // Force init attributes and Reset insertion
-        ScriptableCommandUtils.register(ForceInitTagInputPortsModificationCommand.class, "modifyCircuitForceInitTagInputPorts",
+        ScriptableCommandUtils.register(ForceInitInputPortsTagCommand.class, "tagCircuitForceInitInputPorts",
                 "force init all input ports in the Circuit 'work'  (environment must initialise them)");
-        ScriptableCommandUtils.register(ForceInitTagSelfLoopsModificationCommand.class, "modifyCircuitForceInitTagSelfLoops",
-                "force init all self-loops in the Circuit 'work'");
-        ScriptableCommandUtils.register(ForceInitTagSequentialGatesModificationCommand.class, "modifyCircuitForceInitTagSequentialGates",
-                "force init all sequential gates in the Circuit 'work'");
-        ScriptableCommandUtils.register(ForceInitTagNecessaryModificationCommand.class, "modifyCircuitForceInitTagNecessary",
-                "add force init to pins if necessary to complete initialisation of the Circuit 'work'");
-        ScriptableCommandUtils.register(ForceInitClearRedundantModificationCommand.class, "modifyCircuitForceInitClearRedundant",
-                "remove force init from pins if redundant for initialisation of the Circuit 'work'");
-        ScriptableCommandUtils.register(ForceInitClearAllModificationCommand.class, "modifyCircuitForceInitClearAll",
-                "clear force init for all input ports and output pins in the Circuit 'work'");
+        ScriptableCommandUtils.register(ForceInitSequentialPinsTagCommand.class, "tagCircuitForceInitSequentialPins",
+                "force init all sequential pins in the Circuit 'work'");
+        ScriptableCommandUtils.register(ForceInitSelfloopPinsTagCommand.class, "tagCircuitForceInitSelfloopPins",
+                "force init all self-loop pins in the Circuit 'work'");
+        ScriptableCommandUtils.register(ForceInitAutoAppendTagCommand.class, "tagCircuitForceInitAutoAppend",
+                "auto-append force init pins as necessary to complete initialisation of the Circuit 'work'");
+        ScriptableCommandUtils.register(ForceInitAutoDiscardTagCommand.class, "tagCircuitForceInitAutoDiscard",
+                "auto-discard force init pins that are redundant for initialisation of the Circuit 'work'");
+        ScriptableCommandUtils.register(ForceInitClearAllTagCommand.class, "tagCircuitForceInitClearAll",
+                "clear all force init input ports and output pins in the Circuit 'work'");
 
         ScriptableCommandUtils.register(ResetActiveLowInsertionCommand.class, "insertCircuitResetActiveLow",
                 "insert active-low reset into the Circuit 'work'");
@@ -111,14 +111,14 @@ public class CircuitPlugin implements Plugin {
                 "check if the Circuit 'work' is correctly initialised via input ports");
 
         // Path breaker attributes and Scan insertion
-        ScriptableCommandUtils.register(PathBreakerTagSelfLoopsModificationCommand.class, "modifyCircuitPathBreakerTagSelfLoops",
-                "path breaker all self-loops in the Circuit 'work'");
-        ScriptableCommandUtils.register(PathBreakerTagNecessaryModificationCommand.class, "modifyCircuitPathBreakerTagNecessary",
-                "add path breaker to pins if necessary to complete cycle breaking in the Circuit 'work'");
-        ScriptableCommandUtils.register(PathBreakerClearRedundantModificationCommand.class, "modifyCircuitPathBreakerClearRedundant",
-                "remove path breaker from pins if redundant for cycle breaking in the Circuit 'work'");
-        ScriptableCommandUtils.register(PathBreakerClearAllModificationCommand.class, "modifyCircuitPathBreakerClearAll",
-                "clear path breaker property from all pins in the Circuit 'work'");
+        ScriptableCommandUtils.register(PathBreakerSelfloopPinsTagCommand.class, "tagCircuitPathBreakerSelfloopPins",
+                "path breaker all self-loop pins in the Circuit 'work'");
+        ScriptableCommandUtils.register(PathBreakerAutoAppendTagCommand.class, "tagCircuitPathBreakerAutoAppend",
+                "auto-append path breaker pins as necessary to complete cycle breaking in the Circuit 'work'");
+        ScriptableCommandUtils.register(PathBreakerAutoDiscardTagCommand.class, "tagCircuitPathBreakerAutoDiscard",
+                "auto-discard path breaker pins that are redundant for cycle breaking in the Circuit 'work'");
+        ScriptableCommandUtils.register(PathBreakerClearAllTagCommand.class, "tagCircuitPathBreakerClearAll",
+                "clear all path breaker pins in the Circuit 'work'");
 
         ScriptableCommandUtils.register(ScanInsertionCommand.class, "insertCircuitScan",
                 "insert scan for path breaker components into the Circuit 'work'");

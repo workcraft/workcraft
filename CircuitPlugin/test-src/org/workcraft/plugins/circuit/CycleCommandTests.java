@@ -7,9 +7,9 @@ import org.workcraft.Framework;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.commands.CycleFreenessVerificationCommand;
-import org.workcraft.plugins.circuit.commands.PathBreakerClearAllModificationCommand;
+import org.workcraft.plugins.circuit.commands.PathBreakerClearAllTagCommand;
 import org.workcraft.plugins.circuit.commands.ScanInsertionCommand;
-import org.workcraft.plugins.circuit.commands.PathBreakerTagNecessaryModificationCommand;
+import org.workcraft.plugins.circuit.commands.PathBreakerAutoAppendTagCommand;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.ScanUtils;
 import org.workcraft.utils.PackageUtils;
@@ -28,18 +28,18 @@ public class CycleCommandTests {
     }
 
     @Test
-    public void testCycleTmCircuitLoopbreakerCommand() throws DeserialisationException {
+    public void testCycleTmLoopbreakerCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "cycle-tm.circuit.work");
-        testCircuitLoopbreakerCommand(workName, 0, true);
+        testLoopbreakerCommands(workName, 0, true);
     }
 
     @Test
-    public void testChargeTmCircuitLoopbreakerCommand() throws DeserialisationException {
+    public void testChargeTmLoopbreakerCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "charge-tm.circuit.work");
-        testCircuitLoopbreakerCommand(workName, 3, true);
+        testLoopbreakerCommands(workName, 3, true);
     }
 
-    private void testCircuitLoopbreakerCommand(String workName, int breakCount, boolean pass)
+    private void testLoopbreakerCommands(String workName, int breakCount, boolean pass)
             throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
@@ -47,10 +47,10 @@ public class CycleCommandTests {
         WorkspaceEntry we = framework.loadWork(url.getFile());
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
 
-        new PathBreakerClearAllModificationCommand().execute(we);
+        new PathBreakerClearAllTagCommand().execute(we);
         Assert.assertEquals(0, countPathBreaker(circuit));
 
-        new PathBreakerTagNecessaryModificationCommand().execute(we);
+        new PathBreakerAutoAppendTagCommand().execute(we);
         int count = countPathBreaker(circuit);
         Assert.assertEquals(breakCount, count);
 

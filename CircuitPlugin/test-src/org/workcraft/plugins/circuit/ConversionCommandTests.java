@@ -1,24 +1,24 @@
 package org.workcraft.plugins.circuit;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.plugins.circuit.commands.CircuitToStgConversionCommand;
 import org.workcraft.plugins.circuit.commands.CircuitToStgWithEnvironmentConversionCommand;
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.PackageUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ConversionCommandTests {
 
@@ -41,26 +41,26 @@ public class ConversionCommandTests {
     }
 
     @Test
-    public void testBufferCircuitConversionCommands() throws IOException, DeserialisationException {
+    public void testBufferConversionCommands() throws IOException, DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer.circuit.work");
-        testCircuitConversionCommands(workName, false, 0);
+        testConversionCommands(workName, false, 0);
     }
 
     @Test
-    public void testCelementCircuitConversionCommands() throws IOException, DeserialisationException {
+    public void testCelementConversionCommands() throws IOException, DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "celement.circuit.work");
-        testCircuitConversionCommands(workName, false, 0);
+        testConversionCommands(workName, false, 0);
     }
 
     @Test
-    public void testVmeCircuitConversionCommands() throws IOException, DeserialisationException {
+    public void testVmeTmConversionCommands() throws IOException, DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
-        testCircuitConversionCommands(workName, false, 0);
-        testCircuitConversionCommands(workName, true, 17);
+        testConversionCommands(workName, false, 0);
+        testConversionCommands(workName, true, 17);
     }
 
-    private void testCircuitConversionCommands(String workName, boolean composeEnvironment, int extraPlaceCount)
-            throws IOException, DeserialisationException {
+    private void testConversionCommands(String workName, boolean composeEnvironment, int extraPlaceCount)
+            throws DeserialisationException {
 
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();

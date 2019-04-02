@@ -1,19 +1,19 @@
 package org.workcraft.plugins.circuit;
 
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.PackageUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 public class CircuitLayoutCommandTests {
 
@@ -36,24 +36,24 @@ public class CircuitLayoutCommandTests {
     }
 
     @Test
-    public void testBufferTmCircuitImport() throws DeserialisationException {
+    public void testBufferTmImport() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer-tm.circuit.work");
-        testCircuitImport(workName);
+        testImport(workName);
     }
 
     @Test
-    public void testCelementTmCircuitImport() throws DeserialisationException {
+    public void testCelementTmImport() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "celement-tm.circuit.work");
-        testCircuitImport(workName);
+        testImport(workName);
     }
 
     @Test
-    public void testVmeTmCircuitImport() throws DeserialisationException {
+    public void testVmeTmImport() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
-        testCircuitImport(workName);
+        testImport(workName);
     }
 
-    private void testCircuitImport(String workName) throws DeserialisationException {
+    private void testImport(String workName) throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         URL url = classLoader.getResource(workName);
@@ -62,7 +62,7 @@ public class CircuitLayoutCommandTests {
         Set<String> srcInputs = new HashSet<>();
         Set<String> srcOutputs = new HashSet<>();
         Set<String> srcGates = new HashSet<>();
-        countCircuitNodes(we, srcInputs, srcOutputs, srcGates);
+        countNodes(we, srcInputs, srcOutputs, srcGates);
 
         CircuitLayoutCommand command = new CircuitLayoutCommand();
         command.execute(we);
@@ -70,7 +70,7 @@ public class CircuitLayoutCommandTests {
         Set<String> dstInputs = new HashSet<>();
         Set<String> dstOutputs = new HashSet<>();
         Set<String> dstGates = new HashSet<>();
-        countCircuitNodes(we, dstInputs, dstOutputs, dstGates);
+        countNodes(we, dstInputs, dstOutputs, dstGates);
 
         Assert.assertEquals(srcInputs, dstInputs);
         Assert.assertEquals(srcOutputs, dstOutputs);
@@ -79,7 +79,7 @@ public class CircuitLayoutCommandTests {
         framework.closeWork(we);
     }
 
-    private void countCircuitNodes(WorkspaceEntry we, Set<String> inputs, Set<String> outputs, Set<String> gates) {
+    private void countNodes(WorkspaceEntry we, Set<String> inputs, Set<String> outputs, Set<String> gates) {
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         for (Contact port: circuit.getPorts()) {
             if (port.isInput()) {

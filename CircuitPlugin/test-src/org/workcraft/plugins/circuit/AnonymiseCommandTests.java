@@ -23,12 +23,12 @@ public class AnonymiseCommandTests {
     }
 
     @Test
-    public void testBufferTmCircuitAnonymiseCommands() throws DeserialisationException {
+    public void testBufferTmAnonymiseCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer-tm.circuit.work");
-        testCircuitAnonymiseCommands(workName, new String[]{"in0", "out0", "g0.i0", "g0.o0"});
+        testAnonymiseCommands(workName, new String[]{"in0", "out0", "g0.i0", "g0.o0"});
     }
 
-    private void testCircuitAnonymiseCommands(String workName, String[] contactRefs)
+    private void testAnonymiseCommands(String workName, String[] contactRefs)
             throws DeserialisationException {
 
         final Framework framework = Framework.getInstance();

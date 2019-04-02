@@ -1,22 +1,22 @@
 package org.workcraft.plugins.circuit;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.plugins.circuit.interop.VerilogFormat;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.PackageUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ImportExportTests {
 
@@ -39,50 +39,50 @@ public class ImportExportTests {
     }
 
     @Test
-    public void testBufferCircuitImportExport() throws DeserialisationException {
+    public void testBufferImportExport() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer.circuit.work");
-        testCircuitImportExport(workName, null);
+        testImportExport(workName, null);
     }
 
     @Test
-    public void testCelementCircuitImportExport() throws DeserialisationException {
+    public void testCelementImportExport() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "celement.circuit.work");
-        testCircuitImportExport(workName, null);
+        testImportExport(workName, null);
     }
 
     @Test
-    public void testBufferTmCircuitImportExport() throws DeserialisationException {
+    public void testBufferTmImportExport() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer-tm.circuit.work");
-        testCircuitImportExport(workName, null);
+        testImportExport(workName, null);
     }
 
     @Test
-    public void testCelementTmCircuitImportExport() throws DeserialisationException {
+    public void testCelementTmImportExport() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "celement-tm.circuit.work");
-        testCircuitImportExport(workName, null);
+        testImportExport(workName, null);
     }
 
     @Test
-    public void testVmeTmCircuitImportExport() throws DeserialisationException {
+    public void testVmeTmImportExport() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
-        testCircuitImportExport(workName, null);
+        testImportExport(workName, null);
     }
 
     @Test
-    public void testBusCircuitImportExport() throws DeserialisationException {
+    public void testBusImportExport() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "bus.circuit.work");
         String verilogName = PackageUtils.getPackagePath(getClass(), "bus.circuit.v");
-        testCircuitImportExport(workName, verilogName);
+        testImportExport(workName, verilogName);
     }
 
     @Test
-    public void testMutexCircuitImportExport() throws DeserialisationException {
+    public void testMutexImportExport() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "mutex.circuit.work");
         String verilogName = PackageUtils.getPackagePath(getClass(), "mutex.circuit.v");
-        testCircuitImportExport(workName, verilogName);
+        testImportExport(workName, verilogName);
     }
 
-    private void testCircuitImportExport(String workName, String verilogName) throws DeserialisationException {
+    private void testImportExport(String workName, String verilogName) throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
 
@@ -92,7 +92,7 @@ public class ImportExportTests {
         Set<String> wInputs = new HashSet<>();
         Set<String> wOutputs = new HashSet<>();
         Set<String> wGates = new HashSet<>();
-        countCircuitNodes(wWe, wInputs, wOutputs, wGates);
+        countNodes(wWe, wInputs, wOutputs, wGates);
 
         WorkspaceEntry vWe = null;
         Set<String> vInputs = new HashSet<>();
@@ -103,7 +103,7 @@ public class ImportExportTests {
             vFile.deleteOnExit();
             framework.exportModel(wWe.getModelEntry(), vFile, VerilogFormat.getInstance());
             vWe = framework.loadWork(vFile);
-            countCircuitNodes(vWe, vInputs, vOutputs, vGates);
+            countNodes(vWe, vInputs, vOutputs, vGates);
         } catch (IOException | SerialisationException e) {
         }
 
@@ -118,7 +118,7 @@ public class ImportExportTests {
             Set<String> sInputs = new HashSet<>();
             Set<String> sOutputs = new HashSet<>();
             Set<String> sGates = new HashSet<>();
-            countCircuitNodes(sWe, sInputs, sOutputs, sGates);
+            countNodes(sWe, sInputs, sOutputs, sGates);
 
             Assert.assertEquals(wInputs, sInputs);
             Assert.assertEquals(wOutputs, sOutputs);
@@ -131,7 +131,7 @@ public class ImportExportTests {
         framework.closeWork(vWe);
     }
 
-    private void countCircuitNodes(WorkspaceEntry we, Set<String> inputs, Set<String> outputs, Set<String> gates) {
+    private void countNodes(WorkspaceEntry we, Set<String> inputs, Set<String> outputs, Set<String> gates) {
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         for (Contact port: circuit.getPorts()) {
             if (port.isInput()) {

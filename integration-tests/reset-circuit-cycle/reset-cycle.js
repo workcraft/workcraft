@@ -1,8 +1,8 @@
 work = load("cycle-tm.circuit.work");
 
-modifyCircuitForceInitClearAll(work);
+tagCircuitForceInitClearAll(work);
 
-modifyCircuitForceInitTagNecessary(work);
+tagCircuitForceInitAutoAppend(work);
 
 insertCircuitResetActiveHigh(work);
 

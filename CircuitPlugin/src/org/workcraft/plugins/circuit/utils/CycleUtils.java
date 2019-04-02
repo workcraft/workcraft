@@ -5,50 +5,43 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.utils.DirectedGraphUtils;
+import org.workcraft.utils.Hierarchy;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class CycleUtils {
 
-    public static Set<? extends Contact> clearPathBreakers(Circuit circuit) {
-        Set<Contact> result = new HashSet<>();
-        for (FunctionComponent component : circuit.getFunctionComponents()) {
-            for (Contact contact : component.getContacts()) {
-                if (contact.getPathBreaker()) {
-                    result.add(contact);
-                    contact.setPathBreaker(false);
-                }
-            }
-        }
-        return result;
+    public static Collection<Contact> tagPathBreakerClearAll(Circuit circuit) {
+        Collection<Contact> contacts = Hierarchy.getDescendantsOfType(circuit.getRoot(),
+                Contact.class, contact -> contact.isOutput() && contact.isPin());
+
+        return setPathBreaker(contacts, false);
     }
 
-    public static Set<? extends Contact> setSelfLoopPathBreakers(Circuit circuit) {
-        Set<Contact> result = new HashSet<>();
-        for (Contact contact : getSelfloopDrivers(circuit)) {
-            if (!contact.getPathBreaker()) {
-                contact.setPathBreaker(true);
+    public static Collection<Contact> tagPathBreakerSelfloopPins(Circuit circuit) {
+        Map<Contact, Set<Contact>> graph = buildGraph(circuit);
+        Set<Contact> contacts = DirectedGraphUtils.findSelfloopVertices(graph);
+        return setPathBreaker(contacts, true);
+    }
+
+    public static Collection<Contact> tagPathBreakerAutoAppend(Circuit circuit) {
+        Map<Contact, Set<Contact>> graph = buildGraph(circuit);
+        Set<Contact> contacts = DirectedGraphUtils.findFeedbackVertices(graph);
+        return setPathBreaker(contacts, true);
+    }
+
+    private static Set<Contact> setPathBreaker(Collection<? extends Contact> contacts, boolean value) {
+        HashSet<Contact> result = new HashSet<>();
+        for (Contact contact : contacts) {
+            if (contact.getPathBreaker() != value) {
+                contact.setPathBreaker(value);
                 result.add(contact);
             }
         }
         return result;
     }
 
-    public static Set<? extends Contact> tagNecessaryPathBreakers(Circuit circuit) {
-        Map<Contact, Set<Contact>> graph = buildGraph(circuit);
-        Set<Contact> feedbackContacts = DirectedGraphUtils.findFeedbackVertices(graph);
-        Set<Contact> result = new HashSet<>();
-        for (Contact feedbackContact : feedbackContacts) {
-            feedbackContact.setPathBreaker(true);
-            result.add(feedbackContact);
-        }
-        return result;
-    }
-
-    public static Set<? extends Contact> untagRedundantPathBreakers(Circuit circuit) {
+    public static Collection<Contact> tagPathBreakerAutoDiscard(Circuit circuit) {
         Set<Contact> result = new HashSet<>();
         boolean progress = true;
         int initCount = getCycledDrivers(circuit).size();
@@ -68,7 +61,7 @@ public class CycleUtils {
         return result;
     }
 
-    public static Set<Contact> getPathBreakerDrivers(Circuit circuit) {
+    private static Set<Contact> getPathBreakerDrivers(Circuit circuit) {
         Set<Contact> result = new HashSet<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
             for (Contact contact : component.getOutputs()) {
@@ -78,11 +71,6 @@ public class CycleUtils {
             }
         }
         return result;
-    }
-
-    public static Set<Contact> getSelfloopDrivers(Circuit circuit) {
-        Map<Contact, Set<Contact>> graph = buildGraph(circuit);
-        return DirectedGraphUtils.findSelfloopVertices(graph);
     }
 
     public static Set<Contact> getCycledDrivers(Circuit circuit) {

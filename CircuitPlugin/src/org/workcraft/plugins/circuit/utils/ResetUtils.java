@@ -7,81 +7,64 @@ import org.workcraft.plugins.circuit.*;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 public class ResetUtils {
 
-    public static HashSet<Contact> clearForceInit(Circuit circuit) {
-        HashSet<Contact> result = new HashSet<>();
-        for (Contact contact : circuit.getFunctionContacts()) {
-            if (contact.isDriver() && contact.getForcedInit()) {
-                contact.setForcedInit(false);
-                result.add(contact);
-            }
-        }
-        return result;
+    public static Set<Contact> tagForceInitClearAll(Circuit circuit) {
+        return setForceInit(circuit.getFunctionContacts(), false);
     }
 
-    public static HashSet<Contact> setForceInitInputPorts(Circuit circuit, boolean value) {
-        HashSet<Contact> result = new HashSet<>();
-        for (Contact port : circuit.getInputPorts()) {
-            if (port.getForcedInit() != value) {
-                port.setForcedInit(value);
-                result.add(port);
-            }
-        }
-        return result;
+    public static Set<Contact> tagForceInitInputPorts(Circuit circuit) {
+        return setForceInit(circuit.getInputPorts(), true);
     }
 
-    public static HashSet<Contact> toggleForceInitInputPorts(Circuit circuit) {
-        boolean allForceInit = true;
-        for (Contact port : circuit.getInputPorts()) {
-            if (!port.getForcedInit()) {
-                allForceInit = false;
-                break;
-            }
-        }
-        return setForceInitInputPorts(circuit, !allForceInit);
-    }
-
-    public static HashSet<Contact> setForceInitSelfLoops(Circuit circuit, boolean value) {
-        HashSet<Contact> result = new HashSet<>();
-        for (Contact contact : getSelfLoopContacts(circuit)) {
-            if (contact.getForcedInit() != value) {
-                contact.setForcedInit(value);
-                result.add(contact);
-            }
-        }
-        return result;
-    }
-
-    public static HashSet<Contact> toggleForceInitSelfLoops(Circuit circuit) {
-        boolean allForceInit = true;
-        for (Contact contact : getSelfLoopContacts(circuit)) {
-            if (!contact.getForcedInit()) {
-                allForceInit = false;
-                break;
-            }
-        }
-        return setForceInitSelfLoops(circuit, !allForceInit);
-    }
-
-    private static HashSet<Contact> getSelfLoopContacts(Circuit circuit) {
-        HashSet<Contact> result = new HashSet<>();
+    public static Set<Contact> tagForceInitSelfloopGates(Circuit circuit) {
+        HashSet<Contact> contacts = new HashSet<>();
         for (CircuitComponent component : circuit.getFunctionComponents()) {
             if ((component instanceof FunctionComponent) && ((FunctionComponent) component).getIsZeroDelay()) continue;
             for (Contact outputContact : component.getOutputs()) {
                 for (CircuitComponent succComponent : StructureUtilsKt.getPostsetComponents(circuit, outputContact, true)) {
                     if (component != succComponent) continue;
-                    result.add(outputContact);
+                    contacts.add(outputContact);
                 }
             }
         }
-        return result;
+        return setForceInit(contacts, true);
     }
 
-    public static HashSet<Contact> setForceInitSequentialGates(Circuit circuit, boolean value) {
+    public static Set<Contact> tagForceInitSequentialPins(Circuit circuit) {
+        Set<Contact> contacts = new HashSet<>();
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            if (component.isGate()) {
+                for (FunctionContact contact : component.getFunctionOutputs()) {
+                    if ((contact.getSetFunction() != null) && (contact.getResetFunction() != null)) {
+                        contacts.add(contact);
+                    }
+                }
+            }
+        }
+        return setForceInit(contacts, true);
+    }
+
+    public static Set<Contact> tagForceInitAutoAppend(Circuit circuit) {
+        Set<Contact> contacts = new HashSet<>();
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            if (!component.getIsZeroDelay()) {
+                for (FunctionContact contact : component.getFunctionContacts()) {
+                    if (contact.isPin() && contact.isDriver()) {
+                        contacts.add(contact);
+                    }
+                }
+            }
+        }
+        Set<Contact> changedContacts = setForceInit(contacts, true);
+        return simplifyForceInit(circuit, changedContacts);
+    }
+
+    private static Set<Contact> setForceInit(Collection<? extends Contact> contacts, boolean value) {
         HashSet<Contact> result = new HashSet<>();
-        for (Contact contact : getSequentialGateContacts(circuit)) {
+        for (Contact contact : contacts) {
             if (contact.getForcedInit() != value) {
                 contact.setForcedInit(value);
                 result.add(contact);
@@ -90,54 +73,19 @@ public class ResetUtils {
         return result;
     }
 
-    public static HashSet<Contact> toggleForceInitSequentialGates(Circuit circuit) {
-        boolean allForceInit = true;
-        for (FunctionContact contact : getSequentialGateContacts(circuit)) {
-            allForceInit &= contact.getForcedInit();
-        }
-        return setForceInitSequentialGates(circuit, !allForceInit);
-    }
-
-    private static HashSet<FunctionContact> getSequentialGateContacts(Circuit circuit) {
-        HashSet<FunctionContact> result = new HashSet<>();
-        for (FunctionComponent component : circuit.getFunctionComponents()) {
-            if (component.isGate()) {
-                for (FunctionContact contact : component.getFunctionOutputs()) {
-                    if ((contact.getSetFunction() == null) || (contact.getResetFunction() == null)) continue;
-                    result.add(contact);
-                }
-            }
-        }
-        return result;
-    }
-
-    public static HashSet<FunctionContact> untagRedundantForceInitPins(Circuit circuit) {
+    public static Set<Contact> tagForceInitAutoDiscard(Circuit circuit) {
         HashSet<FunctionContact> userForceInitContacts = new HashSet<>();
         for (FunctionContact contact : circuit.getFunctionContacts()) {
             if (contact.isPin() && contact.isDriver() && contact.getForcedInit()) {
                 userForceInitContacts.add(contact);
             }
         }
-        return clearRedundantForceInitPins(circuit, userForceInitContacts);
+        return simplifyForceInit(circuit, userForceInitContacts);
     }
 
-    public static HashSet<FunctionContact> tagNecessaryForceInitPins(Circuit circuit) {
-        HashSet<FunctionContact> addedForceInitContacts = new HashSet<>();
-        for (FunctionComponent component : circuit.getFunctionComponents()) {
-            if (component.getIsZeroDelay()) continue;
-            for (FunctionContact contact : component.getFunctionContacts()) {
-                if (contact.isPin() && contact.isDriver() && !contact.getForcedInit()) {
-                    contact.setForcedInit(true);
-                    addedForceInitContacts.add(contact);
-                }
-            }
-        }
-        return clearRedundantForceInitPins(circuit, addedForceInitContacts);
-    }
-
-    private static HashSet<FunctionContact> clearRedundantForceInitPins(Circuit circuit, HashSet<FunctionContact> contacts) {
-        HashSet<FunctionContact> result = new HashSet<>();
-        for (FunctionContact contact : contacts) {
+    private static Set<Contact> simplifyForceInit(Circuit circuit, Collection<? extends Contact> contacts) {
+        Set<Contact> result = new HashSet<>();
+        for (Contact contact : contacts) {
             contact.setForcedInit(false);
             InitialisationState initState = new InitialisationState(circuit);
             if (initState.isCorrectlyInitialised(contact)) {

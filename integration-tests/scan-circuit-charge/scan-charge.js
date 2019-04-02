@@ -1,8 +1,8 @@
 work = load("charge-tm.circuit.work");
 
-modifyCircuitPathBreakerClearAll(work);
+tagCircuitPathBreakerClearAll(work);
 
-modifyCircuitPathBreakerTagNecessary(work);
+tagCircuitPathBreakerAutoAppend(work);
 
 insertCircuitScan(work);
 
