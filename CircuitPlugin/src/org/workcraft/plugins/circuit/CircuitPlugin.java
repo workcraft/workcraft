@@ -91,10 +91,8 @@ public class CircuitPlugin implements Plugin {
         // Force init attributes and Reset insertion
         ScriptableCommandUtils.register(ForceInitInputPortsTagCommand.class, "tagCircuitForceInitInputPorts",
                 "force init all input ports in the Circuit 'work'  (environment must initialise them)");
-        ScriptableCommandUtils.register(ForceInitSequentialPinsTagCommand.class, "tagCircuitForceInitSequentialPins",
-                "force init all sequential pins in the Circuit 'work'");
-        ScriptableCommandUtils.register(ForceInitSelfloopPinsTagCommand.class, "tagCircuitForceInitSelfloopPins",
-                "force init all self-loop pins in the Circuit 'work'");
+        ScriptableCommandUtils.register(ForceInitConflictPinsTagCommand.class, "tagCircuitForceInitConflictPins",
+                "force init pins with conflicting initial state in the Circuit 'work'");
         ScriptableCommandUtils.register(ForceInitAutoAppendTagCommand.class, "tagCircuitForceInitAutoAppend",
                 "auto-append force init pins as necessary to complete initialisation of the Circuit 'work'");
         ScriptableCommandUtils.register(ForceInitAutoDiscardTagCommand.class, "tagCircuitForceInitAutoDiscard",
@@ -112,7 +110,7 @@ public class CircuitPlugin implements Plugin {
 
         // Path breaker attributes and Scan insertion
         ScriptableCommandUtils.register(PathBreakerSelfloopPinsTagCommand.class, "tagCircuitPathBreakerSelfloopPins",
-                "path breaker all self-loop pins in the Circuit 'work'");
+                "path breaker output pins within self-loops in the Circuit 'work'");
         ScriptableCommandUtils.register(PathBreakerAutoAppendTagCommand.class, "tagCircuitPathBreakerAutoAppend",
                 "auto-append path breaker pins as necessary to complete cycle breaking in the Circuit 'work'");
         ScriptableCommandUtils.register(PathBreakerAutoDiscardTagCommand.class, "tagCircuitPathBreakerAutoDiscard",

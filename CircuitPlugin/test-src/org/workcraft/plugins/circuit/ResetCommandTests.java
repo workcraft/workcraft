@@ -23,16 +23,16 @@ public class ResetCommandTests {
     @Test
     public void testCycleTmResetCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "cycle-tm.circuit.work");
-        testResetCommands(workName, 2, -1, 0, 0, 0, 2, 1, true, true);
+        testResetCommands(workName, 2, -1, -1, 0, 2, 1, true, true);
     }
 
     @Test
     public void testChargeTmResetCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "charge-tm.circuit.work");
-        testResetCommands(workName, 5, 5, 8, 9, 7, 7, 6, false, true);
+        testResetCommands(workName, 5, 5, 6, 6, 7, 6, false, true);
     }
 
-    private void testResetCommands(String workName, int initNum, int inputNum, int loopNum, int seqNum,
+    private void testResetCommands(String workName, int initNum, int inputNum, int conflictNum,
             int autoDiscardNum, int autoAppendNum, int finalNum, boolean activeLow, boolean pass)
             throws DeserialisationException {
         final Framework framework = Framework.getInstance();
@@ -52,14 +52,9 @@ public class ResetCommandTests {
             Assert.assertEquals(inputNum, getForceInitCount(we));
         }
 
-        if (loopNum >= 0) {
-            new ForceInitSelfloopPinsTagCommand().execute(we);
-            Assert.assertEquals(loopNum, getForceInitCount(we));
-        }
-
-        if (seqNum >= 0) {
-            new ForceInitSequentialPinsTagCommand().execute(we);
-            Assert.assertEquals(seqNum, getForceInitCount(we));
+        if (conflictNum >= 0) {
+            new ForceInitConflictPinsTagCommand().execute(we);
+            Assert.assertEquals(conflictNum, getForceInitCount(we));
         }
 
         if (autoDiscardNum >= 0) {

@@ -93,15 +93,10 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
                 "Force init all input ports (environment responsibility)");
         tagForceInitInputPortsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitInputPorts(c)));
 
-        JButton tagForceInitSequentialGatesButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-initialisation-sequential_pins.svg"),
-                "Force init all sequential gates");
-        tagForceInitSequentialGatesButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitSequentialPins(c)));
-
-        JButton tagForceInitSelfloopGatesButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-initialisation-selfloop_pins.svg"),
-                "Force init all self-loops");
-        tagForceInitSelfloopGatesButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitSelfloopGates(c)));
+        JButton tagForceInitNecessaryPinsButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-initialisation-conflict_pins.svg"),
+                "Force init pins with conflicting initial state");
+        tagForceInitNecessaryPinsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitConflictPins(c)));
 
         JButton tagForceInitAutoAppendButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/circuit-initialisation-auto_append.svg"),
@@ -128,8 +123,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         btnPanel.setPreferredSize(panelSize);
         btnPanel.setMaximumSize(panelSize);
         btnPanel.add(tagForceInitInputPortsButton);
-        btnPanel.add(tagForceInitSequentialGatesButton);
-        btnPanel.add(tagForceInitSelfloopGatesButton);
+        btnPanel.add(tagForceInitNecessaryPinsButton);
         btnPanel.add(tagForceInitAutoAppendButton);
         btnPanel.add(tagForceInitAutoDiscardButton);
         btnPanel.add(tagForceInitClearAllButton);
