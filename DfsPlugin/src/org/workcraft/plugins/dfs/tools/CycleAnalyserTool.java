@@ -2,17 +2,16 @@ package org.workcraft.plugins.dfs.tools;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.dfs.VisualDelayComponent;
 import org.workcraft.plugins.dfs.VisualDfs;
-import org.workcraft.plugins.dfs.cycle.ElementaryCyclesSearch;
+import org.workcraft.shared.IntDocument;
+import org.workcraft.utils.DirectedGraphUtils;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.utils.Hierarchy;
-import org.workcraft.shared.IntDocument;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
@@ -244,10 +243,12 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     private ArrayList<Cycle> findCycles() {
         ArrayList<Cycle> result = new ArrayList<>();
+        Map<VisualDelayComponent, Set<VisualDelayComponent>> graph = new HashMap<>();
         // Update global min and max delay values
         Collection<VisualDelayComponent> allComponents = Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualDelayComponent.class);
         boolean first = true;
         for (VisualDelayComponent c: allComponents) {
+            graph.put(c, dfs.getPostset(c, VisualDelayComponent.class));
             double delay = c.getReferencedDelayComponent().getDelay();
             if (first || minDelay > delay) {
                 minDelay = delay;
@@ -257,35 +258,8 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
             }
             first = false;
         }
-        // Prepare temporary node array and adjacency matrix
-        int size = allComponents.size();
-        VisualComponent[] tmpComponents = allComponents.toArray(new VisualComponent[size]);
-        boolean[][] adjMatrix = new boolean[size][size];
-        for (int i = 0; i < size; i++) {
-            HashSet<Node> preset = new HashSet<>(dfs.getPreset(tmpComponents[i]));
-            HashSet<Node> postset = new HashSet<>(dfs.getPostset(tmpComponents[i]));
-            for (int j = i + 1; j < size; j++) {
-                adjMatrix[i][j] = postset.contains(tmpComponents[j]);
-                adjMatrix[j][i] = preset.contains(tmpComponents[j]);
-            }
-        }
-        // Calculate simple cycles and process the results
-        ElementaryCyclesSearch ecs = new ElementaryCyclesSearch(adjMatrix, tmpComponents);
-        List tmpCycles = ecs.getElementaryCycles();
-        for (int i = 0; i < tmpCycles.size(); i++) {
-            List tmpCycle = (List) tmpCycles.get(i);
-            String toString = "";
-            LinkedHashSet<VisualDelayComponent> components = new LinkedHashSet<>();
-            for (int j = 0; j < tmpCycle.size(); j++) {
-                VisualDelayComponent component = (VisualDelayComponent) tmpCycle.get(j);
-                if (toString.length() > 0) {
-                    toString += Character.toString((char) 0x2192); // arrow symbol
-                }
-                toString += dfs.getMathModel().getNodeReference(component.getReferencedComponent());
-                components.add(component);
-            }
-            Cycle cycle = new Cycle(dfs, components);
-            result.add(cycle);
+        for (List<VisualDelayComponent> cycle : DirectedGraphUtils.findSimpleCycles(graph)) {
+            result.add(new Cycle(dfs, new LinkedHashSet<>(cycle)));
         }
         Collections.sort(result);
         return result;

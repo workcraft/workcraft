@@ -202,6 +202,9 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
     public <T extends VisualComponent> T createVisualComponent(MathNode mathNode, Class<T> type) {
         VisualComponent component = null;
         Node mathParent = mathNode.getParent();
+        if (mathParent == null) {
+            mathModel.getRoot().add(mathNode);
+        }
         Container container = getRoot();
         if (mathParent instanceof PageNode) {
             PageNode mathPage = (PageNode) mathParent;

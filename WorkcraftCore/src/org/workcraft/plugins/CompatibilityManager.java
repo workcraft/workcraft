@@ -10,9 +10,7 @@ import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -64,9 +62,11 @@ public class CompatibilityManager {
         return result;
     }
 
-    private HashSet<ReplacementData> getApplicableData(Version version) {
-        HashSet<ReplacementData> result = new HashSet<>();
-        for (Version sinceVersion : versionedReplacementData.keySet()) {
+    private List<ReplacementData> getOrderedApplicableData(Version version) {
+        List<ReplacementData> result = new ArrayList<>();
+        List<Version> versions = new ArrayList<>(versionedReplacementData.keySet());
+        Collections.sort(versions);
+        for (Version sinceVersion : versions) {
             if ((version == null) || (version.compareTo(sinceVersion) < 0)) {
                 ReplacementData data = getReplacementData(sinceVersion);
                 result.add(data);
@@ -122,7 +122,7 @@ public class CompatibilityManager {
     }
 
     private String replaceMetaData(Version version, String line) {
-        for (ReplacementData data : getApplicableData(version)) {
+        for (ReplacementData data : getOrderedApplicableData(version)) {
             for (Map.Entry<String, String> replacement : data.meta.entrySet()) {
                 if (line.contains(replacement.getKey())) {
                     line = replace(line, replacement, "legacy meta data");
@@ -133,7 +133,7 @@ public class CompatibilityManager {
     }
 
     private String replaceModelName(Version version, String line) {
-        for (ReplacementData data : getApplicableData(version)) {
+        for (ReplacementData data : getOrderedApplicableData(version)) {
             for (Map.Entry<String, String> replacement : data.model.entrySet()) {
                 if (line.contains(replacement.getKey())) {
                     line = replace(line, replacement, "legacy model class");
@@ -144,7 +144,7 @@ public class CompatibilityManager {
     }
 
     private String replaceGlobalEntry(Version version, String modelName, String line) {
-        for (ReplacementData data : getApplicableData(version)) {
+        for (ReplacementData data : getOrderedApplicableData(version)) {
             Replacement replacementMap = data.global.get(modelName);
             if (replacementMap != null) {
                 for (Map.Entry<String, String> replacement : replacementMap.entrySet()) {
@@ -156,7 +156,7 @@ public class CompatibilityManager {
     }
 
     private String replaceContextualEntry(Version version, String modelName, String className, String line) {
-        for (ReplacementData data : getApplicableData(version)) {
+        for (ReplacementData data : getOrderedApplicableData(version)) {
             HashMap<String, Replacement> contextualMap = data.local.get(modelName);
             if (contextualMap != null) {
                 Replacement replacementMap = contextualMap.get(className);

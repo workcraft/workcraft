@@ -6,13 +6,13 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.converters.DefaultModelConverter;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.petri.VisualPetriNet;
+import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.policy.BundledTransition;
-import org.workcraft.plugins.policy.VisualPolicyNet;
+import org.workcraft.plugins.policy.VisualPolicy;
 
-public class PetriToPolicyConverter extends DefaultModelConverter<VisualPetriNet, VisualPolicyNet> {
+public class PetriToPolicyConverter extends DefaultModelConverter<VisualPetri, VisualPolicy> {
 
-    public PetriToPolicyConverter(VisualPetriNet srcModel, VisualPolicyNet dstModel) {
+    public PetriToPolicyConverter(VisualPetri srcModel, VisualPolicy dstModel) {
         super(srcModel, dstModel);
     }
 

@@ -1,16 +1,16 @@
 work = load("charge-tm.circuit.work");
 
-resetCircuitClearForceInit(work);
+tagCircuitForceInitClearAll(work);
 
-resetCircuitForceInitInputPorts(work);
+tagCircuitForceInitInputPorts(work);
 
-resetCircuitForceInitSelfLoops(work);
+tagCircuitForceInitSelfloopPins(work);
 
-resetCircuitForceInitSequentialGates(work);
+tagCircuitForceInitSequentialPins(work);
 
-resetCircuitProcessRedundantForceInitPins(work);
+tagCircuitForceInitAutoDiscard(work);
 
-resetCircuitInsertActiveLow(work);
+insertCircuitResetActiveLow(work);
 
 write(
     "Initialisation check: " + checkCircuitReset(work) + "\n" +

@@ -7,7 +7,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.workcraft.dom.Connection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.petri.PetriNet;
+import org.workcraft.plugins.petri.Petri;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 
@@ -15,7 +15,7 @@ public class DOMTests {
 
     @Test
     public void test1() throws InvalidConnectionException {
-        PetriNet petri = new PetriNet();
+        Petri petri = new Petri();
 
         Place p1 = new Place();
         Place p2 = new Place();

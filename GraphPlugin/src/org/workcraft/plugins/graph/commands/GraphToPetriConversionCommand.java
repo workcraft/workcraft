@@ -4,9 +4,9 @@ import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.plugins.graph.Graph;
 import org.workcraft.plugins.graph.VisualGraph;
 import org.workcraft.plugins.graph.converters.GraphToPetriConverter;
-import org.workcraft.plugins.petri.PetriNet;
-import org.workcraft.plugins.petri.PetriNetDescriptor;
-import org.workcraft.plugins.petri.VisualPetriNet;
+import org.workcraft.plugins.petri.Petri;
+import org.workcraft.plugins.petri.PetriDescriptor;
+import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
@@ -26,9 +26,9 @@ public class GraphToPetriConversionCommand extends AbstractConversionCommand {
     @Override
     public ModelEntry convert(ModelEntry me) {
         final VisualGraph graph = me.getAs(VisualGraph.class);
-        final VisualPetriNet petri = new VisualPetriNet(new PetriNet());
+        final VisualPetri petri = new VisualPetri(new Petri());
         final GraphToPetriConverter converter = new GraphToPetriConverter(graph, petri);
-        return new ModelEntry(new PetriNetDescriptor(), converter.getDstModel());
+        return new ModelEntry(new PetriDescriptor(), converter.getDstModel());
     }
 
 }

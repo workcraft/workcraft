@@ -6,11 +6,6 @@ import org.apache.log4j.Logger;
 import org.mozilla.javascript.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.workcraft.plugins.builtin.commands.DotLayoutCommand;
-import org.workcraft.plugins.builtin.commands.RandomLayoutCommand;
-import org.workcraft.plugins.builtin.serialisation.XMLModelDeserialiser;
-import org.workcraft.plugins.builtin.serialisation.XMLModelSerialiser;
-import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
 import org.workcraft.commands.AbstractLayoutCommand;
 import org.workcraft.commands.Command;
 import org.workcraft.commands.ScriptableCommand;
@@ -34,6 +29,11 @@ import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.CompatibilityManager;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.PluginManager;
+import org.workcraft.plugins.builtin.commands.DotLayoutCommand;
+import org.workcraft.plugins.builtin.commands.RandomLayoutCommand;
+import org.workcraft.plugins.builtin.serialisation.XMLModelDeserialiser;
+import org.workcraft.plugins.builtin.serialisation.XMLModelSerialiser;
+import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
 import org.workcraft.serialisation.DeserialisationResult;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
@@ -595,13 +595,14 @@ public final class Framework {
             boolean found = false;
             boolean scriptable = false;
             for (Command command : CommandUtils.getCommands()) {
-                String commandClassName = command.getClass().getSimpleName();
-                if (!className.equals(commandClassName)) continue;
-                found = true;
-                if (command instanceof ScriptableCommand) {
-                    scriptable = true;
-                    ScriptableCommand<T> scriptableCommand = (ScriptableCommand<T>) command;
-                    return CommandUtils.execute(we, scriptableCommand);
+                Class<? extends Command> cls = command.getClass();
+                if (className.equals(cls.getSimpleName()) || className.endsWith(cls.getName())) {
+                    found = true;
+                    if (command instanceof ScriptableCommand) {
+                        scriptable = true;
+                        ScriptableCommand<T> scriptableCommand = (ScriptableCommand<T>) command;
+                        return CommandUtils.execute(we, scriptableCommand);
+                    }
                 }
             }
             if (!found) {

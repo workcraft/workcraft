@@ -5,10 +5,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.plugins.wtg.commands.WtgInputPropernessVerificationCommand;
-import org.workcraft.plugins.wtg.commands.WtgReachabilityVerificationCommand;
-import org.workcraft.plugins.wtg.commands.WtgSoundnessVerificationCommand;
-import org.workcraft.plugins.wtg.commands.WtgSynthesisGuidelinesVerificationCommand;
+import org.workcraft.plugins.wtg.commands.InputPropernessVerificationCommand;
+import org.workcraft.plugins.wtg.commands.ReachabilityVerificationCommand;
+import org.workcraft.plugins.wtg.commands.SoundnessVerificationCommand;
+import org.workcraft.plugins.wtg.commands.SynthesisGuidelinesVerificationCommand;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -49,16 +49,16 @@ public class WtgVerificationCommandTests {
 
         WorkspaceEntry we = framework.loadWork(url.getFile());
 
-        WtgInputPropernessVerificationCommand inputPropernessCommand = new WtgInputPropernessVerificationCommand();
+        InputPropernessVerificationCommand inputPropernessCommand = new InputPropernessVerificationCommand();
         Assert.assertEquals(inputProperness, inputPropernessCommand.execute(we));
 
-        WtgReachabilityVerificationCommand reachabilityCommand = new WtgReachabilityVerificationCommand();
+        ReachabilityVerificationCommand reachabilityCommand = new ReachabilityVerificationCommand();
         Assert.assertEquals(reachability, reachabilityCommand.execute(we));
 
-        WtgSoundnessVerificationCommand soundnessCommand = new WtgSoundnessVerificationCommand();
+        SoundnessVerificationCommand soundnessCommand = new SoundnessVerificationCommand();
         Assert.assertEquals(soundness, soundnessCommand.execute(we));
 
-        WtgSynthesisGuidelinesVerificationCommand guidelinesCommand = new WtgSynthesisGuidelinesVerificationCommand();
+        SynthesisGuidelinesVerificationCommand guidelinesCommand = new SynthesisGuidelinesVerificationCommand();
         Assert.assertEquals(guidelines, guidelinesCommand.execute(we));
 
         framework.closeWork(we);

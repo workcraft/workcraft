@@ -1,4 +1,4 @@
-work = load("abcd-tm.circuit.work");
+work = load("abcd-bad-tm.circuit.work");
 write(
     "Combined check: " + checkCircuitCombined(work) + "\n" +
     "Deadlock-freeness: " + checkCircuitDeadlockFreeness(work) + "\n" +

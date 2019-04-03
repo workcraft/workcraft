@@ -8,14 +8,12 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.tools.AbstractGraphEditorTool;
-import org.workcraft.gui.tools.Decoration;
-import org.workcraft.gui.tools.Decorator;
-import org.workcraft.gui.tools.GraphEditor;
+import org.workcraft.gui.tools.*;
+import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.InitialisationState;
 import org.workcraft.plugins.circuit.utils.ResetUtils;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.utils.LogUtils;
@@ -23,24 +21,20 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
-import javax.swing.table.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.HashSet;
+import java.util.*;
 import java.util.function.Function;
 
 public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
-    private static final int LEGEND_COLUMN_COLOR = 0;
-    private static final int LEGEND_COLUMN_DESCRIPTION = 1;
-    private static final int LEGEND_ROW_INIT_UNDEFINED = 0;
-    private static final int LEGEND_ROW_INIT_CONFLICT = 1;
-    private static final int LEGEND_ROW_INIT_FORCED = 2;
-    private static final int LEGEND_ROW_INIT_PROPAGATED = 3;
-
     private JTable forceTable;
     private InitialisationState initState;
+    private final ArrayList<String> forcedPins = new ArrayList<>();
 
     @Override
     public JPanel getControlsPanel(final GraphEditor editor) {
@@ -53,7 +47,13 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private JPanel getLegendControlsPanel(final GraphEditor editor) {
-        LegendTableModel legendTableModel = new LegendTableModel();
+        ColorLegendTableModel legendTableModel = new ColorLegendTableModel(Arrays.asList(
+                Pair.of(CommonVisualSettings.getFillColor(), "Undefined initial state"),
+                Pair.of(CircuitSettings.getConflictInitGateColor(), "Conflict of initialisation"),
+                Pair.of(CircuitSettings.getForcedInitGateColor(), "Forced initial state"),
+                Pair.of(CircuitSettings.getPropagatedInitGateColor(), "Propagated initial state")
+        ));
+
         JTable legendTable = new JTable(legendTableModel);
         legendTable.setFocusable(false);
         legendTable.setRowSelectionAllowed(false);
@@ -68,7 +68,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         // Set the color cells square shape
         TableColumnModel columnModel = legendTable.getColumnModel();
         int colorCellSize = legendTable.getRowHeight();
-        TableColumn colorLegendColumn = columnModel.getColumn(LEGEND_COLUMN_COLOR);
+        TableColumn colorLegendColumn = columnModel.getColumn(0);
         colorLegendColumn.setMinWidth(colorCellSize);
         colorLegendColumn.setMaxWidth(colorCellSize);
 
@@ -79,7 +79,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private JPanel getForcedControlsPanel(final GraphEditor editor) {
-        ForceTableModel forceTableModel = new ForceTableModel();
+        BasicTableModel<String> forceTableModel = new BasicTableModel(forcedPins);
         forceTable = new JTable(forceTableModel);
         forceTable.setFocusable(false);
         forceTable.setRowSelectionAllowed(false);
@@ -88,51 +88,51 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         forceTable.setTableHeader(null);
         JScrollPane forceScrollPane = new JScrollPane(forceTable);
 
-        JButton clearAllForceInitButton = GuiUtils.createIconButton(
+        JButton tagForceInitInputPortsButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-initialisation-input_ports.svg"),
+                "Force init all input ports (environment responsibility)");
+        tagForceInitInputPortsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitInputPorts(c)));
+
+        JButton tagForceInitSequentialGatesButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-initialisation-sequential_pins.svg"),
+                "Force init all sequential gates");
+        tagForceInitSequentialGatesButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitSequentialPins(c)));
+
+        JButton tagForceInitSelfloopGatesButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-initialisation-selfloop_pins.svg"),
+                "Force init all self-loops");
+        tagForceInitSelfloopGatesButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitSelfloopGates(c)));
+
+        JButton tagForceInitAutoAppendButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-initialisation-auto_append.svg"),
+                "Auto-append force init pins as necessary to complete initialisation");
+        tagForceInitAutoAppendButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitAutoAppend(c)));
+
+        JButton tagForceInitAutoDiscardButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-initialisation-auto_discard.svg"),
+                "Auto-discard force init pins that are redundant for initialisation");
+        tagForceInitAutoDiscardButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitAutoDiscard(c)));
+
+        JButton tagForceInitClearAllButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/circuit-initialisation-clear_all.svg"),
-                "Clear force init from all input ports and component outputs");
-        clearAllForceInitButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.setForceInit(c, false)));
-
-        JButton toggleForceInitInputPortsButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-initialisation-input_port.svg"),
-                "Toggle force init for all input ports (environment responsibility)");
-        toggleForceInitInputPortsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.toggleForceInitInputPorts(c)));
-
-        JButton toggleForceInitSelfLoopsButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-initialisation-self_loop.svg"),
-                "Toggle force init for all self-loops");
-        toggleForceInitSelfLoopsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.toggleForceInitSelfLoops(c)));
-
-        JButton toggleForceInitSequentialGatesButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-initialisation-sequential_gate.svg"),
-                "Toggle force init for all sequential gates");
-        toggleForceInitSequentialGatesButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.toggleForceInitSequentialGates(c)));
-
-        JButton untagRedundantForceInitPinsButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-initialisation-untag_redundant.svg"),
-                "Remove force init from pins if redundant for initialisation");
-        untagRedundantForceInitPinsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.untagRedundantForceInitPins(c)));
-
-        JButton addNecessaryForceInitPinsButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-initialisation-tag_necessary.svg"),
-                "Add force init to pins if necessary to complete initialisation");
-        addNecessaryForceInitPinsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagNecessaryForceInitPins(c)));
+                "Clear all force init ports and pins");
+        tagForceInitClearAllButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitClearAll(c)));
 
         FlowLayout flowLayout = new FlowLayout();
-        int buttonWidth = (int) Math.round(toggleForceInitInputPortsButton.getPreferredSize().getWidth() + flowLayout.getHgap());
-        int buttonHeight = (int) Math.round(toggleForceInitInputPortsButton.getPreferredSize().getHeight() + flowLayout.getVgap());
+        int buttonWidth = (int) Math.round(tagForceInitInputPortsButton.getPreferredSize().getWidth() + flowLayout.getHgap());
+        int buttonHeight = (int) Math.round(tagForceInitInputPortsButton.getPreferredSize().getHeight() + flowLayout.getVgap());
         Dimension panelSize = new Dimension(buttonWidth * 5 + flowLayout.getHgap(), buttonHeight + flowLayout.getVgap());
 
         JPanel btnPanel = new JPanel();
         btnPanel.setLayout(flowLayout);
         btnPanel.setPreferredSize(panelSize);
         btnPanel.setMaximumSize(panelSize);
-        btnPanel.add(clearAllForceInitButton);
-        btnPanel.add(toggleForceInitInputPortsButton);
-        btnPanel.add(toggleForceInitSelfLoopsButton);
-        btnPanel.add(toggleForceInitSequentialGatesButton);
-        btnPanel.add(untagRedundantForceInitPinsButton);
-        btnPanel.add(addNecessaryForceInitPinsButton);
+        btnPanel.add(tagForceInitInputPortsButton);
+        btnPanel.add(tagForceInitSequentialGatesButton);
+        btnPanel.add(tagForceInitSelfloopGatesButton);
+        btnPanel.add(tagForceInitAutoAppendButton);
+        btnPanel.add(tagForceInitAutoDiscardButton);
+        btnPanel.add(tagForceInitClearAllButton);
 
         JPanel forcePanel = new JPanel(new BorderLayout());
         forcePanel.setBorder(SizeHelper.getTitledBorder("Force init pins"));
@@ -141,13 +141,13 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         return forcePanel;
     }
 
-    public void changeForceInit(final GraphEditor editor, Function<Circuit, HashSet<? extends Contact>> func) {
+    private void changeForceInit(final GraphEditor editor, Function<Circuit, Collection<? extends Contact>> func) {
         WorkspaceEntry we = editor.getWorkspaceEntry();
         we.captureMemento();
         Circuit circuit = (Circuit) editor.getModel().getMathModel();
-        HashSet<? extends Contact> changedContacts = func.apply(circuit);
+        Collection<? extends Contact> changedContacts = func.apply(circuit);
         if (changedContacts.isEmpty()) {
-            we.cancelMemento();
+            we.uncaptureMemento();
         } else {
             we.saveMemento();
         }
@@ -157,7 +157,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private JPanel getResetControlsPanel(final GraphEditor editor) {
-        JButton insertResetButton = new JButton("Insert reset logic");
+        JButton insertResetButton = new JButton("Insert reset logic...");
         insertResetButton.addActionListener(l -> insertReset(editor));
 
         JPanel resetPanel = new JPanel();
@@ -199,83 +199,6 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         editor.requestFocus();
     }
 
-    private final class LegendTableModel extends AbstractTableModel {
-        @Override
-        public int getColumnCount() {
-            return 2;
-        }
-
-        @Override
-        public Class<?> getColumnClass(final int col) {
-            switch (col) {
-            case LEGEND_COLUMN_COLOR:
-                return Color.class;
-            case LEGEND_COLUMN_DESCRIPTION:
-                return String.class;
-            default:
-                return null;
-            }
-        }
-
-        @Override
-        public int getRowCount() {
-            return 4;
-        }
-
-        @Override
-        public Object getValueAt(int row, int col) {
-            switch (row) {
-            case LEGEND_ROW_INIT_UNDEFINED:
-                return (col == LEGEND_COLUMN_COLOR) ? CommonVisualSettings.getFillColor() : "Undefined initial state";
-            case LEGEND_ROW_INIT_CONFLICT:
-                return (col == LEGEND_COLUMN_COLOR) ? CircuitSettings.getConflictInitGateColor() : "Conflict of initialisation";
-            case LEGEND_ROW_INIT_FORCED:
-                return (col == LEGEND_COLUMN_COLOR) ? CircuitSettings.getForcedInitGateColor() : "Forced initial state";
-            case LEGEND_ROW_INIT_PROPAGATED:
-                return (col == LEGEND_COLUMN_COLOR) ? CircuitSettings.getPropagatedInitGateColor() : "Propagated initial state";
-            default:
-                return null;
-            }
-        }
-    }
-
-    private final class ForceTableModel extends AbstractTableModel {
-        @Override
-        public int getColumnCount() {
-            return 1;
-        }
-
-        @Override
-        public int getRowCount() {
-            return initState.getForcedPinCount();
-        }
-
-        @Override
-        public Object getValueAt(int row, int col) {
-            return initState.getForcedPin(row);
-        }
-    }
-
-    private final class ColorDataRenderer implements TableCellRenderer {
-        private final JLabel label = new JLabel() {
-            @Override
-            public void paint(final Graphics g) {
-                g.setColor(getBackground());
-                g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
-                super.paint(g);
-            }
-        };
-
-        @Override
-        public Component getTableCellRendererComponent(final JTable table, final Object value,
-                final boolean isSelected, final boolean hasFocus, final int row, final int column) {
-            label.setText("");
-            label.setBorder(SizeHelper.getTableCellBorder());
-            label.setBackground((Color) value);
-            return label;
-        }
-    }
-
     @Override
     public String getLabel() {
         return "Initialisation analyser";
@@ -312,6 +235,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     public void deactivated(final GraphEditor editor) {
         super.deactivated(editor);
         initState = null;
+        forcedPins.clear();
     }
 
     @Override
@@ -324,6 +248,14 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
     private void updateState(Circuit circuit) {
         initState = new InitialisationState(circuit);
+        forcedPins.clear();
+        for (FunctionContact contact : circuit.getFunctionContacts()) {
+            if (contact.isDriver() && contact.getForcedInit()) {
+                String pinRef = circuit.getNodeReference(contact);
+                forcedPins.add(pinRef);
+            }
+        }
+        Collections.sort(forcedPins);
         forceTable.tableChanged(new TableModelEvent(forceTable.getModel()));
     }
 
@@ -345,9 +277,9 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
             }
 
             if ((contact instanceof VisualFunctionContact) && contact.isDriver()) {
-                FunctionContact funcContact = ((VisualFunctionContact) contact).getReferencedContact();
+                FunctionContact mathContact = ((VisualFunctionContact) contact).getReferencedContact();
                 editor.getWorkspaceEntry().saveMemento();
-                funcContact.setForcedInit(!funcContact.getForcedInit());
+                mathContact.setForcedInit(!mathContact.getForcedInit());
                 processed = true;
             }
         }

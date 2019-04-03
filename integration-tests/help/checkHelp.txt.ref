@@ -1,5 +1,6 @@
 checkCircuitCombined(work) - combined check of the Circuit 'work' for conformation to environment, deadlock freeness, and output persistency
 checkCircuitConformation(work) - check the Circuit 'work' for conformation to environment
+checkCircuitCycles(work) - check if the Circuit 'work' is free from cyclic paths
 checkCircuitDeadlockFreeness(work) - check the Circuit 'work' for deadlock freeness
 checkCircuitOutputPersistency(work) - check the Circuit 'work' for output persistency
 checkCircuitReset(work) - check if the Circuit 'work' is correctly initialised via input ports

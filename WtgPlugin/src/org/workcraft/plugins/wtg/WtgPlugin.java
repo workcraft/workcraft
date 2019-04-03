@@ -37,19 +37,19 @@ public class WtgPlugin implements Plugin {
         ScriptableCommandUtils.register(WtgToStgConversionCommand.class, "convertWtgToStg",
                 "convert the given WTG 'work' into a new STG work");
 
-        ScriptableCommandUtils.register(WtgSoundnessVerificationCommand.class, "checkWtgSoundness",
+        ScriptableCommandUtils.register(SoundnessVerificationCommand.class, "checkWtgSoundness",
                 "check the given WTG 'work' for soundness and consistency");
 
-        ScriptableCommandUtils.register(WtgReachabilityVerificationCommand.class, "checkWtgReachability",
+        ScriptableCommandUtils.register(ReachabilityVerificationCommand.class, "checkWtgReachability",
                 "check the given WTG 'work' for reachability of nodes and transitions");
 
-        ScriptableCommandUtils.register(WtgInputPropernessVerificationCommand.class, "checkWtgInputProperness",
+        ScriptableCommandUtils.register(InputPropernessVerificationCommand.class, "checkWtgInputProperness",
                 "check the given WTG 'work' for input properness");
 
         ScriptableCommandUtils.register(StructureWaveformTransformationCommand.class, "transformWtgStructureWaveform",
                 "transform the given WTG 'work' by structuring the waveforms");
 
-        ScriptableCommandUtils.register(WtgSynthesisGuidelinesVerificationCommand.class, "checkWtgSynthesisGuidelines",
+        ScriptableCommandUtils.register(SynthesisGuidelinesVerificationCommand.class, "checkWtgSynthesisGuidelines",
                 "check the given WTG 'work' for compliance with the synthesis guidelines");
     }
 

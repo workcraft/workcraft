@@ -8,8 +8,8 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.tools.*;
 import org.workcraft.gui.layouts.WrapLayout;
+import org.workcraft.gui.tools.*;
 import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
 import org.workcraft.plugins.son.BlockConnector;
 import org.workcraft.plugins.son.SON;
@@ -27,8 +27,8 @@ import org.workcraft.plugins.son.util.Trace;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import javax.swing.*;
 import javax.swing.Timer;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
@@ -304,7 +304,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         super.activated(editor);
         this.editor = editor;
         visualNet = (VisualSON) editor.getModel();
-        net = (SON) visualNet.getMathModel();
+        net = visualNet.getMathModel();
         editor.getWorkspaceEntry().captureMemento();
 
         BlockConnector.blockBoundingConnector(visualNet);

@@ -5,6 +5,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -451,6 +452,29 @@ public class CircuitUtils {
                 component.remove(contact);
             }
         }
+    }
+
+    public static VisualFunctionContact getOrCreatePort(VisualCircuit circuit, String portName, Contact.IOType ioType) {
+        VisualFunctionContact result = null;
+        VisualComponent component = circuit.getVisualComponentByMathReference(portName, VisualComponent.class);
+        if (component == null) {
+            result = circuit.getOrCreatePort(portName, ioType);
+            if (result == null) {
+                DialogUtils.showError("Cannot create port '" + portName + "'.");
+                return null;
+            }
+        } else if (component instanceof VisualFunctionContact) {
+            result = (VisualFunctionContact) component;
+            if (result.isOutput()) {
+                DialogUtils.showError("Cannot reuse existing port '" + portName + "' because it is of different type.");
+                return null;
+            }
+            DialogUtils.showWarning("Reusing existing port '" + portName + "'.");
+        } else {
+            DialogUtils.showError("Cannot insert port '" + portName + "' because a component with the same name already exists.");
+            return null;
+        }
+        return result;
     }
 
 }

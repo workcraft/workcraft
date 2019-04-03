@@ -1,8 +1,5 @@
 package org.workcraft.plugins.graph.tools;
 
-import java.awt.Color;
-import java.awt.event.MouseEvent;
-
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
@@ -14,16 +11,15 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditor;
+import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
 import org.workcraft.plugins.graph.VisualGraph;
 import org.workcraft.plugins.graph.VisualVertex;
 import org.workcraft.plugins.graph.converters.GraphToPetriConverter;
-import org.workcraft.plugins.petri.PetriNet;
-import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.petri.VisualPetriNet;
-import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.plugins.petri.VisualTransition;
+import org.workcraft.plugins.petri.*;
 import org.workcraft.plugins.petri.tools.PetriSimulationTool;
-import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
+
+import java.awt.*;
+import java.awt.event.MouseEvent;
 
 public class GraphSimulationTool extends PetriSimulationTool {
 
@@ -53,7 +49,7 @@ public class GraphSimulationTool extends PetriSimulationTool {
     @Override
     public void generateUnderlyingModel(VisualModel model) {
         final VisualGraph graph = (VisualGraph) model;
-        final VisualPetriNet petri = new VisualPetriNet(new PetriNet());
+        final VisualPetri petri = new VisualPetri(new Petri());
         converter = new GraphToPetriConverter(graph, petri);
         setUnderlyingModel(converter.getDstModel());
     }

@@ -1,35 +1,29 @@
 package org.workcraft.plugins.petrify.tasks;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.swing.SwingUtilities;
-
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.interop.SgImporter;
-import org.workcraft.plugins.petri.PetriNetModel;
-import org.workcraft.tasks.ExportOutput;
-import org.workcraft.tasks.ExportTask;
-import org.workcraft.tasks.ExternalProcessOutput;
+import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.Result;
+import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.tasks.SubtaskMonitor;
-import org.workcraft.tasks.Task;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.ExportUtils;
 import org.workcraft.utils.FileUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class WriteSgConversionTask implements Task<WriteSgConversionOutput> {
 
@@ -71,23 +65,24 @@ public class WriteSgConversionTask implements Task<WriteSgConversionOutput> {
     @Override
     public Result<? extends WriteSgConversionOutput> run(ProgressMonitor<? super WriteSgConversionOutput> monitor) {
         final Framework framework = Framework.getInstance();
+        final TaskManager taskManager = framework.getTaskManager();
+        final SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
         try {
             // Common variables
             monitor.progressUpdate(0.05);
-            PetriNetModel petri = WorkspaceUtils.getAs(we, PetriNetModel.class);
+            PetriModel petri = WorkspaceUtils.getAs(we, PetriModel.class);
             StgFormat format = StgFormat.getInstance();
             Exporter petriExporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), petri, format);
             if (petriExporter == null) {
                 throw new NoExporterException(petri, format);
             }
-            SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
             monitor.progressUpdate(0.10);
 
             // Generating .g file for Petri Net
             File petriFile = FileUtils.createTempFile("stg-", ".g");
             petriFile.deleteOnExit();
             ExportTask petriExportTask = new ExportTask(petriExporter, petri, petriFile.getAbsolutePath());
-            Result<? extends ExportOutput> petriExportResult = framework.getTaskManager().execute(
+            Result<? extends ExportOutput> petriExportResult = taskManager.execute(
                     petriExportTask, "Exporting .g", subtaskMonitor);
 
             if (petriExportResult.getOutcome() != Outcome.SUCCESS) {
@@ -106,7 +101,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionOutput> {
 
             while (true) {
                 WriteSgTask writeSgTask = new WriteSgTask(writeSgOptions, petriFile, null, null);
-                Result<? extends ExternalProcessOutput> result = framework.getTaskManager().execute(
+                Result<? extends ExternalProcessOutput> result = taskManager.execute(
                         writeSgTask, "Building state graph", subtaskMonitor);
 
                 ExternalProcessOutput output = result.getPayload();

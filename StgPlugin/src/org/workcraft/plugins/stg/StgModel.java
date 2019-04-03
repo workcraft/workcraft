@@ -3,9 +3,9 @@ package org.workcraft.plugins.stg;
 import java.util.Collection;
 import java.util.Set;
 
-import org.workcraft.plugins.petri.PetriNetModel;
+import org.workcraft.plugins.petri.PetriModel;
 
-public interface StgModel extends PetriNetModel {
+public interface StgModel extends PetriModel {
     Collection<DummyTransition> getDummyTransitions();
     Collection<SignalTransition> getSignalTransitions();
     Collection<SignalTransition> getSignalTransitions(Signal.Type type);

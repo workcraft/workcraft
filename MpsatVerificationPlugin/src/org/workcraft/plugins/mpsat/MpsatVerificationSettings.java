@@ -4,8 +4,8 @@ import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.Settings;
-import org.workcraft.plugins.mpsat.MpsatParameters.SolutionMode;
-import org.workcraft.plugins.mpsat.tasks.MpsatConformationNwayOutputHandler.ConformationReportStyle;
+import org.workcraft.plugins.mpsat.VerificationParameters.SolutionMode;
+import org.workcraft.plugins.mpsat.tasks.ConformationNwayOutputHandler.ConformationReportStyle;
 import org.workcraft.utils.DesktopApi;
 
 import java.util.LinkedList;

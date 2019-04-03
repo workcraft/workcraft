@@ -14,7 +14,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.dom.converters.DefaultModelConverter;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.petri.VisualPetriNet;
+import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.stg.DummyTransition;
@@ -24,9 +24,9 @@ import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualStg;
 
-public class StgToPetriConverter extends DefaultModelConverter<VisualStg, VisualPetriNet> {
+public class StgToPetriConverter extends DefaultModelConverter<VisualStg, VisualPetri> {
 
-    public StgToPetriConverter(VisualStg srcModel, VisualPetriNet dstModel) {
+    public StgToPetriConverter(VisualStg srcModel, VisualPetri dstModel) {
         super(srcModel, dstModel);
     }
 

@@ -32,9 +32,9 @@ public class XmasPlugin implements Plugin {
         pm.registerSettings(XmasSettings.class);
 
         pm.registerCommand(JsonExportCommand.class);
-        pm.registerCommand(XmasPNetGenCommand.class);
-        pm.registerCommand(XmasSyncCommand.class);
-        pm.registerCommand(XmasConfigureCommand.class);
+        pm.registerCommand(PNetGenerationCommand.class);
+        pm.registerCommand(SynchronisationCommand.class);
+        pm.registerCommand(ConfigurationCommand.class);
         pm.registerCommand(XmasToStgConversionCommand.class);
         pm.registerCommand(XmasVerificationTool.class);
         pm.registerCommand(XmasAnalysisTool.class);

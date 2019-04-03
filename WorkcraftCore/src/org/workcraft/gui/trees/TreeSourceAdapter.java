@@ -1,13 +1,13 @@
 package org.workcraft.gui.trees;
 
-import java.util.List;
-
 import org.workcraft.gui.workspace.Path;
+
+import java.util.List;
 
 public class TreeSourceAdapter<Node> implements TreeSource<Node> {
 
-    TreeListenerArray<Node> ls = new TreeListenerArray<>();
     private final TreeSource<Node> source;
+    private final TreeListenerArray<Node> ls = new TreeListenerArray<>();
 
     public TreeSourceAdapter(TreeSource<Node> source) {
         this.source = source;

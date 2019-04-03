@@ -9,7 +9,7 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.plugins.petri.utils.PetriNetUtils;
+import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
@@ -62,7 +62,7 @@ public class ReadArcConnectionTool extends ConnectionTool {
 
                 if (e.isExtendKeyDown()) {
                     VisualModel visualModel = e.getEditor().getModel();
-                    connection = PetriNetUtils.replicateConnectedPlace(visualModel, connection);
+                    connection = ConversionUtils.replicateConnectedPlace(visualModel, connection);
                 }
             }
         }

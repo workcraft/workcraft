@@ -40,18 +40,18 @@ public class FsmPlugin implements Plugin {
         ScriptableCommandUtils.register(FsmToPetriConversionCommand.class, "convertFsmToPetri",
                 "convert the given FSM 'work' into a new Petri net work");
 
-        ScriptableCommandUtils.register(FsmDeadlockFreenessVerificationCommand.class, "checkFsmDeadlockFreeness",
+        ScriptableCommandUtils.register(DeadlockFreenessVerificationCommand.class, "checkFsmDeadlockFreeness",
                 "check the FSM or FST 'work' for deadlock freeness");
-        ScriptableCommandUtils.register(FsmDeterminismVerificationCommand.class, "checkFsmDeterminism",
+        ScriptableCommandUtils.register(DeterminismVerificationCommand.class, "checkFsmDeterminism",
                 "check the FSM or FST 'work' for determinism");
-        ScriptableCommandUtils.register(FsmReachabilityVerificationCommand.class, "checkFsmReachability",
+        ScriptableCommandUtils.register(ReachabilityVerificationCommand.class, "checkFsmReachability",
                 "check the FSM or FST 'work' for reachability of all states");
-        ScriptableCommandUtils.register(FsmReversibilityVerificationCommand.class, "checkFsmReversibility",
+        ScriptableCommandUtils.register(ReversibilityVerificationCommand.class, "checkFsmReversibility",
                 "check the FSM or FST 'work' for reversibility of all states");
 
-        ScriptableCommandUtils.register(FsmMergeStateTransformationCommand.class, "transformFsmMergeState",
+        ScriptableCommandUtils.register(MergeStateTransformationCommand.class, "transformFsmMergeState",
                 "transform the given FSM or FST 'work' by merging selected states");
-        ScriptableCommandUtils.register(FsmContractStateTransformationCommand.class, "transformFsmContractState",
+        ScriptableCommandUtils.register(ContractStateTransformationCommand.class, "transformFsmContractState",
                 "transform the given FSM or FST 'work' by contracting selected states");
     }
 

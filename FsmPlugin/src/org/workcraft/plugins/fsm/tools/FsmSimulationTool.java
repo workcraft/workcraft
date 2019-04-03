@@ -1,8 +1,5 @@
 package org.workcraft.plugins.fsm.tools;
 
-import java.awt.Color;
-import java.awt.event.MouseEvent;
-
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
@@ -14,20 +11,14 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditor;
-import org.workcraft.plugins.fsm.Fsm;
-import org.workcraft.plugins.fsm.State;
-import org.workcraft.plugins.fsm.VisualEvent;
-import org.workcraft.plugins.fsm.VisualFsm;
-import org.workcraft.plugins.fsm.VisualState;
-import org.workcraft.plugins.fsm.converters.FsmToPetriConverter;
-import org.workcraft.plugins.petri.PetriNet;
-import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.petri.VisualPetriNet;
-import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.plugins.petri.tools.PetriSimulationTool;
 import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
+import org.workcraft.plugins.fsm.*;
+import org.workcraft.plugins.fsm.converters.FsmToPetriConverter;
+import org.workcraft.plugins.petri.*;
+import org.workcraft.plugins.petri.tools.PetriSimulationTool;
+
+import java.awt.*;
+import java.awt.event.MouseEvent;
 
 public class FsmSimulationTool extends PetriSimulationTool {
 
@@ -57,7 +48,7 @@ public class FsmSimulationTool extends PetriSimulationTool {
     @Override
     public void generateUnderlyingModel(VisualModel model) {
         final VisualFsm fsm = (VisualFsm) model;
-        final VisualPetriNet petri = new VisualPetriNet(new PetriNet());
+        final VisualPetri petri = new VisualPetri(new Petri());
         converter = new FsmToPetriConverter(fsm, petri);
         setUnderlyingModel(converter.getDstModel());
     }

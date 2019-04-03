@@ -4,6 +4,7 @@ import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -138,7 +139,7 @@ public class SizeHelper {
         return scaleButtonIcon(icon, getFileChooserIconSize());
     }
 
-    public static Border getTitledBorder(String title) {
+    public static CompoundBorder getTitledBorder(String title) {
         return BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(title), getEmptyBorder());
     }
 

@@ -2,10 +2,10 @@ package org.workcraft.gui.properties;
 
 import org.workcraft.Config;
 import org.workcraft.Framework;
-import org.workcraft.plugins.PluginManager;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.PluginInfo;
+import org.workcraft.plugins.PluginManager;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.GuiUtils;
 
@@ -23,15 +23,23 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class SettingsEditorDialog extends JDialog {
+
+    // Right arrow symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
+    private static final char RIGHT_ARROW_SYMBOL = 0x2192;
+    private static final String SEPARATOR = " " + RIGHT_ARROW_SYMBOL + " ";
+
     private static final String DIALOG_RESTORE_SETTINGS = "Restore settings";
     private static final long serialVersionUID = 1L;
-    private JButton restoreButton;
-    private DefaultMutableTreeNode sectionRoot;
-    private JTree sectionTree;
-    private final PropertyEditorTable propertiesTable;
+
+    private final JLabel sectionLabel  = new JLabel();
+    private final PropertyEditorTable propertiesTable = new PropertyEditorTable();
 
     private Settings currentPage;
     private Config currentConfig;
+
+    private JButton restoreButton;
+    private DefaultMutableTreeNode sectionRoot;
+    private JTree sectionTree;
 
     static class SettingsPageNode {
         private final Settings page;
@@ -53,7 +61,7 @@ public class SettingsEditorDialog extends JDialog {
     public SettingsEditorDialog(MainWindow owner) {
         super(owner);
 
-        propertiesTable = new PropertyEditorTable();
+        sectionLabel.setFont(sectionLabel.getFont().deriveFont(Font.BOLD));
         propertiesTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -163,19 +171,19 @@ public class SettingsEditorDialog extends JDialog {
         if (page == null) {
             currentConfig = null;
             restoreButton.setText("Restore defaults (all)");
+            sectionLabel.setText("");
         } else {
             currentConfig = new Config();
             page.save(currentConfig);
             restoreButton.setText("Restore defaults");
+            sectionLabel.setText(page.getSection() + SEPARATOR + page.getName());
         }
         currentPage = page;
         propertiesTable.assign(currentPage);
     }
 
     private void initComponents() {
-        JPanel contentPane = new JPanel(new BorderLayout());
-        setContentPane(contentPane);
-        JScrollPane sectionPane = new JScrollPane();
+        JScrollPane sectionScrollPane = new JScrollPane();
         sectionRoot = new DefaultMutableTreeNode("root");
 
         sectionTree = new JTree();
@@ -184,25 +192,34 @@ public class SettingsEditorDialog extends JDialog {
         sectionTree.setShowsRootHandles(true);
 
         sectionTree.addTreeSelectionListener(e -> {
-            Object userObject = ((DefaultMutableTreeNode) e.getPath().getLastPathComponent()).getUserObject();
+            DefaultMutableTreeNode pathComponent = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
+            Object userObject = pathComponent.getUserObject();
             if (userObject instanceof SettingsPageNode) {
-                Settings page = ((SettingsPageNode) userObject).getPage();
+                SettingsPageNode pageNode = (SettingsPageNode) userObject;
+                Settings page = pageNode.getPage();
                 setObject(page);
             } else {
                 setObject(null);
             }
         });
 
-        sectionPane.setViewportView(sectionTree);
-        sectionPane.setMinimumSize(new Dimension(100, 0));
-        sectionPane.setBorder(SizeHelper.getTitledBorder("Section"));
+        sectionScrollPane.setViewportView(sectionTree);
 
-        JScrollPane propertiesPane = new JScrollPane();
-        propertiesPane.setMinimumSize(new Dimension(250, 0));
-        propertiesPane.setBorder(SizeHelper.getTitledBorder("Selection properties"));
-        propertiesPane.setViewportView(propertiesTable);
+        JScrollPane propertiesScrollPane = new JScrollPane();
+        propertiesScrollPane.setViewportView(propertiesTable);
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sectionPane, propertiesPane);
+        JPanel sectionPanel = new JPanel(new BorderLayout());
+        sectionPanel.setMinimumSize(new Dimension(100, 0));
+        sectionPanel.setBorder(SizeHelper.getEmptyBorder());
+        sectionPanel.add(sectionScrollPane, BorderLayout.CENTER);
+
+        JPanel propertiesPanel = new JPanel(new BorderLayout());
+        propertiesPanel.setMinimumSize(new Dimension(250, 0));
+        propertiesPanel.setBorder(SizeHelper.getEmptyBorder());
+        propertiesPanel.add(sectionLabel, BorderLayout.NORTH);
+        propertiesPanel.add(propertiesScrollPane, BorderLayout.CENTER);
+
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sectionPanel, propertiesPanel);
         splitPane.setOneTouchExpandable(true);
         splitPane.setDividerLocation((int) Math.round(0.3 * getWidth()));
         splitPane.setResizeWeight(0.1);
@@ -216,12 +233,15 @@ public class SettingsEditorDialog extends JDialog {
         restoreButton = GuiUtils.createDialogButton("Restore defaults (all)");
         restoreButton.addActionListener(event -> actionRestore());
 
-        JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
-        buttonsPane.add(okButton);
-        buttonsPane.add(cancelButton);
-        buttonsPane.add(restoreButton);
-        contentPane.add(splitPane, BorderLayout.CENTER);
-        contentPane.add(buttonsPane, BorderLayout.SOUTH);
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
+        buttonsPanel.add(okButton);
+        buttonsPanel.add(cancelButton);
+        buttonsPanel.add(restoreButton);
+
+        JPanel contentPanel = new JPanel(new BorderLayout());
+        setContentPane(contentPanel);
+        contentPanel.add(splitPane, BorderLayout.CENTER);
+        contentPanel.add(buttonsPanel, BorderLayout.SOUTH);
         getRootPane().setDefaultButton(okButton);
 
         getRootPane().registerKeyboardAction(event -> actionOk(),

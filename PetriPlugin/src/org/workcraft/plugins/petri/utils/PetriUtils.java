@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.workcraft.dom.Node;
 import org.workcraft.gui.tools.Trace;
-import org.workcraft.plugins.petri.PetriNetModel;
+import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.utils.DialogUtils;
@@ -14,7 +14,7 @@ import org.workcraft.utils.LogUtils;
 
 public class PetriUtils {
 
-    public static HashMap<Place, Integer> getMarking(PetriNetModel net) {
+    public static HashMap<Place, Integer> getMarking(PetriModel net) {
         HashMap<Place, Integer> marking = new HashMap<>();
         for (Place place: net.getPlaces()) {
             marking.put(place, place.getTokens());
@@ -22,7 +22,7 @@ public class PetriUtils {
         return marking;
     }
 
-    public static void setMarking(PetriNetModel net, HashMap<Place, Integer> marking) {
+    public static void setMarking(PetriModel net, HashMap<Place, Integer> marking) {
         for (Place place: net.getPlaces()) {
             Integer count = marking.get(place);
             if (count != null) {
@@ -31,7 +31,7 @@ public class PetriUtils {
         }
     }
 
-    public static boolean fireTrace(PetriNetModel net, Trace trace) {
+    public static boolean fireTrace(PetriModel net, Trace trace) {
         for (String ref: trace) {
             Node node = net.getNodeByReference(ref);
             if (node instanceof Transition) {
@@ -50,7 +50,7 @@ public class PetriUtils {
         return true;
     }
 
-    public static HashSet<Transition> getEnabledTransitions(PetriNetModel net) {
+    public static HashSet<Transition> getEnabledTransitions(PetriModel net) {
         HashSet<Transition> result = new HashSet<>();
         for (Transition transition: net.getTransitions()) {
             if (net.isEnabled(transition)) {
@@ -60,7 +60,7 @@ public class PetriUtils {
         return result;
     }
 
-    public static boolean checkSoundness(PetriNetModel stg, boolean ask) {
+    public static boolean checkSoundness(PetriModel stg, boolean ask) {
         String msg = "";
         Set<String> hangingTransitions = new HashSet<>();
         Set<String> unboundedTransitions = new HashSet<>();

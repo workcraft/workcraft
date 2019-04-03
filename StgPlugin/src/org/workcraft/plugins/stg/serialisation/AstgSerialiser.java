@@ -4,7 +4,7 @@ import java.io.OutputStream;
 import java.util.UUID;
 
 import org.workcraft.dom.Model;
-import org.workcraft.plugins.petri.PetriNetModel;
+import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.serialisation.SerialiserUtils.Style;
@@ -21,7 +21,7 @@ public class AstgSerialiser implements ModelSerialiser {
 
     @Override
     public boolean isApplicableTo(Model model) {
-        return (model instanceof StgModel) || (model instanceof PetriNetModel);
+        return (model instanceof StgModel) || (model instanceof PetriModel);
     }
 
     @Override

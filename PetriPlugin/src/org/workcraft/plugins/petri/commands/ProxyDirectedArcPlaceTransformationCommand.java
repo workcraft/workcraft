@@ -6,10 +6,10 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.plugins.petri.PetriNetModel;
+import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
-import org.workcraft.plugins.petri.utils.PetriNetUtils;
+import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
@@ -31,7 +31,7 @@ public class ProxyDirectedArcPlaceTransformationCommand extends AbstractTransfor
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, PetriNetModel.class);
+        return WorkspaceUtils.isApplicable(we, PetriModel.class);
     }
 
     @Override
@@ -40,9 +40,9 @@ public class ProxyDirectedArcPlaceTransformationCommand extends AbstractTransfor
         if (node instanceof VisualConnection) {
             VisualConnection connection = (VisualConnection) node;
             Node place = null;
-            if (PetriNetUtils.isVisualConsumingArc(connection)) {
+            if (ConversionUtils.isVisualConsumingArc(connection)) {
                 place = connection.getFirst();
-            } else if (PetriNetUtils.isVisualProducingArc(connection)) {
+            } else if (ConversionUtils.isVisualProducingArc(connection)) {
                 place = connection.getSecond();
             }
             result = place instanceof VisualPlace;
@@ -63,8 +63,8 @@ public class ProxyDirectedArcPlaceTransformationCommand extends AbstractTransfor
     @Override
     public Collection<VisualNode> collect(VisualModel model) {
         Collection<VisualNode> connections = new HashSet<>();
-        connections.addAll(PetriNetUtils.getVisualProducingArcs(model));
-        connections.addAll(PetriNetUtils.getVisualConsumingArcs(model));
+        connections.addAll(ConversionUtils.getVisualProducingArcs(model));
+        connections.addAll(ConversionUtils.getVisualConsumingArcs(model));
         connections.retainAll(model.getSelection());
         return connections;
     }
@@ -72,7 +72,7 @@ public class ProxyDirectedArcPlaceTransformationCommand extends AbstractTransfor
     @Override
     public void transform(VisualModel model, VisualNode node) {
         if (node instanceof VisualConnection) {
-            VisualConnection connection = PetriNetUtils.replicateConnectedPlace(model, (VisualConnection) node);
+            VisualConnection connection = ConversionUtils.replicateConnectedPlace(model, (VisualConnection) node);
             if (connection != null) {
                 if (connection.getFirst() instanceof VisualReplicaPlace) {
                     model.addToSelection(connection.getFirst());

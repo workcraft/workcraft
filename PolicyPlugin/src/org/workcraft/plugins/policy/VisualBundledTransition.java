@@ -37,7 +37,7 @@ public class VisualBundledTransition extends VisualTransition {
     public void draw(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
-        VisualPolicyNet model = (VisualPolicyNet) r.getModel();
+        VisualPolicy model = (VisualPolicy) r.getModel();
 
         double size = CommonVisualSettings.getNodeSize();
         double strokeWidth = CommonVisualSettings.getStrokeWidth();

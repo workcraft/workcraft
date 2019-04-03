@@ -13,7 +13,7 @@ import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NotFoundException;
-import org.workcraft.plugins.petri.PetriNet;
+import org.workcraft.plugins.petri.Petri;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.observers.SignalTypeConsistencySupervisor;
 import org.workcraft.plugins.stg.references.StgReferenceManager;
@@ -90,22 +90,22 @@ public class Stg extends AbstractMathModel implements StgModel {
 
     @Override
     public boolean isEnabled(Transition t) {
-        return PetriNet.isEnabled(this, t);
+        return Petri.isEnabled(this, t);
     }
 
     @Override
     public boolean isUnfireEnabled(Transition t) {
-        return PetriNet.isUnfireEnabled(this, t);
+        return Petri.isUnfireEnabled(this, t);
     }
 
     @Override
     public final void fire(Transition t) {
-        PetriNet.fire(this, t);
+        Petri.fire(this, t);
     }
 
     @Override
     public final void unFire(Transition t) {
-        PetriNet.unFire(this, t);
+        Petri.unFire(this, t);
     }
 
     @Override

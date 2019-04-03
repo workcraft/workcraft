@@ -26,7 +26,7 @@ public class PunfOutputParser {
         }
     }
 
-    private final Pair<MpsatSolution, Cause> outcome;
+    private final Pair<Solution, Cause> outcome;
 
     /*
      * \R -- any Unicode linebreak sequence introduced in Java 8.
@@ -55,16 +55,16 @@ public class PunfOutputParser {
         if (matcherInconsistent.find()) {
             String comment = "Signal '" + matcherInconsistent.group(1) + "' is inconsistent";
             Trace trace = getTrace(matcherInconsistent.group(2));
-            MpsatSolution solution = new MpsatSolution(trace, null, comment);
+            Solution solution = new Solution(trace, null, comment);
             outcome = Pair.of(solution, Cause.INCONSISTENT);
         } else if (matcherNotSafe.find()) {
             String comment = "Place '" + matcherNotSafe.group(1) + "' is unsafe";
             Trace trace = getTrace(matcherNotSafe.group(2));
-            MpsatSolution solution = new MpsatSolution(trace, null, comment);
+            Solution solution = new Solution(trace, null, comment);
             outcome = Pair.of(solution, Cause.NOT_SAFE);
         } else if (matcherEmptyPreset.find()) {
             String comment = "Transition(s) with empty preset: " + matcherEmptyPreset.group(2);
-            MpsatSolution solution = new MpsatSolution(null, null, comment);
+            Solution solution = new Solution(null, null, comment);
             outcome = Pair.of(solution, Cause.EMPTY_PRESET);
         } else {
             outcome = null;
@@ -86,7 +86,7 @@ public class PunfOutputParser {
         return trace;
     }
 
-    public Pair<MpsatSolution, Cause> getOutcome() {
+    public Pair<Solution, Cause> getOutcome() {
         return outcome;
     }
 

@@ -7,7 +7,7 @@ import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.PluginManager;
-import org.workcraft.plugins.pcomp.gui.PcompDialog;
+import org.workcraft.plugins.pcomp.gui.ParallelCompositionDialog;
 import org.workcraft.plugins.pcomp.tasks.PcompResultHandler;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.stg.Mutex;
@@ -53,7 +53,7 @@ public class ParallelCompositionCommand implements Command {
             return;
         }
         MainWindow mainWindow = framework.getMainWindow();
-        PcompDialog dialog = new PcompDialog(mainWindow);
+        ParallelCompositionDialog dialog = new ParallelCompositionDialog(mainWindow);
         dialog.checkAll();
         GuiUtils.centerToParent(dialog, mainWindow);
         Collection<Mutex> mutexes = new HashSet<>();

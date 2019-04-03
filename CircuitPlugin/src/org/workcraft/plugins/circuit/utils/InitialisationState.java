@@ -12,28 +12,27 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
 
 public class InitialisationState {
 
     private final HashSet<MathNode> highSet = new HashSet<>();
     private final HashSet<MathNode> lowSet = new HashSet<>();
     private final HashSet<MathNode> errorSet = new HashSet<>();
-    private final ArrayList<String> forcedPins = new ArrayList<>();
 
     public InitialisationState(Circuit circuit) {
         Queue<MathConnection> queue = new LinkedList<>();
         for (FunctionContact contact : circuit.getFunctionContacts()) {
             if (contact.isDriver() && contact.getForcedInit()) {
-                String pinRef = circuit.getNodeReference(contact);
-                forcedPins.add(pinRef);
                 HashSet<MathNode> initSet = contact.getInitToOne() ? highSet : lowSet;
                 if (initSet.add(contact)) {
                     queue.addAll(circuit.getConnections(contact));
                 }
             }
         }
-        Collections.sort(forcedPins);
 
         while (!queue.isEmpty()) {
             MathConnection connection = queue.remove();
@@ -136,14 +135,6 @@ public class InitialisationState {
 
     public boolean isError(MathNode node) {
         return errorSet.contains(node);
-    }
-
-    public String getForcedPin(int index) {
-        return (index < forcedPins.size()) ? forcedPins.get(index) : null;
-    }
-
-    public int getForcedPinCount() {
-        return forcedPins.size();
     }
 
 }

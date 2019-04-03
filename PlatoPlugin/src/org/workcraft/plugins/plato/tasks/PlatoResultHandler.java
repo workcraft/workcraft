@@ -12,13 +12,13 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fst.FstDescriptor;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.fst.VisualFstDescriptor;
-import org.workcraft.plugins.mpsat.MpsatMode;
-import org.workcraft.plugins.mpsat.MpsatParameters;
-import org.workcraft.plugins.mpsat.MpsatParameters.SolutionMode;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
-import org.workcraft.plugins.plato.commands.PlatoFstConversionCommand;
-import org.workcraft.plugins.plato.commands.PlatoStgConversionCommand;
+import org.workcraft.plugins.mpsat.VerificationMode;
+import org.workcraft.plugins.mpsat.VerificationParameters;
+import org.workcraft.plugins.mpsat.VerificationParameters.SolutionMode;
+import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
+import org.workcraft.plugins.mpsat.tasks.VerificationChainTask;
+import org.workcraft.plugins.plato.commands.FstConversionCommand;
+import org.workcraft.plugins.plato.commands.StgConversionCommand;
 import org.workcraft.plugins.plato.exceptions.PlatoException;
 import org.workcraft.plugins.plato.layout.ConceptsLayout;
 import org.workcraft.tasks.ExternalProcessOutput;
@@ -83,9 +83,9 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
                                 invariants = new String[0];
                             }
 
-                            if (sender instanceof PlatoStgConversionCommand) {
+                            if (sender instanceof StgConversionCommand) {
                                 addStg(stdout, framework, editor, invariants);
-                            } else if (sender instanceof PlatoFstConversionCommand) {
+                            } else if (sender instanceof FstConversionCommand) {
                                 addFst(stdout, framework, editor);
                             }
                             return;
@@ -160,7 +160,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
             me = new ModelEntry(me.getDescriptor(), vmd.create(mathModel));
             we = addWork(framework, we, editor, me);
             VisualStg visualStg = WorkspaceUtils.getAs(we, VisualStg.class);
-            if (!((PlatoStgConversionCommand) sender).getDotLayout()) {
+            if (!((StgConversionCommand) sender).getDotLayout()) {
                 ConceptsLayout.layout(visualStg);
             } else {
                 visualStg.getBestLayouter().layout(visualStg);
@@ -240,10 +240,10 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
             }
             fullExpression = prefix + fullExpression + suffix;
 
-            MpsatParameters param = new MpsatParameters(null, MpsatMode.STG_REACHABILITY, 0, SolutionMode.MINIMUM_COST, 10, fullExpression, true);
-            final MpsatChainTask mpsatTask = new MpsatChainTask(we, param);
+            VerificationParameters param = new VerificationParameters(null, VerificationMode.STG_REACHABILITY, 0, SolutionMode.MINIMUM_COST, 10, fullExpression, true);
+            final VerificationChainTask mpsatTask = new VerificationChainTask(we, param);
             final TaskManager taskManager = Framework.getInstance().getTaskManager();
-            final MpsatChainResultHandler monitor = new MpsatChainResultHandler(we);
+            final VerificationChainResultHandler monitor = new VerificationChainResultHandler(we);
             taskManager.queue(mpsatTask, "Verify invariant of translated concepts", monitor);
         }
     }

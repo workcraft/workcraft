@@ -9,10 +9,10 @@ import org.workcraft.plugins.cpog.VisualVertex;
 import org.workcraft.plugins.cpog.VisualVertex.RenderType;
 import org.workcraft.plugins.cpog.commands.PetriToCpogParameters;
 import org.workcraft.plugins.cpog.untangling.UntanglingNode.NodeType;
-import org.workcraft.plugins.petri.PetriNet;
+import org.workcraft.plugins.petri.Petri;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.petri.VisualPetriNet;
+import org.workcraft.plugins.petri.VisualPetri;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -20,12 +20,12 @@ import java.util.LinkedHashMap;
 
 public class PetriToCpogConverter {
 
-    private final PetriNet pn;
+    private final Petri pn;
     private final VisualCpog visualCpog;
     private int xRightmostVertex;
 
     /** constructor **/
-    public PetriToCpogConverter(VisualPetriNet vpn) {
+    public PetriToCpogConverter(VisualPetri vpn) {
         this.pn = vpn.getPetriNet();
         this.visualCpog = new VisualCpog(new Cpog());
         this.xRightmostVertex = -1;

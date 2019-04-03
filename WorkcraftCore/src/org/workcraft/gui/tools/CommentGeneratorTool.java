@@ -1,8 +1,7 @@
 package org.workcraft.gui.tools;
 
-import java.awt.geom.Point2D;
-
 import org.workcraft.Framework;
+import org.workcraft.dom.generators.DefaultNodeGenerator;
 import org.workcraft.dom.math.CommentNode;
 import org.workcraft.dom.visual.VisualComment;
 import org.workcraft.dom.visual.VisualModel;
@@ -12,7 +11,8 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.tools.editors.AbstractInplaceEditor;
 import org.workcraft.gui.tools.editors.LabelInplaceEditor;
-import org.workcraft.dom.generators.DefaultNodeGenerator;
+
+import java.awt.geom.Point2D;
 
 public class CommentGeneratorTool extends NodeGeneratorTool {
 
@@ -21,11 +21,11 @@ public class CommentGeneratorTool extends NodeGeneratorTool {
             @Override
             public VisualNode generate(VisualModel model, Point2D where) throws NodeCreationException {
                 final VisualComment comment = (VisualComment) super.generate(model, where);
-                Framework framework = Framework.getInstance();
-                MainWindow mainWindow = framework.getMainWindow();
-                Toolbox toolbox = mainWindow.getCurrentToolbox();
-                GraphEditor editor = mainWindow.getCurrentEditor();
-                GraphEditorTool defaultTool = toolbox.getDefaultTool();
+                final Framework framework = Framework.getInstance();
+                final MainWindow mainWindow = framework.getMainWindow();
+                final Toolbox toolbox = mainWindow.getCurrentToolbox();
+                final GraphEditor editor = mainWindow.getCurrentEditor();
+                final GraphEditorTool defaultTool = toolbox.getDefaultTool();
                 toolbox.selectTool(defaultTool);
                 if (defaultTool instanceof SelectionTool) {
                     AbstractInplaceEditor textEditor = new LabelInplaceEditor(editor, comment);

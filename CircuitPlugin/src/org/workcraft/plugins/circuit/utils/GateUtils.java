@@ -37,7 +37,7 @@ public class GateUtils {
         Point2D predPoint = predContact.getRootSpacePosition();
         Point2D succPoint = MixUtils.middleRootspacePosition(succComponents);
         Point2D pos = MixUtils.middlePoint(Arrays.asList(predPoint, succPoint));
-        component.setPosition(pos);
+        component.setRootSpacePosition(pos);
 
         VisualContact inputContact = component.getFirstVisualInput();
         VisualContact outputContact = component.getFirstVisualOutput();

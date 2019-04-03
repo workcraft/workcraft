@@ -4,12 +4,12 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.*;
-import org.workcraft.plugins.circuit.VisualContact.Direction;
 import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.circuit.VisualContact.Direction;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
@@ -55,18 +55,6 @@ public class VisualCircuitComponent extends VisualComponent implements Container
             @Override
             public Boolean getter(VisualCircuitComponent object) {
                 return object.getIsEnvironment();
-            }
-        });
-
-        addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, Boolean>(
-                this, Contact.PROPERTY_PATH_BREAKER, Boolean.class, true, true) {
-            @Override
-            public void setter(VisualCircuitComponent object, Boolean value) {
-                object.getReferencedComponent().setPathBreaker(value);
-            }
-            @Override
-            public Boolean getter(VisualCircuitComponent object) {
-                return object.getReferencedComponent().getPathBreaker();
             }
         });
 // TODO: Rename label to module name (?)

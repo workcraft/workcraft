@@ -19,20 +19,20 @@ import org.workcraft.plugins.graph.Graph;
 import org.workcraft.plugins.graph.Symbol;
 import org.workcraft.plugins.graph.VisualGraph;
 import org.workcraft.plugins.graph.VisualVertex;
-import org.workcraft.plugins.petri.VisualPetriNet;
+import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.utils.Hierarchy;
 
 public class GraphToPetriConverter {
     private final VisualGraph srcModel;
-    private final VisualPetriNet dstModel;
+    private final VisualPetri dstModel;
 
     private final Map<VisualConnection, VisualPlace> arcToPlaceMap;
     private final Map<VisualVertex, VisualTransition> vertexToTransitionMap;
     private final Map<String, String> refToSymbolMap;
 
-    public GraphToPetriConverter(VisualGraph srcModel, VisualPetriNet dstModel) {
+    public GraphToPetriConverter(VisualGraph srcModel, VisualPetri dstModel) {
         this.srcModel = srcModel;
         this.dstModel = dstModel;
         arcToPlaceMap = convertArcs();
@@ -179,7 +179,7 @@ public class GraphToPetriConverter {
         return srcModel;
     }
 
-    public VisualPetriNet getDstModel() {
+    public VisualPetri getDstModel() {
         return dstModel;
     }
 

@@ -3,8 +3,8 @@ package org.workcraft.plugins.plato;
 import org.workcraft.Framework;
 import org.workcraft.plugins.Plugin;
 import org.workcraft.plugins.PluginManager;
-import org.workcraft.plugins.plato.commands.PlatoFstConversionCommand;
-import org.workcraft.plugins.plato.commands.PlatoStgConversionCommand;
+import org.workcraft.plugins.plato.commands.FstConversionCommand;
+import org.workcraft.plugins.plato.commands.StgConversionCommand;
 import org.workcraft.plugins.plato.interop.ConceptsImporter;
 
 @SuppressWarnings("unused")
@@ -23,8 +23,8 @@ public class PlatoPlugin implements Plugin {
         pm.registerSettings(PlatoSettings.class);
         pm.registerImporter(ConceptsImporter.class);
 
-        pm.registerCommand(PlatoStgConversionCommand.class);
-        pm.registerCommand(PlatoFstConversionCommand.class);
+        pm.registerCommand(StgConversionCommand.class);
+        pm.registerCommand(FstConversionCommand.class);
     }
 
 }

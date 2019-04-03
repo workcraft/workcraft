@@ -2,9 +2,9 @@ package org.workcraft.plugins.stg.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractConversionCommand;
-import org.workcraft.plugins.petri.PetriNet;
-import org.workcraft.plugins.petri.PetriNetDescriptor;
-import org.workcraft.plugins.petri.VisualPetriNet;
+import org.workcraft.plugins.petri.Petri;
+import org.workcraft.plugins.petri.PetriDescriptor;
+import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.converters.StgToPetriConverter;
@@ -34,9 +34,9 @@ public class StgToPetriConversionCommand extends AbstractConversionCommand {
             we.captureMemento();
             try {
                 final VisualStg stg = me.getAs(VisualStg.class);
-                final VisualPetriNet petri = new VisualPetriNet(new PetriNet());
+                final VisualPetri petri = new VisualPetri(new Petri());
                 final StgToPetriConverter converter = new StgToPetriConverter(stg, petri);
-                return new ModelEntry(new PetriNetDescriptor(), converter.getDstModel());
+                return new ModelEntry(new PetriDescriptor(), converter.getDstModel());
             } finally {
                 we.cancelMemento();
             }

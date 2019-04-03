@@ -1,13 +1,12 @@
 package org.workcraft.plugins.circuit;
 
-import org.workcraft.plugins.CompatibilityManager;
 import org.workcraft.Framework;
 import org.workcraft.Version;
+import org.workcraft.plugins.CompatibilityManager;
 import org.workcraft.plugins.Plugin;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.circuit.commands.*;
 import org.workcraft.plugins.circuit.interop.GenlibImporter;
-import org.workcraft.plugins.circuit.interop.SdcExporter;
 import org.workcraft.plugins.circuit.interop.VerilogExporter;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.serialisation.FunctionDeserialiser;
@@ -39,7 +38,6 @@ public class CircuitPlugin implements Plugin {
         pm.registerExporter(VerilogExporter.class);
         pm.registerImporter(VerilogImporter.class);
         pm.registerImporter(GenlibImporter.class);
-        pm.registerExporter(SdcExporter.class);
 
         ScriptableCommandUtils.register(CircuitLayoutCommand.class, "layoutCircuit",
                 "place components and route wires of the Circuit 'work'");
@@ -68,7 +66,7 @@ public class CircuitPlugin implements Plugin {
         ScriptableCommandUtils.register(PropagateInversionTransformationCommand.class, "transformCircuitPropagateInversion",
                 "transform the given Circuit 'work' by propagating inversion through selected (or all) gates");
 
-        ScriptableCommandUtils.register(CircuitStatisticsCommand.class, "statCircuit",
+        ScriptableCommandUtils.register(StatisticsCommand.class, "statCircuit",
                 "advanced complexity estimates for the Circuit 'work'");
 
         ScriptableCommandUtils.register(CircuitToStgConversionCommand.class, "convertCircuitToStg",
@@ -76,41 +74,57 @@ public class CircuitPlugin implements Plugin {
         ScriptableCommandUtils.register(CircuitToStgWithEnvironmentConversionCommand.class, "convertCircuitToStgWithEnvironment",
                 "convert the given Circuit 'work' and its environment into a new STG work");
 
-        ScriptableCommandUtils.register(CircuitVerificationCommand.class, "checkCircuitCombined",
+        ScriptableCommandUtils.register(CombinedVerificationCommand.class, "checkCircuitCombined",
                 "combined check of the Circuit 'work' for conformation to environment, deadlock freeness, and output persistency");
-        ScriptableCommandUtils.register(CircuitConformationVerificationCommand.class, "checkCircuitConformation",
+        ScriptableCommandUtils.register(ConformationVerificationCommand.class, "checkCircuitConformation",
                 "check the Circuit 'work' for conformation to environment");
-        ScriptableCommandUtils.register(CircuitDeadlockFreenessVerificationCommand.class, "checkCircuitDeadlockFreeness",
+        ScriptableCommandUtils.register(DeadlockFreenessVerificationCommand.class, "checkCircuitDeadlockFreeness",
                 "check the Circuit 'work' for deadlock freeness");
-        ScriptableCommandUtils.register(CircuitOutputPersistencyVerificationCommand.class, "checkCircuitOutputPersistency",
+        ScriptableCommandUtils.register(OutputPersistencyVerificationCommand.class, "checkCircuitOutputPersistency",
                 "check the Circuit 'work' for output persistency");
-        ScriptableCommandUtils.register(CircuitStrictImplementationVerificationCommand.class, "checkCircuitStrictImplementation",
+        ScriptableCommandUtils.register(StrictImplementationVerificationCommand.class, "checkCircuitStrictImplementation",
                 "check the Circuit 'work' for strict implementation of its signals according to the environment");
 
-        pm.registerCommand(CircuitPropertyVerificationCommand.class);
-        pm.registerCommand(CircuitAssertionVerificationCommand.class);
+        pm.registerCommand(PropertyVerificationCommand.class);
+        pm.registerCommand(AssertionVerificationCommand.class);
 
-        ScriptableCommandUtils.register(ClearForceInitCommand.class, "resetCircuitClearForceInit",
-                "clear force init for all input ports and output pins in the Circuit 'work'");
-        ScriptableCommandUtils.register(ForceInitInputPortsCommand.class, "resetCircuitForceInitInputPorts",
+        // Force init attributes and Reset insertion
+        ScriptableCommandUtils.register(ForceInitInputPortsTagCommand.class, "tagCircuitForceInitInputPorts",
                 "force init all input ports in the Circuit 'work'  (environment must initialise them)");
-        ScriptableCommandUtils.register(ForceInitSelfLoopsCommand.class, "resetCircuitForceInitSelfLoops",
-                "force init all self-loops in the Circuit 'work'");
-        ScriptableCommandUtils.register(ForceInitSequentialGatesCommand.class, "resetCircuitForceInitSequentialGates",
-                "force init all sequential gates in the Circuit 'work'");
+        ScriptableCommandUtils.register(ForceInitSequentialPinsTagCommand.class, "tagCircuitForceInitSequentialPins",
+                "force init all sequential pins in the Circuit 'work'");
+        ScriptableCommandUtils.register(ForceInitSelfloopPinsTagCommand.class, "tagCircuitForceInitSelfloopPins",
+                "force init all self-loop pins in the Circuit 'work'");
+        ScriptableCommandUtils.register(ForceInitAutoAppendTagCommand.class, "tagCircuitForceInitAutoAppend",
+                "auto-append force init pins as necessary to complete initialisation of the Circuit 'work'");
+        ScriptableCommandUtils.register(ForceInitAutoDiscardTagCommand.class, "tagCircuitForceInitAutoDiscard",
+                "auto-discard force init pins that are redundant for initialisation of the Circuit 'work'");
+        ScriptableCommandUtils.register(ForceInitClearAllTagCommand.class, "tagCircuitForceInitClearAll",
+                "clear all force init input ports and output pins in the Circuit 'work'");
 
-        ScriptableCommandUtils.register(ProcessRedundantForceInitPinsCommand.class, "resetCircuitProcessRedundantForceInitPins",
-                "remove force init from pins if redundant for initialisation of the Circuit 'work'");
-        ScriptableCommandUtils.register(ProcessNecessaryForceInitPinsCommand.class, "resetCircuitProcessNecessaryForceInitPins",
-                "add force init to pins if necessary to complete initialisation of the Circuit 'work'");
-
-        ScriptableCommandUtils.register(CircuitResetActiveLowCommand.class, "resetCircuitInsertActiveLow",
+        ScriptableCommandUtils.register(ResetActiveLowInsertionCommand.class, "insertCircuitResetActiveLow",
                 "insert active-low reset into the Circuit 'work'");
-        ScriptableCommandUtils.register(CircuitResetActiveHighCommand.class, "resetCircuitInsertActiveHigh",
+        ScriptableCommandUtils.register(ResetActiveHighInsertionCommand.class, "insertCircuitResetActiveHigh",
                 "insert active-high reset into the Circuit 'work'");
 
-        ScriptableCommandUtils.register(CircuitResetVerificationCommand.class, "checkCircuitReset",
+        ScriptableCommandUtils.register(ResetVerificationCommand.class, "checkCircuitReset",
                 "check if the Circuit 'work' is correctly initialised via input ports");
+
+        // Path breaker attributes and Scan insertion
+        ScriptableCommandUtils.register(PathBreakerSelfloopPinsTagCommand.class, "tagCircuitPathBreakerSelfloopPins",
+                "path breaker all self-loop pins in the Circuit 'work'");
+        ScriptableCommandUtils.register(PathBreakerAutoAppendTagCommand.class, "tagCircuitPathBreakerAutoAppend",
+                "auto-append path breaker pins as necessary to complete cycle breaking in the Circuit 'work'");
+        ScriptableCommandUtils.register(PathBreakerAutoDiscardTagCommand.class, "tagCircuitPathBreakerAutoDiscard",
+                "auto-discard path breaker pins that are redundant for cycle breaking in the Circuit 'work'");
+        ScriptableCommandUtils.register(PathBreakerClearAllTagCommand.class, "tagCircuitPathBreakerClearAll",
+                "clear all path breaker pins in the Circuit 'work'");
+
+        ScriptableCommandUtils.register(ScanInsertionCommand.class, "insertCircuitScan",
+                "insert scan for path breaker components into the Circuit 'work'");
+
+        ScriptableCommandUtils.register(CycleFreenessVerificationCommand.class, "checkCircuitCycles",
+                "check if the Circuit 'work' is free from cyclic paths");
     }
 
     private void initCompatibilityManager() {

@@ -4,7 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.plugins.Plugin;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.utils.ScriptableCommandUtils;
-import org.workcraft.plugins.graph.commands.GraphReachabilityVerificationCommand;
+import org.workcraft.plugins.graph.commands.ReachabilityVerificationCommand;
 import org.workcraft.plugins.graph.commands.GraphToPetriConversionCommand;
 import org.workcraft.plugins.graph.serialisation.VertexDeserialiser;
 import org.workcraft.plugins.graph.serialisation.VertexSerialiser;
@@ -29,7 +29,7 @@ public class GraphPlugin implements Plugin {
 
         ScriptableCommandUtils.register(GraphToPetriConversionCommand.class, "convertGraphToPetri",
                 "convert the given Graph 'work' into a new Petri net work");
-        ScriptableCommandUtils.register(GraphReachabilityVerificationCommand.class, "checkGraphReachability",
+        ScriptableCommandUtils.register(ReachabilityVerificationCommand.class, "checkGraphReachability",
                 "check the Graph 'work' for reachability of all its nodes");
     }
 
