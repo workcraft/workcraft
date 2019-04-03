@@ -3,10 +3,12 @@ package org.workcraft.plugins.circuit.utils;
 import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
+import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.plugins.circuit.*;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 
 public class ResetUtils {
@@ -19,32 +21,36 @@ public class ResetUtils {
         return setForceInit(circuit.getInputPorts(), true);
     }
 
-    public static Set<Contact> tagForceInitSelfloopGates(Circuit circuit) {
+    public static Set<Contact> tagForceInitConflictPins(Circuit circuit) {
         HashSet<Contact> contacts = new HashSet<>();
-        for (CircuitComponent component : circuit.getFunctionComponents()) {
-            if ((component instanceof FunctionComponent) && ((FunctionComponent) component).getIsZeroDelay()) continue;
-            for (Contact outputContact : component.getOutputs()) {
-                for (CircuitComponent succComponent : StructureUtilsKt.getPostsetComponents(circuit, outputContact, true)) {
-                    if (component != succComponent) continue;
-                    contacts.add(outputContact);
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            LinkedList<BooleanVariable> variables = new LinkedList<>();
+            LinkedList<BooleanFormula> values = new LinkedList<>();
+            for (FunctionContact inputContact : component.getFunctionInputs()) {
+                Contact driver = CircuitUtils.findDriver(circuit, inputContact, false);
+                if (driver != null) {
+                    variables.add(inputContact);
+                    values.add(driver.getInitToOne() ? One.instance() : Zero.instance());
                 }
+            }
+            for (FunctionContact outputContact : component.getFunctionOutputs()) {
+                BooleanFormula setFunction = BooleanUtils.replaceClever(outputContact.getSetFunction(), variables, values);
+                BooleanFormula resetFunction = BooleanUtils.replaceClever(outputContact.getResetFunction(), variables, values);
+                if (isEvaluatedHigh(setFunction, resetFunction) && outputContact.getInitToOne()) continue;
+                if (isEvaluatedLow(setFunction, resetFunction) && !outputContact.getInitToOne()) continue;
+                contacts.add(outputContact);
             }
         }
         return setForceInit(contacts, true);
     }
 
-    public static Set<Contact> tagForceInitSequentialPins(Circuit circuit) {
-        Set<Contact> contacts = new HashSet<>();
-        for (FunctionComponent component : circuit.getFunctionComponents()) {
-            if (component.isGate()) {
-                for (FunctionContact contact : component.getFunctionOutputs()) {
-                    if ((contact.getSetFunction() != null) && (contact.getResetFunction() != null)) {
-                        contacts.add(contact);
-                    }
-                }
-            }
-        }
-        return setForceInit(contacts, true);
+    public static boolean isEvaluatedHigh(BooleanFormula setFunction, BooleanFormula resetFunction) {
+        return One.instance().equals(setFunction) && ((resetFunction == null) || Zero.instance().equals(resetFunction));
+    }
+
+
+    public static boolean isEvaluatedLow(BooleanFormula setFunction, BooleanFormula resetFunction) {
+        return Zero.instance().equals(setFunction) && ((resetFunction == null) || One.instance().equals(resetFunction));
     }
 
     public static Set<Contact> tagForceInitAutoAppend(Circuit circuit) {
@@ -59,7 +65,9 @@ public class ResetUtils {
             }
         }
         Set<Contact> changedContacts = setForceInit(contacts, true);
-        return simplifyForceInit(circuit, changedContacts);
+        Set<Contact> redundandContacts = simplifyForceInit(circuit, changedContacts);
+        changedContacts.removeAll(redundandContacts);
+        return changedContacts;
     }
 
     private static Set<Contact> setForceInit(Collection<? extends Contact> contacts, boolean value) {
@@ -71,16 +79,6 @@ public class ResetUtils {
             }
         }
         return result;
-    }
-
-    public static Set<Contact> tagForceInitAutoDiscard(Circuit circuit) {
-        HashSet<FunctionContact> userForceInitContacts = new HashSet<>();
-        for (FunctionContact contact : circuit.getFunctionContacts()) {
-            if (contact.isPin() && contact.isDriver() && contact.getForcedInit()) {
-                userForceInitContacts.add(contact);
-            }
-        }
-        return simplifyForceInit(circuit, userForceInitContacts);
     }
 
     private static Set<Contact> simplifyForceInit(Circuit circuit, Collection<? extends Contact> contacts) {
@@ -95,6 +93,16 @@ public class ResetUtils {
             }
         }
         return result;
+    }
+
+    public static Set<Contact> tagForceInitAutoDiscard(Circuit circuit) {
+        HashSet<FunctionContact> contacts = new HashSet<>();
+        for (FunctionContact contact : circuit.getFunctionContacts()) {
+            if (contact.isPin() && contact.isDriver() && contact.getForcedInit()) {
+                contacts.add(contact);
+            }
+        }
+        return simplifyForceInit(circuit, contacts);
     }
 
     public static void insertReset(VisualCircuit circuit, String portName, boolean activeLow) {

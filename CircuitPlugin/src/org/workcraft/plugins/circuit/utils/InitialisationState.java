@@ -55,8 +55,8 @@ public class InitialisationState {
                 }
             }
         }
-
     }
+
     private void fillVariableValues(FunctionComponent component,
             LinkedList<BooleanVariable> variables, LinkedList<BooleanFormula> values) {
         for (FunctionContact contact : component.getFunctionContacts()) {
@@ -105,20 +105,13 @@ public class InitialisationState {
         }
         BooleanFormula setFunction = BooleanUtils.replaceClever(contact.getSetFunction(), variables, values);
         BooleanFormula resetFunction = BooleanUtils.replaceClever(contact.getResetFunction(), variables, values);
-        if (isEvaluatedHigh(setFunction, resetFunction)) {
+        if (ResetUtils.isEvaluatedHigh(setFunction, resetFunction)) {
             return highSet;
-        } else if (isEvaluatedLow(setFunction, resetFunction)) {
+        }
+        if (ResetUtils.isEvaluatedLow(setFunction, resetFunction)) {
             return lowSet;
         }
         return null;
-    }
-
-    private boolean isEvaluatedHigh(BooleanFormula setFunction, BooleanFormula resetFunction) {
-        return One.instance().equals(setFunction) && ((resetFunction == null) || Zero.instance().equals(resetFunction));
-    }
-
-    private boolean isEvaluatedLow(BooleanFormula setFunction, BooleanFormula resetFunction) {
-        return Zero.instance().equals(setFunction) && ((resetFunction == null) || One.instance().equals(resetFunction));
     }
 
     public boolean isCorrectlyInitialised(MathNode contact) {

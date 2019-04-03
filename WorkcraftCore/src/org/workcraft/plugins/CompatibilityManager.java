@@ -25,7 +25,9 @@ public class CompatibilityManager {
             Framework.META_VERSION_MINOR_WORK_ATTRIBUTE + "=\"([0-9]+)\" " +
             Framework.META_VERSION_REVISION_WORK_ATTRIBUTE + "=\"([0-9]+)\" " +
             Framework.META_VERSION_STATUS_WORK_ATTRIBUTE + "=\"(.*)\"/>");
+
     private static final Pattern modelNamePattern = Pattern.compile("<model class=\"(.+?)\" ref=\"\">");
+
     private static final Pattern classNamePattern = Pattern.compile("<([A-Z]\\S*).*>");
 
     @SuppressWarnings("serial")
@@ -48,7 +50,7 @@ public class CompatibilityManager {
     }
 
     @SuppressWarnings("serial")
-    private class VersionedReplacementData extends HashMap<Version, ReplacementData> {
+    private class VersionedReplacementData extends TreeMap<Version, ReplacementData> {
     }
 
     private final VersionedReplacementData versionedReplacementData = new VersionedReplacementData();
@@ -64,9 +66,7 @@ public class CompatibilityManager {
 
     private List<ReplacementData> getOrderedApplicableData(Version version) {
         List<ReplacementData> result = new ArrayList<>();
-        List<Version> versions = new ArrayList<>(versionedReplacementData.keySet());
-        Collections.sort(versions);
-        for (Version sinceVersion : versions) {
+        for (Version sinceVersion : versionedReplacementData.keySet()) {
             if ((version == null) || (version.compareTo(sinceVersion) < 0)) {
                 ReplacementData data = getReplacementData(sinceVersion);
                 result.add(data);

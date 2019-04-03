@@ -4,11 +4,11 @@ tagCircuitForceInitClearAll(work);
 
 tagCircuitForceInitInputPorts(work);
 
-tagCircuitForceInitSelfloopPins(work);
-
-tagCircuitForceInitSequentialPins(work);
+tagCircuitForceInitConflictPins(work);
 
 tagCircuitForceInitAutoDiscard(work);
+
+tagCircuitForceInitAutoAppend(work);
 
 insertCircuitResetActiveLow(work);
 
