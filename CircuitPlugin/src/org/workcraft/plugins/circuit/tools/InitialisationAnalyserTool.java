@@ -20,21 +20,17 @@ import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.util.List;
 import java.util.*;
 import java.util.function.Function;
 
 public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
-    private JTable forceTable;
-    private InitialisationState initState;
-    private final ArrayList<String> forcedPins = new ArrayList<>();
+    private final BasicTable<String> forcedTable = new BasicTable();
+    private InitialisationState initState = null;
 
     @Override
     public JPanel getControlsPanel(final GraphEditor editor) {
@@ -47,47 +43,20 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private JPanel getLegendControlsPanel(final GraphEditor editor) {
-        ColorLegendTableModel legendTableModel = new ColorLegendTableModel(Arrays.asList(
+        ColorLegendTable colorLegendTable = new ColorLegendTable(Arrays.asList(
                 Pair.of(CommonVisualSettings.getFillColor(), "Undefined initial state"),
                 Pair.of(CircuitSettings.getConflictInitGateColor(), "Conflict of initialisation"),
                 Pair.of(CircuitSettings.getForcedInitGateColor(), "Forced initial state"),
                 Pair.of(CircuitSettings.getPropagatedInitGateColor(), "Propagated initial state")
         ));
 
-        JTable legendTable = new JTable(legendTableModel);
-        legendTable.setFocusable(false);
-        legendTable.setRowSelectionAllowed(false);
-        legendTable.setRowHeight(SizeHelper.getComponentHeightFromFont(legendTable.getFont()));
-        legendTable.setDefaultRenderer(Color.class, new ColorDataRenderer());
-        legendTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-        // Make the table transparent
-        legendTable.setShowGrid(false);
-        legendTable.setOpaque(false);
-        DefaultTableCellRenderer legendRenderer = (DefaultTableCellRenderer) legendTable.getDefaultRenderer(Object.class);
-        legendRenderer.setOpaque(false);
-        // Set the color cells square shape
-        TableColumnModel columnModel = legendTable.getColumnModel();
-        int colorCellSize = legendTable.getRowHeight();
-        TableColumn colorLegendColumn = columnModel.getColumn(0);
-        colorLegendColumn.setMinWidth(colorCellSize);
-        colorLegendColumn.setMaxWidth(colorCellSize);
-
         JPanel legendPanel = new JPanel(new BorderLayout());
         legendPanel.setBorder(SizeHelper.getTitledBorder("Gate highlight legend"));
-        legendPanel.add(legendTable, BorderLayout.CENTER);
+        legendPanel.add(colorLegendTable, BorderLayout.CENTER);
         return legendPanel;
     }
 
     private JPanel getForcedControlsPanel(final GraphEditor editor) {
-        BasicTableModel<String> forceTableModel = new BasicTableModel(forcedPins);
-        forceTable = new JTable(forceTableModel);
-        forceTable.setFocusable(false);
-        forceTable.setRowSelectionAllowed(false);
-        forceTable.setRowHeight(SizeHelper.getComponentHeightFromFont(forceTable.getFont()));
-        forceTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-        forceTable.setTableHeader(null);
-        JScrollPane forceScrollPane = new JScrollPane(forceTable);
-
         JButton tagForceInitInputPortsButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/circuit-initialisation-input_ports.svg"),
                 "Force init all input ports (environment responsibility)");
@@ -130,7 +99,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
         JPanel forcePanel = new JPanel(new BorderLayout());
         forcePanel.setBorder(SizeHelper.getTitledBorder("Force init pins"));
-        forcePanel.add(forceScrollPane, BorderLayout.CENTER);
+        forcePanel.add(new JScrollPane(forcedTable), BorderLayout.CENTER);
         forcePanel.add(btnPanel, BorderLayout.SOUTH);
         return forcePanel;
     }
@@ -145,8 +114,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         } else {
             we.saveMemento();
         }
-        circuit = (Circuit) editor.getModel().getMathModel();
-        updateState(circuit);
+        updateState(editor);
         editor.requestFocus();
     }
 
@@ -187,7 +155,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
                 editor.getWorkspaceEntry().saveMemento();
                 VisualCircuit visualCircuit = (VisualCircuit) editor.getModel();
                 ResetUtils.insertReset(visualCircuit, textField.getText(), result == JOptionPane.YES_OPTION);
-                updateState(circuit);
+                updateState(editor);
             }
         }
         editor.requestFocus();
@@ -221,15 +189,14 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     @Override
     public void activated(final GraphEditor editor) {
         super.activated(editor);
-        Circuit circuit = (Circuit) editor.getModel().getMathModel();
-        updateState(circuit);
+        updateState(editor);
     }
 
     @Override
     public void deactivated(final GraphEditor editor) {
         super.deactivated(editor);
+        forcedTable.clear();
         initState = null;
-        forcedPins.clear();
     }
 
     @Override
@@ -240,8 +207,9 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         we.setCanCopy(false);
     }
 
-    private void updateState(Circuit circuit) {
-        initState = new InitialisationState(circuit);
+    private void updateState(final GraphEditor editor) {
+        Circuit circuit = (Circuit) editor.getModel().getMathModel();
+        List<String> forcedPins = new ArrayList<>();
         forcedPins.clear();
         for (FunctionContact contact : circuit.getFunctionContacts()) {
             if (contact.isDriver() && contact.getForcedInit()) {
@@ -250,7 +218,8 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
             }
         }
         Collections.sort(forcedPins);
-        forceTable.tableChanged(new TableModelEvent(forceTable.getModel()));
+        forcedTable.set(forcedPins);
+        initState = new InitialisationState(circuit);
     }
 
     @Override
@@ -278,8 +247,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
             }
         }
         if (processed) {
-            Circuit circuit = (Circuit) model.getMathModel();
-            updateState(circuit);
+            updateState(editor);
         } else {
             super.mousePressed(e);
         }

@@ -25,10 +25,6 @@ import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -39,10 +35,9 @@ import java.util.function.Function;
 
 public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
-    private JTable breakTable;
+    private final BasicTable<String> breakerTable = new BasicTable();
     private Set<Contact> cycleContacts;
     private Set<FunctionComponent> cycleComponents;
-    private final List<String> breakers = new ArrayList<>();
 
     @Override
     public JPanel getControlsPanel(final GraphEditor editor) {
@@ -55,45 +50,19 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private JPanel getLegendControlsPanel(final GraphEditor editor) {
-        ColorLegendTableModel legendTableModel = new ColorLegendTableModel(Arrays.asList(
+        ColorLegendTable colorLegendTable = new ColorLegendTable(Arrays.asList(
                 Pair.of(CircuitSettings.getWithinCycleGateColor(), "Within a cycle"),
                 Pair.of(CircuitSettings.getBreakCycleGateColor(), "Path breaker"),
                 Pair.of(CircuitSettings.getOutsideCycleGateColor(), "Outside of all cycles")
         ));
 
-        JTable legendTable = new JTable(legendTableModel);
-        legendTable.setFocusable(false);
-        legendTable.setRowSelectionAllowed(false);
-        legendTable.setRowHeight(SizeHelper.getComponentHeightFromFont(legendTable.getFont()));
-        legendTable.setDefaultRenderer(Color.class, new ColorDataRenderer());
-        legendTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-        // Make the table transparent
-        legendTable.setShowGrid(false);
-        legendTable.setOpaque(false);
-        DefaultTableCellRenderer legendRenderer = (DefaultTableCellRenderer) legendTable.getDefaultRenderer(Object.class);
-        legendRenderer.setOpaque(false);
-        // Set the color cells square shape
-        TableColumnModel columnModel = legendTable.getColumnModel();
-        int colorCellSize = legendTable.getRowHeight();
-        TableColumn colorLegendColumn = columnModel.getColumn(0);
-        colorLegendColumn.setMinWidth(colorCellSize);
-        colorLegendColumn.setMaxWidth(colorCellSize);
-
         JPanel legendPanel = new JPanel(new BorderLayout());
         legendPanel.setBorder(SizeHelper.getTitledBorder("Highlight legend"));
-        legendPanel.add(legendTable, BorderLayout.CENTER);
+        legendPanel.add(colorLegendTable, BorderLayout.CENTER);
         return legendPanel;
     }
 
     private JPanel getBreakControlsPanel(final GraphEditor editor) {
-        BasicTableModel<String> breakTableModel = new BasicTableModel<>(breakers);
-        breakTable = new JTable(breakTableModel);
-        breakTable.setFocusable(false);
-        breakTable.setRowSelectionAllowed(false);
-        breakTable.setRowHeight(SizeHelper.getComponentHeightFromFont(breakTable.getFont()));
-        breakTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-        breakTable.setTableHeader(null);
-        JScrollPane forceScrollPane = new JScrollPane(breakTable);
 
         JButton tagPathBreakerSelfloopPinsButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/circuit-cycle-selfloop_pins.svg"),
@@ -132,7 +101,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
         JPanel forcePanel = new JPanel(new BorderLayout());
         forcePanel.setBorder(SizeHelper.getTitledBorder("Path breakers"));
-        forcePanel.add(forceScrollPane, BorderLayout.CENTER);
+        forcePanel.add(new JScrollPane(breakerTable), BorderLayout.CENTER);
         forcePanel.add(btnPanel, BorderLayout.SOUTH);
         return forcePanel;
     }
@@ -229,7 +198,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         super.deactivated(editor);
         cycleContacts = null;
         cycleComponents = null;
-        breakers.clear();
+        breakerTable.clear();
     }
 
     @Override
@@ -250,7 +219,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
             }
         }
 
-        breakers.clear();
+        List<String> breakers = new ArrayList<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
             for (Contact contact : component.getContacts()) {
                 if (contact.getPathBreaker()) {
@@ -264,7 +233,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
             }
         }
         Collections.sort(breakers);
-        breakTable.tableChanged(new TableModelEvent(breakTable.getModel()));
+        breakerTable.set(breakers);
     }
 
     @Override
