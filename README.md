@@ -3,7 +3,6 @@
 [![Build status](https://travis-ci.org/workcraft/workcraft.svg)](https://travis-ci.org/workcraft/workcraft)
 [![Code maintainability](https://codeclimate.com/github/workcraft/workcraft/badges/gpa.svg)](https://codeclimate.com/github/workcraft/workcraft)
 [![Coverage](https://img.shields.io/coveralls/github/workcraft/workcraft.svg)](https://coveralls.io/github/workcraft/workcraft)
-[![Issues](https://badge.waffle.io/workcraft/workcraft.svg?columns=backlog,confirmed)](https://waffle.io/workcraft/workcraft)
 ![Repo size](https://img.shields.io/github/repo-size/workcraft/workcraft.svg)
 ![Code size](https://img.shields.io/github/languages/code-size/workcraft/workcraft.svg)
 [![Current release](https://img.shields.io/github/release/workcraft/workcraft.svg)](https://github.com/workcraft/workcraft/releases)
