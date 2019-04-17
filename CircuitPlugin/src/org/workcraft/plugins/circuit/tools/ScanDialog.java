@@ -1,7 +1,7 @@
 package org.workcraft.plugins.circuit.tools;
 
-import info.clearthought.layout.TableLayout;
 import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
@@ -16,11 +16,15 @@ public class ScanDialog extends JDialog {
     public ScanDialog(Window owner) {
         super(owner, "Scan insertion", ModalityType.DOCUMENT_MODAL);
 
-        JPanel outputOptions = new JPanel();
-        outputOptions.setLayout(new BoxLayout(outputOptions, BoxLayout.Y_AXIS));
-        outputOptions.setBorder(SizeHelper.getTitledBorder("Shared signals"));
+        JPanel inputPanel = new JPanel(new BorderLayout());
 
-        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JTextField portsText = new JTextField(CircuitSettings.getScanPorts());
+        inputPanel.add(GuiUtils.createWideLabeledComponent(portsText, "Scan ports: "), BorderLayout.NORTH);
+
+        JTextField pinsText = new JTextField(CircuitSettings.getScanPins());
+        inputPanel.add(GuiUtils.createWideLabeledComponent(pinsText, "Scan pins: "), BorderLayout.CENTER);
+
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
         JButton okButton = GuiUtils.createDialogButton("OK");
         okButton.addActionListener(event -> actionOk());
 
@@ -38,18 +42,12 @@ public class ScanDialog extends JDialog {
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-        int buttonPanelHeight = buttonsPanel.getPreferredSize().height;
-        double[][] sizes = new double[][] {
-                {TableLayout.FILL},
-                {TableLayout.PREFERRED, TableLayout.FILL, buttonPanelHeight},
-        };
-        final JPanel contentPanel = new JPanel(new TableLayout(sizes));
-        contentPanel.setBorder(SizeHelper.getEmptyBorder());
-
-        contentPanel.add(buttonsPanel, "0 2");
+        JPanel contentPanel = new JPanel(new BorderLayout());
+        contentPanel.add(inputPanel, BorderLayout.CENTER);
+        contentPanel.add(buttonsPanel, BorderLayout.SOUTH);
 
         setContentPane(contentPanel);
-        setMinimumSize(new Dimension(600, 400));
+        setMinimumSize(new Dimension(600, 200));
         pack();
         setLocationRelativeTo(owner);
     }
