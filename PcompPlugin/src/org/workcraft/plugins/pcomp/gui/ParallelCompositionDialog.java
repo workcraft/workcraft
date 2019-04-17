@@ -22,7 +22,6 @@ import java.util.Set;
 @SuppressWarnings("serial")
 public class ParallelCompositionDialog extends JDialog {
 
-    private boolean result;
     private WorkspaceChooser chooser;
     private Set<Path<String>> sourcePaths;
     private JCheckBox showInEditor;
@@ -32,12 +31,15 @@ public class ParallelCompositionDialog extends JDialog {
     private JCheckBox sharedOutputs;
     private JCheckBox saveDetail;
     private JCheckBox improvedPcomp;
+    private boolean modalResult;
 
     public ParallelCompositionDialog(Window owner) {
         super(owner, "Parallel composition", ModalityType.DOCUMENT_MODAL);
         setContentPane(createContents());
         setMinimumSize(new Dimension(600, 400));
         pack();
+        setLocationRelativeTo(owner);
+        checkAll();
     }
 
     private JPanel createContents() {
@@ -114,13 +116,13 @@ public class ParallelCompositionDialog extends JDialog {
     }
 
     private void actionRun() {
-        result = true;
+        modalResult = true;
         sourcePaths = chooser.getCheckedNodes();
         setVisible(false);
     }
 
     private void actionCancel() {
-        result = false;
+        modalResult = false;
         setVisible(false);
     }
 
@@ -168,9 +170,9 @@ public class ParallelCompositionDialog extends JDialog {
         throw new NotSupportedException("No button is selected. Cannot proceed.");
     }
 
-    public boolean run() {
+    public boolean reveal() {
         setVisible(true);
-        return result;
+        return modalResult;
     }
 
 }

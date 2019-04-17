@@ -136,10 +136,13 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private void insertScan(GraphEditor editor) {
-        editor.getWorkspaceEntry().saveMemento();
-        VisualCircuit circuit = (VisualCircuit) editor.getModel();
-        ScanUtils.insertScan(circuit);
-        updateState(((VisualCircuit) editor.getModel()).getMathModel());
+        ScanDialog dialog = new ScanDialog(Framework.getInstance().getMainWindow());
+        if (dialog.reveal()) {
+            editor.getWorkspaceEntry().saveMemento();
+            VisualCircuit circuit = (VisualCircuit) editor.getModel();
+            ScanUtils.insertScan(circuit);
+            updateState(((VisualCircuit) editor.getModel()).getMathModel());
+        }
     }
 
     private void writePathbreakConstraints(final GraphEditor editor) {

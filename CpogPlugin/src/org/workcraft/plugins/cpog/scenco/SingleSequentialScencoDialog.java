@@ -1,22 +1,6 @@
 package org.workcraft.plugins.cpog.scenco;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.Window;
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.KeyStroke;
-
+import info.clearthought.layout.TableLayout;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.plugins.cpog.EncoderSettings;
@@ -25,7 +9,10 @@ import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.utils.GuiUtils;
 
-import info.clearthought.layout.TableLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 @SuppressWarnings("serial")
 public class SingleSequentialScencoDialog extends AbstractScencoDialog {
@@ -33,7 +20,6 @@ public class SingleSequentialScencoDialog extends AbstractScencoDialog {
     private JCheckBox verboseModeCheck, abcCheck;
     private JComboBox<String> optimiseBox;
     private JPanel buttonsPanel, standardPanel;
-    JScrollPane scrollPane;
     private int m, bits;
 
     public SingleSequentialScencoDialog(Window owner, String title, EncoderSettings settings, VisualCpog model) {
@@ -65,6 +51,7 @@ public class SingleSequentialScencoDialog extends AbstractScencoDialog {
 
         //sizeWindow(365, 151, 200, 100);
         pack();
+        setLocationRelativeTo(owner);
     }
 
     private void createStandardPanel() {
@@ -157,7 +144,6 @@ public class SingleSequentialScencoDialog extends AbstractScencoDialog {
             settings.setBits(bits + 1);
             settings.setCustomEncMode(false);
         }
-        setDone();
     }
 
 }

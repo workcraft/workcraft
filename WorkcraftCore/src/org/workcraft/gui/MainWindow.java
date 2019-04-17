@@ -746,10 +746,7 @@ public class MainWindow extends JFrame {
 
     public void createWork(Path<String> directory) throws OperationCancelledException {
         CreateWorkDialog dialog = new CreateWorkDialog(this);
-        dialog.pack();
-        GuiUtils.centerToParent(dialog, this);
-        dialog.setVisible(true);
-        if (dialog.getModalResult() == 0) {
+        if (!dialog.reveal()) {
             throw new OperationCancelledException("Create operation cancelled by user.");
         }
         ModelDescriptor md = dialog.getSelectedModel();
@@ -1228,12 +1225,13 @@ public class MainWindow extends JFrame {
 
     public void editSettings() {
         SettingsEditorDialog dialog = new SettingsEditorDialog(this);
-        dialog.setVisible(true);
-        for (WorkspaceEntry we: editorWindows.keySet()) {
-            refreshWorkspaceEntryTitle(we, false);
+        if (dialog.reveal()) {
+            for (WorkspaceEntry we: editorWindows.keySet()) {
+                refreshWorkspaceEntryTitle(we, false);
+            }
+            DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
+            globalToolbar.refreshToggles();
         }
-        DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
-        globalToolbar.refreshToggles();
     }
 
     public void resetLayout() {

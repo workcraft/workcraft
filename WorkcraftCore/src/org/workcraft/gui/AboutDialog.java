@@ -1,8 +1,13 @@
 package org.workcraft.gui;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Font;
+import org.workcraft.Info;
+import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.utils.DesktopApi;
+import org.workcraft.utils.GuiUtils;
+
+import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -11,27 +16,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JEditorPane;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
-
-import org.workcraft.Info;
-import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.utils.DesktopApi;
-import org.workcraft.utils.GuiUtils;
-
 public class AboutDialog extends JDialog {
     private static final long serialVersionUID = 1L;
+
+    private boolean modalResult;
 
     public AboutDialog(final MainWindow owner) {
         super(owner);
@@ -72,16 +60,13 @@ public class AboutDialog extends JDialog {
                 + "<p center>" + Info.getCopyright() + "</p>"
                 + "<p center><a href='" + homepage + "'>" + homepage + "</a></p>");
 
-        infoPane.addHyperlinkListener(new HyperlinkListener() {
-            @Override
-            public void hyperlinkUpdate(HyperlinkEvent event) {
-                if (HyperlinkEvent.EventType.ACTIVATED.equals(event.getEventType())) {
-                    try {
-                        URI uri = event.getURL().toURI();
-                        DesktopApi.browse(uri);
-                    } catch (URISyntaxException e) {
-                        System.out.println(e);
-                    }
+        infoPane.addHyperlinkListener(event -> {
+            if (HyperlinkEvent.EventType.ACTIVATED.equals(event.getEventType())) {
+                try {
+                    URI uri = event.getURL().toURI();
+                    DesktopApi.browse(uri);
+                } catch (URISyntaxException e) {
+                    System.out.println(e);
                 }
             }
         });
@@ -111,10 +96,17 @@ public class AboutDialog extends JDialog {
         setModal(true);
         setResizable(false);
         pack();
+        setLocationRelativeTo(owner);
     }
 
     private void ok() {
+        modalResult = true;
         setVisible(false);
+    }
+
+    public boolean reveal() {
+        setVisible(true);
+        return modalResult;
     }
 
 }

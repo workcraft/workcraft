@@ -1,14 +1,14 @@
 package org.workcraft.gui;
 
 import org.workcraft.Framework;
-import org.workcraft.plugins.PluginManager;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.utils.PluginUtils;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.PluginInfo;
+import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.builtin.settings.CommonFavoriteSettings;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.PluginUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,7 +37,7 @@ public class CreateWorkDialog extends JDialog {
     private JList workTypeList;
     private JButton okButton;
     private JButton cancelButton;
-    private int modalResult;
+    private boolean modalResult;
 
     public CreateWorkDialog(MainWindow owner) {
         super(owner);
@@ -46,6 +46,8 @@ public class CreateWorkDialog extends JDialog {
         setTitle("New work");
         initComponents();
         setMinimumSize(new Dimension(300, 200));
+        pack();
+        setLocationRelativeTo(owner);
     }
 
     static class ListElement implements Comparable<ListElement> {
@@ -82,7 +84,7 @@ public class CreateWorkDialog extends JDialog {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if ((e.getClickCount() == 2) && (workTypeList.getSelectedIndex() != -1)) {
-                    ok();
+                    actionOk();
                 }
             }
         });
@@ -99,10 +101,10 @@ public class CreateWorkDialog extends JDialog {
 
         okButton = GuiUtils.createDialogButton("OK");
         okButton.setEnabled(false);
-        okButton.addActionListener(event -> ok());
+        okButton.addActionListener(event -> actionOk());
 
         cancelButton = GuiUtils.createDialogButton("Cancel");
-        cancelButton.addActionListener(event -> cancel());
+        cancelButton.addActionListener(event -> actionCancel());
 
         JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
         buttonsPane.add(okButton);
@@ -170,11 +172,11 @@ public class CreateWorkDialog extends JDialog {
     }
 
     private void setKeyboardShortcuts() {
-        getRootPane().registerKeyboardAction(event -> ok(),
+        getRootPane().registerKeyboardAction(event -> actionOk(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-        getRootPane().registerKeyboardAction(event -> cancel(),
+        getRootPane().registerKeyboardAction(event -> actionCancel(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
@@ -182,34 +184,35 @@ public class CreateWorkDialog extends JDialog {
         for (int i = 0; i <= 9; i++) {
             final int index = i;
             int keyCode = (i < 9) ? KeyEvent.VK_1 + i : KeyEvent.VK_0;
-            getRootPane().registerKeyboardAction(event -> ok(index),
+            getRootPane().registerKeyboardAction(event -> actionOk(index),
                     KeyStroke.getKeyStroke(keyCode, 0),
                     JComponent.WHEN_IN_FOCUSED_WINDOW);
         }
     }
 
-    private void ok(int index) {
+    private void actionOk(int index) {
         if (index < workTypeList.getModel().getSize()) {
             workTypeList.setSelectedIndex(index);
-            ok();
+            actionOk();
         }
     }
 
-    private void ok() {
+    private void actionOk() {
         if (okButton.isEnabled()) {
-            modalResult = 1;
+            modalResult = true;
             setVisible(false);
         }
     }
 
-    private void cancel() {
+    private void actionCancel() {
         if (cancelButton.isEnabled()) {
-            modalResult = 0;
+            modalResult = false;
             setVisible(false);
         }
     }
 
-    public int getModalResult() {
+    public boolean reveal() {
+        setVisible(true);
         return modalResult;
     }
 

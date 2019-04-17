@@ -1,7 +1,5 @@
 package org.workcraft.plugins.plato.commands;
 
-import java.io.File;
-
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.plugins.fst.VisualFst;
@@ -10,9 +8,11 @@ import org.workcraft.plugins.plato.tasks.PlatoResultHandler;
 import org.workcraft.plugins.plato.tasks.PlatoTask;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
+
+import java.io.File;
 
 public class FstConversionCommand extends AbstractConversionCommand {
 
@@ -35,22 +35,19 @@ public class FstConversionCommand extends AbstractConversionCommand {
 
     @Override
     public ModelEntry convert(ModelEntry me) {
-        WriterDialog dialog = new WriterDialog(true);
-        dialog.setVisible(true);
-        if (!dialog.getTranslate()) {
-            return null;
-        } else {
-            final Framework framework = Framework.getInstance();
-            final TaskManager taskManager = framework.getTaskManager();
+        final Framework framework = Framework.getInstance();
+        WriterDialog dialog = new WriterDialog(framework.getMainWindow(), true);
+        if (dialog.reveal()) {
             WorkspaceEntry we = framework.getWorkspaceEntry(me);
             File inputFile = dialog.getFile();
             dotLayout = dialog.getDotLayoutState();
             PlatoTask task = new PlatoTask(inputFile, dialog.getIncludeList(), true, isSystem(dialog));
             String name = FileUtils.getFileNameWithoutExtension(inputFile);
             PlatoResultHandler resultHandler = new PlatoResultHandler(this, name, we, isSystem(dialog));
+            TaskManager taskManager = framework.getTaskManager();
             taskManager.queue(task, "Plato - Translating concepts to FST", resultHandler);
-            return null;
         }
+        return null;
     }
 
     public boolean getDotLayout() {

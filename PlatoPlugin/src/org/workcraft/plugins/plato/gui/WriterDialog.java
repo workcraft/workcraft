@@ -1,34 +1,17 @@
 package org.workcraft.plugins.plato.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.util.Scanner;
-
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.KeyStroke;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.GuiUtils;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.io.*;
+import java.util.Scanner;
 
 @SuppressWarnings("serial")
 public class WriterDialog extends JDialog {
@@ -38,12 +21,13 @@ public class WriterDialog extends JDialog {
     private final JPanel content, btnPanel;
     private JTextArea conceptsText;
     private JCheckBox dotLayoutCheckBox;
-    private boolean changed = false, translate = false;
+    private boolean changed = false;
     private final boolean fst;
     private static DefaultListModel<String> includeList = new DefaultListModel<String>();
+    private boolean modalResult;
 
-    public WriterDialog(boolean fst) {
-        super(Framework.getInstance().getMainWindow(), "Write and translate Concepts", ModalityType.APPLICATION_MODAL);
+    public WriterDialog(Window owner, boolean fst) {
+        super(owner, "Write and translate Concepts", ModalityType.APPLICATION_MODAL);
 
         this.fst = fst;
 
@@ -66,8 +50,7 @@ public class WriterDialog extends JDialog {
         setContentPane(content);
         setMinimumSize(new Dimension(1000, 500));
         pack();
-        this.setLocationRelativeTo(Framework.getInstance().getMainWindow());
-
+        setLocationRelativeTo(owner);
     }
 
     private void createScrollPane() {
@@ -106,7 +89,6 @@ public class WriterDialog extends JDialog {
         });
 
         JScrollPane scrollPane = new JScrollPane(conceptsText);
-
         content.add(scrollPane, BorderLayout.CENTER);
     }
 
@@ -198,12 +180,12 @@ public class WriterDialog extends JDialog {
         JPanel finalBtnPanel = new JPanel();
 
         translateBtn.addActionListener(event -> {
-            translate = true;
+            modalResult = true;
             setVisible(false);
         });
 
         cancelBtn.addActionListener(event -> {
-            translate = false;
+            modalResult = false;
             setVisible(false);
         });
 
@@ -256,10 +238,6 @@ public class WriterDialog extends JDialog {
         return fileText == "" ? "" : fileText;
     }
 
-    public boolean getTranslate() {
-        return translate;
-    }
-
     public File getFile() {
         if (lastFileUsed != null && !changed) {
             return lastFileUsed;
@@ -293,6 +271,11 @@ public class WriterDialog extends JDialog {
             return true;
         }
         return false;
+    }
+
+    public boolean reveal() {
+        setVisible(true);
+        return modalResult;
     }
 
 }

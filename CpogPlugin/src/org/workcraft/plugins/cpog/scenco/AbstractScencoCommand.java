@@ -1,7 +1,5 @@
 package org.workcraft.plugins.cpog.scenco;
 
-import java.awt.Window;
-
 import org.workcraft.Framework;
 import org.workcraft.commands.Command;
 import org.workcraft.gui.MainWindow;
@@ -11,10 +9,11 @@ import org.workcraft.plugins.cpog.tasks.ScencoResultHandler;
 import org.workcraft.plugins.cpog.tasks.ScencoSolver;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.utils.GuiUtils;
 import org.workcraft.utils.DialogUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
+import java.awt.*;
 
 public abstract class AbstractScencoCommand implements Command {
 
@@ -38,9 +37,7 @@ public abstract class AbstractScencoCommand implements Command {
             DialogUtils.showError(ScencoSolver.MSG_TOO_MANY_SCENARIOS);
         } else {
             AbstractScencoDialog dialog = createDialog(mainWindow, we);
-            GuiUtils.centerToParent(dialog, mainWindow);
-            dialog.setVisible(true);
-            if (dialog.isDone()) {
+            if (dialog.reveal()) {
                 final ScencoSolver solver = new ScencoSolver(dialog.getSettings(), we);
                 final ScencoExternalToolTask scencoTask = new ScencoExternalToolTask(we, solver);
                 final ScencoResultHandler resultScenco = new ScencoResultHandler(scencoTask);

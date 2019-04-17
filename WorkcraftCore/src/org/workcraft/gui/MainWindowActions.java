@@ -10,7 +10,6 @@ import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
 import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.FileUtils;
-import org.workcraft.utils.GuiUtils;
 import org.workcraft.utils.LogUtils;
 
 import javax.swing.*;
@@ -635,9 +634,7 @@ public class MainWindowActions {
         public void run() {
             final Framework framework = Framework.getInstance();
             final MainWindow mainWindow = framework.getMainWindow();
-            final AboutDialog about = new AboutDialog(mainWindow);
-            GuiUtils.centerToParent(about, mainWindow);
-            about.setVisible(true);
+            new AboutDialog(mainWindow).reveal();
         }
     };
 

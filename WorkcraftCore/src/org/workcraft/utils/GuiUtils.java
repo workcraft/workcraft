@@ -46,33 +46,11 @@ public class GuiUtils {
         return result;
     }
 
-    public static void centerToParent(Window frame, Window parent) {
-        if ((frame != null) && (parent != null)) {
-            Dimension parentSize = parent.getSize();
-            Dimension mySize = frame.getSize();
-            Point q = parent.getLocationOnScreen();
-            int x = ((parentSize.width - mySize.width) / 2) + q.x;
-            int y = ((parentSize.height - mySize.height) / 2) + q.y;
-            frame.setLocation(x, y);
-        }
-    }
-
     public static void centerAndSizeToParent(Window frame, Window parent) {
         if ((frame != null) && (parent != null)) {
             Dimension parentSize = parent.getSize();
             frame.setSize(2 * parentSize.width / 3, 2 * parentSize.height / 3);
-            centerToParent(frame, parent);
-        }
-    }
-
-    public static void centerToParent(JComponent frame, Window parent) {
-        if ((frame != null) && (parent != null)) {
-            Dimension parentSize = parent.getSize();
-            Dimension mySize = frame.getSize();
-            Point q = parent.getLocationOnScreen();
-            int x = ((parentSize.width - mySize.width) / 2) + q.x;
-            int y = ((parentSize.height - mySize.height) / 2) + q.y;
-            frame.setLocation(x, y);
+            frame.setLocationRelativeTo(parent);
         }
     }
 

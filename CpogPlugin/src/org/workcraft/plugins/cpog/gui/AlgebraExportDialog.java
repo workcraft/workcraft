@@ -1,20 +1,12 @@
 package org.workcraft.plugins.cpog.gui;
 
-import java.awt.GridLayout;
-import java.awt.event.KeyEvent;
-import java.io.File;
-
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-
 import org.workcraft.Framework;
 import org.workcraft.utils.GuiUtils;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.io.File;
 
 @SuppressWarnings("serial")
 public class AlgebraExportDialog extends JDialog {
@@ -22,7 +14,7 @@ public class AlgebraExportDialog extends JDialog {
     private final JTextField filePath;
     private final JButton selectFileBtn;
     private final JRadioButton pasteRB, exportRB;
-    private Boolean okClicked;
+    private boolean modalResult;
 
     public AlgebraExportDialog() {
         super(Framework.getInstance().getMainWindow(),
@@ -76,12 +68,12 @@ public class AlgebraExportDialog extends JDialog {
     }
 
     private void actionOk() {
-        okClicked = true;
+        modalResult = true;
         setVisible(false);
     }
 
     private void actionCancel() {
-        okClicked = false;
+        modalResult = false;
         setVisible(false);
     }
 
@@ -112,10 +104,6 @@ public class AlgebraExportDialog extends JDialog {
         }
     }
 
-    public Boolean getOK() {
-        return okClicked;
-    }
-
     public Boolean getPaste() {
         return pasteRB.isSelected();
     }
@@ -127,4 +115,10 @@ public class AlgebraExportDialog extends JDialog {
     public String getFilePath() {
         return filePath.getText();
     }
+
+    public boolean reveal() {
+        setVisible(true);
+        return modalResult;
+    }
+
 }

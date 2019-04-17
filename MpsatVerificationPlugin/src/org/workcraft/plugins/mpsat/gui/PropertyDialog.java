@@ -1,10 +1,21 @@
 package org.workcraft.plugins.mpsat.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Window;
+import info.clearthought.layout.TableLayout;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.plugins.mpsat.MpsatPresetManager;
+import org.workcraft.plugins.mpsat.VerificationMode;
+import org.workcraft.plugins.mpsat.VerificationParameters;
+import org.workcraft.plugins.mpsat.VerificationParameters.SolutionMode;
+import org.workcraft.presets.Preset;
+import org.workcraft.presets.PresetManagerPanel;
+import org.workcraft.presets.SettingsToControlsMapper;
+import org.workcraft.shared.IntDocument;
+import org.workcraft.utils.DesktopApi;
+import org.workcraft.utils.GuiUtils;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -12,38 +23,11 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-
-import org.workcraft.dom.hierarchy.NamespaceHelper;
-import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.utils.DesktopApi;
-import org.workcraft.plugins.mpsat.VerificationMode;
-import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.VerificationParameters.SolutionMode;
-import org.workcraft.plugins.mpsat.MpsatPresetManager;
-import org.workcraft.presets.PresetManagerPanel;
-import org.workcraft.presets.Preset;
-import org.workcraft.presets.SettingsToControlsMapper;
-import org.workcraft.utils.GuiUtils;
-import org.workcraft.shared.IntDocument;
-
-import info.clearthought.layout.TableLayout;
-
 @SuppressWarnings("serial")
 public class PropertyDialog extends JDialog {
     private static final int DEFAULT_ALL_SOLUTION_LIMIT = 10;
 
+    private final MpsatPresetManager presetManager;
     private JPanel optionsPanel, predicatePanel, buttonsPanel;
     private PresetManagerPanel<VerificationParameters> presetPanel;
     private JComboBox<VerificationMode> modeCombo;
@@ -51,9 +35,7 @@ public class PropertyDialog extends JDialog {
     private JTextArea propertyText;
     private JRadioButton allSolutionsRadioButton, firstSolutionRadioButton, cheapestSolutionRadioButton;
     private JRadioButton satisfiebleRadioButton, unsatisfiebleRadioButton;
-    private final MpsatPresetManager presetManager;
-
-    private int modalResult = 0;
+    private boolean modalResult;
 
     public PropertyDialog(Window owner, MpsatPresetManager presetManager) {
         super(owner, "Custom property", ModalityType.APPLICATION_MODAL);
@@ -86,7 +68,7 @@ public class PropertyDialog extends JDialog {
         presetPanel.selectFirst();
 
         getRootPane().registerKeyboardAction(event -> {
-            modalResult = 0;
+            modalResult = false;
             setVisible(false);
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 
@@ -95,8 +77,10 @@ public class PropertyDialog extends JDialog {
                 propertyText.requestFocus();
             }
         });
+
         setMinimumSize(new Dimension(450, 450));
         pack();
+        setLocationRelativeTo(owner);
     }
 
     private void createPresetPanel() {
@@ -221,13 +205,13 @@ public class PropertyDialog extends JDialog {
 
         JButton runButton = GuiUtils.createDialogButton("Run");
         runButton.addActionListener(event -> {
-            modalResult = 1;
+            modalResult = true;
             setVisible(false);
         });
 
         JButton cancelButton = GuiUtils.createDialogButton("Cancel");
         cancelButton.addActionListener(event -> {
-            modalResult = 0;
+            modalResult = false;
             setVisible(false);
         });
 
@@ -239,7 +223,8 @@ public class PropertyDialog extends JDialog {
         buttonsPanel.add(helpButton);
     }
 
-    public int getModalResult() {
+    public boolean reveal() {
+        setVisible(true);
         return modalResult;
     }
 

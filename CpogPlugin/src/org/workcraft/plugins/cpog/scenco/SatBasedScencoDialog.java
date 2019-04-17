@@ -1,34 +1,19 @@
 package org.workcraft.plugins.cpog.scenco;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Window;
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-
+import info.clearthought.layout.TableLayout;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.layouts.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
-import org.workcraft.utils.GuiUtils;
 import org.workcraft.shared.IntDocument;
+import org.workcraft.utils.GuiUtils;
 
-import info.clearthought.layout.TableLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 @SuppressWarnings("serial")
 public class SatBasedScencoDialog extends AbstractScencoDialog {
@@ -37,7 +22,6 @@ public class SatBasedScencoDialog extends AbstractScencoDialog {
     private JComboBox<String> optimiseBox;
     private JPanel generationPanel, buttonsPanel, standardPanel;
     private JTextField bitsText, circuitSizeText;
-    JScrollPane scrollPane;
     private int m, bits;
 
     public SatBasedScencoDialog(Window owner, String title, EncoderSettings settings, VisualCpog model) {
@@ -69,6 +53,7 @@ public class SatBasedScencoDialog extends AbstractScencoDialog {
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         pack();
+        setLocationRelativeTo(owner);
     }
 
     private void createStandardPanel() {
@@ -162,7 +147,7 @@ public class SatBasedScencoDialog extends AbstractScencoDialog {
         EncoderSettings settings = getSettings();
 
         // abc disabled
-        settings.setAbcFlag(abcCheck.isSelected() ? true : false);
+        settings.setAbcFlag(abcCheck.isSelected());
 
         // speed-up mode selection
         settings.setEffort(true);
@@ -175,7 +160,7 @@ public class SatBasedScencoDialog extends AbstractScencoDialog {
         settings.setCircuitSize(Integer.valueOf(circuitSizeText.getText()));
 
         // optimise for option
-        settings.setCpogSize(optimiseBox.getSelectedIndex() == 0 ? false : true);
+        settings.setCpogSize(optimiseBox.getSelectedIndex() != 0);
 
         // verbose mode
         settings.setVerboseMode(verboseModeCheck.isSelected());
@@ -189,7 +174,6 @@ public class SatBasedScencoDialog extends AbstractScencoDialog {
         // custom encodings
         settings.setNumPO(m);
         settings.setCustomEncMode(true);
-        setDone();
     }
 
 }

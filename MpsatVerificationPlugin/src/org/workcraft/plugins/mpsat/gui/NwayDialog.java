@@ -18,15 +18,16 @@ import java.util.Set;
 @SuppressWarnings("serial")
 public class NwayDialog extends JDialog {
 
-    private boolean result;
     private WorkspaceChooser chooser;
     private Set<Path<String>> sourcePaths;
+    private boolean modalResult;
 
     public NwayDialog(Window owner) {
         super(owner, "N-way conformation", ModalityType.DOCUMENT_MODAL);
         setContentPane(createContents());
         setMinimumSize(new Dimension(500, 300));
         pack();
+        setLocationRelativeTo(owner);
     }
 
     private JPanel createContents() {
@@ -67,13 +68,13 @@ public class NwayDialog extends JDialog {
     }
 
     private void actionRun() {
-        result = true;
+        modalResult = true;
         sourcePaths = chooser.getCheckedNodes();
         setVisible(false);
     }
 
     private void actionCancel() {
-        result = false;
+        modalResult = false;
         setVisible(false);
     }
 
@@ -92,9 +93,9 @@ public class NwayDialog extends JDialog {
         return sourcePaths;
     }
 
-    public boolean run() {
+    public boolean reveal() {
         setVisible(true);
-        return result;
+        return modalResult;
     }
 
 }

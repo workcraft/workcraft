@@ -5,8 +5,8 @@ import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.StructureVerifySettings;
 import org.workcraft.utils.GuiUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -32,8 +32,8 @@ public class StructureVerifyDialog extends JDialog {
     protected Font font = new Font("Arial", Font.PLAIN, 12);
     protected Dimension buttonSize = new Dimension(100, 25);
     protected Dimension listScrollerSize = new Dimension(350, 220);
-    protected int run = 0;
-    protected Window owner;
+
+    protected boolean modalResult;
 
     class TypeMode {
         public int value;
@@ -249,14 +249,14 @@ public class StructureVerifyDialog extends JDialog {
         runButton = new JButton("Run");
         runButton.setPreferredSize(buttonSize);
         runButton.addActionListener(event -> {
-            run = 1;
+            modalResult = true;
             setVisible(false);
         });
 
         cancelButton = new JButton("Cancel");
         cancelButton.setPreferredSize(buttonSize);
         cancelButton.addActionListener(event -> {
-            run = 2;
+            modalResult = false;
             setVisible(false);
         });
 
@@ -265,7 +265,14 @@ public class StructureVerifyDialog extends JDialog {
         confirmButtonsPanel.add(runButton);
     }
 
-    protected void createInterface() {
+    public StructureVerifyDialog(Window owner, String title, ModalityType modalityType, WorkspaceEntry we) {
+        super(owner, title, modalityType);
+        this.we = we;
+        net = WorkspaceUtils.getAs(we, SON.class);
+        createInterface(owner);
+    }
+
+    protected void createInterface(Window owner) {
         createTypePanel();
         createSelectionPanel();
         createButtonsPanel();
@@ -284,16 +291,7 @@ public class StructureVerifyDialog extends JDialog {
         add(content);
         setResizable(false);
         pack();
-    }
-
-    public StructureVerifyDialog(Window owner, String title, ModalityType modalityType, WorkspaceEntry we) {
-        //super(owner, "Structure Verification Setting", ModalityType.APPLICATION_MODAL);
-        super(owner, title, modalityType);
-        this.we = we;
-        net = WorkspaceUtils.getAs(we, SON.class);
-        this.owner = owner;
-
-        createInterface();
+        setLocationRelativeTo(owner);
     }
 
     protected TitledBorder createTitileBorder(String title) {
@@ -310,10 +308,6 @@ public class StructureVerifyDialog extends JDialog {
         return "Group selection";
     }
 
-    public SON getSONModel() {
-        return this.net;
-    }
-
     public ArrayList<ONGroup> getSelectedGroups() {
         return selectedGroups;
     }
@@ -327,15 +321,13 @@ public class StructureVerifyDialog extends JDialog {
                 getSelectedGroups(), typeCombo.getSelectedIndex());
     }
 
-    public int getRun() {
-        return run;
-    }
-
     public Dimension getListScrollerSize() {
         return listScrollerSize;
     }
 
-    public Font getPlainFont() {
-        return font;
+    public boolean reveal() {
+        setVisible(true);
+        return modalResult;
     }
+
 }

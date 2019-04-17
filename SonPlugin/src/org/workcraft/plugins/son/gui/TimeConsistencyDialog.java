@@ -9,8 +9,8 @@ import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.plugins.son.util.ScenarioRef;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -345,7 +345,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
         runButton.setPreferredSize(buttonSize);
         runButton.addActionListener(event -> {
             if (defaultDurationPanel.isValidDuration()) {
-                run = 1;
+                modalResult = true;
                 setVisible(false);
             } else {
                 defaultDurationPanel.getMin().setForeground(Color.RED);
@@ -356,7 +356,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
         cancelButton = new JButton("Cancel");
         cancelButton.setPreferredSize(buttonSize);
         cancelButton.addActionListener(event -> {
-            run = 2;
+            modalResult = false;
             setVisible(false);
         });
 
@@ -367,7 +367,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
     }
 
     @Override
-    protected void createInterface() {
+    protected void createInterface(Window owner) {
         createSelectionPanel();
         createSettingPanel();
         createButtonsPanel();
@@ -390,9 +390,10 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
 
         updateCausalConsistencyPanel(true);
 
-        this.add(content);
-        this.setResizable(false);
-        this.pack();
+        add(content);
+        setResizable(false);
+        pack();
+        setLocationRelativeTo(owner);
     }
 
     public TimeConsistencyDialog(Window owner, WorkspaceEntry we) {
@@ -453,4 +454,5 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
                 granularityPanel.getSelection(), causalConsistency.isSelected(), getDefaultDuration(),
                 causalHighlight.isSelected());
     }
+
 }

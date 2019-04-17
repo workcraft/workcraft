@@ -10,9 +10,8 @@ import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.gui.StructureVerifyDialog;
 import org.workcraft.plugins.son.tasks.SONMainTask;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.utils.GuiUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class StructurePropertyCheckerCommand implements Command {
 
@@ -40,10 +39,7 @@ public class StructurePropertyCheckerCommand implements Command {
 
         net.refreshAllColor();
         StructureVerifyDialog dialog = new StructureVerifyDialog(mainWindow, we);
-        GuiUtils.centerToParent(dialog, mainWindow);
-        dialog.setVisible(true);
-
-        if (dialog.getRun() == 1) {
+        if (dialog.reveal()) {
             OutputRedirect.redirect(30, 40, "Structure Verification Result");
             BlockConnector.blockBoundingConnector(visualNet);
             SONMainTask sonTask = new SONMainTask(dialog.getSettings(), we);

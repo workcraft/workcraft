@@ -41,6 +41,8 @@ public class SettingsEditorDialog extends JDialog {
     private DefaultMutableTreeNode sectionRoot;
     private JTree sectionTree;
 
+    private boolean modalResult;
+
     static class SettingsPageNode {
         private final Settings page;
 
@@ -254,11 +256,13 @@ public class SettingsEditorDialog extends JDialog {
     }
 
     private void actionOk() {
+        modalResult = true;
         setObject(null);
         setVisible(false);
     }
 
     private void actionCancel() {
+        modalResult = false;
         if ((currentPage != null) && (currentConfig != null)) {
             currentPage.load(currentConfig);
         }
@@ -277,6 +281,11 @@ public class SettingsEditorDialog extends JDialog {
                 framework.resetConfig();
             }
         }
+    }
+
+    public boolean reveal() {
+        setVisible(true);
+        return modalResult;
     }
 
 }

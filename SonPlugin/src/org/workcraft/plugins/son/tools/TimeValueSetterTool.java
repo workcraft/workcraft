@@ -114,13 +114,11 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
             editor.requestFocus();
             editor.getWorkspaceEntry().saveMemento();
             Granularity g = granularityPanel.getSelection();
-            TimeEstimatorDialog estimator = new TimeEstimatorDialog(editor, settings, selection, g);
             visualNet.setForegroundColor(selection, selectedColor);
             final Framework framework = Framework.getInstance();
             final MainWindow mainWindow = framework.getMainWindow();
-            GuiUtils.centerToParent(estimator, mainWindow);
-            estimator.setVisible(true);
-            if (estimator.getRun() == 1) {
+            TimeEstimatorDialog estimator = new TimeEstimatorDialog(mainWindow, editor, settings, selection, g);
+            if (estimator.reveal()) {
                 updateTimePanel(editor, visualSelection);
             }
         });

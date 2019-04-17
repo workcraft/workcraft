@@ -1,36 +1,24 @@
 package org.workcraft.plugins.cpog.gui;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.FileNotFoundException;
-
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-
 import org.workcraft.Framework;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.GuiUtils;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 @SuppressWarnings("serial")
 public class PGMinerImportDialog extends JDialog {
 
     private final JTextField filePath;
     private final JCheckBox extractConcurrencyCB, splitCB;
-    private boolean canImport;
+    private boolean modalResult;
 
     public PGMinerImportDialog() {
         super(Framework.getInstance().getMainWindow(), "Import event log", ModalityType.APPLICATION_MODAL);
-
-        canImport = false;
 
         filePath = new JTextField("", 25);
         filePath.setEditable(true);
@@ -106,19 +94,19 @@ public class PGMinerImportDialog extends JDialog {
         }
     }
 
-    private void actionCancel() {
-        canImport = false;
-        setVisible(false);
-    }
-
     private void actionImport() {
         File eventLog = new File(filePath.getText());
         if (!eventLog.exists()) {
             DialogUtils.showError("The event log chosen does not exist");
         } else {
-            canImport = true;
+            modalResult = true;
             setVisible(false);
         }
+    }
+
+    private void actionCancel() {
+        modalResult = false;
+        setVisible(false);
     }
 
     public boolean getExtractConcurrency() {
@@ -133,8 +121,9 @@ public class PGMinerImportDialog extends JDialog {
         return filePath.getText();
     }
 
-    public boolean getCanImport() {
-        return canImport;
+    public boolean reveal() {
+        setVisible(true);
+        return modalResult;
     }
 
 }

@@ -7,9 +7,9 @@ import org.workcraft.gui.layouts.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
+import org.workcraft.shared.IntDocument;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.GuiUtils;
-import org.workcraft.shared.IntDocument;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -28,7 +28,6 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
     private JPanel generationPanel, buttonsPanel, customPanel, standardPanel;
     private JTextField numberOfSolutionsText, bitsText, circuitSizeText;
     private JTable encodingTable;
-    JScrollPane scrollPane;
     private final int m;
     private int bits;
     private JRadioButton normal, fast;
@@ -85,10 +84,12 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         if (mode != 1) {
-            sizeWindow(570, 570, 200, 100);
+            setMinimumSize(new Dimension(570, 570));
         } else {
-            sizeWindow(570, 530, 200, 100);
+            setMinimumSize(new Dimension(570, 530));
         }
+        pack();
+        setLocationRelativeTo(owner);
     }
 
     private void createCustomPanel(ArrayList<VisualTransformableNode> scenarios) {
@@ -102,7 +103,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
         customEncodings = new JCheckBox("", false);
         customEncLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                customEncodings.setSelected(customEncodings.isSelected() ? false : true);
+                customEncodings.setSelected(!customEncodings.isSelected());
                 actionCustomEncoding();
             }
         });
@@ -157,7 +158,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
         DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
         leftRenderer.setHorizontalAlignment(JLabel.LEFT);
         encodingTable.getColumnModel().getColumn(0).setCellRenderer(leftRenderer);
-        scrollPane = new JScrollPane(encodingTable);
+        JScrollPane scrollPane = new JScrollPane(encodingTable);
 
         customPanel = new JPanel(new BorderLayout());
         customPanel.setBorder(SizeHelper.getTitledBorder("Custom encoding"));
@@ -209,7 +210,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
 
         // OPTIMISE FOR MICROCONTROLLER/CPOG SIZE
         JLabel optimiseLabel = new JLabel(ScencoHelper.textOptimiseForLabel);
-        optimiseBox = new JComboBox<String>();
+        optimiseBox = new JComboBox<>();
         optimiseBox.setEditable(false);
         optimiseBox.setPreferredSize(ScencoHelper.dimensionOptimiseForBox);
         optimiseBox.addItem(ScencoHelper.textOptimiseForFirstElement);
@@ -222,7 +223,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
         JLabel abcLabel = new JLabel(ScencoHelper.textAbcLabel);
         abcLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                abcCheck.setSelected(abcCheck.isSelected() ? false : true);
+                abcCheck.setSelected(!abcCheck.isSelected());
             }
         });
 
@@ -231,8 +232,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
         verboseModeCheck = new JCheckBox("", false);
         verboseModeLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                verboseModeCheck.setSelected(verboseModeCheck.isSelected() ? false
-                        : true);
+                verboseModeCheck.setSelected(!verboseModeCheck.isSelected());
             }
         });
 
@@ -301,14 +301,14 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
         EncoderSettings settings = getSettings();
 
         // abc disabled
-        settings.setAbcFlag(abcCheck.isSelected() ? true : false);
+        settings.setAbcFlag(abcCheck.isSelected());
 
         // speed-up mode selection
-        settings.setEffort(fast.isSelected() ? false : true);
+        settings.setEffort(!fast.isSelected());
         settings.setCostFunc(false);
 
         // optimise for option
-        settings.setCpogSize(optimiseBox.getSelectedIndex() == 0 ? false : true);
+        settings.setCpogSize(optimiseBox.getSelectedIndex() != 0);
 
         // verbose mode
         settings.setVerboseMode(verboseModeCheck.isSelected());
@@ -344,12 +344,6 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
             settings.setBits(bits + 1);
             settings.setCustomEncMode(false);
         }
-        setDone();
-    }
-
-    private void sizeWindow(int width, int height, int row1, int row2) {
-        setMinimumSize(new Dimension(width, height));
-        pack();
     }
 
     private void modifyCircuitSize(boolean b) {

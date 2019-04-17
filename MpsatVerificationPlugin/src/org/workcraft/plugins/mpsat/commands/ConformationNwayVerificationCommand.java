@@ -5,18 +5,17 @@ import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.mpsat.gui.NwayDialog;
+import org.workcraft.plugins.mpsat.tasks.ConformationNwayTask;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
-import org.workcraft.plugins.mpsat.tasks.ConformationNwayTask;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,8 +73,7 @@ public class ConformationNwayVerificationCommand extends AbstractVerificationCom
             MainWindow mainWindow = framework.getMainWindow();
             NwayDialog dialog = new NwayDialog(mainWindow);
             dialog.checkAll();
-            GuiUtils.centerToParent(dialog, mainWindow);
-            if (!dialog.run()) {
+            if (!dialog.reveal()) {
                 return null;
             }
 
