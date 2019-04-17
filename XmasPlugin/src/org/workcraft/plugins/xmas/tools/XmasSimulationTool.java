@@ -189,11 +189,11 @@ public class XmasSimulationTool extends StgSimulationTool {
         return new Decoration() {
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonDecorationSettings.getExcitedComponentColor() : null;
+                return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
             }
             @Override
             public Color getBackground() {
-                Color  colorisation = isSuggested ? CommonDecorationSettings.getExcitedComponentColor() : null;
+                Color  colorisation = isSuggested ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
                 Color contactColor = isReady ? (isInput ? COLOR_CONTACT_TRDY : COLOR_CONTACT_IRDY) : COLOR_CONTACT_NOT_READY;
                 return Coloriser.colorise(contactColor, colorisation);
             }
@@ -243,11 +243,11 @@ public class XmasSimulationTool extends StgSimulationTool {
             }
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonDecorationSettings.getExcitedComponentColor() : null;
+                return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
             }
             @Override
             public Color getBackground() {
-                return isSuggested ? CommonDecorationSettings.getSuggestedComponentColor() : null;
+                return isSuggested ? CommonDecorationSettings.getSimulationSuggestedComponentColor() : null;
             }
         };
     }
@@ -266,11 +266,11 @@ public class XmasSimulationTool extends StgSimulationTool {
             }
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonDecorationSettings.getExcitedComponentColor() : null;
+                return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
             }
             @Override
             public Color getBackground() {
-                return isSuggested ? CommonDecorationSettings.getSuggestedComponentColor() : null;
+                return isSuggested ? CommonDecorationSettings.getSimulationSuggestedComponentColor() : null;
             }
         };
     }
@@ -289,11 +289,11 @@ public class XmasSimulationTool extends StgSimulationTool {
             }
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonDecorationSettings.getExcitedComponentColor() : null;
+                return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
             }
             @Override
             public Color getBackground() {
-                return isSuggested ? CommonDecorationSettings.getSuggestedComponentColor() : null;
+                return isSuggested ? CommonDecorationSettings.getSimulationSuggestedComponentColor() : null;
             }
         };
     }

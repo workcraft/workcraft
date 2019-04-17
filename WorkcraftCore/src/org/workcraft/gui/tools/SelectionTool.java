@@ -602,7 +602,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
         if ((dragState == DrugState.SELECT) && (selectionBox != null)) {
             Viewport viewport = editor.getViewport();
             g.setStroke(new BasicStroke((float) viewport.pixelSizeInUserSpace().getX()));
-            Color borderColor = CommonDecorationSettings.getSelectedComponentColor();
+            Color borderColor = CommonDecorationSettings.getSelectionColor();
             Color fillColor = new Color(borderColor.getRed(), borderColor.getGreen(), borderColor.getBlue(), 35);
             g.setColor(fillColor);
             g.fill(selectionBox);

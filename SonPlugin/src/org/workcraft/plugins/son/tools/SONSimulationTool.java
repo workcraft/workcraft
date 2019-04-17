@@ -823,7 +823,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
 
         for (TransitionNode e : enabled) {
             //e.setFillColor(CommonSimulationSettings.getEnabledForegroundColor());
-            e.setForegroundColor(CommonDecorationSettings.getExcitedComponentColor());
+            e.setForegroundColor(CommonDecorationSettings.getSimulationExcitedComponentColor());
         }
 
         StepRef refStep = null;

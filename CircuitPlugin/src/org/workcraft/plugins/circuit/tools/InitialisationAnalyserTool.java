@@ -9,6 +9,7 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.tools.*;
+import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
 import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.InitialisationState;
@@ -45,9 +46,9 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     private JPanel getLegendControlsPanel(final GraphEditor editor) {
         ColorLegendTable colorLegendTable = new ColorLegendTable(Arrays.asList(
                 Pair.of(CommonVisualSettings.getFillColor(), "Undefined initial state"),
-                Pair.of(CircuitSettings.getConflictInitGateColor(), "Conflict of initialisation"),
-                Pair.of(CircuitSettings.getForcedInitGateColor(), "Forced initial state"),
-                Pair.of(CircuitSettings.getPropagatedInitGateColor(), "Propagated initial state")
+                Pair.of(CommonDecorationSettings.getAnalysisProblematicComponentColor(), "Conflict of initialisation"),
+                Pair.of(CommonDecorationSettings.getAnalysisFixerComponentColor(), "Forced initial state"),
+                Pair.of(CommonDecorationSettings.getAnalysisImmaculateComponentColor(), "Propagated initial state")
         ));
 
         JPanel legendPanel = new JPanel(new BorderLayout());
@@ -290,9 +291,9 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
             initialised &= initState.isHigh(outputContact) || initState.isLow(outputContact);
             initialisationConflict |= initState.isError(outputContact);
         }
-        final Color color = forcedInit ? CircuitSettings.getForcedInitGateColor()
-                : initialisationConflict ? CircuitSettings.getConflictInitGateColor()
-                : initialised ? CircuitSettings.getPropagatedInitGateColor() : null;
+        final Color color = forcedInit ? CommonDecorationSettings.getAnalysisFixerComponentColor()
+                : initialisationConflict ? CommonDecorationSettings.getAnalysisProblematicComponentColor()
+                : initialised ? CommonDecorationSettings.getAnalysisImmaculateComponentColor() : null;
 
         return new Decoration() {
             @Override

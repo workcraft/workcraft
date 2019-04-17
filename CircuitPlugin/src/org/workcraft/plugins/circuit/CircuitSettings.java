@@ -60,13 +60,7 @@ public class CircuitSettings implements Settings {
     private static final String keyNorbData = prefix + ".norbData";
     private static final String keyMutexData = prefix + ".mutexData";
     private static final String keyBusSuffix = prefix + ".busSuffix";
-    private static final String keyConflictInitGateColor = prefix + ".conflictInitGateColor";
-    private static final String keyForcedInitGateColor = prefix + ".forcedInitGateColor";
-    private static final String keyPropagatedInitGateColor = prefix + ".propagatedInitGateColor";
     private static final String keyResetName = prefix + ".resetName";
-    private static final String keyWithinCycleGateColor = prefix + ".withinCycleGateColor";
-    private static final String keyBreakCycleGateColor = prefix + ".breakCycleGateColor";
-    private static final String keyOutsideCycleGateColor = prefix + ".outsideCycleGateColor";
     private static final String keyScanSuffix = prefix + ".scanSuffix";
     private static final String keyScanPorts = prefix + ".scanPorts";
     private static final String keyScanPins = prefix + ".scanPins";
@@ -89,13 +83,7 @@ public class CircuitSettings implements Settings {
     private static final String defaultNorbData = "NOR2B (AN, B, ON)";
     private static final String defaultMutexData = "MUTEX ((r1, g1), (r2, g2))";
     private static final String defaultBusSuffix = "__$";
-    private static final Color defaultConflictInitGateColor = new Color(1.0f, 0.4f, 1.0f);
-    private static final Color defaultForcedInitGateColor = new Color(1.0f, 0.8f, 0.0f);
-    private static final Color defaultPropagatedInitGateColor = new Color(0.4f, 1.0f, 0.4f);
     private static final String defaultResetName = "reset";
-    private static final Color defaultWithinCycleGateColor = new Color(1.0f, 0.4f, 1.0f);
-    private static final Color defaultBreakCycleGateColor = new Color(1.0f, 0.8f, 0.0f);
-    private static final Color defaultOutsideCycleGateColor = new Color(0.4f, 1.0f, 0.4f);
     private static final String defaultScanSuffix = "_SCAN";
     private static final String defaultScanPorts = "scanin, clock";
     private static final String defaultScanPins = "SI, CK";
@@ -118,13 +106,7 @@ public class CircuitSettings implements Settings {
     private static String norbData = defaultNorbData;
     private static String mutexData = defaultMutexData;
     private static String busSuffix = defaultBusSuffix;
-    private static Color conflictInitGateColor = defaultConflictInitGateColor;
-    private static Color forcedInitGateColor = defaultForcedInitGateColor;
-    private static Color propagatedInitGateColor = defaultPropagatedInitGateColor;
     private static String resetName = defaultResetName;
-    private static Color withinCycleGateColor = defaultWithinCycleGateColor;
-    private static Color breakCycleGateColor = defaultBreakCycleGateColor;
-    private static Color outsideCycleGateColor = defaultOutsideCycleGateColor;
     private static String scanSuffix = defaultScanSuffix;
     private static String scanPorts = defaultScanPorts;
     private static String scanPins = defaultScanPins;
@@ -390,42 +372,6 @@ public class CircuitSettings implements Settings {
             }
         });
 
-        properties.add(new PropertyDeclaration<CircuitSettings, Color>(
-                this, "Initialisation analyser: Conflict of initialisation", Color.class) {
-            @Override
-            public void setter(CircuitSettings object, Color value) {
-                setConflictInitGateColor(value);
-            }
-            @Override
-            public Color getter(CircuitSettings object) {
-                return getConflictInitGateColor();
-            }
-        });
-
-        properties.add(new PropertyDeclaration<CircuitSettings, Color>(
-                this, "Initialisation analyser: Forced initial state", Color.class) {
-            @Override
-            public void setter(CircuitSettings object, Color value) {
-                setForcedInitGateColor(value);
-            }
-            @Override
-            public Color getter(CircuitSettings object) {
-                return getForcedInitGateColor();
-            }
-        });
-
-        properties.add(new PropertyDeclaration<CircuitSettings, Color>(
-                this, "Initialisation analyser: Propagated initial state", Color.class) {
-            @Override
-            public void setter(CircuitSettings object, Color value) {
-                setPropagatedInitGateColor(value);
-            }
-            @Override
-            public Color getter(CircuitSettings object) {
-                return getPropagatedInitGateColor();
-            }
-        });
-
         properties.add(new PropertyDeclaration<CircuitSettings, String>(
                 this, "Reset port name", String.class) {
             @Override
@@ -435,42 +381,6 @@ public class CircuitSettings implements Settings {
             @Override
             public String getter(CircuitSettings object) {
                 return getResetName();
-            }
-        });
-
-        properties.add(new PropertyDeclaration<CircuitSettings, Color>(
-                this, "Cycle analyser: Within a cycle", Color.class) {
-            @Override
-            public void setter(CircuitSettings object, Color value) {
-                setWithinCycleGateColor(value);
-            }
-            @Override
-            public Color getter(CircuitSettings object) {
-                return getWithinCycleGateColor();
-            }
-        });
-
-        properties.add(new PropertyDeclaration<CircuitSettings, Color>(
-                this, "Cycle analyser: Path breaker", Color.class) {
-            @Override
-            public void setter(CircuitSettings object, Color value) {
-                setBreakCycleGateColor(value);
-            }
-            @Override
-            public Color getter(CircuitSettings object) {
-                return getBreakCycleGateColor();
-            }
-        });
-
-        properties.add(new PropertyDeclaration<CircuitSettings, Color>(
-                this, "Cycle analyser: Outside of all cycles", Color.class) {
-            @Override
-            public void setter(CircuitSettings object, Color value) {
-                setOutsideCycleGateColor(value);
-            }
-            @Override
-            public Color getter(CircuitSettings object) {
-                return getOutsideCycleGateColor();
             }
         });
 
@@ -554,13 +464,7 @@ public class CircuitSettings implements Settings {
         setNorbData(config.getString(keyNorbData, defaultNorbData));
         setMutexData(config.getString(keyMutexData, defaultMutexData));
         setBusSuffix(config.getString(keyBusSuffix, defaultBusSuffix));
-        setConflictInitGateColor(config.getColor(keyConflictInitGateColor, defaultConflictInitGateColor));
-        setForcedInitGateColor(config.getColor(keyForcedInitGateColor, defaultForcedInitGateColor));
-        setPropagatedInitGateColor(config.getColor(keyPropagatedInitGateColor, defaultPropagatedInitGateColor));
         setResetName(config.getString(keyResetName, defaultResetName));
-        setWithinCycleGateColor(config.getColor(keyWithinCycleGateColor, defaultWithinCycleGateColor));
-        setBreakCycleGateColor(config.getColor(keyBreakCycleGateColor, defaultBreakCycleGateColor));
-        setOutsideCycleGateColor(config.getColor(keyOutsideCycleGateColor, defaultOutsideCycleGateColor));
         setScanSuffix(config.getString(keyScanSuffix, defaultScanSuffix));
         setScanPorts(config.getString(keyScanPorts, defaultScanPorts));
         setScanPins(config.getString(keyScanPins, defaultScanPins));
@@ -586,13 +490,7 @@ public class CircuitSettings implements Settings {
         config.set(keyNorbData, getNorbData());
         config.set(keyMutexData, getMutexData());
         config.set(keyBusSuffix, getBusSuffix());
-        config.setColor(keyConflictInitGateColor, getConflictInitGateColor());
-        config.setColor(keyForcedInitGateColor, getForcedInitGateColor());
-        config.setColor(keyPropagatedInitGateColor, getPropagatedInitGateColor());
         config.set(keyResetName, getResetName());
-        config.setColor(keyWithinCycleGateColor, getWithinCycleGateColor());
-        config.setColor(keyBreakCycleGateColor, getBreakCycleGateColor());
-        config.setColor(keyOutsideCycleGateColor, getOutsideCycleGateColor());
         config.set(keyScanSuffix, getScanSuffix());
         config.set(keyScanPorts, getScanPorts());
         config.set(keyScanPins, getScanPins());
@@ -774,60 +672,12 @@ public class CircuitSettings implements Settings {
         busSuffix = value;
     }
 
-    public static Color getConflictInitGateColor() {
-        return conflictInitGateColor;
-    }
-
-    public static void setConflictInitGateColor(Color value) {
-        conflictInitGateColor = value;
-    }
-
-    public static Color getForcedInitGateColor() {
-        return forcedInitGateColor;
-    }
-
-    public static void setForcedInitGateColor(Color value) {
-        forcedInitGateColor = value;
-    }
-
-    public static Color getPropagatedInitGateColor() {
-        return propagatedInitGateColor;
-    }
-
-    public static void setPropagatedInitGateColor(Color value) {
-        propagatedInitGateColor = value;
-    }
-
     public static String getResetName() {
         return resetName;
     }
 
     public static void setResetName(String value) {
         resetName = value;
-    }
-
-    public static Color getWithinCycleGateColor() {
-        return withinCycleGateColor;
-    }
-
-    public static void setWithinCycleGateColor(Color value) {
-        withinCycleGateColor = value;
-    }
-
-    public static Color getOutsideCycleGateColor() {
-        return outsideCycleGateColor;
-    }
-
-    public static void setOutsideCycleGateColor(Color value) {
-        outsideCycleGateColor = value;
-    }
-
-    public static Color getBreakCycleGateColor() {
-        return breakCycleGateColor;
-    }
-
-    public static void setBreakCycleGateColor(Color value) {
-        breakCycleGateColor = value;
     }
 
     public static String getScanSuffix() {

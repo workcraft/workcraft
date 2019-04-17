@@ -168,12 +168,12 @@ public class WtgSimulationTool extends StgSimulationTool {
         return new Decoration() {
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonDecorationSettings.getExcitedComponentColor() : null;
+                return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
             }
 
             @Override
             public Color getBackground() {
-                return isSuggested ? CommonDecorationSettings.getSuggestedComponentColor() : null;
+                return isSuggested ? CommonDecorationSettings.getSimulationSuggestedComponentColor() : null;
             }
         };
     }
@@ -195,12 +195,12 @@ public class WtgSimulationTool extends StgSimulationTool {
         return new Decoration() {
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonDecorationSettings.getExcitedComponentColor() : null;
+                return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
             }
 
             @Override
             public Color getBackground() {
-                return isSuggested ? CommonDecorationSettings.getSuggestedComponentColor() : null;
+                return isSuggested ? CommonDecorationSettings.getSimulationSuggestedComponentColor() : null;
             }
         };
     }

@@ -806,7 +806,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         return new Decoration() {
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonDecorationSettings.getExcitedComponentColor() : null;
+                return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
             }
             @Override
             public Color getBackground() {
@@ -823,11 +823,11 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         return new Decoration() {
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonDecorationSettings.getExcitedComponentColor() : null;
+                return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
             }
             @Override
             public Color getBackground() {
-                return isSuggested ? CommonDecorationSettings.getSuggestedComponentColor() : null;
+                return isSuggested ? CommonDecorationSettings.getSimulationSuggestedComponentColor() : null;
             }
         };
     }

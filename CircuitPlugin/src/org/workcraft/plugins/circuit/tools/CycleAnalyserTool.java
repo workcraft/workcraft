@@ -13,6 +13,7 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.tools.*;
 import org.workcraft.interop.Format;
 import org.workcraft.interop.FormatFileFilter;
+import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.serialisation.PathbreakConstraintExporter;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
@@ -51,9 +52,9 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     private JPanel getLegendControlsPanel(final GraphEditor editor) {
         ColorLegendTable colorLegendTable = new ColorLegendTable(Arrays.asList(
-                Pair.of(CircuitSettings.getWithinCycleGateColor(), "Within a cycle"),
-                Pair.of(CircuitSettings.getBreakCycleGateColor(), "Path breaker"),
-                Pair.of(CircuitSettings.getOutsideCycleGateColor(), "Outside of all cycles")
+                Pair.of(CommonDecorationSettings.getAnalysisProblematicComponentColor(), "Within a cycle"),
+                Pair.of(CommonDecorationSettings.getAnalysisFixerComponentColor(), "Path breaker"),
+                Pair.of(CommonDecorationSettings.getAnalysisImmaculateComponentColor(), "Outside of all cycles")
         ));
 
         JPanel legendPanel = new JPanel(new BorderLayout());
@@ -294,9 +295,9 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private Decoration getContactDecoration(Contact contact) {
-        final Color color = contact.getPathBreaker() ? CircuitSettings.getBreakCycleGateColor()
-                : cycleContacts.contains(contact) ? CircuitSettings.getWithinCycleGateColor()
-                : contact.isPin() ? CircuitSettings.getOutsideCycleGateColor() : null;
+        final Color color = contact.getPathBreaker() ? CommonDecorationSettings.getAnalysisFixerComponentColor()
+                : cycleContacts.contains(contact) ? CommonDecorationSettings.getAnalysisProblematicComponentColor()
+                : contact.isPin() ? CommonDecorationSettings.getAnalysisImmaculateComponentColor() : null;
 
         return new Decoration() {
             @Override
@@ -312,9 +313,9 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private Decoration getComponentDecoration(FunctionComponent component) {
-        final Color color = ScanUtils.hasPathBreakerOutput(component) ? CircuitSettings.getBreakCycleGateColor()
-                : cycleComponents.contains(component) ? CircuitSettings.getWithinCycleGateColor()
-                : CircuitSettings.getOutsideCycleGateColor();
+        final Color color = ScanUtils.hasPathBreakerOutput(component) ? CommonDecorationSettings.getAnalysisFixerComponentColor()
+                : cycleComponents.contains(component) ? CommonDecorationSettings.getAnalysisProblematicComponentColor()
+                : CommonDecorationSettings.getAnalysisImmaculateComponentColor();
 
         return new Decoration() {
             @Override
