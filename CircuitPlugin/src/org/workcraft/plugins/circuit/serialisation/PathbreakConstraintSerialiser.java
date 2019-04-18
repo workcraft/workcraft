@@ -28,10 +28,10 @@ public class PathbreakConstraintSerialiser implements PathbreakSerialiser {
     private static final String KEYWORD_TO = "-to";
 
     @Override
-    public void serialise(Circuit circuit, String instancePrefix, OutputStream out) {
+    public void serialise(Circuit circuit, OutputStream out) {
         PrintWriter writer = new PrintWriter(out);
         writer.write(Info.getGeneratedByText("# Path break SDC file ", "\n"));
-        writeCircuit(writer, circuit, instancePrefix);
+        writeCircuit(writer, circuit);
         writer.close();
     }
 
@@ -45,24 +45,21 @@ public class PathbreakConstraintSerialiser implements PathbreakSerialiser {
         return "Path breaker SDC constraints";
     }
 
-    private void writeCircuit(PrintWriter out, Circuit circuit, String instancPrefix) {
+    private void writeCircuit(PrintWriter out, Circuit circuit) {
         HashMap<String, SubstitutionRule> substitutionRules = SubstitutionUtils.readSubsritutionRules();
         // Write out mapped components
         for (FunctionComponent component: Hierarchy.getDescendantsOfType(circuit.getRoot(), FunctionComponent.class)) {
             if (component.isMapped()) {
-                writeInstance(out, circuit, instancPrefix, component, substitutionRules);
+                writeInstance(out, circuit, component, substitutionRules);
             }
         }
     }
 
-    private void writeInstance(PrintWriter out, Circuit circuit, String instancePrefix, FunctionComponent component,
+    private void writeInstance(PrintWriter out, Circuit circuit, FunctionComponent component,
             HashMap<String, SubstitutionRule> substitutionRules) {
 
         String instanceRef = circuit.getNodeReference(component);
         String instanceFlatName = NamespaceHelper.flattenReference(instanceRef);
-        if ((instancePrefix != null) && !instancePrefix.isEmpty()) {
-            instanceFlatName = instancePrefix + instanceFlatName;
-        }
         String moduleName = component.getModule();
         SubstitutionRule substitutionRule = substitutionRules.get(moduleName);
         for (Contact outputContact: component.getOutputs()) {
