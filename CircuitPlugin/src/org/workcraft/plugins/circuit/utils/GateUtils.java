@@ -11,9 +11,9 @@ import org.workcraft.formula.*;
 import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.formula.utils.LiteralsExtractor;
 import org.workcraft.plugins.circuit.*;
+import org.workcraft.types.Pair;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.LogUtils;
-import org.workcraft.types.Pair;
 
 import java.awt.geom.Point2D;
 import java.util.*;

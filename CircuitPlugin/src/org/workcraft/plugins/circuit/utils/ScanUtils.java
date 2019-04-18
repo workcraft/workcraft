@@ -1,6 +1,8 @@
 package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.One;
@@ -8,12 +10,14 @@ import org.workcraft.formula.Zero;
 import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.LogUtils;
 
 import java.util.*;
 
 public class ScanUtils {
 
-    public static void insertScan(VisualCircuit circuit) {
+    public static Set<VisualFunctionComponent> insertTestableBuffers(VisualCircuit circuit) {
         Set<VisualFunctionComponent> components = new HashSet<>();
         for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {
             for (VisualContact contact : component.getVisualOutputs()) {
@@ -24,9 +28,7 @@ public class ScanUtils {
                 }
             }
         }
-        if (!components.isEmpty()) {
-            insertScan(circuit, components);
-        }
+        return components;
     }
 
     private static VisualFunctionComponent insertOrReuseBuffer(VisualCircuit circuit, VisualContact contact) {
@@ -52,44 +54,62 @@ public class ScanUtils {
             GateUtils.propagateInitialState(circuit, result);
             result.getGateOutput().getReferencedContact().setPathBreaker(true);
         }
+        if (result != null)  {
+            Gate2 tbuf = CircuitSettings.parseTbufData();
+            result.getReferencedComponent().setModule(tbuf.name);
+            circuit.setMathName(result.getFirstVisualInput(), tbuf.in);
+            circuit.setMathName(result.getFirstVisualOutput(), tbuf.out);
+            result.getGateOutput().getReferencedContact().setPathBreaker(true);
+        }
         return result;
     }
 
-    private static void insertScan(VisualCircuit circuit, Collection<VisualFunctionComponent> components) {
-        List<VisualFunctionContact> ports = new ArrayList<>();
-        for (String name : CircuitSettings.parseScanPorts()) {
-            ports.add(CircuitUtils.getOrCreatePort(circuit, name, Contact.IOType.INPUT));
-        }
-
-        for (VisualFunctionComponent component : components) {
+    public static void insertScan(VisualCircuit circuit) {
+        Set<VisualFunctionComponent> components = new HashSet<>();
+        for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {
             if (hasPathBreakerOutput(component.getReferencedComponent())) {
-                insertScan(circuit, component, ports);
+                components.add(component);
             }
         }
+        if (!components.isEmpty()) {
+            List<VisualFunctionContact> ports = new ArrayList<>();
+            for (String name : CircuitSettings.parseScanPorts()) {
+                ports.add(CircuitUtils.getOrCreatePort(circuit, name, Contact.IOType.INPUT));
+            }
 
-        for (VisualFunctionContact port : ports) {
-            SpaceUtils.positionPort(circuit, port);
-            port.setSetFunction(Zero.instance());
+            for (VisualFunctionComponent component : components) {
+                if (hasPathBreakerOutput(component.getReferencedComponent())) {
+                    insertScan(circuit, component, ports);
+                }
+            }
+
+            for (VisualFunctionContact port : ports) {
+                SpaceUtils.positionPort(circuit, port);
+                port.setSetFunction(Zero.instance());
+            }
         }
     }
 
-    private static void insertScan(VisualCircuit circuit, VisualFunctionComponent component, List<VisualFunctionContact> ports) {
-        String moduleName = component.getReferencedComponent().getModule();
-        String suffix = CircuitSettings.getScanSuffix();
-        if (!moduleName.isEmpty() && !suffix.isEmpty()) {
-            component.getReferencedComponent().setModule(moduleName + suffix);
-        }
+    private static void insertScan(VisualCircuit circuit, VisualFunctionComponent component,
+            List<VisualFunctionContact> ports) {
+
         component.setRenderType(ComponentRenderingResult.RenderType.BOX);
         Iterator<VisualFunctionContact> iterator = ports.iterator();
         for (String name : CircuitSettings.parseScanPins()) {
-            VisualFunctionContact contact = circuit.getOrCreateContact(component, name, Contact.IOType.INPUT);
-            component.setPositionByDirection(contact, VisualContact.Direction.WEST, false);
+            String ref = NamespaceHelper.getReference(circuit.getMathReference(component), name);
+            VisualFunctionContact contact = circuit.getVisualComponentByMathReference(ref, VisualFunctionContact.class);
+            if (contact == null) {
+                contact = circuit.getOrCreateContact(component, name, Contact.IOType.INPUT);
+                component.setPositionByDirection(contact, VisualContact.Direction.WEST, false);
+            }
             if (iterator.hasNext()) {
                 VisualFunctionContact port = iterator.next();
-                try {
-                    circuit.connect(port, contact);
-                } catch (InvalidConnectionException e) {
-                    throw new RuntimeException(e);
+                if (circuit.getConnections(contact).isEmpty()) {
+                    try {
+                        circuit.connect(port, contact);
+                    } catch (InvalidConnectionException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
@@ -124,4 +144,16 @@ public class ScanUtils {
         return result;
     }
 
+    public static boolean check(Circuit circuit) {
+        Set<FunctionComponent> cycleComponents = CycleUtils.getCycledComponents(circuit);
+        if (cycleComponents.isEmpty()) {
+            return true;
+        }
+        ArrayList<String> refs = ReferenceHelper.getReferenceList(circuit, cycleComponents);
+        String msg = "All cycles must be broken before inserting testable buffers or scan.\n" +
+                LogUtils.getTextWithRefs("Problematic component", refs);
+
+        DialogUtils.showError(msg);
+        return false;
+    }
 }

@@ -1,15 +1,15 @@
 package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.references.Identifier;
+import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
 import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.plugins.circuit.*;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.LogUtils;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.*;
 
 public class ResetUtils {
 
@@ -318,6 +318,32 @@ public class ResetUtils {
                 contact.setForcedInit(false);
             }
         }
+    }
+
+    public static Set<Contact> getInitialisationProblemContacts(Circuit circuit) {
+        InitialisationState initState = new InitialisationState(circuit);
+        Set<Contact> result = new HashSet<>();
+        for (FunctionContact contact : circuit.getFunctionContacts()) {
+            if (contact.isPin() && contact.isDriver()) {
+                if (!initState.isCorrectlyInitialised(contact)) {
+                    result.add(contact);
+                }
+            }
+        }
+        return result;
+    }
+
+    public static boolean check(Circuit circuit) {
+        Set<Contact> problematicContacts = ResetUtils.getInitialisationProblemContacts(circuit);
+        if (problematicContacts.isEmpty()) {
+            return true;
+        }
+        ArrayList<String> refs = ReferenceHelper.getReferenceList(circuit, problematicContacts);
+        String msg = "All gates must be correctly initialised before inserting reset.\n" +
+                LogUtils.getTextWithRefs("Problematic signal", refs);
+
+        DialogUtils.showError(msg);
+        return false;
     }
 
 }

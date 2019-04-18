@@ -78,8 +78,8 @@ public class PropertyDialog extends JDialog {
             }
         });
 
-        setMinimumSize(new Dimension(450, 450));
         pack();
+        setMinimumSize(getSize());
         setLocationRelativeTo(owner);
     }
 
@@ -119,7 +119,7 @@ public class PropertyDialog extends JDialog {
             }
         };
 
-        presetPanel = new PresetManagerPanel<VerificationParameters>(presetManager, builtInPresets, guiMapper, this);
+        presetPanel = new PresetManagerPanel<>(presetManager, builtInPresets, guiMapper, this);
     }
 
     private void createOptionsPanel() {

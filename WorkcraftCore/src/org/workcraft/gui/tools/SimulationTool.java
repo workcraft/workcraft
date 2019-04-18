@@ -117,12 +117,12 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         JButton saveInitStateButton = GuiUtils.createIconButton(ICON_SAVE_INITIL_STATE, HINT_SAVE_INITIAL_STATE);
 
         FlowLayout flowLayout = new FlowLayout();
-        int buttonWidth = (int) Math.round(playButton.getPreferredSize().getWidth() + flowLayout.getHgap());
-        int buttonHeight = (int) Math.round(playButton.getPreferredSize().getHeight() + flowLayout.getVgap());
+        Dimension buttonSize = playButton.getPreferredSize();
+        int buttonWidth = (int) Math.round(buttonSize.getWidth() + flowLayout.getHgap());
+        int buttonHeight = (int) Math.round(buttonSize.getHeight() + flowLayout.getVgap());
         Dimension panelSize = new Dimension(buttonWidth * 5 + flowLayout.getHgap(), buttonHeight + flowLayout.getVgap());
 
-        JPanel simulationControl = new JPanel();
-        simulationControl.setLayout(flowLayout);
+        JPanel simulationControl = new JPanel(flowLayout);
         simulationControl.setPreferredSize(panelSize);
         simulationControl.setMaximumSize(panelSize);
         simulationControl.add(playButton);

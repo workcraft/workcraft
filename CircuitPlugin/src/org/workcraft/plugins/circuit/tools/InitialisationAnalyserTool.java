@@ -8,6 +8,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.gui.tools.*;
 import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
 import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
@@ -15,9 +16,7 @@ import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.InitialisationState;
 import org.workcraft.plugins.circuit.utils.ResetUtils;
 import org.workcraft.types.Pair;
-import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.GuiUtils;
-import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
@@ -84,24 +83,27 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         tagForceInitClearAllButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitClearAll(c)));
 
         FlowLayout flowLayout = new FlowLayout();
-        int buttonWidth = (int) Math.round(tagForceInitInputPortsButton.getPreferredSize().getWidth() + flowLayout.getHgap());
-        int buttonHeight = (int) Math.round(tagForceInitInputPortsButton.getPreferredSize().getHeight() + flowLayout.getVgap());
+        Dimension buttonSize = tagForceInitInputPortsButton.getPreferredSize();
+        int buttonWidth = (int) Math.round(buttonSize.getWidth() + flowLayout.getHgap());
+        int buttonHeight = (int) Math.round(buttonSize.getHeight() + flowLayout.getVgap());
         Dimension panelSize = new Dimension(buttonWidth * 5 + flowLayout.getHgap(), buttonHeight + flowLayout.getVgap());
 
-        JPanel btnPanel = new JPanel();
-        btnPanel.setLayout(flowLayout);
-        btnPanel.setPreferredSize(panelSize);
-        btnPanel.setMaximumSize(panelSize);
-        btnPanel.add(tagForceInitInputPortsButton);
-        btnPanel.add(tagForceInitNecessaryPinsButton);
-        btnPanel.add(tagForceInitAutoAppendButton);
-        btnPanel.add(tagForceInitAutoDiscardButton);
-        btnPanel.add(tagForceInitClearAllButton);
+        JPanel buttonPanel = new JPanel(flowLayout);
+        buttonPanel.setPreferredSize(panelSize);
+        buttonPanel.setMaximumSize(panelSize);
+        buttonPanel.add(tagForceInitInputPortsButton);
+        buttonPanel.add(tagForceInitNecessaryPinsButton);
+        buttonPanel.add(tagForceInitAutoAppendButton);
+        buttonPanel.add(tagForceInitAutoDiscardButton);
+        buttonPanel.add(tagForceInitClearAllButton);
+
+        JPanel controlPanel = new JPanel(new WrapLayout());
+        controlPanel.add(buttonPanel);
 
         JPanel forcePanel = new JPanel(new BorderLayout());
         forcePanel.setBorder(SizeHelper.getTitledBorder("Force init pins"));
         forcePanel.add(new JScrollPane(forcedTable), BorderLayout.CENTER);
-        forcePanel.add(btnPanel, BorderLayout.SOUTH);
+        forcePanel.add(controlPanel, BorderLayout.SOUTH);
         return forcePanel;
     }
 
@@ -120,44 +122,24 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private JPanel getResetControlsPanel(final GraphEditor editor) {
-        JButton insertResetButton = new JButton("Insert reset logic...");
-        insertResetButton.addActionListener(l -> insertReset(editor));
+        JButton insertHighResetButton = new JButton("<html><center>Insert reset<br>(active-high)</center></html>");
+        insertHighResetButton.addActionListener(l -> insertReset(editor, false));
 
-        JPanel resetPanel = new JPanel();
-        resetPanel.add(insertResetButton);
+        JButton insertLowResetButton = new JButton("<html><center>Insert reset<br>(active-low)</center></html>");
+        insertLowResetButton.addActionListener(l -> insertReset(editor, true));
+
+        JPanel resetPanel = new JPanel(new WrapLayout());
+        resetPanel.add(insertHighResetButton);
+        resetPanel.add(insertLowResetButton);
         return resetPanel;
     }
 
-    private void insertReset(final GraphEditor editor) {
-        Circuit circuit = (Circuit) editor.getModel().getMathModel();
-        HashSet<String> incorrectlyInitialisedComponentRefs = new HashSet<>();
-        for (FunctionContact contact : circuit.getFunctionContacts()) {
-            if (contact.isPin() && contact.isDriver()) {
-                if (!initState.isCorrectlyInitialised(contact)) {
-                    String ref = circuit.getNodeReference(contact);
-                    incorrectlyInitialisedComponentRefs.add(ref);
-                }
-            }
-        }
-        if (!incorrectlyInitialisedComponentRefs.isEmpty()) {
-            String msg = "All gates must be correctly initialised before inserting reset.\n" +
-                    LogUtils.getTextWithRefs("Problematic signal", incorrectlyInitialisedComponentRefs);
-            DialogUtils.showError(msg);
-        } else {
-            Object[] options1 = {"Insert active-low reset", "Insert active-high reset", "Cancel"};
-            JPanel panel = new JPanel();
-            panel.add(new JLabel("Reset port name: "));
-            JTextField textField = new JTextField(CircuitSettings.getResetName(), 20);
-            panel.add(textField);
-
-            int result = JOptionPane.showOptionDialog(null, panel, "Reset logic",
-                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options1, null);
-            if ((result == JOptionPane.YES_OPTION) || (result == JOptionPane.NO_OPTION)) {
-                editor.getWorkspaceEntry().saveMemento();
-                VisualCircuit visualCircuit = (VisualCircuit) editor.getModel();
-                ResetUtils.insertReset(visualCircuit, textField.getText(), result == JOptionPane.YES_OPTION);
-                updateState(editor);
-            }
+    private void insertReset(final GraphEditor editor, boolean activeLow) {
+        VisualCircuit circuit = (VisualCircuit) editor.getModel();
+        if (ResetUtils.check(circuit.getMathModel())) {
+            editor.getWorkspaceEntry().saveMemento();
+            ResetUtils.insertReset(circuit, CircuitSettings.getResetName(), activeLow);
+            updateState(editor);
         }
         editor.requestFocus();
     }

@@ -77,8 +77,8 @@ public class CircuitSettingsTests {
         Assert.assertEquals(Config.toString(CircuitSettings.getResetName()),
                 framework.getConfigVar(prefix + ".resetName", false));
 
-        Assert.assertEquals(Config.toString(CircuitSettings.getScanSuffix()),
-                framework.getConfigVar(prefix + ".scanSuffix", false));
+        Assert.assertEquals(Config.toString(CircuitSettings.getTbufData()),
+                framework.getConfigVar(prefix + ".tbufData", false));
 
         Assert.assertEquals(Config.toString(CircuitSettings.getScanPorts()),
                 framework.getConfigVar(prefix + ".scanPorts", false));

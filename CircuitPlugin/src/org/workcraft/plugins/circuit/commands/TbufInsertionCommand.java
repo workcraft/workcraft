@@ -5,11 +5,11 @@ import org.workcraft.plugins.circuit.utils.ScanUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class ScanInsertionCommand extends AbstractInsertionCommand {
+public class TbufInsertionCommand extends AbstractInsertionCommand {
 
     @Override
     public String getDisplayName() {
-        return "Insert scan for path breaker components";
+        return "Insert testable buffers for path breaker components";
     }
 
     @Override
@@ -17,7 +17,7 @@ public class ScanInsertionCommand extends AbstractInsertionCommand {
         VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
         if (ScanUtils.check(circuit.getMathModel())) {
             we.saveMemento();
-            ScanUtils.insertScan(circuit);
+            ScanUtils.insertTestableBuffers(circuit);
         }
         return null;
     }

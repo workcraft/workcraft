@@ -6,10 +6,7 @@ import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.plugins.circuit.commands.CycleFreenessVerificationCommand;
-import org.workcraft.plugins.circuit.commands.PathBreakerClearAllTagCommand;
-import org.workcraft.plugins.circuit.commands.ScanInsertionCommand;
-import org.workcraft.plugins.circuit.commands.PathBreakerAutoAppendTagCommand;
+import org.workcraft.plugins.circuit.commands.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.ScanUtils;
 import org.workcraft.utils.PackageUtils;
@@ -55,8 +52,10 @@ public class CycleCommandTests {
         Assert.assertEquals(breakCount, count);
 
         if (count > 0) {
-            new ScanInsertionCommand().execute(we);
+            new TbufInsertionCommand().execute(we);
+            Assert.assertEquals(breakCount, countPathBreaker(circuit));
 
+            new ScanInsertionCommand().execute(we);
 
             Iterator<String> portNameIterator = CircuitSettings.parseScanPorts().iterator();
             Iterator<String> pinNameIterator = CircuitSettings.parseScanPins().iterator();

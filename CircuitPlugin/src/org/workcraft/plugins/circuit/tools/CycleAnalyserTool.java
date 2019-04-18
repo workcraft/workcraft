@@ -10,6 +10,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.gui.tools.*;
 import org.workcraft.interop.Format;
 import org.workcraft.interop.FormatFileFilter;
@@ -91,19 +92,22 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         int buttonHeight = (int) Math.round(buttonSize.getHeight() + flowLayout.getVgap());
         Dimension panelSize = new Dimension(buttonWidth * 3 + flowLayout.getHgap(), buttonHeight + flowLayout.getVgap());
 
-        JPanel btnPanel = new JPanel();
-        btnPanel.setLayout(flowLayout);
-        btnPanel.setPreferredSize(panelSize);
-        btnPanel.setMaximumSize(panelSize);
-        btnPanel.add(tagPathBreakerSelfloopPinsButton);
-        btnPanel.add(tagPathBreakerAutoAppendButton);
-        btnPanel.add(tagPathBreakerAutoDiscardButton);
-        btnPanel.add(tagPathBreakerClearAllButton);
+        JPanel buttonPanel = new JPanel(new WrapLayout());
+        buttonPanel.setLayout(flowLayout);
+        buttonPanel.setPreferredSize(panelSize);
+        buttonPanel.setMaximumSize(panelSize);
+        buttonPanel.add(tagPathBreakerSelfloopPinsButton);
+        buttonPanel.add(tagPathBreakerAutoAppendButton);
+        buttonPanel.add(tagPathBreakerAutoDiscardButton);
+        buttonPanel.add(tagPathBreakerClearAllButton);
+
+        JPanel controlPanel = new JPanel(new WrapLayout());
+        controlPanel.add(buttonPanel);
 
         JPanel forcePanel = new JPanel(new BorderLayout());
         forcePanel.setBorder(SizeHelper.getTitledBorder("Path breakers"));
         forcePanel.add(new JScrollPane(breakerTable), BorderLayout.CENTER);
-        forcePanel.add(btnPanel, BorderLayout.SOUTH);
+        forcePanel.add(controlPanel, BorderLayout.SOUTH);
         return forcePanel;
     }
 
@@ -123,26 +127,43 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private JPanel getScanControlsPanel(final GraphEditor editor) {
-        JButton insertScanButton = new JButton("Insert scan");
+        JButton insertTestButton = new JButton("<html><center>Insert<br>T-BUF</center></html>");
+        insertTestButton.addActionListener(l -> insertTbuf(editor));
+        insertTestButton.setToolTipText("Insert testable buffers for all path breaker components");
+
+        JButton insertScanButton = new JButton("<html><center>Insert<br>SCAN</center></html>");
         insertScanButton.addActionListener(l -> insertScan(editor));
+        insertScanButton.setToolTipText("Insert scan for all path breaker components");
 
-        JButton writePathbreakConstraintsButton = new JButton("Write SDC...");
-        writePathbreakConstraintsButton.addActionListener(l -> writePathbreakConstraints(editor));
+        JButton writeConstraintsButton = new JButton("<html><center>Write<br>SDC...</center></html>");
+        writeConstraintsButton.addActionListener(l -> writePathbreakConstraints(editor));
+        writeConstraintsButton.setToolTipText("Write set_disable_timing constraints for path breaker input pins");
 
-        JPanel scanPanel = new JPanel();
+        JPanel scanPanel = new JPanel(new WrapLayout());
+        scanPanel.add(insertTestButton);
         scanPanel.add(insertScanButton);
-        scanPanel.add(writePathbreakConstraintsButton);
+        scanPanel.add(writeConstraintsButton);
         return scanPanel;
     }
 
-    private void insertScan(GraphEditor editor) {
-        ScanDialog dialog = new ScanDialog(Framework.getInstance().getMainWindow());
-        if (dialog.reveal()) {
+    private void insertTbuf(GraphEditor editor) {
+        VisualCircuit circuit = (VisualCircuit) editor.getModel();
+        if (ScanUtils.check(circuit.getMathModel())) {
             editor.getWorkspaceEntry().saveMemento();
-            VisualCircuit circuit = (VisualCircuit) editor.getModel();
+            ScanUtils.insertTestableBuffers(circuit);
+            updateState(((VisualCircuit) editor.getModel()).getMathModel());
+        }
+        editor.requestFocus();
+    }
+
+    private void insertScan(GraphEditor editor) {
+        VisualCircuit circuit = (VisualCircuit) editor.getModel();
+        if (ScanUtils.check(circuit.getMathModel())) {
+            editor.getWorkspaceEntry().saveMemento();
             ScanUtils.insertScan(circuit);
             updateState(((VisualCircuit) editor.getModel()).getMathModel());
         }
+        editor.requestFocus();
     }
 
     private void writePathbreakConstraints(final GraphEditor editor) {
@@ -187,7 +208,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     @Override
     public String getHintText(final GraphEditor editor) {
-        return "Click on a driven contact or a component to toggle its path breaker state.";
+        return "Click on a contact or a gate to toggle its path breaker state.";
     }
 
     @Override

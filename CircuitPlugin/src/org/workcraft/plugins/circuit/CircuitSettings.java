@@ -1,7 +1,7 @@
 package org.workcraft.plugins.circuit;
 
 import org.workcraft.Config;
-import org.workcraft.dom.references.Identifier;
+import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.Settings;
@@ -14,7 +14,6 @@ import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.DialogUtils;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -61,7 +60,7 @@ public class CircuitSettings implements Settings {
     private static final String keyMutexData = prefix + ".mutexData";
     private static final String keyBusSuffix = prefix + ".busSuffix";
     private static final String keyResetName = prefix + ".resetName";
-    private static final String keyScanSuffix = prefix + ".scanSuffix";
+    private static final String keyTbufData = prefix + ".tbufData";
     private static final String keyScanPorts = prefix + ".scanPorts";
     private static final String keyScanPins = prefix + ".scanPins";
 
@@ -84,7 +83,7 @@ public class CircuitSettings implements Settings {
     private static final String defaultMutexData = "MUTEX ((r1, g1), (r2, g2))";
     private static final String defaultBusSuffix = "__$";
     private static final String defaultResetName = "reset";
-    private static final String defaultScanSuffix = "_SCAN";
+    private static final String defaultTbufData = "TBUF (I, O)";
     private static final String defaultScanPorts = "scanin, clock";
     private static final String defaultScanPins = "SI, CK";
 
@@ -107,7 +106,7 @@ public class CircuitSettings implements Settings {
     private static String mutexData = defaultMutexData;
     private static String busSuffix = defaultBusSuffix;
     private static String resetName = defaultResetName;
-    private static String scanSuffix = defaultScanSuffix;
+    private static String tbufData = defaultTbufData;
     private static String scanPorts = defaultScanPorts;
     private static String scanPins = defaultScanPins;
 
@@ -385,25 +384,29 @@ public class CircuitSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Scan module suffix", String.class) {
+                this, "Testable buffer name and input-output pins", String.class) {
             @Override
             public void setter(CircuitSettings object, String value) {
-                setScanSuffix(value);
+                if (parseGate2Data(value) != null) {
+                    setTbufData(value);
+                } else {
+                    DialogUtils.showError("Testable buffer description format is incorrect. It should be as follows:\n" + defaultTbufData);
+                }
             }
             @Override
             public String getter(CircuitSettings object) {
-                return getScanSuffix();
+                return getTbufData();
             }
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Scan ports (coma-separated, same order as scan pins)", String.class) {
+                this, "Scan ports (comma-separated, same order as scan pins)", String.class) {
             @Override
             public void setter(CircuitSettings object, String value) {
-                if (parseNames(value) != null) {
+                if (ReferenceHelper.parseReferenceList(value) != null) {
                     setScanPorts(value);
                 } else {
-                    DialogUtils.showError("Scan ports should be a coma-separated list of valid names.");
+                    DialogUtils.showError("Scan ports should be a comma-separated list of valid names.");
                 }
             }
             @Override
@@ -413,13 +416,13 @@ public class CircuitSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Scan pins (coma-separated, same order as scan ports)", String.class) {
+                this, "Scan pins (comma-separated, same order as scan ports)", String.class) {
             @Override
             public void setter(CircuitSettings object, String value) {
-                if (parseNames(value) != null) {
+                if (ReferenceHelper.parseReferenceList(value) != null) {
                     setScanPins(value);
                 } else {
-                    DialogUtils.showError("Scan pins should be a coma-separated list of valid names.");
+                    DialogUtils.showError("Scan pins should be a comma-separated list of valid names.");
                 }
             }
             @Override
@@ -465,7 +468,7 @@ public class CircuitSettings implements Settings {
         setMutexData(config.getString(keyMutexData, defaultMutexData));
         setBusSuffix(config.getString(keyBusSuffix, defaultBusSuffix));
         setResetName(config.getString(keyResetName, defaultResetName));
-        setScanSuffix(config.getString(keyScanSuffix, defaultScanSuffix));
+        setTbufData(config.getString(keyTbufData, defaultTbufData));
         setScanPorts(config.getString(keyScanPorts, defaultScanPorts));
         setScanPins(config.getString(keyScanPins, defaultScanPins));
     }
@@ -491,7 +494,7 @@ public class CircuitSettings implements Settings {
         config.set(keyMutexData, getMutexData());
         config.set(keyBusSuffix, getBusSuffix());
         config.set(keyResetName, getResetName());
-        config.set(keyScanSuffix, getScanSuffix());
+        config.set(keyTbufData, getTbufData());
         config.set(keyScanPorts, getScanPorts());
         config.set(keyScanPins, getScanPins());
     }
@@ -680,12 +683,16 @@ public class CircuitSettings implements Settings {
         resetName = value;
     }
 
-    public static String getScanSuffix() {
-        return scanSuffix;
+    public static String getTbufData() {
+        return tbufData;
     }
 
-    public static void setScanSuffix(String value) {
-        scanSuffix = value;
+    public static void setTbufData(String value) {
+        tbufData = value;
+    }
+
+    public static Gate2 parseTbufData() {
+        return parseGate2Data(getTbufData());
     }
 
     public static String getScanPorts() {
@@ -697,7 +704,7 @@ public class CircuitSettings implements Settings {
     }
 
     public static List<String> parseScanPorts() {
-        return parseNames(getScanPorts());
+        return ReferenceHelper.parseReferenceList(getScanPorts());
     }
 
     public static String getScanPins() {
@@ -709,7 +716,7 @@ public class CircuitSettings implements Settings {
     }
 
     public static List<String> parseScanPins() {
-        return parseNames(getScanPins());
+        return ReferenceHelper.parseReferenceList(getScanPins());
     }
 
     private static Gate2 parseGate2Data(String str) {
@@ -747,20 +754,6 @@ public class CircuitSettings implements Settings {
             Signal r2 = new Signal(matcher.group(MUTEX_R2_GROUP), Signal.Type.INPUT);
             Signal g2 = new Signal(matcher.group(MUTEX_G2_GROUP), Signal.Type.OUTPUT);
             result = new Mutex(name, r1, g1, r2, g2);
-        }
-        return result;
-    }
-
-    private static List<String> parseNames(String str) {
-        List<String> result = new ArrayList<>();
-        if ((str != null) && !str.isEmpty()) {
-            for (String name : str.replaceAll("\\s", "").split(",")) {
-                if (Identifier.isName(name)) {
-                    result.add(name);
-                } else {
-                    return null;
-                }
-            }
         }
         return result;
     }
