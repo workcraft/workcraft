@@ -1,6 +1,7 @@
 package org.workcraft.utils;
 
 import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstraints;
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.GVTBuilder;
@@ -32,17 +33,12 @@ public class GuiUtils {
     }
 
     public static JPanel createWideLabeledComponent(JComponent component, String labelText) {
-        double[][] sizes = {
-            {TableLayout.PREFERRED, TableLayout.FILL},
-            {TableLayout.PREFERRED},
-        };
+        JPanel result = new JPanel(createTableLayout(
+                new double[]{TableLayout.PREFERRED, TableLayout.FILL},
+                new double[]{TableLayout.PREFERRED}));
 
-        TableLayout layout = new TableLayout(sizes);
-        layout.setHGap(SizeHelper.getLayoutHGap());
-        layout.setVGap(SizeHelper.getLayoutVGap());
-        JPanel result = new JPanel(layout);
-        result.add(new JLabel(labelText), "0 0");
-        result.add(component, "1 0");
+        result.add(new JLabel(labelText), new TableLayoutConstraints(0, 0));
+        result.add(component, new TableLayoutConstraints(1, 0));
         return result;
     }
 
@@ -221,6 +217,13 @@ public class GuiUtils {
         int w = Math.max(dimension.width, BUTTON_PREFERED_WIDTH);
         int h = Math.max(dimension.height, BUTTON_PREFERED_HEIGHT);
         result.setPreferredSize(new Dimension(w, h));
+        return result;
+    }
+
+    public static TableLayout createTableLayout(double[] columnSizes, double[] rowSizes) {
+        TableLayout result = new TableLayout(new double[][]{columnSizes, rowSizes});
+        result.setHGap(SizeHelper.getLayoutHGap());
+        result.setVGap(SizeHelper.getLayoutVGap());
         return result;
     }
 

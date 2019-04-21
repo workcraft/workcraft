@@ -1,8 +1,10 @@
 package org.workcraft.gui.trees;
 
 import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.workspace.Path;
+import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.Workspace;
 
 import javax.swing.*;
@@ -136,12 +138,10 @@ public class TreeWindow<Node> extends JPanel {
         private final TreeDecorator<Node> decorator;
         private static final long serialVersionUID = 1L;
 
-        private final double[][] size = new double[][] {
-            {TableLayout.PREFERRED, TableLayout.PREFERRED },
-            {TableLayout.PREFERRED},
-        };
+        private final TableLayout layout = GuiUtils.createTableLayout(
+                new double[]{TableLayout.PREFERRED, TableLayout.PREFERRED},
+                new double[]{TableLayout.PREFERRED});
 
-        private final TableLayout layout = new TableLayout(size);
         private final JPanel cellRenderer = new JPanel(layout);
 
         private TreeCellRenderer(TreeSource<Node> source, TreeDecorator<Node> decorator) {
@@ -176,8 +176,8 @@ public class TreeWindow<Node> extends JPanel {
 
             cellRenderer.removeAll();
             if ((checkBoxMode == CheckBoxMode.ALL) || ((checkBoxMode == CheckBoxMode.LEAF) && source.isLeaf(node))) {
-                cellRenderer.add(checkBox, "0 0");
-                cellRenderer.add(result, "1 0");
+                cellRenderer.add(checkBox, new TableLayoutConstraints(0, 0));
+                cellRenderer.add(result, new TableLayoutConstraints(1, 0));
                 checkBox.setSelected(checkedNodes.contains(node));
                 result = cellRenderer;
             }

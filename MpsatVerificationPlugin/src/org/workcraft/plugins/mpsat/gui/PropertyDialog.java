@@ -1,8 +1,10 @@
 package org.workcraft.plugins.mpsat.gui;
 
 import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.gui.dialogs.ModalDialog;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
@@ -23,70 +25,54 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 
-@SuppressWarnings("serial")
-public class PropertyDialog extends JDialog {
+public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
+
     private static final int DEFAULT_ALL_SOLUTION_LIMIT = 10;
 
-    private final MpsatPresetManager presetManager;
-    private JPanel optionsPanel, predicatePanel, buttonsPanel;
-    private PresetManagerPanel<VerificationParameters> presetPanel;
     private JComboBox<VerificationMode> modeCombo;
     private JTextField solutionLimitText;
     private JTextArea propertyText;
     private JRadioButton allSolutionsRadioButton, firstSolutionRadioButton, cheapestSolutionRadioButton;
-    private JRadioButton satisfiebleRadioButton, unsatisfiebleRadioButton;
-    private boolean modalResult;
+    private JRadioButton satisfiableRadioButton, unsatisfiableRadioButton;
 
     public PropertyDialog(Window owner, MpsatPresetManager presetManager) {
-        super(owner, "Custom property", ModalityType.APPLICATION_MODAL);
-        this.presetManager = presetManager;
+        super(owner, "Custom property", presetManager);
+    }
 
-        createPresetPanel();
-        createOptionsPanel();
-        createPropertyPanel();
-        createButtonsPanel();
+    @Override
+    public JPanel createControlsPanel() {
+        JPanel result = super.createControlsPanel();
+        result.setLayout(GuiUtils.createTableLayout(
+                new double[]{TableLayout.FILL},
+                new double[]{TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL}));
 
-        int buttonPanelHeight = buttonsPanel.getPreferredSize().height;
-        double[][] size = new double[][] {
-            {TableLayout.FILL},
-            {TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL, buttonPanelHeight},
-        };
-        final TableLayout layout = new TableLayout(size);
-        layout.setHGap(SizeHelper.getLayoutHGap());
-        layout.setVGap(SizeHelper.getLayoutVGap());
+        PresetManagerPanel<VerificationParameters> presetPanel = createPresetPanel();
 
-        JPanel contentPanel = new JPanel(layout);
-        contentPanel.setBorder(SizeHelper.getEmptyBorder());
-
-        contentPanel.add(presetPanel, "0 0");
-        contentPanel.add(optionsPanel, "0 1");
-        contentPanel.add(predicatePanel, "0 2");
-        contentPanel.add(buttonsPanel, "0 3");
-
-        setContentPane(contentPanel);
+        result.add(presetPanel, new TableLayoutConstraints(0, 0));
+        result.add(createOptionsPanel(), new TableLayoutConstraints(0, 1));
+        result.add(createPropertyPanel(), new TableLayoutConstraints(0, 2));
 
         presetPanel.selectFirst();
 
-        getRootPane().registerKeyboardAction(event -> {
-            modalResult = false;
-            setVisible(false);
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
-
         addWindowListener(new WindowAdapter() {
+            @Override
             public void windowOpened(WindowEvent e) {
+                if (propertyText.getText().isEmpty()) {
+                    propertyText.setText("\n\n");
+                }
+                propertyText.setCaretPosition(0);
                 propertyText.requestFocus();
             }
         });
 
-        pack();
-        setMinimumSize(getSize());
-        setLocationRelativeTo(owner);
+        return result;
     }
 
-    private void createPresetPanel() {
+    private PresetManagerPanel<VerificationParameters> createPresetPanel() {
         ArrayList<Preset<VerificationParameters>> builtInPresets = new ArrayList<>();
 
-        if (presetManager.isAllowStgPresets()) {
+        MpsatPresetManager userData = getUserData();
+        if (userData.isAllowStgPresets()) {
             builtInPresets.add(new Preset<>("Consistency",
                     VerificationParameters.getConsistencySettings(), true));
 
@@ -114,26 +100,25 @@ public class PropertyDialog extends JDialog {
 
             @Override
             public VerificationParameters getSettingsFromControls() {
-                VerificationParameters settings = PropertyDialog.this.getSettingsFromControls();
-                return settings;
+                return PropertyDialog.this.getSettingsFromControls();
             }
         };
 
-        presetPanel = new PresetManagerPanel<>(presetManager, builtInPresets, guiMapper, this);
+        return new PresetManagerPanel<>(userData, builtInPresets, guiMapper, this);
     }
 
-    private void createOptionsPanel() {
-        optionsPanel = new JPanel(new BorderLayout());
-        optionsPanel.setBorder(SizeHelper.getTitledBorder("MPSat settings"));
+    private JPanel createOptionsPanel() {
+        JPanel result = new JPanel(new BorderLayout());
+        result.setBorder(SizeHelper.getTitledBorder("MPSat settings"));
 
         modeCombo = new JComboBox<>();
         modeCombo.setEditable(false);
-        if (presetManager.isAllowStgPresets()) {
+        if (getUserData().isAllowStgPresets()) {
             modeCombo.addItem(VerificationMode.STG_REACHABILITY);
         }
         modeCombo.addItem(VerificationMode.REACHABILITY);
 
-        optionsPanel.add(GuiUtils.createWideLabeledComponent(modeCombo, "  Mode:      "), BorderLayout.NORTH);
+        result.add(GuiUtils.createWideLabeledComponent(modeCombo, "  Mode:      "), BorderLayout.NORTH);
 
         JPanel solutionModePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
         solutionModePanel.add(new JLabel("Solution:"));
@@ -160,18 +145,18 @@ public class PropertyDialog extends JDialog {
         solutionLimitText.setDocument(new IntDocument(3));
         solutionLimitText.setEnabled(false);
         solutionModePanel.add(solutionLimitText);
-        optionsPanel.add(solutionModePanel, BorderLayout.SOUTH);
+        result.add(solutionModePanel, BorderLayout.SOUTH);
+        return result;
     }
 
-    private void createPropertyPanel() {
-        predicatePanel = new JPanel(new BorderLayout());
+    public JPanel createPropertyPanel() {
+        JPanel resutl = new JPanel(new BorderLayout());
         String title = "Reach predicate (use '" + NamespaceHelper.getHierarchySeparator() + "' as hierarchy separator)";
-        predicatePanel.setBorder(SizeHelper.getTitledBorder(title));
+        resutl.setBorder(SizeHelper.getTitledBorder(title));
 
         propertyText = new JTextArea();
         propertyText.setMargin(SizeHelper.getTextMargin());
         propertyText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
-        propertyText.setText("");
         propertyText.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -182,50 +167,34 @@ public class PropertyDialog extends JDialog {
         });
         JScrollPane propertyScrollPane = new JScrollPane(propertyText);
 
-        satisfiebleRadioButton = new JRadioButton("satisfiable");
-        unsatisfiebleRadioButton = new JRadioButton("unsatisfiable");
+        satisfiableRadioButton = new JRadioButton("satisfiable");
+        unsatisfiableRadioButton = new JRadioButton("unsatisfiable");
         ButtonGroup buttonGroup = new ButtonGroup();
-        buttonGroup.add(satisfiebleRadioButton);
-        buttonGroup.add(unsatisfiebleRadioButton);
-        unsatisfiebleRadioButton.setSelected(true);
+        buttonGroup.add(satisfiableRadioButton);
+        buttonGroup.add(unsatisfiableRadioButton);
+        unsatisfiableRadioButton.setSelected(true);
 
         JPanel propertyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,
                 SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
 
         propertyPanel.add(new JLabel("Property holds if predicate is:"));
-        propertyPanel.add(satisfiebleRadioButton);
-        propertyPanel.add(unsatisfiebleRadioButton);
+        propertyPanel.add(satisfiableRadioButton);
+        propertyPanel.add(unsatisfiableRadioButton);
 
-        predicatePanel.add(propertyScrollPane, BorderLayout.CENTER);
-        predicatePanel.add(propertyPanel, BorderLayout.SOUTH);
+        resutl.add(propertyScrollPane, BorderLayout.CENTER);
+        resutl.add(propertyPanel, BorderLayout.SOUTH);
+        return resutl;
     }
 
-    private void createButtonsPanel() {
-        buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-
-        JButton runButton = GuiUtils.createDialogButton("Run");
-        runButton.addActionListener(event -> {
-            modalResult = true;
-            setVisible(false);
-        });
-
-        JButton cancelButton = GuiUtils.createDialogButton("Cancel");
-        cancelButton.addActionListener(event -> {
-            modalResult = false;
-            setVisible(false);
-        });
+    @Override
+    public JPanel createButtonsPanel() {
+        JPanel result = super.createButtonsPanel();
 
         JButton helpButton = GuiUtils.createDialogButton("Help");
         helpButton.addActionListener(event -> DesktopApi.open(new File("help/reach.html")));
+        result.add(helpButton);
 
-        buttonsPanel.add(runButton);
-        buttonsPanel.add(cancelButton);
-        buttonsPanel.add(helpButton);
-    }
-
-    public boolean reveal() {
-        setVisible(true);
-        return modalResult;
+        return result;
     }
 
     public VerificationParameters getSettings() {
@@ -256,9 +225,9 @@ public class PropertyDialog extends JDialog {
 
         propertyText.setText(settings.getExpression());
         if (settings.getInversePredicate()) {
-            unsatisfiebleRadioButton.setSelected(true);
+            unsatisfiableRadioButton.setSelected(true);
         } else {
-            satisfiebleRadioButton.setSelected(true);
+            satisfiableRadioButton.setSelected(true);
         }
     }
 
@@ -283,7 +252,7 @@ public class PropertyDialog extends JDialog {
         }
 
         VerificationParameters settings = new VerificationParameters(null, (VerificationMode) modeCombo.getSelectedItem(),
-                0, solutionMode, solutionLimin, propertyText.getText(), unsatisfiebleRadioButton.isSelected());
+                0, solutionMode, solutionLimin, propertyText.getText(), unsatisfiableRadioButton.isSelected());
 
         return settings;
     }

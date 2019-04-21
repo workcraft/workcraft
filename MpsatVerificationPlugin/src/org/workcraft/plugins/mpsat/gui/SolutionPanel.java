@@ -1,10 +1,12 @@
 package org.workcraft.plugins.mpsat.gui;
 
 import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.tools.Trace;
 import org.workcraft.plugins.mpsat.tasks.Solution;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
+import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
@@ -17,14 +19,9 @@ public class SolutionPanel extends JPanel {
     private static final int MAX_COLUMN_COUNT = 60;
 
     public SolutionPanel(final WorkspaceEntry we, final Solution solution, final ActionListener closeAction) {
-        double[][] sizes = new double[][] {
-            {TableLayout.FILL, TableLayout.PREFERRED},
-            {TableLayout.PREFERRED, TableLayout.FILL},
-        };
-        TableLayout layout = new TableLayout(sizes);
-        layout.setHGap(SizeHelper.getLayoutHGap());
-        layout.setVGap(SizeHelper.getLayoutVGap());
-        setLayout(layout);
+        setLayout(GuiUtils.createTableLayout(
+                new double[]{TableLayout.FILL, TableLayout.PREFERRED},
+                new double[]{TableLayout.PREFERRED, TableLayout.FILL}));
 
         JLabel commentLabel = new JLabel();
         if (solution.getComment() != null) {
@@ -56,9 +53,9 @@ public class SolutionPanel extends JPanel {
 
         buttonsPanel.add(playButton);
 
-        add(commentLabel, "0 0");
-        add(scrollPane, "0 1");
-        add(buttonsPanel, "1 1");
+        add(commentLabel, new TableLayoutConstraints(0, 0));
+        add(scrollPane, new TableLayoutConstraints(0, 1));
+        add(buttonsPanel, new TableLayoutConstraints(1, 1));
     }
 
     public int getRowCount(Solution solution) {

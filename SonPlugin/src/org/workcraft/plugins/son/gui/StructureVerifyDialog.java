@@ -189,12 +189,12 @@ public class StructureVerifyDialog extends JDialog {
         addAllButton = new JButton("Select All");
         addAllButton.setMaximumSize(buttonSize);
         addAllButton.setFont(this.getFont());
-        addAllButton.addActionListener(event -> actionAddAll());
+        addAllButton.addActionListener(event -> addAllAction());
 
         removeAllButton = new JButton("Remove All");
         removeAllButton.setMaximumSize(buttonSize);
         removeAllButton.setFont(this.getFont());
-        removeAllButton.addActionListener(event -> actionRemoveAll());
+        removeAllButton.addActionListener(event -> removeAllAction());
 
         selectionButtonPanel = new JPanel();
         selectionButtonPanel.setLayout(new BoxLayout(selectionButtonPanel, BoxLayout.Y_AXIS));
@@ -203,7 +203,7 @@ public class StructureVerifyDialog extends JDialog {
         selectionButtonPanel.add(removeAllButton);
     }
 
-    private void actionAddAll() {
+    private void addAllAction() {
         selectedGroups.clear();
         for (int i = 0; i < getList().getModel().getSize(); i++) {
             ((ListItem) getList().getModel().getElementAt(i)).setSelected(true);
@@ -216,7 +216,7 @@ public class StructureVerifyDialog extends JDialog {
         getList().repaint();
     }
 
-    private void actionRemoveAll() {
+    private void removeAllAction() {
         for (int i = 0; i < getList().getModel().getSize(); i++) {
             ((ListItem) getList().getModel().getElementAt(i)).setSelected(false);
             ((ListItem) getList().getModel().getElementAt(i)).setItemColor(Color.BLACK);

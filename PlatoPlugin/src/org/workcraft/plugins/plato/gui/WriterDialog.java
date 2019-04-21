@@ -109,10 +109,10 @@ public class WriterDialog extends JDialog {
             fileBtnPanel.add(dotLayoutCheckBox);
         }
 
-        openFileBtn.addActionListener(event -> actionOpenFile());
-        saveFileBtn.addActionListener(event -> actionSaveFile());
-        componentBtn.addActionListener(event -> actionComponent());
-        systemBtn.addActionListener(event -> actionSystem());
+        openFileBtn.addActionListener(event -> openFileAction());
+        saveFileBtn.addActionListener(event -> saveFileAction());
+        componentBtn.addActionListener(event -> componentAction());
+        systemBtn.addActionListener(event -> systemAction());
 
         final IncludesDialog dialog = new IncludesDialog(this, lastDirUsed, includeList);
 
@@ -121,7 +121,7 @@ public class WriterDialog extends JDialog {
         btnPanel.add(fileBtnPanel, BorderLayout.WEST);
     }
 
-    private void actionOpenFile() {
+    private void openFileAction() {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileFilter(new FileNameExtensionFilter("Haskell/Concept file (.hs)", "hs"));
         chooser.setCurrentDirectory(lastDirUsed);
@@ -139,7 +139,7 @@ public class WriterDialog extends JDialog {
         }
     }
 
-    private void actionSaveFile() {
+    private void saveFileAction() {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileFilter(new FileNameExtensionFilter("Haskell/Concept file (.hs)", "hs"));
         chooser.setCurrentDirectory(lastDirUsed);
@@ -162,13 +162,13 @@ public class WriterDialog extends JDialog {
         }
     }
 
-    private void actionComponent() {
+    private void componentAction() {
         conceptsText.setText(getDefaultComponentText());
         lastFileUsed = null;
         changed = false;
     }
 
-    private void actionSystem() {
+    private void systemAction() {
         conceptsText.setText(getDefaultSystemText());
         lastFileUsed = null;
         changed = false;

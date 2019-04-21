@@ -1,6 +1,7 @@
 package org.workcraft.plugins.cpog.gui;
 
 import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.layouts.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.commands.PetriToCpogParameters;
@@ -31,20 +32,13 @@ public class PetriToCpogDialog extends JDialog {
         createSettingPanel();
         createButtonPanel(settings);
 
-        double[][] size = new double[][] {
-            {TableLayout.FILL},
-            {110, TableLayout.FILL},
-        };
+        JPanel content = new JPanel(GuiUtils.createTableLayout(
+                new double[]{TableLayout.FILL}, new double[]{110, TableLayout.FILL}));
 
-        TableLayout layout = new TableLayout(size);
-        layout.setHGap(3);
-        layout.setVGap(3);
-
-        JPanel content = new JPanel(layout);
         content.setBorder(SizeHelper.getEmptyBorder());
 
-        content.add(settingPanel, "0 0");
-        content.add(buttonPanel, "0 1");
+        content.add(settingPanel, new TableLayoutConstraints(0, 0));
+        content.add(buttonPanel, new TableLayoutConstraints(0, 1));
 
         setContentPane(content);
 
@@ -59,7 +53,6 @@ public class PetriToCpogDialog extends JDialog {
 
     /** creates the panel containing the settings of the converter **/
     private void createSettingPanel() {
-
         settingPanel = new JPanel(new SimpleFlowLayout());
 
         // reduction of maximal significant runs, check box
@@ -122,16 +115,16 @@ public class PetriToCpogDialog extends JDialog {
 
         // run the converter
         JButton runButton = GuiUtils.createDialogButton("Run");
-        runButton.addActionListener(event -> actionRun(settings));
+        runButton.addActionListener(event -> runAction(settings));
 
         // close the converter
         JButton closeButton = GuiUtils.createDialogButton("Close");
-        closeButton.addActionListener(event -> actionClose());
+        closeButton.addActionListener(event -> closeAction());
         buttonPanel.add(runButton);
         buttonPanel.add(closeButton);
     }
 
-    private void actionRun(PetriToCpogParameters settings) {
+    private void runAction(PetriToCpogParameters settings) {
         settings.setReduce(reduceCheck.isSelected());
         settings.setIsomorphism(isomorphismCheck.isSelected());
         settings.setSignificance(significanceBox.getSelectedIndex());
@@ -140,7 +133,7 @@ public class PetriToCpogDialog extends JDialog {
         setVisible(false);
     }
 
-    private void actionClose() {
+    private void closeAction() {
         modalResult = false;
         setVisible(false);
     }

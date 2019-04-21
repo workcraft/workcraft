@@ -1,6 +1,7 @@
 package org.workcraft.plugins.cpog.scenco;
 
 import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.layouts.SimpleFlowLayout;
@@ -60,22 +61,15 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
             height = 110;
         }
 
-        double[][] size = new double[][] {
-            {TableLayout.FILL},
-            {60, height, TableLayout.FILL, 39},
-        };
+        JPanel content = new JPanel(GuiUtils.createTableLayout(
+                new double[]{TableLayout.FILL}, new double[]{60, height, TableLayout.FILL, 39}));
 
-        TableLayout layout = new TableLayout(size);
-        layout.setHGap(3);
-        layout.setVGap(3);
-
-        JPanel content = new JPanel(layout);
         content.setBorder(SizeHelper.getEmptyBorder());
 
-        content.add(standardPanel, "0, 0");
-        content.add(generationPanel, "0 1");
-        content.add(customPanel, "0 2");
-        content.add(buttonsPanel, "0 3");
+        content.add(standardPanel, new TableLayoutConstraints(0, 0));
+        content.add(generationPanel, new TableLayoutConstraints(0, 1));
+        content.add(customPanel, new TableLayoutConstraints(0, 2));
+        content.add(buttonsPanel, new TableLayoutConstraints(0, 3));
 
         setContentPane(content);
 
@@ -104,10 +98,10 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
         customEncLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 customEncodings.setSelected(!customEncodings.isSelected());
-                actionCustomEncoding();
+                customEncodingAction();
             }
         });
-        customEncodings.addActionListener(event -> actionCustomEncoding());
+        customEncodings.addActionListener(event -> customEncodingAction());
 
         JLabel bitsLabel = new JLabel(ScencoHelper.textEncodingBitWidth);
         circuitSizeLabel = new JLabel(ScencoHelper.textCircuitSizeLabel);
@@ -123,7 +117,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
         bitsText.setPreferredSize(ScencoHelper.dimensionBitEncodingWidthText);
         bitsText.setBackground(Color.LIGHT_GRAY);
         bitsText.setEnabled(false);
-        bitsText.addActionListener(event -> actionBits());
+        bitsText.addActionListener(event -> bitsAction());
 
         circuitSizeText = new JTextField();
         circuitSizeText.setText(String.valueOf(bits + 2));
@@ -175,7 +169,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
 
     }
 
-    private void actionBits() {
+    private void bitsAction() {
         if (Integer.parseInt(bitsText.getText()) < bits + 1) {
             DialogUtils.showError("Bits selected are not enough to encode all scenarios.");
 
@@ -190,7 +184,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
         }
     }
 
-    private void actionCustomEncoding() {
+    private void customEncodingAction() {
         if (customEncodings.isSelected()) {
             encodingTable.setEnabled(true);
             encodingTable.setBackground(Color.WHITE);
@@ -285,7 +279,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
         buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
         JButton saveButton = GuiUtils.createDialogButton("Run");
-        saveButton.addActionListener(event -> actionSave(mode));
+        saveButton.addActionListener(event -> saveAction(mode));
 
         JButton closeButton = GuiUtils.createDialogButton("Close");
         closeButton.addActionListener(e -> setVisible(false));
@@ -294,7 +288,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
         buttonsPanel.add(closeButton);
     }
 
-    private void actionSave(final int mode) {
+    private void saveAction(final int mode) {
         setVisible(false);
 
         // ENCODER EXECUTION

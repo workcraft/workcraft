@@ -1,6 +1,5 @@
 package org.workcraft.plugins.cpog.scenco;
 
-import info.clearthought.layout.TableLayout;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.layouts.SimpleFlowLayout;
@@ -30,15 +29,6 @@ public class SatBasedScencoDialog extends AbstractScencoDialog {
         createStandardPanel();
         createGenerationPanel();
         createButtonPanel();
-
-        double[][] size = new double[][] {
-            {TableLayout.FILL},
-            {60, TableLayout.FILL, 39},
-        };
-
-        TableLayout layout = new TableLayout(size);
-        layout.setHGap(3);
-        layout.setVGap(3);
 
         JPanel content = new JPanel(new BorderLayout());
 
@@ -131,7 +121,7 @@ public class SatBasedScencoDialog extends AbstractScencoDialog {
         buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
         JButton runButton = GuiUtils.createDialogButton("Run");
-        runButton.addActionListener(event -> actionRun());
+        runButton.addActionListener(event -> runAction());
 
         JButton closeButton = GuiUtils.createDialogButton("Close");
         closeButton.addActionListener(e -> setVisible(false));
@@ -140,7 +130,7 @@ public class SatBasedScencoDialog extends AbstractScencoDialog {
         buttonsPanel.add(closeButton);
     }
 
-    private void actionRun() {
+    private void runAction() {
         setVisible(false);
 
         // ENCODER EXECUTION

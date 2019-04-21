@@ -1,13 +1,7 @@
 package org.workcraft.gui.workspace;
 
-import java.util.Set;
-
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
+import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.trees.FilteredTreeSource;
 import org.workcraft.gui.trees.TreeWindow;
@@ -16,7 +10,10 @@ import org.workcraft.types.Func;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.Workspace;
 
-import info.clearthought.layout.TableLayout;
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.util.Set;
 
 @SuppressWarnings("serial")
 public class WorkspaceChooser extends JPanel {
@@ -29,17 +26,11 @@ public class WorkspaceChooser extends JPanel {
         super();
         this.filter = filter;
 
-        double[][] sizes = {
-            {TableLayout.FILL},
-            {TableLayout.PREFERRED, TableLayout.FILL},
-        };
+        setLayout(GuiUtils.createTableLayout(
+                new double[]{TableLayout.FILL},
+                new double[]{TableLayout.PREFERRED, TableLayout.FILL}));
 
-        final TableLayout layout = new TableLayout(sizes);
-        layout.setHGap(SizeHelper.getLayoutHGap());
-        layout.setVGap(SizeHelper.getLayoutVGap());
-
-        this.setBorder(SizeHelper.getEmptyBorder());
-        this.setLayout(layout);
+        setBorder(SizeHelper.getEmptyBorder());
 
         nameFilter = new JTextField();
 
@@ -61,7 +52,7 @@ public class WorkspaceChooser extends JPanel {
             }
         });
 
-        this.add(GuiUtils.createWideLabeledComponent(nameFilter, "Search: "), "0 0");
+        add(GuiUtils.createWideLabeledComponent(nameFilter, "Search: "), new TableLayoutConstraints(0, 0));
 
         filteredSource = new FilteredTreeSource<>(workspace.getTree(), filter);
 
@@ -72,7 +63,7 @@ public class WorkspaceChooser extends JPanel {
 
         expand(filteredSource.getRoot());
 
-        this.add(scroll, "0 1");
+        add(scroll, new TableLayoutConstraints(0, 1));
 
         filteredSource.setFilter(filter);
     }

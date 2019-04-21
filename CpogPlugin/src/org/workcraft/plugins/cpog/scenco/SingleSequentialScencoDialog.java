@@ -1,6 +1,5 @@
 package org.workcraft.plugins.cpog.scenco;
 
-import info.clearthought.layout.TableLayout;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.plugins.cpog.EncoderSettings;
@@ -14,7 +13,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
-@SuppressWarnings("serial")
 public class SingleSequentialScencoDialog extends AbstractScencoDialog {
 
     private JCheckBox verboseModeCheck, abcCheck;
@@ -27,15 +25,6 @@ public class SingleSequentialScencoDialog extends AbstractScencoDialog {
 
         createStandardPanel();
         createButtonPanel(title);
-
-        double[][] size = new double[][] {
-            {TableLayout.FILL},
-            {60, TableLayout.FILL},
-        };
-
-        TableLayout layout = new TableLayout(size);
-        layout.setHGap(SizeHelper.getLayoutHGap());
-        layout.setVGap(SizeHelper.getLayoutVGap());
 
         JPanel content = new JPanel(new BorderLayout());
         content.setBorder(SizeHelper.getEmptyBorder());
@@ -101,7 +90,7 @@ public class SingleSequentialScencoDialog extends AbstractScencoDialog {
         buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
         JButton runButton = GuiUtils.createDialogButton("Run");
-        runButton.addActionListener(event -> actionRun(string));
+        runButton.addActionListener(event -> runAction(string));
 
         JButton closeButton = GuiUtils.createDialogButton("Close");
         closeButton.addActionListener(event -> setVisible(false));
@@ -110,7 +99,7 @@ public class SingleSequentialScencoDialog extends AbstractScencoDialog {
         buttonsPanel.add(closeButton);
     }
 
-    private void actionRun(final String string) {
+    private void runAction(final String string) {
         setVisible(false);
 
         // ENCODER EXECUTION

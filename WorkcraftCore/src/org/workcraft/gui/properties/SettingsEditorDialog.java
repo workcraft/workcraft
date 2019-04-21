@@ -73,7 +73,7 @@ public class SettingsEditorDialog extends JDialog {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                actionOk();
+                okAction();
             }
         });
 
@@ -227,13 +227,13 @@ public class SettingsEditorDialog extends JDialog {
         splitPane.setResizeWeight(0.1);
 
         JButton okButton = GuiUtils.createDialogButton("OK");
-        okButton.addActionListener(event -> actionOk());
+        okButton.addActionListener(event -> okAction());
 
         JButton cancelButton = GuiUtils.createDialogButton("Cancel");
-        cancelButton.addActionListener(event -> actionCancel());
+        cancelButton.addActionListener(event -> cancelAction());
 
         restoreButton = GuiUtils.createDialogButton("Restore defaults (all)");
-        restoreButton.addActionListener(event -> actionRestore());
+        restoreButton.addActionListener(event -> restoreAction());
 
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
         buttonsPanel.add(okButton);
@@ -246,22 +246,22 @@ public class SettingsEditorDialog extends JDialog {
         contentPanel.add(buttonsPanel, BorderLayout.SOUTH);
         getRootPane().setDefaultButton(okButton);
 
-        getRootPane().registerKeyboardAction(event -> actionOk(),
+        getRootPane().registerKeyboardAction(event -> okAction(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-        getRootPane().registerKeyboardAction(event -> actionCancel(),
+        getRootPane().registerKeyboardAction(event -> cancelAction(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
     }
 
-    private void actionOk() {
+    private void okAction() {
         modalResult = true;
         setObject(null);
         setVisible(false);
     }
 
-    private void actionCancel() {
+    private void cancelAction() {
         modalResult = false;
         if ((currentPage != null) && (currentConfig != null)) {
             currentPage.load(currentConfig);
@@ -270,7 +270,7 @@ public class SettingsEditorDialog extends JDialog {
         setVisible(false);
     }
 
-    private void actionRestore() {
+    private void restoreAction() {
         if (currentPage != null) {
             currentPage.load(new Config());
             setObject(currentPage);

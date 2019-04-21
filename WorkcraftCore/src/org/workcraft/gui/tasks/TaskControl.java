@@ -1,18 +1,13 @@
 package org.workcraft.gui.tasks;
 
-import java.awt.Color;
-import java.awt.Dimension;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.border.Border;
-
-import org.workcraft.dom.visual.SizeHelper;
-
 import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstraints;
+import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.utils.GuiUtils;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import java.awt.*;
 
 @SuppressWarnings("serial")
 public class TaskControl extends JPanel {
@@ -23,21 +18,14 @@ public class TaskControl extends JPanel {
     volatile boolean cancelRequested;
 
     public TaskControl(String taskDescription) {
-        double[][] size = {
-            {TableLayout.FILL, 80, 120},
-            {25, 25, 25},
-        };
+        setLayout(GuiUtils.createTableLayout(
+                new double[]{TableLayout.FILL, 80, 120},
+                new double[]{25, 25, 25}));
 
         Border outsideBorder = BorderFactory.createLineBorder(Color.LIGHT_GRAY);
         Border insideBorder = SizeHelper.getEmptyBorder();
         Border lineBorder = BorderFactory.createCompoundBorder(outsideBorder, insideBorder);
-
         setBorder(lineBorder);
-
-        TableLayout layout = new TableLayout(size);
-        layout.setHGap(3);
-        layout.setVGap(3);
-        setLayout(layout);
 
         label = new JLabel(taskDescription);
         label.setMinimumSize(new Dimension(100, 20));
@@ -54,9 +42,9 @@ public class TaskControl extends JPanel {
         btnCancel = new JButton("Cancel");
         btnCancel.addActionListener(event -> cancel());
 
-        add(label, "0,0,2,0");
-        add(progressBar, "0,1,2,1");
-        add(btnCancel, "2,2");
+        add(label, new TableLayoutConstraints(0, 0, 2, 0));
+        add(progressBar, new TableLayoutConstraints(0, 1, 2, 1));
+        add(btnCancel, new TableLayoutConstraints(2, 2));
     }
 
     public void progressUpdate(final double completion) {

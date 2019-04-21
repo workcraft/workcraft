@@ -53,12 +53,12 @@ public class IncludesDialog extends JDialog {
         btnPanel.add(removeBtn);
         btnPanel.add(okBtn);
 
-        addBtn.addActionListener(event -> actionAdd());
-        removeBtn.addActionListener(event -> actionRemove());
+        addBtn.addActionListener(event -> addAction());
+        removeBtn.addActionListener(event -> removeAction());
         okBtn.addActionListener(event -> setVisible(false));
     }
 
-    private void actionAdd() {
+    private void addAction() {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         chooser.setFileFilter(new FileNameExtensionFilter("Haskell/Concept file (.hs)", "hs"));
@@ -76,7 +76,7 @@ public class IncludesDialog extends JDialog {
         }
     }
 
-    private void actionRemove() {
+    private void removeAction() {
         if (!includeList.isSelectionEmpty()) {
             includeListModel.removeElement(includeList.getSelectedValue());
         }

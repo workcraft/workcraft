@@ -72,7 +72,6 @@ public class ConformationNwayVerificationCommand extends AbstractVerificationCom
         } else {
             MainWindow mainWindow = framework.getMainWindow();
             NwayDialog dialog = new NwayDialog(mainWindow);
-            dialog.checkAll();
             if (!dialog.reveal()) {
                 return null;
             }

@@ -7,19 +7,23 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-@SuppressWarnings("serial")
-public class ModalDialog extends JDialog {
+public class ModalDialog<T> extends JDialog {
 
+    private final T userData;
+    private JButton okButton;
     private boolean modalResult;
 
-    public ModalDialog(Window owner, String title) {
+    public ModalDialog(Window owner, String title, T userData) {
         super(owner, title, ModalityType.DOCUMENT_MODAL);
+        this.userData = userData;
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 
-        getRootPane().registerKeyboardAction(event -> actionOk(),
+        getRootPane().setDefaultButton(okButton);
+        getRootPane().registerKeyboardAction(event -> okAction(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-        getRootPane().registerKeyboardAction(event -> actionCancel(),
+        getRootPane().registerKeyboardAction(event -> cancelAction(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
@@ -38,25 +42,35 @@ public class ModalDialog extends JDialog {
         return new JPanel();
     }
 
-    private JPanel createButtonsPanel() {
+    public JPanel createButtonsPanel() {
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
-        JButton okButton = GuiUtils.createDialogButton("OK");
-        okButton.addActionListener(event -> actionOk());
+        okButton = GuiUtils.createDialogButton("OK");
+        okButton.addActionListener(event -> okAction());
 
         JButton cancelButton = GuiUtils.createDialogButton("Cancel");
-        cancelButton.addActionListener(event -> actionCancel());
+        cancelButton.addActionListener(event -> cancelAction());
 
         buttonsPanel.add(okButton);
         buttonsPanel.add(cancelButton);
         return buttonsPanel;
     }
 
-    private void actionOk() {
-        modalResult = true;
-        setVisible(false);
+    public T getUserData() {
+        return userData;
     }
 
-    private void actionCancel() {
+    public void setOkEnableness(boolean value) {
+        okButton.setEnabled(value);
+    }
+
+    public void okAction() {
+        if (okButton.isEnabled()) {
+            modalResult = true;
+            setVisible(false);
+        }
+    }
+
+    public void cancelAction() {
         modalResult = false;
         setVisible(false);
     }

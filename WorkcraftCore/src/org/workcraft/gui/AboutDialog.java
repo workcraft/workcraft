@@ -29,7 +29,7 @@ public class AboutDialog extends JDialog {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                ok();
+                okAction();
             }
         });
 
@@ -72,7 +72,7 @@ public class AboutDialog extends JDialog {
         });
 
         JButton okButton = GuiUtils.createDialogButton("OK");
-        okButton.addActionListener(event -> ok());
+        okButton.addActionListener(event -> okAction());
 
         JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
         buttonsPane.add(okButton);
@@ -85,11 +85,11 @@ public class AboutDialog extends JDialog {
         setContentPane(contentPane);
         getRootPane().setDefaultButton(okButton);
 
-        getRootPane().registerKeyboardAction(event -> ok(),
+        getRootPane().registerKeyboardAction(event -> okAction(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-        getRootPane().registerKeyboardAction(event -> ok(),
+        getRootPane().registerKeyboardAction(event -> okAction(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
@@ -99,7 +99,7 @@ public class AboutDialog extends JDialog {
         setLocationRelativeTo(owner);
     }
 
-    private void ok() {
+    private void okAction() {
         modalResult = true;
         setVisible(false);
     }
