@@ -6,10 +6,10 @@ import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.gui.properties.FlatHeaderRenderer;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
+import org.workcraft.gui.properties.FlatHeaderRenderer;
 import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
 import org.workcraft.types.Func;
 import org.workcraft.utils.GuiUtils;
@@ -116,31 +116,21 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         JButton mergeTraceButton = GuiUtils.createIconButton(ICON_MERGE_TRACE, HINT_MERGE_TRACE);
         JButton saveInitStateButton = GuiUtils.createIconButton(ICON_SAVE_INITIL_STATE, HINT_SAVE_INITIAL_STATE);
 
-        FlowLayout flowLayout = new FlowLayout();
-        Dimension buttonSize = playButton.getPreferredSize();
-        int buttonWidth = (int) Math.round(buttonSize.getWidth() + flowLayout.getHgap());
-        int buttonHeight = (int) Math.round(buttonSize.getHeight() + flowLayout.getVgap());
-        Dimension panelSize = new Dimension(buttonWidth * 5 + flowLayout.getHgap(), buttonHeight + flowLayout.getVgap());
-
-        JPanel simulationControl = new JPanel(flowLayout);
-        simulationControl.setPreferredSize(panelSize);
-        simulationControl.setMaximumSize(panelSize);
+        JPanel simulationControl = new JPanel();
         simulationControl.add(playButton);
         simulationControl.add(backwardButton);
         simulationControl.add(forwardButton);
         simulationControl.add(recordButton);
         simulationControl.add(ejectButton);
+        GuiUtils.setButtonPanelLayout(simulationControl, playButton.getPreferredSize());
 
         JPanel speedControl = new JPanel();
         speedControl.setLayout(new BorderLayout());
-        speedControl.setPreferredSize(panelSize);
-        speedControl.setMaximumSize(panelSize);
+        speedControl.setPreferredSize(simulationControl.getPreferredSize());
+        speedControl.setMaximumSize(simulationControl.getMaximumSize());
         speedControl.add(speedSlider, BorderLayout.CENTER);
 
         JPanel traceControl = new JPanel();
-        traceControl.setLayout(flowLayout);
-        traceControl.setPreferredSize(panelSize);
-        traceControl.setMaximumSize(panelSize);
         if (enableTraceGraph) {
             traceControl.add(generateGraphButton);
         }
@@ -148,6 +138,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         traceControl.add(pasteStateButton);
         traceControl.add(mergeTraceButton);
         traceControl.add(saveInitStateButton);
+        GuiUtils.setButtonPanelLayout(simulationControl, copyStateButton.getPreferredSize());
 
         controlPanel = new JPanel();
         controlPanel.setLayout(new WrapLayout());

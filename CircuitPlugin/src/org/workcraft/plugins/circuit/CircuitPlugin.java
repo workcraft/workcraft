@@ -92,7 +92,9 @@ public class CircuitPlugin implements Plugin {
         ScriptableCommandUtils.register(ForceInitInputPortsTagCommand.class, "tagCircuitForceInitInputPorts",
                 "force init all input ports in the Circuit 'work'  (environment must initialise them)");
         ScriptableCommandUtils.register(ForceInitConflictPinsTagCommand.class, "tagCircuitForceInitConflictPins",
-                "force init pins with conflicting initial state in the Circuit 'work'");
+                "force init output pins with conflicting initial state in the Circuit 'work'");
+        ScriptableCommandUtils.register(ForceInitSequentialPinsTagCommand.class, "tagCircuitForceInitSequentialPins",
+                "force init output pins of sequential gates in the Circuit 'work'");
         ScriptableCommandUtils.register(ForceInitAutoAppendTagCommand.class, "tagCircuitForceInitAutoAppend",
                 "auto-append force init pins as necessary to complete initialisation of the Circuit 'work'");
         ScriptableCommandUtils.register(ForceInitAutoDiscardTagCommand.class, "tagCircuitForceInitAutoDiscard",

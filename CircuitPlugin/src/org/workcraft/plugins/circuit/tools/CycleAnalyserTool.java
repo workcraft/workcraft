@@ -44,6 +44,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     @Override
     public JPanel getControlsPanel(final GraphEditor editor) {
         JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(SizeHelper.getEmptyBorder());
         panel.add(getLegendControlsPanel(editor), BorderLayout.NORTH);
         panel.add(getBreakControlsPanel(editor), BorderLayout.CENTER);
         panel.add(getScanControlsPanel(editor), BorderLayout.SOUTH);
@@ -86,20 +87,12 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
                 "Clear all path breaker pins");
         tagPathBreakerClearAllButton.addActionListener(l -> changePathBreaker(editor, c -> CycleUtils.tagPathBreakerClearAll(c)));
 
-        FlowLayout flowLayout = new FlowLayout();
-        Dimension buttonSize = tagPathBreakerClearAllButton.getPreferredSize();
-        int buttonWidth = (int) Math.round(buttonSize.getWidth() + flowLayout.getHgap());
-        int buttonHeight = (int) Math.round(buttonSize.getHeight() + flowLayout.getVgap());
-        Dimension panelSize = new Dimension(buttonWidth * 3 + flowLayout.getHgap(), buttonHeight + flowLayout.getVgap());
-
-        JPanel buttonPanel = new JPanel(new WrapLayout());
-        buttonPanel.setLayout(flowLayout);
-        buttonPanel.setPreferredSize(panelSize);
-        buttonPanel.setMaximumSize(panelSize);
+        JPanel buttonPanel = new JPanel();
         buttonPanel.add(tagPathBreakerSelfloopPinsButton);
         buttonPanel.add(tagPathBreakerAutoAppendButton);
         buttonPanel.add(tagPathBreakerAutoDiscardButton);
         buttonPanel.add(tagPathBreakerClearAllButton);
+        GuiUtils.setButtonPanelLayout(buttonPanel, tagPathBreakerClearAllButton.getPreferredSize());
 
         JPanel controlPanel = new JPanel(new WrapLayout());
         controlPanel.add(buttonPanel);

@@ -44,6 +44,17 @@ public class ResetUtils {
         return setForceInit(contacts, true);
     }
 
+    public static Set<Contact> tagForceInitSequentialPins(Circuit circuit) {
+        HashSet<FunctionContact> contacts = new HashSet<>();
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            for (FunctionContact contact : component.getFunctionOutputs()) {
+                if ((contact.getSetFunction() == null) || (contact.getResetFunction() == null)) continue;
+                contacts.add(contact);
+            }
+        }
+        return setForceInit(contacts, true);
+    }
+
     public static boolean isEvaluatedHigh(BooleanFormula setFunction, BooleanFormula resetFunction) {
         return One.instance().equals(setFunction) && ((resetFunction == null) || Zero.instance().equals(resetFunction));
     }

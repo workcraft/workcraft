@@ -35,6 +35,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     @Override
     public JPanel getControlsPanel(final GraphEditor editor) {
         JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(SizeHelper.getEmptyBorder());
         panel.add(getLegendControlsPanel(editor), BorderLayout.NORTH);
         panel.add(getForcedControlsPanel(editor), BorderLayout.CENTER);
         panel.add(getResetControlsPanel(editor), BorderLayout.SOUTH);
@@ -64,8 +65,13 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
         JButton tagForceInitNecessaryPinsButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/circuit-initialisation-conflict_pins.svg"),
-                "Force init pins with conflicting initial state");
+                "Force init output pins with conflicting initial state");
         tagForceInitNecessaryPinsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitConflictPins(c)));
+
+        JButton tagForceInitSequentialPinsButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-initialisation-sequential_pins.svg"),
+                "Force init output pins of sequential gates");
+        tagForceInitSequentialPinsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitSequentialPins(c)));
 
         JButton tagForceInitAutoAppendButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/circuit-initialisation-auto_append.svg"),
@@ -82,20 +88,14 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
                 "Clear all force init ports and pins");
         tagForceInitClearAllButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitClearAll(c)));
 
-        FlowLayout flowLayout = new FlowLayout();
-        Dimension buttonSize = tagForceInitInputPortsButton.getPreferredSize();
-        int buttonWidth = (int) Math.round(buttonSize.getWidth() + flowLayout.getHgap());
-        int buttonHeight = (int) Math.round(buttonSize.getHeight() + flowLayout.getVgap());
-        Dimension panelSize = new Dimension(buttonWidth * 5 + flowLayout.getHgap(), buttonHeight + flowLayout.getVgap());
-
-        JPanel buttonPanel = new JPanel(flowLayout);
-        buttonPanel.setPreferredSize(panelSize);
-        buttonPanel.setMaximumSize(panelSize);
+        JPanel buttonPanel = new JPanel();
         buttonPanel.add(tagForceInitInputPortsButton);
         buttonPanel.add(tagForceInitNecessaryPinsButton);
+        buttonPanel.add(tagForceInitSequentialPinsButton);
         buttonPanel.add(tagForceInitAutoAppendButton);
         buttonPanel.add(tagForceInitAutoDiscardButton);
         buttonPanel.add(tagForceInitClearAllButton);
+        GuiUtils.setButtonPanelLayout(buttonPanel, tagForceInitInputPortsButton.getPreferredSize());
 
         JPanel controlPanel = new JPanel(new WrapLayout());
         controlPanel.add(buttonPanel);

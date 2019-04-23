@@ -220,11 +220,28 @@ public class GuiUtils {
         return result;
     }
 
+    public static BorderLayout createBorderLayout() {
+        return new BorderLayout(SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap());
+    }
+
     public static TableLayout createTableLayout(double[] columnSizes, double[] rowSizes) {
         TableLayout result = new TableLayout(new double[][]{columnSizes, rowSizes});
         result.setHGap(SizeHelper.getLayoutHGap());
         result.setVGap(SizeHelper.getLayoutVGap());
         return result;
+    }
+
+    public static void setButtonPanelLayout(JPanel panel, Dimension buttonSize) {
+        FlowLayout layout = new FlowLayout();
+        panel.setLayout(layout);
+        int hGap = layout.getHgap();
+        int vGap = layout.getVgap();
+        int buttonWidth = (int) Math.round(buttonSize.getWidth() + hGap);
+        int buttonHeight = (int) Math.round(buttonSize.getHeight() + vGap);
+        int buttonCount = panel.getComponentCount();
+        Dimension panelSize = new Dimension(buttonWidth * buttonCount + hGap, buttonHeight + vGap);
+        panel.setPreferredSize(panelSize);
+        panel.setMaximumSize(panelSize);
     }
 
 }
