@@ -14,11 +14,9 @@ public class TbufInsertionCommand extends AbstractInsertionCommand {
 
     @Override
     public Void execute(WorkspaceEntry we) {
+        we.saveMemento();
         VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
-        if (ScanUtils.check(circuit.getMathModel())) {
-            we.saveMemento();
-            ScanUtils.insertTestableBuffers(circuit);
-        }
+        ScanUtils.insertTestableBuffers(circuit);
         return null;
     }
 

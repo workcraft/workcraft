@@ -2,7 +2,6 @@ package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
-import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.One;
@@ -10,8 +9,6 @@ import org.workcraft.formula.Zero;
 import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.LogUtils;
 
 import java.util.*;
 
@@ -94,6 +91,10 @@ public class ScanUtils {
             List<VisualFunctionContact> ports) {
 
         component.setRenderType(ComponentRenderingResult.RenderType.BOX);
+        String moduleName = component.getReferencedComponent().getModule();
+        if (!moduleName.isEmpty()) {
+            component.getReferencedComponent().setModule(moduleName + CircuitSettings.getScanSuffix());
+        }
         Iterator<VisualFunctionContact> iterator = ports.iterator();
         for (String name : CircuitSettings.parseScanPins()) {
             String ref = NamespaceHelper.getReference(circuit.getMathReference(component), name);
@@ -144,16 +145,4 @@ public class ScanUtils {
         return result;
     }
 
-    public static boolean check(Circuit circuit) {
-        Set<FunctionComponent> cycleComponents = CycleUtils.getCycledComponents(circuit);
-        if (cycleComponents.isEmpty()) {
-            return true;
-        }
-        ArrayList<String> refs = ReferenceHelper.getReferenceList(circuit, cycleComponents);
-        String msg = "All cycles must be broken before inserting testable buffers or scan.\n" +
-                LogUtils.getTextWithRefs("Problematic component", refs);
-
-        DialogUtils.showError(msg);
-        return false;
-    }
 }

@@ -14,11 +14,9 @@ public class ScanInsertionCommand extends AbstractInsertionCommand {
 
     @Override
     public Void execute(WorkspaceEntry we) {
+        we.saveMemento();
         VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
-        if (ScanUtils.check(circuit.getMathModel())) {
-            we.saveMemento();
-            ScanUtils.insertScan(circuit);
-        }
+        ScanUtils.insertScan(circuit);
         return null;
     }
 

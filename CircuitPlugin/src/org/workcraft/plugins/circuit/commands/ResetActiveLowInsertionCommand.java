@@ -12,11 +12,9 @@ public class ResetActiveLowInsertionCommand extends AbstractInsertionCommand {
     @Override
     public Void execute(WorkspaceEntry we) {
         if (isApplicableTo(we) && VerificationUtils.checkCircuitHasComponents(we)) {
+            we.saveMemento();
             VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
-            if (ResetUtils.check(circuit.getMathModel())) {
-                we.saveMemento();
-                ResetUtils.insertReset(circuit, CircuitSettings.getResetName(), true);
-            }
+            ResetUtils.insertReset(circuit, CircuitSettings.getResetPort(), true);
         }
         return null;
     }

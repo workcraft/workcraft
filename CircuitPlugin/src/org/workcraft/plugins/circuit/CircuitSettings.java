@@ -59,10 +59,12 @@ public class CircuitSettings implements Settings {
     private static final String keyNorbData = prefix + ".norbData";
     private static final String keyMutexData = prefix + ".mutexData";
     private static final String keyBusSuffix = prefix + ".busSuffix";
-    private static final String keyResetName = prefix + ".resetName";
+    private static final String keyResetPort = prefix + ".resetPort";
+    private static final String keyResetPin = prefix + ".resetPin";
     private static final String keyTbufData = prefix + ".tbufData";
     private static final String keyScanPorts = prefix + ".scanPorts";
     private static final String keyScanPins = prefix + ".scanPins";
+    private static final String keyScanSuffix = prefix + ".scanSuffix";
 
     private static final Double defaultBorderWidth = 0.06;
     private static final Double defaultWireWidth = 0.04;
@@ -82,10 +84,12 @@ public class CircuitSettings implements Settings {
     private static final String defaultNorbData = "NOR2B (AN, B, ON)";
     private static final String defaultMutexData = "MUTEX ((r1, g1), (r2, g2))";
     private static final String defaultBusSuffix = "__$";
-    private static final String defaultResetName = "reset";
+    private static final String defaultResetPort = "reset";
+    private static final String defaultResetPin = "R";
     private static final String defaultTbufData = "TBUF (I, O)";
     private static final String defaultScanPorts = "scanin, clock";
     private static final String defaultScanPins = "SI, CK";
+    private static final String defaultScanSuffix = "_scan";
 
     private static Double borderWidth = defaultBorderWidth;
     private static Double wireWidth = defaultWireWidth;
@@ -105,10 +109,12 @@ public class CircuitSettings implements Settings {
     private static String norbData = defaultNorbData;
     private static String mutexData = defaultMutexData;
     private static String busSuffix = defaultBusSuffix;
-    private static String resetName = defaultResetName;
+    private static String resetPort = defaultResetPort;
+    private static String resetPin = defaultResetPin;
     private static String tbufData = defaultTbufData;
     private static String scanPorts = defaultScanPorts;
     private static String scanPins = defaultScanPins;
+    private static String scanSuffix = defaultScanSuffix;
 
     public CircuitSettings() {
         properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
@@ -375,11 +381,23 @@ public class CircuitSettings implements Settings {
                 this, "Reset port name", String.class) {
             @Override
             public void setter(CircuitSettings object, String value) {
-                setResetName(value);
+                setResetPort(value);
             }
             @Override
             public String getter(CircuitSettings object) {
-                return getResetName();
+                return getResetPort();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, String>(
+                this, "Reset pin name", String.class) {
+            @Override
+            public void setter(CircuitSettings object, String value) {
+                setResetPin(value);
+            }
+            @Override
+            public String getter(CircuitSettings object) {
+                return getResetPin();
             }
         });
 
@@ -430,6 +448,18 @@ public class CircuitSettings implements Settings {
                 return getScanPins();
             }
         });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, String>(
+                this, "Scan module suffix", String.class) {
+            @Override
+            public void setter(CircuitSettings object, String value) {
+                setScanSuffix(value);
+            }
+            @Override
+            public String getter(CircuitSettings object) {
+                return getScanSuffix();
+            }
+        });
     }
 
     @Override
@@ -467,10 +497,12 @@ public class CircuitSettings implements Settings {
         setNorbData(config.getString(keyNorbData, defaultNorbData));
         setMutexData(config.getString(keyMutexData, defaultMutexData));
         setBusSuffix(config.getString(keyBusSuffix, defaultBusSuffix));
-        setResetName(config.getString(keyResetName, defaultResetName));
+        setResetPort(config.getString(keyResetPort, defaultResetPort));
+        setResetPin(config.getString(keyResetPin, defaultResetPin));
         setTbufData(config.getString(keyTbufData, defaultTbufData));
         setScanPorts(config.getString(keyScanPorts, defaultScanPorts));
         setScanPins(config.getString(keyScanPins, defaultScanPins));
+        setScanSuffix(config.getString(keyScanSuffix, defaultScanSuffix));
     }
 
     @Override
@@ -493,10 +525,12 @@ public class CircuitSettings implements Settings {
         config.set(keyNorbData, getNorbData());
         config.set(keyMutexData, getMutexData());
         config.set(keyBusSuffix, getBusSuffix());
-        config.set(keyResetName, getResetName());
+        config.set(keyResetPort, getResetPort());
+        config.set(keyResetPin, getResetPin());
         config.set(keyTbufData, getTbufData());
         config.set(keyScanPorts, getScanPorts());
         config.set(keyScanPins, getScanPins());
+        config.set(keyScanSuffix, getScanSuffix());
     }
 
     public static double getBorderWidth() {
@@ -675,12 +709,20 @@ public class CircuitSettings implements Settings {
         busSuffix = value;
     }
 
-    public static String getResetName() {
-        return resetName;
+    public static String getResetPort() {
+        return resetPort;
     }
 
-    public static void setResetName(String value) {
-        resetName = value;
+    public static void setResetPort(String value) {
+        resetPort = value;
+    }
+
+    public static String getResetPin() {
+        return resetPin;
+    }
+
+    public static void setResetPin(String value) {
+        resetPin = value;
     }
 
     public static String getTbufData() {
@@ -717,6 +759,14 @@ public class CircuitSettings implements Settings {
 
     public static List<String> parseScanPins() {
         return ReferenceHelper.parseReferenceList(getScanPins());
+    }
+
+    public static String getScanSuffix() {
+        return scanSuffix;
+    }
+
+    public static void setScanSuffix(String value) {
+        scanSuffix = value;
     }
 
     private static Gate2 parseGate2Data(String str) {

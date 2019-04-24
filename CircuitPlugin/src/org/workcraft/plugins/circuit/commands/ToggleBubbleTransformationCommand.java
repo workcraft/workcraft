@@ -1,7 +1,7 @@
 package org.workcraft.plugins.circuit.commands;
 
-import org.workcraft.commands.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
+import org.workcraft.commands.NodeTransformer;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
@@ -11,9 +11,9 @@ import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -137,7 +137,7 @@ public class ToggleBubbleTransformationCommand extends AbstractTransformationCom
                 if (!label.isEmpty()) {
                     String ref = model.getMathReference(node);
                     LogUtils.logWarning("Label '" + label + "' is removed from component '" + ref + "'.");
-                    component.setLabel("");
+                    component.getReferencedComponent().setModule("");
                 }
                 component.invalidateRenderingResult();
                 model.addToSelection(component);

@@ -22,8 +22,8 @@ import org.workcraft.plugins.stg.Signal;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.LogUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.*;
 
@@ -469,7 +469,7 @@ public class CircuitUtils {
                 DialogUtils.showError("Cannot reuse existing port '" + portName + "' because it is of different type.");
                 return null;
             }
-            DialogUtils.showWarning("Reusing existing port '" + portName + "'.");
+            LogUtils.logWarning("Reusing existing port '" + portName + "'.");
         } else {
             DialogUtils.showError("Cannot insert port '" + portName + "' because a component with the same name already exists.");
             return null;

@@ -141,21 +141,17 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     private void insertTbuf(GraphEditor editor) {
         VisualCircuit circuit = (VisualCircuit) editor.getModel();
-        if (ScanUtils.check(circuit.getMathModel())) {
-            editor.getWorkspaceEntry().saveMemento();
-            ScanUtils.insertTestableBuffers(circuit);
-            updateState(((VisualCircuit) editor.getModel()).getMathModel());
-        }
+        editor.getWorkspaceEntry().saveMemento();
+        ScanUtils.insertTestableBuffers(circuit);
+        updateState(((VisualCircuit) editor.getModel()).getMathModel());
         editor.requestFocus();
     }
 
     private void insertScan(GraphEditor editor) {
         VisualCircuit circuit = (VisualCircuit) editor.getModel();
-        if (ScanUtils.check(circuit.getMathModel())) {
-            editor.getWorkspaceEntry().saveMemento();
-            ScanUtils.insertScan(circuit);
-            updateState(((VisualCircuit) editor.getModel()).getMathModel());
-        }
+        editor.getWorkspaceEntry().saveMemento();
+        ScanUtils.insertScan(circuit);
+        updateState(((VisualCircuit) editor.getModel()).getMathModel());
         editor.requestFocus();
     }
 
@@ -186,7 +182,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     @Override
     public int getHotKeyCode() {
-        return KeyEvent.VK_A;
+        return KeyEvent.VK_Y;
     }
 
     @Override

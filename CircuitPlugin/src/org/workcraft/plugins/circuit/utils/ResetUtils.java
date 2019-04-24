@@ -1,15 +1,16 @@
 package org.workcraft.plugins.circuit.utils;
 
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.references.Identifier;
-import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
 import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.plugins.circuit.*;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.LogUtils;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
 
 public class ResetUtils {
 
@@ -146,18 +147,23 @@ public class ResetUtils {
                     }
                 }
             }
-            VisualContact resetContact = null;
             if (!forceInitFuncContacts.isEmpty()) {
-                resetContact = component.createContact(Contact.IOType.INPUT);
+                String name = CircuitSettings.getResetPin();
+                String ref = NamespaceHelper.getReference(circuit.getMathReference(component), name);
+                VisualFunctionContact resetContact = circuit.getVisualComponentByMathReference(ref, VisualFunctionContact.class);
+                if (resetContact == null) {
+                    resetContact = circuit.getOrCreateContact(component, name, Contact.IOType.INPUT);
+                    component.setPositionByDirection(resetContact, VisualContact.Direction.WEST, false);
+                    for (VisualFunctionContact contact : forceInitFuncContacts) {
+                        insertResetFunction(contact, resetContact, activeLow);
+                    }
+                    component.getReferencedComponent().setModule("");
+                }
                 try {
                     circuit.connect(resetPort, resetContact);
                 } catch (InvalidConnectionException e) {
                     throw new RuntimeException(e);
                 }
-            }
-            for (VisualFunctionContact contact : forceInitFuncContacts) {
-                insertResetFunction(contact, resetContact, activeLow);
-                component.setLabel("");
             }
             for (VisualFunctionContact contact : forceInitGateContacts) {
                 insertResetGate(circuit, resetPort, contact, activeLow);
@@ -342,19 +348,6 @@ public class ResetUtils {
             }
         }
         return result;
-    }
-
-    public static boolean check(Circuit circuit) {
-        Set<Contact> problematicContacts = ResetUtils.getInitialisationProblemContacts(circuit);
-        if (problematicContacts.isEmpty()) {
-            return true;
-        }
-        ArrayList<String> refs = ReferenceHelper.getReferenceList(circuit, problematicContacts);
-        String msg = "All gates must be correctly initialised before inserting reset.\n" +
-                LogUtils.getTextWithRefs("Problematic signal", refs);
-
-        DialogUtils.showError(msg);
-        return false;
     }
 
 }
