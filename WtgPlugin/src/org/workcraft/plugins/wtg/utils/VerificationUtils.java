@@ -119,9 +119,9 @@ public class VerificationUtils {
             return false;
         }
         //Checks that guard functions are correct and complete
-        if (!checkGuardFunctions(wtg)) {
-            return false;
-        }
+//        if (!checkGuardFunctions(wtg)) {
+//            return false;
+//        }
         //Checks that signals are stable before reaching a guard
         if (!checkGuardSignalsAreStable(wtg)) {
             return false;
@@ -333,14 +333,16 @@ public class VerificationUtils {
 
     public static boolean checkFirstTransitionIsValid(Wtg wtg) {
         for (Waveform waveform : wtg.getWaveforms()) {
-            for (EntryEvent entry : wtg.getEntries(waveform)) {
-                if (entry.getSignal().getType() != Signal.Type.INPUT) {
-                    for (MathNode node: wtg.getPostset(entry)) {
-                        if ((isFirstTransition(wtg, node)) && (isWaveformInChoice(wtg, waveform))) {
-                            DialogUtils.showError("Signal '" + wtg.getName(entry.getSignal())
-                                    + "' cannot be fired immediately after a choice, in waveform '"
-                                    + wtg.getName(waveform) + "'.");
-                            return false;
+            if (waveform.getGuard().isEmpty()) {
+                for (EntryEvent entry : wtg.getEntries(waveform)) {
+                    if (entry.getSignal().getType() != Signal.Type.INPUT) {
+                        for (MathNode node : wtg.getPostset(entry)) {
+                            if ((isFirstTransition(wtg, node)) && (isWaveformInChoice(wtg, waveform))) {
+                                DialogUtils.showError("Signal '" + wtg.getName(entry.getSignal())
+                                        + "' cannot be fired immediately after a choice, in waveform '"
+                                        + wtg.getName(waveform) + "'.");
+                                return false;
+                            }
                         }
                     }
                 }

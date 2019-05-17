@@ -56,6 +56,9 @@ public class WtgSettingsTest {
 
         Assert.assertEquals(Config.toString(WtgSettings.getExitEventSuffix()),
                 framework.getConfigVar(prefix + ".exitEventSuffix", false));
+
+        Assert.assertEquals(Config.toString(WtgSettings.getInactivePlaceSuffix()),
+                framework.getConfigVar(prefix + ".inactivePlaceSuffix", false));
     }
 
 }

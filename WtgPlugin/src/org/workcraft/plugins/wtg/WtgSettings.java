@@ -22,6 +22,7 @@ public class WtgSettings implements Settings {
     private static final String keyDestabiliseEventSuffix = prefix + ".destabiliseEventSuffix";
     private static final String keyEntryEventSuffix = prefix + ".entryEventSuffix";
     private static final String keyExitEventSuffix = prefix + ".exitEventSuffix";
+    private static final String keyInactivePlaceSuffix = prefix + ".inactivePlaceSuffix";
 
     private static final String defaultLowStateSuffix = "_LOW";
     private static final String defaultHighStateSuffix = "_HIGH";
@@ -31,6 +32,7 @@ public class WtgSettings implements Settings {
     private static final String defaultDestabiliseEventSuffix = "_DESTABILISE";
     private static final String defaultEntryEventSuffix = "_ENTRY";
     private static final String defaultExitEventSuffix = "_EXIT";
+    private static final String defaultInactivePlaceSuffix = "_INACTIVE";
 
     private static String lowStateSuffix = defaultLowStateSuffix;
     private static String highStateSuffix = defaultHighStateSuffix;
@@ -40,6 +42,7 @@ public class WtgSettings implements Settings {
     private static String destabiliseEventSuffix = defaultDestabiliseEventSuffix;
     private static String entryEventSuffix = defaultEntryEventSuffix;
     private static String exitEventSuffix = defaultExitEventSuffix;
+    private static String inactivePlaceSuffix = defaultInactivePlaceSuffix;
 
     public WtgSettings() {
         properties.add(new PropertyDeclaration<WtgSettings, String>(
@@ -137,6 +140,18 @@ public class WtgSettings implements Settings {
                 return getExitEventSuffix();
             }
         });
+
+        properties.add(new PropertyDeclaration<WtgSettings, String>(
+                this, "STG conversion suffix for waveform inactive place", String.class) {
+            @Override
+            public void setter(WtgSettings object, String value) {
+                setSuffixIfValid(value, WtgSettings::setInactivePlaceSuffix);
+            }
+            @Override
+            public String getter(WtgSettings object) {
+                return getInactivePlaceSuffix();
+            }
+        });
     }
 
     private void setSuffixIfValid(String value, Consumer<String> setter) {
@@ -168,6 +183,7 @@ public class WtgSettings implements Settings {
         setDestabiliseEventSuffix(config.getString(keyDestabiliseEventSuffix, defaultDestabiliseEventSuffix));
         setEntryEventSuffix(config.getString(keyEntryEventSuffix, defaultEntryEventSuffix));
         setExitEventSuffix(config.getString(keyExitEventSuffix, defaultExitEventSuffix));
+        setInactivePlaceSuffix(config.getString(keyInactivePlaceSuffix, defaultInactivePlaceSuffix));
     }
 
     @Override
@@ -180,6 +196,7 @@ public class WtgSettings implements Settings {
         config.set(keyDestabiliseEventSuffix, getDestabiliseEventSuffix());
         config.set(keyEntryEventSuffix, getEntryEventSuffix());
         config.set(keyExitEventSuffix, getExitEventSuffix());
+        config.set(keyInactivePlaceSuffix, getInactivePlaceSuffix());
     }
 
     @Override
@@ -269,6 +286,16 @@ public class WtgSettings implements Settings {
     public static void setExitEventSuffix(String value) {
         if (value.length() > 0) {
             exitEventSuffix = value;
+        }
+    }
+
+    public static String getInactivePlaceSuffix() {
+        return inactivePlaceSuffix;
+    }
+
+    public static void setInactivePlaceSuffix(String value) {
+        if (value.length() > 0) {
+            inactivePlaceSuffix = value;
         }
     }
 

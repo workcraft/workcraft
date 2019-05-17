@@ -6,10 +6,10 @@ import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualPage;
-import org.workcraft.utils.Coloriser;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 import org.workcraft.plugins.wtg.decorations.WaveformDecoration;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;

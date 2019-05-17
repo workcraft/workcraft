@@ -119,6 +119,9 @@ public class DtdSelectionTool extends SelectionTool {
                 return TransitionEvent.Direction.RISE;
             }
         }
+        if (state == Signal.State.STABLE) {
+            return TransitionEvent.Direction.DESTABILISE;
+        }
         return null;
     }
 

@@ -14,7 +14,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.LinkedList;
 
 public class HitMan {
@@ -84,7 +84,7 @@ public class HitMan {
     public static Node hitFirstChild(Point2D point, Node parentNode, Func<Node, Boolean> filter) {
         Node result = null;
         Point2D pointInLocalSpace = transformToChildSpace(point, parentNode);
-        for (Node childNode : reverse(parentNode.getChildren())) {
+        for (Node childNode : getHitableChildrenInReverseOrder(parentNode)) {
             if (filter.eval(childNode)) {
                 Node branchNode = hitBranch(pointInLocalSpace, childNode);
                 if (filter.eval(branchNode)) {
@@ -114,7 +114,7 @@ public class HitMan {
             }
         }
         Point2D pointInLocalSpace = transformToChildSpace(point, node);
-        for (Node childNode : reverse(node.getChildren())) {
+        for (Node childNode : getHitableChildrenInReverseOrder(node)) {
             if (isBranchHit(pointInLocalSpace, childNode)) {
                 return true;
             }
@@ -172,26 +172,16 @@ public class HitMan {
         return point;
     }
 
-    private static <T> Iterable<T> reverse(Iterable<T> original) {
-        final ArrayList<T> list = new ArrayList<>();
-        for (T node : original) {
-            list.add(node);
+    private static Collection<Node> getHitableChildrenInReverseOrder(Node parentNode) {
+        if (parentNode instanceof Collapsible) {
+            Collapsible collapsible = (Collapsible) parentNode;
+            if (collapsible.getIsCollapsed() && !collapsible.isCurrentLevelInside()) {
+                return Collections.EMPTY_LIST;
+            }
         }
-        return () -> new Iterator<T>() {
-            private int cur = list.size();
-            @Override
-            public boolean hasNext() {
-                return cur > 0;
-            }
-            @Override
-            public T next() {
-                return list.get(--cur);
-            }
-            @Override
-            public void remove() {
-                throw new RuntimeException("Not supported");
-            }
-        };
+        final ArrayList<Node> result = new ArrayList<>(parentNode.getChildren());
+        Collections.reverse(result);
+        return result;
     }
 
 }
