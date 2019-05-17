@@ -125,10 +125,8 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         GuiUtils.setButtonPanelLayout(simulationControl, playButton.getPreferredSize());
 
         JPanel speedControl = new JPanel();
-        speedControl.setLayout(new BorderLayout());
-        speedControl.setPreferredSize(simulationControl.getPreferredSize());
-        speedControl.setMaximumSize(simulationControl.getMaximumSize());
-        speedControl.add(speedSlider, BorderLayout.CENTER);
+        speedControl.add(speedSlider);
+        GuiUtils.setButtonPanelLayout(speedControl, speedSlider.getPreferredSize());
 
         JPanel traceControl = new JPanel();
         if (enableTraceGraph) {
@@ -624,7 +622,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
 
         @Override
         public String getColumnName(int column) {
-            return (column == 0) ? "Trace" : "Branch";
+            return (column == 0) ? "<html><b>Trace</b></html>" : "<html><b>Branch</b></html>";
         }
 
         @Override

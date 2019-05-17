@@ -11,13 +11,15 @@ public class BasicTable<T> extends JTable {
 
     private final List<T> items = new ArrayList<>();
 
-    public BasicTable() {
-        setModel(new BasicTableModel<>(items));
+    public BasicTable(String title) {
+        setModel(new BasicTableModel<>(title, items));
         setFocusable(false);
         setRowSelectionAllowed(false);
         setRowHeight(SizeHelper.getComponentHeightFromFont(getFont()));
         setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-        setTableHeader(null);
+        if (title == null) {
+            setTableHeader(null);
+        }
     }
 
     public void clear() {

@@ -15,6 +15,7 @@ import org.workcraft.gui.tools.*;
 import org.workcraft.interop.Format;
 import org.workcraft.interop.FormatFileFilter;
 import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
+import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.serialisation.PathbreakConstraintExporter;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
@@ -37,14 +38,13 @@ import java.util.function.Function;
 
 public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
-    private final BasicTable<String> breakerTable = new BasicTable();
+    private final BasicTable<String> breakerTable = new BasicTable("<html><b>Path breakers</b></html>");
     private Set<Contact> cycleContacts;
     private Set<FunctionComponent> cycleComponents;
 
     @Override
     public JPanel getControlsPanel(final GraphEditor editor) {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(SizeHelper.getEmptyBorder());
         panel.add(getLegendControlsPanel(editor), BorderLayout.NORTH);
         panel.add(getBreakControlsPanel(editor), BorderLayout.CENTER);
         panel.add(getScanControlsPanel(editor), BorderLayout.SOUTH);
@@ -54,13 +54,14 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     private JPanel getLegendControlsPanel(final GraphEditor editor) {
         ColorLegendTable colorLegendTable = new ColorLegendTable(Arrays.asList(
-                Pair.of(CommonDecorationSettings.getAnalysisProblematicComponentColor(), "Within a cycle"),
+                Pair.of(CommonVisualSettings.getFillColor(), "Zero-delay"),
+                Pair.of(CommonDecorationSettings.getAnalysisProblematicComponentColor(), "On a cycle"),
                 Pair.of(CommonDecorationSettings.getAnalysisFixerComponentColor(), "Path breaker"),
-                Pair.of(CommonDecorationSettings.getAnalysisImmaculateComponentColor(), "Outside of all cycles")
+                Pair.of(CommonDecorationSettings.getAnalysisImmaculateComponentColor(), "Not on any cycle")
         ));
 
         JPanel legendPanel = new JPanel(new BorderLayout());
-        legendPanel.setBorder(SizeHelper.getTitledBorder("Highlight legend"));
+        legendPanel.setBorder(SizeHelper.getTitledBorder("<html><b>Highlight legend</b></html>"));
         legendPanel.add(colorLegendTable, BorderLayout.CENTER);
         return legendPanel;
     }
@@ -98,9 +99,8 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         controlPanel.add(buttonPanel);
 
         JPanel forcePanel = new JPanel(new BorderLayout());
-        forcePanel.setBorder(SizeHelper.getTitledBorder("Path breakers"));
+        forcePanel.add(controlPanel, BorderLayout.NORTH);
         forcePanel.add(new JScrollPane(breakerTable), BorderLayout.CENTER);
-        forcePanel.add(controlPanel, BorderLayout.SOUTH);
         return forcePanel;
     }
 
@@ -326,7 +326,8 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private Decoration getComponentDecoration(FunctionComponent component) {
-        final Color color = ScanUtils.hasPathBreakerOutput(component) ? CommonDecorationSettings.getAnalysisFixerComponentColor()
+        final Color color = component.getIsZeroDelay() ? null
+                : ScanUtils.hasPathBreakerOutput(component) ? CommonDecorationSettings.getAnalysisFixerComponentColor()
                 : cycleComponents.contains(component) ? CommonDecorationSettings.getAnalysisProblematicComponentColor()
                 : CommonDecorationSettings.getAnalysisImmaculateComponentColor();
 

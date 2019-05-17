@@ -7,14 +7,16 @@ import java.util.List;
 
 public final class BasicTableModel<T> extends AbstractTableModel {
 
+    private final String title;
     private final List<T> items;
     private final Func<T, String> converter;
 
-    public BasicTableModel(List<T> items) {
-        this(items, item -> item.toString());
+    public BasicTableModel(String title, List<T> items) {
+        this(title, items, item -> item.toString());
     }
 
-    public BasicTableModel(List<T> items, Func<T, String> converter) {
+    public BasicTableModel(String title, List<T> items, Func<T, String> converter) {
+        this.title = title;
         this.items = items;
         this.converter = converter;
     }
@@ -22,6 +24,11 @@ public final class BasicTableModel<T> extends AbstractTableModel {
     @Override
     public int getColumnCount() {
         return 1;
+    }
+
+    @Override
+    public String getColumnName(int column) {
+        return (column == 0) ? title : null;
     }
 
     @Override

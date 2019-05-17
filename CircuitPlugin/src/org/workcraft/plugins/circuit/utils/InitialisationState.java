@@ -19,15 +19,15 @@ import java.util.Set;
 
 public class InitialisationState {
 
-    private final HashSet<MathNode> highSet = new HashSet<>();
-    private final HashSet<MathNode> lowSet = new HashSet<>();
-    private final HashSet<MathNode> errorSet = new HashSet<>();
+    private final Set<MathNode> highSet = new HashSet<>();
+    private final Set<MathNode> lowSet = new HashSet<>();
+    private final Set<MathNode> errorSet = new HashSet<>();
 
     public InitialisationState(Circuit circuit) {
         Queue<MathConnection> queue = new LinkedList<>();
         for (FunctionContact contact : circuit.getFunctionContacts()) {
             if (contact.isDriver() && contact.getForcedInit()) {
-                HashSet<MathNode> initSet = contact.getInitToOne() ? highSet : lowSet;
+                Set<MathNode> initSet = contact.getInitToOne() ? highSet : lowSet;
                 if (initSet.add(contact)) {
                     queue.addAll(circuit.getConnections(contact));
                 }
@@ -37,7 +37,7 @@ public class InitialisationState {
         while (!queue.isEmpty()) {
             MathConnection connection = queue.remove();
             MathNode fromNode = connection.getFirst();
-            HashSet<MathNode> nodeInitLevelSet = chooseNodeLevelSet(fromNode);
+            Set<MathNode> nodeInitLevelSet = chooseNodeLevelSet(fromNode);
             if ((nodeInitLevelSet != null) && nodeInitLevelSet.add(connection)) {
                 if (errorSet.contains(fromNode)) {
                     errorSet.add(connection);
@@ -60,7 +60,7 @@ public class InitialisationState {
     private void fillVariableValues(FunctionComponent component,
             LinkedList<BooleanVariable> variables, LinkedList<BooleanFormula> values) {
         for (FunctionContact contact : component.getFunctionContacts()) {
-            HashSet<MathNode> contactInitLevelSet = chooseNodeLevelSet(contact);
+            Set<MathNode> contactInitLevelSet = chooseNodeLevelSet(contact);
             if (contactInitLevelSet != null) {
                 variables.add(contact);
                 values.add(contactInitLevelSet == highSet ? One.instance() : Zero.instance());
@@ -88,7 +88,7 @@ public class InitialisationState {
         }
     }
 
-    private HashSet<MathNode> chooseNodeLevelSet(MathNode node) {
+    private Set<MathNode> chooseNodeLevelSet(MathNode node) {
         if (highSet.contains(node)) {
             return highSet;
         }
@@ -98,7 +98,7 @@ public class InitialisationState {
         return null;
     }
 
-    private HashSet<MathNode> chooseFunctionLevelSet(FunctionContact contact,
+    private Set<MathNode> chooseFunctionLevelSet(FunctionContact contact,
             LinkedList<BooleanVariable> variables, LinkedList<BooleanFormula> values) {
         if (contact.getForcedInit()) {
             return contact.getInitToOne() ? highSet : lowSet;

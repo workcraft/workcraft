@@ -185,7 +185,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     @Override
     public int getHotKeyCode() {
-        return KeyEvent.VK_Y;
+        return KeyEvent.VK_A;
     }
 
     @Override

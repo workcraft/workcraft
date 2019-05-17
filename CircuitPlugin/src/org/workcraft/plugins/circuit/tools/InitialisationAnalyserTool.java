@@ -13,6 +13,7 @@ import org.workcraft.gui.tools.*;
 import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
 import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.InitialisationState;
 import org.workcraft.plugins.circuit.utils.ResetUtils;
 import org.workcraft.types.Pair;
@@ -29,13 +30,12 @@ import java.util.function.Function;
 
 public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
-    private final BasicTable<String> forcedTable = new BasicTable();
+    private final BasicTable<String> forcedTable = new BasicTable("<html><b>Force init pins</b></html>");
     private InitialisationState initState = null;
 
     @Override
     public JPanel getControlsPanel(final GraphEditor editor) {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(SizeHelper.getEmptyBorder());
         panel.add(getLegendControlsPanel(editor), BorderLayout.NORTH);
         panel.add(getForcedControlsPanel(editor), BorderLayout.CENTER);
         panel.add(getResetControlsPanel(editor), BorderLayout.SOUTH);
@@ -51,10 +51,24 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
                 Pair.of(CommonDecorationSettings.getAnalysisImmaculateComponentColor(), "Propagated initial state")
         ));
 
+        String expectedPinLegend = getHtmlPinLegend("&#x2610;", "Expected high / low");
+        String propagatedPinLegend = getHtmlPinLegend("&#x25A0;", "Propagated high / low");
+        String forcedPinLegend = getHtmlPinLegend("&#x25C6;", "Forced high / low");
+        JLabel legendLabel = new JLabel("<html><b>Pin initial state:</b><br>" + expectedPinLegend + "<br>" + propagatedPinLegend + "<br>" + forcedPinLegend + "</html>");
         JPanel legendPanel = new JPanel(new BorderLayout());
-        legendPanel.setBorder(SizeHelper.getTitledBorder("Gate highlight legend"));
+        legendPanel.setBorder(SizeHelper.getTitledBorder("<html><b>Gate highlight legend</b></html>"));
         legendPanel.add(colorLegendTable, BorderLayout.CENTER);
+        legendPanel.add(legendLabel, BorderLayout.SOUTH);
         return legendPanel;
+    }
+
+    private String getHtmlPinLegend(String key, String description) {
+        String keyFormat = "<span style=\"color: #%06x\">" + key + "</span>";
+        int highValue = CircuitSettings.getActiveWireColor().getRGB() & 0xffffff;
+        String highKey = String.format(keyFormat, highValue);
+        int lowValue = CircuitSettings.getInactiveWireColor().getRGB() & 0xffffff;
+        String lowKey = String.format(keyFormat, lowValue);
+        return highKey + " / " + lowKey + " " + description;
     }
 
     private JPanel getForcedControlsPanel(final GraphEditor editor) {
@@ -101,9 +115,8 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         controlPanel.add(buttonPanel);
 
         JPanel forcePanel = new JPanel(new BorderLayout());
-        forcePanel.setBorder(SizeHelper.getTitledBorder("Force init pins"));
+        forcePanel.add(controlPanel, BorderLayout.NORTH);
         forcePanel.add(new JScrollPane(forcedTable), BorderLayout.CENTER);
-        forcePanel.add(controlPanel, BorderLayout.SOUTH);
         return forcePanel;
     }
 
@@ -249,12 +262,12 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
                 if (mathNode != null) {
                     if (mathNode instanceof FunctionComponent) {
                         return getComponentDecoration((FunctionComponent) mathNode);
-                    }
-                    if (initState.isHigh(mathNode)) {
-                        return getHighLevelDecoration(mathNode);
-                    }
-                    if (initState.isLow(mathNode)) {
-                        return getLowLevelDecoration(mathNode);
+                    } else if (mathNode instanceof Contact) {
+                        Circuit circuit = (Circuit) editor.getModel().getMathModel();
+                        Contact driver = CircuitUtils.findDriver(circuit, mathNode, false);
+                        return getContactDecoration(driver);
+                    } else {
+                        return getConnectionDecoration(mathNode);
                     }
                 }
                 return (mathNode instanceof Contact) ? StateDecoration.Empty.INSTANCE : null;
@@ -288,17 +301,43 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         };
     }
 
+    private Decoration getContactDecoration(Contact contact) {
+        if (initState.isHigh(contact)) {
+            return getHighLevelDecoration(contact);
+        }
+        if (initState.isLow(contact)) {
+            return getLowLevelDecoration(contact);
+        }
+        return getExpectedLevelDecoration(contact);
+    }
+
+    private Decoration getConnectionDecoration(MathNode node) {
+        Color color = initState.isHigh(node) ? CircuitSettings.getActiveWireColor()
+                : initState.isLow(node) ? CircuitSettings.getInactiveWireColor() : null;
+        return new Decoration() {
+            @Override
+            public Color getColorisation() {
+                return color;
+            }
+
+            @Override
+            public Color getBackground() {
+                return color;
+            }
+        };
+    }
+
     private Decoration getLowLevelDecoration(MathNode node) {
         final boolean initialisationConflict = initState.isError(node);
         return new StateDecoration() {
             @Override
             public Color getColorisation() {
-                return CircuitSettings.getInactiveWireColor();
+                return initialisationConflict ? CircuitSettings.getActiveWireColor() : CircuitSettings.getInactiveWireColor();
             }
 
             @Override
             public Color getBackground() {
-                return initialisationConflict ? CircuitSettings.getActiveWireColor() : CircuitSettings.getInactiveWireColor();
+                return CircuitSettings.getInactiveWireColor();
             }
 
             @Override
@@ -313,12 +352,31 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         return new StateDecoration() {
             @Override
             public Color getColorisation() {
-                return CircuitSettings.getActiveWireColor();
+                return initialisationConflict ? CircuitSettings.getInactiveWireColor() : CircuitSettings.getActiveWireColor();
             }
 
             @Override
             public Color getBackground() {
-                return initialisationConflict ? CircuitSettings.getInactiveWireColor() : CircuitSettings.getActiveWireColor();
+                return CircuitSettings.getActiveWireColor();
+            }
+
+            @Override
+            public boolean showForcedInit() {
+                return true;
+            }
+        };
+    }
+
+    private Decoration getExpectedLevelDecoration(Contact contact) {
+        return new StateDecoration() {
+            @Override
+            public Color getColorisation() {
+                return contact.getInitToOne() ? CircuitSettings.getActiveWireColor() : CircuitSettings.getInactiveWireColor();
+            }
+
+            @Override
+            public Color getBackground() {
+                return null;
             }
 
             @Override

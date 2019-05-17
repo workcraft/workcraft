@@ -135,13 +135,13 @@ public class StgSimulationTool extends PetriSimulationTool {
         public String getColumnName(final int column) {
             switch (column) {
             case COLUMN_SIGNAL:
-                return "Signal";
+                return "<html><b>Signal</b></html>";
             case COLUMN_STATE:
-                return "State";
+                return "<html><b>State</b></html>";
             case COLUMN_VISIBLE:
-                return "Visible";
+                return "<html><b>Visible</b></html>";
             case COLUMN_COLOR:
-                return "Color";
+                return "<html><b>Color</b></html>";
             default:
                 return null;
             }
