@@ -137,7 +137,7 @@ public class ToggleBubbleTransformationCommand extends AbstractTransformationCom
                 if (!label.isEmpty()) {
                     String ref = model.getMathReference(node);
                     LogUtils.logWarning("Label '" + label + "' is removed from component '" + ref + "'.");
-                    component.getReferencedComponent().setModule("");
+                    component.clearMapping();
                 }
                 component.invalidateRenderingResult();
                 model.addToSelection(component);

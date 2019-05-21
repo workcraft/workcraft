@@ -102,6 +102,10 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         return (getReferencedComponent() != null) && getReferencedComponent().isMapped();
     }
 
+    public void clearMapping() {
+        getReferencedComponent().setModule("");
+    }
+
     public boolean isGate() {
         return (getReferencedComponent() != null) && getReferencedComponent().isGate();
     }
