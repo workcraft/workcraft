@@ -2,7 +2,6 @@ package org.workcraft.plugins.circuit.serialisation;
 
 import org.workcraft.Info;
 import org.workcraft.dom.Model;
-import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanOperations;
@@ -19,14 +18,13 @@ import org.workcraft.utils.LogUtils;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 public class VerilogSerialiser implements ModelSerialiser {
 
     private static final String KEYWORD_INPUT = "input";
     private static final String KEYWORD_OUTPUT = "output";
+    private static final String KEYWORD_WIRE = "wire";
     private static final String KEYWORD_MODULE = "module";
     private static final String KEYWORD_ENDMODULE = "endmodule";
     private static final String KEYWORD_ASSIGN = "assign";
@@ -57,55 +55,58 @@ public class VerilogSerialiser implements ModelSerialiser {
 
     private void writeCircuit(PrintWriter out, Circuit circuit) {
         CircuitSignalInfo circuitInfo = new CircuitSignalInfo(circuit);
-        writeHeader(out, circuit);
+        writeHeader(out, circuitInfo);
         writeInstances(out, circuitInfo);
         writeInitialState(out, circuitInfo);
         out.println(KEYWORD_ENDMODULE);
     }
 
-    private void writeHeader(PrintWriter out, Circuit circuit) {
-        String title = ExportUtils.getClearModelTitle(circuit);
+    private void writeHeader(PrintWriter out, CircuitSignalInfo circuitInfo) {
+        String title = ExportUtils.getClearModelTitle(circuitInfo.getCircuit());
         out.print(KEYWORD_MODULE + " " + title + " (");
-        String inputPorts = "";
-        String outputPorts = "";
+        Set<String> inputPorts = new LinkedHashSet<>();
+        Set<String> outputPorts = new LinkedHashSet<>();
         boolean isFirstPort = true;
-        for (Contact contact: circuit.getPorts()) {
+        for (Contact contact : circuitInfo.getCircuit().getPorts()) {
             if (isFirstPort) {
                 isFirstPort = false;
             } else {
                 out.print(", ");
             }
-            String contactRef = circuit.getNodeReference(contact);
-            String contactFlatName = NamespaceHelper.flattenReference(contactRef);
-            out.print(contactFlatName);
+            String signal = circuitInfo.getContactSignal(contact);
+            out.print(signal);
             if (contact.isInput()) {
-                if (!inputPorts.isEmpty()) {
-                    inputPorts += ", ";
-                }
-                inputPorts += contactFlatName;
+                inputPorts.add(signal);
             } else {
-                if (!outputPorts.isEmpty()) {
-                    outputPorts += ", ";
-                }
-                outputPorts += contactFlatName;
+                outputPorts.add(signal);
             }
         }
         out.println(");");
         if (!inputPorts.isEmpty()) {
-            out.println("    " + KEYWORD_INPUT + " " + inputPorts + ";");
+            out.println("    " + KEYWORD_INPUT + " " + String.join(", ", inputPorts) + ";");
         }
         if (!outputPorts.isEmpty()) {
-            out.println("    " + KEYWORD_OUTPUT + " " + outputPorts + ";");
+            out.println("    " + KEYWORD_OUTPUT + " " + String.join(", ", outputPorts) + ";");
+        }
+        Set<String> wires = new LinkedHashSet<>();
+        for (FunctionComponent component : circuitInfo.getCircuit().getFunctionComponents()) {
+            for (FunctionContact contact : component.getFunctionOutputs()) {
+                String signal = circuitInfo.getContactSignal(contact);
+                if (inputPorts.contains(signal) || outputPorts.contains(signal)) continue;
+                wires.add(signal);
+            }
+        }
+        if (!wires.isEmpty()) {
+            out.println("    " + KEYWORD_WIRE + " " + String.join(", ", wires) + ";");
         }
         out.println();
     }
 
     private void writeInstances(PrintWriter out, CircuitSignalInfo circuitInfo) {
         HashMap<String, SubstitutionRule> substitutionRules = SubstitutionUtils.readSubsritutionRules();
-        Collection<FunctionComponent> functionComponents = circuitInfo.getCircuit().getFunctionComponents();
         // Write out assign statements
         boolean hasAssignments = false;
-        for (FunctionComponent component: functionComponents) {
+        for (FunctionComponent component : circuitInfo.getCircuit().getFunctionComponents()) {
             if (!component.isMapped()) {
                 if (writeAssigns(out, circuitInfo, component)) {
                     hasAssignments = true;
@@ -119,10 +120,15 @@ public class VerilogSerialiser implements ModelSerialiser {
             out.print("\n");
         }
         // Write out mapped components
-        for (FunctionComponent component: functionComponents) {
+        boolean hasMappedComponents = false;
+        for (FunctionComponent component : circuitInfo.getCircuit().getFunctionComponents()) {
             if (component.isMapped()) {
                 writeInstance(out, circuitInfo, component, substitutionRules);
+                hasMappedComponents = true;
             }
+        }
+        if (hasMappedComponents) {
+            out.print("\n");
         }
     }
 
@@ -194,7 +200,6 @@ public class VerilogSerialiser implements ModelSerialiser {
     private void writeInitialState(PrintWriter out, CircuitSignalInfo circuitInfo) {
         Collection<Contact> drivers = circuitInfo.getCircuit().getDrivers();
         if (!drivers.isEmpty()) {
-            out.println();
             out.println("    // signal values at the initial state:");
             out.print("    //");
             for (Contact driver: drivers) {

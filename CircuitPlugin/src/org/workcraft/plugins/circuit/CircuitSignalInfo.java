@@ -55,7 +55,7 @@ public class CircuitSignalInfo {
         if (literalSuffix == null) {
             literalSuffix = "";
         }
-        for (FunctionContact contact: circuit.getFunctionContacts()) {
+        for (FunctionContact contact : circuit.getFunctionContacts()) {
             if (contact.isDriver()) {
                 String signalName = getContactSignal(contact);
                 String literalName = literalPrefix + signalName + literalSuffix;
@@ -101,7 +101,7 @@ public class CircuitSignalInfo {
         Collection<SignalInfo> result = new ArrayList<>();
         LinkedList<BooleanVariable> variables = new LinkedList<>();
         LinkedList<BooleanFormula> values = new LinkedList<>();
-        for (FunctionContact contact: component.getFunctionContacts()) {
+        for (FunctionContact contact : component.getFunctionContacts()) {
             String signalName = getContactSignal(contact);
             BooleanFormula literal = signalLiteralMap.get(signalName);
             if (literal != null) {
@@ -109,7 +109,7 @@ public class CircuitSignalInfo {
                 values.add(literal);
             }
         }
-        for (FunctionContact contact: component.getFunctionContacts()) {
+        for (FunctionContact contact : component.getFunctionContacts()) {
             if (contact.isOutput()) {
                 BooleanFormula setFunction = BooleanUtils.replaceClever(contact.getSetFunction(), variables, values);
                 BooleanFormula resetFunction = BooleanUtils.replaceClever(contact.getResetFunction(), variables, values);
