@@ -1,11 +1,5 @@
 package org.workcraft.plugins.circuit.serialisation;
 
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.UUID;
-
 import org.workcraft.Info;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
@@ -14,10 +8,7 @@ import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanOperations;
 import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.formula.utils.StringGenerator.Style;
-import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.CircuitSignalInfo;
-import org.workcraft.plugins.circuit.Contact;
-import org.workcraft.plugins.circuit.FunctionComponent;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.interop.VerilogFormat;
 import org.workcraft.plugins.circuit.verilog.SubstitutionRule;
 import org.workcraft.plugins.circuit.verilog.SubstitutionUtils;
@@ -26,13 +17,20 @@ import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.utils.ExportUtils;
 import org.workcraft.utils.LogUtils;
 
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.UUID;
+
 public class VerilogSerialiser implements ModelSerialiser {
 
-    private static final String KEYWORD_OUTPUT = "output";
     private static final String KEYWORD_INPUT = "input";
+    private static final String KEYWORD_OUTPUT = "output";
     private static final String KEYWORD_MODULE = "module";
     private static final String KEYWORD_ENDMODULE = "endmodule";
     private static final String KEYWORD_ASSIGN = "assign";
+    private static final String KEYWORD_ASSIGN_DELAY = "#1";
 
     @Override
     public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) {
@@ -150,7 +148,8 @@ public class VerilogSerialiser implements ModelSerialiser {
                 expr = resetExpr;
             }
             if ((expr != null) && !expr.isEmpty()) {
-                out.println("    " + KEYWORD_ASSIGN + " " + signalName + " = " + expr + ";");
+                String assignStr = KEYWORD_ASSIGN  + " " + (CircuitSettings.getVerilogAssignDelay() ? KEYWORD_ASSIGN_DELAY : "");
+                out.println("    " + assignStr + " " + signalName + " = " + expr + ";");
                 result = true;
             }
         }

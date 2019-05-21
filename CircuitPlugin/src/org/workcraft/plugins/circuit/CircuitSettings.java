@@ -65,6 +65,7 @@ public class CircuitSettings implements Settings {
     private static final String keyScanPorts = prefix + ".scanPorts";
     private static final String keyScanPins = prefix + ".scanPins";
     private static final String keyScanSuffix = prefix + ".scanSuffix";
+    private static final String keyVerilogAssignDelay = prefix + ".verilogAssignDelay";
 
     private static final Double defaultBorderWidth = 0.06;
     private static final Double defaultWireWidth = 0.04;
@@ -90,6 +91,7 @@ public class CircuitSettings implements Settings {
     private static final String defaultScanPorts = "scanin, clock";
     private static final String defaultScanPins = "SI, CK";
     private static final String defaultScanSuffix = "_scan";
+    private static final boolean defaultVerilogAssignDelay = false;
 
     private static Double borderWidth = defaultBorderWidth;
     private static Double wireWidth = defaultWireWidth;
@@ -115,6 +117,7 @@ public class CircuitSettings implements Settings {
     private static String scanPorts = defaultScanPorts;
     private static String scanPins = defaultScanPins;
     private static String scanSuffix = defaultScanSuffix;
+    private static boolean verilogAssignDelay = defaultVerilogAssignDelay;
 
     public CircuitSettings() {
         properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
@@ -460,6 +463,18 @@ public class CircuitSettings implements Settings {
                 return getScanSuffix();
             }
         });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
+                this, "Delay assign statements in Verilog export", Boolean.class) {
+            @Override
+            public void setter(CircuitSettings object, Boolean value) {
+                setVerilogAssignDelay(value);
+            }
+            @Override
+            public Boolean getter(CircuitSettings object) {
+                return getVerilogAssignDelay();
+            }
+        });
     }
 
     @Override
@@ -503,6 +518,7 @@ public class CircuitSettings implements Settings {
         setScanPorts(config.getString(keyScanPorts, defaultScanPorts));
         setScanPins(config.getString(keyScanPins, defaultScanPins));
         setScanSuffix(config.getString(keyScanSuffix, defaultScanSuffix));
+        setVerilogAssignDelay(config.getBoolean(keyVerilogAssignDelay, defaultVerilogAssignDelay));
     }
 
     @Override
@@ -531,6 +547,7 @@ public class CircuitSettings implements Settings {
         config.set(keyScanPorts, getScanPorts());
         config.set(keyScanPins, getScanPins());
         config.set(keyScanSuffix, getScanSuffix());
+        config.setBoolean(keyVerilogAssignDelay, getVerilogAssignDelay());
     }
 
     public static double getBorderWidth() {
@@ -767,6 +784,14 @@ public class CircuitSettings implements Settings {
 
     public static void setScanSuffix(String value) {
         scanSuffix = value;
+    }
+
+    public static boolean getVerilogAssignDelay() {
+        return verilogAssignDelay;
+    }
+
+    public static void setVerilogAssignDelay(boolean value) {
+        verilogAssignDelay = value;
     }
 
     private static Gate2 parseGate2Data(String str) {
