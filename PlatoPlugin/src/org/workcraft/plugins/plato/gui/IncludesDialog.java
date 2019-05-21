@@ -1,20 +1,13 @@
 package org.workcraft.plugins.plato.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.io.File;
-import java.io.FileNotFoundException;
-
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.GuiUtils;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 @SuppressWarnings("serial")
 public class IncludesDialog extends JDialog {
@@ -24,9 +17,8 @@ public class IncludesDialog extends JDialog {
     private static JList<String> includeList;
     private final DefaultListModel<String> includeListModel;
 
-    public IncludesDialog(WriterDialog parent, File lastDirUsed,
-            DefaultListModel<String> includeListModel) {
-        super(parent, "Include concept files", ModalityType.APPLICATION_MODAL);
+    public IncludesDialog(WriterDialog owner, File lastDirUsed, DefaultListModel<String> includeListModel) {
+        super(owner, "Include concept files", ModalityType.APPLICATION_MODAL);
 
         this.lastDirUsed = lastDirUsed;
         this.includeListModel = includeListModel;
@@ -43,11 +35,11 @@ public class IncludesDialog extends JDialog {
 
         setContentPane(content);
         setMinimumSize(new Dimension(500, 500));
-        this.setLocationRelativeTo(parent);
+        setLocationRelativeTo(owner);
     }
 
     private void createListPanel() {
-        includeList = new JList<String>(includeListModel);
+        includeList = new JList<>(includeListModel);
 
         content.add(includeList, BorderLayout.CENTER);
     }
@@ -61,12 +53,12 @@ public class IncludesDialog extends JDialog {
         btnPanel.add(removeBtn);
         btnPanel.add(okBtn);
 
-        addBtn.addActionListener(event -> actionAdd());
-        removeBtn.addActionListener(event -> actionRemove());
+        addBtn.addActionListener(event -> addAction());
+        removeBtn.addActionListener(event -> removeAction());
         okBtn.addActionListener(event -> setVisible(false));
     }
 
-    private void actionAdd() {
+    private void addAction() {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         chooser.setFileFilter(new FileNameExtensionFilter("Haskell/Concept file (.hs)", "hs"));
@@ -78,14 +70,13 @@ public class IncludesDialog extends JDialog {
                     throw new FileNotFoundException();
                 }
                 includeListModel.addElement(f.getAbsolutePath());
-                // includeList.setListData(includeListModel);
             } catch (FileNotFoundException e1) {
                 DialogUtils.showError(e1.getMessage());
             }
         }
     }
 
-    private void actionRemove() {
+    private void removeAction() {
         if (!includeList.isSelectionEmpty()) {
             includeListModel.removeElement(includeList.getSelectedValue());
         }

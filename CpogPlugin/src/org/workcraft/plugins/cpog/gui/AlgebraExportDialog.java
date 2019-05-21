@@ -1,20 +1,12 @@
 package org.workcraft.plugins.cpog.gui;
 
-import java.awt.GridLayout;
-import java.awt.event.KeyEvent;
-import java.io.File;
-
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-
 import org.workcraft.Framework;
 import org.workcraft.utils.GuiUtils;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.io.File;
 
 @SuppressWarnings("serial")
 public class AlgebraExportDialog extends JDialog {
@@ -22,7 +14,7 @@ public class AlgebraExportDialog extends JDialog {
     private final JTextField filePath;
     private final JButton selectFileBtn;
     private final JRadioButton pasteRB, exportRB;
-    private Boolean okClicked;
+    private boolean modalResult;
 
     public AlgebraExportDialog() {
         super(Framework.getInstance().getMainWindow(),
@@ -33,7 +25,7 @@ public class AlgebraExportDialog extends JDialog {
 
         selectFileBtn = GuiUtils.createDialogButton("Select export location");
 
-        selectFileBtn.addActionListener(event -> actionSelectFile());
+        selectFileBtn.addActionListener(event -> selectFileAction());
 
         JPanel filePanel = new JPanel();
         filePanel.add(filePath);
@@ -43,20 +35,20 @@ public class AlgebraExportDialog extends JDialog {
         selectFileBtn.setEnabled(false);
 
         pasteRB = new JRadioButton("Paste expression into algebra text box", false);
-        pasteRB.addActionListener(event -> actionPaste());
+        pasteRB.addActionListener(event -> pasteAction());
 
         exportRB = new JRadioButton("Export expression to file", false);
-        exportRB.addActionListener(event -> actionExport());
+        exportRB.addActionListener(event -> exportAction());
 
         JPanel optionPanel = new JPanel();
         optionPanel.add(pasteRB);
         optionPanel.add(exportRB);
 
         JButton okButton = GuiUtils.createDialogButton("OK");
-        okButton.addActionListener(event -> actionOk());
+        okButton.addActionListener(event -> okAction());
 
         JButton cancelButton = GuiUtils.createDialogButton("Cancel");
-        cancelButton.addActionListener(event -> actionCancel());
+        cancelButton.addActionListener(event -> cancelAction());
 
         JPanel okPanel = new JPanel();
         okPanel.add(okButton);
@@ -75,17 +67,17 @@ public class AlgebraExportDialog extends JDialog {
         setLocationRelativeTo(Framework.getInstance().getMainWindow());
     }
 
-    private void actionOk() {
-        okClicked = true;
+    private void okAction() {
+        modalResult = true;
         setVisible(false);
     }
 
-    private void actionCancel() {
-        okClicked = false;
+    private void cancelAction() {
+        modalResult = false;
         setVisible(false);
     }
 
-    private void actionSelectFile() {
+    private void selectFileAction() {
         JFileChooser chooser = new JFileChooser();
         if (chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
             File f = chooser.getSelectedFile();
@@ -93,7 +85,7 @@ public class AlgebraExportDialog extends JDialog {
         }
     }
 
-    private void actionPaste() {
+    private void pasteAction() {
         if (pasteRB.isSelected()) {
             exportRB.setSelected(false);
             filePath.setEnabled(false);
@@ -101,7 +93,7 @@ public class AlgebraExportDialog extends JDialog {
         }
     }
 
-    private void actionExport() {
+    private void exportAction() {
         if (exportRB.isSelected()) {
             pasteRB.setSelected(false);
             filePath.setEnabled(true);
@@ -110,10 +102,6 @@ public class AlgebraExportDialog extends JDialog {
             filePath.setEnabled(false);
             selectFileBtn.setEnabled(false);
         }
-    }
-
-    public Boolean getOK() {
-        return okClicked;
     }
 
     public Boolean getPaste() {
@@ -127,4 +115,10 @@ public class AlgebraExportDialog extends JDialog {
     public String getFilePath() {
         return filePath.getText();
     }
+
+    public boolean reveal() {
+        setVisible(true);
+        return modalResult;
+    }
+
 }

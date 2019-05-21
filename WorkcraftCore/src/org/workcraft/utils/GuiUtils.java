@@ -1,6 +1,7 @@
 package org.workcraft.utils;
 
 import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstraints;
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.GVTBuilder;
@@ -32,47 +33,20 @@ public class GuiUtils {
     }
 
     public static JPanel createWideLabeledComponent(JComponent component, String labelText) {
-        double[][] sizes = {
-            {TableLayout.PREFERRED, TableLayout.FILL},
-            {TableLayout.PREFERRED},
-        };
+        JPanel result = new JPanel(createTableLayout(
+                new double[]{TableLayout.PREFERRED, TableLayout.FILL},
+                new double[]{TableLayout.PREFERRED}));
 
-        TableLayout layout = new TableLayout(sizes);
-        layout.setHGap(SizeHelper.getLayoutHGap());
-        layout.setVGap(SizeHelper.getLayoutVGap());
-        JPanel result = new JPanel(layout);
-        result.add(new JLabel(labelText), "0 0");
-        result.add(component, "1 0");
+        result.add(new JLabel(labelText), new TableLayoutConstraints(0, 0));
+        result.add(component, new TableLayoutConstraints(1, 0));
         return result;
-    }
-
-    public static void centerToParent(Window frame, Window parent) {
-        if ((frame != null) && (parent != null)) {
-            Dimension parentSize = parent.getSize();
-            Dimension mySize = frame.getSize();
-            Point q = parent.getLocationOnScreen();
-            int x = ((parentSize.width - mySize.width) / 2) + q.x;
-            int y = ((parentSize.height - mySize.height) / 2) + q.y;
-            frame.setLocation(x, y);
-        }
     }
 
     public static void centerAndSizeToParent(Window frame, Window parent) {
         if ((frame != null) && (parent != null)) {
             Dimension parentSize = parent.getSize();
             frame.setSize(2 * parentSize.width / 3, 2 * parentSize.height / 3);
-            centerToParent(frame, parent);
-        }
-    }
-
-    public static void centerToParent(JComponent frame, Window parent) {
-        if ((frame != null) && (parent != null)) {
-            Dimension parentSize = parent.getSize();
-            Dimension mySize = frame.getSize();
-            Point q = parent.getLocationOnScreen();
-            int x = ((parentSize.width - mySize.width) / 2) + q.x;
-            int y = ((parentSize.height - mySize.height) / 2) + q.y;
-            frame.setLocation(x, y);
+            frame.setLocationRelativeTo(parent);
         }
     }
 
@@ -244,6 +218,30 @@ public class GuiUtils {
         int h = Math.max(dimension.height, BUTTON_PREFERED_HEIGHT);
         result.setPreferredSize(new Dimension(w, h));
         return result;
+    }
+
+    public static BorderLayout createBorderLayout() {
+        return new BorderLayout(SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap());
+    }
+
+    public static TableLayout createTableLayout(double[] columnSizes, double[] rowSizes) {
+        TableLayout result = new TableLayout(new double[][]{columnSizes, rowSizes});
+        result.setHGap(SizeHelper.getLayoutHGap());
+        result.setVGap(SizeHelper.getLayoutVGap());
+        return result;
+    }
+
+    public static void setButtonPanelLayout(JPanel panel, Dimension buttonSize) {
+        FlowLayout layout = new FlowLayout();
+        panel.setLayout(layout);
+        int hGap = layout.getHgap();
+        int vGap = layout.getVgap();
+        int buttonWidth = (int) Math.round(buttonSize.getWidth() + hGap);
+        int buttonHeight = (int) Math.round(buttonSize.getHeight() + vGap);
+        int buttonCount = panel.getComponentCount();
+        Dimension panelSize = new Dimension(buttonWidth * buttonCount + hGap, buttonHeight + vGap);
+        panel.setPreferredSize(panelSize);
+        panel.setMaximumSize(panelSize);
     }
 
 }

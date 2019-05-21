@@ -1,43 +1,31 @@
 package org.workcraft.plugins.cpog.gui;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.FileNotFoundException;
-
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-
 import org.workcraft.Framework;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.GuiUtils;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 @SuppressWarnings("serial")
 public class PGMinerImportDialog extends JDialog {
 
     private final JTextField filePath;
     private final JCheckBox extractConcurrencyCB, splitCB;
-    private boolean canImport;
+    private boolean modalResult;
 
     public PGMinerImportDialog() {
         super(Framework.getInstance().getMainWindow(), "Import event log", ModalityType.APPLICATION_MODAL);
-
-        canImport = false;
 
         filePath = new JTextField("", 25);
         filePath.setEditable(true);
 
         JButton selectFileBtn = GuiUtils.createDialogButton("Browse for file");
 
-        selectFileBtn.addActionListener(event -> actionSelect());
+        selectFileBtn.addActionListener(event -> selectAction());
 
         JPanel filePanel = new JPanel();
         JPanel selPanel = new JPanel(new FlowLayout());
@@ -50,7 +38,7 @@ public class PGMinerImportDialog extends JDialog {
         splitCB = new JCheckBox("Split traces into scenarios", false);
 
         splitCB.setEnabled(false);
-        extractConcurrencyCB.addActionListener(event -> actionExtract());
+        extractConcurrencyCB.addActionListener(event -> extractAction());
 
         JPanel optionPanel = new JPanel();
         optionPanel.setLayout(new BoxLayout(optionPanel, BoxLayout.PAGE_AXIS));
@@ -58,10 +46,10 @@ public class PGMinerImportDialog extends JDialog {
         optionPanel.add(splitCB);
 
         JButton importButton = GuiUtils.createDialogButton("Import");
-        importButton.addActionListener(event -> actionImport());
+        importButton.addActionListener(event -> importAction());
 
         JButton cancelButton = GuiUtils.createDialogButton("Cancel");
-        cancelButton.addActionListener(event -> actionCancel());
+        cancelButton.addActionListener(event -> cancelAction());
 
         JPanel btnPanel = new JPanel();
         btnPanel.add(importButton);
@@ -82,7 +70,7 @@ public class PGMinerImportDialog extends JDialog {
         setLocationRelativeTo(Framework.getInstance().getMainWindow());
     }
 
-    private void actionSelect() {
+    private void selectAction() {
         JFileChooser chooser = new JFileChooser();
         if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             File file = chooser.getSelectedFile();
@@ -97,7 +85,7 @@ public class PGMinerImportDialog extends JDialog {
         }
     }
 
-    private void actionExtract() {
+    private void extractAction() {
         if (extractConcurrencyCB.isSelected()) {
             splitCB.setEnabled(true);
         } else {
@@ -106,19 +94,19 @@ public class PGMinerImportDialog extends JDialog {
         }
     }
 
-    private void actionCancel() {
-        canImport = false;
-        setVisible(false);
-    }
-
-    private void actionImport() {
+    private void importAction() {
         File eventLog = new File(filePath.getText());
         if (!eventLog.exists()) {
             DialogUtils.showError("The event log chosen does not exist");
         } else {
-            canImport = true;
+            modalResult = true;
             setVisible(false);
         }
+    }
+
+    private void cancelAction() {
+        modalResult = false;
+        setVisible(false);
     }
 
     public boolean getExtractConcurrency() {
@@ -133,8 +121,9 @@ public class PGMinerImportDialog extends JDialog {
         return filePath.getText();
     }
 
-    public boolean getCanImport() {
-        return canImport;
+    public boolean reveal() {
+        setVisible(true);
+        return modalResult;
     }
 
 }

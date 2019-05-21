@@ -2,7 +2,6 @@ package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
-import org.workcraft.utils.ScriptableCommandUtils;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.tasks.CustomCheckTask;
@@ -13,9 +12,9 @@ import org.workcraft.plugins.mpsat.gui.AssertionDialog;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.utils.GuiUtils;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.utils.ScriptableCommandUtils;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 
@@ -54,10 +53,7 @@ public class AssertionVerificationCommand extends AbstractVerificationCommand {
 
         MpsatPresetManager pmgr = new MpsatPresetManager(presetFile, new MpsatSettingsSerialiser(), true);
         AssertionDialog dialog = new AssertionDialog(mainWindow, pmgr);
-        dialog.pack();
-        GuiUtils.centerToParent(dialog, mainWindow);
-        dialog.setVisible(true);
-        if (dialog.getModalResult() == 1) {
+        if (dialog.reveal()) {
             TaskManager manager = framework.getTaskManager();
             CustomCheckTask task = new CustomCheckTask(we, dialog.getSettings());
             String description = MpsatUtils.getToolchainDescription(we.getTitle());

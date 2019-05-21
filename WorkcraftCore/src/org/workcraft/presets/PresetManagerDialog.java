@@ -1,22 +1,15 @@
 package org.workcraft.presets;
 
-import java.awt.BorderLayout;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-
+import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.GuiUtils;
 
-import info.clearthought.layout.TableLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 @SuppressWarnings("serial")
 public class PresetManagerDialog<T> extends JDialog {
@@ -28,16 +21,10 @@ public class PresetManagerDialog<T> extends JDialog {
     public PresetManagerDialog(Window owner, final PresetManager<T> presetManager) {
         super(owner, "Manage presets");
 
-        double[][] size = {
-            {TableLayout.FILL, 100},
-            {20, 20, TableLayout.FILL, 20},
-        };
+        JPanel content = new JPanel(GuiUtils.createTableLayout(
+                new double[]{TableLayout.FILL, 100},
+                new double[]{20, 20, TableLayout.FILL, 20}));
 
-        TableLayout layout = new TableLayout(size);
-        layout.setHGap(SizeHelper.getLayoutHGap());
-        layout.setVGap(SizeHelper.getLayoutVGap());
-
-        JPanel content = new JPanel(layout);
         content.setBorder(SizeHelper.getEmptyBorder());
 
         this.setLayout(new BorderLayout());
@@ -96,10 +83,10 @@ public class PresetManagerDialog<T> extends JDialog {
 
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        content.add(listScroll, "0 0 0 3");
-        content.add(okButton, "1 3");
-        content.add(deleteButton, "1 0");
-        content.add(renameButton, "1 1");
+        content.add(listScroll, new TableLayoutConstraints(0, 0, 0, 3));
+        content.add(okButton, new TableLayoutConstraints(1, 3));
+        content.add(deleteButton, new TableLayoutConstraints(1, 0));
+        content.add(renameButton, new TableLayoutConstraints(1, 1));
     }
 
 }

@@ -1,25 +1,12 @@
 package org.workcraft.plugins.son.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Toolkit;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JToolBar;
 
 public class OutputArea extends JFrame {
 
@@ -105,16 +92,15 @@ public class OutputArea extends JFrame {
                     JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                     JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED),
                 BorderLayout.CENTER);
-        this.pack();
-        this.setVisible(true);
-        this.setTitle(title);
+        pack();
+        setVisible(true);
+        setTitle(title);
 
         Toolkit kit = Toolkit.getDefaultToolkit();
         Dimension screenSize = kit.getScreenSize();
         int width = screenSize.width;
         int height = screenSize.height;
         setLocation(width / 2, height / 4);
-
     }
 
 }

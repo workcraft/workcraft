@@ -1,28 +1,17 @@
 package org.workcraft.plugins.cpog.gui;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Window;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-
+import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.layouts.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.commands.PetriToCpogParameters;
 import org.workcraft.utils.GuiUtils;
 
-import info.clearthought.layout.TableLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 @SuppressWarnings("serial")
 public class PetriToCpogDialog extends JDialog {
@@ -35,29 +24,21 @@ public class PetriToCpogDialog extends JDialog {
     //other elements
     private JComboBox<String> significanceBox;
     private JPanel buttonPanel, settingPanel;
-    protected int modalResult;
+    private boolean modalResult;
 
     public PetriToCpogDialog(Window owner, PetriToCpogParameters settings) {
         super(owner, "Petri Net to CPOG conversion [Untanglings]", ModalityType.APPLICATION_MODAL);
-        modalResult = 0;
 
         createSettingPanel();
         createButtonPanel(settings);
 
-        double[][] size = new double[][] {
-            {TableLayout.FILL},
-            {110, TableLayout.FILL},
-        };
+        JPanel content = new JPanel(GuiUtils.createTableLayout(
+                new double[]{TableLayout.FILL}, new double[]{110, TableLayout.FILL}));
 
-        TableLayout layout = new TableLayout(size);
-        layout.setHGap(3);
-        layout.setVGap(3);
-
-        JPanel content = new JPanel(layout);
         content.setBorder(SizeHelper.getEmptyBorder());
 
-        content.add(settingPanel, "0 0");
-        content.add(buttonPanel, "0 1");
+        content.add(settingPanel, new TableLayoutConstraints(0, 0));
+        content.add(buttonPanel, new TableLayoutConstraints(0, 1));
 
         setContentPane(content);
 
@@ -65,12 +46,13 @@ public class PetriToCpogDialog extends JDialog {
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-        sizeWindow(560, 200, 200, 100);
+        setMinimumSize(new Dimension(560, 200));
+        pack();
+        setLocationRelativeTo(owner);
     }
 
     /** creates the panel containing the settings of the converter **/
     private void createSettingPanel() {
-
         settingPanel = new JPanel(new SimpleFlowLayout());
 
         // reduction of maximal significant runs, check box
@@ -133,28 +115,31 @@ public class PetriToCpogDialog extends JDialog {
 
         // run the converter
         JButton runButton = GuiUtils.createDialogButton("Run");
-        runButton.addActionListener(event -> {
-            setVisible(false);
-            settings.setReduce(reduceCheck.isSelected() ? true : false);
-            settings.setIsomorphism(isomorphismCheck.isSelected() ? true : false);
-            settings.setSignificance(significanceBox.getSelectedIndex());
-            settings.setRemoveNodes(removeNodesCheck.isSelected() ? true : false);
-            modalResult = 1;
-        });
+        runButton.addActionListener(event -> runAction(settings));
 
         // close the converter
         JButton closeButton = GuiUtils.createDialogButton("Close");
-        closeButton.addActionListener(event -> setVisible(false));
+        closeButton.addActionListener(event -> closeAction());
         buttonPanel.add(runButton);
         buttonPanel.add(closeButton);
     }
 
-    private void sizeWindow(int width, int height, int row1, int row2) {
-        setMinimumSize(new Dimension(width, height));
-        pack();
+    private void runAction(PetriToCpogParameters settings) {
+        settings.setReduce(reduceCheck.isSelected());
+        settings.setIsomorphism(isomorphismCheck.isSelected());
+        settings.setSignificance(significanceBox.getSelectedIndex());
+        settings.setRemoveNodes(removeNodesCheck.isSelected());
+        modalResult = true;
+        setVisible(false);
     }
 
-    public int getModalResult() {
+    private void closeAction() {
+        modalResult = false;
+        setVisible(false);
+    }
+
+    public boolean reveal() {
+        setVisible(true);
         return modalResult;
     }
 

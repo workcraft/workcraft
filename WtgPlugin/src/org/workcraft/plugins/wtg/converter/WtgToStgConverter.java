@@ -3,11 +3,11 @@ package org.workcraft.plugins.wtg.converter;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.dtd.*;
 import org.workcraft.plugins.dtd.Signal;
+import org.workcraft.plugins.dtd.*;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.wtg.*;
-import org.workcraft.types.Pair;
+import org.workcraft.types.Triple;
 
 import java.util.*;
 
@@ -21,7 +21,7 @@ public class WtgToStgConverter {
 
     private final Map<State, StgPlace> stateToPlaceMap;
     private final Map<String, UnstableSignalStg> unstableSignalToStgMap;
-    private final Map<Waveform, Pair<NamedTransition, NamedTransition>> waveformToEntryExitMap;
+    private final Map<Waveform, Triple<NamedTransition, NamedTransition, StgPlace>> waveformToEntryExitInactiveMap;
     private final Map<Event, NamedTransition> eventToTransitionMap;
 
     public WtgToStgConverter(Wtg srcModel, Stg dstModel) {
@@ -29,7 +29,7 @@ public class WtgToStgConverter {
         this.dstModel = dstModel;
         stateToPlaceMap = convertStates();
         unstableSignalToStgMap = createSignalStatePlaces();
-        waveformToEntryExitMap = convertWaveforms();
+        waveformToEntryExitInactiveMap = convertWaveforms();
         eventToTransitionMap = convertEvents();
         convertConnections();
         convertGuards();
@@ -105,15 +105,15 @@ public class WtgToStgConverter {
         return result;
     }
 
-    private Map<Waveform, Pair<NamedTransition, NamedTransition>> convertWaveforms() {
-        Map<Waveform, Pair<NamedTransition, NamedTransition>> result = new HashMap<>();
+    private Map<Waveform, Triple<NamedTransition, NamedTransition, StgPlace>> convertWaveforms() {
+        Map<Waveform, Triple<NamedTransition, NamedTransition, StgPlace>> result = new HashMap<>();
         for (Waveform waveform : srcModel.getWaveforms()) {
             result.put(waveform, convertWaveform(waveform));
         }
         return result;
     }
 
-    private Pair<NamedTransition, NamedTransition> convertWaveform(Waveform waveform) {
+    private Triple<NamedTransition, NamedTransition, StgPlace> convertWaveform(Waveform waveform) {
         Set<MathNode> preset = srcModel.getPreset(waveform);
         Set<MathNode> postset = srcModel.getPostset(waveform);
         if ((preset.size() != 1) || (postset.size() != 1)) {
@@ -147,7 +147,16 @@ public class WtgToStgConverter {
                 throw new RuntimeException(e);
             }
         }
-        return Pair.of(entryTransition, exitTransition);
+        // Waveform inactive place
+        StgPlace inactivePlace = dstModel.createPlace(getInactivePlaceName(waveformName), null);
+        inactivePlace.setTokens(1);
+        try {
+            dstModel.connect(inactivePlace, entryTransition);
+            dstModel.connect(exitTransition, inactivePlace);
+        } catch (InvalidConnectionException e) {
+            throw new RuntimeException(e);
+        }
+        return Triple.of(entryTransition, exitTransition, inactivePlace);
     }
 
     private Map<Event, NamedTransition> convertEvents() {
@@ -171,7 +180,7 @@ public class WtgToStgConverter {
 
     private Map<Event, NamedTransition> convertEntryEvents(Waveform waveform) {
         Map<Event, NamedTransition> result = new HashMap<>();
-        NamedTransition entryTransition = waveformToEntryExitMap.get(waveform).getFirst();
+        NamedTransition entryTransition = waveformToEntryExitInactiveMap.get(waveform).getFirst();
         for (EntryEvent entryEvent : srcModel.getEntries(waveform)) {
             result.put(entryEvent, entryTransition);
         }
@@ -180,7 +189,7 @@ public class WtgToStgConverter {
 
     private Map<Event, NamedTransition> convertExitEvents(Waveform waveform) {
         Map<Event, NamedTransition> result = new HashMap<>();
-        NamedTransition exitTransition = waveformToEntryExitMap.get(waveform).getSecond();
+        NamedTransition exitTransition = waveformToEntryExitInactiveMap.get(waveform).getSecond();
         for (ExitEvent signalExit : srcModel.getExits(waveform)) {
             result.put(signalExit, exitTransition);
         }
@@ -389,7 +398,7 @@ public class WtgToStgConverter {
     }
 
     private void convertGuard(Waveform waveform) {
-        NamedTransition entryTransition = waveformToEntryExitMap.get(waveform).getFirst();
+        NamedTransition entryTransition = waveformToEntryExitInactiveMap.get(waveform).getFirst();
         Guard guard = waveform.getGuard();
         for (String signalName : guard.keySet()) {
             UnstableSignalStg signalStg = unstableSignalToStgMap.get(signalName);
@@ -434,6 +443,10 @@ public class WtgToStgConverter {
         return signalName + WtgSettings.getDestabiliseEventSuffix();
     }
 
+    public static String getInactivePlaceName(String signalName) {
+        return signalName + WtgSettings.getInactivePlaceSuffix();
+    }
+
     public static String getEntryEventName(String signalName) {
         return signalName + WtgSettings.getEntryEventSuffix();
     }
@@ -476,14 +489,21 @@ public class WtgToStgConverter {
         if (unstableSignalStg != null) {
             if (unstableSignalStg.unstablePlace.getTokens() > 0) {
                 if (unstableSignalStg.highPlace.getTokens() > 0) {
+                    System.out.println("fall");
                     return unstableSignalStg.fallTransition;
                 }
                 if (unstableSignalStg.lowPlace.getTokens() > 0) {
+                    System.out.println("rise");
                     return unstableSignalStg.riseTransition;
                 }
             }
         }
         return null;
+    }
+
+    public boolean isActiveWaveform(Waveform waveform) {
+        StgPlace inactivePlace = waveformToEntryExitInactiveMap.get(waveform).getThird();
+        return inactivePlace.getTokens() == 0;
     }
 
 }

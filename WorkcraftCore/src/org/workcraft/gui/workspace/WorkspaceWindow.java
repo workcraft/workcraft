@@ -1,19 +1,8 @@
 package org.workcraft.gui.workspace;
 
-import java.awt.BorderLayout;
-import java.io.File;
-
-import javax.swing.JFileChooser;
-import javax.swing.JMenu;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.tree.DefaultMutableTreeNode;
-
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
-import org.workcraft.workspace.FileFilters;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.MainWindowActions;
 import org.workcraft.gui.actions.ActionMenuItem;
@@ -21,7 +10,13 @@ import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.trees.TreeWindow;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.GuiUtils;
+import org.workcraft.workspace.FileFilters;
 import org.workcraft.workspace.Workspace;
+
+import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import java.awt.*;
+import java.io.File;
 
 @SuppressWarnings("serial")
 public class WorkspaceWindow extends JPanel {
@@ -47,7 +42,7 @@ public class WorkspaceWindow extends JPanel {
 
         scrollPane.setViewportView(workspaceTree);
 
-        setLayout(new BorderLayout(0, 0));
+        setLayout(new BorderLayout());
         this.add(scrollPane, BorderLayout.CENTER);
 
         lastDirectory = framework.getConfigVar(CONFIG_WORKSPACE_LAST_DIRECTORY, false);

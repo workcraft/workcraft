@@ -201,7 +201,7 @@ public class CpogSelectionTool extends SelectionTool {
         JPanel buttonPanel = new JPanel();
 
         JButton btnInsert = new JButton("Insert");
-        btnInsert.addActionListener(event -> actionInsert());
+        btnInsert.addActionListener(event -> insertAction());
         buttonPanel.add(btnInsert);
 
         insertTransitives = new Checkbox("Insert transitives", false);
@@ -214,7 +214,7 @@ public class CpogSelectionTool extends SelectionTool {
 
         JButton groupPageButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG(
                 "images/selection-page.svg"), "Combine selection as a scenario (Alt-G)");
-        groupPageButton.addActionListener(event -> actionGroupPage(editor));
+        groupPageButton.addActionListener(event -> groupPageAction(editor));
         JPanel groupPanel = getGroupPanel();
         if (groupPanel != null) {
             groupPanel.add(groupPageButton, 1);
@@ -225,7 +225,7 @@ public class CpogSelectionTool extends SelectionTool {
         return panel;
     }
 
-    private void actionInsert() {
+    private void insertAction() {
         int prevLineEnd = 0;
         ArrayList<String> expressions = new ArrayList<>();
         editor.getWorkspaceEntry().captureMemento();
@@ -268,7 +268,7 @@ public class CpogSelectionTool extends SelectionTool {
         }
     }
 
-    private void actionGroupPage(final GraphEditor editor) {
+    private void groupPageAction(final GraphEditor editor) {
         VisualCpog visualCpog = (VisualCpog) editor.getWorkspaceEntry().getModelEntry().getVisualModel();
         visualCpog.groupScenarioPageSelection("scenario" + scenarioNo);
         scenarioNo++;

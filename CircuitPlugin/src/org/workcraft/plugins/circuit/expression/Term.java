@@ -45,7 +45,7 @@ public class Term implements Expression {
 
     @Override
     public Expression eval() {
-        return eval(new HashMap<String, Boolean>());
+        return eval(new HashMap<>());
     }
 
     @Override

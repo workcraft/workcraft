@@ -1,10 +1,22 @@
 package org.workcraft.plugins.mpsat.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Window;
+import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstraints;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.gui.dialogs.ModalDialog;
+import org.workcraft.plugins.mpsat.MpsatPresetManager;
+import org.workcraft.plugins.mpsat.VerificationMode;
+import org.workcraft.plugins.mpsat.VerificationParameters;
+import org.workcraft.plugins.mpsat.VerificationParameters.SolutionMode;
+import org.workcraft.presets.Preset;
+import org.workcraft.presets.PresetManagerPanel;
+import org.workcraft.presets.SettingsToControlsMapper;
+import org.workcraft.utils.DesktopApi;
+import org.workcraft.utils.GuiUtils;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -12,81 +24,43 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.KeyStroke;
+public class AssertionDialog extends ModalDialog<MpsatPresetManager> {
 
-import org.workcraft.dom.hierarchy.NamespaceHelper;
-import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.utils.DesktopApi;
-import org.workcraft.plugins.mpsat.VerificationMode;
-import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.VerificationParameters.SolutionMode;
-import org.workcraft.plugins.mpsat.MpsatPresetManager;
-import org.workcraft.presets.PresetManagerPanel;
-import org.workcraft.presets.Preset;
-import org.workcraft.presets.SettingsToControlsMapper;
-import org.workcraft.utils.GuiUtils;
-
-import info.clearthought.layout.TableLayout;
-
-@SuppressWarnings("serial")
-public class AssertionDialog extends JDialog {
-    private JPanel predicatePanel, buttonsPanel;
-    private PresetManagerPanel<VerificationParameters> presetPanel;
-    private JTextArea assertionText;
-    private final MpsatPresetManager presetManager;
-
-    private int modalResult = 0;
+    private JTextArea propertyText;
 
     public AssertionDialog(Window owner, MpsatPresetManager presetManager) {
-        super(owner, "Custom assertion", ModalityType.APPLICATION_MODAL);
-        this.presetManager = presetManager;
+        super(owner, "Custom assertion", presetManager);
+    }
 
-        createPresetPanel();
-        createAssertionPanel();
-        createButtonsPanel();
+    @Override
+    public JPanel createControlsPanel() {
+        JPanel result = super.createControlsPanel();
+        result.setLayout(GuiUtils.createTableLayout(
+                new double[]{TableLayout.FILL},
+                new double[]{TableLayout.PREFERRED, TableLayout.FILL}));
 
-        int buttonPanelHeight = buttonsPanel.getPreferredSize().height;
-        double[][] size = new double[][] {
-            {TableLayout.FILL},
-            {TableLayout.PREFERRED, TableLayout.FILL, buttonPanelHeight},
-        };
+        PresetManagerPanel<VerificationParameters> presetPanel = createPresetPanel();
 
-        final TableLayout layout = new TableLayout(size);
-        layout.setHGap(SizeHelper.getLayoutHGap());
-        layout.setVGap(SizeHelper.getLayoutVGap());
-
-        JPanel contentPanel = new JPanel(layout);
-        contentPanel.setBorder(SizeHelper.getEmptyBorder());
-
-        contentPanel.add(presetPanel, "0 0");
-        contentPanel.add(predicatePanel, "0 1");
-        contentPanel.add(buttonsPanel, "0 2");
-
-        setContentPane(contentPanel);
+        result.add(presetPanel, new TableLayoutConstraints(0, 0));
+        result.add(createAssertionPanel(), new TableLayoutConstraints(0, 1));
 
         presetPanel.selectFirst();
 
-        getRootPane().registerKeyboardAction(event -> {
-            modalResult = 0;
-            setVisible(false);
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
-
         addWindowListener(new WindowAdapter() {
+            @Override
             public void windowOpened(WindowEvent e) {
-                assertionText.requestFocus();
+                if (propertyText.getText().isEmpty()) {
+                    propertyText.setText("\n\n");
+                }
+                propertyText.setCaretPosition(0);
+                propertyText.requestFocus();
             }
         });
-        setMinimumSize(new Dimension(450, 350));
-        pack();
+
+        return result;
     }
 
-    private void createPresetPanel() {
+    private PresetManagerPanel<VerificationParameters> createPresetPanel() {
         ArrayList<Preset<VerificationParameters>> builtInPresets = new ArrayList<>();
 
         builtInPresets.add(new Preset<>("", VerificationParameters.getEmptyAssertionSettings(), false));
@@ -99,24 +73,22 @@ public class AssertionDialog extends JDialog {
 
             @Override
             public VerificationParameters getSettingsFromControls() {
-                VerificationParameters settings = AssertionDialog.this.getSettingsFromControls();
-                return settings;
+                return AssertionDialog.this.getSettingsFromControls();
             }
         };
 
-        presetPanel = new PresetManagerPanel<VerificationParameters>(presetManager, builtInPresets, guiMapper, this);
+        return new PresetManagerPanel<>(getUserData(), builtInPresets, guiMapper, this);
     }
 
-    private void createAssertionPanel() {
-        predicatePanel = new JPanel(new BorderLayout());
+    private JPanel createAssertionPanel() {
+        JPanel result = new JPanel(new BorderLayout());
         String title = "Assertion (use '" + NamespaceHelper.getHierarchySeparator() + "' as hierarchy separator)";
-        predicatePanel.setBorder(SizeHelper.getTitledBorder(title));
+        result.setBorder(SizeHelper.getTitledBorder(title));
 
-        assertionText = new JTextArea();
-        assertionText.setMargin(SizeHelper.getTextMargin());
-        assertionText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
-        assertionText.setText("");
-        assertionText.addKeyListener(new KeyAdapter() {
+        propertyText = new JTextArea();
+        propertyText.setMargin(SizeHelper.getTextMargin());
+        propertyText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
+        propertyText.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
                 if (e.getKeyChar() > 127) {
@@ -124,53 +96,38 @@ public class AssertionDialog extends JDialog {
                 }
             }
         });
-        JScrollPane assertionScrollPane = new JScrollPane(assertionText);
+        JScrollPane assertionScrollPane = new JScrollPane(propertyText);
 
         JPanel propertyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,
                 SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
 
-        predicatePanel.add(assertionScrollPane, BorderLayout.CENTER);
-        predicatePanel.add(propertyPanel, BorderLayout.SOUTH);
+        result.add(assertionScrollPane, BorderLayout.CENTER);
+        result.add(propertyPanel, BorderLayout.SOUTH);
+        return result;
     }
 
     public VerificationParameters getSettings() {
         return getSettingsFromControls();
     }
 
-    private void createButtonsPanel() {
-        buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-
-        JButton runButton = GuiUtils.createDialogButton("Run");
-        runButton.addActionListener(event -> {
-            modalResult = 1;
-            setVisible(false);
-        });
-
-        JButton cancelButton = GuiUtils.createDialogButton("Cancel");
-        cancelButton.addActionListener(event -> {
-            modalResult = 0;
-            setVisible(false);
-        });
+    @Override
+    public JPanel createButtonsPanel() {
+        JPanel result = super.createButtonsPanel();
 
         JButton helpButton = GuiUtils.createDialogButton("Help");
         helpButton.addActionListener(event -> DesktopApi.open(new File("help/assertion.html")));
+        result.add(helpButton);
 
-        buttonsPanel.add(runButton);
-        buttonsPanel.add(cancelButton);
-        buttonsPanel.add(helpButton);
-    }
-
-    public int getModalResult() {
-        return modalResult;
+        return result;
     }
 
     private void applySettingsToControls(VerificationParameters settings) {
-        assertionText.setText(settings.getExpression());
+        propertyText.setText(settings.getExpression());
     }
 
     private VerificationParameters getSettingsFromControls() {
         return new VerificationParameters(null, VerificationMode.ASSERTION,
-                0, SolutionMode.MINIMUM_COST, 0, assertionText.getText(), true);
+                0, SolutionMode.MINIMUM_COST, 0, propertyText.getText(), true);
     }
 
 }

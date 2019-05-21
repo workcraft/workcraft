@@ -74,35 +74,23 @@ public class CircuitSettingsTests {
         Assert.assertEquals(Config.toString(CircuitSettings.getBusSuffix()),
                 framework.getConfigVar(prefix + ".busSuffix", false));
 
-        Assert.assertEquals(Config.toString(CircuitSettings.getConflictInitGateColor()),
-                framework.getConfigVar(prefix + ".conflictInitGateColor", false));
+        Assert.assertEquals(Config.toString(CircuitSettings.getResetPort()),
+                framework.getConfigVar(prefix + ".resetPort", false));
 
-        Assert.assertEquals(Config.toString(CircuitSettings.getForcedInitGateColor()),
-                framework.getConfigVar(prefix + ".forcedInitGateColor", false));
+        Assert.assertEquals(Config.toString(CircuitSettings.getResetPin()),
+                framework.getConfigVar(prefix + ".resetPin", false));
 
-        Assert.assertEquals(Config.toString(CircuitSettings.getPropagatedInitGateColor()),
-                framework.getConfigVar(prefix + ".propagatedInitGateColor", false));
-
-        Assert.assertEquals(Config.toString(CircuitSettings.getResetName()),
-                framework.getConfigVar(prefix + ".resetName", false));
-
-        Assert.assertEquals(Config.toString(CircuitSettings.getWithinCycleGateColor()),
-                framework.getConfigVar(prefix + ".withinCycleGateColor", false));
-
-        Assert.assertEquals(Config.toString(CircuitSettings.getBreakCycleGateColor()),
-                framework.getConfigVar(prefix + ".breakCycleGateColor", false));
-
-        Assert.assertEquals(Config.toString(CircuitSettings.getOutsideCycleGateColor()),
-                framework.getConfigVar(prefix + ".outsideCycleGateColor", false));
-
-        Assert.assertEquals(Config.toString(CircuitSettings.getScanSuffix()),
-                framework.getConfigVar(prefix + ".scanSuffix", false));
+        Assert.assertEquals(Config.toString(CircuitSettings.getTbufData()),
+                framework.getConfigVar(prefix + ".tbufData", false));
 
         Assert.assertEquals(Config.toString(CircuitSettings.getScanPorts()),
                 framework.getConfigVar(prefix + ".scanPorts", false));
 
         Assert.assertEquals(Config.toString(CircuitSettings.getScanPins()),
                 framework.getConfigVar(prefix + ".scanPins", false));
+
+        Assert.assertEquals(Config.toString(CircuitSettings.getScanSuffix()),
+                framework.getConfigVar(prefix + ".scanSuffix", false));
     }
 
 }

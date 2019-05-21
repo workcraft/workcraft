@@ -10,19 +10,16 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditor;
+import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
 import org.workcraft.plugins.dtd.*;
 import org.workcraft.plugins.dtd.utils.DtdUtils;
 import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
 import org.workcraft.plugins.stg.NamedTransition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
-import org.workcraft.plugins.wtg.State;
-import org.workcraft.plugins.wtg.VisualState;
-import org.workcraft.plugins.wtg.VisualWaveform;
-import org.workcraft.plugins.wtg.Wtg;
+import org.workcraft.plugins.wtg.*;
 import org.workcraft.plugins.wtg.converter.WtgToStgConverter;
 import org.workcraft.plugins.wtg.decorations.StateDecoration;
 import org.workcraft.plugins.wtg.decorations.WaveformDecoration;
@@ -74,19 +71,11 @@ public class WtgSimulationTool extends StgSimulationTool {
 
     @Override
     public boolean isContainerExcited(Container container) {
-        if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
-        boolean ret = false;
-        for (Node node: container.getChildren()) {
-            if (node instanceof VisualEvent) {
-                ret = ret || (getExcitedTransitionOfEvent((VisualEvent) node) != null);
-            }
-            if (node instanceof Container) {
-                ret = ret || isContainerExcited((Container) node);
-            }
-            if (ret) break;
+        if (container instanceof VisualWaveform) {
+            Waveform waveform = ((VisualWaveform) container).getReferencedWaveform();
+            return converter.isActiveWaveform(waveform);
         }
-        excitedContainers.put(container, ret);
-        return ret;
+        return false;
     }
 
     @Override
@@ -168,12 +157,12 @@ public class WtgSimulationTool extends StgSimulationTool {
         return new Decoration() {
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonDecorationSettings.getExcitedComponentColor() : null;
+                return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
             }
 
             @Override
             public Color getBackground() {
-                return isSuggested ? CommonDecorationSettings.getSuggestedComponentColor() : null;
+                return isSuggested ? CommonDecorationSettings.getSimulationSuggestedComponentColor() : null;
             }
         };
     }
@@ -188,19 +177,18 @@ public class WtgSimulationTool extends StgSimulationTool {
         NamedTransition enabledUnstableTransition = converter.getEnabledUnstableTransition(signal.getReferencedSignal());
         boolean isEnabledUnstable = (state == Signal.State.UNSTABLE) && (enabledUnstableTransition != null);
         boolean isExcitedWaveform = isContainerExcited(getWaveform(signal));
-        boolean isActiveSection = (secondEvent instanceof VisualExitEvent) || (getExcitedTransitionOfEvent(secondEvent) != null);
 
-        final boolean isExcited = isEnabledUnstable && isExcitedWaveform && isActiveSection;
+        final boolean isExcited = isEnabledUnstable && isExcitedWaveform;
         final boolean isSuggested = isExcited && (enabledUnstableTransition == transition);
         return new Decoration() {
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonDecorationSettings.getExcitedComponentColor() : null;
+                return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
             }
 
             @Override
             public Color getBackground() {
-                return isSuggested ? CommonDecorationSettings.getSuggestedComponentColor() : null;
+                return isSuggested ? CommonDecorationSettings.getSimulationSuggestedComponentColor() : null;
             }
         };
     }

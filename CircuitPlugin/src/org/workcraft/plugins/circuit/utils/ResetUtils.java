@@ -1,5 +1,6 @@
 package org.workcraft.plugins.circuit.utils;
 
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
@@ -39,6 +40,17 @@ public class ResetUtils {
                 if (isEvaluatedHigh(setFunction, resetFunction) && outputContact.getInitToOne()) continue;
                 if (isEvaluatedLow(setFunction, resetFunction) && !outputContact.getInitToOne()) continue;
                 contacts.add(outputContact);
+            }
+        }
+        return setForceInit(contacts, true);
+    }
+
+    public static Set<Contact> tagForceInitSequentialPins(Circuit circuit) {
+        HashSet<FunctionContact> contacts = new HashSet<>();
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            for (FunctionContact contact : component.getFunctionOutputs()) {
+                if ((contact.getSetFunction() == null) || (contact.getResetFunction() == null)) continue;
+                contacts.add(contact);
             }
         }
         return setForceInit(contacts, true);
@@ -135,18 +147,23 @@ public class ResetUtils {
                     }
                 }
             }
-            VisualContact resetContact = null;
             if (!forceInitFuncContacts.isEmpty()) {
-                resetContact = component.createContact(Contact.IOType.INPUT);
+                String name = CircuitSettings.getResetPin();
+                String ref = NamespaceHelper.getReference(circuit.getMathReference(component), name);
+                VisualFunctionContact resetContact = circuit.getVisualComponentByMathReference(ref, VisualFunctionContact.class);
+                if (resetContact == null) {
+                    resetContact = circuit.getOrCreateContact(component, name, Contact.IOType.INPUT);
+                    component.setPositionByDirection(resetContact, VisualContact.Direction.WEST, false);
+                    for (VisualFunctionContact contact : forceInitFuncContacts) {
+                        insertResetFunction(contact, resetContact, activeLow);
+                    }
+                    component.getReferencedComponent().setModule("");
+                }
                 try {
                     circuit.connect(resetPort, resetContact);
                 } catch (InvalidConnectionException e) {
                     throw new RuntimeException(e);
                 }
-            }
-            for (VisualFunctionContact contact : forceInitFuncContacts) {
-                insertResetFunction(contact, resetContact, activeLow);
-                component.setLabel("");
             }
             for (VisualFunctionContact contact : forceInitGateContacts) {
                 insertResetGate(circuit, resetPort, contact, activeLow);
@@ -318,6 +335,19 @@ public class ResetUtils {
                 contact.setForcedInit(false);
             }
         }
+    }
+
+    public static Set<Contact> getInitialisationProblemContacts(Circuit circuit) {
+        InitialisationState initState = new InitialisationState(circuit);
+        Set<Contact> result = new HashSet<>();
+        for (FunctionContact contact : circuit.getFunctionContacts()) {
+            if (contact.isPin() && contact.isDriver()) {
+                if (!initState.isCorrectlyInitialised(contact)) {
+                    result.add(contact);
+                }
+            }
+        }
+        return result;
     }
 
 }

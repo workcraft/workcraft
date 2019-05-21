@@ -1,7 +1,6 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.Framework;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.tools.Trace;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.gui.ReachibilityDialog;
@@ -10,12 +9,11 @@ import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.utils.PetriUtils;
-import org.workcraft.tasks.ExportOutput;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.tasks.ExportOutput;
 import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.GuiUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -84,10 +82,9 @@ class DeadlockFreenessOutputHandler extends ReachabilityOutputHandler {
                 if (framework.isInGuiMode()) {
                     message = "<html><br>&#160;" + message + " after the following trace(s):<br><br></html>";
                     ReachibilityDialog solutionsDialog = new ReachibilityDialog(
-                            getWorkspaceEntry(), TITLE, message, processedSolutions);
-                    MainWindow mainWindow = framework.getMainWindow();
-                    GuiUtils.centerToParent(solutionsDialog, mainWindow);
-                    solutionsDialog.setVisible(true);
+                            framework.getMainWindow(), getWorkspaceEntry(), TITLE, message, processedSolutions);
+
+                    solutionsDialog.reveal();
                 }
             }
         }

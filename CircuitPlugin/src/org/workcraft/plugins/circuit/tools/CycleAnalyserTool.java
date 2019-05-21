@@ -10,9 +10,12 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.gui.tools.*;
 import org.workcraft.interop.Format;
 import org.workcraft.interop.FormatFileFilter;
+import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
+import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.serialisation.PathbreakConstraintExporter;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
@@ -35,7 +38,7 @@ import java.util.function.Function;
 
 public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
-    private final BasicTable<String> breakerTable = new BasicTable();
+    private final BasicTable<String> breakerTable = new BasicTable("<html><b>Path breakers</b></html>");
     private Set<Contact> cycleContacts;
     private Set<FunctionComponent> cycleComponents;
 
@@ -51,13 +54,14 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     private JPanel getLegendControlsPanel(final GraphEditor editor) {
         ColorLegendTable colorLegendTable = new ColorLegendTable(Arrays.asList(
-                Pair.of(CircuitSettings.getWithinCycleGateColor(), "Within a cycle"),
-                Pair.of(CircuitSettings.getBreakCycleGateColor(), "Path breaker"),
-                Pair.of(CircuitSettings.getOutsideCycleGateColor(), "Outside of all cycles")
+                Pair.of(CommonVisualSettings.getFillColor(), "Zero-delay"),
+                Pair.of(CommonDecorationSettings.getAnalysisProblematicComponentColor(), "On a cycle"),
+                Pair.of(CommonDecorationSettings.getAnalysisFixerComponentColor(), "Path breaker"),
+                Pair.of(CommonDecorationSettings.getAnalysisImmaculateComponentColor(), "Not on any cycle")
         ));
 
         JPanel legendPanel = new JPanel(new BorderLayout());
-        legendPanel.setBorder(SizeHelper.getTitledBorder("Highlight legend"));
+        legendPanel.setBorder(SizeHelper.getTitledBorder("<html><b>Highlight legend</b></html>"));
         legendPanel.add(colorLegendTable, BorderLayout.CENTER);
         return legendPanel;
     }
@@ -84,25 +88,19 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
                 "Clear all path breaker pins");
         tagPathBreakerClearAllButton.addActionListener(l -> changePathBreaker(editor, c -> CycleUtils.tagPathBreakerClearAll(c)));
 
-        FlowLayout flowLayout = new FlowLayout();
-        Dimension buttonSize = tagPathBreakerClearAllButton.getPreferredSize();
-        int buttonWidth = (int) Math.round(buttonSize.getWidth() + flowLayout.getHgap());
-        int buttonHeight = (int) Math.round(buttonSize.getHeight() + flowLayout.getVgap());
-        Dimension panelSize = new Dimension(buttonWidth * 3 + flowLayout.getHgap(), buttonHeight + flowLayout.getVgap());
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(tagPathBreakerSelfloopPinsButton);
+        buttonPanel.add(tagPathBreakerAutoAppendButton);
+        buttonPanel.add(tagPathBreakerAutoDiscardButton);
+        buttonPanel.add(tagPathBreakerClearAllButton);
+        GuiUtils.setButtonPanelLayout(buttonPanel, tagPathBreakerClearAllButton.getPreferredSize());
 
-        JPanel btnPanel = new JPanel();
-        btnPanel.setLayout(flowLayout);
-        btnPanel.setPreferredSize(panelSize);
-        btnPanel.setMaximumSize(panelSize);
-        btnPanel.add(tagPathBreakerSelfloopPinsButton);
-        btnPanel.add(tagPathBreakerAutoAppendButton);
-        btnPanel.add(tagPathBreakerAutoDiscardButton);
-        btnPanel.add(tagPathBreakerClearAllButton);
+        JPanel controlPanel = new JPanel(new WrapLayout());
+        controlPanel.add(buttonPanel);
 
         JPanel forcePanel = new JPanel(new BorderLayout());
-        forcePanel.setBorder(SizeHelper.getTitledBorder("Path breakers"));
+        forcePanel.add(controlPanel, BorderLayout.NORTH);
         forcePanel.add(new JScrollPane(breakerTable), BorderLayout.CENTER);
-        forcePanel.add(btnPanel, BorderLayout.SOUTH);
         return forcePanel;
     }
 
@@ -122,23 +120,39 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private JPanel getScanControlsPanel(final GraphEditor editor) {
-        JButton insertScanButton = new JButton("Insert scan");
+        JButton insertTestButton = new JButton("<html><center>Insert<br>T-BUF</center></html>");
+        insertTestButton.addActionListener(l -> insertTbuf(editor));
+        insertTestButton.setToolTipText("Insert testable buffers for all path breaker components");
+
+        JButton insertScanButton = new JButton("<html><center>Insert<br>SCAN</center></html>");
         insertScanButton.addActionListener(l -> insertScan(editor));
+        insertScanButton.setToolTipText("Insert scan for all path breaker components");
 
-        JButton writePathbreakConstraintsButton = new JButton("Write SDC...");
-        writePathbreakConstraintsButton.addActionListener(l -> writePathbreakConstraints(editor));
+        JButton writeConstraintsButton = new JButton("<html><center>Write<br>SDC...</center></html>");
+        writeConstraintsButton.addActionListener(l -> writePathbreakConstraints(editor));
+        writeConstraintsButton.setToolTipText("Write set_disable_timing constraints for path breaker input pins");
 
-        JPanel scanPanel = new JPanel();
+        JPanel scanPanel = new JPanel(new WrapLayout());
+        scanPanel.add(insertTestButton);
         scanPanel.add(insertScanButton);
-        scanPanel.add(writePathbreakConstraintsButton);
+        scanPanel.add(writeConstraintsButton);
         return scanPanel;
     }
 
-    private void insertScan(GraphEditor editor) {
-        editor.getWorkspaceEntry().saveMemento();
+    private void insertTbuf(GraphEditor editor) {
         VisualCircuit circuit = (VisualCircuit) editor.getModel();
+        editor.getWorkspaceEntry().saveMemento();
+        ScanUtils.insertTestableBuffers(circuit);
+        updateState(((VisualCircuit) editor.getModel()).getMathModel());
+        editor.requestFocus();
+    }
+
+    private void insertScan(GraphEditor editor) {
+        VisualCircuit circuit = (VisualCircuit) editor.getModel();
+        editor.getWorkspaceEntry().saveMemento();
         ScanUtils.insertScan(circuit);
         updateState(((VisualCircuit) editor.getModel()).getMathModel());
+        editor.requestFocus();
     }
 
     private void writePathbreakConstraints(final GraphEditor editor) {
@@ -168,7 +182,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     @Override
     public int getHotKeyCode() {
-        return KeyEvent.VK_A;
+        return KeyEvent.VK_Y;
     }
 
     @Override
@@ -183,7 +197,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     @Override
     public String getHintText(final GraphEditor editor) {
-        return "Click on a driven contact or a component to toggle its path breaker state.";
+        return "Click on a contact or a gate to toggle its path breaker state.";
     }
 
     @Override
@@ -294,9 +308,9 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private Decoration getContactDecoration(Contact contact) {
-        final Color color = contact.getPathBreaker() ? CircuitSettings.getBreakCycleGateColor()
-                : cycleContacts.contains(contact) ? CircuitSettings.getWithinCycleGateColor()
-                : contact.isPin() ? CircuitSettings.getOutsideCycleGateColor() : null;
+        final Color color = contact.getPathBreaker() ? CommonDecorationSettings.getAnalysisFixerComponentColor()
+                : cycleContacts.contains(contact) ? CommonDecorationSettings.getAnalysisProblematicComponentColor()
+                : contact.isPin() ? CommonDecorationSettings.getAnalysisImmaculateComponentColor() : null;
 
         return new Decoration() {
             @Override
@@ -312,9 +326,10 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private Decoration getComponentDecoration(FunctionComponent component) {
-        final Color color = ScanUtils.hasPathBreakerOutput(component) ? CircuitSettings.getBreakCycleGateColor()
-                : cycleComponents.contains(component) ? CircuitSettings.getWithinCycleGateColor()
-                : CircuitSettings.getOutsideCycleGateColor();
+        final Color color = component.getIsZeroDelay() ? null
+                : ScanUtils.hasPathBreakerOutput(component) ? CommonDecorationSettings.getAnalysisFixerComponentColor()
+                : cycleComponents.contains(component) ? CommonDecorationSettings.getAnalysisProblematicComponentColor()
+                : CommonDecorationSettings.getAnalysisImmaculateComponentColor();
 
         return new Decoration() {
             @Override

@@ -32,7 +32,7 @@ public interface Decoration {
     class Shaded implements Decoration {
         @Override
         public Color getColorisation() {
-            return CommonDecorationSettings.getShadedComponentColor();
+            return CommonDecorationSettings.getShadingColor();
         }
         public static final Shaded INSTANCE = new Shaded();
     }
@@ -40,7 +40,7 @@ public interface Decoration {
     class Highlighted implements Decoration {
         @Override
         public Color getColorisation() {
-            return CommonDecorationSettings.getHighlightedComponentColor();
+            return CommonDecorationSettings.getHighlightingColor();
         }
         public static final Highlighted INSTANCE = new Highlighted();
     }
@@ -48,7 +48,7 @@ public interface Decoration {
     class Selected implements Decoration {
         @Override
         public Color getColorisation() {
-            return CommonDecorationSettings.getSelectedComponentColor();
+            return CommonDecorationSettings.getSelectionColor();
         }
         public static final Selected INSTANCE = new Selected();
     }

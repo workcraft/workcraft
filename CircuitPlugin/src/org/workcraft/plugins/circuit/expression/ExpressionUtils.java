@@ -74,7 +74,7 @@ public class ExpressionUtils {
             result = NEGATION_DELIMITER + "(" + expression + ")";
         } else {
             if (expression.startsWith("!")) {
-                result = expression.substring(1, expression.length());
+                result = expression.substring(1);
             } else if (expression.endsWith("'")) {
                 result = expression.substring(0, expression.length() - 1);
             } else {

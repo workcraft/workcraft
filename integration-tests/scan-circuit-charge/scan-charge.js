@@ -4,6 +4,8 @@ tagCircuitPathBreakerClearAll(work);
 
 tagCircuitPathBreakerAutoAppend(work);
 
+insertCircuitTestableBuffers(work);
+
 insertCircuitScan(work);
 
 write(

@@ -1,25 +1,21 @@
 package org.workcraft.plugins.cpog.commands;
 
-import java.io.File;
-import java.util.Scanner;
-
 import org.workcraft.Framework;
 import org.workcraft.commands.Command;
 import org.workcraft.gui.Toolbox;
-import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.gui.PGMinerImportDialog;
 import org.workcraft.plugins.cpog.tasks.PGMinerResultHandler;
 import org.workcraft.plugins.cpog.tasks.PGMinerTask;
 import org.workcraft.plugins.cpog.tools.CpogSelectionTool;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
+import java.io.File;
+import java.util.Scanner;
 
 public class ImportEventLogPGMinerCommand implements Command {
-
-    boolean split = false;
-    PGMinerImportDialog dialog;
 
     @Override
     public String getSection() {
@@ -36,25 +32,16 @@ public class ImportEventLogPGMinerCommand implements Command {
         return WorkspaceUtils.isApplicable(we, VisualCpog.class);
     }
 
-    public File getInputFile(WorkspaceEntry we) {
-        dialog = new PGMinerImportDialog();
-        dialog.setVisible(true);
-        if (!dialog.getCanImport()) {
-            return null;
-        }
-        return new File(dialog.getFilePath());
-    }
-
     @Override
     public void run(WorkspaceEntry we) {
-        File inputFile = getInputFile(we);
-        final Framework framework = Framework.getInstance();
-        final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
-        final Toolbox toolbox = editor.getToolBox();
-        final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
-        VisualCpog visualCpog = WorkspaceUtils.getAs(we, VisualCpog.class);
-        try {
-            if (inputFile != null) {
+        PGMinerImportDialog dialog = new PGMinerImportDialog();
+        if (dialog.reveal()) {
+            File inputFile = new File(dialog.getFilePath());
+            final Framework framework = Framework.getInstance();
+            final Toolbox toolbox = framework.getMainWindow().getEditor(we).getToolBox();
+            final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
+            VisualCpog visualCpog = WorkspaceUtils.getAs(we, VisualCpog.class);
+            try {
                 if (dialog.getExtractConcurrency()) {
                     TaskManager taskManager = framework.getTaskManager();
                     PGMinerTask task = new PGMinerTask(inputFile, dialog.getSplit());
@@ -73,10 +60,10 @@ public class ImportEventLogPGMinerCommand implements Command {
                     k.close();
                     we.saveMemento();
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
+                we.cancelMemento();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            we.cancelMemento();
         }
     }
 

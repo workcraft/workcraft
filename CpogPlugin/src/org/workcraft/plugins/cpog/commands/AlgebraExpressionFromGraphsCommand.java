@@ -1,9 +1,5 @@
 package org.workcraft.plugins.cpog.commands;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintStream;
-
 import org.workcraft.Framework;
 import org.workcraft.commands.Command;
 import org.workcraft.gui.MainWindow;
@@ -14,8 +10,12 @@ import org.workcraft.plugins.cpog.gui.AlgebraExportDialog;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.plugins.cpog.tools.CpogSelectionTool;
 import org.workcraft.utils.DialogUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 
 public class AlgebraExpressionFromGraphsCommand implements Command {
 
@@ -47,42 +47,39 @@ public class AlgebraExpressionFromGraphsCommand implements Command {
 
         VisualCpog visualCpog = WorkspaceUtils.getAs(we, VisualCpog.class);
         String exp = CpogParsingTool.getExpressionFromGraph(visualCpog);
-        AlgebraExportDialog dialog = new AlgebraExportDialog();
-
         if (exp == "") {
             return;
         }
-        dialog.setVisible(true);
-        if (!dialog.getOK()) {
-            return;
-        }
-        if (dialog.getPaste()) {
-            tool.setExpressionText(exp);
-            return;
-        }
-        if (dialog.getExport()) {
-            String filePath = dialog.getFilePath();
-            if (filePath.compareTo(" ") == 0 || filePath == "") {
-                DialogUtils.showError("No export file has been given", DIALOG_EXPRESSION_EXPORT_ERROR);
+        AlgebraExportDialog dialog = new AlgebraExportDialog();
+        if (dialog.reveal()) {
+            if (dialog.getPaste()) {
+                tool.setExpressionText(exp);
                 return;
             }
-            File file = new File(filePath);
-            if (file.exists()) {
-                String msg = "The file '" + file.getName() + "' already exists.\n" + "Overwrite it?";
-                if (DialogUtils.showConfirmWarning(msg, DIALOG_SAVE_FILE, false)) {
+            if (dialog.getExport()) {
+                String filePath = dialog.getFilePath();
+                if (filePath.compareTo(" ") == 0 || filePath == "") {
+                    DialogUtils.showError("No export file has been given", DIALOG_EXPRESSION_EXPORT_ERROR);
                     return;
                 }
+                File file = new File(filePath);
+                if (file.exists()) {
+                    String msg = "The file '" + file.getName() + "' already exists.\n" + "Overwrite it?";
+                    if (DialogUtils.showConfirmWarning(msg, DIALOG_SAVE_FILE, false)) {
+                        return;
+                    }
+                }
+                PrintStream expressions;
+                try {
+                    expressions = new PrintStream(file);
+                    expressions.print(exp);
+                    expressions.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                DialogUtils.showError("No export selection was made", DIALOG_EXPRESSION_EXPORT_ERROR);
             }
-            PrintStream expressions;
-            try {
-                expressions = new PrintStream(file);
-                expressions.print(exp);
-                expressions.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        } else {
-            DialogUtils.showError("No export selection was made", DIALOG_EXPRESSION_EXPORT_ERROR);
         }
     }
 

@@ -6,6 +6,7 @@ import org.workcraft.dom.Node;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 public class ReferenceHelper {
 
@@ -41,6 +42,20 @@ public class ReferenceHelper {
             sb.replace(i, i + 1, "\n");
         }
         return sb.toString();
+    }
+
+    public static List<String> parseReferenceList(String str) {
+        List<String> result = new ArrayList<>();
+        if ((str != null) && !str.isEmpty()) {
+            for (String name : str.replaceAll("\\s", "").split(",")) {
+                if (Identifier.isName(name)) {
+                    result.add(name);
+                } else {
+                    return null;
+                }
+            }
+        }
+        return result;
     }
 
 }

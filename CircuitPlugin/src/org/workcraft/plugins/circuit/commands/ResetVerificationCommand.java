@@ -2,18 +2,21 @@ package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
+import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.tools.InitialisationAnalyserTool;
-import org.workcraft.plugins.circuit.utils.InitialisationState;
+import org.workcraft.plugins.circuit.utils.ResetUtils;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ResetVerificationCommand extends AbstractVerificationCommand {
 
@@ -38,17 +41,13 @@ public class ResetVerificationCommand extends AbstractVerificationCommand {
             return null;
         }
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-        InitialisationState initState = new InitialisationState(circuit);
-        HashSet<String> incorrectlyInitialisedComponentRefs = new HashSet<>();
+        Set<Contact> problematicContacts = ResetUtils.getInitialisationProblemContacts(circuit);
         for (FunctionContact contact : circuit.getFunctionContacts()) {
-            if (contact.isPin() && contact.isDriver()) {
-                if (contact.getForcedInit() || !initState.isCorrectlyInitialised(contact)) {
-                    String ref = circuit.getNodeReference(contact);
-                    incorrectlyInitialisedComponentRefs.add(ref);
-                }
+            if (contact.isPin() && contact.isDriver() && contact.getForcedInit()) {
+                problematicContacts.add(contact);
             }
         }
-        if (incorrectlyInitialisedComponentRefs.isEmpty()) {
+        if (problematicContacts.isEmpty()) {
             DialogUtils.showInfo("The circuit is fully initialised via forced inputs");
             return true;
         } else {
@@ -57,8 +56,9 @@ public class ResetVerificationCommand extends AbstractVerificationCommand {
                 final Toolbox toolbox = framework.getMainWindow().getCurrentToolbox();
                 toolbox.selectTool(toolbox.getToolInstance(InitialisationAnalyserTool.class));
             }
+            List<String> refs = ReferenceHelper.getReferenceList(circuit, problematicContacts);
             String msg = "The circuit cannot be initialised via forced inputs.\n" +
-                    LogUtils.getTextWithRefs("Problematic signal", incorrectlyInitialisedComponentRefs);
+                    LogUtils.getTextWithRefs("Problematic signal", refs);
 
             DialogUtils.showError(msg);
             return false;

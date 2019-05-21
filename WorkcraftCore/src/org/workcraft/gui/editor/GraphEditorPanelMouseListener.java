@@ -1,20 +1,15 @@
 package org.workcraft.gui.editor;
 
-import java.awt.Cursor;
-import java.awt.Point;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import java.awt.geom.Point2D;
-
 import org.workcraft.Framework;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.gui.tools.ToolProvider;
+import org.workcraft.utils.DesktopApi;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.geom.Point2D;
 
 class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListener, MouseWheelListener {
     protected GraphEditorPanel editor;

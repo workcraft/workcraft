@@ -1,34 +1,5 @@
 package org.workcraft.plugins.son.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Window;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListCellRenderer;
-import javax.swing.ListSelectionModel;
-import javax.swing.table.TableColumn;
-
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.Path;
@@ -36,28 +7,29 @@ import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.util.Step;
 
+import javax.swing.*;
+import javax.swing.table.TableColumn;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+
 @SuppressWarnings("rawtypes")
 public class ParallelSimDialog extends JDialog {
-
     private static final long serialVersionUID = 1L;
 
     private final SON net;
-
     boolean isRev = false;
     private static final Color selectedColor = new Color(255, 228, 181);
     private final Step possibleFire, minFire;
     private final TransitionNode clickedEvent;
-
     private JPanel eventPanel, buttonsPanel, eventInfoPanel;
-    protected JScrollPane infoPanel;
-    Collection<Path> sync;
-
+    private final Collection<Path> sync;
     protected Dimension buttonSize = new Dimension(80, 25);
-
     private final HashSet<TransitionNode> selectedEvents = new HashSet<>();
-
-    private int run = 0;
-    private Window owner;
+    private int modalResult = 0;
 
     class EventItem {
         private final String label;
@@ -210,7 +182,7 @@ public class ParallelSimDialog extends JDialog {
         JButton runButton = new JButton("Run");
         runButton.setPreferredSize(buttonSize);
         runButton.addActionListener(event -> {
-            run = 1;
+            modalResult = 1;
             net.refreshAllColor();
             setVisible(false);
         });
@@ -218,7 +190,7 @@ public class ParallelSimDialog extends JDialog {
         JButton cancelButton = new JButton("Cancel");
         cancelButton.setPreferredSize(buttonSize);
         cancelButton.addActionListener(event -> {
-            run = 2;
+            modalResult = 2;
             net.refreshAllColor();
             setVisible(false);
         });
@@ -286,23 +258,24 @@ public class ParallelSimDialog extends JDialog {
         interfacePanel.add(eventPanel, BorderLayout.CENTER);
         interfacePanel.add(buttonsPanel, BorderLayout.SOUTH);
 
-        this.add(interfacePanel);
-        this.pack();
+        add(interfacePanel);
+        pack();
+        setLocationRelativeTo(owner);
 
-        this.addWindowListener(new WindowAdapter() {
+        addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 getSONModel().refreshAllColor();
             }
         });
 
-        this.addWindowFocusListener(new WindowFocusListener() {
+        addWindowFocusListener(new WindowFocusListener() {
             @Override
             public void windowGainedFocus(WindowEvent e) {
             }
 
             @Override
             public void windowLostFocus(WindowEvent e) {
-                if (run == 0) {
+                if (modalResult == 0) {
                     setVisible(true);
                 }
             }
@@ -325,12 +298,8 @@ public class ParallelSimDialog extends JDialog {
         return this.selectedEvents;
     }
 
-    public Window getOwner() {
-        return this.owner;
-    }
-
-    public int getRun() {
-        return run;
+    public int getModalResult() {
+        return modalResult;
     }
 
 }

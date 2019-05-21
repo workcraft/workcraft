@@ -4,25 +4,27 @@ import org.workcraft.Framework;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.tools.Trace;
-import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
+import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.gui.ReachibilityDialog;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
-import org.workcraft.tasks.ExportOutput;
 import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.GuiUtils;
-import org.workcraft.utils.LogUtils;
+import org.workcraft.tasks.ExportOutput;
 import org.workcraft.types.Pair;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class ConformationNwayOutputHandler extends ConformationOutputHandler {
 
@@ -99,9 +101,9 @@ public class ConformationNwayOutputHandler extends ConformationOutputHandler {
                     String title = TITLE + " for model '" + we.getTitle() + "'";
                     String extendedMessage = extendMessage(message);
                     ReachibilityDialog solutionsDialog = new ReachibilityDialog(
-                            we, title, extendedMessage, processedSolutions);
-                    GuiUtils.centerToParent(solutionsDialog, mainWindow);
-                    solutionsDialog.setVisible(true);
+                            mainWindow, we, title, extendedMessage, processedSolutions);
+
+                    solutionsDialog.reveal();
                 }
             }
         }

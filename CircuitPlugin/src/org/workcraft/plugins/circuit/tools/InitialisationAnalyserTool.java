@@ -8,15 +8,16 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.gui.tools.*;
+import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
 import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.InitialisationState;
 import org.workcraft.plugins.circuit.utils.ResetUtils;
 import org.workcraft.types.Pair;
-import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.GuiUtils;
-import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
@@ -29,7 +30,7 @@ import java.util.function.Function;
 
 public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
-    private final BasicTable<String> forcedTable = new BasicTable();
+    private final BasicTable<String> forcedTable = new BasicTable("<html><b>Force init pins</b></html>");
     private InitialisationState initState = null;
 
     @Override
@@ -45,15 +46,29 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     private JPanel getLegendControlsPanel(final GraphEditor editor) {
         ColorLegendTable colorLegendTable = new ColorLegendTable(Arrays.asList(
                 Pair.of(CommonVisualSettings.getFillColor(), "Undefined initial state"),
-                Pair.of(CircuitSettings.getConflictInitGateColor(), "Conflict of initialisation"),
-                Pair.of(CircuitSettings.getForcedInitGateColor(), "Forced initial state"),
-                Pair.of(CircuitSettings.getPropagatedInitGateColor(), "Propagated initial state")
+                Pair.of(CommonDecorationSettings.getAnalysisProblematicComponentColor(), "Conflict of initialisation"),
+                Pair.of(CommonDecorationSettings.getAnalysisFixerComponentColor(), "Forced initial state"),
+                Pair.of(CommonDecorationSettings.getAnalysisImmaculateComponentColor(), "Propagated initial state")
         ));
 
+        String expectedPinLegend = getHtmlPinLegend("&#x2610;", "Expected high / low");
+        String propagatedPinLegend = getHtmlPinLegend("&#x25A0;", "Propagated high / low");
+        String forcedPinLegend = getHtmlPinLegend("&#x25C6;", "Forced high / low");
+        JLabel legendLabel = new JLabel("<html><b>Pin initial state:</b><br>" + expectedPinLegend + "<br>" + propagatedPinLegend + "<br>" + forcedPinLegend + "</html>");
         JPanel legendPanel = new JPanel(new BorderLayout());
-        legendPanel.setBorder(SizeHelper.getTitledBorder("Gate highlight legend"));
+        legendPanel.setBorder(SizeHelper.getTitledBorder("<html><b>Gate highlight legend</b></html>"));
         legendPanel.add(colorLegendTable, BorderLayout.CENTER);
+        legendPanel.add(legendLabel, BorderLayout.SOUTH);
         return legendPanel;
+    }
+
+    private String getHtmlPinLegend(String key, String description) {
+        String keyFormat = "<span style=\"color: #%06x\">" + key + "</span>";
+        int highValue = CircuitSettings.getActiveWireColor().getRGB() & 0xffffff;
+        String highKey = String.format(keyFormat, highValue);
+        int lowValue = CircuitSettings.getInactiveWireColor().getRGB() & 0xffffff;
+        String lowKey = String.format(keyFormat, lowValue);
+        return highKey + " / " + lowKey + " " + description;
     }
 
     private JPanel getForcedControlsPanel(final GraphEditor editor) {
@@ -64,8 +79,13 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
         JButton tagForceInitNecessaryPinsButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/circuit-initialisation-conflict_pins.svg"),
-                "Force init pins with conflicting initial state");
+                "Force init output pins with conflicting initial state");
         tagForceInitNecessaryPinsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitConflictPins(c)));
+
+        JButton tagForceInitSequentialPinsButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/circuit-initialisation-sequential_pins.svg"),
+                "Force init output pins of sequential gates");
+        tagForceInitSequentialPinsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitSequentialPins(c)));
 
         JButton tagForceInitAutoAppendButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/circuit-initialisation-auto_append.svg"),
@@ -82,25 +102,21 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
                 "Clear all force init ports and pins");
         tagForceInitClearAllButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitClearAll(c)));
 
-        FlowLayout flowLayout = new FlowLayout();
-        int buttonWidth = (int) Math.round(tagForceInitInputPortsButton.getPreferredSize().getWidth() + flowLayout.getHgap());
-        int buttonHeight = (int) Math.round(tagForceInitInputPortsButton.getPreferredSize().getHeight() + flowLayout.getVgap());
-        Dimension panelSize = new Dimension(buttonWidth * 5 + flowLayout.getHgap(), buttonHeight + flowLayout.getVgap());
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(tagForceInitInputPortsButton);
+        buttonPanel.add(tagForceInitNecessaryPinsButton);
+        buttonPanel.add(tagForceInitSequentialPinsButton);
+        buttonPanel.add(tagForceInitAutoAppendButton);
+        buttonPanel.add(tagForceInitAutoDiscardButton);
+        buttonPanel.add(tagForceInitClearAllButton);
+        GuiUtils.setButtonPanelLayout(buttonPanel, tagForceInitInputPortsButton.getPreferredSize());
 
-        JPanel btnPanel = new JPanel();
-        btnPanel.setLayout(flowLayout);
-        btnPanel.setPreferredSize(panelSize);
-        btnPanel.setMaximumSize(panelSize);
-        btnPanel.add(tagForceInitInputPortsButton);
-        btnPanel.add(tagForceInitNecessaryPinsButton);
-        btnPanel.add(tagForceInitAutoAppendButton);
-        btnPanel.add(tagForceInitAutoDiscardButton);
-        btnPanel.add(tagForceInitClearAllButton);
+        JPanel controlPanel = new JPanel(new WrapLayout());
+        controlPanel.add(buttonPanel);
 
         JPanel forcePanel = new JPanel(new BorderLayout());
-        forcePanel.setBorder(SizeHelper.getTitledBorder("Force init pins"));
+        forcePanel.add(controlPanel, BorderLayout.NORTH);
         forcePanel.add(new JScrollPane(forcedTable), BorderLayout.CENTER);
-        forcePanel.add(btnPanel, BorderLayout.SOUTH);
         return forcePanel;
     }
 
@@ -119,45 +135,23 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private JPanel getResetControlsPanel(final GraphEditor editor) {
-        JButton insertResetButton = new JButton("Insert reset logic...");
-        insertResetButton.addActionListener(l -> insertReset(editor));
+        JButton insertHighResetButton = new JButton("<html><center>Insert reset<br>(active-high)</center></html>");
+        insertHighResetButton.addActionListener(l -> insertReset(editor, false));
 
-        JPanel resetPanel = new JPanel();
-        resetPanel.add(insertResetButton);
+        JButton insertLowResetButton = new JButton("<html><center>Insert reset<br>(active-low)</center></html>");
+        insertLowResetButton.addActionListener(l -> insertReset(editor, true));
+
+        JPanel resetPanel = new JPanel(new WrapLayout());
+        resetPanel.add(insertHighResetButton);
+        resetPanel.add(insertLowResetButton);
         return resetPanel;
     }
 
-    private void insertReset(final GraphEditor editor) {
-        Circuit circuit = (Circuit) editor.getModel().getMathModel();
-        HashSet<String> incorrectlyInitialisedComponentRefs = new HashSet<>();
-        for (FunctionContact contact : circuit.getFunctionContacts()) {
-            if (contact.isPin() && contact.isDriver()) {
-                if (!initState.isCorrectlyInitialised(contact)) {
-                    String ref = circuit.getNodeReference(contact);
-                    incorrectlyInitialisedComponentRefs.add(ref);
-                }
-            }
-        }
-        if (!incorrectlyInitialisedComponentRefs.isEmpty()) {
-            String msg = "All gates must be correctly initialised before inserting reset.\n" +
-                    LogUtils.getTextWithRefs("Problematic signal", incorrectlyInitialisedComponentRefs);
-            DialogUtils.showError(msg);
-        } else {
-            Object[] options1 = {"Insert active-low reset", "Insert active-high reset", "Cancel"};
-            JPanel panel = new JPanel();
-            panel.add(new JLabel("Reset port name: "));
-            JTextField textField = new JTextField(CircuitSettings.getResetName(), 20);
-            panel.add(textField);
-
-            int result = JOptionPane.showOptionDialog(null, panel, "Reset logic",
-                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options1, null);
-            if ((result == JOptionPane.YES_OPTION) || (result == JOptionPane.NO_OPTION)) {
-                editor.getWorkspaceEntry().saveMemento();
-                VisualCircuit visualCircuit = (VisualCircuit) editor.getModel();
-                ResetUtils.insertReset(visualCircuit, textField.getText(), result == JOptionPane.YES_OPTION);
-                updateState(editor);
-            }
-        }
+    private void insertReset(final GraphEditor editor, boolean activeLow) {
+        VisualCircuit circuit = (VisualCircuit) editor.getModel();
+        editor.getWorkspaceEntry().saveMemento();
+        ResetUtils.insertReset(circuit, CircuitSettings.getResetPort(), activeLow);
+        updateState(editor);
         editor.requestFocus();
     }
 
@@ -268,12 +262,12 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
                 if (mathNode != null) {
                     if (mathNode instanceof FunctionComponent) {
                         return getComponentDecoration((FunctionComponent) mathNode);
-                    }
-                    if (initState.isHigh(mathNode)) {
-                        return getHighLevelDecoration(mathNode);
-                    }
-                    if (initState.isLow(mathNode)) {
-                        return getLowLevelDecoration(mathNode);
+                    } else if (mathNode instanceof Contact) {
+                        Circuit circuit = (Circuit) editor.getModel().getMathModel();
+                        Contact driver = CircuitUtils.findDriver(circuit, mathNode, false);
+                        return getContactDecoration(driver);
+                    } else {
+                        return getConnectionDecoration(mathNode);
                     }
                 }
                 return (mathNode instanceof Contact) ? StateDecoration.Empty.INSTANCE : null;
@@ -290,10 +284,36 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
             initialised &= initState.isHigh(outputContact) || initState.isLow(outputContact);
             initialisationConflict |= initState.isError(outputContact);
         }
-        final Color color = forcedInit ? CircuitSettings.getForcedInitGateColor()
-                : initialisationConflict ? CircuitSettings.getConflictInitGateColor()
-                : initialised ? CircuitSettings.getPropagatedInitGateColor() : null;
+        final Color color = forcedInit ? CommonDecorationSettings.getAnalysisFixerComponentColor()
+                : initialisationConflict ? CommonDecorationSettings.getAnalysisProblematicComponentColor()
+                : initialised ? CommonDecorationSettings.getAnalysisImmaculateComponentColor() : null;
 
+        return new Decoration() {
+            @Override
+            public Color getColorisation() {
+                return color;
+            }
+
+            @Override
+            public Color getBackground() {
+                return color;
+            }
+        };
+    }
+
+    private Decoration getContactDecoration(Contact contact) {
+        if (initState.isHigh(contact)) {
+            return getHighLevelDecoration(contact);
+        }
+        if (initState.isLow(contact)) {
+            return getLowLevelDecoration(contact);
+        }
+        return getExpectedLevelDecoration(contact);
+    }
+
+    private Decoration getConnectionDecoration(MathNode node) {
+        Color color = initState.isHigh(node) ? CircuitSettings.getActiveWireColor()
+                : initState.isLow(node) ? CircuitSettings.getInactiveWireColor() : null;
         return new Decoration() {
             @Override
             public Color getColorisation() {
@@ -312,12 +332,12 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         return new StateDecoration() {
             @Override
             public Color getColorisation() {
-                return CircuitSettings.getInactiveWireColor();
+                return initialisationConflict ? CircuitSettings.getActiveWireColor() : CircuitSettings.getInactiveWireColor();
             }
 
             @Override
             public Color getBackground() {
-                return initialisationConflict ? CircuitSettings.getActiveWireColor() : CircuitSettings.getInactiveWireColor();
+                return CircuitSettings.getInactiveWireColor();
             }
 
             @Override
@@ -332,12 +352,31 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         return new StateDecoration() {
             @Override
             public Color getColorisation() {
-                return CircuitSettings.getActiveWireColor();
+                return initialisationConflict ? CircuitSettings.getInactiveWireColor() : CircuitSettings.getActiveWireColor();
             }
 
             @Override
             public Color getBackground() {
-                return initialisationConflict ? CircuitSettings.getInactiveWireColor() : CircuitSettings.getActiveWireColor();
+                return CircuitSettings.getActiveWireColor();
+            }
+
+            @Override
+            public boolean showForcedInit() {
+                return true;
+            }
+        };
+    }
+
+    private Decoration getExpectedLevelDecoration(Contact contact) {
+        return new StateDecoration() {
+            @Override
+            public Color getColorisation() {
+                return contact.getInitToOne() ? CircuitSettings.getActiveWireColor() : CircuitSettings.getInactiveWireColor();
+            }
+
+            @Override
+            public Color getBackground() {
+                return null;
             }
 
             @Override

@@ -823,7 +823,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
 
         for (TransitionNode e : enabled) {
             //e.setFillColor(CommonSimulationSettings.getEnabledForegroundColor());
-            e.setForegroundColor(CommonDecorationSettings.getExcitedComponentColor());
+            e.setForegroundColor(CommonDecorationSettings.getSimulationExcitedComponentColor());
         }
 
         StepRef refStep = null;
@@ -894,14 +894,12 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
                 e.getEditor().requestFocus();
                 ParallelSimDialog dialog = new ParallelSimDialog(mainWindow,
                         net, possibleFire, minFire, select, isRev, sync);
-                GuiUtils.centerToParent(dialog, mainWindow);
                 dialog.setVisible(true);
-
-                if (dialog.getRun() == 1) {
+                if (dialog.getModalResult() == 1) {
                     step.addAll(dialog.getSelectedEvent());
                     executeEvents(e.getEditor(), step);
                 }
-                if (dialog.getRun() == 2) {
+                if (dialog.getModalResult() == 2) {
                     setDecoration(enabled);
                     return;
                 }

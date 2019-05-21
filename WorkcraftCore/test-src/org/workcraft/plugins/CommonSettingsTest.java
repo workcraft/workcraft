@@ -66,20 +66,29 @@ public class CommonSettingsTest {
         final Framework framework = Framework.getInstance();
         String prefix = "CommonDecorationSettings";
 
-        Assert.assertEquals(Config.toString(CommonDecorationSettings.getHighlightedComponentColor()),
-                framework.getConfigVar(prefix + ".highlightedComponentColor", false));
+        Assert.assertEquals(Config.toString(CommonDecorationSettings.getHighlightingColor()),
+                framework.getConfigVar(prefix + ".highlightingColor", false));
 
-        Assert.assertEquals(Config.toString(CommonDecorationSettings.getSelectedComponentColor()),
-                framework.getConfigVar(prefix + ".selectedComponentColor", false));
+        Assert.assertEquals(Config.toString(CommonDecorationSettings.getSelectionColor()),
+                framework.getConfigVar(prefix + ".selectionColor", false));
 
-        Assert.assertEquals(Config.toString(CommonDecorationSettings.getShadedComponentColor()),
-                framework.getConfigVar(prefix + ".shadedComponentColor", false));
+        Assert.assertEquals(Config.toString(CommonDecorationSettings.getShadingColor()),
+                framework.getConfigVar(prefix + ".shadingColor", false));
 
-        Assert.assertEquals(Config.toString(CommonDecorationSettings.getExcitedComponentColor()),
-                framework.getConfigVar(prefix + ".excitedComponentColor", false));
+        Assert.assertEquals(Config.toString(CommonDecorationSettings.getSimulationExcitedComponentColor()),
+                framework.getConfigVar(prefix + ".simulationExcitedComponentColor", false));
 
-        Assert.assertEquals(Config.toString(CommonDecorationSettings.getSuggestedComponentColor()),
-                framework.getConfigVar(prefix + ".suggestedComponetColor", false));
+        Assert.assertEquals(Config.toString(CommonDecorationSettings.getSimulationSuggestedComponentColor()),
+                framework.getConfigVar(prefix + ".simulationSuggestedComponentColor", false));
+
+        Assert.assertEquals(Config.toString(CommonDecorationSettings.getAnalysisProblematicComponentColor()),
+                framework.getConfigVar(prefix + ".analysisProblematicComponentColor", false));
+
+        Assert.assertEquals(Config.toString(CommonDecorationSettings.getAnalysisFixerComponentColor()),
+                framework.getConfigVar(prefix + ".analysisFixerComponentColor", false));
+
+        Assert.assertEquals(Config.toString(CommonDecorationSettings.getAnalysisImmaculateComponentColor()),
+                framework.getConfigVar(prefix + ".analysisImmaculateComponentColor", false));
     }
 
     @Test

@@ -1,28 +1,27 @@
 package org.workcraft.plugins.mpsat.commands;
 
-import java.io.File;
-
-import javax.swing.JFileChooser;
-
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.interop.Importer;
+import org.workcraft.interop.Format;
+import org.workcraft.plugins.mpsat.tasks.ConformationTask;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
-import org.workcraft.plugins.mpsat.tasks.ConformationTask;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.StgUtils;
-import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.FileUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import java.io.File;
 
 public class ConformationVerificationCommand extends AbstractVerificationCommand {
 
@@ -82,8 +81,8 @@ public class ConformationVerificationCommand extends AbstractVerificationCommand
             MainWindow mainWindow = framework.getMainWindow();
             boolean proceed = true;
             if (interactive) {
-                Importer[] importers = {new StgImporter()};
-                JFileChooser fc = mainWindow.createOpenDialog("Open environment file", false, true, importers);
+                Format[] formats = {StgFormat.getInstance()};
+                JFileChooser fc = mainWindow.createOpenDialog("Open environment file", false, true, formats);
                 if (fc.showDialog(mainWindow, "Open") == JFileChooser.APPROVE_OPTION) {
                     setEnvironment(fc.getSelectedFile());
                 } else {

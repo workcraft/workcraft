@@ -13,5 +13,5 @@ import java.io.OutputStream;
 
 public interface PathbreakSerialiser extends SerialFormat {
     String getName();
-    void serialise(Circuit circuit, String instancePrefix, OutputStream out);
+    void serialise(Circuit circuit, OutputStream out);
 }

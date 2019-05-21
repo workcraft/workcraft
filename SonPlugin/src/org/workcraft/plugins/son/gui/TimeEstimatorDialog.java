@@ -1,23 +1,5 @@
 package org.workcraft.plugins.son.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.table.AbstractTableModel;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.SizeHelper;
@@ -28,19 +10,23 @@ import org.workcraft.plugins.son.TimeEstimatorSettings;
 import org.workcraft.plugins.son.algorithm.BFSEntireEstimationAlg;
 import org.workcraft.plugins.son.algorithm.DFSEstimationAlg;
 import org.workcraft.plugins.son.elements.Time;
-import org.workcraft.plugins.son.exception.AlternativeStructureException;
-import org.workcraft.plugins.son.exception.SyncCycleException;
-import org.workcraft.plugins.son.exception.TimeEstimationException;
-import org.workcraft.plugins.son.exception.TimeInconsistencyException;
-import org.workcraft.plugins.son.exception.TimeOutOfBoundsException;
+import org.workcraft.plugins.son.exception.*;
 import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.plugins.son.util.ScenarioRef;
 import org.workcraft.plugins.son.util.ScenarioSaveList;
 
-public class TimeEstimatorDialog extends JDialog {
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
+public class TimeEstimatorDialog extends JDialog {
     private static final long serialVersionUID = 1L;
+
     protected SON net;
     protected GraphEditor editor;
     protected TimeEstimatorSettings settings;
@@ -55,9 +41,9 @@ public class TimeEstimatorDialog extends JDialog {
     protected JButton runButton, cancelButton;
     protected JCheckBox setDuration, intermediate, entireEst, narrow, twoDir;
     protected Dimension buttonSize = new Dimension(80, 25);
-    protected int run = 0;
+    protected boolean modalResult;
 
-    public TimeEstimatorDialog(GraphEditor editor, TimeEstimatorSettings settings, Node selection, Granularity g) {
+    public TimeEstimatorDialog(Window owner, GraphEditor editor, TimeEstimatorSettings settings, Node selection, Granularity g) {
         super(Framework.getInstance().getMainWindow(), "Estimator Setting", ModalityType.TOOLKIT_MODAL);
         net = (SON) editor.getModel().getMathModel();
         this.editor = editor;
@@ -74,17 +60,16 @@ public class TimeEstimatorDialog extends JDialog {
         add(tabelPanel, BorderLayout.CENTER);
         add(buttonsPanel, BorderLayout.SOUTH);
 
+        pack();
+        setLocationRelativeTo(owner);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 setParameters();
             }
         });
-
-        pack();
     }
 
     protected void creatCheckboxPanel() {
-
         defaultDurationPanel = new DefaultDurationPanel(settings.getDuration());
         defaultDurationPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
@@ -213,7 +198,7 @@ public class TimeEstimatorDialog extends JDialog {
         runButton.addActionListener(event -> {
             setParameters();
             if (defaultDurationPanel.isValidDuration()) {
-                run = 1;
+                modalResult = true;
                 final Framework framework = Framework.getInstance();
                 final MainWindow mainWindow = framework.getMainWindow();
                 if (entireEst.isSelected()) {
@@ -283,7 +268,7 @@ public class TimeEstimatorDialog extends JDialog {
         cancelButton = new JButton("Cancel");
         cancelButton.setPreferredSize(buttonSize);
         cancelButton.addActionListener(event -> {
-            run = 2;
+            modalResult = false;
             setParameters();
             setVisible(false);
         });
@@ -347,7 +332,8 @@ public class TimeEstimatorDialog extends JDialog {
         }
     }
 
-    public int getRun() {
-        return run;
+    public boolean reveal() {
+        setVisible(true);
+        return modalResult;
     }
 }

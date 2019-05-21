@@ -746,10 +746,7 @@ public class MainWindow extends JFrame {
 
     public void createWork(Path<String> directory) throws OperationCancelledException {
         CreateWorkDialog dialog = new CreateWorkDialog(this);
-        dialog.pack();
-        GuiUtils.centerToParent(dialog, this);
-        dialog.setVisible(true);
-        if (dialog.getModalResult() == 0) {
+        if (!dialog.reveal()) {
             throw new OperationCancelledException("Create operation cancelled by user.");
         }
         ModelDescriptor md = dialog.getSelectedModel();
@@ -818,23 +815,22 @@ public class MainWindow extends JFrame {
         }
     }
 
-    public JFileChooser createOpenDialog(String title, boolean multiSelection, boolean allowWorkFiles, Importer[] importers) {
+    public JFileChooser createOpenDialog(String title, boolean multiSelection, boolean allowWorkFiles, Format[] formats) {
         JFileChooser fc = new JFileChooser();
         fc.setDialogType(JFileChooser.OPEN_DIALOG);
         fc.setDialogTitle(title);
+        if (allowWorkFiles) {
+            fc.setFileFilter(FileFilters.DOCUMENT_FILES);
+        }
+        if (formats != null) {
+            for (Format format : formats) {
+                fc.addChoosableFileFilter(new FormatFileFilter(format));
+            }
+        }
         GuiUtils.sizeFileChooserToScreen(fc, getDisplayMode());
         fc.setCurrentDirectory(getLastDirectory());
         fc.setAcceptAllFileFilterUsed(false);
         fc.setMultiSelectionEnabled(multiSelection);
-        if (allowWorkFiles) {
-            fc.setFileFilter(FileFilters.DOCUMENT_FILES);
-        }
-        if (importers != null) {
-            for (Importer importer: importers) {
-                Format format = importer.getFormat();
-                fc.addChoosableFileFilter(new FormatFileFilter(format));
-            }
-        }
         return fc;
     }
 
@@ -844,12 +840,12 @@ public class MainWindow extends JFrame {
         fc.setDialogTitle(title);
         GuiUtils.sizeFileChooserToScreen(fc, getDisplayMode());
         // Set working directory
-        fc.setSelectedFile(file);
         if (file.exists()) {
             fc.setCurrentDirectory(file.getParentFile());
         } else {
             fc.setCurrentDirectory(getLastDirectory());
         }
+        fc.setSelectedFile(file);
         // Set file filters
         fc.setAcceptAllFileFilterUsed(false);
         if (format == null) {
@@ -998,12 +994,16 @@ public class MainWindow extends JFrame {
         PluginManager pm = framework.getPluginManager();
         Collection<PluginInfo<? extends Importer>> importerInfo = pm.getImporterPlugins();
         Importer[] importers = new Importer[importerInfo.size()];
+        Format[] formats = new Format[importerInfo.size()];
         int cnt = 0;
         for (PluginInfo<? extends Importer> info: importerInfo) {
-            importers[cnt++] = info.getSingleton();
+            Importer importer = info.getSingleton();
+            importers[cnt] = importer;
+            formats[cnt] = importer.getFormat();
+            cnt++;
         }
 
-        JFileChooser fc = createOpenDialog("Import model(s)", true, false, importers);
+        JFileChooser fc = createOpenDialog("Import model(s)", true, false, formats);
         if (fc.showDialog(this, "Open") == JFileChooser.APPROVE_OPTION) {
             for (File file: fc.getSelectedFiles()) {
                 importFrom(file, importers);
@@ -1228,12 +1228,13 @@ public class MainWindow extends JFrame {
 
     public void editSettings() {
         SettingsEditorDialog dialog = new SettingsEditorDialog(this);
-        dialog.setVisible(true);
-        for (WorkspaceEntry we: editorWindows.keySet()) {
-            refreshWorkspaceEntryTitle(we, false);
+        if (dialog.reveal()) {
+            for (WorkspaceEntry we: editorWindows.keySet()) {
+                refreshWorkspaceEntryTitle(we, false);
+            }
+            DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
+            globalToolbar.refreshToggles();
         }
-        DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
-        globalToolbar.refreshToggles();
     }
 
     public void resetLayout() {

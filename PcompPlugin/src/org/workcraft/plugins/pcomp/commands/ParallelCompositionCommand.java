@@ -54,10 +54,7 @@ public class ParallelCompositionCommand implements Command {
         }
         MainWindow mainWindow = framework.getMainWindow();
         ParallelCompositionDialog dialog = new ParallelCompositionDialog(mainWindow);
-        dialog.checkAll();
-        GuiUtils.centerToParent(dialog, mainWindow);
-        Collection<Mutex> mutexes = new HashSet<>();
-        if (!dialog.run()) {
+        if (!dialog.reveal()) {
             return;
         }
 
@@ -66,6 +63,8 @@ public class ParallelCompositionCommand implements Command {
             DialogUtils.showWarning("At least 2 STGs are required for parallel composition.");
             return;
         }
+
+        Collection<Mutex> mutexes = new HashSet<>();
         String tmpPrefix = FileUtils.getTempPrefix(we.getTitle());
         File tmpDirectory = FileUtils.createTempDirectory(tmpPrefix);
         ArrayList<File> inputFiles = new ArrayList<>();
