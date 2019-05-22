@@ -91,6 +91,9 @@ public class CircuitSettingsTests {
 
         Assert.assertEquals(Config.toString(CircuitSettings.getScanSuffix()),
                 framework.getConfigVar(prefix + ".scanSuffix", false));
+
+        Assert.assertEquals(Config.toString(CircuitSettings.getVerilogAssignDelay()),
+                framework.getConfigVar(prefix + ".verilogAssignDelay", false));
     }
 
 }

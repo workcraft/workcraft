@@ -135,7 +135,7 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
             } else {
                 VisualFunctionComponent gate = insertGate(circuit, function, container, toNodeConnectionsStack, direction);
                 gate.copyStyle(bigGate);
-                gate.getReferencedComponent().setModule("");
+                gate.clearMapping();
                 if (!isRootGate) {
                     nonRootGates.push(gate);
                 } else {

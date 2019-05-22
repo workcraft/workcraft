@@ -461,7 +461,7 @@ VerilogAssign parseAssign():
     Token formulaToken;
 }
 {
-    <ASSIGN> nameToken = <NAME> formulaToken = <FORMULA>
+    <ASSIGN> ["#"<INTEGER>] nameToken = <NAME> formulaToken = <FORMULA>
     {
         String formula = formulaToken.image
                 .replaceAll("^=", "")  // start of assign expression

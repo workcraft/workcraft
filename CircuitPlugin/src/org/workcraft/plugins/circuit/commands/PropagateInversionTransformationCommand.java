@@ -95,7 +95,7 @@ public class PropagateInversionTransformationCommand extends AbstractTransformat
         if (!BooleanUtils.compareFunctions(setFunction, newSetFunction)
                 || !BooleanUtils.compareFunctions(resetFunction, newResetFunction)) {
             outputContact.setSetFunction(newSetFunction);
-            gate.getReferencedComponent().setModule("");
+            gate.clearMapping();
             renameContacts(circuit.getMathModel(), gate.getReferencedComponent());
             String newGateStr = CircuitUtils.gateToString(circuit, gate);
             LogUtils.logInfo("Transforming gate " + gateStr + " into " + newGateStr);
