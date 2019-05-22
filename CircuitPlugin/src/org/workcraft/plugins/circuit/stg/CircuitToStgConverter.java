@@ -163,7 +163,7 @@ public class CircuitToStgConverter {
 
         HashMap<VisualNode, Pair<VisualContact, Boolean>> result = new HashMap<>();
         result.put(node, driverAndInversion);
-        // Support for zero-delay buffers and inverters.
+        // Support for zero delay buffers and inverters.
         if (node instanceof VisualContact) {
             VisualContact contact = (VisualContact) node;
             Node parent = node.getParent();

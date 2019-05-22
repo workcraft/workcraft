@@ -147,7 +147,7 @@ public class VisualCircuit extends AbstractVisualModel {
             }
         }
 
-        // Handle zero-delay components
+        // Handle zero delay components
         Node firstParent = first.getParent();
         if (firstParent instanceof VisualFunctionComponent) {
             VisualFunctionComponent firstComponent = (VisualFunctionComponent) firstParent;

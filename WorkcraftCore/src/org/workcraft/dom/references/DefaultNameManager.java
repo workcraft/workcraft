@@ -5,8 +5,8 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.ArgumentException;
-import org.workcraft.utils.DialogUtils;
 import org.workcraft.types.TwoWayMap;
+import org.workcraft.utils.DialogUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,7 +46,6 @@ public class DefaultNameManager implements NameManager {
         Node occupant = getNode(name);
         if (node != occupant) {
             if (!isUnusedName(name)) {
-                System.out.println("this = " + this);
                 String derivedName = getDerivedName(occupant, name);
                 String msg = "The name '" + name + "' is already taken by another node.\n" +
                         "Rename that node to '" + derivedName + "' and continue?";

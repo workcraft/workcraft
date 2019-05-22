@@ -54,7 +54,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     private JPanel getLegendControlsPanel(final GraphEditor editor) {
         ColorLegendTable colorLegendTable = new ColorLegendTable(Arrays.asList(
-                Pair.of(CommonVisualSettings.getFillColor(), "Zero-delay"),
+                Pair.of(CommonVisualSettings.getFillColor(), "Zero delay"),
                 Pair.of(CommonDecorationSettings.getAnalysisProblematicComponentColor(), "On a cycle"),
                 Pair.of(CommonDecorationSettings.getAnalysisFixerComponentColor(), "Path breaker"),
                 Pair.of(CommonDecorationSettings.getAnalysisImmaculateComponentColor(), "Not on any cycle")

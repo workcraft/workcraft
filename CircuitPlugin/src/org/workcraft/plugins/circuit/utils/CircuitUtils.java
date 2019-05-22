@@ -19,6 +19,7 @@ import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.stg.Signal;
+import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.LogUtils;
@@ -28,6 +29,25 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.util.*;
 
 public class CircuitUtils {
+
+    public static Pair<Contact, Boolean> findDriverAndInversionSkipZeroDelay(Circuit circuit, MathNode curNode) {
+        Pair<Contact, Boolean> result = null;
+        Contact driver = CircuitUtils.findDriver(circuit, curNode, false);
+        boolean inversion = false;
+        if (driver != null) {
+            Node parent = driver.getParent();
+            if (parent instanceof FunctionComponent) {
+                FunctionComponent component = (FunctionComponent) parent;
+                if (component.getIsZeroDelay() && (component.isInverter() || component.isBuffer())) {
+                    Contact input = component.getFirstInput();
+                    driver = CircuitUtils.findDriver(circuit, input, false);
+                    inversion = component.isInverter();
+                }
+            }
+            result = Pair.of(driver, inversion);
+        }
+        return result;
+    }
 
     public static VisualContact findDriver(VisualCircuit circuit, VisualContact contact, boolean transparentZeroDelayComponents) {
         Contact mathDriver = findDriver(circuit.getMathModel(), contact.getReferencedContact(), transparentZeroDelayComponents);
@@ -57,7 +77,7 @@ public class CircuitUtils {
                 queue.addAll(circuit.getPreset(node));
             } else if (node instanceof Contact) {
                 Contact contact = (Contact) node;
-                // Support for zero-delay buffers and inverters.
+                // Support for zero delay buffers and inverters.
                 Contact zeroDelayInput = transparentZeroDelayComponents ? findZeroDelayInput(contact) : null;
                 if (zeroDelayInput != null) {
                     queue.addAll(circuit.getPreset(zeroDelayInput));
@@ -115,7 +135,7 @@ public class CircuitUtils {
                 queue.addAll(circuit.getPostset(node));
             } else if (node instanceof Contact) {
                 Contact contact = (Contact) node;
-                // Support for zero-delay buffers and inverters.
+                // Support for zero delay buffers and inverters.
                 Contact zeroDelayOutput = transparentZeroDelayComponents ? findZeroDelayOutput(contact) : null;
                 if (zeroDelayOutput != null) {
                     queue.addAll(circuit.getPostset(zeroDelayOutput));

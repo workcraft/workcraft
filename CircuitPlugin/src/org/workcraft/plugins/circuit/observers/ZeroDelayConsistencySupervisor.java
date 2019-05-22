@@ -48,7 +48,7 @@ public class ZeroDelayConsistencySupervisor extends StateSupervisor {
         if (component.getIsZeroDelay()) {
             if (!component.isInverter() && !component.isBuffer()) {
                 component.setIsZeroDelay(false);
-                throw new ArgumentException("Only inverters and buffers can be zero-delay.");
+                throw new ArgumentException("Only inverters and buffers can be zero delay.");
             }
             HashSet<CircuitComponent> componentPreset = StructureUtilsKt.getPresetComponents(circuit, component);
             for (CircuitComponent predComponent: componentPreset) {
@@ -56,17 +56,17 @@ public class ZeroDelayConsistencySupervisor extends StateSupervisor {
                     FunctionComponent predFunctionComponent = (FunctionComponent) predComponent;
                     if (predFunctionComponent.getIsZeroDelay()) {
                         component.setIsZeroDelay(false);
-                        throw new ArgumentException("Zero-delay components cannot be connected to each other.");
+                        throw new ArgumentException("Zero delay components cannot be connected to each other.");
                     }
                 }
             }
-            HashSet<CircuitComponent> componentPostset = StructureUtilsKt.getPresetComponents(circuit, component);
+            HashSet<CircuitComponent> componentPostset = StructureUtilsKt.getPostsetComponents(circuit, component);
             for (CircuitComponent succComponent: componentPostset) {
                 if (succComponent instanceof FunctionComponent) {
                     FunctionComponent succFunctionComponent = (FunctionComponent) succComponent;
                     if (succFunctionComponent.getIsZeroDelay()) {
                         component.setIsZeroDelay(false);
-                        throw new ArgumentException("Zero-delay components cannot be connected to each other.");
+                        throw new ArgumentException("Zero delay components cannot be connected to each other.");
                     }
                 }
             }
@@ -74,12 +74,12 @@ public class ZeroDelayConsistencySupervisor extends StateSupervisor {
             for (Contact succContact: portPostset) {
                 if (succContact.isPort()) {
                     component.setIsZeroDelay(false);
-                    throw new ArgumentException("A component connected to an output port cannot be zero-delay.");
+                    throw new ArgumentException("A component connected to an output port cannot be zero delay.");
                 }
             }
             if (componentPostset.size() + portPostset.size() > 1) {
                 component.setIsZeroDelay(false);
-                throw new ArgumentException("A component with a fork at its output cannot be zero-delay.");
+                throw new ArgumentException("A component with a fork at its output cannot be zero delay.");
             }
         }
     }
