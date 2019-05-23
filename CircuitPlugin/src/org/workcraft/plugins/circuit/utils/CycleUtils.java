@@ -97,7 +97,7 @@ public class CycleUtils {
             for (Contact contact : component.getInputs()) {
                 if (contact.getPathBreaker()) continue;
                 Contact driver = CircuitUtils.findDriver(circuit, contact, true);
-                if (driver.isPin() && !driver.getPathBreaker()) {
+                if ((driver != null) && driver.isPin() && !driver.getPathBreaker()) {
                     drivers.add(driver);
                 }
             }

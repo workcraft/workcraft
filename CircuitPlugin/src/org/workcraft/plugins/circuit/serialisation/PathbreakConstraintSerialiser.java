@@ -15,6 +15,7 @@ import org.workcraft.plugins.circuit.interop.SdcFormat;
 import org.workcraft.plugins.circuit.verilog.SubstitutionRule;
 import org.workcraft.plugins.circuit.verilog.SubstitutionUtils;
 import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.LogUtils;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -47,11 +48,8 @@ public class PathbreakConstraintSerialiser implements PathbreakSerialiser {
 
     private void writeCircuit(PrintWriter out, Circuit circuit) {
         HashMap<String, SubstitutionRule> substitutionRules = SubstitutionUtils.readSubsritutionRules();
-        // Write out mapped components
         for (FunctionComponent component: Hierarchy.getDescendantsOfType(circuit.getRoot(), FunctionComponent.class)) {
-            if (component.isMapped()) {
-                writeInstance(out, circuit, component, substitutionRules);
-            }
+            writeInstance(out, circuit, component, substitutionRules);
         }
     }
 
@@ -60,6 +58,9 @@ public class PathbreakConstraintSerialiser implements PathbreakSerialiser {
 
         String instanceRef = circuit.getNodeReference(component);
         String instanceFlatName = NamespaceHelper.flattenReference(instanceRef);
+        if (!component.isMapped()) {
+            LogUtils.logWarning("Disabling timing arc in unmapped component '" + instanceRef + "'");
+        }
         String moduleName = component.getModule();
         SubstitutionRule substitutionRule = substitutionRules.get(moduleName);
         for (Contact outputContact: component.getOutputs()) {

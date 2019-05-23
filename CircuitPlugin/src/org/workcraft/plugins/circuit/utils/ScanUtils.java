@@ -21,7 +21,9 @@ public class ScanUtils {
                 if (contact.getReferencedContact().getPathBreaker()) {
                     contact.getReferencedContact().setPathBreaker(false);
                     VisualFunctionComponent buffer = insertOrReuseBuffer(circuit, contact);
-                    components.add(buffer);
+                    if (buffer != null) {
+                        components.add(buffer);
+                    }
                 }
             }
         }
@@ -39,17 +41,18 @@ public class ScanUtils {
         }
         if ((result == null) && contact.isOutput()) {
             Collection<VisualContact> drivenContacts = CircuitUtils.findDriven(circuit, contact, false);
-            if (drivenContacts.size() == 1) {
-                VisualContact drivenContact = drivenContacts.iterator().next();
-                result = insertOrReuseBuffer(circuit, drivenContact);
+            if (drivenContacts.size() > 0) {
+                if (drivenContacts.size() == 1) {
+                    VisualContact drivenContact = drivenContacts.iterator().next();
+                    result = insertOrReuseBuffer(circuit, drivenContact);
+                } else {
+                    SpaceUtils.makeSpaceAfterContact(circuit, contact, 3.0);
+                    result = GateUtils.createBufferGate(circuit);
+                    GateUtils.insertGateAfter(circuit, result, contact);
+                    GateUtils.propagateInitialState(circuit, result);
+                    result.getGateOutput().getReferencedContact().setPathBreaker(true);
+                }
             }
-        }
-        if ((result == null) && contact.isOutput()) {
-            SpaceUtils.makeSpaceAfterContact(circuit, contact, 3.0);
-            result = GateUtils.createBufferGate(circuit);
-            GateUtils.insertGateAfter(circuit, result, contact);
-            GateUtils.propagateInitialState(circuit, result);
-            result.getGateOutput().getReferencedContact().setPathBreaker(true);
         }
         if (result != null)  {
             Gate2 tbuf = CircuitSettings.parseTbufData();

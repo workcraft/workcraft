@@ -13,7 +13,6 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.gui.tools.*;
 import org.workcraft.interop.Format;
-import org.workcraft.interop.FormatFileFilter;
 import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
 import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 import org.workcraft.plugins.circuit.*;
@@ -156,20 +155,15 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private void writePathbreakConstraints(final GraphEditor editor) {
-        JFileChooser fc = new JFileChooser();
-        fc.setDialogType(JFileChooser.SAVE_DIALOG);
-        fc.setDialogTitle("Save path breaker SDC constraints");
-        Circuit circuit = WorkspaceUtils.getAs(editor.getWorkspaceEntry(), Circuit.class);
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        File file = new File(editor.getWorkspaceEntry().getFileName());
         PathbreakConstraintExporter exporter = new PathbreakConstraintExporter();
         Format format = exporter.getFormat();
-        fc.setFileFilter(new FormatFileFilter(format));
-        MainWindow mainWindow = Framework.getInstance().getMainWindow();
-        GuiUtils.sizeFileChooserToScreen(fc, mainWindow.getDisplayMode());
-        fc.setCurrentDirectory(mainWindow.getLastDirectory());
+        JFileChooser fc = mainWindow.createSaveDialog("Save path breaker SDC constraints", file, format);
         try {
             String path = ExportUtils.getValidSavePath(fc, format);
-            File file = new File(path);
-            exporter.export(circuit, file);
+            Circuit circuit = WorkspaceUtils.getAs(editor.getWorkspaceEntry(), Circuit.class);
+            exporter.export(circuit, new File(path));
         } catch (OperationCancelledException e) {
         }
         mainWindow.setLastDirectory(fc.getCurrentDirectory());
