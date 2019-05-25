@@ -18,12 +18,22 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.HashMap;
+import java.io.InputStream;
 
 import org.workcraft.types.Pair;
 import org.workcraft.plugins.circuit.verilog.SubstitutionRule;
 
 public class SubstitutionParser {
+
+    private boolean invertRules;
+
+    public SubstitutionParser(InputStream stream, boolean invertRules) {
+        this(stream);
+        this.invertRules = invertRules;
+    }
+
 }
+
 PARSER_END(SubstitutionParser)
 
 SKIP:
@@ -103,6 +113,6 @@ Pair<String, String> parseSubstitution():
 {
     oldName = <EXTENDED_NAME> "=" newName = <EXTENDED_NAME>
     {
-        return new Pair(oldName.image, newName.image);
+        return invertRules ? new Pair(newName.image, oldName.image) : new Pair(oldName.image, newName.image);
     }
 }

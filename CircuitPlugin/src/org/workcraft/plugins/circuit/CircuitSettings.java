@@ -50,6 +50,7 @@ public class CircuitSettings implements Settings {
     private static final String keySimplifyStg = prefix + ".simplifyStg";
     private static final String keyGateLibrary = prefix + ".gateLibrary";
     private static final String keySubstitutionLibrary = prefix + ".substitutionLibrary";
+    private static final String keyInvertSubstitutionRules = prefix + ".invertSubstitutionRules";
     private static final String keyBufData = prefix + ".bufData";
     private static final String keyAndData = prefix + ".andData";
     private static final String keyOrData = prefix + ".orData";
@@ -76,6 +77,7 @@ public class CircuitSettings implements Settings {
     private static final boolean defaultSimplifyStg = true;
     private static final String defaultGateLibrary = DesktopApi.getOs().isWindows() ? "libraries\\workcraft.lib" : "libraries/workcraft.lib";
     private static final String defaultSubstitutionLibrary = "";
+    private static final boolean defaultInvertSubstitutionRules = false;
     private static final String defaultBufData = "BUF (I, O)";
     private static final String defaultAndData = "AND2 (A, B, O)";
     private static final String defaultOrData = "OR2 (A, B, O)";
@@ -102,6 +104,7 @@ public class CircuitSettings implements Settings {
     private static boolean simplifyStg = defaultSimplifyStg;
     private static String gateLibrary = defaultGateLibrary;
     private static String substitutionLibrary = defaultSubstitutionLibrary;
+    private static boolean invertSubstitutionRules = defaultInvertSubstitutionRules;
     private static String bufData = defaultBufData;
     private static String andData = defaultAndData;
     private static String orData = defaultOrData;
@@ -225,6 +228,18 @@ public class CircuitSettings implements Settings {
             @Override
             public String getter(CircuitSettings object) {
                 return getSubstitutionLibrary();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
+                this, "Invert substitution rules", Boolean.class) {
+            @Override
+            public void setter(CircuitSettings object, Boolean value) {
+                setInvertSubstitutionRules(value);
+            }
+            @Override
+            public Boolean getter(CircuitSettings object) {
+                return getInvertSubstitutionRules();
             }
         });
 
@@ -503,6 +518,7 @@ public class CircuitSettings implements Settings {
         setSimplifyStg(config.getBoolean(keySimplifyStg, defaultSimplifyStg));
         setGateLibrary(config.getString(keyGateLibrary, defaultGateLibrary));
         setSubstitutionLibrary(config.getString(keySubstitutionLibrary, defaultSubstitutionLibrary));
+        setInvertSubstitutionRules(config.getBoolean(keyInvertSubstitutionRules, defaultInvertSubstitutionRules));
         setBufData(config.getString(keyBufData, defaultBufData));
         setAndData(config.getString(keyAndData, defaultAndData));
         setOrData(config.getString(keyOrData, defaultOrData));
@@ -532,6 +548,7 @@ public class CircuitSettings implements Settings {
         config.setBoolean(keySimplifyStg, getSimplifyStg());
         config.set(keyGateLibrary, getGateLibrary());
         config.set(keySubstitutionLibrary, getSubstitutionLibrary());
+        config.setBoolean(keyInvertSubstitutionRules, getInvertSubstitutionRules());
         config.set(keyBufData, getBufData());
         config.set(keyAndData, getAndData());
         config.set(keyOrData, getOrData());
@@ -620,6 +637,14 @@ public class CircuitSettings implements Settings {
 
     public static void setSubstitutionLibrary(String value) {
         substitutionLibrary = value;
+    }
+
+    public static boolean getInvertSubstitutionRules() {
+        return invertSubstitutionRules;
+    }
+
+    public static void setInvertSubstitutionRules(boolean value) {
+        invertSubstitutionRules = value;
     }
 
     public static String getBufData() {

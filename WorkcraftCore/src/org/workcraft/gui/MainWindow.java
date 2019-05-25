@@ -741,7 +741,7 @@ public class MainWindow extends JFrame {
     }
 
     public void createWork() throws OperationCancelledException {
-        createWork(Path.<String>empty());
+        createWork(Path.empty());
     }
 
     public void createWork(Path<String> directory) throws OperationCancelledException {
@@ -839,13 +839,14 @@ public class MainWindow extends JFrame {
         fc.setDialogType(JFileChooser.SAVE_DIALOG);
         fc.setDialogTitle(title);
         GuiUtils.sizeFileChooserToScreen(fc, getDisplayMode());
+        // Set file name
+        fc.setSelectedFile(file);
         // Set working directory
         if (file.exists()) {
             fc.setCurrentDirectory(file.getParentFile());
         } else {
             fc.setCurrentDirectory(getLastDirectory());
         }
-        fc.setSelectedFile(file);
         // Set file filters
         fc.setAcceptAllFileFilterUsed(false);
         if (format == null) {
