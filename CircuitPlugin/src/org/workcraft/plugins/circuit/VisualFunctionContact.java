@@ -1,20 +1,5 @@
 package org.workcraft.plugins.circuit;
 
-import java.awt.BasicStroke;
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
-import java.awt.font.FontRenderContext;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Line2D;
-import java.awt.geom.Path2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
@@ -24,14 +9,22 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.utils.FormulaRenderingResult;
 import org.workcraft.formula.utils.FormulaToGraphics;
-import org.workcraft.utils.Coloriser;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.serialisation.NoAutoSerialisation;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.utils.Hierarchy;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.*;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
 
 @DisplayName("Input/output port")
 @Hotkey(KeyEvent.VK_P)
@@ -117,10 +110,10 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
     }
 
     private FormulaRenderingResult getRenderedSetFormula() {
-        if (((FunctionContact) getReferencedContact()).getSetFunction() == null) {
+        if (getReferencedContact().getSetFunction() == null) {
             renderedSetFormula = null;
         } else if (renderedSetFormula == null) {
-            renderedSetFormula = FormulaToGraphics.render(((FunctionContact) getReferencedContact()).getSetFunction(), context, font);
+            renderedSetFormula = FormulaToGraphics.render(getReferencedContact().getSetFunction(), context, font);
         }
         return renderedSetFormula;
     }
@@ -160,10 +153,10 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
     }
 
     private FormulaRenderingResult getRenderedResetFormula() {
-        if (((FunctionContact) getReferencedContact()).getResetFunction() == null) {
+        if (getReferencedContact().getResetFunction() == null) {
             renderedResetFormula = null;
         } else if (renderedResetFormula == null) {
-            renderedResetFormula = FormulaToGraphics.render(((FunctionContact) getReferencedContact()).getResetFunction(), context, font);
+            renderedResetFormula = FormulaToGraphics.render(getReferencedContact().getResetFunction(), context, font);
         }
         return renderedResetFormula;
     }

@@ -10,7 +10,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.gui.tools.*;
-import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
+import org.workcraft.plugins.builtin.settings.AnalysisDecorationSettings;
 import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
@@ -32,6 +32,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
     private final BasicTable<String> forcedTable = new BasicTable("<html><b>Force init pins</b></html>");
     private InitialisationState initState = null;
+    private Set<FunctionContact> nonpropagatebleSet = null;
 
     @Override
     public JPanel getControlsPanel(final GraphEditor editor) {
@@ -45,10 +46,11 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
     private JPanel getLegendControlsPanel(final GraphEditor editor) {
         ColorLegendTable colorLegendTable = new ColorLegendTable(Arrays.asList(
-                Pair.of(CommonVisualSettings.getFillColor(), "Undefined initial state"),
-                Pair.of(CommonDecorationSettings.getAnalysisProblematicComponentColor(), "Conflict of initialisation"),
-                Pair.of(CommonDecorationSettings.getAnalysisFixerComponentColor(), "Forced initial state"),
-                Pair.of(CommonDecorationSettings.getAnalysisImmaculateComponentColor(), "Propagated initial state")
+                Pair.of(CommonVisualSettings.getFillColor(), "Unknown initial state"),
+                Pair.of(AnalysisDecorationSettings.getDontTouchColor(), "Don't touch zero delay"),
+                Pair.of(AnalysisDecorationSettings.getProblemColor(), "Problem of initialisation"),
+                Pair.of(AnalysisDecorationSettings.getFixerColor(), "Forced initial state"),
+                Pair.of(AnalysisDecorationSettings.getClearColor(), "Propagated initial state")
         ));
 
         String expectedPinLegend = getHtmlPinLegend("&#x2610;", "Expected high / low");
@@ -183,6 +185,8 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     @Override
     public void activated(final GraphEditor editor) {
         super.activated(editor);
+        Circuit circuit = (Circuit) editor.getModel().getMathModel();
+        CircuitUtils.correctZeroDelayInitialState(circuit);
         updateState(editor);
     }
 
@@ -191,6 +195,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         super.deactivated(editor);
         forcedTable.clear();
         initState = null;
+        nonpropagatebleSet = null;
     }
 
     @Override
@@ -214,6 +219,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         Collections.sort(forcedPins);
         forcedTable.set(forcedPins);
         initState = new InitialisationState(circuit);
+        nonpropagatebleSet = ResetUtils.getNonpropagatableContacts(circuit);
     }
 
     @Override
@@ -233,10 +239,9 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
                 contact = component.getMainVisualOutput();
             }
 
-            if ((contact instanceof VisualFunctionContact) && contact.isDriver()) {
-                FunctionContact mathContact = ((VisualFunctionContact) contact).getReferencedContact();
+            if ((contact != null) && contact.isPin() && contact.isDriver() && !contact.isZeroDelayPin()) {
                 editor.getWorkspaceEntry().saveMemento();
-                mathContact.setForcedInit(!mathContact.getForcedInit());
+                contact.getReferencedContact().setForcedInit(!contact.getReferencedContact().getForcedInit());
                 processed = true;
             }
         }
@@ -278,15 +283,16 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     private Decoration getComponentDecoration(FunctionComponent component) {
         boolean forcedInit = false;
         boolean initialised = true;
-        boolean initialisationConflict = false;
+        boolean hasProblem = false;
         for (Contact outputContact : component.getOutputs()) {
             forcedInit |= outputContact.getForcedInit();
             initialised &= initState.isHigh(outputContact) || initState.isLow(outputContact);
-            initialisationConflict |= initState.isError(outputContact);
+            hasProblem |= initState.isError(outputContact) || nonpropagatebleSet.contains(outputContact);
         }
-        final Color color = forcedInit ? CommonDecorationSettings.getAnalysisFixerComponentColor()
-                : initialisationConflict ? CommonDecorationSettings.getAnalysisProblematicComponentColor()
-                : initialised ? CommonDecorationSettings.getAnalysisImmaculateComponentColor() : null;
+        final Color color = component.getIsZeroDelay() ? AnalysisDecorationSettings.getDontTouchColor()
+                : hasProblem ? AnalysisDecorationSettings.getProblemColor()
+                : forcedInit ? AnalysisDecorationSettings.getFixerColor()
+                : initialised ? AnalysisDecorationSettings.getClearColor() : null;
 
         return new Decoration() {
             @Override

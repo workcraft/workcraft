@@ -1,52 +1,30 @@
 package org.workcraft.plugins.xmas.tools;
 
-import java.awt.Color;
-import java.awt.event.MouseEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualTransformableNode;
-import org.workcraft.utils.Coloriser;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditor;
+import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
 import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.plugins.xmas.VisualXmas;
-import org.workcraft.plugins.xmas.components.QueueDecoration;
-import org.workcraft.plugins.xmas.components.SlotState;
-import org.workcraft.plugins.xmas.components.StateDecoration;
-import org.workcraft.plugins.xmas.components.VisualForkComponent;
-import org.workcraft.plugins.xmas.components.VisualFunctionComponent;
-import org.workcraft.plugins.xmas.components.VisualJoinComponent;
-import org.workcraft.plugins.xmas.components.VisualMergeComponent;
-import org.workcraft.plugins.xmas.components.VisualQueueComponent;
-import org.workcraft.plugins.xmas.components.VisualSinkComponent;
-import org.workcraft.plugins.xmas.components.VisualSourceComponent;
-import org.workcraft.plugins.xmas.components.VisualSwitchComponent;
-import org.workcraft.plugins.xmas.components.VisualXmasConnection;
-import org.workcraft.plugins.xmas.components.VisualXmasContact;
-import org.workcraft.plugins.xmas.stg.ContactStg;
-import org.workcraft.plugins.xmas.stg.ForkStg;
-import org.workcraft.plugins.xmas.stg.FunctionStg;
-import org.workcraft.plugins.xmas.stg.JoinStg;
-import org.workcraft.plugins.xmas.stg.MergeStg;
-import org.workcraft.plugins.xmas.stg.QueueStg;
-import org.workcraft.plugins.xmas.stg.SinkStg;
-import org.workcraft.plugins.xmas.stg.SlotStg;
-import org.workcraft.plugins.xmas.stg.SourceStg;
-import org.workcraft.plugins.xmas.stg.SwitchStg;
-import org.workcraft.plugins.xmas.stg.XmasToStgConverter;
+import org.workcraft.plugins.xmas.components.*;
+import org.workcraft.plugins.xmas.stg.*;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.utils.Hierarchy;
+
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class XmasSimulationTool extends StgSimulationTool {
 
@@ -189,11 +167,11 @@ public class XmasSimulationTool extends StgSimulationTool {
         return new Decoration() {
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
+                return isExcited ? SimulationDecorationSettings.getExcitedComponentColor() : null;
             }
             @Override
             public Color getBackground() {
-                Color  colorisation = isSuggested ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
+                Color  colorisation = isSuggested ? SimulationDecorationSettings.getExcitedComponentColor() : null;
                 Color contactColor = isReady ? (isInput ? COLOR_CONTACT_TRDY : COLOR_CONTACT_IRDY) : COLOR_CONTACT_NOT_READY;
                 return Coloriser.colorise(contactColor, colorisation);
             }
@@ -243,11 +221,11 @@ public class XmasSimulationTool extends StgSimulationTool {
             }
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
+                return isExcited ? SimulationDecorationSettings.getExcitedComponentColor() : null;
             }
             @Override
             public Color getBackground() {
-                return isSuggested ? CommonDecorationSettings.getSimulationSuggestedComponentColor() : null;
+                return isSuggested ? SimulationDecorationSettings.getSuggestedComponentColor() : null;
             }
         };
     }
@@ -266,11 +244,11 @@ public class XmasSimulationTool extends StgSimulationTool {
             }
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
+                return isExcited ? SimulationDecorationSettings.getExcitedComponentColor() : null;
             }
             @Override
             public Color getBackground() {
-                return isSuggested ? CommonDecorationSettings.getSimulationSuggestedComponentColor() : null;
+                return isSuggested ? SimulationDecorationSettings.getSuggestedComponentColor() : null;
             }
         };
     }
@@ -289,11 +267,11 @@ public class XmasSimulationTool extends StgSimulationTool {
             }
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
+                return isExcited ? SimulationDecorationSettings.getExcitedComponentColor() : null;
             }
             @Override
             public Color getBackground() {
-                return isSuggested ? CommonDecorationSettings.getSimulationSuggestedComponentColor() : null;
+                return isSuggested ? SimulationDecorationSettings.getSuggestedComponentColor() : null;
             }
         };
     }

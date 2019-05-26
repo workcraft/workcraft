@@ -59,6 +59,7 @@ public class InitialisationState {
 
     private void fillVariableValues(FunctionComponent component,
             LinkedList<BooleanVariable> variables, LinkedList<BooleanFormula> values) {
+
         for (FunctionContact contact : component.getFunctionContacts()) {
             Set<MathNode> contactInitLevelSet = chooseNodeLevelSet(contact);
             if (contactInitLevelSet != null) {
@@ -100,6 +101,7 @@ public class InitialisationState {
 
     private Set<MathNode> chooseFunctionLevelSet(FunctionContact contact,
             LinkedList<BooleanVariable> variables, LinkedList<BooleanFormula> values) {
+
         if (contact.getForcedInit()) {
             return contact.getInitToOne() ? highSet : lowSet;
         }

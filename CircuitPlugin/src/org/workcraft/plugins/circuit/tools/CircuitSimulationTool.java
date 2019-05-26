@@ -1,41 +1,30 @@
 package org.workcraft.plugins.circuit.tools;
 
-import java.awt.Color;
-import java.awt.event.MouseEvent;
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
-import org.workcraft.dom.visual.HitMan;
-import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.dom.visual.VisualPage;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.dom.visual.*;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.tools.ContainerDecoration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditor;
-import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.plugins.circuit.utils.CircuitUtils;
-import org.workcraft.plugins.circuit.FunctionContact;
-import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.VisualCircuitConnection;
-import org.workcraft.plugins.circuit.VisualContact;
-import org.workcraft.plugins.circuit.VisualFunctionComponent;
-import org.workcraft.plugins.circuit.VisualJoint;
+import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.converters.SignalStg;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.types.Pair;
+import org.workcraft.utils.Coloriser;
+
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class CircuitSimulationTool extends StgSimulationTool {
 
@@ -208,11 +197,11 @@ public class CircuitSimulationTool extends StgSimulationTool {
         return new Decoration() {
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
+                return isExcited ? SimulationDecorationSettings.getExcitedComponentColor() : null;
             }
             @Override
             public Color getBackground() {
-                return isSuggested ? CommonDecorationSettings.getSimulationSuggestedComponentColor() : null;
+                return isSuggested ? SimulationDecorationSettings.getSuggestedComponentColor() : null;
             }
         };
     }
@@ -237,11 +226,11 @@ public class CircuitSimulationTool extends StgSimulationTool {
         return new StateDecoration() {
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
+                return isExcited ? SimulationDecorationSettings.getExcitedComponentColor() : null;
             }
             @Override
             public Color getBackground() {
-                Color  colorisation = isSuggested ? CommonDecorationSettings.getSimulationSuggestedComponentColor() : null;
+                Color  colorisation = isSuggested ? SimulationDecorationSettings.getSuggestedComponentColor() : null;
                 if (isOne && !isZero) {
                     return Coloriser.colorise(CircuitSettings.getActiveWireColor(), colorisation);
                 }

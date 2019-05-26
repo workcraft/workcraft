@@ -497,4 +497,21 @@ public class CircuitUtils {
         return result;
     }
 
+    public static Collection<FunctionComponent> correctZeroDelayInitialState(Circuit circuit) {
+        Collection<FunctionComponent> result = new HashSet<>();
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            if (component.getIsZeroDelay()) {
+                FunctionContact output = component.getGateOutput();
+                boolean initToOne = output.getInitToOne();
+                GateUtils.propagateInitialState(circuit, component);
+                if (initToOne != output.getInitToOne()) {
+                    result.add(component);
+                    String ref = circuit.getNodeReference(component);
+                    LogUtils.logInfo("Correcting initial state of zero delay component '" + ref + "'");
+                }
+            }
+        }
+        return result;
+    }
+
 }

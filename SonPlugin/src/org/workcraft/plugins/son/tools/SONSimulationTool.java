@@ -10,7 +10,7 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.gui.tools.*;
-import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
+import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
 import org.workcraft.plugins.son.BlockConnector;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
@@ -822,8 +822,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         net.refreshAllColor();
 
         for (TransitionNode e : enabled) {
-            //e.setFillColor(CommonSimulationSettings.getEnabledForegroundColor());
-            e.setForegroundColor(CommonDecorationSettings.getSimulationExcitedComponentColor());
+            e.setForegroundColor(SimulationDecorationSettings.getExcitedComponentColor());
         }
 
         StepRef refStep = null;

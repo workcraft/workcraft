@@ -3,10 +3,7 @@ package org.workcraft.plugins.circuit.utils;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
-import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
 
@@ -35,23 +32,22 @@ public class ScanUtils {
         Node parent = contact.getParent();
         if (parent instanceof VisualFunctionComponent) {
             VisualFunctionComponent component = (VisualFunctionComponent) parent;
-            if (isBuffer(component.getReferencedComponent())) {
+            if (component.isBuffer()) {
                 result = component;
             }
         }
         if ((result == null) && contact.isOutput()) {
             Collection<VisualContact> drivenContacts = CircuitUtils.findDriven(circuit, contact, false);
-            if (drivenContacts.size() > 0) {
-                if (drivenContacts.size() == 1) {
-                    VisualContact drivenContact = drivenContacts.iterator().next();
-                    result = insertOrReuseBuffer(circuit, drivenContact);
-                } else {
-                    SpaceUtils.makeSpaceAfterContact(circuit, contact, 3.0);
-                    result = GateUtils.createBufferGate(circuit);
-                    GateUtils.insertGateAfter(circuit, result, contact);
-                    GateUtils.propagateInitialState(circuit, result);
-                    result.getGateOutput().getReferencedContact().setPathBreaker(true);
-                }
+            if (drivenContacts.size() == 1) {
+                VisualContact drivenContact = drivenContacts.iterator().next();
+                result = insertOrReuseBuffer(circuit, drivenContact);
+            }
+            if (result == null) {
+                SpaceUtils.makeSpaceAfterContact(circuit, contact, 3.0);
+                result = GateUtils.createBufferGate(circuit);
+                GateUtils.insertGateAfter(circuit, result, contact);
+                GateUtils.propagateInitialState(circuit, result);
+                result.getGateOutput().getReferencedContact().setPathBreaker(true);
             }
         }
         if (result != null)  {
@@ -126,26 +122,6 @@ public class ScanUtils {
             }
         }
         return false;
-    }
-
-    public static boolean isBuffer(FunctionComponent component) {
-        boolean result = false;
-        Collection<FunctionContact> contacts = component.getFunctionContacts();
-        FunctionContact inputContact = null;
-        FunctionContact outputContact = null;
-        if (contacts.size() > 1) {
-            inputContact = (FunctionContact) component.getFirstInput();
-            outputContact = (FunctionContact) component.getFirstOutput();
-        }
-        if ((inputContact != null) && (outputContact != null)) {
-            BooleanFormula setFunction = outputContact.getSetFunction();
-            if ((setFunction != null) && (outputContact.getResetFunction() == null)) {
-                BooleanFormula zeroReplace = BooleanUtils.replaceClever(setFunction, inputContact, Zero.instance());
-                BooleanFormula oneReplace = BooleanUtils.replaceClever(setFunction, inputContact, One.instance());
-                result = (zeroReplace == Zero.instance()) && (oneReplace == One.instance());
-            }
-        }
-        return result;
     }
 
 }

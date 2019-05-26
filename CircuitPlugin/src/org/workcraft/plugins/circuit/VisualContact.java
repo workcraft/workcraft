@@ -2,14 +2,14 @@ package org.workcraft.plugins.circuit;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.circuit.tools.StateDecoration;
 import org.workcraft.serialisation.NoAutoSerialisation;
+import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -182,7 +182,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
             }
             @Override
             public boolean isVisible() {
-                return isDriver();
+                return isDriver() && !isZeroDelayDriver();
             }
         });
 
@@ -198,7 +198,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
             }
             @Override
             public boolean isVisible() {
-                return isDriver();
+                return isDriver() && !isZeroDelayPin();
             }
         });
 
@@ -214,7 +214,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
             }
             @Override
             public boolean isVisible() {
-                return isPin() && isDriven();
+                return isPin() && !isZeroDelayDriver();
             }
         });
     }
@@ -410,7 +410,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
     }
 
     public Contact getReferencedContact() {
-        return (Contact) getReferencedComponent();
+        return getReferencedComponent();
     }
 
     public boolean isInput() {
@@ -443,6 +443,14 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
 
     public boolean isForcedDriver() {
         return getReferencedContact().isForcedDriver();
+    }
+
+    public boolean isZeroDelayPin() {
+        return getReferencedContact().isZeroDelayPin();
+    }
+
+    public boolean isZeroDelayDriver() {
+        return getReferencedContact().isZeroDelayDriver();
     }
 
     @Override

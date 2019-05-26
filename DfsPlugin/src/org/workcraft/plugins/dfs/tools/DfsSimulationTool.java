@@ -1,12 +1,5 @@
 package org.workcraft.plugins.dfs.tools;
 
-import java.awt.Color;
-import java.awt.event.MouseEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.util.Arrays;
-import java.util.List;
-
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.TransformHelper;
@@ -16,35 +9,24 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditor;
+import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
 import org.workcraft.plugins.dfs.BinaryRegister.Marking;
-import org.workcraft.plugins.dfs.VisualAbstractRegister;
-import org.workcraft.plugins.dfs.VisualBinaryRegister;
-import org.workcraft.plugins.dfs.VisualControlRegister;
-import org.workcraft.plugins.dfs.VisualCounterflowLogic;
-import org.workcraft.plugins.dfs.VisualCounterflowRegister;
-import org.workcraft.plugins.dfs.VisualDfs;
-import org.workcraft.plugins.dfs.VisualLogic;
-import org.workcraft.plugins.dfs.VisualPopRegister;
-import org.workcraft.plugins.dfs.VisualPushRegister;
-import org.workcraft.plugins.dfs.VisualRegister;
-import org.workcraft.plugins.dfs.decorations.BinaryRegisterDecoration;
-import org.workcraft.plugins.dfs.decorations.CounterflowLogicDecoration;
-import org.workcraft.plugins.dfs.decorations.CounterflowRegisterDecoration;
-import org.workcraft.plugins.dfs.decorations.LogicDecoration;
-import org.workcraft.plugins.dfs.decorations.RegisterDecoration;
-import org.workcraft.plugins.dfs.stg.BinaryRegisterStg;
-import org.workcraft.plugins.dfs.stg.CounterflowLogicStg;
-import org.workcraft.plugins.dfs.stg.CounterflowRegisterStg;
-import org.workcraft.plugins.dfs.stg.DfsToStgConverter;
-import org.workcraft.plugins.dfs.stg.LogicStg;
-import org.workcraft.plugins.dfs.stg.RegisterStg;
+import org.workcraft.plugins.dfs.*;
+import org.workcraft.plugins.dfs.decorations.*;
+import org.workcraft.plugins.dfs.stg.*;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.utils.Hierarchy;
+
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.util.Arrays;
+import java.util.List;
 
 public class DfsSimulationTool extends StgSimulationTool {
     private DfsToStgConverter converter;
@@ -234,12 +216,12 @@ public class DfsSimulationTool extends StgSimulationTool {
                     return new LogicDecoration() {
                         @Override
                         public Color getColorisation() {
-                            return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
+                            return isExcited ? SimulationDecorationSettings.getExcitedComponentColor() : null;
                         }
 
                         @Override
                         public Color getBackground() {
-                            return isSuggested ? CommonDecorationSettings.getSimulationSuggestedComponentColor() : null;
+                            return isSuggested ? SimulationDecorationSettings.getSuggestedComponentColor() : null;
                         }
 
                         @Override
@@ -255,12 +237,12 @@ public class DfsSimulationTool extends StgSimulationTool {
                     return new RegisterDecoration() {
                         @Override
                         public Color getColorisation() {
-                            return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
+                            return isExcited ? SimulationDecorationSettings.getExcitedComponentColor() : null;
                         }
 
                         @Override
                         public Color getBackground() {
-                            return isSuggested ? CommonDecorationSettings.getSimulationSuggestedComponentColor() : null;
+                            return isSuggested ? SimulationDecorationSettings.getSuggestedComponentColor() : null;
                         }
 
                         @Override
@@ -286,12 +268,12 @@ public class DfsSimulationTool extends StgSimulationTool {
                     return new CounterflowLogicDecoration() {
                         @Override
                         public Color getColorisation() {
-                            return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
+                            return isExcited ? SimulationDecorationSettings.getExcitedComponentColor() : null;
                         }
 
                         @Override
                         public Color getBackground() {
-                            return isSuggested ? CommonDecorationSettings.getSimulationSuggestedComponentColor() : null;
+                            return isSuggested ? SimulationDecorationSettings.getSuggestedComponentColor() : null;
                         }
 
                         @Override
@@ -322,12 +304,12 @@ public class DfsSimulationTool extends StgSimulationTool {
                     return new CounterflowRegisterDecoration() {
                         @Override
                         public Color getColorisation() {
-                            return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
+                            return isExcited ? SimulationDecorationSettings.getExcitedComponentColor() : null;
                         }
 
                         @Override
                         public Color getBackground() {
-                            return isSuggested ? CommonDecorationSettings.getSimulationSuggestedComponentColor() : null;
+                            return isSuggested ? SimulationDecorationSettings.getSuggestedComponentColor() : null;
                         }
 
                         @Override
@@ -383,12 +365,12 @@ public class DfsSimulationTool extends StgSimulationTool {
                     return new BinaryRegisterDecoration() {
                         @Override
                         public Color getColorisation() {
-                            return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
+                            return isExcited ? SimulationDecorationSettings.getExcitedComponentColor() : null;
                         }
 
                         @Override
                         public Color getBackground() {
-                            return isSuggested ? CommonDecorationSettings.getSimulationSuggestedComponentColor() : null;
+                            return isSuggested ? SimulationDecorationSettings.getSuggestedComponentColor() : null;
                         }
 
                         @Override

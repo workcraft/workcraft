@@ -1,15 +1,14 @@
 package org.workcraft.plugins.builtin.settings;
 
 import org.workcraft.Config;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.Settings;
+import org.workcraft.utils.DesktopApi;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class DotLayoutSettings implements Settings {
+public class DotLayoutSettings extends AbstractLayoutSettings {
 
     public enum Rankdir {
         LR("left-to-right", "LR"),
@@ -32,7 +31,7 @@ public class DotLayoutSettings implements Settings {
     }
 
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
-    private static final String prefix = "DotLayout";
+    private static final String prefix = "DotLayoutSettings";
 
     private static final String keyCommand = prefix + ".command";
     private static final String keyRankdir = prefix + ".rankdir";
@@ -138,11 +137,6 @@ public class DotLayoutSettings implements Settings {
     }
 
     @Override
-    public String getSection() {
-        return "Layout";
-    }
-
-    @Override
     public String getName() {
         return "Dot";
     }
@@ -198,4 +192,5 @@ public class DotLayoutSettings implements Settings {
     public static void setImportConnectionsShape(boolean value) {
         importConnectionsShape = value;
     }
+
 }

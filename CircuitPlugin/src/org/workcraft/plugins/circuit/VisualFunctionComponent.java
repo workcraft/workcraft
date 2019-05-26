@@ -43,7 +43,6 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
     }
 
     private void addPropertyDeclarations() {
-
         addPropertyDeclaration(new PropertyDeclaration<VisualFunctionComponent, RenderType>(
                 this, PROPERTY_RENDER_TYPE, RenderType.class, true, true) {
             @Override

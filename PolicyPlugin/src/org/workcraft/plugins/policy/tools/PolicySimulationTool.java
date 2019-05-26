@@ -11,6 +11,7 @@ import org.workcraft.gui.tools.ContainerDecoration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditor;
+import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
@@ -20,7 +21,6 @@ import org.workcraft.plugins.policy.Bundle;
 import org.workcraft.plugins.policy.Policy;
 import org.workcraft.plugins.policy.VisualBundledTransition;
 import org.workcraft.plugins.policy.VisualPolicy;
-import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -90,12 +90,12 @@ public class PolicySimulationTool extends PetriSimulationTool {
                     return new Decoration() {
                         @Override
                         public Color getColorisation() {
-                            return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
+                            return isExcited ? SimulationDecorationSettings.getExcitedComponentColor() : null;
                         }
 
                         @Override
                         public Color getBackground() {
-                            return isSuggested ? CommonDecorationSettings.getSimulationSuggestedComponentColor() : null;
+                            return isSuggested ? SimulationDecorationSettings.getSuggestedComponentColor() : null;
                         }
                     };
                 }

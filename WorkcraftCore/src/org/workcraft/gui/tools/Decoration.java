@@ -1,9 +1,8 @@
 package org.workcraft.gui.tools;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
+import org.workcraft.plugins.builtin.settings.SelectionDecorationSettings;
 
-import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
+import java.awt.*;
 
 public interface Decoration {
     default Color getColorisation() {
@@ -32,7 +31,7 @@ public interface Decoration {
     class Shaded implements Decoration {
         @Override
         public Color getColorisation() {
-            return CommonDecorationSettings.getShadingColor();
+            return SelectionDecorationSettings.getShadingColor();
         }
         public static final Shaded INSTANCE = new Shaded();
     }
@@ -40,7 +39,7 @@ public interface Decoration {
     class Highlighted implements Decoration {
         @Override
         public Color getColorisation() {
-            return CommonDecorationSettings.getHighlightingColor();
+            return SelectionDecorationSettings.getHighlightingColor();
         }
         public static final Highlighted INSTANCE = new Highlighted();
     }
@@ -48,7 +47,7 @@ public interface Decoration {
     class Selected implements Decoration {
         @Override
         public Color getColorisation() {
-            return CommonDecorationSettings.getSelectionColor();
+            return SelectionDecorationSettings.getSelectionColor();
         }
         public static final Selected INSTANCE = new Selected();
     }

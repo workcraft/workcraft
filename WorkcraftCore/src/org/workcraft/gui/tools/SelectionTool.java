@@ -1,23 +1,23 @@
 package org.workcraft.gui.tools;
 
 import org.workcraft.Framework;
-import org.workcraft.commands.NodeTransformer;
 import org.workcraft.commands.Command;
+import org.workcraft.commands.NodeTransformer;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.actions.ActionMenuItem;
 import org.workcraft.gui.actions.PopupToolAction;
+import org.workcraft.gui.editor.Viewport;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.editor.Viewport;
 import org.workcraft.gui.tools.editors.AbstractInplaceEditor;
 import org.workcraft.gui.tools.editors.LabelInplaceEditor;
-import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
+import org.workcraft.plugins.builtin.settings.SelectionDecorationSettings;
 import org.workcraft.utils.CommandUtils;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.workspace.ModelEntry;
@@ -602,7 +602,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
         if ((dragState == DrugState.SELECT) && (selectionBox != null)) {
             Viewport viewport = editor.getViewport();
             g.setStroke(new BasicStroke((float) viewport.pixelSizeInUserSpace().getX()));
-            Color borderColor = CommonDecorationSettings.getSelectionColor();
+            Color borderColor = SelectionDecorationSettings.getSelectionColor();
             Color fillColor = new Color(borderColor.getRed(), borderColor.getGreen(), borderColor.getBlue(), 35);
             g.setColor(fillColor);
             g.fill(selectionBox);
