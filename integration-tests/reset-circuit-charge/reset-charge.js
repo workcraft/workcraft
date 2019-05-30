@@ -4,7 +4,7 @@ tagCircuitForceInitClearAll(work);
 
 tagCircuitForceInitInputPorts(work);
 
-tagCircuitForceInitConflictPins(work);
+tagCircuitForceInitProblematicPins(work);
 
 tagCircuitForceInitAutoDiscard(work);
 

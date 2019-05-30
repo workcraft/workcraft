@@ -9,6 +9,7 @@ import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
 import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
 
@@ -21,7 +22,8 @@ public class InitialisationState {
 
     private final Set<MathNode> highSet = new HashSet<>();
     private final Set<MathNode> lowSet = new HashSet<>();
-    private final Set<MathNode> errorSet = new HashSet<>();
+    private final Set<MathNode> conflictSet = new HashSet<>();
+    private final Set<MathNode> problematicSet = new HashSet<>();
 
     public InitialisationState(Circuit circuit) {
         Queue<MathConnection> queue = new LinkedList<>();
@@ -39,8 +41,8 @@ public class InitialisationState {
             MathNode fromNode = connection.getFirst();
             Set<MathNode> nodeInitLevelSet = chooseNodeLevelSet(fromNode);
             if ((nodeInitLevelSet != null) && nodeInitLevelSet.add(connection)) {
-                if (errorSet.contains(fromNode)) {
-                    errorSet.add(connection);
+                if (conflictSet.contains(fromNode)) {
+                    conflictSet.add(connection);
                 }
                 MathNode toNode = connection.getSecond();
                 if (nodeInitLevelSet.add(toNode)) {
@@ -55,6 +57,7 @@ public class InitialisationState {
                 }
             }
         }
+        problematicSet.addAll(ResetUtils.getProblematicPins(circuit));
     }
 
     private void fillVariableValues(FunctionComponent component,
@@ -81,7 +84,7 @@ public class InitialisationState {
                 if ((outputInitLevelSet != null) && outputInitLevelSet.add(outputPin)) {
                     progress = true;
                     if (!outputPin.getForcedInit() && ((outputInitLevelSet == highSet) != outputPin.getInitToOne())) {
-                        errorSet.add(outputPin);
+                        conflictSet.add(outputPin);
                     }
                     queue.addAll(circuit.getConnections(outputPin));
                 }
@@ -116,20 +119,28 @@ public class InitialisationState {
         return null;
     }
 
-    public boolean isCorrectlyInitialised(MathNode contact) {
-        return !errorSet.contains(contact) && (lowSet.contains(contact) || highSet.contains(contact));
+    public boolean isHigh(MathNode node) {
+        return highSet.contains(node);
     }
 
-    public boolean isHigh(MathNode contact) {
-        return highSet.contains(contact);
+    public boolean isLow(MathNode node) {
+        return lowSet.contains(node);
     }
 
-    public boolean isLow(MathNode contact) {
-        return lowSet.contains(contact);
+    public boolean isConflict(MathNode node) {
+        return conflictSet.contains(node);
     }
 
-    public boolean isError(MathNode node) {
-        return errorSet.contains(node);
+    public boolean isProblematic(MathNode node) {
+        return problematicSet.contains(node);
+    }
+
+    public boolean isInitialisedPin(Contact contact) {
+        return !isConflict(contact) && (isLow(contact) || isHigh(contact));
+    }
+
+    public boolean isProblematicPin(Contact contact) {
+        return isConflict(contact) || (!isLow(contact) && !isHigh(contact) && isProblematic(contact));
     }
 
 }

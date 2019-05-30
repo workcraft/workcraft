@@ -6,6 +6,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
 import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.plugins.circuit.*;
+import org.workcraft.types.Pair;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -22,51 +23,48 @@ public class ResetUtils {
         return setForceInit(circuit.getInputPorts(), true);
     }
 
-    public static Set<Contact> tagForceInitConflictPins(Circuit circuit) {
-        HashSet<Contact> contacts = new HashSet<>();
-        for (FunctionComponent component : circuit.getFunctionComponents()) {
-            LinkedList<BooleanVariable> variables = new LinkedList<>();
-            LinkedList<BooleanFormula> values = new LinkedList<>();
-            for (FunctionContact inputContact : component.getFunctionInputs()) {
-                Contact driver = CircuitUtils.findDriver(circuit, inputContact, false);
-                if (driver != null) {
-                    variables.add(inputContact);
-                    values.add(driver.getInitToOne() ? One.instance() : Zero.instance());
-                }
-            }
-            for (FunctionContact outputContact : component.getFunctionOutputs()) {
-                BooleanFormula setFunction = BooleanUtils.replaceClever(outputContact.getSetFunction(), variables, values);
-                BooleanFormula resetFunction = BooleanUtils.replaceClever(outputContact.getResetFunction(), variables, values);
-                if (isEvaluatedHigh(setFunction, resetFunction) && outputContact.getInitToOne()) continue;
-                if (isEvaluatedLow(setFunction, resetFunction) && !outputContact.getInitToOne()) continue;
-                contacts.add(outputContact);
-            }
-        }
-        return setForceInit(contacts, true);
+    public static Set<Contact> tagForceInitProblematicPins(Circuit circuit) {
+        return setForceInit(getProblematicPins(circuit), true);
     }
 
-    public static Set<FunctionContact> getNonpropagatableContacts(Circuit circuit) {
-        HashSet<FunctionContact> result = new HashSet<>();
+    public static Set<Contact> getProblematicPins(Circuit circuit) {
+        HashSet<Contact> result = new HashSet<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
             LinkedList<BooleanVariable> variables = new LinkedList<>();
             LinkedList<BooleanFormula> values = new LinkedList<>();
-            for (FunctionContact inputContact : component.getFunctionInputs()) {
-                Contact driver = CircuitUtils.findDriver(circuit, inputContact, false);
-                if (driver != null) {
-                    variables.add(inputContact);
-                    values.add(driver.getInitToOne() ? One.instance() : Zero.instance());
+            for (FunctionContact contact : component.getFunctionContacts()) {
+                Pair<Contact, Boolean> pair = CircuitUtils.findDriverAndInversionSkipZeroDelay(circuit, contact);
+                Contact driver = pair.getFirst();
+                if ((driver != null) && ((driver.getParent() != component) || driver.getForcedInit())) {
+                    variables.add(contact);
+                    boolean inverting = pair.getSecond();
+                    values.add(driver.getInitToOne() == inverting ? Zero.instance() : One.instance());
                 }
             }
-            for (FunctionContact outputContact : component.getFunctionOutputs()) {
-                BooleanFormula setFunction = BooleanUtils.replaceClever(outputContact.getSetFunction(), variables, values);
-                BooleanFormula resetFunction = BooleanUtils.replaceClever(outputContact.getResetFunction(), variables, values);
-                if (isEvaluatedHigh(setFunction, resetFunction) && outputContact.getInitToOne()) continue;
-                if (isEvaluatedLow(setFunction, resetFunction) && !outputContact.getInitToOne()) continue;
-                result.add(outputContact);
-                break;
+            for (FunctionContact contact : component.getFunctionOutputs()) {
+                if (isProblematicPin(contact, variables, values)) {
+                    result.add(contact);
+                }
             }
         }
         return result;
+    }
+
+    private static boolean isProblematicPin(FunctionContact contact,
+            LinkedList<BooleanVariable> variables, LinkedList<BooleanFormula> values) {
+
+        if (contact.getForcedInit()) {
+            return false;
+        }
+        BooleanFormula setFunction = BooleanUtils.replaceClever(contact.getSetFunction(), variables, values);
+        BooleanFormula resetFunction = BooleanUtils.replaceClever(contact.getResetFunction(), variables, values);
+        if (isEvaluatedHigh(setFunction, resetFunction) && contact.getInitToOne()) {
+            return false;
+        }
+        if (isEvaluatedLow(setFunction, resetFunction) && !contact.getInitToOne()) {
+            return false;
+        }
+        return true;
     }
 
     public static Set<Contact> tagForceInitSequentialPins(Circuit circuit) {
@@ -122,7 +120,7 @@ public class ResetUtils {
         for (Contact contact : contacts) {
             contact.setForcedInit(false);
             InitialisationState initState = new InitialisationState(circuit);
-            if (initState.isCorrectlyInitialised(contact)) {
+            if (initState.isInitialisedPin(contact)) {
                 result.add(contact);
             } else {
                 contact.setForcedInit(true);
@@ -395,7 +393,7 @@ public class ResetUtils {
         Set<Contact> result = new HashSet<>();
         for (FunctionContact contact : circuit.getFunctionContacts()) {
             if (contact.isPin() && contact.isDriver()) {
-                if (!initState.isCorrectlyInitialised(contact)) {
+                if (!initState.isInitialisedPin(contact)) {
                     result.add(contact);
                 }
             }

@@ -29,10 +29,10 @@ public class ResetCommandTests {
     @Test
     public void testChargeTmResetCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "charge-tm.circuit.work");
-        testResetCommands(workName, 5, 5, 6, 6, 7, 6, false, true);
+        testResetCommands(workName, 5, 5, 7, 7, 7, 6, false, true);
     }
 
-    private void testResetCommands(String workName, int initNum, int inputNum, int conflictNum,
+    private void testResetCommands(String workName, int initNum, int inputNum, int problematicNum,
             int autoDiscardNum, int autoAppendNum, int finalNum, boolean activeLow, boolean pass)
             throws DeserialisationException {
         final Framework framework = Framework.getInstance();
@@ -52,9 +52,9 @@ public class ResetCommandTests {
             Assert.assertEquals(inputNum, getForceInitCount(we));
         }
 
-        if (conflictNum >= 0) {
-            new ForceInitConflictPinsTagCommand().execute(we);
-            Assert.assertEquals(conflictNum, getForceInitCount(we));
+        if (problematicNum >= 0) {
+            new ForceInitProblematicPinsTagCommand().execute(we);
+            Assert.assertEquals(problematicNum, getForceInitCount(we));
         }
 
         if (autoDiscardNum >= 0) {
