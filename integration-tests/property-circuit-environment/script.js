@@ -19,28 +19,3 @@ write(
     "charge-tm.circuit.txt");
 
 exit();
-
-function setCircuitEnvironment(circuitWork, env) {
-    // Helper function to convert env to a File object
-    function getEnvironmentFile(env) {
-        if (env instanceof File) {
-            return env;
-        }
-        if ((env instanceof String) || (typeof env === "string")) {
-            return new File(env);
-        }
-        if (env instanceof org.workcraft.workspace.WorkspaceEntry) {
-            return getWorkFile(env);
-        }
-        throw "Environment must be specified as File, String or WorkspaceEntry";
-    }
-
-    circuitMathModel=circuitWork.getModelEntry().getMathModel();
-    envFile = getEnvironmentFile(env);
-    org.workcraft.plugins.circuit.utils.EnvironmentUtils.setEnvironmentFile(circuitMathModel, envFile);
-}
-
-function getCircuitEnvironment(circuitWork) {
-    circuitMathModel=circuitWork.getModelEntry().getMathModel();
-    return org.workcraft.plugins.circuit.utils.EnvironmentUtils.getEnvironmentFile(circuitMathModel);
-}
