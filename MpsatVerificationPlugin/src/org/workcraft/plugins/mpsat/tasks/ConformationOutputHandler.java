@@ -7,10 +7,10 @@ import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.utils.PetriUtils;
-import org.workcraft.tasks.ExportOutput;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.tasks.ExportOutput;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -45,6 +45,7 @@ class ConformationOutputHandler extends ReachabilityOutputHandler {
         List<Solution> result = new LinkedList<>();
 
         StgModel stg = getSrcStg(we);
+
         ComponentData data = getCompositionData(we);
         Map<String, String> substitutions = getSubstitutions(we);
 
