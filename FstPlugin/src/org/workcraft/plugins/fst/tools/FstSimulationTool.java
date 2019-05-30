@@ -1,8 +1,5 @@
 package org.workcraft.plugins.fst.tools;
 
-import java.awt.Color;
-import java.awt.event.MouseEvent;
-
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
@@ -14,6 +11,7 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditor;
+import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualState;
@@ -24,10 +22,12 @@ import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
+
+import java.awt.*;
+import java.awt.event.MouseEvent;
 
 public class FstSimulationTool extends StgSimulationTool {
     private FstToStgConverter converter;
@@ -140,12 +140,12 @@ public class FstSimulationTool extends StgSimulationTool {
         return new Decoration() {
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
+                return isExcited ? SimulationDecorationSettings.getExcitedComponentColor() : null;
             }
 
             @Override
             public Color getBackground() {
-                return isSuggested ? CommonDecorationSettings.getSimulationSuggestedComponentColor() : null;
+                return isSuggested ? SimulationDecorationSettings.getSuggestedComponentColor() : null;
             }
         };
     }
@@ -159,7 +159,7 @@ public class FstSimulationTool extends StgSimulationTool {
         return new Decoration() {
             @Override
             public Color getColorisation() {
-                return isMarkedPlace ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
+                return isMarkedPlace ? SimulationDecorationSettings.getExcitedComponentColor() : null;
             }
             @Override
             public Color getBackground() {

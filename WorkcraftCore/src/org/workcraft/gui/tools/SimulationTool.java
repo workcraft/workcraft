@@ -10,7 +10,7 @@ import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.gui.properties.FlatHeaderRenderer;
-import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
+import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
 import org.workcraft.types.Func;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -795,7 +795,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         return new Decoration() {
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
+                return isExcited ? SimulationDecorationSettings.getExcitedComponentColor() : null;
             }
             @Override
             public Color getBackground() {
@@ -812,11 +812,11 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         return new Decoration() {
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
+                return isExcited ? SimulationDecorationSettings.getExcitedComponentColor() : null;
             }
             @Override
             public Color getBackground() {
-                return isSuggested ? CommonDecorationSettings.getSimulationSuggestedComponentColor() : null;
+                return isSuggested ? SimulationDecorationSettings.getSuggestedComponentColor() : null;
             }
         };
     }

@@ -1,19 +1,19 @@
 package org.workcraft.plugins.circuit.verilog;
 
+import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
+import org.workcraft.plugins.circuit.CircuitSettings;
+import org.workcraft.plugins.circuit.Contact;
+import org.workcraft.plugins.circuit.jj.substitution.ParseException;
+import org.workcraft.plugins.circuit.jj.substitution.SubstitutionParser;
+import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.LogUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
-
-import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.plugins.circuit.Contact;
-import org.workcraft.plugins.circuit.jj.substitution.ParseException;
-import org.workcraft.plugins.circuit.jj.substitution.SubstitutionParser;
-import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
-import org.workcraft.utils.FileUtils;
-import org.workcraft.utils.LogUtils;
 
 public class SubstitutionUtils {
 
@@ -25,7 +25,8 @@ public class SubstitutionUtils {
             if (FileUtils.checkAvailability(libraryFile, "Access error for the file of substitutions", false)) {
                 try {
                     InputStream substitutionInputStream = new FileInputStream(substitutionsFileName);
-                    SubstitutionParser substitutionParser = new SubstitutionParser(substitutionInputStream);
+                    boolean invertSubstitutionRules = CircuitSettings.getInvertSubstitutionRules();
+                    SubstitutionParser substitutionParser = new SubstitutionParser(substitutionInputStream, invertSubstitutionRules);
                     if (CommonDebugSettings.getParserTracing()) {
                         substitutionParser.enable_tracing();
                     } else {
@@ -35,7 +36,11 @@ public class SubstitutionUtils {
                     for (SubstitutionRule rule: rules) {
                         result.put(rule.oldName, rule);
                     }
-                    LogUtils.logInfo("Renaming gates and pins using the file of substitutions '" + substitutionsFileName + "'.");
+                    LogUtils.logInfo("Renaming gates and pins using "
+                            + (invertSubstitutionRules ? "inverted" : "direct")
+                            + " rules in the file of substitutions '"
+                            + substitutionsFileName + "'.");
+
                 } catch (FileNotFoundException e) {
                 } catch (ParseException e) {
                     LogUtils.logWarning("Could not parse the file of substitutions '" + substitutionsFileName + "'.");

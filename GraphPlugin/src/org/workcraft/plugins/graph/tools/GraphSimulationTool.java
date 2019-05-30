@@ -11,7 +11,7 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditor;
-import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
+import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
 import org.workcraft.plugins.graph.VisualGraph;
 import org.workcraft.plugins.graph.VisualVertex;
 import org.workcraft.plugins.graph.converters.GraphToPetriConverter;
@@ -104,12 +104,12 @@ public class GraphSimulationTool extends PetriSimulationTool {
         return new Decoration() {
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
+                return isExcited ? SimulationDecorationSettings.getExcitedComponentColor() : null;
             }
 
             @Override
             public Color getBackground() {
-                return isSuggested ? CommonDecorationSettings.getSimulationSuggestedComponentColor() : null;
+                return isSuggested ? SimulationDecorationSettings.getSuggestedComponentColor() : null;
             }
         };
     }
@@ -119,7 +119,7 @@ public class GraphSimulationTool extends PetriSimulationTool {
         return new Decoration() {
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonDecorationSettings.getSimulationExcitedComponentColor() : null;
+                return isExcited ? SimulationDecorationSettings.getExcitedComponentColor() : null;
             }
 
             @Override

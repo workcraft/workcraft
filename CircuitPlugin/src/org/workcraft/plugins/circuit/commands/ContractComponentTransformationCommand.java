@@ -118,7 +118,7 @@ public class ContractComponentTransformationCommand extends AbstractTransformati
             }
         }
 
-        // Handle zero-delay components
+        // Handle zero delay components
         Contact directDriver = CircuitUtils.findDriver(mathCircuit, inputContact.getReferencedComponent(), false);
         Node directDriverParent = directDriver.getParent();
         if (directDriverParent instanceof FunctionComponent) {

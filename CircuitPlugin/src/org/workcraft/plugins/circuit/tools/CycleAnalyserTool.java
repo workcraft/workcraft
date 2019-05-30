@@ -6,16 +6,13 @@ import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.gui.tools.*;
 import org.workcraft.interop.Format;
-import org.workcraft.interop.FormatFileFilter;
-import org.workcraft.plugins.builtin.settings.CommonDecorationSettings;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.AnalysisDecorationSettings;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.serialisation.PathbreakConstraintExporter;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
@@ -54,10 +51,10 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     private JPanel getLegendControlsPanel(final GraphEditor editor) {
         ColorLegendTable colorLegendTable = new ColorLegendTable(Arrays.asList(
-                Pair.of(CommonVisualSettings.getFillColor(), "Zero-delay"),
-                Pair.of(CommonDecorationSettings.getAnalysisProblematicComponentColor(), "On a cycle"),
-                Pair.of(CommonDecorationSettings.getAnalysisFixerComponentColor(), "Path breaker"),
-                Pair.of(CommonDecorationSettings.getAnalysisImmaculateComponentColor(), "Not on any cycle")
+                Pair.of(AnalysisDecorationSettings.getDontTouchColor(), "Don't touch zero delay"),
+                Pair.of(AnalysisDecorationSettings.getProblemColor(), "On a cycle"),
+                Pair.of(AnalysisDecorationSettings.getFixerColor(), "Path breaker"),
+                Pair.of(AnalysisDecorationSettings.getClearColor(), "Not on any cycle")
         ));
 
         JPanel legendPanel = new JPanel(new BorderLayout());
@@ -114,8 +111,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         } else {
             we.saveMemento();
         }
-        circuit = (Circuit) editor.getModel().getMathModel();
-        updateState(circuit);
+        updateState(editor);
         editor.requestFocus();
     }
 
@@ -143,7 +139,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         VisualCircuit circuit = (VisualCircuit) editor.getModel();
         editor.getWorkspaceEntry().saveMemento();
         ScanUtils.insertTestableBuffers(circuit);
-        updateState(((VisualCircuit) editor.getModel()).getMathModel());
+        updateState(editor);
         editor.requestFocus();
     }
 
@@ -151,25 +147,20 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         VisualCircuit circuit = (VisualCircuit) editor.getModel();
         editor.getWorkspaceEntry().saveMemento();
         ScanUtils.insertScan(circuit);
-        updateState(((VisualCircuit) editor.getModel()).getMathModel());
+        updateState(editor);
         editor.requestFocus();
     }
 
     private void writePathbreakConstraints(final GraphEditor editor) {
-        JFileChooser fc = new JFileChooser();
-        fc.setDialogType(JFileChooser.SAVE_DIALOG);
-        fc.setDialogTitle("Save path breaker SDC constraints");
-        Circuit circuit = WorkspaceUtils.getAs(editor.getWorkspaceEntry(), Circuit.class);
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        File file = new File(editor.getWorkspaceEntry().getFileName());
         PathbreakConstraintExporter exporter = new PathbreakConstraintExporter();
         Format format = exporter.getFormat();
-        fc.setFileFilter(new FormatFileFilter(format));
-        MainWindow mainWindow = Framework.getInstance().getMainWindow();
-        GuiUtils.sizeFileChooserToScreen(fc, mainWindow.getDisplayMode());
-        fc.setCurrentDirectory(mainWindow.getLastDirectory());
+        JFileChooser fc = mainWindow.createSaveDialog("Save path breaker SDC constraints", file, format);
         try {
             String path = ExportUtils.getValidSavePath(fc, format);
-            File file = new File(path);
-            exporter.export(circuit, file);
+            Circuit circuit = WorkspaceUtils.getAs(editor.getWorkspaceEntry(), Circuit.class);
+            exporter.export(circuit, new File(path));
         } catch (OperationCancelledException e) {
         }
         mainWindow.setLastDirectory(fc.getCurrentDirectory());
@@ -204,7 +195,8 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     public void activated(final GraphEditor editor) {
         super.activated(editor);
         Circuit circuit = (Circuit) editor.getModel().getMathModel();
-        updateState(circuit);
+        CircuitUtils.correctZeroDelayInitialState(circuit);
+        updateState(editor);
     }
 
     @Override
@@ -223,7 +215,8 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         we.setCanCopy(false);
     }
 
-    private void updateState(Circuit circuit) {
+    private void updateState(final GraphEditor editor) {
+        Circuit circuit = (Circuit) editor.getModel().getMathModel();
         cycleContacts = CycleUtils.getCycledDrivers(circuit);
         cycleComponents = new HashSet<>();
         for (Contact contact : cycleContacts) {
@@ -267,7 +260,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
                 contact = component.getMainVisualOutput();
 
             }
-            if ((contact != null) && contact.isPin()) {
+            if ((contact != null) && contact.isPin() && !contact.isZeroDelayDriver()) {
                 FunctionContact mathContact = ((VisualFunctionContact) contact).getReferencedContact();
                 editor.getWorkspaceEntry().saveMemento();
                 mathContact.setPathBreaker(!mathContact.getPathBreaker());
@@ -275,8 +268,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
             }
         }
         if (processed) {
-            Circuit circuit = (Circuit) model.getMathModel();
-            updateState(circuit);
+            updateState(editor);
         } else {
             super.mousePressed(e);
         }
@@ -290,8 +282,6 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
                 Node mathNode = null;
                 if (node instanceof VisualComponent) {
                     mathNode = ((VisualComponent) node).getReferencedComponent();
-                } else if (node instanceof VisualConnection) {
-                    mathNode = ((VisualConnection) node).getReferencedConnection();
                 }
 
                 if (mathNode != null) {
@@ -308,9 +298,10 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private Decoration getContactDecoration(Contact contact) {
-        final Color color = contact.getPathBreaker() ? CommonDecorationSettings.getAnalysisFixerComponentColor()
-                : cycleContacts.contains(contact) ? CommonDecorationSettings.getAnalysisProblematicComponentColor()
-                : contact.isPin() ? CommonDecorationSettings.getAnalysisImmaculateComponentColor() : null;
+        final Color color = contact.isZeroDelayDriver() ? AnalysisDecorationSettings.getDontTouchColor()
+                : cycleContacts.contains(contact) ? AnalysisDecorationSettings.getProblemColor()
+                : contact.getPathBreaker() ? AnalysisDecorationSettings.getFixerColor()
+                : contact.isPin() ? AnalysisDecorationSettings.getClearColor() : null;
 
         return new Decoration() {
             @Override
@@ -326,10 +317,10 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private Decoration getComponentDecoration(FunctionComponent component) {
-        final Color color = component.getIsZeroDelay() ? null
-                : ScanUtils.hasPathBreakerOutput(component) ? CommonDecorationSettings.getAnalysisFixerComponentColor()
-                : cycleComponents.contains(component) ? CommonDecorationSettings.getAnalysisProblematicComponentColor()
-                : CommonDecorationSettings.getAnalysisImmaculateComponentColor();
+        final Color color = component.getIsZeroDelay() ? AnalysisDecorationSettings.getDontTouchColor()
+                : cycleComponents.contains(component) ? AnalysisDecorationSettings.getProblemColor()
+                : ScanUtils.hasPathBreakerOutput(component) ? AnalysisDecorationSettings.getFixerColor()
+                : AnalysisDecorationSettings.getClearColor();
 
         return new Decoration() {
             @Override

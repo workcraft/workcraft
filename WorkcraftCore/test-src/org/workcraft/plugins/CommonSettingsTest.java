@@ -62,36 +62,6 @@ public class CommonSettingsTest {
     }
 
     @Test
-    public void commonDecorationSettingsTest() {
-        final Framework framework = Framework.getInstance();
-        String prefix = "CommonDecorationSettings";
-
-        Assert.assertEquals(Config.toString(CommonDecorationSettings.getHighlightingColor()),
-                framework.getConfigVar(prefix + ".highlightingColor", false));
-
-        Assert.assertEquals(Config.toString(CommonDecorationSettings.getSelectionColor()),
-                framework.getConfigVar(prefix + ".selectionColor", false));
-
-        Assert.assertEquals(Config.toString(CommonDecorationSettings.getShadingColor()),
-                framework.getConfigVar(prefix + ".shadingColor", false));
-
-        Assert.assertEquals(Config.toString(CommonDecorationSettings.getSimulationExcitedComponentColor()),
-                framework.getConfigVar(prefix + ".simulationExcitedComponentColor", false));
-
-        Assert.assertEquals(Config.toString(CommonDecorationSettings.getSimulationSuggestedComponentColor()),
-                framework.getConfigVar(prefix + ".simulationSuggestedComponentColor", false));
-
-        Assert.assertEquals(Config.toString(CommonDecorationSettings.getAnalysisProblematicComponentColor()),
-                framework.getConfigVar(prefix + ".analysisProblematicComponentColor", false));
-
-        Assert.assertEquals(Config.toString(CommonDecorationSettings.getAnalysisFixerComponentColor()),
-                framework.getConfigVar(prefix + ".analysisFixerComponentColor", false));
-
-        Assert.assertEquals(Config.toString(CommonDecorationSettings.getAnalysisImmaculateComponentColor()),
-                framework.getConfigVar(prefix + ".analysisImmaculateComponentColor", false));
-    }
-
-    @Test
     public void commonEditorSettingsTest() {
         final Framework framework = Framework.getInstance();
         String prefix = "CommonEditorSettings";

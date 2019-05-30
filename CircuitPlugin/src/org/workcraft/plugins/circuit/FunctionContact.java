@@ -70,4 +70,5 @@ public class FunctionContact extends Contact {
     public boolean isSequential() {
         return (setFunction != null) && (resetFunction != null);
     }
+
 }

@@ -45,6 +45,30 @@ public class ResetUtils {
         return setForceInit(contacts, true);
     }
 
+    public static Set<FunctionContact> getNonpropagatableContacts(Circuit circuit) {
+        HashSet<FunctionContact> result = new HashSet<>();
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            LinkedList<BooleanVariable> variables = new LinkedList<>();
+            LinkedList<BooleanFormula> values = new LinkedList<>();
+            for (FunctionContact inputContact : component.getFunctionInputs()) {
+                Contact driver = CircuitUtils.findDriver(circuit, inputContact, false);
+                if (driver != null) {
+                    variables.add(inputContact);
+                    values.add(driver.getInitToOne() ? One.instance() : Zero.instance());
+                }
+            }
+            for (FunctionContact outputContact : component.getFunctionOutputs()) {
+                BooleanFormula setFunction = BooleanUtils.replaceClever(outputContact.getSetFunction(), variables, values);
+                BooleanFormula resetFunction = BooleanUtils.replaceClever(outputContact.getResetFunction(), variables, values);
+                if (isEvaluatedHigh(setFunction, resetFunction) && outputContact.getInitToOne()) continue;
+                if (isEvaluatedLow(setFunction, resetFunction) && !outputContact.getInitToOne()) continue;
+                result.add(outputContact);
+                break;
+            }
+        }
+        return result;
+    }
+
     public static Set<Contact> tagForceInitSequentialPins(Circuit circuit) {
         HashSet<FunctionContact> contacts = new HashSet<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {

@@ -236,7 +236,6 @@ public class GateUtils {
         for (FunctionContact output : component.getFunctionOutputs()) {
             BooleanFormula setFunction = BooleanUtils.replaceClever(output.getSetFunction(),
                     variableAsignment.getFirst(), variableAsignment.getSecond());
-
             if ((setFunction != null) && (One.instance().equals(setFunction) != output.getInitToOne())) {
                 BooleanFormula resetFunction = BooleanUtils.replaceClever(output.getResetFunction(),
                         variableAsignment.getFirst(), variableAsignment.getSecond());
@@ -255,11 +254,13 @@ public class GateUtils {
         List<BooleanVariable> variables = new LinkedList<>();
         List<BooleanFormula> values = new LinkedList<>();
         for (FunctionContact input : component.getFunctionInputs()) {
-            Contact driver = CircuitUtils.findDriver(circuit, input, false);
-            if (driver != null) {
+            Pair<Contact, Boolean> pair = CircuitUtils.findDriverAndInversionSkipZeroDelay(circuit, input);
+            if (pair != null) {
+                boolean initToOne = pair.getFirst().getInitToOne();
+                boolean inversion = pair.getSecond();
                 variables.add(input);
-                BooleanFormula initToOne = driver.getInitToOne() ? One.instance() : Zero.instance();
-                values.add(initToOne);
+                BooleanFormula state = initToOne ^ inversion ? One.instance() : Zero.instance();
+                values.add(state);
             }
         }
         return Pair.of(variables, values);

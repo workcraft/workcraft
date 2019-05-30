@@ -6,14 +6,14 @@ import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.plugins.circuit.commands.*;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.punf.PunfSettings;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.PackageUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
 import java.util.HashSet;
@@ -82,11 +82,12 @@ public class TransformationCommandTests {
         CombinedVerificationCommand verificationCommand = new CombinedVerificationCommand();
         Assert.assertEquals(true, verificationCommand.execute(we));
 
-        VisualFunctionContact contact = circuit.getVisualComponentByMathReference("OUT_BUBBLE2.ON", VisualFunctionContact.class);
+        // Note that U31.C2 was renamed to U31.C2N after inversion propagation command
+        VisualContact contact = circuit.getVisualComponentByMathReference("U31.C2N", VisualContact.class);
         Assert.assertNotNull(contact);
 
         Set<VisualConnection> connections = circuit.getConnections(contact);
-        Assert.assertEquals(2, connections.size());
+        Assert.assertEquals(1, connections.size());
 
         InsertBufferTransformationCommand insertBufferCommand = new InsertBufferTransformationCommand();
         circuit.select(connections);

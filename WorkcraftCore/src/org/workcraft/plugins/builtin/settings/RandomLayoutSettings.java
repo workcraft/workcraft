@@ -3,14 +3,13 @@ package org.workcraft.plugins.builtin.settings;
 import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.Settings;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class RandomLayoutSettings implements Settings {
+public class RandomLayoutSettings extends AbstractLayoutSettings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
-    private static final String prefix = "RandomLayout";
+    private static final String prefix = "RandomLayoutSettings";
 
     private static final String keyStartX = prefix + ".startX";
     private static final String keyStartY = prefix + ".startY";
@@ -96,11 +95,6 @@ public class RandomLayoutSettings implements Settings {
         config.setDouble(keyStartY, getStartY());
         config.setDouble(keyRangeX, getRangeX());
         config.setDouble(keyRangeY, getRangeY());
-    }
-
-    @Override
-    public String getSection() {
-        return "Layout";
     }
 
     @Override

@@ -1,14 +1,14 @@
 package org.workcraft.plugins.circuit.commands;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.Settings;
+import org.workcraft.plugins.builtin.settings.AbstractLayoutSettings;
 
-public class CircuitLayoutSettings implements Settings {
+import java.util.LinkedList;
+import java.util.List;
+
+public class CircuitLayoutSettings extends AbstractLayoutSettings {
 
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CircuitLayout";
@@ -165,11 +165,6 @@ public class CircuitLayoutSettings implements Settings {
         config.setDouble(keySnappingMajor, getSnappingMajor());
         config.setDouble(keySnappingMinor, getSnappingMinor());
         config.setBoolean(keyDebugRouting, getDebugRouting());
-    }
-
-    @Override
-    public String getSection() {
-        return "Layout";
     }
 
     @Override

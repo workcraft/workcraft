@@ -147,7 +147,7 @@ public class VisualCircuit extends AbstractVisualModel {
             }
         }
 
-        // Handle zero-delay components
+        // Handle zero delay components
         Node firstParent = first.getParent();
         if (firstParent instanceof VisualFunctionComponent) {
             VisualFunctionComponent firstComponent = (VisualFunctionComponent) firstParent;
@@ -319,16 +319,15 @@ public class VisualCircuit extends AbstractVisualModel {
         if (node == null) {
             properties.add(getEnvironmentFileProperty());
         } else if (node instanceof VisualFunctionContact) {
-            properties.add(getSetFunctionProperty((VisualFunctionContact) node));
-            properties.add(getResetFunctionProperty((VisualFunctionContact) node));
-        } else if (node instanceof VisualCircuitComponent) {
-            VisualCircuitComponent component = (VisualCircuitComponent) node;
-            VisualContact mainOutput = component.getMainVisualOutput();
+            VisualFunctionContact contact = (VisualFunctionContact) node;
+            properties.add(getSetFunctionProperty(contact));
+            properties.add(getResetFunctionProperty(contact));
+        } else if (node instanceof VisualFunctionComponent) {
+            VisualFunctionComponent component = (VisualFunctionComponent) node;
+            VisualFunctionContact mainOutput = component.getMainVisualOutput();
             if (mainOutput != null) {
-                if (mainOutput instanceof VisualFunctionContact) {
-                    properties.add(getSetFunctionProperty((VisualFunctionContact) mainOutput));
-                    properties.add(getResetFunctionProperty((VisualFunctionContact) mainOutput));
-                }
+                properties.add(getSetFunctionProperty(mainOutput));
+                properties.add(getResetFunctionProperty(mainOutput));
                 for (PropertyDescriptor property : mainOutput.getDescriptors()) {
                     String propertyName = property.getName();
                     if (Contact.PROPERTY_INIT_TO_ONE.equals(propertyName)
