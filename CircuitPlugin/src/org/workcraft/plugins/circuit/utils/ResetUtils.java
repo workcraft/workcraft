@@ -287,19 +287,36 @@ public class ResetUtils {
             }
         }
         if (!forceInitFuncContacts.isEmpty()) {
-            String name = CircuitSettings.getResetPin();
-            String ref = NamespaceHelper.getReference(circuit.getMathReference(component), name);
-            VisualFunctionContact resetContact = circuit.getVisualComponentByMathReference(ref, VisualFunctionContact.class);
-            if (resetContact == null) {
-                resetContact = circuit.getOrCreateContact(component, name, Contact.IOType.INPUT);
-                component.setPositionByDirection(resetContact, VisualContact.Direction.WEST, false);
-                for (VisualFunctionContact contact : forceInitFuncContacts) {
-                    insertResetFunction(contact, resetContact, isActiveLow);
+            VisualFunctionContact setContact = null;
+            VisualFunctionContact clearContact = null;
+            for (VisualFunctionContact contact : forceInitFuncContacts) {
+                if (contact.getInitToOne()) {
+                    setContact = getOrCreatePin(circuit, component, CircuitSettings.getSetPin());
+                    insertResetFunction(contact, setContact, isActiveLow);
+                } else {
+                    clearContact = getOrCreatePin(circuit, component, CircuitSettings.getClearPin());
+                    insertResetFunction(contact, clearContact, isActiveLow);
                 }
-                component.clearMapping();
             }
+            // Modify module name by adding set/clear suffix
+            String moduleName = component.getReferencedComponent().getModule();
+            if (!moduleName.isEmpty()) {
+                if (setContact != null) {
+                    moduleName += CircuitSettings.getSetPin();
+                }
+                if (clearContact != null) {
+                    moduleName += CircuitSettings.getClearPin();
+                }
+                component.getReferencedComponent().setModule(moduleName);
+            }
+            // Connect set/clear pins to reset port
             try {
-                circuit.connect(resetPort, resetContact);
+                if (setContact != null) {
+                    circuit.connect(resetPort, setContact);
+                }
+                if (clearContact != null) {
+                    circuit.connect(resetPort, clearContact);
+                }
             } catch (InvalidConnectionException e) {
                 throw new RuntimeException(e);
             }
@@ -308,6 +325,16 @@ public class ResetUtils {
         for (VisualFunctionContact contact : forceInitGateContacts) {
             VisualFunctionComponent resetGate = insertResetGate(circuit, resetPort, contact, isActiveLow);
             result.add(resetGate);
+        }
+        return result;
+    }
+
+    private static VisualFunctionContact getOrCreatePin(VisualCircuit circuit, VisualFunctionComponent component, String name) {
+        String ref = NamespaceHelper.getReference(circuit.getMathReference(component), name);
+        VisualFunctionContact result = circuit.getVisualComponentByMathReference(ref, VisualFunctionContact.class);
+        if (result == null) {
+            result = circuit.getOrCreateContact(component, name, Contact.IOType.INPUT);
+            component.setPositionByDirection(result, VisualContact.Direction.WEST, false);
         }
         return result;
     }

@@ -77,8 +77,11 @@ public class CircuitSettingsTests {
         Assert.assertEquals(Config.toString(CircuitSettings.getResetPort()),
                 framework.getConfigVar(prefix + ".resetPort", false));
 
-        Assert.assertEquals(Config.toString(CircuitSettings.getResetPin()),
-                framework.getConfigVar(prefix + ".resetPin", false));
+        Assert.assertEquals(Config.toString(CircuitSettings.getSetPin()),
+                framework.getConfigVar(prefix + ".setPin", false));
+
+        Assert.assertEquals(Config.toString(CircuitSettings.getClearPin()),
+                framework.getConfigVar(prefix + ".clearPin", false));
 
         Assert.assertEquals(Config.toString(CircuitSettings.getTbufData()),
                 framework.getConfigVar(prefix + ".tbufData", false));

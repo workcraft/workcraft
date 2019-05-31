@@ -79,8 +79,8 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         tagForceInitInputPortsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitInputPorts(c)));
 
         JButton tagForceInitNecessaryPinsButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-initialisation-conflict_pins.svg"),
-                "Force init output pins with conflicting initial state");
+                GuiUtils.createIconFromSVG("images/circuit-initialisation-problematic_pins.svg"),
+                "Force init output pins with problematic initial state");
         tagForceInitNecessaryPinsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitProblematicPins(c)));
 
         JButton tagForceInitSequentialPinsButton = GuiUtils.createIconButton(

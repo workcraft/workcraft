@@ -61,7 +61,8 @@ public class CircuitSettings implements Settings {
     private static final String keyMutexData = prefix + ".mutexData";
     private static final String keyBusSuffix = prefix + ".busSuffix";
     private static final String keyResetPort = prefix + ".resetPort";
-    private static final String keyResetPin = prefix + ".resetPin";
+    private static final String keySetPin = prefix + ".setPin";
+    private static final String keyClearPin = prefix + ".clearPin";
     private static final String keyTbufData = prefix + ".tbufData";
     private static final String keyScanPorts = prefix + ".scanPorts";
     private static final String keyScanPins = prefix + ".scanPins";
@@ -88,7 +89,8 @@ public class CircuitSettings implements Settings {
     private static final String defaultMutexData = "MUTEX ((r1, g1), (r2, g2))";
     private static final String defaultBusSuffix = "__$";
     private static final String defaultResetPort = "reset";
-    private static final String defaultResetPin = "R";
+    private static final String defaultSetPin = "S";
+    private static final String defaultClearPin = "R";
     private static final String defaultTbufData = "TBUF (I, O)";
     private static final String defaultScanPorts = "scanin, clock";
     private static final String defaultScanPins = "SI, CK";
@@ -115,7 +117,8 @@ public class CircuitSettings implements Settings {
     private static String mutexData = defaultMutexData;
     private static String busSuffix = defaultBusSuffix;
     private static String resetPort = defaultResetPort;
-    private static String resetPin = defaultResetPin;
+    private static String setPin = defaultSetPin;
+    private static String clearPin = defaultClearPin;
     private static String tbufData = defaultTbufData;
     private static String scanPorts = defaultScanPorts;
     private static String scanPins = defaultScanPins;
@@ -408,14 +411,26 @@ public class CircuitSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Reset pin name", String.class) {
+                this, "Initialisation SET pin name", String.class) {
             @Override
             public void setter(CircuitSettings object, String value) {
-                setResetPin(value);
+                setSetPin(value);
             }
             @Override
             public String getter(CircuitSettings object) {
-                return getResetPin();
+                return getSetPin();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, String>(
+                this, "Initialisation CLEAR pin name", String.class) {
+            @Override
+            public void setter(CircuitSettings object, String value) {
+                setClearPin(value);
+            }
+            @Override
+            public String getter(CircuitSettings object) {
+                return getClearPin();
             }
         });
 
@@ -529,7 +544,8 @@ public class CircuitSettings implements Settings {
         setMutexData(config.getString(keyMutexData, defaultMutexData));
         setBusSuffix(config.getString(keyBusSuffix, defaultBusSuffix));
         setResetPort(config.getString(keyResetPort, defaultResetPort));
-        setResetPin(config.getString(keyResetPin, defaultResetPin));
+        setSetPin(config.getString(keySetPin, defaultSetPin));
+        setClearPin(config.getString(keyClearPin, defaultClearPin));
         setTbufData(config.getString(keyTbufData, defaultTbufData));
         setScanPorts(config.getString(keyScanPorts, defaultScanPorts));
         setScanPins(config.getString(keyScanPins, defaultScanPins));
@@ -559,7 +575,8 @@ public class CircuitSettings implements Settings {
         config.set(keyMutexData, getMutexData());
         config.set(keyBusSuffix, getBusSuffix());
         config.set(keyResetPort, getResetPort());
-        config.set(keyResetPin, getResetPin());
+        config.set(keySetPin, getSetPin());
+        config.set(keyClearPin, getClearPin());
         config.set(keyTbufData, getTbufData());
         config.set(keyScanPorts, getScanPorts());
         config.set(keyScanPins, getScanPins());
@@ -759,12 +776,20 @@ public class CircuitSettings implements Settings {
         resetPort = value;
     }
 
-    public static String getResetPin() {
-        return resetPin;
+    public static String getSetPin() {
+        return setPin;
     }
 
-    public static void setResetPin(String value) {
-        resetPin = value;
+    public static void setSetPin(String value) {
+        setPin = value;
+    }
+
+    public static String getClearPin() {
+        return clearPin;
+    }
+
+    public static void setClearPin(String value) {
+        clearPin = value;
     }
 
     public static String getTbufData() {
