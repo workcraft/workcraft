@@ -30,20 +30,23 @@ public class ResetUtils {
     public static Set<Contact> getProblematicPins(Circuit circuit) {
         HashSet<Contact> result = new HashSet<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
-            LinkedList<BooleanVariable> variables = new LinkedList<>();
-            LinkedList<BooleanFormula> values = new LinkedList<>();
-            for (FunctionContact contact : component.getFunctionContacts()) {
-                Pair<Contact, Boolean> pair = CircuitUtils.findDriverAndInversionSkipZeroDelay(circuit, contact);
-                Contact driver = pair.getFirst();
-                if ((driver != null) && ((driver.getParent() != component) || driver.getForcedInit())) {
-                    variables.add(contact);
-                    boolean inverting = pair.getSecond();
-                    values.add(driver.getInitToOne() == inverting ? Zero.instance() : One.instance());
-                }
-            }
-            for (FunctionContact contact : component.getFunctionOutputs()) {
-                if (isProblematicPin(contact, variables, values)) {
-                    result.add(contact);
+            for (FunctionContact outputContact : component.getFunctionOutputs()) {
+                if (!outputContact.getForcedInit()) {
+                    LinkedList<BooleanVariable> variables = new LinkedList<>();
+                    LinkedList<BooleanFormula> values = new LinkedList<>();
+                    for (FunctionContact contact : component.getFunctionContacts()) {
+                        Pair<Contact, Boolean> pair = CircuitUtils.findDriverAndInversionSkipZeroDelay(circuit, contact);
+                        Contact driver = pair.getFirst();
+                        if ((driver != null) && (driver != outputContact)) {
+                            variables.add(contact);
+                            boolean inverting = pair.getSecond();
+                            BooleanFormula value = (driver.getInitToOne() == inverting) ? Zero.instance() : One.instance();
+                            values.add(value);
+                        }
+                    }
+                    if (isProblematicPin(outputContact, variables, values)) {
+                        result.add(outputContact);
+                    }
                 }
             }
         }
