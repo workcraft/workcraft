@@ -506,10 +506,11 @@ public class CircuitUtils {
                 GateUtils.propagateInitialState(circuit, component);
                 if (initToOne != output.getInitToOne()) {
                     result.add(component);
-                    String ref = circuit.getNodeReference(component);
-                    LogUtils.logInfo("Correcting initial state of zero delay component '" + ref + "'");
                 }
             }
+        }
+        if (!result.isEmpty()) {
+            LogUtils.logInfo("Corrected initial state of " + result.size() + " zero delay component(s)");
         }
         return result;
     }

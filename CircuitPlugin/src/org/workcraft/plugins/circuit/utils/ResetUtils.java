@@ -6,6 +6,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
 import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.plugins.circuit.*;
+import org.workcraft.types.Pair;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -22,51 +23,51 @@ public class ResetUtils {
         return setForceInit(circuit.getInputPorts(), true);
     }
 
-    public static Set<Contact> tagForceInitConflictPins(Circuit circuit) {
-        HashSet<Contact> contacts = new HashSet<>();
-        for (FunctionComponent component : circuit.getFunctionComponents()) {
-            LinkedList<BooleanVariable> variables = new LinkedList<>();
-            LinkedList<BooleanFormula> values = new LinkedList<>();
-            for (FunctionContact inputContact : component.getFunctionInputs()) {
-                Contact driver = CircuitUtils.findDriver(circuit, inputContact, false);
-                if (driver != null) {
-                    variables.add(inputContact);
-                    values.add(driver.getInitToOne() ? One.instance() : Zero.instance());
-                }
-            }
-            for (FunctionContact outputContact : component.getFunctionOutputs()) {
-                BooleanFormula setFunction = BooleanUtils.replaceClever(outputContact.getSetFunction(), variables, values);
-                BooleanFormula resetFunction = BooleanUtils.replaceClever(outputContact.getResetFunction(), variables, values);
-                if (isEvaluatedHigh(setFunction, resetFunction) && outputContact.getInitToOne()) continue;
-                if (isEvaluatedLow(setFunction, resetFunction) && !outputContact.getInitToOne()) continue;
-                contacts.add(outputContact);
-            }
-        }
-        return setForceInit(contacts, true);
+    public static Set<Contact> tagForceInitProblematicPins(Circuit circuit) {
+        return setForceInit(getProblematicPins(circuit), true);
     }
 
-    public static Set<FunctionContact> getNonpropagatableContacts(Circuit circuit) {
-        HashSet<FunctionContact> result = new HashSet<>();
+    public static Set<Contact> getProblematicPins(Circuit circuit) {
+        HashSet<Contact> result = new HashSet<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
-            LinkedList<BooleanVariable> variables = new LinkedList<>();
-            LinkedList<BooleanFormula> values = new LinkedList<>();
-            for (FunctionContact inputContact : component.getFunctionInputs()) {
-                Contact driver = CircuitUtils.findDriver(circuit, inputContact, false);
-                if (driver != null) {
-                    variables.add(inputContact);
-                    values.add(driver.getInitToOne() ? One.instance() : Zero.instance());
-                }
-            }
             for (FunctionContact outputContact : component.getFunctionOutputs()) {
-                BooleanFormula setFunction = BooleanUtils.replaceClever(outputContact.getSetFunction(), variables, values);
-                BooleanFormula resetFunction = BooleanUtils.replaceClever(outputContact.getResetFunction(), variables, values);
-                if (isEvaluatedHigh(setFunction, resetFunction) && outputContact.getInitToOne()) continue;
-                if (isEvaluatedLow(setFunction, resetFunction) && !outputContact.getInitToOne()) continue;
-                result.add(outputContact);
-                break;
+                if (!outputContact.getForcedInit()) {
+                    LinkedList<BooleanVariable> variables = new LinkedList<>();
+                    LinkedList<BooleanFormula> values = new LinkedList<>();
+                    for (FunctionContact contact : component.getFunctionContacts()) {
+                        Pair<Contact, Boolean> pair = CircuitUtils.findDriverAndInversionSkipZeroDelay(circuit, contact);
+                        Contact driver = pair.getFirst();
+                        if ((driver != null) && (driver != outputContact)) {
+                            variables.add(contact);
+                            boolean inverting = pair.getSecond();
+                            BooleanFormula value = (driver.getInitToOne() == inverting) ? Zero.instance() : One.instance();
+                            values.add(value);
+                        }
+                    }
+                    if (isProblematicPin(outputContact, variables, values)) {
+                        result.add(outputContact);
+                    }
+                }
             }
         }
         return result;
+    }
+
+    private static boolean isProblematicPin(FunctionContact contact,
+            LinkedList<BooleanVariable> variables, LinkedList<BooleanFormula> values) {
+
+        if (contact.getForcedInit()) {
+            return false;
+        }
+        BooleanFormula setFunction = BooleanUtils.replaceClever(contact.getSetFunction(), variables, values);
+        BooleanFormula resetFunction = BooleanUtils.replaceClever(contact.getResetFunction(), variables, values);
+        if (isEvaluatedHigh(setFunction, resetFunction) && contact.getInitToOne()) {
+            return false;
+        }
+        if (isEvaluatedLow(setFunction, resetFunction) && !contact.getInitToOne()) {
+            return false;
+        }
+        return true;
     }
 
     public static Set<Contact> tagForceInitSequentialPins(Circuit circuit) {
@@ -122,7 +123,7 @@ public class ResetUtils {
         for (Contact contact : contacts) {
             contact.setForcedInit(false);
             InitialisationState initState = new InitialisationState(circuit);
-            if (initState.isCorrectlyInitialised(contact)) {
+            if (initState.isInitialisedPin(contact)) {
                 result.add(contact);
             } else {
                 contact.setForcedInit(true);
@@ -286,19 +287,36 @@ public class ResetUtils {
             }
         }
         if (!forceInitFuncContacts.isEmpty()) {
-            String name = CircuitSettings.getResetPin();
-            String ref = NamespaceHelper.getReference(circuit.getMathReference(component), name);
-            VisualFunctionContact resetContact = circuit.getVisualComponentByMathReference(ref, VisualFunctionContact.class);
-            if (resetContact == null) {
-                resetContact = circuit.getOrCreateContact(component, name, Contact.IOType.INPUT);
-                component.setPositionByDirection(resetContact, VisualContact.Direction.WEST, false);
-                for (VisualFunctionContact contact : forceInitFuncContacts) {
-                    insertResetFunction(contact, resetContact, isActiveLow);
+            VisualFunctionContact setContact = null;
+            VisualFunctionContact clearContact = null;
+            for (VisualFunctionContact contact : forceInitFuncContacts) {
+                if (contact.getInitToOne()) {
+                    setContact = getOrCreatePin(circuit, component, CircuitSettings.getSetPin());
+                    insertResetFunction(contact, setContact, isActiveLow);
+                } else {
+                    clearContact = getOrCreatePin(circuit, component, CircuitSettings.getClearPin());
+                    insertResetFunction(contact, clearContact, isActiveLow);
                 }
-                component.clearMapping();
             }
+            // Modify module name by adding set/clear suffix
+            String moduleName = component.getReferencedComponent().getModule();
+            if (!moduleName.isEmpty()) {
+                if (setContact != null) {
+                    moduleName += CircuitSettings.getSetPin();
+                }
+                if (clearContact != null) {
+                    moduleName += CircuitSettings.getClearPin();
+                }
+                component.getReferencedComponent().setModule(moduleName);
+            }
+            // Connect set/clear pins to reset port
             try {
-                circuit.connect(resetPort, resetContact);
+                if (setContact != null) {
+                    circuit.connect(resetPort, setContact);
+                }
+                if (clearContact != null) {
+                    circuit.connect(resetPort, clearContact);
+                }
             } catch (InvalidConnectionException e) {
                 throw new RuntimeException(e);
             }
@@ -307,6 +325,16 @@ public class ResetUtils {
         for (VisualFunctionContact contact : forceInitGateContacts) {
             VisualFunctionComponent resetGate = insertResetGate(circuit, resetPort, contact, isActiveLow);
             result.add(resetGate);
+        }
+        return result;
+    }
+
+    private static VisualFunctionContact getOrCreatePin(VisualCircuit circuit, VisualFunctionComponent component, String name) {
+        String ref = NamespaceHelper.getReference(circuit.getMathReference(component), name);
+        VisualFunctionContact result = circuit.getVisualComponentByMathReference(ref, VisualFunctionContact.class);
+        if (result == null) {
+            result = circuit.getOrCreateContact(component, name, Contact.IOType.INPUT);
+            component.setPositionByDirection(result, VisualContact.Direction.WEST, false);
         }
         return result;
     }
@@ -395,7 +423,7 @@ public class ResetUtils {
         Set<Contact> result = new HashSet<>();
         for (FunctionContact contact : circuit.getFunctionContacts()) {
             if (contact.isPin() && contact.isDriver()) {
-                if (!initState.isCorrectlyInitialised(contact)) {
+                if (!initState.isInitialisedPin(contact)) {
                     result.add(contact);
                 }
             }

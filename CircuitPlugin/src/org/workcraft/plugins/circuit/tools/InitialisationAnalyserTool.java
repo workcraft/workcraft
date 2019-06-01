@@ -32,7 +32,6 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
     private final BasicTable<String> forcedTable = new BasicTable("<html><b>Force init pins</b></html>");
     private InitialisationState initState = null;
-    private Set<FunctionContact> nonpropagatebleSet = null;
 
     @Override
     public JPanel getControlsPanel(final GraphEditor editor) {
@@ -80,9 +79,9 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         tagForceInitInputPortsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitInputPorts(c)));
 
         JButton tagForceInitNecessaryPinsButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-initialisation-conflict_pins.svg"),
-                "Force init output pins with conflicting initial state");
-        tagForceInitNecessaryPinsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitConflictPins(c)));
+                GuiUtils.createIconFromSVG("images/circuit-initialisation-problematic_pins.svg"),
+                "Force init output pins with problematic initial state");
+        tagForceInitNecessaryPinsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitProblematicPins(c)));
 
         JButton tagForceInitSequentialPinsButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/circuit-initialisation-sequential_pins.svg"),
@@ -195,7 +194,6 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         super.deactivated(editor);
         forcedTable.clear();
         initState = null;
-        nonpropagatebleSet = null;
     }
 
     @Override
@@ -219,7 +217,6 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         Collections.sort(forcedPins);
         forcedTable.set(forcedPins);
         initState = new InitialisationState(circuit);
-        nonpropagatebleSet = ResetUtils.getNonpropagatableContacts(circuit);
     }
 
     @Override
@@ -239,7 +236,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
                 contact = component.getMainVisualOutput();
             }
 
-            if ((contact != null) && contact.isPin() && contact.isDriver() && !contact.isZeroDelayPin()) {
+            if ((contact != null) && contact.isDriver() && !contact.isZeroDelayPin()) {
                 editor.getWorkspaceEntry().saveMemento();
                 contact.getReferencedContact().setForcedInit(!contact.getReferencedContact().getForcedInit());
                 processed = true;
@@ -284,10 +281,10 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         boolean forcedInit = false;
         boolean initialised = true;
         boolean hasProblem = false;
-        for (Contact outputContact : component.getOutputs()) {
-            forcedInit |= outputContact.getForcedInit();
-            initialised &= initState.isHigh(outputContact) || initState.isLow(outputContact);
-            hasProblem |= initState.isError(outputContact) || nonpropagatebleSet.contains(outputContact);
+        for (Contact contact : component.getOutputs()) {
+            forcedInit |= contact.getForcedInit();
+            initialised &= initState.isInitialisedPin(contact);
+            hasProblem |= initState.isProblematicPin(contact);
         }
         final Color color = component.getIsZeroDelay() ? AnalysisDecorationSettings.getDontTouchColor()
                 : hasProblem ? AnalysisDecorationSettings.getProblemColor()
@@ -334,7 +331,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private Decoration getLowLevelDecoration(MathNode node) {
-        final boolean initialisationConflict = initState.isError(node);
+        final boolean initialisationConflict = initState.isConflict(node);
         return new StateDecoration() {
             @Override
             public Color getColorisation() {
@@ -354,7 +351,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private Decoration getHighLevelDecoration(MathNode node) {
-        final boolean initialisationConflict = initState.isError(node);
+        final boolean initialisationConflict = initState.isConflict(node);
         return new StateDecoration() {
             @Override
             public Color getColorisation() {

@@ -86,8 +86,8 @@ public class AnalysisDecorationSettings extends AbstractDecorationSettings {
     public void load(Config config) {
         setDontTouchColor(config.getColor(keyDontTouchColor, defaultDontTouchColor));
         setProblemColor(config.getColor(keyProblemColor, defaultProblemColor));
-        setClearColor(config.getColor(keyFixerColor, defaultFixerColor));
-        setFixerColor(config.getColor(keyClearColor, defaultClearColor));
+        setFixerColor(config.getColor(keyFixerColor, defaultFixerColor));
+        setClearColor(config.getColor(keyClearColor, defaultClearColor));
     }
 
     @Override

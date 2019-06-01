@@ -13,21 +13,17 @@ import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
-import org.workcraft.tasks.ExportOutput;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.StgUtils;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.Result;
+import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.tasks.SubtaskMonitor;
-import org.workcraft.tasks.TaskManager;
-import org.workcraft.utils.FileUtils;
 import org.workcraft.types.Pair;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 import java.util.*;
@@ -62,16 +58,16 @@ public class CheckTask extends VerificationChainTask {
 
             // Load device STG
             CircuitToStgConverter converter = new CircuitToStgConverter(circuit);
-            Stg devStg = (Stg) converter.getStg().getMathModel();
-            // Convert mutex grants into inputs in device STG, but store the original signal type
+            Stg devStg = converter.getStg().getMathModel();
+            // Expose mutex grants as outputs in the device STG (store the original signal type to apply in composition STG)
             HashMap<String, Signal.Type> signalOriginalType = new HashMap<>();
             for (Pair<String, String> grantPair: grantPairs) {
                 String g1SignalName = grantPair.getFirst();
                 signalOriginalType.put(g1SignalName, devStg.getSignalType(g1SignalName));
-                devStg.setSignalType(g1SignalName, Signal.Type.INPUT);
+                devStg.setSignalType(g1SignalName, Signal.Type.OUTPUT);
                 String g2SignalName = grantPair.getSecond();
                 signalOriginalType.put(g2SignalName, devStg.getSignalType(g2SignalName));
-                devStg.setSignalType(g2SignalName, Signal.Type.INPUT);
+                devStg.setSignalType(g2SignalName, Signal.Type.OUTPUT);
             }
 
             // Load environment STG
@@ -81,11 +77,6 @@ public class CheckTask extends VerificationChainTask {
                 Set<String> inputSignals = devStg.getSignalReferences(Signal.Type.INPUT);
                 Set<String> outputSignals = devStg.getSignalReferences(Signal.Type.OUTPUT);
                 StgUtils.restoreInterfaceSignals(envStg, inputSignals, outputSignals);
-                // Convert mutex grants into inputs in environment STG
-                for (Pair<String, String> grantPair: grantPairs) {
-                    envStg.setSignalType(grantPair.getFirst(), Signal.Type.INPUT);
-                    envStg.setSignalType(grantPair.getSecond(), Signal.Type.INPUT);
-                }
             }
 
             // Write device STG into a .g file
