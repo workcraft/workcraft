@@ -7,6 +7,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -15,10 +16,12 @@ import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.observation.ModelModifiedEvent;
 import org.workcraft.plugins.petri.*;
 import org.workcraft.plugins.petri.tools.ReadArcConnectionTool;
 import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.plugins.stg.tools.*;
+import org.workcraft.serialisation.NoAutoSerialisation;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.types.Pair;
 
@@ -27,6 +30,8 @@ import java.util.*;
 
 @DisplayName("Signal Transition Graph")
 public class VisualStg extends AbstractVisualModel {
+
+    public static final String PROPERTY_REFINEMENT = "Refinement";
 
     public VisualStg(Stg model) {
         this(model, null);
@@ -423,6 +428,7 @@ public class VisualStg extends AbstractVisualModel {
         ModelProperties properties = super.getProperties(node);
         Stg stg = getMathModel();
         if (node == null) {
+            properties.add(getRefinementProperty());
             for (Signal.Type type : Signal.Type.values()) {
                 Container container = NamespaceHelper.getMathContainer(this, getCurrentLevel());
                 for (final String signalName : stg.getSignalNames(type, container)) {
@@ -540,6 +546,31 @@ public class VisualStg extends AbstractVisualModel {
                 getMathModel().setInstanceNumber(object.getReferencedTransition(), value);
             }
         };
+    }
+
+    private PropertyDescriptor getRefinementProperty() {
+        return new PropertyDeclaration<VisualStg, FileReference>(
+                this, PROPERTY_REFINEMENT, FileReference.class) {
+            @Override
+            public void setter(VisualStg object, FileReference value) {
+                object.setRefinement(value);
+            }
+            @Override
+            public FileReference getter(VisualStg object) {
+                return object.getRefinement();
+            }
+        };
+    }
+
+    @NoAutoSerialisation
+    public FileReference getRefinement() {
+        return getMathModel().getRefinement();
+    }
+
+    @NoAutoSerialisation
+    public void setRefinement(FileReference value) {
+        getMathModel().setRefinement(value);
+        sendNotification(new ModelModifiedEvent(this));
     }
 
 }

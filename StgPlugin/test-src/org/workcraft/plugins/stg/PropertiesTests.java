@@ -65,7 +65,7 @@ public class PropertiesTests {
         check(ModelPropertyUtils.getSelectionProperties(visualModel), 9);
 
         visualModel.selectNone();
-        check(ModelPropertyUtils.getSelectionProperties(visualModel), 5);
+        check(ModelPropertyUtils.getSelectionProperties(visualModel), 6);
     }
 
     private void check(ModelProperties properties, int expectedCount) {

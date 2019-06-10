@@ -13,12 +13,14 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
+import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.visual.NodeHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.*;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.Settings;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Exporter;
@@ -765,6 +767,7 @@ public final class Framework {
                 try {
                     ByteArrayInputStream bis = compatibilityManager.process(file);
                     me = loadModel(bis);
+                    adjustFileReferenceProperties(me, FileUtils.getBasePath(file));
                 } catch (OperationCancelledException e) {
                     return null;
                 }
@@ -787,8 +790,8 @@ public final class Framework {
             byte[] bi = DataAccumulator.loadStream(is);
             Document metaDoc = FrameworkUtils.loadMetaDoc(bi);
             ModelDescriptor descriptor = FrameworkUtils.loadMetaDescriptor(metaDoc);
-            Stamp stamp = FrameworkUtils.loadMetaStamp(metaDoc);
             Version version = FrameworkUtils.loadMetaVersion(metaDoc);
+            Stamp stamp = FrameworkUtils.loadMetaStamp(metaDoc);
 
             // load math model
             InputStream mathData = FrameworkUtils.getMathData(bi, metaDoc);
@@ -812,8 +815,8 @@ public final class Framework {
                 FrameworkUtils.loadVisualModelState(bi, (VisualModel) visualResult.model, visualResult.references);
             }
             ModelEntry modelEntry = new ModelEntry(descriptor, visualResult.model);
-            modelEntry.setStamp(stamp);
             modelEntry.setVersion(version);
+            modelEntry.setStamp(stamp);
             return modelEntry;
         } catch (IOException | ParserConfigurationException | InstantiationException | IllegalAccessException
                 | SAXException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException e) {
@@ -888,6 +891,7 @@ public final class Framework {
     public void saveModel(ModelEntry modelEntry, File file) throws SerialisationException {
         if (modelEntry == null) return;
         try {
+            adjustFileReferenceProperties(modelEntry, FileUtils.getBasePath(file));
             FileOutputStream stream = new FileOutputStream(file);
             saveModel(modelEntry, stream);
             stream.close();
@@ -956,7 +960,6 @@ public final class Framework {
                 visualElement.setAttribute(META_MODEL_FORMAT_UUID_WORK_ATTRIBUTE, visualSerialiser.getFormatUUID().toString());
                 metaRoot.appendChild(visualElement);
             }
-
             XmlUtils.writeDocument(metaDoc, zos);
             zos.closeEntry();
             zos.close();
@@ -1070,6 +1073,26 @@ public final class Framework {
             }
         }
         return null;
+    }
+
+    private void adjustFileReferenceProperties(ModelEntry me, String base) {
+        VisualModel model = me.getVisualModel();
+        Set<PropertyDescriptor> properties = new HashSet<>();
+        properties.addAll(model.getProperties(null).getDescriptors());
+        for (VisualNode node : Hierarchy.getDescendantsOfType(model.getRoot(), VisualNode.class)) {
+            properties.addAll(node.getDescriptors());
+            properties.addAll(model.getProperties(node).getDescriptors());
+        }
+        Set<FileReference> fileReferences = new HashSet<>();
+        for (PropertyDescriptor property : properties) {
+            Object value = property.getValue();
+            if (value instanceof FileReference) {
+                fileReferences.add((FileReference) value);
+            }
+        }
+        for (FileReference fileReference : fileReferences) {
+            fileReference.setBase(base);
+        }
     }
 
 }

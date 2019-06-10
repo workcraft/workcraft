@@ -7,7 +7,10 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.types.LinkedTwoWayMap;
-import org.workcraft.utils.*;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.XmlUtils;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -174,7 +177,7 @@ public class Workspace {
         clear();
         this.workspaceFile = workspaceFile;
         try {
-            Document doc = XmlUtils.loadDocument(workspaceFile.getPath());
+            Document doc = XmlUtils.loadDocument(workspaceFile);
             Element xmlroot = doc.getDocumentElement();
 
             if (xmlroot.getNodeName() != "workcraft-workspace") {
@@ -182,8 +185,8 @@ public class Workspace {
             }
             List<Element> mounts = XmlUtils.getChildElements("mount", xmlroot);
             for (Element mountElement : mounts) {
-                final String mountPoint = XmlUtils.readStringAttr(mountElement, "mountPoint");
-                final String filePath = XmlUtils.readStringAttr(mountElement, "filePath");
+                final String mountPoint = mountElement.getAttribute("mountPoint");
+                final String filePath = mountElement.getAttribute("filePath");
                 File file = new File(filePath);
                 if (!file.isAbsolute()) {
                     file = new File(getBaseDir(), file.getPath());

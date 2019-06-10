@@ -1,17 +1,16 @@
 package org.workcraft.serialisation;
 
-import static org.workcraft.serialisation.BeanInfoCache.getBeanInfo;
+import org.w3c.dom.Element;
+import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.visual.Dependent;
+import org.workcraft.exceptions.SerialisationException;
 
-import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 
-import org.w3c.dom.Element;
-import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.visual.Dependent;
-import org.workcraft.exceptions.SerialisationException;
+import static org.workcraft.serialisation.BeanInfoCache.getBeanInfo;
 
 public class DefaultNodeSerialiser {
     private final SerialiserFactory fac;
@@ -22,51 +21,50 @@ public class DefaultNodeSerialiser {
         this.serialiser = serialiser;
     }
 
-    private void autoSerialiseProperties(Element element, Object object, Class<?> currentLevel) throws IntrospectionException, InstantiationException, IllegalAccessException, IllegalArgumentException, SerialisationException, InvocationTargetException {
-        // type explicitly requested to be excluded from auto serialisation
+    private void autoSerialiseProperties(Element element, Object object, Class<?> currentLevel)
+            throws IntrospectionException, InstantiationException, IllegalAccessException,
+            IllegalArgumentException, SerialisationException, InvocationTargetException {
+
+        if (object == null) {
+            return;
+        }
+        // Type explicitly requested to be excluded from auto serialisation
         if (currentLevel.getAnnotation(NoAutoSerialisation.class) != null) {
             return;
         }
 
-        BeanInfo info = getBeanInfo(currentLevel);
-
-        for (PropertyDescriptor desc : info.getPropertyDescriptors()) {
-            if (desc.getPropertyType() == null) {
-                continue;
+        for (PropertyDescriptor desc : getBeanInfo(currentLevel).getPropertyDescriptors()) {
+            if (needSerialisation(desc)) {
+                autoSerialiseProperty(element, object, desc);
             }
+        }
+    }
 
-            if (desc.getWriteMethod() == null || desc.getReadMethod() == null) {
-                continue;
-            }
+    private boolean needSerialisation(PropertyDescriptor desc) {
+        return (desc.getPropertyType() != null) && (desc.getWriteMethod() != null) && (desc.getReadMethod() != null)
+                && (desc.getReadMethod().getAnnotation(NoAutoSerialisation.class) == null)
+                && (desc.getWriteMethod().getAnnotation(NoAutoSerialisation.class) == null);
+    }
 
-            // property explicitly requested to be excluded from auto serialisation
-            if (
-                    desc.getReadMethod().getAnnotation(NoAutoSerialisation.class) != null ||
-                    desc.getWriteMethod().getAnnotation(NoAutoSerialisation.class) != null) {
-                continue;
-            }
+    private void autoSerialiseProperty(Element element, Object object, PropertyDescriptor desc)
+            throws IllegalAccessException, InvocationTargetException, InstantiationException, SerialisationException {
 
-            // the property is writable and is not of array type, try to get a serialiser
+        Object propertyObject = desc.getReadMethod().invoke(object);
+        if (propertyObject != null) {
+            // The property is writable and is not of array type, try to get a serialiser
             XMLSerialiser serialiser = fac.getSerialiserFor(desc.getPropertyType());
-
-            if (!(serialiser instanceof BasicXMLSerialiser)) {
-                // no serialiser, try to use the special case enum serialiser
-                if (desc.getPropertyType().isEnum()) {
-                    serialiser = fac.getSerialiserFor(Enum.class);
-                    if (serialiser == null) {
-                        continue;
-                    }
-                } else {
-                    continue;
-                }
+            if (!(serialiser instanceof BasicXMLSerialiser) && desc.getPropertyType().isEnum()) {
+                // No basic serialiser, try to use the special case enum serialiser
+                serialiser = fac.getSerialiserFor(Enum.class);
             }
-
-            Element propertyElement = element.getOwnerDocument().createElement("property");
-            element.appendChild(propertyElement);
-            propertyElement.setAttribute("class", desc.getPropertyType().getName());
-            propertyElement.setAttribute("name", desc.getName());
-
-            ((BasicXMLSerialiser) serialiser).serialise(propertyElement, desc.getReadMethod().invoke(object));
+            if (serialiser instanceof BasicXMLSerialiser) {
+                BasicXMLSerialiser basicSerialiser = (BasicXMLSerialiser) serialiser;
+                Element propertyElement = element.getOwnerDocument().createElement("property");
+                element.appendChild(propertyElement);
+                propertyElement.setAttribute("class", desc.getPropertyType().getName());
+                propertyElement.setAttribute("name", desc.getName());
+                basicSerialiser.serialise(propertyElement, propertyObject);
+            }
         }
     }
 

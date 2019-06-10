@@ -1,14 +1,10 @@
 package org.workcraft.plugins;
 
+import org.workcraft.annotations.DisplayName;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.workcraft.annotations.DisplayName;
-import org.workcraft.exceptions.FormatException;
-import org.workcraft.utils.XmlUtils;
 
 public class LegacyPluginInfo implements Initialiser<Object> {
     private String displayName;
@@ -56,36 +52,6 @@ public class LegacyPluginInfo implements Initialiser<Object> {
         }
     }
 
-    public LegacyPluginInfo(Element element) throws FormatException {
-        className = XmlUtils.readStringAttr(element, "class");
-        if (className == null || className.isEmpty()) {
-            throw new FormatException();
-        }
-
-        displayName = XmlUtils.readStringAttr(element, "displayName");
-        if (displayName.isEmpty()) {
-            displayName = className.substring(className.lastIndexOf('.') + 1);
-        }
-
-        NodeList nl = element.getElementsByTagName("interface");
-        interfaceNames = new String[nl.getLength()];
-
-        for (int i = 0; i < nl.getLength(); i++) {
-            interfaceNames[i] = ((Element) nl.item(i)).getAttribute("name");
-        }
-    }
-
-    public void toXml(Element element) {
-        XmlUtils.writeStringAttr(element, "class", className);
-        XmlUtils.writeStringAttr(element, "displayName", displayName);
-
-        for (String i : interfaceNames) {
-            Element e = element.getOwnerDocument().createElement("interface");
-            e.setAttribute("name", i);
-            element.appendChild(e);
-        }
-    }
-
     public Class<?> loadClass() throws ClassNotFoundException {
         return Class.forName(className);
     }
@@ -94,14 +60,6 @@ public class LegacyPluginInfo implements Initialiser<Object> {
         return interfaceNames.clone();
     }
 
-    public boolean isInterfaceImplemented(String interfaceClassName) {
-        for (String s : interfaceNames) {
-            if (s.equals(interfaceClassName)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     public String getDisplayName() {
         return displayName;

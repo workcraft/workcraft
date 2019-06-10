@@ -2,17 +2,18 @@ package org.workcraft.serialisation;
 
 import org.w3c.dom.Element;
 import org.workcraft.Framework;
-import org.workcraft.plugins.PluginProvider;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.PluginInfo;
+import org.workcraft.plugins.PluginProvider;
 import org.workcraft.utils.XmlUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class XMLSerialisationManager implements SerialiserFactory, NodeSerialiser {
+
     private final HashMap<String, XMLSerialiser> serialisers = new HashMap<>();
     private final DefaultNodeSerialiser nodeSerialiser = new DefaultNodeSerialiser(this, this);
     private XMLSerialiserState state = null;
@@ -54,4 +55,5 @@ public class XMLSerialisationManager implements SerialiserFactory, NodeSerialise
             }
         }
     }
+
 }

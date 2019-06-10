@@ -2,6 +2,7 @@ package org.workcraft.plugins.circuit;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathGroup;
+import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.utils.Hierarchy;
@@ -14,10 +15,12 @@ public class CircuitComponent extends MathGroup {
 
     public static final String PROPERTY_MODULE = "Module";
     public static final String PROPERTY_IS_ENVIRONMENT = "Treat as environment";
+    public static final String PROPERTY_REFINEMENT = "Refinement";
 
     private String name = "";
     private String module = "";
     private boolean isEnvironment = false;
+    private FileReference refinement = null;
 
     public void setName(String value) {
         if (value == null) value = "";
@@ -52,6 +55,21 @@ public class CircuitComponent extends MathGroup {
             isEnvironment = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_IS_ENVIRONMENT));
         }
+    }
+
+    public FileReference getRefinement() {
+        return refinement;
+    }
+
+    public void setRefinement(FileReference value) {
+        if (refinement != value) {
+            refinement = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_REFINEMENT));
+        }
+    }
+
+    public boolean hasRefinement() {
+        return (refinement != null) && (refinement.getFile() != null);
     }
 
     public boolean getIsEnvironment() {

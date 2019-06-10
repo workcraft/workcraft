@@ -14,8 +14,7 @@ public class FileDeserialiser implements BasicXMLDeserialiser<File> {
 
     @Override
     public File deserialise(Element element) {
-        String path = element.getAttribute("path");
-        return new File(path);
+        return new File(element.getAttribute("path"));
     }
 
 }

@@ -1,9 +1,10 @@
 package org.workcraft.gui.properties;
 
 import org.workcraft.Framework;
-import org.workcraft.plugins.PluginManager;
+import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.PluginInfo;
+import org.workcraft.plugins.PluginManager;
 import org.workcraft.utils.DialogUtils;
 
 import javax.swing.*;
@@ -43,6 +44,7 @@ public class PropertyEditorTable extends JTable {
         propertyClasses.put(Boolean.class, new BooleanProperty());
         propertyClasses.put(Color.class, new ColorProperty());
         propertyClasses.put(File.class, new FileProperty());
+        propertyClasses.put(FileReference.class, new FileReferenceProperty());
 
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();

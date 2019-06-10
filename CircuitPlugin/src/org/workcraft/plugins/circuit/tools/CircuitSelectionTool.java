@@ -1,20 +1,27 @@
 package org.workcraft.plugins.circuit.tools;
 
+import org.workcraft.Framework;
+import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.ConnectionUtils;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.tools.editors.AbstractInplaceEditor;
-import org.workcraft.gui.tools.editors.NameInplaceEditor;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.tools.SelectionTool;
-import org.workcraft.plugins.circuit.Contact.IOType;
+import org.workcraft.gui.tools.editors.AbstractInplaceEditor;
+import org.workcraft.gui.tools.editors.NameInplaceEditor;
 import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.plugins.circuit.utils.RefinementUtils;
+import org.workcraft.types.Pair;
 import org.workcraft.utils.Hierarchy;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.*;
 
 public class CircuitSelectionTool extends SelectionTool {
@@ -83,6 +90,26 @@ public class CircuitSelectionTool extends SelectionTool {
                     AbstractInplaceEditor textEditor = new NameInplaceEditor(editor, contact);
                     textEditor.edit(contact.getName(), contact.getNameFont(),
                             contact.getNameOffset(), Alignment.CENTER, false);
+                    processed = true;
+                }
+            } else if (node instanceof VisualCircuitComponent) {
+                CircuitComponent component = ((VisualCircuitComponent) node).getReferencedComponent();
+                File file = null;
+                if (e.isCtrlKeyDown()) {
+                    Pair<File, Circuit> refinementCircuit = RefinementUtils.getRefinementCircuit(component);
+                    if (refinementCircuit != null) {
+                        file = refinementCircuit.getFirst();
+                    }
+                } else {
+                    FileReference refinement = component.getRefinement();
+                    if (refinement != null) {
+                        file = refinement.getFile();
+                    }
+                }
+                if (file != null) {
+                    MainWindow mainWindow = Framework.getInstance().getMainWindow();
+                    WorkspaceEntry we = mainWindow.openWork(file);
+                    mainWindow.requestFocus(we);
                     processed = true;
                 }
             }

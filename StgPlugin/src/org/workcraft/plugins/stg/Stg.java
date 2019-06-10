@@ -9,6 +9,7 @@ import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -21,7 +22,9 @@ import org.workcraft.serialisation.References;
 import org.workcraft.types.MultiSet;
 import org.workcraft.types.Pair;
 import org.workcraft.types.Triple;
-import org.workcraft.utils.*;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.SetUtils;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -29,6 +32,8 @@ import java.util.Set;
 
 @VisualClass(org.workcraft.plugins.stg.VisualStg.class)
 public class Stg extends AbstractMathModel implements StgModel {
+
+    private FileReference refinement = null;
 
     public Stg() {
         this(null, null);
@@ -491,6 +496,18 @@ public class Stg extends AbstractMathModel implements StgModel {
                 }
             }
         }
+    }
+
+    public FileReference getRefinement() {
+        return refinement;
+    }
+
+    public void setRefinement(FileReference value) {
+        refinement = value;
+    }
+
+    public boolean hasRefinement() {
+        return (refinement != null) && (refinement.getFile() != null);
     }
 
 }

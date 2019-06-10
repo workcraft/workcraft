@@ -43,45 +43,32 @@ class DefaultNodeDeserialiser {
             BeanInfo info = BeanInfoCache.getBeanInfo(currentLevel);
 
             for (PropertyDescriptor desc : info.getPropertyDescriptors()) {
-                if (!nameMap.containsKey(desc.getName())) {
-                    continue;
-                }
-
-                if ((desc.getPropertyType() == null) || (desc.getWriteMethod() == null) || (desc.getReadMethod() == null)) {
-                    continue;
-                }
-
-                // Property explicitly requested to be excluded from auto serialisation.
-                if ((desc.getReadMethod().getAnnotation(NoAutoSerialisation.class) != null)
-                        || (desc.getWriteMethod().getAnnotation(NoAutoSerialisation.class) != null)) {
-                    continue;
-                }
-
-                // The property is writable and is not of array type, try to get a deserialiser.
-                XMLDeserialiser deserialiser = fac.getDeserialiserFor(desc.getPropertyType().getName());
-
-                if (!(deserialiser instanceof BasicXMLDeserialiser)) {
-                    // No deserialiser, try to use the special case enum deserialiser.
-                    if (desc.getPropertyType().isEnum()) {
+                if (nameMap.containsKey(desc.getName()) && needDeserialisation(desc)) {
+                    // The property is writable and is not of array type, try to get a deserialiser.
+                    XMLDeserialiser deserialiser = fac.getDeserialiserFor(desc.getPropertyType().getName());
+                    if (!(deserialiser instanceof BasicXMLDeserialiser) && desc.getPropertyType().isEnum()) {
+                        // No basic deserialiser, try to use the special case enum deserialiser
                         deserialiser = fac.getDeserialiserFor(Enum.class.getName());
-                        if (deserialiser == null) {
-                            continue;
-                        }
-                    } else {
-                        continue;
+                    }
+                    if (deserialiser instanceof BasicXMLDeserialiser) {
+                        BasicXMLDeserialiser basicDeserialiser = (BasicXMLDeserialiser) deserialiser;
+                        Element element = nameMap.get(desc.getName());
+                        Object value = basicDeserialiser.deserialise(element);
+                        desc.getWriteMethod().invoke(instance, value);
                     }
                 }
-
-                Element element = nameMap.get(desc.getName());
-                Object value = ((BasicXMLDeserialiser) deserialiser).deserialise(element);
-
-                desc.getWriteMethod().invoke(instance, value);
             }
         } catch (IllegalArgumentException | IllegalAccessException | InstantiationException | IntrospectionException e) {
             throw new DeserialisationException(e);
         } catch (InvocationTargetException e) {
             throw new DeserialisationException(instance.getClass().getName() + " " + currentLevel.getName() + " " + e.getMessage(), e);
         }
+    }
+
+    private boolean needDeserialisation(PropertyDescriptor desc) {
+        return (desc.getPropertyType() != null) && (desc.getWriteMethod() != null) && (desc.getReadMethod() != null)
+                && (desc.getReadMethod().getAnnotation(NoAutoSerialisation.class) == null)
+                && (desc.getWriteMethod().getAnnotation(NoAutoSerialisation.class) == null);
     }
 
     public Object initInstance(Element element, ReferenceResolver externalReferenceResolver, Object... constructorParameters)

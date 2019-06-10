@@ -10,6 +10,7 @@ import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
+import org.workcraft.serialisation.NoAutoSerialisation;
 import org.workcraft.utils.Coloriser;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
@@ -87,10 +88,12 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         }
     }
 
+    @NoAutoSerialisation
     public boolean getIsZeroDelay() {
         return (getReferencedComponent() != null) && getReferencedComponent().getIsZeroDelay();
     }
 
+    @NoAutoSerialisation
     public void setIsZeroDelay(boolean value) {
         if (getReferencedComponent() != null) {
             getReferencedComponent().setIsZeroDelay(value);
