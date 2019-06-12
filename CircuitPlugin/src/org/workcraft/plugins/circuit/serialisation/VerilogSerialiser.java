@@ -9,13 +9,17 @@ import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.formula.utils.StringGenerator.Style;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.interop.VerilogFormat;
+import org.workcraft.plugins.circuit.utils.RefinementUtils;
 import org.workcraft.plugins.circuit.verilog.SubstitutionRule;
 import org.workcraft.plugins.circuit.verilog.SubstitutionUtils;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
+import org.workcraft.types.Pair;
 import org.workcraft.utils.ExportUtils;
+import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.LogUtils;
 
+import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.*;
@@ -30,17 +34,38 @@ public class VerilogSerialiser implements ModelSerialiser {
     private static final String KEYWORD_ASSIGN = "assign";
     private static final String KEYWORD_ASSIGN_DELAY = "#1";
 
+    private final Queue<Pair<File, Circuit>> refinementCircuits = new LinkedList<>();
+
     @Override
     public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) {
         if (model instanceof Circuit) {
-            PrintWriter writer = new PrintWriter(out);
-            writer.write(Info.getGeneratedByText("// Verilog netlist ", "\n"));
-            writeCircuit(writer, (Circuit) model);
-            writer.close();
+            Circuit circuit = (Circuit) model;
+            if (RefinementUtils.checkRefinementCircuits(circuit)) {
+                PrintWriter writer = new PrintWriter(out);
+                writer.println(Info.getGeneratedByText("// Verilog netlist ", ""));
+                refinementCircuits.clear();
+                writeCircuit(writer, circuit);
+                writeRefinementCircuits(writer);
+                writer.close();
+            }
         } else {
             throw new ArgumentException("Model class not supported: " + model.getClass().getName());
         }
         return refs;
+    }
+
+    private void writeRefinementCircuits(PrintWriter writer) {
+        Set<String> visited = new HashSet<>();
+        while (!refinementCircuits.isEmpty()) {
+            Pair<File, Circuit> refinement = refinementCircuits.remove();
+            String path = FileUtils.getFullPath(refinement.getFirst());
+            if (!visited.contains(path)) {
+                visited.add(path);
+                Circuit circuit = refinement.getSecond();
+                writer.println();
+                writeCircuit(writer, circuit);
+            }
+        }
     }
 
     @Override
@@ -53,17 +78,17 @@ public class VerilogSerialiser implements ModelSerialiser {
         return VerilogFormat.getInstance().getUuid();
     }
 
-    private void writeCircuit(PrintWriter out, Circuit circuit) {
+    private void writeCircuit(PrintWriter writer, Circuit circuit) {
         CircuitSignalInfo circuitInfo = new CircuitSignalInfo(circuit);
-        writeHeader(out, circuitInfo);
-        writeInstances(out, circuitInfo);
-        writeInitialState(out, circuitInfo);
-        out.println(KEYWORD_ENDMODULE);
+        writeHeader(writer, circuitInfo);
+        writeInstances(writer, circuitInfo);
+        writeInitialState(writer, circuitInfo);
+        writer.println(KEYWORD_ENDMODULE);
     }
 
-    private void writeHeader(PrintWriter out, CircuitSignalInfo circuitInfo) {
-        String title = ExportUtils.getClearModelTitle(circuitInfo.getCircuit());
-        out.print(KEYWORD_MODULE + " " + title + " (");
+    private void writeHeader(PrintWriter writer, CircuitSignalInfo circuitInfo) {
+        String title = ExportUtils.asIdentifier(circuitInfo.getCircuit().getTitle());
+        writer.print(KEYWORD_MODULE + " " + title + " (");
         Set<String> inputPorts = new LinkedHashSet<>();
         Set<String> outputPorts = new LinkedHashSet<>();
         boolean isFirstPort = true;
@@ -71,22 +96,22 @@ public class VerilogSerialiser implements ModelSerialiser {
             if (isFirstPort) {
                 isFirstPort = false;
             } else {
-                out.print(", ");
+                writer.print(", ");
             }
             String signal = circuitInfo.getContactSignal(contact);
-            out.print(signal);
+            writer.print(signal);
             if (contact.isInput()) {
                 inputPorts.add(signal);
             } else {
                 outputPorts.add(signal);
             }
         }
-        out.println(");");
+        writer.println(");");
         if (!inputPorts.isEmpty()) {
-            out.println("    " + KEYWORD_INPUT + " " + String.join(", ", inputPorts) + ";");
+            writer.println("    " + KEYWORD_INPUT + " " + String.join(", ", inputPorts) + ";");
         }
         if (!outputPorts.isEmpty()) {
-            out.println("    " + KEYWORD_OUTPUT + " " + String.join(", ", outputPorts) + ";");
+            writer.println("    " + KEYWORD_OUTPUT + " " + String.join(", ", outputPorts) + ";");
         }
         Set<String> wires = new LinkedHashSet<>();
         for (FunctionComponent component : circuitInfo.getCircuit().getFunctionComponents()) {
@@ -97,18 +122,18 @@ public class VerilogSerialiser implements ModelSerialiser {
             }
         }
         if (!wires.isEmpty()) {
-            out.println("    " + KEYWORD_WIRE + " " + String.join(", ", wires) + ";");
+            writer.println("    " + KEYWORD_WIRE + " " + String.join(", ", wires) + ";");
         }
-        out.println();
+        writer.println();
     }
 
-    private void writeInstances(PrintWriter out, CircuitSignalInfo circuitInfo) {
+    private void writeInstances(PrintWriter writer, CircuitSignalInfo circuitInfo) {
         HashMap<String, SubstitutionRule> substitutionRules = SubstitutionUtils.readSubsritutionRules();
-        // Write out assign statements
+        // Write writer assign statements
         boolean hasAssignments = false;
         for (FunctionComponent component : circuitInfo.getCircuit().getFunctionComponents()) {
-            if (!component.isMapped()) {
-                if (writeAssigns(out, circuitInfo, component)) {
+            if (!component.isMapped() && !component.hasRefinement()) {
+                if (writeAssigns(writer, circuitInfo, component)) {
                     hasAssignments = true;
                 } else {
                     String ref = circuitInfo.getComponentReference(component);
@@ -117,22 +142,22 @@ public class VerilogSerialiser implements ModelSerialiser {
             }
         }
         if (hasAssignments) {
-            out.print("\n");
+            writer.println();
         }
-        // Write out mapped components
+        // Write writer mapped components
         boolean hasMappedComponents = false;
         for (FunctionComponent component : circuitInfo.getCircuit().getFunctionComponents()) {
-            if (component.isMapped()) {
-                writeInstance(out, circuitInfo, component, substitutionRules);
+            if (component.isMapped() || component.hasRefinement()) {
+                writeInstance(writer, circuitInfo, component, substitutionRules);
                 hasMappedComponents = true;
             }
         }
         if (hasMappedComponents) {
-            out.print("\n");
+            writer.println();
         }
     }
 
-    private boolean writeAssigns(PrintWriter out, CircuitSignalInfo circuitInfo, FunctionComponent component) {
+    private boolean writeAssigns(PrintWriter writer, CircuitSignalInfo circuitInfo, FunctionComponent component) {
         boolean result = false;
         String instanceFlatName = circuitInfo.getComponentFlattenReference(component);
         LogUtils.logWarning("Component '" + instanceFlatName + "' is not associated to a module and is exported as assign statement.");
@@ -155,17 +180,25 @@ public class VerilogSerialiser implements ModelSerialiser {
             }
             if ((expr != null) && !expr.isEmpty()) {
                 String assignStr = KEYWORD_ASSIGN  + " " + (CircuitSettings.getVerilogAssignDelay() ? KEYWORD_ASSIGN_DELAY : "");
-                out.println("    " + assignStr + " " + signalName + " = " + expr + ";");
+                writer.println("    " + assignStr + " " + signalName + " = " + expr + ";");
                 result = true;
             }
         }
         return result;
     }
 
-    private void writeInstance(PrintWriter out, CircuitSignalInfo circuitInfo, FunctionComponent component,
+    private void writeInstance(PrintWriter writer, CircuitSignalInfo circuitInfo, FunctionComponent component,
             HashMap<String, SubstitutionRule> substitutionRules) {
+        // Module name
+        String title = component.getModule();
+        Pair<File, Circuit> refinementCircuit = RefinementUtils.getRefinementCircuit(component);
+        if (refinementCircuit != null) {
+            refinementCircuits.add(refinementCircuit);
+            title = refinementCircuit.getSecond().getTitle();
+        }
+        String moduleName = ExportUtils.asIdentifier(title);
+        // Instance name
         String instanceFlatName = circuitInfo.getComponentFlattenReference(component);
-        String moduleName = component.getModule();
         SubstitutionRule substitutionRule = substitutionRules.get(moduleName);
         if (substitutionRule != null) {
             String newModuleName = substitutionRule.newName;
@@ -175,15 +208,15 @@ public class VerilogSerialiser implements ModelSerialiser {
             }
         }
         if (component.getIsZeroDelay() && (component.isBuffer() || component.isInverter())) {
-            out.println("    // This inverter should have a short delay");
+            writer.println("    // This inverter should have a short delay");
         }
-        out.print("    " + moduleName + " " + instanceFlatName + " (");
+        writer.print("    " + moduleName + " " + instanceFlatName + " (");
         boolean first = true;
         for (Contact contact: component.getContacts()) {
             if (first) {
                 first = false;
             } else {
-                out.print(", ");
+                writer.print(", ");
             }
             String signalName = circuitInfo.getContactSignal(contact);
             if ((signalName == null) || signalName.isEmpty()) {
@@ -192,27 +225,27 @@ public class VerilogSerialiser implements ModelSerialiser {
                 signalName = "";
             }
             String contactName = SubstitutionUtils.getContactSubstitutionName(contact, substitutionRule, instanceFlatName);
-            out.print("." + contactName + "(" + signalName + ")");
+            writer.print("." + contactName + "(" + signalName + ")");
         }
-        out.print(");\n");
+        writer.println(");");
     }
 
-    private void writeInitialState(PrintWriter out, CircuitSignalInfo circuitInfo) {
+    private void writeInitialState(PrintWriter writer, CircuitSignalInfo circuitInfo) {
         Collection<Contact> drivers = circuitInfo.getCircuit().getDrivers();
         if (!drivers.isEmpty()) {
-            out.println("    // signal values at the initial state:");
-            out.print("    //");
+            writer.println("    // signal values at the initial state:");
+            writer.print("    //");
             for (Contact driver: drivers) {
                 String signalName = circuitInfo.getContactSignal(driver);
                 if ((signalName != null) && !signalName.isEmpty()) {
-                    out.print(" ");
+                    writer.print(" ");
                     if (!driver.getInitToOne()) {
-                        out.print("!");
+                        writer.print("!");
                     }
-                    out.print(signalName);
+                    writer.print(signalName);
                 }
             }
-            out.println();
+            writer.println();
         }
     }
 

@@ -27,7 +27,7 @@ public class SgSerialiser implements ModelSerialiser {
     public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) {
         PrintWriter writer = new PrintWriter(out);
         writer.write(Info.getGeneratedByText("# SG file ", "\n"));
-        String title = ExportUtils.getClearModelTitle(model);
+        String title = ExportUtils.asIdentifier(model.getTitle());
         writer.write(".model " + title + "\n");
         if (model instanceof Fsm) {
             writeFsm(writer, (Fsm) model);

@@ -58,7 +58,7 @@ public class SerialiserUtils {
         writer.write(Info.getGeneratedByText(prefix, "\n"));
 
         String keyword = (style == Style.LPN) ? KEYWORD_NAME : KEYWORD_MODEL;
-        String title = ExportUtils.getClearModelTitle(petri);
+        String title = ExportUtils.asIdentifier(petri.getTitle());
         writer.write(keyword + " " + title + "\n");
 
         if ((style == Style.LPN) && (petri instanceof StgModel)) {

@@ -111,8 +111,7 @@ public class ExportUtils {
         return path;
     }
 
-    public static String getClearModelTitle(Model model) {
-        String title = model.getTitle();
+    public static String asIdentifier(String title) {
         // Non-empty module name is required.
         if ((title == null) || title.isEmpty()) {
             title = "Untitled";
