@@ -818,7 +818,8 @@ public class VerilogImporter implements Importer {
                 try {
                     component.setIsZeroDelay(true);
                 } catch (ArgumentException e) {
-                    LogUtils.logWarning("Component '" + verilogInstance.name + "': " + e.getMessage());
+                    LogUtils.logWarning(e.getMessage()
+                            + " Zero delay attribute is ignored for component '" + verilogInstance.name + "'.");
                 }
             }
         }

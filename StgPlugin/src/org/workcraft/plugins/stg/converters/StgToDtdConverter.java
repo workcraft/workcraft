@@ -7,6 +7,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.tools.Trace;
 import org.workcraft.plugins.dtd.*;
 import org.workcraft.plugins.dtd.VisualDtd.SignalEvent;
+import org.workcraft.plugins.dtd.utils.DtdUtils;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.types.Pair;
@@ -16,6 +17,7 @@ import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 public class StgToDtdConverter {
     private static final double SIGNAL_OFFSET = 1.0;
@@ -34,6 +36,7 @@ public class StgToDtdConverter {
         this.stg = stg;
         this.dtd = (dtd == null) ? new VisualDtd(new Dtd()) : dtd;
         signalMap = createSignals(signals);
+        setInitialState(trace);
         eventMap = ctreateEvents(trace);
     }
 
@@ -84,12 +87,30 @@ public class StgToDtdConverter {
         return visualSignal;
     }
 
+    private void setInitialState(Trace trace) {
+        Set<String> visitedSignals = new HashSet<>();
+        for (String transitionRef: trace) {
+            MathNode node = stg.getNodeByReference(transitionRef);
+            if (node instanceof SignalTransition) {
+                SignalTransition transition = (SignalTransition) node;
+                String signalRef = stg.getSignalReference(transition);
+                if (visitedSignals.contains(signalRef)) continue;
+                visitedSignals.add(signalRef);
+                if (signalMap.containsKey(signalRef)) {
+                    VisualSignal signal = signalMap.get(signalRef);
+                    TransitionEvent.Direction direction = getDirection(transition.getDirection());
+                    signal.setInitialState(DtdUtils.getPreviousState(direction));
+                }
+            }
+        }
+    }
+
     private HashMap<SignalEvent, SignalTransition> ctreateEvents(Trace trace) {
         HashMap<SignalEvent, SignalTransition> result = new HashMap<>();
         HashMap<Node, HashSet<SignalEvent>> causeMap = new HashMap<>();
         double x = EVENT_OFFSET;
         for (String transitionRef: trace) {
-            MathNode node = (MathNode) stg.getNodeByReference(transitionRef);
+            MathNode node = stg.getNodeByReference(transitionRef);
             if (node == null) continue;
             boolean skip = true;
             if (node instanceof SignalTransition) {
