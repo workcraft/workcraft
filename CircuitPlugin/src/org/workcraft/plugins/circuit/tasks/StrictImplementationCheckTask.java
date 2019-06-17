@@ -8,23 +8,18 @@ import org.workcraft.formula.utils.StringGenerator.Style;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitSignalInfo;
 import org.workcraft.plugins.circuit.FunctionComponent;
-import org.workcraft.plugins.circuit.utils.EnvironmentUtils;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.tasks.*;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
-import org.workcraft.tasks.ExportOutput;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.StgUtils;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.Result;
+import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.tasks.SubtaskMonitor;
-import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.FileUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -47,7 +42,7 @@ public class StrictImplementationCheckTask extends VerificationChainTask {
         try {
             // Common variables
             Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-            File envFile = EnvironmentUtils.getEnvironmentFile(circuit);
+            File envFile = circuit.getEnvironmentFile();
 
             // Load environment STG
             Stg envStg = StgUtils.loadStg(envFile);

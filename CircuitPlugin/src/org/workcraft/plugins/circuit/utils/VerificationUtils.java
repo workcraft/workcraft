@@ -12,8 +12,8 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ public class VerificationUtils {
 
     public static Stg getEnvironmentStg(WorkspaceEntry we) {
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-        File envFile = EnvironmentUtils.getEnvironmentFile(circuit);
+        File envFile = circuit.getEnvironmentFile();
         return StgUtils.loadStg(envFile);
     }
 
@@ -40,7 +40,7 @@ public class VerificationUtils {
 
     public static boolean checkInterfaceInitialState(WorkspaceEntry we) {
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-        File envFile = EnvironmentUtils.getEnvironmentFile(circuit);
+        File envFile = circuit.getEnvironmentFile();
         Stg envStg = StgUtils.loadStg(envFile);
         // Check initial state conformance of interface signals between the circuit and its environment STG (if present)
         if (envStg != null) {
@@ -74,7 +74,7 @@ public class VerificationUtils {
 
     public static boolean checkInterfaceConstrains(WorkspaceEntry we, boolean skipEnvironmentCheck) {
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-        File envFile = EnvironmentUtils.getEnvironmentFile(circuit);
+        File envFile = circuit.getEnvironmentFile();
         Stg envStg = StgUtils.loadStg(envFile);
         String msg = "";
         if (!skipEnvironmentCheck && (envStg == null)) {

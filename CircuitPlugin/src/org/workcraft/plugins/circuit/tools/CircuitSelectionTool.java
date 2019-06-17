@@ -1,27 +1,21 @@
 package org.workcraft.plugins.circuit.tools;
 
-import org.workcraft.Framework;
-import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.ConnectionUtils;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.tools.SelectionTool;
 import org.workcraft.gui.tools.editors.AbstractInplaceEditor;
 import org.workcraft.gui.tools.editors.NameInplaceEditor;
-import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.RefinementUtils;
-import org.workcraft.types.Pair;
 import org.workcraft.utils.Hierarchy;
-import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.util.*;
 
 public class CircuitSelectionTool extends SelectionTool {
@@ -39,6 +33,7 @@ public class CircuitSelectionTool extends SelectionTool {
                 popup = new JPopupMenu();
                 popup.setFocusable(false);
             }
+
             JMenuItem addOutputMenuItem = new JMenuItem("Add output pin");
             addOutputMenuItem.addActionListener(event -> {
                 editor.getWorkspaceEntry().saveMemento();
@@ -46,6 +41,7 @@ public class CircuitSelectionTool extends SelectionTool {
                 component.setPositionByDirection(contact, VisualContact.Direction.EAST, false);
             });
             popup.add(addOutputMenuItem);
+
             JMenuItem addInputMenuItem = new JMenuItem("Add input pin");
             addInputMenuItem.addActionListener(event -> {
                 editor.getWorkspaceEntry().saveMemento();
@@ -54,18 +50,21 @@ public class CircuitSelectionTool extends SelectionTool {
             });
             popup.add(addInputMenuItem);
             popup.addSeparator();
+
             JMenuItem defaultContactPositionMenuItem = new JMenuItem("Set contacts in default position");
             defaultContactPositionMenuItem.addActionListener(event -> {
                 editor.getWorkspaceEntry().saveMemento();
                 component.setContactsDefaultPosition();
             });
             popup.add(defaultContactPositionMenuItem);
+
             JMenuItem centerPivotPointMenuItem = new JMenuItem("Center pivot point");
             centerPivotPointMenuItem.addActionListener(event -> {
                 editor.getWorkspaceEntry().saveMemento();
                 component.centerPivotPoint(true, true);
             });
             popup.add(centerPivotPointMenuItem);
+
             JMenuItem removeUnusedPinsMenuItem = new JMenuItem("Remove unused pins");
             removeUnusedPinsMenuItem.addActionListener(event -> {
                 editor.getWorkspaceEntry().saveMemento();
@@ -73,6 +72,17 @@ public class CircuitSelectionTool extends SelectionTool {
                 CircuitUtils.removeUnusedPins(circuit, component);
             });
             popup.add(removeUnusedPinsMenuItem);
+            popup.addSeparator();
+
+            JMenuItem openRefinementStgMenuItem = new JMenuItem("Open refinement STG");
+            openRefinementStgMenuItem.setEnabled(RefinementUtils.hasRefinementStg(component));
+            openRefinementStgMenuItem.addActionListener(event -> RefinementUtils.openRefinementStg(component));
+            popup.add(openRefinementStgMenuItem);
+
+            JMenuItem openRefinementCircuitMenuItem = new JMenuItem("Open refinement circuit");
+            openRefinementCircuitMenuItem.setEnabled(RefinementUtils.hasRefinementCircuit(component));
+            openRefinementCircuitMenuItem.addActionListener(event -> RefinementUtils.openRefinementCircuit(component));
+            popup.add(openRefinementCircuitMenuItem);
         }
         return popup;
     }
@@ -93,24 +103,11 @@ public class CircuitSelectionTool extends SelectionTool {
                     processed = true;
                 }
             } else if (node instanceof VisualCircuitComponent) {
-                CircuitComponent component = ((VisualCircuitComponent) node).getReferencedComponent();
-                File file = null;
+                VisualCircuitComponent component = (VisualCircuitComponent) node;
                 if (e.isCtrlKeyDown()) {
-                    Pair<File, Circuit> refinementCircuit = RefinementUtils.getRefinementCircuit(component);
-                    if (refinementCircuit != null) {
-                        file = refinementCircuit.getFirst();
-                    }
+                    processed = RefinementUtils.openRefinementCircuit(component);
                 } else {
-                    FileReference refinement = component.getRefinement();
-                    if (refinement != null) {
-                        file = refinement.getFile();
-                    }
-                }
-                if (file != null) {
-                    MainWindow mainWindow = Framework.getInstance().getMainWindow();
-                    WorkspaceEntry we = mainWindow.openWork(file);
-                    mainWindow.requestFocus(we);
-                    processed = true;
+                    processed = RefinementUtils.openRefinementModel(component);
                 }
             }
         }
