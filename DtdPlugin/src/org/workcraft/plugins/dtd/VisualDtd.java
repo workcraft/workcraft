@@ -395,9 +395,6 @@ public class VisualDtd extends AbstractVisualModel {
         VisualConnection beforeLevel = null;
         try {
             beforeLevel = connect(event, edge);
-            if (connection instanceof VisualLevelConnection) {
-                color = ((VisualLevelConnection) connection).getColor();
-            }
             beforeLevel.setColor(color);
         } catch (InvalidConnectionException e) {
         }
