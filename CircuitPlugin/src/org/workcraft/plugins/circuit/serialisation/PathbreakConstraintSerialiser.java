@@ -47,7 +47,7 @@ public class PathbreakConstraintSerialiser implements PathbreakSerialiser {
     }
 
     private void writeCircuit(PrintWriter out, Circuit circuit) {
-        HashMap<String, SubstitutionRule> substitutionRules = SubstitutionUtils.readSubsritutionRules();
+        HashMap<String, SubstitutionRule> substitutionRules = SubstitutionUtils.readExportSubsritutionRules();
         for (FunctionComponent component: Hierarchy.getDescendantsOfType(circuit.getRoot(), FunctionComponent.class)) {
             writeInstance(out, circuit, component, substitutionRules);
         }
@@ -68,9 +68,12 @@ public class PathbreakConstraintSerialiser implements PathbreakSerialiser {
             for (Contact inputContact: component.getInputs()) {
                 if (inputContact.getPathBreaker()) {
                     if (outputName == null) {
-                        outputName = SubstitutionUtils.getContactSubstitutionName(outputContact, substitutionRule, instanceFlatName);
+                        outputName = SubstitutionUtils.getContactSubstitutionName(
+                                outputContact.getName(), substitutionRule, instanceFlatName);
                     }
-                    String inputName = SubstitutionUtils.getContactSubstitutionName(inputContact, substitutionRule, instanceFlatName);
+                    String inputName = SubstitutionUtils.getContactSubstitutionName(
+                            inputContact.getName(), substitutionRule, instanceFlatName);
+
                     out.write(KEYWORD_SET_DISABLE_TIMING + " " + instanceFlatName + " " +
                             KEYWORD_FROM + " " + inputName + " " + KEYWORD_TO + " " + outputName + "\n");
                 }

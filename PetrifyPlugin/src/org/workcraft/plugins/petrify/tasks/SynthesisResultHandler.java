@@ -137,7 +137,7 @@ public class SynthesisResultHandler extends AbstractExtendedResultHandler<Synthe
             try {
                 ByteArrayInputStream verilogStream = new ByteArrayInputStream(verilogOutput.getBytes());
                 VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
-                Circuit circuit = verilogImporter.importCircuit(verilogStream, mutexes);
+                Circuit circuit = verilogImporter.importTopModule(verilogStream, mutexes);
                 Path<String> path = we.getWorkspacePath();
                 ModelEntry dstMe = new ModelEntry(new CircuitDescriptor(), circuit);
                 Framework framework = Framework.getInstance();

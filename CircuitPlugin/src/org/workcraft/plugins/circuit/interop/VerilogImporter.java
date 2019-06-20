@@ -1,11 +1,13 @@
 package org.workcraft.plugins.circuit.interop;
 
+import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
+import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.references.ReferenceHelper;
@@ -16,6 +18,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.formula.utils.StringGenerator;
+import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
 import org.workcraft.plugins.circuit.*;
@@ -36,8 +39,10 @@ import org.workcraft.plugins.circuit.verilog.*;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.StgSettings;
+import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.workspace.FileFilters;
 import org.workcraft.workspace.ModelEntry;
 
 import java.io.ByteArrayInputStream;
@@ -91,14 +96,28 @@ public class VerilogImporter implements Importer {
 
     @Override
     public ModelEntry importFrom(InputStream in) throws DeserialisationException {
-        return new ModelEntry(new CircuitDescriptor(), importCircuit(in));
+        Framework framework = Framework.getInstance();
+        Pair<Circuit, Set<Circuit>> modules = importModules(in, Collections.emptySet());
+        Circuit topModule = modules.getFirst();
+        Set<Circuit> otherModules = modules.getSecond();
+        for (Circuit circuit : otherModules) {
+            ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
+            framework.createWork(me, Path.empty(), circuit.getTitle());
+        }
+        return new ModelEntry(new CircuitDescriptor(), topModule);
     }
 
-    public Circuit importCircuit(InputStream in) throws DeserialisationException {
-        return importCircuit(in, new LinkedList<>());
+    public Circuit importTopModule(InputStream in) throws DeserialisationException {
+        return importTopModule(in, Collections.emptySet());
     }
 
-    public Circuit importCircuit(InputStream in, Collection<Mutex> mutexes) throws DeserialisationException {
+    public Circuit importTopModule(InputStream in, Collection<Mutex> mutexes) throws DeserialisationException {
+        return importModules(in, mutexes).getFirst();
+    }
+
+    private Pair<Circuit, Set<Circuit>> importModules(InputStream in, Collection<Mutex> mutexes) throws DeserialisationException {
+        Circuit topModule = null;
+        Set<Circuit> otherModules = new HashSet<>();
         try {
             VerilogParser parser = new VerilogParser(in);
             if (CommonDebugSettings.getParserTracing()) {
@@ -107,7 +126,7 @@ public class VerilogImporter implements Importer {
                 parser.disable_tracing();
             }
             HashMap<String, VerilogModule> modules = getModuleMap(parser.parseCircuit());
-            HashSet<VerilogModule> topVerilogModules = getTopModule(modules);
+            HashSet<VerilogModule> topVerilogModules = getTopModules(modules);
             if (topVerilogModules.size() == 0) {
                 throw new DeserialisationException(MSG_NO_TOP_MODULE);
             }
@@ -116,21 +135,30 @@ public class VerilogImporter implements Importer {
             }
             if (CommonDebugSettings.getVerboseImport()) {
                 LogUtils.logInfo("Parsed Verilog modules");
-                for (VerilogModule verilogModule : modules.values()) {
-                    if (topVerilogModules.contains(verilogModule)) {
-                        System.out.print("// Top module\n");
-                    }
+            }
+            HashMap<String, SubstitutionRule> substitutionRules = SubstitutionUtils.readImportSubsritutionRules();
+            for (VerilogModule verilogModule : modules.values()) {
+                if (verilogModule.isEmpty()) continue;
+                if (topVerilogModules.contains(verilogModule)) {
+                    topModule = createCircuit(verilogModule, modules, mutexes, substitutionRules);
+                } else {
+                    Circuit otherModule = createCircuit(verilogModule, modules, Collections.emptySet(), substitutionRules);
+                    otherModules.add(otherModule);
+                }
+                if (CommonDebugSettings.getVerboseImport()) {
                     printModule(verilogModule);
+                    if (topVerilogModules.contains(verilogModule)) {
+                        LogUtils.logMessage("// Top module\n");
+                    }
                 }
             }
-            VerilogModule topVerilogModule = topVerilogModules.iterator().next();
-            return createCircuit(topVerilogModule, modules, mutexes);
         } catch (FormatException | org.workcraft.plugins.circuit.jj.verilog.ParseException e) {
             throw new DeserialisationException(e);
         }
+        return Pair.of(topModule, otherModules);
     }
 
-    private HashSet<VerilogModule> getTopModule(HashMap<String, VerilogModule> modules) {
+    private HashSet<VerilogModule> getTopModules(HashMap<String, VerilogModule> modules) {
         HashSet<VerilogModule> result = new HashSet<>(modules.values());
         if (modules.size() > 1) {
             for (VerilogModule verilogModule : modules.values()) {
@@ -150,12 +178,12 @@ public class VerilogImporter implements Importer {
         String portNames = verilogModule.ports.stream()
                 .map(verilogPort -> verilogPort.name)
                 .collect(Collectors.joining(", "));
-        System.out.println("module " + verilogModule.name + " (" + portNames + ");");
+        LogUtils.logMessage("module " + verilogModule.name + " (" + portNames + ");");
         for (VerilogPort verilogPort : verilogModule.ports) {
-            System.out.println("    " + verilogPort.type + " " + ((verilogPort.range == null) ? "" : verilogPort.range + " ") + verilogPort.name + ";");
+            LogUtils.logMessage("    " + verilogPort.type + " " + ((verilogPort.range == null) ? "" : verilogPort.range + " ") + verilogPort.name + ";");
         }
         for (VerilogAssign verilogAssign : verilogModule.assigns) {
-            System.out.println("    assign " + verilogAssign.name + " = " + verilogAssign.formula + ";");
+            LogUtils.logMessage("    assign " + verilogAssign.name + " = " + verilogAssign.formula + ";");
         }
 
         for (VerilogInstance verilogInstance : verilogModule.instances) {
@@ -163,9 +191,9 @@ public class VerilogImporter implements Importer {
             String pinNames = verilogInstance.connections.stream()
                     .map(verilogConnection -> getConnectionString(verilogConnection))
                     .collect(Collectors.joining(", "));
-            System.out.println("    " + verilogInstance.moduleName + " " + instanceName + " (" + pinNames + ");");
+            LogUtils.logMessage("    " + verilogInstance.moduleName + " " + instanceName + " (" + pinNames + ");");
         }
-        System.out.println("endmodule\n");
+        LogUtils.logMessage("endmodule\n");
     }
 
     private String getConnectionString(VerilogConnection verilogConnection) {
@@ -176,7 +204,9 @@ public class VerilogImporter implements Importer {
         return result;
     }
 
-    private Circuit createCircuit(VerilogModule topVerilogModule, HashMap<String, VerilogModule> modules, Collection<Mutex> mutexes) {
+    private Circuit createCircuit(VerilogModule topVerilogModule, HashMap<String, VerilogModule> modules,
+            Collection<Mutex> mutexes, HashMap<String, SubstitutionRule> substitutionRules) {
+
         Circuit circuit = new Circuit();
         circuit.setTitle(topVerilogModule.name);
         HashMap<VerilogInstance, FunctionComponent> instanceComponentMap = new HashMap<>();
@@ -186,6 +216,7 @@ public class VerilogImporter implements Importer {
         }
         Mutex mutexModule = CircuitSettings.parseMutexData();
         Library library = null;
+        SubstitutionRule substitutionRule = null;
         for (VerilogInstance verilogInstance: topVerilogModule.instances) {
             Gate gate = createPrimitiveGate(verilogInstance);
             if (gate == null) {
@@ -193,11 +224,15 @@ public class VerilogImporter implements Importer {
                     String libraryFileName = CircuitSettings.getGateLibrary();
                     library = GenlibUtils.readLibrary(libraryFileName);
                 }
-                gate = library.get(verilogInstance.moduleName);
+                substitutionRule = substitutionRules.get(verilogInstance.moduleName);
+                String gateName = SubstitutionUtils.getModuleSubstitutionName(
+                        verilogInstance.moduleName, substitutionRule,  verilogInstance.name);
+
+                gate = library.get(gateName);
             }
             FunctionComponent component = null;
             if (gate != null) {
-                component = createLibraryGate(circuit, verilogInstance, wires, gate);
+                component = createLibraryGate(circuit, verilogInstance, wires, gate, substitutionRule);
             } else if (isMutexInstance(verilogInstance, mutexModule)) {
                 Mutex mutexInstance = instanceToMutex(verilogInstance, mutexModule);
                 component = createMutex(circuit, mutexInstance, mutexModule, wires);
@@ -509,13 +544,16 @@ public class VerilogImporter implements Importer {
     }
 
     private FunctionComponent createLibraryGate(Circuit circuit, VerilogInstance verilogInstance,
-            HashMap<String, Wire> wires, Gate gate) {
+            HashMap<String, Wire> wires, Gate gate, SubstitutionRule substitutionRule) {
         FunctionComponent component = GenlibUtils.instantiateGate(gate, verilogInstance.name, circuit);
         int index = 0;
         for (VerilogConnection verilogConnection : verilogInstance.connections) {
             String wireName = getWireName(verilogConnection);
             Wire wire = getOrCreateWire(wireName, wires);
-            String pinName = gate.isPrimitive() ? getPrimitiveGatePinName(index++) : verilogConnection.name;
+            String pinName = gate.isPrimitive() ? getPrimitiveGatePinName(index++)
+                    : SubstitutionUtils.getContactSubstitutionName(
+                            verilogConnection.name, substitutionRule, verilogInstance.name);
+
             Node node = circuit.getNodeByReference(component, pinName);
             if (node instanceof FunctionContact) {
                 FunctionContact contact = (FunctionContact) node;
@@ -535,9 +573,17 @@ public class VerilogImporter implements Importer {
 
     private FunctionComponent createBlackBox(Circuit circuit, VerilogInstance verilogInstance,
             HashMap<String, Wire> wires, HashMap<String, VerilogModule> modules) {
+
         final FunctionComponent component = new FunctionComponent();
+        VerilogModule verilogModule = modules.get(verilogInstance.moduleName);
+        if (verilogModule == null) {
+            component.setIsEnvironment(true);
+        } else {
+            FileReference refinement = new FileReference();
+            refinement.setPath(verilogModule.name + FileFilters.DOCUMENT_EXTENSION);
+            component.setRefinement(refinement);
+        }
         component.setModule(verilogInstance.moduleName);
-        component.setIsEnvironment(true);
         circuit.add(component);
         try {
             circuit.setName(component, verilogInstance.name);
@@ -545,7 +591,6 @@ public class VerilogImporter implements Importer {
             String componentRef = circuit.getNodeReference(component);
             LogUtils.logWarning("Cannot set name '" + verilogInstance.name + "' for component '" + componentRef + "'.");
         }
-        VerilogModule verilogModule = modules.get(verilogInstance.moduleName);
         HashMap<String, VerilogPort> instancePorts = getModulePortMap(verilogModule);
         for (VerilogConnection verilogConnection : verilogInstance.connections) {
             VerilogPort verilogPort = instancePorts.get(verilogConnection.name);
@@ -572,7 +617,7 @@ public class VerilogImporter implements Importer {
 
     private void insertMutexes(Collection<Mutex> mutexes, Circuit circuit, HashMap<String, Wire> wires) {
         LinkedList<String> internalSignals = new LinkedList<>();
-        if (!mutexes.isEmpty()) {
+        if ((mutexes != null) & !mutexes.isEmpty()) {
             Mutex moduleMutex = CircuitSettings.parseMutexData();
             if ((moduleMutex != null) && (moduleMutex.name != null)) {
                 for (Mutex instanceMutex : mutexes) {

@@ -1025,7 +1025,7 @@ public class MainWindow extends JFrame {
                         me.getMathModel().setTitle(title);
                     }
                     final Framework framework = Framework.getInstance();
-                    framework.createWork(me, Path.<String>empty(), file.getName());
+                    framework.createWork(me, Path.empty(), file.getName());
                     setLastDirectory(file);
                     break;
                 } catch (IOException | DeserialisationException e) {

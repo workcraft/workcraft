@@ -128,7 +128,7 @@ public class VerilogSerialiser implements ModelSerialiser {
     }
 
     private void writeInstances(PrintWriter writer, CircuitSignalInfo circuitInfo) {
-        HashMap<String, SubstitutionRule> substitutionRules = SubstitutionUtils.readSubsritutionRules();
+        HashMap<String, SubstitutionRule> substitutionRules = SubstitutionUtils.readExportSubsritutionRules();
         // Write writer assign statements
         boolean hasAssignments = false;
         for (FunctionComponent component : circuitInfo.getCircuit().getFunctionComponents()) {
@@ -200,13 +200,7 @@ public class VerilogSerialiser implements ModelSerialiser {
         // Instance name
         String instanceFlatName = circuitInfo.getComponentFlattenReference(component);
         SubstitutionRule substitutionRule = substitutionRules.get(moduleName);
-        if (substitutionRule != null) {
-            String newModuleName = substitutionRule.newName;
-            if (newModuleName != null) {
-                LogUtils.logInfo("In component '" + instanceFlatName + "' renaming module '" + moduleName + "' to '" + newModuleName + "'.");
-                moduleName = newModuleName;
-            }
-        }
+        moduleName = SubstitutionUtils.getModuleSubstitutionName(moduleName, substitutionRule, instanceFlatName);
         if (component.getIsZeroDelay() && (component.isBuffer() || component.isInverter())) {
             writer.println("    // This inverter should have a short delay");
         }
@@ -224,7 +218,9 @@ public class VerilogSerialiser implements ModelSerialiser {
                 LogUtils.logWarning("In component '" + instanceFlatName + "' contact '" + contactName + "' is disconnected.");
                 signalName = "";
             }
-            String contactName = SubstitutionUtils.getContactSubstitutionName(contact, substitutionRule, instanceFlatName);
+            String contactName = SubstitutionUtils.getContactSubstitutionName(
+                    contact.getName(), substitutionRule, instanceFlatName);
+
             writer.print("." + contactName + "(" + signalName + ")");
         }
         writer.println(");");

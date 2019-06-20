@@ -49,8 +49,10 @@ public class CircuitSettings implements Settings {
     private static final String keyInactiveWireColor = prefix + ".inactiveWireColor";
     private static final String keySimplifyStg = prefix + ".simplifyStg";
     private static final String keyGateLibrary = prefix + ".gateLibrary";
-    private static final String keySubstitutionLibrary = prefix + ".substitutionLibrary";
-    private static final String keyInvertSubstitutionRules = prefix + ".invertSubstitutionRules";
+    private static final String keyExportSubstitutionLibrary = prefix + ".exportSubstitutionLibrary";
+    private static final String keyInvertExportSubstitutionRules = prefix + ".invertExportSubstitutionRules";
+    private static final String keyImportSubstitutionLibrary = prefix + ".importSubstitutionLibrary";
+    private static final String keyInvertImportSubstitutionRules = prefix + ".invertImportSubstitutionRules";
     private static final String keyBufData = prefix + ".bufData";
     private static final String keyAndData = prefix + ".andData";
     private static final String keyOrData = prefix + ".orData";
@@ -77,8 +79,10 @@ public class CircuitSettings implements Settings {
     private static final Color defaultInactiveWireColor = new Color(0.0f, 0.0f, 1.0f);
     private static final boolean defaultSimplifyStg = true;
     private static final String defaultGateLibrary = DesktopApi.getOs().isWindows() ? "libraries\\workcraft.lib" : "libraries/workcraft.lib";
-    private static final String defaultSubstitutionLibrary = "";
-    private static final boolean defaultInvertSubstitutionRules = false;
+    private static final String defaultExportSubstitutionLibrary = "";
+    private static final boolean defaultInvertExportSubstitutionRules = false;
+    private static final String defaultImportSubstitutionLibrary = "";
+    private static final boolean defaultInvertImportSubstitutionRules = false;
     private static final String defaultBufData = "BUF (I, O)";
     private static final String defaultAndData = "AND2 (A, B, O)";
     private static final String defaultOrData = "OR2 (A, B, O)";
@@ -105,8 +109,10 @@ public class CircuitSettings implements Settings {
     private static Color inactiveWireColor = defaultInactiveWireColor;
     private static boolean simplifyStg = defaultSimplifyStg;
     private static String gateLibrary = defaultGateLibrary;
-    private static String substitutionLibrary = defaultSubstitutionLibrary;
-    private static boolean invertSubstitutionRules = defaultInvertSubstitutionRules;
+    private static String exportSubstitutionLibrary = defaultExportSubstitutionLibrary;
+    private static boolean invertExportSubstitutionRules = defaultInvertExportSubstitutionRules;
+    private static String importSubstitutionLibrary = defaultImportSubstitutionLibrary;
+    private static boolean invertImportSubstitutionRules = defaultInvertImportSubstitutionRules;
     private static String bufData = defaultBufData;
     private static String andData = defaultAndData;
     private static String orData = defaultOrData;
@@ -226,23 +232,47 @@ public class CircuitSettings implements Settings {
                 this, "Substitution rules for export", String.class) {
             @Override
             public void setter(CircuitSettings object, String value) {
-                setSubstitutionLibrary(value);
+                setExportSubstitutionLibrary(value);
             }
             @Override
             public String getter(CircuitSettings object) {
-                return getSubstitutionLibrary();
+                return getExportSubstitutionLibrary();
             }
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
-                this, "Invert substitution rules", Boolean.class) {
+                this, "Invert substitution rules for export", Boolean.class) {
             @Override
             public void setter(CircuitSettings object, Boolean value) {
-                setInvertSubstitutionRules(value);
+                setInvertExportSubstitutionRules(value);
             }
             @Override
             public Boolean getter(CircuitSettings object) {
-                return getInvertSubstitutionRules();
+                return getInvertExportSubstitutionRules();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, String>(
+                this, "Substitution rules for import", String.class) {
+            @Override
+            public void setter(CircuitSettings object, String value) {
+                setImportSubstitutionLibrary(value);
+            }
+            @Override
+            public String getter(CircuitSettings object) {
+                return getImportSubstitutionLibrary();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
+                this, "Invert substitution rules for import", Boolean.class) {
+            @Override
+            public void setter(CircuitSettings object, Boolean value) {
+                setInvertImportSubstitutionRules(value);
+            }
+            @Override
+            public Boolean getter(CircuitSettings object) {
+                return getInvertImportSubstitutionRules();
             }
         });
 
@@ -532,8 +562,10 @@ public class CircuitSettings implements Settings {
         setInactiveWireColor(config.getColor(keyInactiveWireColor, defaultInactiveWireColor));
         setSimplifyStg(config.getBoolean(keySimplifyStg, defaultSimplifyStg));
         setGateLibrary(config.getString(keyGateLibrary, defaultGateLibrary));
-        setSubstitutionLibrary(config.getString(keySubstitutionLibrary, defaultSubstitutionLibrary));
-        setInvertSubstitutionRules(config.getBoolean(keyInvertSubstitutionRules, defaultInvertSubstitutionRules));
+        setExportSubstitutionLibrary(config.getString(keyExportSubstitutionLibrary, defaultExportSubstitutionLibrary));
+        setInvertExportSubstitutionRules(config.getBoolean(keyInvertExportSubstitutionRules, defaultInvertExportSubstitutionRules));
+        setImportSubstitutionLibrary(config.getString(keyImportSubstitutionLibrary, defaultImportSubstitutionLibrary));
+        setInvertImportSubstitutionRules(config.getBoolean(keyInvertImportSubstitutionRules, defaultInvertImportSubstitutionRules));
         setBufData(config.getString(keyBufData, defaultBufData));
         setAndData(config.getString(keyAndData, defaultAndData));
         setOrData(config.getString(keyOrData, defaultOrData));
@@ -563,8 +595,10 @@ public class CircuitSettings implements Settings {
         config.setColor(keyInactiveWireColor, getInactiveWireColor());
         config.setBoolean(keySimplifyStg, getSimplifyStg());
         config.set(keyGateLibrary, getGateLibrary());
-        config.set(keySubstitutionLibrary, getSubstitutionLibrary());
-        config.setBoolean(keyInvertSubstitutionRules, getInvertSubstitutionRules());
+        config.set(keyExportSubstitutionLibrary, getExportSubstitutionLibrary());
+        config.setBoolean(keyInvertExportSubstitutionRules, getInvertExportSubstitutionRules());
+        config.set(keyImportSubstitutionLibrary, getImportSubstitutionLibrary());
+        config.setBoolean(keyInvertImportSubstitutionRules, getInvertImportSubstitutionRules());
         config.set(keyBufData, getBufData());
         config.set(keyAndData, getAndData());
         config.set(keyOrData, getOrData());
@@ -648,20 +682,36 @@ public class CircuitSettings implements Settings {
         gateLibrary = value;
     }
 
-    public static String getSubstitutionLibrary() {
-        return substitutionLibrary;
+    public static String getExportSubstitutionLibrary() {
+        return exportSubstitutionLibrary;
     }
 
-    public static void setSubstitutionLibrary(String value) {
-        substitutionLibrary = value;
+    public static void setExportSubstitutionLibrary(String value) {
+        exportSubstitutionLibrary = value;
     }
 
-    public static boolean getInvertSubstitutionRules() {
-        return invertSubstitutionRules;
+    public static boolean getInvertExportSubstitutionRules() {
+        return invertExportSubstitutionRules;
     }
 
-    public static void setInvertSubstitutionRules(boolean value) {
-        invertSubstitutionRules = value;
+    public static void setInvertExportSubstitutionRules(boolean value) {
+        invertExportSubstitutionRules = value;
+    }
+
+    public static String getImportSubstitutionLibrary() {
+        return importSubstitutionLibrary;
+    }
+
+    public static void setImportSubstitutionLibrary(String value) {
+        importSubstitutionLibrary = value;
+    }
+
+    public static boolean getInvertImportSubstitutionRules() {
+        return invertImportSubstitutionRules;
+    }
+
+    public static void setInvertImportSubstitutionRules(boolean value) {
+        invertImportSubstitutionRules = value;
     }
 
     public static String getBufData() {
