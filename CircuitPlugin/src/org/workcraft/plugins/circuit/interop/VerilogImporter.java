@@ -4,8 +4,6 @@ import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
-import org.workcraft.dom.math.MathConnection;
-import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.references.HierarchyReferenceManager;
@@ -16,8 +14,6 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.utils.BooleanUtils;
-import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
@@ -33,7 +29,6 @@ import org.workcraft.plugins.circuit.genlib.Library;
 import org.workcraft.plugins.circuit.jj.expression.ExpressionParser;
 import org.workcraft.plugins.circuit.jj.verilog.VerilogParser;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
-import org.workcraft.plugins.circuit.utils.StructureUtilsKt;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.plugins.circuit.verilog.*;
 import org.workcraft.plugins.stg.Mutex;
@@ -115,9 +110,44 @@ public class VerilogImporter implements Importer {
         return importModules(in, mutexes).getFirst();
     }
 
-    private Pair<Circuit, Set<Circuit>> importModules(InputStream in, Collection<Mutex> mutexes) throws DeserialisationException {
+    private Pair<Circuit, Set<Circuit>> importModules(InputStream in, Collection<Mutex> mutexes)
+            throws DeserialisationException {
+
+        HashMap<String, VerilogModule> verilogModules = importVerilogModules(in);
+        HashSet<VerilogModule> topVerilogModules = getTopModules(verilogModules);
+        if (topVerilogModules.size() == 0) {
+            throw new DeserialisationException(MSG_NO_TOP_MODULE);
+        }
+        if (topVerilogModules.size() > 1) {
+            throw new DeserialisationException(MSG_MANY_TOP_MODULES);
+        }
+
+        if (CommonDebugSettings.getVerboseImport()) {
+            LogUtils.logInfo("Parsed Verilog modules");
+        }
         Circuit topModule = null;
         Set<Circuit> otherModules = new HashSet<>();
+        HashMap<String, SubstitutionRule> substitutionRules = SubstitutionUtils.readImportSubsritutionRules();
+        for (VerilogModule verilogModule : verilogModules.values()) {
+            if (verilogModule.isEmpty()) continue;
+            if (topVerilogModules.contains(verilogModule)) {
+                if (CommonDebugSettings.getVerboseImport()) {
+                    LogUtils.logMessage("// Top module\n");
+                }
+                topModule = createCircuit(verilogModule, verilogModules, mutexes, substitutionRules);
+            } else {
+                Circuit otherModule = createCircuit(verilogModule, verilogModules, Collections.emptySet(), substitutionRules);
+                otherModules.add(otherModule);
+            }
+            if (CommonDebugSettings.getVerboseImport()) {
+                printModule(verilogModule);
+            }
+        }
+        return Pair.of(topModule, otherModules);
+    }
+
+    private HashMap<String, VerilogModule> importVerilogModules(InputStream in) throws DeserialisationException {
+        List<VerilogModule> verilogModules = null;
         try {
             VerilogParser parser = new VerilogParser(in);
             if (CommonDebugSettings.getParserTracing()) {
@@ -125,37 +155,19 @@ public class VerilogImporter implements Importer {
             } else {
                 parser.disable_tracing();
             }
-            HashMap<String, VerilogModule> modules = getModuleMap(parser.parseCircuit());
-            HashSet<VerilogModule> topVerilogModules = getTopModules(modules);
-            if (topVerilogModules.size() == 0) {
-                throw new DeserialisationException(MSG_NO_TOP_MODULE);
-            }
-            if (topVerilogModules.size() > 1) {
-                throw new DeserialisationException(MSG_MANY_TOP_MODULES);
-            }
-            if (CommonDebugSettings.getVerboseImport()) {
-                LogUtils.logInfo("Parsed Verilog modules");
-            }
-            HashMap<String, SubstitutionRule> substitutionRules = SubstitutionUtils.readImportSubsritutionRules();
-            for (VerilogModule verilogModule : modules.values()) {
-                if (verilogModule.isEmpty()) continue;
-                if (topVerilogModules.contains(verilogModule)) {
-                    topModule = createCircuit(verilogModule, modules, mutexes, substitutionRules);
-                } else {
-                    Circuit otherModule = createCircuit(verilogModule, modules, Collections.emptySet(), substitutionRules);
-                    otherModules.add(otherModule);
-                }
-                if (CommonDebugSettings.getVerboseImport()) {
-                    printModule(verilogModule);
-                    if (topVerilogModules.contains(verilogModule)) {
-                        LogUtils.logMessage("// Top module\n");
-                    }
-                }
-            }
+            verilogModules = parser.parseCircuit();
         } catch (FormatException | org.workcraft.plugins.circuit.jj.verilog.ParseException e) {
             throw new DeserialisationException(e);
         }
-        return Pair.of(topModule, otherModules);
+        HashMap<String, VerilogModule> result = new HashMap<>();
+        if (verilogModules != null) {
+            for (VerilogModule verilogModule : verilogModules) {
+                if ((verilogModule != null) && (verilogModule.name != null)) {
+                    result.put(verilogModule.name, verilogModule);
+                }
+            }
+        }
+        return result;
     }
 
     private HashSet<VerilogModule> getTopModules(HashMap<String, VerilogModule> modules) {
@@ -247,7 +259,6 @@ public class VerilogImporter implements Importer {
         createConnections(circuit, wires);
         setInitialState(circuit, wires, topVerilogModule.signalStates);
         setZeroDelayAttribute(instanceComponentMap);
-        mergeGroups(circuit, topVerilogModule.groups, instanceComponentMap);
         checkImportResult(circuit);
         return circuit;
     }
@@ -895,15 +906,6 @@ public class VerilogImporter implements Importer {
         }
     }
 
-    private HashMap<String, VerilogModule> getModuleMap(List<VerilogModule> verilogModules) {
-        HashMap<String, VerilogModule> result = new HashMap<>();
-        for (VerilogModule verilogModule : verilogModules) {
-            if ((verilogModule == null) || (verilogModule.name == null)) continue;
-            result.put(verilogModule.name, verilogModule);
-        }
-        return result;
-    }
-
     private HashMap<String, VerilogPort> getModulePortMap(VerilogModule verilogModule) {
         HashMap<String, VerilogPort> result = new HashMap<>();
         if (verilogModule != null) {
@@ -912,177 +914,6 @@ public class VerilogImporter implements Importer {
             }
         }
         return result;
-    }
-
-    private void mergeGroups(Circuit circuit, Set<List<VerilogInstance>> groups, HashMap<VerilogInstance, FunctionComponent> instanceComponentMap) {
-        for (List<VerilogInstance> group: groups) {
-            HashSet<FunctionComponent> components = new HashSet<>();
-            FunctionComponent rootComponent = null;
-            for (VerilogInstance verilogInstance : group) {
-                FunctionComponent component = instanceComponentMap.get(verilogInstance);
-                if (component != null) {
-                    components.add(component);
-                    rootComponent = component;
-                }
-            }
-            FunctionComponent complexComponent = mergeComponents(circuit, rootComponent, components);
-            for (FunctionComponent component: components) {
-                if (component == complexComponent) continue;
-                circuit.remove(component);
-            }
-            // Prefix all the pins with underscore so there is no name clash on the subsequent round of renaming
-            for (Contact contact: complexComponent.getContacts()) {
-                circuit.setName(contact, "_" + contact.getName());
-            }
-            // Compact all the pins names
-            int index = 0;
-            for (Contact contact: complexComponent.getContacts()) {
-                if (contact.isOutput()) {
-                    circuit.setName(contact, getPrimitiveGatePinName(0));
-                } else {
-                    circuit.setName(contact, getPrimitiveGatePinName(++index));
-                }
-            }
-        }
-    }
-
-    private FunctionComponent mergeComponents(Circuit circuit, FunctionComponent rootComponent, HashSet<FunctionComponent> components) {
-        boolean done = false;
-        do {
-            HashSet<FunctionComponent> leafComponents = new HashSet<>();
-            for (FunctionComponent component: components) {
-                if (component == rootComponent) continue;
-                for (MathNode node: StructureUtilsKt.getPostsetComponents(circuit, component)) {
-                    if (node != rootComponent) continue;
-                    leafComponents.add(component);
-                }
-            }
-            if (leafComponents.isEmpty()) {
-                done = true;
-            } else {
-                FunctionComponent newComponent = mergeLeafComponents(circuit, rootComponent, leafComponents);
-                components.remove(rootComponent);
-                circuit.remove(rootComponent);
-                rootComponent = newComponent;
-            }
-        } while (!done);
-        return rootComponent;
-    }
-
-    private FunctionComponent mergeLeafComponents(Circuit circuit, FunctionComponent rootComponent, HashSet<FunctionComponent> leafComponents) {
-        FunctionComponent component = null;
-        FunctionContact rootOutputContact = getOutputContact(circuit, rootComponent);
-        List<Contact> rootInputContacts = new LinkedList<>(rootComponent.getInputs());
-
-        HashMap<Contact, Contact> newToOldContactMap = new HashMap<>();
-        component = new FunctionComponent();
-        circuit.add(component);
-        FunctionContact outputContact = new FunctionContact(IOType.OUTPUT);
-        outputContact.setInitToOne(rootOutputContact.getInitToOne());
-        component.add(outputContact);
-        circuit.setName(outputContact, PRIMITIVE_GATE_OUTPUT_NAME);
-        newToOldContactMap.put(outputContact, rootOutputContact);
-
-        List<BooleanFormula> leafSetFunctions = new LinkedList<>();
-        for (Contact rootInputContact: rootInputContacts) {
-            BooleanFormula leafSetFunction = null;
-            for (FunctionComponent leafComponent: leafComponents) {
-                FunctionContact leafOutputContact = getOutputContact(circuit, leafComponent);
-                List<Contact> leafInputContacts = new LinkedList<>(leafComponent.getInputs());
-
-                Set<MathNode> oldContacts = circuit.getPostset(leafOutputContact);
-                if (oldContacts.contains(rootInputContact)) {
-                    List<BooleanFormula> replacementContacts = new LinkedList<>();
-                    for (Contact leafInputContact: leafInputContacts) {
-                        FunctionContact inputContact = new FunctionContact(IOType.INPUT);
-                        component.add(inputContact);
-                        circuit.setName(inputContact, rootInputContact.getName() + leafInputContact.getName());
-                        replacementContacts.add(inputContact);
-                        newToOldContactMap.put(inputContact, leafInputContact);
-                    }
-                    leafSetFunction = BooleanUtils.replaceDumb(
-                            leafOutputContact.getSetFunction(), leafInputContacts, replacementContacts);
-                }
-
-            }
-            if (leafSetFunction == null) {
-                FunctionContact inputContact = new FunctionContact(IOType.INPUT);
-                component.add(inputContact);
-                circuit.setName(inputContact, rootInputContact.getName());
-                newToOldContactMap.put(inputContact, rootInputContact);
-                leafSetFunction = inputContact;
-            }
-            leafSetFunctions.add(leafSetFunction);
-        }
-        BooleanFormula rootSetFunction = rootOutputContact.getSetFunction();
-        BooleanFormula setFunction = printFunctionSubstitution(rootSetFunction, rootInputContacts, leafSetFunctions);
-        outputContact.setSetFunctionQuiet(setFunction);
-
-        connectMergedComponent(circuit, component, rootComponent, newToOldContactMap);
-        return component;
-    }
-
-    private BooleanFormula printFunctionSubstitution(BooleanFormula function, List<Contact> inputContacts, List<BooleanFormula> inputFunctions) {
-        final BooleanFormula setFunction = BooleanUtils.replaceDumb(function, inputContacts, inputFunctions);
-        if (CommonDebugSettings.getVerboseImport()) {
-            LogUtils.logInfo("Expression substitution");
-            LogUtils.logInfo("  Original: " + StringGenerator.toString(function));
-            Iterator<Contact> contactIterator = inputContacts.iterator();
-            Iterator<BooleanFormula> formulaIterator = inputFunctions.iterator();
-            while (contactIterator.hasNext() && formulaIterator.hasNext()) {
-                Contact contact = contactIterator.next();
-                BooleanFormula formula = formulaIterator.next();
-                LogUtils.logInfo("  Replacement: " + contact.getName() + " = " + StringGenerator.toString(formula));
-            }
-            LogUtils.logInfo("  Result: " + StringGenerator.toString(setFunction));
-        }
-        return setFunction;
-    }
-
-    private FunctionContact getOutputContact(Circuit circuit, FunctionComponent component) {
-        Collection<Contact> outputContacts = component.getOutputs();
-        if (outputContacts.size() != 1) {
-            throw new RuntimeException("Cannot determin the output of component '" + circuit.getName(component) + "'.");
-        }
-        return (FunctionContact) outputContacts.iterator().next();
-    }
-
-    private void connectMergedComponent(Circuit circuit, FunctionComponent newComponent,
-            FunctionComponent oldComponent, HashMap<Contact, Contact> newToOldContactMap) {
-
-        FunctionContact oldOutputContact = getOutputContact(circuit, oldComponent);
-        FunctionContact newOutputContact = getOutputContact(circuit, newComponent);
-        for (MathConnection oldConnection: new HashSet<>(circuit.getConnections(oldOutputContact))) {
-            if (oldConnection.getFirst() != oldOutputContact) continue;
-            MathNode toNode = oldConnection.getSecond();
-            circuit.remove(oldConnection);
-            try {
-                boolean hasNewContact = false;
-                for (Contact newContact: newToOldContactMap.keySet()) {
-                    Contact oldContact = newToOldContactMap.get(newContact);
-                    if (toNode == oldContact) {
-                        circuit.connect(newOutputContact, newContact);
-                        hasNewContact = true;
-                    }
-                }
-                if (!hasNewContact) {
-                    circuit.connect(newOutputContact, toNode);
-                }
-            } catch (InvalidConnectionException e) {
-            }
-        }
-        for (Contact newContact: newToOldContactMap.keySet()) {
-            if (newContact.isOutput()) continue;
-            Contact oldContact = newToOldContactMap.get(newContact);
-            if (oldContact == null) continue;
-            for (MathNode fromNode: circuit.getPreset(oldContact)) {
-                try {
-                    circuit.connect(fromNode, newContact);
-                } catch (InvalidConnectionException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
     }
 
 }
