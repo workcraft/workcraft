@@ -60,14 +60,15 @@ public class SubstitutionUtils {
     }
 
     public static String getModuleSubstitutionName(String moduleName,
-            SubstitutionRule substitutionRule, String instanceFlatName) {
+            SubstitutionRule substitutionRule, String msg) {
 
         if (substitutionRule != null) {
             String newModuleName = substitutionRule.newName;
             if (newModuleName != null) {
-                LogUtils.logInfo("In component '" + instanceFlatName + "' renaming "
-                        + "module '" + moduleName + "' to '" + newModuleName + "'.");
-
+                if (msg == null) {
+                    msg = "";
+                }
+                LogUtils.logInfo(msg + "Renaming module '" + moduleName + "' to '" + newModuleName + "'.");
                 moduleName = newModuleName;
             }
         }
@@ -75,14 +76,15 @@ public class SubstitutionUtils {
     }
 
     public static String getContactSubstitutionName(String contactName,
-            SubstitutionRule substitutionRule, String instanceFlatName) {
+            SubstitutionRule substitutionRule, String msg) {
 
         if (substitutionRule != null) {
             String newContactName = substitutionRule.substitutions.get(contactName);
             if (newContactName != null) {
-                LogUtils.logInfo("In component '" + instanceFlatName + "' renaming "
-                        + "contact '" + contactName + "' to '" + newContactName + "'.");
-
+                if (msg == null) {
+                    msg = "";
+                }
+                LogUtils.logInfo(msg + "Renaming contact '" + contactName + "' to '" + newContactName + "'.");
                 contactName = newContactName;
             }
         }

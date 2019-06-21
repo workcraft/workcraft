@@ -35,6 +35,7 @@ public class VerilogSerialiser implements ModelSerialiser {
     private static final String KEYWORD_ASSIGN_DELAY = "#1";
 
     private final Queue<Pair<File, Circuit>> refinementCircuits = new LinkedList<>();
+    private final Map<String, SubstitutionRule> substitutionRules = new HashMap<>();
 
     @Override
     public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) {
@@ -44,6 +45,8 @@ public class VerilogSerialiser implements ModelSerialiser {
                 PrintWriter writer = new PrintWriter(out);
                 writer.println(Info.getGeneratedByText("// Verilog netlist ", ""));
                 refinementCircuits.clear();
+                substitutionRules.clear();
+                substitutionRules.putAll(SubstitutionUtils.readExportSubsritutionRules());
                 writeCircuit(writer, circuit);
                 writeRefinementCircuits(writer);
                 writer.close();
@@ -128,7 +131,6 @@ public class VerilogSerialiser implements ModelSerialiser {
     }
 
     private void writeInstances(PrintWriter writer, CircuitSignalInfo circuitInfo) {
-        HashMap<String, SubstitutionRule> substitutionRules = SubstitutionUtils.readExportSubsritutionRules();
         // Write writer assign statements
         boolean hasAssignments = false;
         for (FunctionComponent component : circuitInfo.getCircuit().getFunctionComponents()) {
@@ -148,7 +150,7 @@ public class VerilogSerialiser implements ModelSerialiser {
         boolean hasMappedComponents = false;
         for (FunctionComponent component : circuitInfo.getCircuit().getFunctionComponents()) {
             if (component.isMapped() || component.hasRefinement()) {
-                writeInstance(writer, circuitInfo, component, substitutionRules);
+                writeInstance(writer, circuitInfo, component);
                 hasMappedComponents = true;
             }
         }
@@ -187,8 +189,7 @@ public class VerilogSerialiser implements ModelSerialiser {
         return result;
     }
 
-    private void writeInstance(PrintWriter writer, CircuitSignalInfo circuitInfo, FunctionComponent component,
-            HashMap<String, SubstitutionRule> substitutionRules) {
+    private void writeInstance(PrintWriter writer, CircuitSignalInfo circuitInfo, FunctionComponent component) {
         // Module name
         String title = component.getModule();
         Pair<File, Circuit> refinementCircuit = RefinementUtils.getRefinementCircuit(component);
@@ -200,7 +201,13 @@ public class VerilogSerialiser implements ModelSerialiser {
         // Instance name
         String instanceFlatName = circuitInfo.getComponentFlattenReference(component);
         SubstitutionRule substitutionRule = substitutionRules.get(moduleName);
-        moduleName = SubstitutionUtils.getModuleSubstitutionName(moduleName, substitutionRule, instanceFlatName);
+        String msg = "Processing instance '" + instanceFlatName + "'";
+        String circuitTitle = circuitInfo.getCircuit().getTitle();
+        if (!circuitTitle.isEmpty()) {
+            msg += " in circuit '" + circuitTitle + "'";
+        }
+        msg += ": ";
+        moduleName = SubstitutionUtils.getModuleSubstitutionName(moduleName, substitutionRule, msg);
         if (component.getIsZeroDelay() && (component.isBuffer() || component.isInverter())) {
             writer.println("    // This inverter should have a short delay");
         }
@@ -218,9 +225,7 @@ public class VerilogSerialiser implements ModelSerialiser {
                 LogUtils.logWarning("In component '" + instanceFlatName + "' contact '" + contactName + "' is disconnected.");
                 signalName = "";
             }
-            String contactName = SubstitutionUtils.getContactSubstitutionName(
-                    contact.getName(), substitutionRule, instanceFlatName);
-
+            String contactName = SubstitutionUtils.getContactSubstitutionName(contact.getName(), substitutionRule, msg);
             writer.print("." + contactName + "(" + signalName + ")");
         }
         writer.println(");");

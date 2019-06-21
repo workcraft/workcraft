@@ -131,13 +131,15 @@ public class RefinementUtils {
         Framework framework = Framework.getInstance();
         try {
             ModelEntry me = framework.loadModel(file);
-            MathModel model = me.getMathModel();
-            if (model instanceof Circuit) {
-                return Pair.of(file, (Circuit) model);
-            }
-            if (model instanceof Stg) {
-                Stg stg = (Stg) model;
-                return getRefinementCircuit(stg.getRefinementFile());
+            if (me != null) {
+                MathModel model = me.getMathModel();
+                if (model instanceof Circuit) {
+                    return Pair.of(file, (Circuit) model);
+                }
+                if (model instanceof Stg) {
+                    Stg stg = (Stg) model;
+                    return getRefinementCircuit(stg.getRefinementFile());
+                }
             }
         } catch (DeserialisationException e) {
             String filePath = FileUtils.getFullPath(file);

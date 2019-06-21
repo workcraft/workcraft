@@ -9,11 +9,9 @@ import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.references.ReferenceHelper;
-import org.workcraft.exceptions.ArgumentException;
-import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.exceptions.FormatException;
-import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.exceptions.*;
 import org.workcraft.formula.BooleanFormula;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
@@ -36,11 +34,15 @@ import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.FileFilters;
 import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
 
+import javax.swing.*;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -91,15 +93,43 @@ public class VerilogImporter implements Importer {
 
     @Override
     public ModelEntry importFrom(InputStream in) throws DeserialisationException {
-        Framework framework = Framework.getInstance();
         Pair<Circuit, Set<Circuit>> modules = importModules(in, Collections.emptySet());
         Circuit topModule = modules.getFirst();
+        ModelEntry topModelEntry = new ModelEntry(new CircuitDescriptor(), topModule);
         Set<Circuit> otherModules = modules.getSecond();
-        for (Circuit circuit : otherModules) {
-            ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
-            framework.createWork(me, Path.empty(), circuit.getTitle());
+        if (!otherModules.isEmpty()) {
+            MainWindow mainWindow = Framework.getInstance().getMainWindow();
+            JFileChooser fc = mainWindow.createOpenDialog("Select directory", false, false, null);
+            fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            if (fc.showDialog(mainWindow, "Open") == JFileChooser.APPROVE_OPTION) {
+                File dir = fc.getSelectedFile();
+                if (dir.exists()) {
+                    adjustModuleRefinements(topModule, otherModules, dir);
+                }
+            }
         }
-        return new ModelEntry(new CircuitDescriptor(), topModule);
+        return topModelEntry;
+    }
+
+    private void adjustModuleRefinements(Circuit topModule, Set<Circuit> otherModules, File dir) {
+        Framework framework = Framework.getInstance();
+        for (Circuit otherModule : otherModules) {
+            ModelEntry me = new ModelEntry(new CircuitDescriptor(), otherModule);
+            WorkspaceEntry we = framework.createWork(me, Path.empty(), otherModule.getTitle());
+            try {
+                File file = new File(dir, otherModule.getTitle() + FileFilters.DOCUMENT_EXTENSION);
+                framework.saveWork(we, file);
+            } catch (SerialisationException e) {
+                e.printStackTrace();
+            }
+        }
+        String base = FileUtils.getFullPath(dir);
+        for (FunctionComponent component : topModule.getFunctionComponents()) {
+            FileReference refinement = component.getRefinement();
+            if (refinement != null) {
+                refinement.setBase(base);
+            }
+        }
     }
 
     public Circuit importTopModule(InputStream in) throws DeserialisationException {
@@ -216,29 +246,28 @@ public class VerilogImporter implements Importer {
         return result;
     }
 
-    private Circuit createCircuit(VerilogModule topVerilogModule, HashMap<String, VerilogModule> modules,
+    private Circuit createCircuit(VerilogModule verilogModule, HashMap<String, VerilogModule> modules,
             Collection<Mutex> mutexes, HashMap<String, SubstitutionRule> substitutionRules) {
 
         Circuit circuit = new Circuit();
-        circuit.setTitle(topVerilogModule.name);
+        circuit.setTitle(verilogModule.name);
         HashMap<VerilogInstance, FunctionComponent> instanceComponentMap = new HashMap<>();
-        HashMap<String, Wire> wires = createPorts(circuit, topVerilogModule);
-        for (VerilogAssign verilogAssign : topVerilogModule.assigns) {
+        HashMap<String, Wire> wires = createPorts(circuit, verilogModule);
+        for (VerilogAssign verilogAssign : verilogModule.assigns) {
             createAssignGate(circuit, verilogAssign, wires);
         }
         Mutex mutexModule = CircuitSettings.parseMutexData();
         Library library = null;
         SubstitutionRule substitutionRule = null;
-        for (VerilogInstance verilogInstance: topVerilogModule.instances) {
+        for (VerilogInstance verilogInstance: verilogModule.instances) {
             Gate gate = createPrimitiveGate(verilogInstance);
             if (gate == null) {
                 if (library == null) {
                     library = GenlibUtils.readLibrary();
                 }
                 substitutionRule = substitutionRules.get(verilogInstance.moduleName);
-                String gateName = SubstitutionUtils.getModuleSubstitutionName(
-                        verilogInstance.moduleName, substitutionRule,  verilogInstance.name);
-
+                String msg = "Processing instance '" + verilogInstance.name + "' in module '" + verilogModule.name + "': ";
+                String gateName = SubstitutionUtils.getModuleSubstitutionName(verilogInstance.moduleName, substitutionRule,  msg);
                 gate = library.get(gateName);
             }
             FunctionComponent component = null;
@@ -256,7 +285,7 @@ public class VerilogImporter implements Importer {
         }
         insertMutexes(mutexes, circuit, wires);
         createConnections(circuit, wires);
-        setInitialState(circuit, wires, topVerilogModule.signalStates);
+        setInitialState(circuit, wires, verilogModule.signalStates);
         setZeroDelayAttribute(instanceComponentMap);
         checkImportResult(circuit);
         return circuit;
@@ -555,14 +584,15 @@ public class VerilogImporter implements Importer {
 
     private FunctionComponent createLibraryGate(Circuit circuit, VerilogInstance verilogInstance,
             HashMap<String, Wire> wires, Gate gate, SubstitutionRule substitutionRule) {
+
+        String msg = "Processing instance '" + verilogInstance.name + "' in module '" + circuit.getTitle() + "': ";
         FunctionComponent component = GenlibUtils.instantiateGate(gate, verilogInstance.name, circuit);
         int index = 0;
         for (VerilogConnection verilogConnection : verilogInstance.connections) {
             String wireName = getWireName(verilogConnection);
             Wire wire = getOrCreateWire(wireName, wires);
             String pinName = gate.isPrimitive() ? getPrimitiveGatePinName(index++)
-                    : SubstitutionUtils.getContactSubstitutionName(
-                            verilogConnection.name, substitutionRule, verilogInstance.name);
+                    : SubstitutionUtils.getContactSubstitutionName(verilogConnection.name, substitutionRule, msg);
 
             Node node = circuit.getNodeByReference(component, pinName);
             if (node instanceof FunctionContact) {

@@ -58,6 +58,7 @@ public class PathbreakConstraintSerialiser implements PathbreakSerialiser {
 
         String instanceRef = circuit.getNodeReference(component);
         String instanceFlatName = NamespaceHelper.flattenReference(instanceRef);
+        String msg = "Processing instance '" + instanceFlatName + "': ";
         if (!component.isMapped()) {
             LogUtils.logWarning("Disabling timing arc in unmapped component '" + instanceRef + "'");
         }
@@ -69,10 +70,10 @@ public class PathbreakConstraintSerialiser implements PathbreakSerialiser {
                 if (inputContact.getPathBreaker()) {
                     if (outputName == null) {
                         outputName = SubstitutionUtils.getContactSubstitutionName(
-                                outputContact.getName(), substitutionRule, instanceFlatName);
+                                outputContact.getName(), substitutionRule, msg);
                     }
                     String inputName = SubstitutionUtils.getContactSubstitutionName(
-                            inputContact.getName(), substitutionRule, instanceFlatName);
+                            inputContact.getName(), substitutionRule, msg);
 
                     out.write(KEYWORD_SET_DISABLE_TIMING + " " + instanceFlatName + " " +
                             KEYWORD_FROM + " " + inputName + " " + KEYWORD_TO + " " + outputName + "\n");

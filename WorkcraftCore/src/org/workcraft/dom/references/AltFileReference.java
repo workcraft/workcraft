@@ -2,6 +2,7 @@ package org.workcraft.dom.references;
 
 import org.workcraft.utils.FileUtils;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -13,10 +14,12 @@ public class AltFileReference extends FileReference {
 
     @Override
     public void setBase(String base) {
+        Set<File> files = getFiles();
         super.setBase(base);
-        Set<String> tmpPaths = new LinkedHashSet<>(paths);
         clear();
-        addAll(tmpPaths);
+        for (File file : files) {
+            add(file.getPath());
+        }
     }
 
     @Override
@@ -61,6 +64,15 @@ public class AltFileReference extends FileReference {
 
     public Set<String> getPaths() {
         return Collections.unmodifiableSet(paths);
+    }
+
+    public Set<File> getFiles() {
+        Set<File> result = new LinkedHashSet<>();
+        for (String path : getPaths()) {
+            File file = FileUtils.getFileByPathAndBase(path, getBase());
+            result.add(file);
+        }
+        return result;
     }
 
 }

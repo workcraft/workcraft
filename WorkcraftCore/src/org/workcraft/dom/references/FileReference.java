@@ -14,8 +14,11 @@ public class FileReference {
     }
 
     public void setBase(String base) {
+        File file = getFile();
         this.base = FileUtils.fixSeparator(base);
-        setPath(getPath());
+        if (file != null) {
+            setPath(file.getPath());
+        }
     }
 
     public String getPath() {
@@ -27,14 +30,7 @@ public class FileReference {
     }
 
     public File getFile() {
-        File result = null;
-        if (path != null) {
-            result = new File(path);
-            if (!result.isAbsolute()) {
-                result = new File(base, path);
-            }
-        }
-        return result;
+        return FileUtils.getFileByPathAndBase(getPath(), getBase());
     }
 
 }

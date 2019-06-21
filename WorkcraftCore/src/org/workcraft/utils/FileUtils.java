@@ -348,4 +348,15 @@ public class FileUtils {
         return null;
     }
 
+    public static File getFileByPathAndBase(String path, String base) {
+        File result = null;
+        if (path != null) {
+            result = new File(path);
+            if (!result.isAbsolute()) {
+                result = new File(base, path);
+            }
+        }
+        return result;
+    }
+
 }

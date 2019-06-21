@@ -862,11 +862,16 @@ public final class Framework {
     @SuppressWarnings("unused")
     public void saveWork(WorkspaceEntry we, String path) throws SerialisationException {
         if (we == null) return;
-        File destination = getFileByAbsoluteOrRelativePath(path);
+        File file = getFileByAbsoluteOrRelativePath(path);
+        saveWork(we, file);
+    }
+
+    public void saveWork(WorkspaceEntry we, File file) throws SerialisationException {
+        if (we == null) return;
         Path<String> wsFrom = we.getWorkspacePath();
-        Path<String> wsTo = workspace.getPath(destination);
+        Path<String> wsTo = workspace.getPath(file);
         if (wsTo == null) {
-            wsTo = workspace.tempMountExternalFile(destination);
+            wsTo = workspace.tempMountExternalFile(file);
         }
         if (wsFrom != wsTo) {
             try {
@@ -875,25 +880,19 @@ public final class Framework {
                 LogUtils.logError(e.getMessage());
             }
         }
-        saveModel(we.getModelEntry(), path);
+        saveModel(we.getModelEntry(), file);
         we.setChanged(false);
         if (mainWindow != null) {
             mainWindow.refreshWorkspaceEntryTitle(we, true);
         }
     }
 
-    public void saveModel(ModelEntry modelEntry, String path) throws SerialisationException {
-        if (modelEntry == null) return;
-        File file = getFileByAbsoluteOrRelativePath(path);
-        saveModel(modelEntry, file);
-    }
-
-    public void saveModel(ModelEntry modelEntry, File file) throws SerialisationException {
-        if (modelEntry == null) return;
+    public void saveModel(ModelEntry me, File file) throws SerialisationException {
+        if (me == null) return;
         try {
-            adjustFileReferenceProperties(modelEntry, FileUtils.getBasePath(file));
+            adjustFileReferenceProperties(me, FileUtils.getBasePath(file));
             FileOutputStream stream = new FileOutputStream(file);
-            saveModel(modelEntry, stream);
+            saveModel(me, stream);
             stream.close();
         } catch (IOException e) {
             throw new SerialisationException(e);
@@ -1075,7 +1074,7 @@ public final class Framework {
         return null;
     }
 
-    private void adjustFileReferenceProperties(ModelEntry me, String base) {
+    public void adjustFileReferenceProperties(ModelEntry me, String base) {
         VisualModel model = me.getVisualModel();
         Set<PropertyDescriptor> properties = new HashSet<>();
         properties.addAll(model.getProperties(null).getDescriptors());
