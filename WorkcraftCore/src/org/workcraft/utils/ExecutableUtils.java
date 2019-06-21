@@ -6,12 +6,36 @@ public class ExecutableUtils {
 
     private static final String EXE_EXTENSION = ".exe";
 
-    public static String getAbsoluteCommandPath(String toolName) {
-        File toolFile = new File(toolName);
-        if (toolFile.exists()) {
-            toolName = toolFile.getAbsolutePath();
+    public static String getAbsoluteBasePath() {
+        return System.getProperty("user.dir");
+    }
+
+    public static String getBaseRelativePath(File file) {
+        if (file == null) {
+            return "";
+        } else {
+            String basePath = getAbsoluteBasePath();
+            return FileUtils.stripBase(file.getPath(), basePath);
         }
-        return toolName;
+    }
+
+    public static File getBaseRelativeFile(String path) {
+        return (path == null) || path.isEmpty() ? null : new File(path);
+    }
+
+    public static String getAbsoluteCommandPath(String toolName) {
+        return getAbsoluteCommandPath(new File(toolName));
+    }
+
+    public static String getAbsoluteCommandPath(File file) {
+        String result = null;
+        if (file != null) {
+            result = file.getPath();
+            if (file.exists()) {
+                result = FileUtils.getFullPath(file);
+            }
+        }
+        return result;
     }
 
     public static String getAbsoluteCommandWithSuffixPath(String name, String suffix) {

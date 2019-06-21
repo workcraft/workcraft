@@ -1,5 +1,7 @@
 package org.workcraft.dom.references;
 
+import org.workcraft.utils.FileUtils;
+
 import java.io.File;
 
 public class FileReference {
@@ -12,7 +14,7 @@ public class FileReference {
     }
 
     public void setBase(String base) {
-        this.base = fixSeparator(base);
+        this.base = FileUtils.fixSeparator(base);
         setPath(getPath());
     }
 
@@ -21,7 +23,7 @@ public class FileReference {
     }
 
     public void setPath(String path) {
-        this.path = stripBase(path);
+        this.path = FileUtils.stripBase(path, base);
     }
 
     public File getFile() {
@@ -33,25 +35,6 @@ public class FileReference {
             }
         }
         return result;
-    }
-
-    public String stripBase(String path) {
-        path = fixSeparator(path);
-        if ((base != null) && (path != null) && path.startsWith(base)) {
-            String result = path.substring(base.length());
-            while (result.startsWith("/")) {
-                result = result.substring(1);
-            }
-            return result;
-        }
-        return path;
-    }
-
-    public static String fixSeparator(String path) {
-        if (path != null) {
-            return path.replace("\\", "/");
-        }
-        return null;
     }
 
 }

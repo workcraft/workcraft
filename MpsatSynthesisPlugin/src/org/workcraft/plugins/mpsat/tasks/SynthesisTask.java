@@ -1,24 +1,19 @@
 package org.workcraft.plugins.mpsat.tasks;
 
+import org.workcraft.plugins.circuit.CircuitSettings;
+import org.workcraft.plugins.mpsat.MpsatSynthesisSettings;
+import org.workcraft.tasks.*;
+import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.ExecutableUtils;
+import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.LogUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.plugins.mpsat.MpsatSynthesisSettings;
-import org.workcraft.tasks.ExternalProcessOutput;
-import org.workcraft.tasks.ExternalProcessTask;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.tasks.SubtaskMonitor;
-import org.workcraft.tasks.Task;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.FileUtils;
-import org.workcraft.utils.LogUtils;
-import org.workcraft.utils.ExecutableUtils;
 
 public class SynthesisTask implements Task<SynthesisOutput> {
 
@@ -61,7 +56,7 @@ public class SynthesisTask implements Task<SynthesisOutput> {
         }
 
         // Technology mapping library (if needed and accepted)
-        String gateLibrary = CircuitSettings.getGateLibrary();
+        String gateLibrary = ExecutableUtils.getAbsoluteCommandPath(CircuitSettings.getGateLibrary());
         if (needsGateLibrary && (gateLibrary != null) && !gateLibrary.isEmpty()) {
             File gateLibraryFile = new File(gateLibrary);
             if (gateLibraryFile.exists()) {

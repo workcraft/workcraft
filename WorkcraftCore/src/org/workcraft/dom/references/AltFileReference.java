@@ -1,5 +1,7 @@
 package org.workcraft.dom.references;
 
+import org.workcraft.utils.FileUtils;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -24,7 +26,7 @@ public class AltFileReference extends FileReference {
     }
 
     public boolean add(String path) {
-        path = stripBase(path);
+        path = FileUtils.stripBase(path, getBase());
         if (path != null) {
             return paths.add(path);
         }
@@ -42,7 +44,7 @@ public class AltFileReference extends FileReference {
     }
 
     public boolean remove(String path) {
-        path = stripBase(path);
+        path = FileUtils.stripBase(path, getBase());
         if (path != null) {
             if (path.equals(getPath())) {
                 setPath(null);

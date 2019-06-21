@@ -1,22 +1,23 @@
 package org.workcraft.plugins.circuit.genlib;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.formula.BooleanFormula;
+import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
 import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.expression.ExpressionUtils;
 import org.workcraft.plugins.circuit.jj.genlib.GenlibParser;
-import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.LogUtils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 public class GenlibUtils {
 
@@ -71,15 +72,16 @@ public class GenlibUtils {
         return result;
     }
 
-    public static Library readLibrary(String fileName) {
+    public static Library readLibrary() {
         Library library = new Library();
+        String fileName = CircuitSettings.getGateLibrary();
         if ((fileName == null) || fileName.isEmpty()) {
-            LogUtils.logWarning("Gate library file is not specified.");
+            LogUtils.logWarning("Gate library is not specified.");
         } else {
             File file = new File(fileName);
             if (FileUtils.checkAvailability(file, "Gate library access error", false)) {
                 try {
-                    InputStream genlibInputStream = new FileInputStream(fileName);
+                    InputStream genlibInputStream = new FileInputStream(file);
                     GenlibParser genlibParser = new GenlibParser(genlibInputStream);
                     if (CommonDebugSettings.getParserTracing()) {
                         genlibParser.enable_tracing();

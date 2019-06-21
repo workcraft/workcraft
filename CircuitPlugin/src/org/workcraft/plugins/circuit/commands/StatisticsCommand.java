@@ -1,21 +1,20 @@
 package org.workcraft.plugins.circuit.commands;
 
-import java.util.Collection;
-
 import org.workcraft.commands.AbstractStatisticsCommand;
 import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.genlib.Gate;
 import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.Library;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.types.MultiSet;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
+import java.util.Collection;
 
 public class StatisticsCommand extends AbstractStatisticsCommand {
 
@@ -85,8 +84,7 @@ public class StatisticsCommand extends AbstractStatisticsCommand {
             }
         }
 
-        String libraryFileName = CircuitSettings.getGateLibrary();
-        Library library = GenlibUtils.readLibrary(libraryFileName);
+        Library library = GenlibUtils.readLibrary();
         double gateArea = 0.0;
         int mappedCount = 0;
         MultiSet<String> namedComponents = new MultiSet<>();

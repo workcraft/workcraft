@@ -1,5 +1,19 @@
 package org.workcraft.plugins.cpog.tasks;
 
+import org.workcraft.dom.visual.VisualTransformableNode;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.encoding.Encoding;
+import org.workcraft.formula.jj.ParseException;
+import org.workcraft.plugins.circuit.CircuitSettings;
+import org.workcraft.plugins.cpog.*;
+import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
+import org.workcraft.plugins.cpog.tools.CpogParsingTool;
+import org.workcraft.utils.ExecutableUtils;
+import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,26 +24,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
-
-import org.workcraft.dom.visual.VisualTransformableNode;
-import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.encoding.Encoding;
-import org.workcraft.formula.jj.ParseException;
-import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.plugins.cpog.CpogSettings;
-import org.workcraft.plugins.cpog.EncoderSettings;
-import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
-import org.workcraft.plugins.cpog.Variable;
-import org.workcraft.plugins.cpog.VisualCpog;
-import org.workcraft.plugins.cpog.VisualScenario;
-import org.workcraft.plugins.cpog.VisualVariable;
-import org.workcraft.plugins.cpog.VisualVertex;
-import org.workcraft.plugins.cpog.tools.CpogParsingTool;
-import org.workcraft.utils.FileUtils;
-import org.workcraft.utils.Hierarchy;
-import org.workcraft.utils.ExecutableUtils;
-import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 public class ScencoSolver {
 
@@ -474,8 +468,7 @@ public class ScencoSolver {
         scencoCommand = ExecutableUtils.getAbsoluteCommandPath(CpogSettings.getScencoCommand());
         espressoCommand = ExecutableUtils.getAbsoluteCommandPath(CpogSettings.getEspressoCommand());
         abcTool = CpogSettings.getAbcTool();
-        File f = new File(CircuitSettings.getGateLibrary());
-        gatesLibrary = f.getAbsolutePath();
+        gatesLibrary = ExecutableUtils.getAbsoluteCommandPath(CircuitSettings.getGateLibrary());
         espressoFlag = "-e";
     }
 

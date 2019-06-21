@@ -1,22 +1,17 @@
 package org.workcraft.plugins.fst.tasks;
 
-import java.io.File;
-import java.util.ArrayList;
-
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.fst.ProcessWindowsSettings;
-import org.workcraft.tasks.ExternalProcessOutput;
-import org.workcraft.tasks.ExternalProcessTask;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.Result;
-import org.workcraft.tasks.SubtaskMonitor;
-import org.workcraft.tasks.Task;
+import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.utils.DesktopApi;
+import org.workcraft.utils.ExecutableUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.LogUtils;
-import org.workcraft.utils.ExecutableUtils;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import java.io.File;
+import java.util.ArrayList;
 
 public class ShuttersTask implements Task<ShuttersResult>, ExternalProcessListener {
 
@@ -91,7 +86,7 @@ public class ShuttersTask implements Task<ShuttersResult>, ExternalProcessListen
     }
 
     private ArrayList<String> getArguments() {
-        ArrayList<String> args = new ArrayList<String>();
+        ArrayList<String> args = new ArrayList<>();
         File f = null;
 
         args.add(ExecutableUtils.getAbsoluteCommandPath(ProcessWindowsSettings.getShuttersCommand()));

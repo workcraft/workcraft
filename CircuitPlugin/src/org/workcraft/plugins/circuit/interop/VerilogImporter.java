@@ -233,8 +233,7 @@ public class VerilogImporter implements Importer {
             Gate gate = createPrimitiveGate(verilogInstance);
             if (gate == null) {
                 if (library == null) {
-                    String libraryFileName = CircuitSettings.getGateLibrary();
-                    library = GenlibUtils.readLibrary(libraryFileName);
+                    library = GenlibUtils.readLibrary();
                 }
                 substitutionRule = substitutionRules.get(verilogInstance.moduleName);
                 String gateName = SubstitutionUtils.getModuleSubstitutionName(

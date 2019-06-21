@@ -91,13 +91,12 @@ public class FileReferenceCellEditor extends AbstractCellEditor implements Table
             file = fileReference.getFile();
         }
         if (file != null) {
+            File dir = file.getParentFile();
+            if ((dir != null) && dir.exists()) {
+                fc.setCurrentDirectory(dir);
+            }
             if (file.exists()) {
                 fc.setSelectedFile(file);
-            } else {
-                File dir = file.getParentFile();
-                if ((dir != null) && dir.exists()) {
-                    fc.setCurrentDirectory(dir);
-                }
             }
         }
         if (fc.showDialog(mainWindow, "Open") == JFileChooser.APPROVE_OPTION) {

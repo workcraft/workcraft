@@ -12,8 +12,10 @@ import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.ExecutableUtils;
 
 import java.awt.*;
+import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -216,27 +218,27 @@ public class CircuitSettings implements Settings {
             }
         });
 
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Gate library for technology mapping", String.class) {
+        properties.add(new PropertyDeclaration<CircuitSettings, File>(
+                this, "Gate library for technology mapping", File.class) {
             @Override
-            public void setter(CircuitSettings object, String value) {
-                setGateLibrary(value);
+            public void setter(CircuitSettings object, File value) {
+                setGateLibrary(ExecutableUtils.getBaseRelativePath(value));
             }
             @Override
-            public String getter(CircuitSettings object) {
-                return getGateLibrary();
+            public File getter(CircuitSettings object) {
+                return ExecutableUtils.getBaseRelativeFile(getGateLibrary());
             }
         });
 
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Substitution rules for export", String.class) {
+        properties.add(new PropertyDeclaration<CircuitSettings, File>(
+                this, "Substitution rules for export", File.class) {
             @Override
-            public void setter(CircuitSettings object, String value) {
-                setExportSubstitutionLibrary(value);
+            public void setter(CircuitSettings object, File value) {
+                setExportSubstitutionLibrary(ExecutableUtils.getBaseRelativePath(value));
             }
             @Override
-            public String getter(CircuitSettings object) {
-                return getExportSubstitutionLibrary();
+            public File getter(CircuitSettings object) {
+                return ExecutableUtils.getBaseRelativeFile(getExportSubstitutionLibrary());
             }
         });
 
@@ -252,15 +254,15 @@ public class CircuitSettings implements Settings {
             }
         });
 
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Substitution rules for import", String.class) {
+        properties.add(new PropertyDeclaration<CircuitSettings, File>(
+                this, "Substitution rules for import", File.class) {
             @Override
-            public void setter(CircuitSettings object, String value) {
-                setImportSubstitutionLibrary(value);
+            public void setter(CircuitSettings object, File value) {
+                setImportSubstitutionLibrary(ExecutableUtils.getBaseRelativePath(value));
             }
             @Override
-            public String getter(CircuitSettings object) {
-                return getImportSubstitutionLibrary();
+            public File getter(CircuitSettings object) {
+                return ExecutableUtils.getBaseRelativeFile(getImportSubstitutionLibrary());
             }
         });
 

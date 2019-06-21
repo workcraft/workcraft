@@ -819,17 +819,20 @@ public class MainWindow extends JFrame {
         JFileChooser fc = new JFileChooser();
         fc.setDialogType(JFileChooser.OPEN_DIALOG);
         fc.setDialogTitle(title);
+        boolean allowAllFileFilter = true;
         if (allowWorkFiles) {
             fc.setFileFilter(FileFilters.DOCUMENT_FILES);
+            allowAllFileFilter = false;
         }
         if (formats != null) {
             for (Format format : formats) {
                 fc.addChoosableFileFilter(new FormatFileFilter(format));
+                allowAllFileFilter = false;
             }
         }
         GuiUtils.sizeFileChooserToScreen(fc, getDisplayMode());
         fc.setCurrentDirectory(getLastDirectory());
-        fc.setAcceptAllFileFilterUsed(false);
+        fc.setAcceptAllFileFilterUsed(allowAllFileFilter);
         fc.setMultiSelectionEnabled(multiSelection);
         return fc;
     }

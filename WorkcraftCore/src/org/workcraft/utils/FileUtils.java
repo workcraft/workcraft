@@ -329,4 +329,23 @@ public class FileUtils {
         return null;
     }
 
+    public static String stripBase(String path, String base) {
+        path = fixSeparator(path);
+        if ((base != null) && (path != null) && path.startsWith(base)) {
+            String result = path.substring(base.length());
+            while (result.startsWith("/")) {
+                result = result.substring(1);
+            }
+            return result;
+        }
+        return path;
+    }
+
+    public static String fixSeparator(String path) {
+        if (path != null) {
+            return path.replace("\\", "/");
+        }
+        return null;
+    }
+
 }
