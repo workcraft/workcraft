@@ -19,15 +19,20 @@ import java.util.HashMap;
 @SuppressWarnings("serial")
 public class PropertyEditorTable extends JTable {
 
-    HashMap<Class<?>, PropertyClass> propertyClasses;
-    TableCellRenderer[] cellRenderers;
-    TableCellEditor[] cellEditors;
-    PropertyEditorTableModel model;
+    private final PropertyEditorTableModel model;
+    private final HashMap<Class<?>, PropertyClass> propertyClasses;
+
+    private TableCellRenderer[] cellRenderers;
+    private TableCellEditor[] cellEditors;
 
     public PropertyEditorTable() {
+        this("", "");
+    }
+
+    public PropertyEditorTable(String propertyHeader, String valueHeader) {
         super();
 
-        model = new PropertyEditorTableModel();
+        model = new PropertyEditorTableModel(propertyHeader, valueHeader);
         setModel(model);
 
         getTableHeader().setDefaultRenderer(new FlatHeaderRenderer());

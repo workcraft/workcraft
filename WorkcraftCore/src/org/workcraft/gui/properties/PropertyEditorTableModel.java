@@ -6,10 +6,13 @@ import java.util.Map;
 @SuppressWarnings("serial")
 public class PropertyEditorTableModel extends AbstractTableModel {
 
-    //static final String[] columnNames = {"Property", "Value" };
-    static final String[] columnNames = {"", ""};
+    final String[] columnNames;
     PropertyDescriptor[] declarations = null;
     PropertyClass[] rowClasses = null;
+
+    public PropertyEditorTableModel(String propertyHeader, String valueHeader) {
+        columnNames = new String[]{propertyHeader, valueHeader};
+    }
 
     @Override
     public String getColumnName(int col) {

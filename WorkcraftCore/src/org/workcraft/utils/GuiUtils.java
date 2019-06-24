@@ -1,7 +1,6 @@
 package org.workcraft.utils;
 
 import info.clearthought.layout.TableLayout;
-import info.clearthought.layout.TableLayoutConstraints;
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.GVTBuilder;
@@ -26,19 +25,9 @@ public class GuiUtils {
     private static final int BUTTON_PREFERED_HEIGHT = 25;
 
     public static JPanel createLabeledComponent(JComponent component, String labelText) {
-        JPanel result = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
-        result.add(new JLabel(labelText));
-        result.add(component);
-        return result;
-    }
-
-    public static JPanel createWideLabeledComponent(JComponent component, String labelText) {
-        JPanel result = new JPanel(createTableLayout(
-                new double[]{TableLayout.PREFERRED, TableLayout.FILL},
-                new double[]{TableLayout.PREFERRED}));
-
-        result.add(new JLabel(labelText), new TableLayoutConstraints(0, 0));
-        result.add(component, new TableLayoutConstraints(1, 0));
+        JPanel result = new JPanel(createBorderLayout());
+        result.add(new JLabel(labelText), BorderLayout.WEST);
+        result.add(component, BorderLayout.CENTER);
         return result;
     }
 
