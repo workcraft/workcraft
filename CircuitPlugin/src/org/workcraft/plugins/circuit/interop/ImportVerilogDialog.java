@@ -7,7 +7,9 @@ import org.workcraft.gui.properties.Properties;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.PropertyEditorTable;
+import org.workcraft.plugins.circuit.utils.VerilogUtils;
 import org.workcraft.plugins.circuit.verilog.VerilogModule;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.FileFilters;
 
@@ -19,38 +21,62 @@ import java.util.*;
 
 public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> {
 
-    class ImportProperties implements Properties {
+    class ModuleFileProperties implements Properties {
         private final List<PropertyDescriptor> properties = new LinkedList<>();
-        private final Map<VerilogModule, String> map = new HashMap<>();
 
         @Override
         public Collection<PropertyDescriptor> getDescriptors() {
             return properties;
         }
 
-        public void add(VerilogModule module, String fileName) {
-            properties.add(new PropertyDeclaration<VerilogModule, String>(
-                    module, fileName, String.class) {
+        public void add(VerilogModule module, String name) {
+            properties.add(new PropertyDeclaration<VerilogModule, String>(module, name, String.class) {
                 @Override
                 public void setter(VerilogModule object, String value) {
-                    map.put(object, value);
+                    if (moduleToFileMap != null) {
+                        if ((value == null) || value.isEmpty() || FileFilters.DOCUMENT_EXTENSION.equals(value)) {
+                            DialogUtils.showError("File name cannot be empty.");
+                        } else {
+                            if (!value.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+                                value += FileFilters.DOCUMENT_EXTENSION;
+                            }
+                            moduleToFileMap.put(object, value);
+                        }
+                    }
                 }
 
                 @Override
                 public String getter(VerilogModule object) {
-                    return map.get(object);
+                    return moduleToFileMap == null ? null : moduleToFileMap.get(object);
                 }
             });
-            map.put(module, fileName);
+        }
+    }
+
+    class ModuleComboBoxRenderer implements ListCellRenderer {
+        private final DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+        private final Map<VerilogModule, String> moduleToTextMap = new HashMap<>();
+
+        ModuleComboBoxRenderer(Map<VerilogModule, String> moduleToTextMap) {
+            this.moduleToTextMap.putAll(moduleToTextMap);
+        }
+
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value, int index,
+                boolean isSelected, boolean cellHasFocus) {
+
+            String text = moduleToTextMap.get(value);
+            return defaultRenderer.getListCellRendererComponent(
+                    list, text, index, isSelected, cellHasFocus);
         }
     }
 
     private VerilogModule topModule;
     private File dir;
-    private ImportProperties importProperties;
+    private Map<VerilogModule, String> moduleToFileMap;
 
     public ImportVerilogDialog(Window owner, Collection<VerilogModule> modules) {
-        super(owner, "Import Verilog hierarchy", modules);
+        super(owner, "Import hierarchical Verilog", modules);
     }
 
     @Override
@@ -58,22 +84,78 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
         JPanel result = super.createControlsPanel();
         result.setLayout(GuiUtils.createBorderLayout());
 
+        Collection<VerilogModule> modules = getUserData();
+
         JComboBox<VerilogModule> topModuleCombo = new JComboBox<>();
+        topModuleCombo.setRenderer(new ModuleComboBoxRenderer(createModuleToTextMap(modules)));
+
+        PropertyEditorTable descendantModulesTable = new PropertyEditorTable(
+                "<html><b>Hierarchy module</b></html>", "<html><b>File name</b></html>");
+
+        Map<VerilogModule, ModuleFileProperties> moduleToPropertiesMap = createModuleToPropertyMap(modules);
         // First add action listener, then populate the ComboBox
         topModuleCombo.addActionListener(l -> {
             topModule = (VerilogModule) topModuleCombo.getSelectedItem();
-            //modulesTableModel.fireTableDataChanged();
+            descendantModulesTable.assign(moduleToPropertiesMap.get(topModule));
         });
-        JPanel topModulePanel = GuiUtils.createLabeledComponent(topModuleCombo, "Top module:");
 
+        Collection<VerilogModule> topModules = VerilogUtils.getTopModules(modules);
+        for (VerilogModule module : modules) {
+            if (topModules.contains(module)) {
+                topModuleCombo.insertItemAt(module, 0);
+            } else {
+                topModuleCombo.addItem(module);
+            }
+            topModuleCombo.setSelectedIndex(0);
+        }
+
+        JPanel topModulePanel = GuiUtils.createLabeledComponent(topModuleCombo,
+                "<html>Top module (suggested are <b>bold</b>):</html>");
+
+        result.add(topModulePanel, BorderLayout.NORTH);
+        result.add(new JScrollPane(descendantModulesTable), BorderLayout.CENTER);
+        result.add(createDirectoryPanel(), BorderLayout.SOUTH);
+
+        return result;
+    }
+
+    private Map<VerilogModule, String> createModuleToTextMap(Collection<VerilogModule> modules) {
+        Map<VerilogModule, String> result = new HashMap<>();
+        Collection<VerilogModule> topModules = VerilogUtils.getTopModules(modules);
+        for (VerilogModule module : modules) {
+            result.put(module, topModules.contains(module) ? "<html><b>" + module.name + "</b></html>" : module.name);
+        }
+        return result;
+    }
+
+    private Map<VerilogModule, ModuleFileProperties> createModuleToPropertyMap(Collection<VerilogModule> modules) {
+        moduleToFileMap = new HashMap<>();
+        Map<VerilogModule, ModuleFileProperties> result = new HashMap<>();
+        Map<VerilogModule, Set<VerilogModule>> moduleToDescendantsMap = VerilogUtils.getModuleToDescendantsMap(modules);
+        for (VerilogModule module : modules) {
+            moduleToFileMap.put(module, module.name + FileFilters.DOCUMENT_EXTENSION);
+            Set<VerilogModule> descendants = moduleToDescendantsMap.get(module);
+            ModuleFileProperties properties = new ModuleFileProperties();
+            result.put(module, properties);
+            if (descendants != null) {
+                for (VerilogModule descendant : descendants) {
+                    properties.add(descendant, descendant.name);
+                }
+            }
+        }
+        return result;
+    }
+
+    private JPanel createDirectoryPanel() {
         MainWindow mainWindow = Framework.getInstance().getMainWindow();
         dir = mainWindow.getLastDirectory();
         JTextField dirText = new JTextField(dir.getPath());
-        JPanel dirPanel = GuiUtils.createLabeledComponent(dirText, "Directory:");
+        JPanel dirPanel = GuiUtils.createLabeledComponent(dirText, "Save directory:");
         JButton dirSelectButton = new JButton("Browse...");
         dirPanel.add(dirSelectButton, BorderLayout.EAST);
+
         dirSelectButton.addActionListener(l -> {
-            JFileChooser fc = mainWindow.createOpenDialog("Select directory", false, false, null);
+            JFileChooser fc = mainWindow.createOpenDialog("Select save directory", false, false, null);
             fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             fc.setCurrentDirectory(dir);
             if (fc.showDialog(mainWindow, "Open") == JFileChooser.APPROVE_OPTION) {
@@ -81,24 +163,7 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
                 dirText.setText(dir.getPath());
             }
         });
-
-        PropertyEditorTable otherModulesTable = new PropertyEditorTable(
-                "<html><b>Module name</b></html>",
-                "<html><b>File name</b></html>");
-
-        JScrollPane otherModulesScroll = new JScrollPane(otherModulesTable);
-        importProperties = new ImportProperties();
-        for (VerilogModule module : getUserData()) {
-            topModuleCombo.addItem(module);
-            importProperties.add(module, module.name + FileFilters.DOCUMENT_EXTENSION);
-        }
-        otherModulesTable.assign(importProperties);
-
-        result.add(topModulePanel, BorderLayout.NORTH);
-        result.add(otherModulesScroll, BorderLayout.CENTER);
-        result.add(dirPanel, BorderLayout.SOUTH);
-
-        return result;
+        return dirPanel;
     }
 
     public VerilogModule getTopModule() {
@@ -106,7 +171,7 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
     }
 
     public Map<VerilogModule, String> getModuleFileNames() {
-        return importProperties.map;
+        return Collections.unmodifiableMap(moduleToFileMap);
     }
 
     public File getDirectory() {

@@ -5,6 +5,7 @@ import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.editor.GraphEditorPanel;
@@ -100,6 +101,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
                 new PlatoException(result).handleConceptsError();
             } catch (PlatoException e) {
                 e.handleConceptsError();
+            } catch (OperationCancelledException e) {
             }
         }
     }
@@ -151,7 +153,8 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
         return false;
     }
 
-    private void addStg(String output, Framework framework, GraphEditorPanel editor, String[] invariants) throws PlatoException, IOException, DeserialisationException {
+    private void addStg(String output, Framework framework, GraphEditorPanel editor, String[] invariants)
+            throws IOException, DeserialisationException, OperationCancelledException {
         ModelEntry me = ImportUtils.importFromByteArray(new StgImporter(), output.getBytes());
         MathModel mathModel = me.getMathModel();
         StgDescriptor stgModel = new StgDescriptor();
@@ -171,7 +174,8 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
         }
     }
 
-    private void addFst(String output, Framework framework, GraphEditorPanel editor) throws PlatoException, IOException, DeserialisationException {
+    private void addFst(String output, Framework framework, GraphEditorPanel editor)
+            throws IOException, DeserialisationException, OperationCancelledException {
         ModelEntry me = ImportUtils.importFromByteArray(new org.workcraft.plugins.fst.interop.SgImporter(), output.getBytes());
         MathModel mathModel = me.getMathModel();
         FstDescriptor fstModel = new FstDescriptor();

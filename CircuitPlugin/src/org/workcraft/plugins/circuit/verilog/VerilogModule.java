@@ -24,9 +24,4 @@ public class VerilogModule {
         return assigns.isEmpty() && instances.isEmpty();
     }
 
-    @Override
-    public String toString() {
-        return name;
-    }
-
 }

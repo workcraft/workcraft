@@ -144,8 +144,6 @@ public class Console {
                     Thread.sleep(100);
                 } catch (InterruptedException e1) {
                 }
-            } else if (framework.isGUIRestartRequested()) {
-                framework.startGUI();
             } else {
                 System.out.print("js>");
                 try {

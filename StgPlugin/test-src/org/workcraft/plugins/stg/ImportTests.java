@@ -10,6 +10,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.dom.Connection;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.interop.StgImporter;
@@ -21,7 +22,7 @@ import org.workcraft.workspace.ModelEntry;
 public class ImportTests {
 
     @Test
-    public void test1() throws IOException, DeserialisationException {
+    public void test1() throws IOException, DeserialisationException, OperationCancelledException {
         File tempFile = File.createTempFile("test-", ".g");
         tempFile.deleteOnExit();
         FileOutputStream fileStream = new FileOutputStream(tempFile);

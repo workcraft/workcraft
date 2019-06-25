@@ -225,7 +225,6 @@ public final class Framework {
 
     private boolean inGuiMode = false;
     private boolean shutdownRequested = false;
-    private boolean guiRestartRequested = false;
     private final ContextFactory contextFactory = new ContextFactory();
     private File workingDirectory = null;
     private MainWindow mainWindow;
@@ -487,7 +486,6 @@ public final class Framework {
             System.out.println("Already in GUI mode");
             return;
         }
-        guiRestartRequested = false;
         System.out.println("Switching to GUI mode...");
 
         if (SwingUtilities.isEventDispatchThread()) {
@@ -769,7 +767,6 @@ public final class Framework {
                     me = loadModel(bis);
                     adjustFileReferenceProperties(me, FileUtils.getBasePath(file));
                 } catch (OperationCancelledException e) {
-                    return null;
                 }
             } else {
                 try {
@@ -778,6 +775,7 @@ public final class Framework {
                     me = ImportUtils.importFromFile(importer, file);
                 } catch (IOException e) {
                     throw new DeserialisationException(e);
+                } catch (OperationCancelledException e) {
                 }
             }
         }
@@ -977,20 +975,6 @@ public final class Framework {
         return new Memento(os.toByteArray());
     }
 
-    public ModelEntry importModel(String path) throws DeserialisationException {
-        File file = getFileByAbsoluteOrRelativePath(path);
-        return importModel(file);
-    }
-
-    public ModelEntry importModel(File file) throws DeserialisationException {
-        try {
-            final Importer importer = ImportUtils.chooseBestImporter(getPluginManager(), file);
-            return ImportUtils.importFromFile(importer, file);
-        } catch (IOException e) {
-            throw new DeserialisationException(e);
-        }
-    }
-
     public ModelEntry cloneModel(ModelEntry modelEntry) {
         Memento memento = saveModel(modelEntry);
         return loadModel(memento);
@@ -1027,15 +1011,6 @@ public final class Framework {
                 throw new SerialisationException(e);
             }
         }
-    }
-
-    public void restartGUI() throws OperationCancelledException {
-        guiRestartRequested = true;
-        shutdownGUI();
-    }
-
-    public boolean isGUIRestartRequested() {
-        return guiRestartRequested;
     }
 
     public void loadWorkspace(File file) throws DeserialisationException {

@@ -28,6 +28,7 @@ import org.workcraft.plugins.circuit.jj.expression.ExpressionParser;
 import org.workcraft.plugins.circuit.jj.verilog.VerilogParser;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
+import org.workcraft.plugins.circuit.utils.VerilogUtils;
 import org.workcraft.plugins.circuit.verilog.*;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
@@ -42,7 +43,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class VerilogImporter implements Importer {
 
@@ -60,9 +60,16 @@ public class VerilogImporter implements Importer {
         }
     }
 
+    private class Wire {
+        public FunctionContact source = null;
+        public HashSet<FunctionContact> sinks = new HashSet<>();
+        public HashSet<FunctionContact> undefined = new HashSet<>();
+    }
+
     private static final String MSG_NO_MODULE = "No module found.";
     private static final String MSG_NO_TOP_MODULE = "No top module found.";
     private static final String MSG_MANY_TOP_MODULES = "More than one top module is found.";
+    private static final String MSG_CANCELED_BY_USER = "Import operation cancelled by user.";
 
     private static final String PRIMITIVE_GATE_INPUT_PREFIX = "i";
     private static final String PRIMITIVE_GATE_OUTPUT_NAME = "o";
@@ -72,12 +79,6 @@ public class VerilogImporter implements Importer {
     private Library library = null;
     private Map<String, SubstitutionRule> substitutionRules = null;
     private Map<VerilogModule, String> moduleFileNames = null;
-
-    private class Wire {
-        public FunctionContact source = null;
-        public HashSet<FunctionContact> sinks = new HashSet<>();
-        public HashSet<FunctionContact> undefined = new HashSet<>();
-    }
 
     // Default constructor is required for PluginManager -- it is called via reflection.
     public VerilogImporter() {
@@ -94,7 +95,7 @@ public class VerilogImporter implements Importer {
     }
 
     @Override
-    public ModelEntry importFrom(InputStream in) throws DeserialisationException {
+    public ModelEntry importFrom(InputStream in) throws OperationCancelledException, DeserialisationException  {
         Collection<VerilogModule> verilogModules = importVerilogModules(in);
         if ((verilogModules == null) || verilogModules.isEmpty()) {
             throw new DeserialisationException(MSG_NO_MODULE);
@@ -109,52 +110,74 @@ public class VerilogImporter implements Importer {
         return new ModelEntry(new CircuitDescriptor(), circuit);
     }
 
-    private Circuit createCircuitHierarchy(Collection<VerilogModule> verilogModules) {
-        Circuit circuit = null;
+    private Circuit createCircuitHierarchy(Collection<VerilogModule> verilogModules) throws OperationCancelledException {
         MainWindow mainWindow = Framework.getInstance().getMainWindow();
         ImportVerilogDialog dialog = new ImportVerilogDialog(mainWindow, verilogModules);
         if (dialog.reveal()) {
             VerilogModule topVerilogModule = dialog.getTopModule();
             File dir = dialog.getDirectory();
             moduleFileNames = dialog.getModuleFileNames();
-            circuit = createCircuitHierarchy(verilogModules, topVerilogModule, dir);
+            Set<VerilogModule> descendantModules = VerilogUtils.getDescendantModules(topVerilogModule, verilogModules);
+            Set<File> problematicFiles = getProblematicFiles(descendantModules, dir);
+            if (!problematicFiles.isEmpty()) {
+                String msg = "The following files already exist:\n";
+                for (File file : problematicFiles) {
+                    msg += "  " + file.getPath() + "\n";
+                }
+                msg += "\nOverwrite?";
+                if (!DialogUtils.showConfirmWarning(msg, "Import hierarchical Verilog", false)) {
+                    throw new OperationCancelledException(MSG_CANCELED_BY_USER);
+                }
+            }
+            return createCircuitHierarchy(topVerilogModule, descendantModules, dir);
         }
-        return circuit;
+        throw new OperationCancelledException(MSG_CANCELED_BY_USER);
     }
 
-    private Circuit createCircuitHierarchy(Collection<VerilogModule> verilogModules, VerilogModule topVerilogModule, File dir) {
-        Circuit circuit = null;
-        Map<Circuit, String> otherModules = new HashMap<>();
-        for (VerilogModule verilogModule : verilogModules) {
+    private Set<File> getProblematicFiles(Set<VerilogModule> descendantModules, File dir) {
+        Set<File> result = new HashSet<>();
+        for (VerilogModule module : descendantModules) {
+            String fileName = moduleFileNames.get(module);
+            File file = new File(dir, fileName);
+            if (file.exists()) {
+                result.add(file);
+            }
+        }
+        return result;
+    }
+
+    private Circuit createCircuitHierarchy(VerilogModule topVerilogModule,
+            Collection<VerilogModule> descendantModules, File dir) {
+
+        Circuit circuit = createCircuit(topVerilogModule, descendantModules);
+
+        Map<Circuit, String> circuitFileNames = new HashMap<>();
+        for (VerilogModule verilogModule : descendantModules) {
             if (!verilogModule.isEmpty()) {
-                if (topVerilogModule == verilogModule) {
-                    circuit = createCircuit(verilogModule, verilogModules);
-                } else {
-                    Circuit otherModule = createCircuit(verilogModule, verilogModules);
-                    if (moduleFileNames != null) {
-                        otherModules.put(otherModule, moduleFileNames.get(verilogModule));
-                    }
+                Circuit descendantCircuit = createCircuit(verilogModule, descendantModules);
+                if (moduleFileNames != null) {
+                    circuitFileNames.put(descendantCircuit, moduleFileNames.get(verilogModule));
                 }
             }
         }
-        adjustModuleRefinements(circuit, otherModules, dir);
+        adjustModuleRefinements(circuit, circuitFileNames, dir);
         return circuit;
     }
 
-    private void adjustModuleRefinements(Circuit topModule, Map<Circuit, String> otherModules, File dir) {
+    private void adjustModuleRefinements(Circuit topCircuit, Map<Circuit, String> circuitFileNames, File dir) {
         Framework framework = Framework.getInstance();
-        for (Circuit otherModule : otherModules.keySet()) {
-            ModelEntry me = new ModelEntry(new CircuitDescriptor(), otherModule);
-            WorkspaceEntry we = framework.createWork(me, Path.empty(), otherModule.getTitle());
+        for (Circuit circuit : circuitFileNames.keySet()) {
+            ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
+            WorkspaceEntry we = framework.createWork(me, Path.empty(), circuit.getTitle());
             try {
-                File file = new File(dir, otherModules.get(otherModule));
+                File file = new File(dir, circuitFileNames.get(circuit));
                 framework.saveWork(we, file);
             } catch (SerialisationException e) {
                 e.printStackTrace();
             }
         }
         String base = FileUtils.getFullPath(dir);
-        for (FunctionComponent component : topModule.getFunctionComponents()) {
+        for (FunctionComponent component : topCircuit.getFunctionComponents()) {
             FileReference refinement = component.getRefinement();
             if (refinement != null) {
                 refinement.setBase(base);
@@ -168,7 +191,7 @@ public class VerilogImporter implements Importer {
 
     public Circuit importTopModule(InputStream in, Collection<Mutex> mutexes) throws DeserialisationException {
         Collection<VerilogModule> verilogModules = importVerilogModules(in);
-        Collection<VerilogModule> topVerilogModules = getTopModules(verilogModules);
+        Collection<VerilogModule> topVerilogModules = VerilogUtils.getTopModules(verilogModules);
         if (topVerilogModules.size() == 0) {
             throw new DeserialisationException(MSG_NO_TOP_MODULE);
         }
@@ -180,6 +203,9 @@ public class VerilogImporter implements Importer {
     }
 
     private Collection<VerilogModule> importVerilogModules(InputStream in) throws DeserialisationException {
+        library = null;
+        substitutionRules = null;
+        moduleFileNames = null;
         List<VerilogModule> result = null;
         try {
             VerilogParser parser = new VerilogParser(in);
@@ -196,60 +222,9 @@ public class VerilogImporter implements Importer {
             LogUtils.logInfo("Parsed Verilog modules");
             for (VerilogModule verilogModule : result) {
                 if (!verilogModule.isEmpty()) {
-                    printModule(verilogModule);
+                    VerilogUtils.printModule(verilogModule);
                 }
             }
-        }
-        return result;
-    }
-
-    private Collection<VerilogModule> getTopModules(Collection<VerilogModule> verilogModules) {
-        HashMap<String, VerilogModule> nameToModuleMap = new HashMap<>();
-        for (VerilogModule verilogModule : verilogModules) {
-            if ((verilogModule != null) && (verilogModule.name != null)) {
-                nameToModuleMap.put(verilogModule.name, verilogModule);
-            }
-        }
-        HashSet<VerilogModule> result = new HashSet<>(verilogModules);
-        if (verilogModules.size() > 1) {
-            for (VerilogModule verilogModule : verilogModules) {
-                if (verilogModule.isEmpty()) {
-                    result.remove(verilogModule);
-                }
-                for (VerilogInstance verilogInstance : verilogModule.instances) {
-                    result.remove(nameToModuleMap.get(verilogInstance.moduleName));
-                }
-            }
-        }
-        return result;
-    }
-
-    private void printModule(VerilogModule verilogModule) {
-        String portNames = verilogModule.ports.stream()
-                .map(verilogPort -> verilogPort.name)
-                .collect(Collectors.joining(", "));
-        LogUtils.logMessage("module " + verilogModule.name + " (" + portNames + ");");
-        for (VerilogPort verilogPort : verilogModule.ports) {
-            LogUtils.logMessage("    " + verilogPort.type + " " + ((verilogPort.range == null) ? "" : verilogPort.range + " ") + verilogPort.name + ";");
-        }
-        for (VerilogAssign verilogAssign : verilogModule.assigns) {
-            LogUtils.logMessage("    assign " + verilogAssign.name + " = " + verilogAssign.formula + ";");
-        }
-
-        for (VerilogInstance verilogInstance : verilogModule.instances) {
-            String instanceName = (verilogInstance.name == null) ? "" : verilogInstance.name;
-            String pinNames = verilogInstance.connections.stream()
-                    .map(verilogConnection -> getConnectionString(verilogConnection))
-                    .collect(Collectors.joining(", "));
-            LogUtils.logMessage("    " + verilogInstance.moduleName + " " + instanceName + " (" + pinNames + ");");
-        }
-        LogUtils.logMessage("endmodule\n");
-    }
-
-    private String getConnectionString(VerilogConnection verilogConnection) {
-        String result = verilogConnection.netName + ((verilogConnection.netIndex == null) ? "" : "[" + verilogConnection.netIndex + "]");
-        if (verilogConnection.name != null) {
-            result = "." + verilogConnection.name + "(" + result + ")";
         }
         return result;
     }

@@ -1032,8 +1032,8 @@ public class MainWindow extends JFrame {
                     setLastDirectory(file);
                     break;
                 } catch (IOException | DeserialisationException e) {
-                    e.printStackTrace();
                     DialogUtils.showError(e.getMessage());
+                } catch (OperationCancelledException e) {
                 }
             }
         }
