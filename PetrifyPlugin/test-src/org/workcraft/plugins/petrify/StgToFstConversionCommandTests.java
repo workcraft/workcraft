@@ -1,17 +1,11 @@
 package org.workcraft.plugins.petrify;
 
-import java.awt.Color;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.utils.DesktopApi;
+import org.workcraft.plugins.circuit.TestUtils;
 import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.VisualFst;
@@ -19,8 +13,14 @@ import org.workcraft.plugins.petrify.commands.StgToBinaryFstConversionCommand;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.utils.PackageUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
+import java.awt.*;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class StgToFstConversionCommandTests {
 
@@ -28,18 +28,7 @@ public class StgToFstConversionCommandTests {
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
-        switch (DesktopApi.getOs()) {
-        case LINUX:
-            PetrifySettings.setCommand("dist-template/linux/tools/PetrifyTools/petrify");
-            break;
-        case MACOS:
-            PetrifySettings.setCommand("dist-template/osx/Contents/Resources/tools/PetrifyTools/petrify");
-            break;
-        case WINDOWS:
-            PetrifySettings.setCommand("dist-template\\windows\\tools\\PetrifyTools\\petrify.exe");
-            break;
-        default:
-        }
+        PetrifySettings.setCommand(TestUtils.getToolPath("PetrifyTools", "petrify"));
     }
 
     @Test

@@ -84,7 +84,7 @@ public class CircuitSettings implements Settings {
     private static final String defaultExportSubstitutionLibrary = "";
     private static final boolean defaultInvertExportSubstitutionRules = false;
     private static final String defaultImportSubstitutionLibrary = "";
-    private static final boolean defaultInvertImportSubstitutionRules = false;
+    private static final boolean defaultInvertImportSubstitutionRules = true;
     private static final String defaultBufData = "BUF (I, O)";
     private static final String defaultAndData = "AND2 (A, B, O)";
     private static final String defaultOrData = "OR2 (A, B, O)";

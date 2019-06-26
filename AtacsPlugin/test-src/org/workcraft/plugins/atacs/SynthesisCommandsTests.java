@@ -4,7 +4,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.plugins.atacs.commands.ComplexGateSynthesisCommand;
 import org.workcraft.plugins.atacs.commands.GeneralisedCelementSynthesisCommand;
 import org.workcraft.plugins.atacs.commands.StandardCelementSynthesisCommand;
@@ -17,18 +16,7 @@ public class SynthesisCommandsTests {
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
-        switch (DesktopApi.getOs()) {
-        case LINUX:
-            AtacsSettings.setCommand("dist-template/linux/tools/ATACS/atacs");
-            break;
-        case MACOS:
-            AtacsSettings.setCommand("dist-template/osx/Contents/Resources/tools/ATACS/atacs");
-            break;
-        case WINDOWS:
-            AtacsSettings.setCommand("dist-template\\windows\\tools\\ATACS\\atacs.exe");
-            break;
-        default:
-        }
+        AtacsSettings.setCommand(TestUtils.getToolPath("ATACS", "atacs"));
     }
 
     @Test

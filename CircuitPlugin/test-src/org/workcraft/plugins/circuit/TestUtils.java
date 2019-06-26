@@ -9,15 +9,40 @@ import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.Hierarchy;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
 public class TestUtils {
+
+    public static String getLibraryPath(String fileName) {
+        switch (DesktopApi.getOs()) {
+        case LINUX:
+            return "dist-template/linux/libraries/" + fileName;
+        case MACOS:
+            return "dist-template/osx/Contents/Resources/libraries/" + fileName;
+        case WINDOWS:
+            return "dist-template\\windows\\libraries\\" + fileName;
+        }
+        return fileName;
+    }
+
+    public static String getToolPath(String dirName, String fileName) {
+        switch (DesktopApi.getOs()) {
+        case LINUX:
+            return "dist-template/linux/tools/" + dirName + "/" + fileName;
+        case MACOS:
+            return "dist-template/osx/Contents/Resources/tools/" + dirName + "/" + fileName;
+        case WINDOWS:
+            return "dist-template\\windows\\tools\\" + dirName + "\\" + fileName;
+        }
+        return dirName + "/" + fileName;
+    }
 
     public static <C extends AbstractSynthesisCommand> void testSynthesisCommand(Class<C> cls, String workName,
             int expectedComponentCount)

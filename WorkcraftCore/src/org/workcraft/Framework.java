@@ -989,6 +989,10 @@ public final class Framework {
         exportModel(we.getModelEntry(), file, formatName, null);
     }
 
+    public void exportWork(WorkspaceEntry we, File file, Format format) throws SerialisationException {
+        exportModel(we.getModelEntry(), file, format.getName(), format.getUuid());
+    }
+
     public void exportModel(ModelEntry me, File file, Format format) throws SerialisationException {
         exportModel(me, file, format.getName(), format.getUuid());
     }

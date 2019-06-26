@@ -10,7 +10,6 @@ import org.workcraft.plugins.circuit.commands.*;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.punf.PunfSettings;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -25,24 +24,9 @@ public class TransformationCommandTests {
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
-        switch (DesktopApi.getOs()) {
-        case LINUX:
-            PcompSettings.setCommand("dist-template/linux/tools/UnfoldingTools/pcomp");
-            PunfSettings.setCommand("dist-template/linux/tools/UnfoldingTools/punf");
-            MpsatVerificationSettings.setCommand("dist-template/linux/tools/UnfoldingTools/mpsat");
-            break;
-        case MACOS:
-            PcompSettings.setCommand("dist-template/osx/Contents/Resources/tools/UnfoldingTools/pcomp");
-            PunfSettings.setCommand("dist-template/osx/Contents/Resources/tools/UnfoldingTools/punf");
-            MpsatVerificationSettings.setCommand("dist-template/osx/Contents/Resources/tools/UnfoldingTools/mpsat");
-            break;
-        case WINDOWS:
-            PcompSettings.setCommand("dist-template\\windows\\tools\\UnfoldingTools\\pcomp.exe");
-            PunfSettings.setCommand("dist-template\\windows\\tools\\UnfoldingTools\\punf.exe");
-            MpsatVerificationSettings.setCommand("dist-template\\windows\\tools\\UnfoldingTools\\mpsat.exe");
-            break;
-        default:
-        }
+        PcompSettings.setCommand(TestUtils.getToolPath("UnfoldingTools", "pcomp"));
+        PunfSettings.setCommand(TestUtils.getToolPath("UnfoldingTools", "punf"));
+        MpsatVerificationSettings.setCommand(TestUtils.getToolPath("UnfoldingTools", "mpsat"));
     }
 
     @Test
