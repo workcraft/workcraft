@@ -48,6 +48,8 @@ public class AnonymiseCommandTests {
         }
         Assert.assertEquals(expectedContactRefs, actualContactRefs);
 
+        Assert.assertEquals("", circuit.getTitle());
+
         framework.closeWork(we);
     }
 

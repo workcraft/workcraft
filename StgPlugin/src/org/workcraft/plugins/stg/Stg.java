@@ -480,6 +480,7 @@ public class Stg extends AbstractMathModel implements StgModel {
 
     @Override
     public void anonymise() {
+        setTitle("");
         for (MathNode node : Hierarchy.getDescendantsOfType(getRoot(), MathNode.class)) {
             String name = getName(node);
             if ((name != null) && !Identifier.isInternal(name) && !(node instanceof SignalTransition)) {
