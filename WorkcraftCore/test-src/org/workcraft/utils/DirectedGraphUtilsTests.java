@@ -18,7 +18,7 @@ public class DirectedGraphUtilsTests {
         graph.put(5, new HashSet<>(Arrays.asList(2)));
         graph.put(6, new HashSet<>(Arrays.asList(4)));
         graph.put(7, new HashSet<>(Arrays.asList()));
-        graph.put(8, new HashSet<>(Arrays.asList(9)));
+        graph.put(8, new HashSet<>(Arrays.asList(8, 9)));
         graph.put(9, new HashSet<>(Arrays.asList(8)));
         graph.put(0, new HashSet<>(Arrays.asList(0)));
     }
@@ -33,7 +33,7 @@ public class DirectedGraphUtilsTests {
         reversedGraph.put(5, new HashSet<>(Arrays.asList(1, 4)));
         reversedGraph.put(6, new HashSet<>(Arrays.asList(3)));
         reversedGraph.put(7, new HashSet<>(Arrays.asList(2)));
-        reversedGraph.put(8, new HashSet<>(Arrays.asList(1, 9)));
+        reversedGraph.put(8, new HashSet<>(Arrays.asList(1, 8, 9)));
         reversedGraph.put(9, new HashSet<>(Arrays.asList(2, 8)));
         reversedGraph.put(0, new HashSet<>(Arrays.asList(0)));
         Assert.assertEquals(reversedGraph, DirectedGraphUtils.reverse(graph));
@@ -56,7 +56,7 @@ public class DirectedGraphUtilsTests {
         evenSubgraph.put(2, new HashSet<>(Arrays.asList()));
         evenSubgraph.put(4, new HashSet<>(Arrays.asList()));
         evenSubgraph.put(6, new HashSet<>(Arrays.asList(4)));
-        evenSubgraph.put(8, new HashSet<>(Arrays.asList()));
+        evenSubgraph.put(8, new HashSet<>(Arrays.asList(8)));
         evenSubgraph.put(0, new HashSet<>(Arrays.asList(0)));
         Assert.assertEquals(evenSubgraph, DirectedGraphUtils.project(graph, new HashSet<>(Arrays.asList(2, 4, 6, 8, 0))));
     }
@@ -73,7 +73,7 @@ public class DirectedGraphUtilsTests {
 
     @Test
     public void findSelfloopVerticesTest() {
-        Set<Integer> selfloopVertices = new HashSet<>(Arrays.asList(0));
+        Set<Integer> selfloopVertices = new HashSet<>(Arrays.asList(0, 8));
         Assert.assertEquals(selfloopVertices, DirectedGraphUtils.findSelfloopVertices(graph));
     }
 
@@ -97,6 +97,7 @@ public class DirectedGraphUtilsTests {
         cycles.add(Arrays.asList(2, 3));
         cycles.add(Arrays.asList(2, 3, 4, 5));
         cycles.add(Arrays.asList(2, 3, 6, 4, 5));
+        cycles.add(Arrays.asList(8));
         cycles.add(Arrays.asList(8, 9));
         cycles.add(Arrays.asList(0));
         Assert.assertEquals(cycles, DirectedGraphUtils.findSimpleCycles(graph));

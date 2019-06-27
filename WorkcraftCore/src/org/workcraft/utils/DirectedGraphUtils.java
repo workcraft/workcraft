@@ -250,7 +250,6 @@ public class DirectedGraphUtils {
         }
         Set<T> result = findSelfloopVertices(graph);
         Set<T> vertices = new HashSet<>(graph.keySet());
-        vertices.removeAll(result);
         graph = project(graph, vertices);
         for (Set<T> component : findStronglyConnectedComponents(graph)) {
             if (component.size() > 1) {

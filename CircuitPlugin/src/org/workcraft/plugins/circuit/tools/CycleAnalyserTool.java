@@ -226,13 +226,30 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
                 cycleComponents.add((FunctionComponent) parent);
             }
         }
-
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            if (component.getIsZeroDelay()) {
+                boolean inputOnCycle = false;
+                boolean outputOnCycle = false;
+                for (Contact contact : component.getInputs()) {
+                    Contact driver = CircuitUtils.findDriver(circuit, contact, true);
+                    inputOnCycle |= cycleComponents.contains(driver.getParent());
+                }
+                for (Contact contact : component.getOutputs()) {
+                    for (Contact driven : CircuitUtils.findDriven(circuit, contact, true)) {
+                        outputOnCycle |= cycleComponents.contains(driven.getParent());
+                    }
+                }
+                if (inputOnCycle && outputOnCycle) {
+                    cycleComponents.add(component);
+                }
+            }
+        }
         List<String> breakers = new ArrayList<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
             for (Contact contact : component.getContacts()) {
                 if (contact.getPathBreaker()) {
                     breakers.add(circuit.getNodeReference(contact));
-                } else if (contact.isInput()) {
+                } else if (contact.isInput() && cycleComponents.contains(component)) {
                     Contact driver = CircuitUtils.findDriver(circuit, contact, true);
                     if (cycleContacts.contains(driver)) {
                         cycleContacts.add(contact);
