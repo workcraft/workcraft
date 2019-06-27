@@ -74,6 +74,8 @@ public final class Framework {
     private static final String VISUAL_MODEL_VARIABLE = "visualModel";
     private static final String ARGS_VARIABLE = "args";
 
+    private static final String CONFIG_LAST_DIRECTORY = "framework.lastDirectory";
+    private static final String CONFIG_RECENT_FILE = "framework.recentFile";
 
     public static final String META_WORK_ENTRY = "meta";
     public static final String STATE_WORK_ENTRY = "state.xml";
@@ -110,6 +112,8 @@ public final class Framework {
     private static final int JAVASCRIPT_FUNCTION_PARAMS_GROUP = 2;
 
     private static Framework instance = null;
+    private File lastDirectory = null;
+    private final LinkedHashSet<String> recentFilePaths = new LinkedHashSet<>();
 
     class ExecuteScriptAction implements ContextAction {
         private final String script;
@@ -269,9 +273,11 @@ public final class Framework {
         LogUtils.logMessage("Loading global preferences from " + file.getAbsolutePath());
         config.load(file);
         loadPluginsSettings();
+        loadRecentFilesFromConfig();
     }
 
     public void saveConfig() {
+        saveRecentFilesToConfig();
         savePluginsSettings();
         File file = new File(CONFIG_FILE_PATH);
         LogUtils.logMessage("Saving global preferences to " + file.getAbsolutePath());
@@ -305,7 +311,6 @@ public final class Framework {
         Logger.getRootLogger().setLevel(Level.INFO);
 
         initJavaScript();
-
         initPlugins();
     }
 
@@ -1025,6 +1030,78 @@ public final class Framework {
         return config;
     }
 
+    private void loadRecentFilesFromConfig() {
+        String lastDirectoryName = getConfigVar(CONFIG_LAST_DIRECTORY, false);
+        File lastDirectory = (lastDirectoryName == null) ? null : new File(lastDirectoryName);
+        setLastDirectory(lastDirectory);
+        for (int i = 0; i < CommonEditorSettings.getRecentCount(); i++) {
+            String entry = getConfigVar(CONFIG_RECENT_FILE + i, false);
+            pushRecentFilePath(entry);
+        }
+    }
+
+    private void saveRecentFilesToConfig() {
+        if (getLastDirectory() != null) {
+            String lastDirectoryPath = getLastDirectory().getAbsolutePath();
+            setConfigVar(CONFIG_LAST_DIRECTORY, lastDirectoryPath, false);
+        }
+        int recentCount = CommonEditorSettings.getRecentCount();
+        String[] tmp = recentFilePaths.toArray(new String[recentCount]);
+        for (int i = 0; i < recentCount; i++) {
+            setConfigVar(CONFIG_RECENT_FILE + i, tmp[i], false);
+        }
+    }
+
+    public void pushRecentFilePath(File file) {
+        pushRecentFilePath(FileUtils.getFullPath(file));
+    }
+
+    public void pushRecentFilePath(String filePath) {
+        if ((filePath != null) && (new File(filePath).exists())) {
+            // Remove previous entry of the fileName
+            recentFilePaths.remove(filePath);
+            // Make sure there is not too many entries
+            int recentCount = CommonEditorSettings.getRecentCount();
+            for (String entry: new ArrayList<>(recentFilePaths)) {
+                if (recentFilePaths.size() < recentCount) {
+                    break;
+                }
+                recentFilePaths.remove(entry);
+            }
+            // Add the fileName if possible
+            if (recentFilePaths.size() < recentCount) {
+                recentFilePaths.add(filePath);
+            }
+        }
+    }
+
+    public void clearRecentFilePaths() {
+        recentFilePaths.clear();
+    }
+
+    public ArrayList<String> getRecentFilePaths() {
+        ArrayList<String> result = new ArrayList<>(recentFilePaths);
+        Collections.reverse(result);
+        return result;
+    }
+
+    public void setLastDirectory(File value) {
+        if (value != null) {
+            if (value.isDirectory()) {
+                lastDirectory = value;
+            } else {
+                File parentFile = value.getParentFile();
+                if ((parentFile != null) && parentFile.isDirectory()) {
+                    lastDirectory = parentFile;
+                }
+            }
+        }
+    }
+
+    public File getLastDirectory() {
+        return lastDirectory;
+    }
+
     public File getFileByAbsoluteOrRelativePath(String path) {
         File file = new File(path);
         if (!file.isAbsolute()) {
@@ -1034,7 +1111,11 @@ public final class Framework {
     }
 
     public void setWorkingDirectory(String path) {
-        workingDirectory = new File(path);
+        setWorkingDirectory(new File(path));
+    }
+
+    public void setWorkingDirectory(File dir) {
+        workingDirectory = dir;
     }
 
     public File getWorkingDirectory() {

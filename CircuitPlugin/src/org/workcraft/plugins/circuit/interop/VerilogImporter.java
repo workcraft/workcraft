@@ -70,6 +70,7 @@ public class VerilogImporter implements Importer {
     private static final String MSG_NO_TOP_MODULE = "No top module found.";
     private static final String MSG_MANY_TOP_MODULES = "More than one top module is found.";
     private static final String MSG_CANCELED_BY_USER = "Import operation cancelled by user.";
+    private static final String MSG_CLASH_OF_FILE_NAMES = "Clash of file names.";
 
     private static final String PRIMITIVE_GATE_INPUT_PREFIX = "i";
     private static final String PRIMITIVE_GATE_OUTPUT_NAME = "o";
@@ -110,37 +111,65 @@ public class VerilogImporter implements Importer {
         return new ModelEntry(new CircuitDescriptor(), circuit);
     }
 
-    private Circuit createCircuitHierarchy(Collection<VerilogModule> verilogModules) throws OperationCancelledException {
-        MainWindow mainWindow = Framework.getInstance().getMainWindow();
-        ImportVerilogDialog dialog = new ImportVerilogDialog(mainWindow, verilogModules);
-        if (dialog.reveal()) {
-            VerilogModule topVerilogModule = dialog.getTopModule();
-            File dir = dialog.getDirectory();
-            moduleFileNames = dialog.getModuleFileNames();
-            Set<VerilogModule> descendantModules = VerilogUtils.getDescendantModules(topVerilogModule, verilogModules);
-            Set<File> problematicFiles = getProblematicFiles(descendantModules, dir);
-            if (!problematicFiles.isEmpty()) {
-                String msg = "The following files already exist:\n";
-                for (File file : problematicFiles) {
-                    msg += "  " + file.getPath() + "\n";
-                }
-                msg += "\nOverwrite?";
-                if (!DialogUtils.showConfirmWarning(msg, "Import hierarchical Verilog", false)) {
-                    throw new OperationCancelledException(MSG_CANCELED_BY_USER);
-                }
-            }
-            return createCircuitHierarchy(topVerilogModule, descendantModules, dir);
+    private Circuit createCircuitHierarchy(Collection<VerilogModule> verilogModules)
+            throws DeserialisationException, OperationCancelledException {
+
+        if (Framework.getInstance().isInGuiMode()) {
+            return createCircuitHierarchyGui(verilogModules);
+        } else {
+            return createCircuitHierarchyAuto(verilogModules);
         }
-        throw new OperationCancelledException(MSG_CANCELED_BY_USER);
     }
 
-    private Set<File> getProblematicFiles(Set<VerilogModule> descendantModules, File dir) {
-        Set<File> result = new HashSet<>();
+    private Circuit createCircuitHierarchyGui(Collection<VerilogModule> verilogModules)
+            throws OperationCancelledException {
+
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        ImportVerilogDialog dialog = new ImportVerilogDialog(mainWindow, verilogModules);
+        if (!dialog.reveal()) {
+            throw new OperationCancelledException(MSG_CANCELED_BY_USER);
+        }
+        VerilogModule topVerilogModule = dialog.getTopModule();
+        File dir = dialog.getDirectory();
+        Set<VerilogModule> descendantModules = VerilogUtils.getDescendantModules(topVerilogModule, verilogModules);
+        moduleFileNames = dialog.getModuleFileNames();
+        Collection<String> badSaveFilePaths = getBadSaveFilePaths(descendantModules, dir);
+        if (!badSaveFilePaths.isEmpty()) {
+            String msg = "The following files already exist:\n"
+                    + String.join("\n", badSaveFilePaths) + "\nOverwrite?";
+
+            if (!DialogUtils.showConfirmWarning(msg, "Import hierarchical Verilog", false)) {
+                throw new OperationCancelledException(MSG_CANCELED_BY_USER);
+            }
+        }
+        return createCircuitHierarchy(topVerilogModule, descendantModules, dir);
+    }
+
+    private Circuit createCircuitHierarchyAuto(Collection<VerilogModule> verilogModules)
+            throws DeserialisationException {
+
+        VerilogModule topVerilogModule = getTopModule(verilogModules);
+        Set<VerilogModule> descendantModules = VerilogUtils.getDescendantModules(topVerilogModule, verilogModules);
+        File dir = Framework.getInstance().getWorkingDirectory();
+        moduleFileNames = VerilogUtils.getModuleToFileMap(verilogModules);
+        Collection<String> badSaveFilePaths = getBadSaveFilePaths(descendantModules, dir);
+        if (!badSaveFilePaths.isEmpty()) {
+            String msg = "Cannot import the circuit hierarchy because the following files already exist:\n"
+                    + String.join("\n", badSaveFilePaths);
+
+            LogUtils.logError(msg);
+            throw new DeserialisationException(MSG_CLASH_OF_FILE_NAMES);
+        }
+        return createCircuitHierarchy(topVerilogModule, descendantModules, dir);
+    }
+
+    private Collection<String> getBadSaveFilePaths(Set<VerilogModule> descendantModules, File dir) {
+        Collection<String> result = new HashSet<>();
         for (VerilogModule module : descendantModules) {
             String fileName = moduleFileNames.get(module);
             File file = new File(dir, fileName);
             if (file.exists()) {
-                result.add(file);
+                result.add(file.getAbsolutePath());
             }
         }
         return result;
@@ -191,6 +220,11 @@ public class VerilogImporter implements Importer {
 
     public Circuit importTopModule(InputStream in, Collection<Mutex> mutexes) throws DeserialisationException {
         Collection<VerilogModule> verilogModules = importVerilogModules(in);
+        VerilogModule topVerilogModule = getTopModule(verilogModules);
+        return createCircuit(topVerilogModule, verilogModules, mutexes);
+    }
+
+    private VerilogModule getTopModule(Collection<VerilogModule> verilogModules) throws DeserialisationException {
         Collection<VerilogModule> topVerilogModules = VerilogUtils.getTopModules(verilogModules);
         if (topVerilogModules.size() == 0) {
             throw new DeserialisationException(MSG_NO_TOP_MODULE);
@@ -198,8 +232,7 @@ public class VerilogImporter implements Importer {
         if (topVerilogModules.size() > 1) {
             throw new DeserialisationException(MSG_MANY_TOP_MODULES);
         }
-        VerilogModule topVerilogModule = topVerilogModules.iterator().next();
-        return createCircuit(topVerilogModule, verilogModules, mutexes);
+        return topVerilogModules.iterator().next();
     }
 
     private Collection<VerilogModule> importVerilogModules(InputStream in) throws DeserialisationException {

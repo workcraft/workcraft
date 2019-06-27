@@ -2,11 +2,20 @@ package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.plugins.circuit.verilog.*;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.workspace.FileFilters;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class VerilogUtils {
+
+    public static Map<VerilogModule, String> getModuleToFileMap(Collection<VerilogModule> modules) {
+        Map<VerilogModule, String> result = new HashMap<>();
+        for (VerilogModule module : modules) {
+            result.put(module, module.name + FileFilters.DOCUMENT_EXTENSION);
+        }
+        return result;
+    }
 
     public static Set<VerilogModule> getDescendantModules(VerilogModule module, Collection<VerilogModule> modules) {
         return getModuleToDescendantsMap(modules).get(module);

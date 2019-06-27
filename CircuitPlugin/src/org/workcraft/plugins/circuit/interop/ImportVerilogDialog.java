@@ -87,6 +87,7 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
         Collection<VerilogModule> modules = getUserData();
 
         JComboBox<VerilogModule> topModuleCombo = new JComboBox<>();
+        moduleToFileMap = VerilogUtils.getModuleToFileMap(modules);
         topModuleCombo.setRenderer(new ModuleComboBoxRenderer(createModuleToTextMap(modules)));
 
         PropertyEditorTable descendantModulesTable = new PropertyEditorTable(
@@ -129,11 +130,9 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
     }
 
     private Map<VerilogModule, ModuleFileProperties> createModuleToPropertyMap(Collection<VerilogModule> modules) {
-        moduleToFileMap = new HashMap<>();
         Map<VerilogModule, ModuleFileProperties> result = new HashMap<>();
         Map<VerilogModule, Set<VerilogModule>> moduleToDescendantsMap = VerilogUtils.getModuleToDescendantsMap(modules);
         for (VerilogModule module : modules) {
-            moduleToFileMap.put(module, module.name + FileFilters.DOCUMENT_EXTENSION);
             Set<VerilogModule> descendants = moduleToDescendantsMap.get(module);
             ModuleFileProperties properties = new ModuleFileProperties();
             result.put(module, properties);
@@ -147,13 +146,14 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
     }
 
     private JPanel createDirectoryPanel() {
-        MainWindow mainWindow = Framework.getInstance().getMainWindow();
-        dir = mainWindow.getLastDirectory();
+        Framework framework = Framework.getInstance();
+        dir = framework.getLastDirectory();
         JTextField dirText = new JTextField(dir.getPath());
         JPanel dirPanel = GuiUtils.createLabeledComponent(dirText, "Save directory:");
         JButton dirSelectButton = new JButton("Browse...");
         dirPanel.add(dirSelectButton, BorderLayout.EAST);
 
+        MainWindow mainWindow = framework.getMainWindow();
         dirSelectButton.addActionListener(l -> {
             JFileChooser fc = mainWindow.createOpenDialog("Select save directory", false, false, null);
             fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);

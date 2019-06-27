@@ -152,7 +152,8 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private void writePathbreakConstraints(final GraphEditor editor) {
-        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        Framework framework = Framework.getInstance();
+        MainWindow mainWindow = framework.getMainWindow();
         File file = new File(editor.getWorkspaceEntry().getFileName());
         PathbreakConstraintExporter exporter = new PathbreakConstraintExporter();
         Format format = exporter.getFormat();
@@ -161,9 +162,9 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
             String path = ExportUtils.getValidSavePath(fc, format);
             Circuit circuit = WorkspaceUtils.getAs(editor.getWorkspaceEntry(), Circuit.class);
             exporter.export(circuit, new File(path));
+            framework.setLastDirectory(fc.getCurrentDirectory());
         } catch (OperationCancelledException e) {
         }
-        mainWindow.setLastDirectory(fc.getCurrentDirectory());
     }
 
     @Override
