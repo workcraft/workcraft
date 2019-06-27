@@ -44,8 +44,17 @@ public class CircuitSettingsTests {
         Assert.assertEquals(Config.toString(CircuitSettings.getGateLibrary()),
                 framework.getConfigVar(prefix + ".gateLibrary", false));
 
-        Assert.assertEquals(Config.toString(CircuitSettings.getSubstitutionLibrary()),
-                framework.getConfigVar(prefix + ".substitutionLibrary", false));
+        Assert.assertEquals(Config.toString(CircuitSettings.getExportSubstitutionLibrary()),
+                framework.getConfigVar(prefix + ".exportSubstitutionLibrary", false));
+
+        Assert.assertEquals(Config.toString(CircuitSettings.getInvertExportSubstitutionRules()),
+                framework.getConfigVar(prefix + ".invertExportSubstitutionRules", false));
+
+        Assert.assertEquals(Config.toString(CircuitSettings.getImportSubstitutionLibrary()),
+                framework.getConfigVar(prefix + ".importSubstitutionLibrary", false));
+
+        Assert.assertEquals(Config.toString(CircuitSettings.getInvertImportSubstitutionRules()),
+                framework.getConfigVar(prefix + ".invertImportSubstitutionRules", false));
 
         Assert.assertEquals(Config.toString(CircuitSettings.getBufData()),
                 framework.getConfigVar(prefix + ".bufData", false));

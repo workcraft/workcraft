@@ -12,8 +12,6 @@ matrix:
       env: TARGET=test
     - jdk: openjdk8
       env: TARGET=test
-    - jdk: oraclejdk11
-      env: TARGET=test
     - jdk: openjdk11
       env: TARGET=test
     - os: osx

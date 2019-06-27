@@ -5,7 +5,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.plugins.mpsat.commands.ConformationNwayVerificationCommand;
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.punf.PunfSettings;
@@ -19,24 +18,9 @@ public class ConformationNwayVerificationCommandTests {
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
-        switch (DesktopApi.getOs()) {
-        case LINUX:
-            PcompSettings.setCommand("dist-template/linux/tools/UnfoldingTools/pcomp");
-            PunfSettings.setCommand("dist-template/linux/tools/UnfoldingTools/punf");
-            MpsatVerificationSettings.setCommand("dist-template/linux/tools/UnfoldingTools/mpsat");
-            break;
-        case MACOS:
-            PcompSettings.setCommand("dist-template/osx/Contents/Resources/tools/UnfoldingTools/pcomp");
-            PunfSettings.setCommand("dist-template/osx/Contents/Resources/tools/UnfoldingTools/punf");
-            MpsatVerificationSettings.setCommand("dist-template/osx/Contents/Resources/tools/UnfoldingTools/mpsat");
-            break;
-        case WINDOWS:
-            PcompSettings.setCommand("dist-template\\windows\\tools\\UnfoldingTools\\pcomp.exe");
-            PunfSettings.setCommand("dist-template\\windows\\tools\\UnfoldingTools\\punf.exe");
-            MpsatVerificationSettings.setCommand("dist-template\\windows\\tools\\UnfoldingTools\\mpsat.exe");
-            break;
-        default:
-        }
+        PcompSettings.setCommand(TestUtils.getUnfoldingToolsPath("pcomp"));
+        PunfSettings.setCommand(TestUtils.getUnfoldingToolsPath("punf"));
+        MpsatVerificationSettings.setCommand(TestUtils.getUnfoldingToolsPath("mpsat"));
     }
 
     @Test

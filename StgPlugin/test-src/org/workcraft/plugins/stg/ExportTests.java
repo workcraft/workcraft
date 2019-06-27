@@ -70,7 +70,7 @@ public class ExportTests {
         URL url = classLoader.getResource(workName);
         WorkspaceEntry we = framework.loadWork(url.getFile());
         ModelEntry me = we.getModelEntry();
-        File directory = FileUtils.createTempDirectory("workcraft-" + workName);
+        File directory = FileUtils.createTempDirectory(FileUtils.getTempPrefix(workName));
 
         File gFile = new File(directory, "export.g");
         framework.exportModel(me, gFile, StgFormat.getInstance());

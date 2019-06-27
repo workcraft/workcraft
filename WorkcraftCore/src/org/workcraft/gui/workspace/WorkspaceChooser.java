@@ -52,7 +52,7 @@ public class WorkspaceChooser extends JPanel {
             }
         });
 
-        add(GuiUtils.createWideLabeledComponent(nameFilter, "Search: "), new TableLayoutConstraints(0, 0));
+        add(GuiUtils.createLabeledComponent(nameFilter, "Search: "), new TableLayoutConstraints(0, 0));
 
         filteredSource = new FilteredTreeSource<>(workspace.getTree(), filter);
 

@@ -1,19 +1,19 @@
 package org.workcraft.workspace;
 
-import java.sql.Timestamp;
-import java.util.UUID;
-
 import org.workcraft.Version;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualModel;
 
+import java.sql.Timestamp;
+import java.util.UUID;
+
 public class ModelEntry {
     private final ModelDescriptor descriptor;
     private final Model model;
-    private Stamp stamp;
     private Version version;
+    private Stamp stamp;
 
     public ModelEntry(ModelDescriptor descriptor, Model model) {
         this.descriptor = descriptor;
@@ -78,6 +78,14 @@ public class ModelEntry {
         return null;
     }
 
+    public void setVersion(Version version) {
+        this.version = version;
+    }
+
+    public Version getVersion() {
+        return version;
+    }
+
     public void setStamp(Stamp stamp) {
         this.stamp = stamp;
     }
@@ -90,14 +98,6 @@ public class ModelEntry {
             stamp = new Stamp(time, uuid);
         }
         return stamp;
-    }
-
-    public void setVersion(Version version) {
-        this.version = version;
-    }
-
-    public Version getVersion() {
-        return version;
     }
 
 }

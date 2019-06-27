@@ -5,6 +5,7 @@ import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.serialisation.BasicXMLSerialiser;
 
 import java.io.File;
+import java.io.IOException;
 
 public class FileSerialiser implements BasicXMLSerialiser<File> {
 
@@ -16,8 +17,11 @@ public class FileSerialiser implements BasicXMLSerialiser<File> {
     @Override
     public void serialise(Element element, File object) throws SerialisationException {
         if (object != null) {
-            String path = object.getAbsolutePath();
-            element.setAttribute("path", path);
+            try {
+                element.setAttribute("path", object.getCanonicalPath());
+            } catch (IOException e) {
+                throw new SerialisationException(e);
+            }
         }
     }
 

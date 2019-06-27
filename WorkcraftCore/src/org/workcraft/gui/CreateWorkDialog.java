@@ -165,7 +165,6 @@ public class CreateWorkDialog extends ModalDialog<Void> {
         JPanel result = super.createButtonsPanel();
         setOkEnableness(false);
         return result;
-
     }
 
     private void okAction(int index) {

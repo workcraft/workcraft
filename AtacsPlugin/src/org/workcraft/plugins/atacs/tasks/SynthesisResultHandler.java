@@ -10,7 +10,6 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
-import org.workcraft.plugins.circuit.utils.EnvironmentUtils;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
@@ -20,9 +19,9 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 import javax.swing.*;
 import java.io.ByteArrayInputStream;
@@ -79,7 +78,7 @@ public class SynthesisResultHandler extends AbstractExtendedResultHandler<Synthe
             try {
                 ByteArrayInputStream verilogStream = new ByteArrayInputStream(verilogOutput.getBytes());
                 VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
-                Circuit circuit = verilogImporter.importCircuit(verilogStream, mutexes);
+                Circuit circuit = verilogImporter.importTopModule(verilogStream, mutexes);
 
                 removePortsForExposedInternalSignals(circuit);
 
@@ -97,7 +96,7 @@ public class SynthesisResultHandler extends AbstractExtendedResultHandler<Synthe
                     if (!we.getFile().exists()) {
                         DialogUtils.showError("Unsaved STG cannot be set as the circuit environment.");
                     } else {
-                        EnvironmentUtils.setEnvironmentFile(visualCircuit.getMathModel(), we.getFile());
+                        visualCircuit.getMathModel().setEnvironmentFile(we.getFile());
                         if (we.isChanged()) {
                             DialogUtils.showWarning("The STG with unsaved changes is set as the circuit environment.");
                         }

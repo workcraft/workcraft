@@ -3,13 +3,13 @@ package org.workcraft.dom.visual;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
 import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
 import java.awt.geom.Path2D;
@@ -333,8 +333,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         Graphics2D g = r.getGraphics();
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
         if (bb != null) {
-            float strokeWidth = (float) CommonVisualSettings.getStrokeWidth();
-            g.setStroke(new BasicStroke(strokeWidth));
+            g.setStroke(new BasicStroke((float) CommonVisualSettings.getStrokeWidth()));
             g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
             g.draw(bb);
         }

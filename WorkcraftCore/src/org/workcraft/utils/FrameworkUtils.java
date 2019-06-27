@@ -64,34 +64,32 @@ public class FrameworkUtils {
     public static ModelDescriptor loadMetaDescriptor(Document metaDoc)
             throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         Element descriptorElement = XmlUtils.getChildElement(Framework.META_DESCRIPTOR_WORK_ELEMENT, metaDoc.getDocumentElement());
-        String descriptorClass = XmlUtils.readStringAttr(descriptorElement, Framework.META_DESCRIPTOR_CLASS_WORK_ATTRIBUTE);
+        String descriptorClass = descriptorElement.getAttribute(Framework.META_DESCRIPTOR_CLASS_WORK_ATTRIBUTE);
         return (ModelDescriptor) Class.forName(descriptorClass).getDeclaredConstructor().newInstance();
     }
 
-    public static Stamp loadMetaStamp(Document metaDoc) {
-        Stamp stamp = null;
-        Element stampElement = XmlUtils.getChildElement(Framework.META_STAMP_WORK_ELEMENT, metaDoc.getDocumentElement());
-        if (stampElement != null) {
-            String time = XmlUtils.readStringAttr(stampElement, Framework.META_STAMP_TIME_WORK_ATTRIBUTE);
-            String uuid = XmlUtils.readStringAttr(stampElement, Framework.META_STAMP_UUID_WORK_ATTRIBUTE);
-            if ((time != null) && (uuid != null)) {
-                stamp = new Stamp(time, uuid);
-            }
-        }
-        return stamp;
-    }
-
     public static Version loadMetaVersion(Document metaDoc) {
-        Version version = null;
         Element versionElement = XmlUtils.getChildElement(Framework.META_VERSION_WORK_ELEMENT, metaDoc.getDocumentElement());
         if (versionElement != null) {
-            String major = XmlUtils.readStringAttr(versionElement, Framework.META_VERSION_MAJOR_WORK_ATTRIBUTE);
-            String minor = XmlUtils.readStringAttr(versionElement, Framework.META_VERSION_MINOR_WORK_ATTRIBUTE);
-            String revision = XmlUtils.readStringAttr(versionElement, Framework.META_VERSION_REVISION_WORK_ATTRIBUTE);
-            String status = XmlUtils.readStringAttr(versionElement, Framework.META_VERSION_STATUS_WORK_ATTRIBUTE);
-            version = new Version(major, minor, revision, status);
+            String major = versionElement.getAttribute(Framework.META_VERSION_MAJOR_WORK_ATTRIBUTE);
+            String minor = versionElement.getAttribute(Framework.META_VERSION_MINOR_WORK_ATTRIBUTE);
+            String revision = versionElement.getAttribute(Framework.META_VERSION_REVISION_WORK_ATTRIBUTE);
+            String status = versionElement.getAttribute(Framework.META_VERSION_STATUS_WORK_ATTRIBUTE);
+            return new Version(major, minor, revision, status);
         }
-        return version;
+        return null;
+    }
+
+    public static Stamp loadMetaStamp(Document metaDoc) {
+        Element stampElement = XmlUtils.getChildElement(Framework.META_STAMP_WORK_ELEMENT, metaDoc.getDocumentElement());
+        if (stampElement != null) {
+            String time = stampElement.getAttribute(Framework.META_STAMP_TIME_WORK_ATTRIBUTE);
+            String uuid = stampElement.getAttribute(Framework.META_STAMP_UUID_WORK_ATTRIBUTE);
+            if ((time != null) && (uuid != null)) {
+                return new Stamp(time, uuid);
+            }
+        }
+        return null;
     }
 
     public static Document loadMetaDoc(byte[] bufferedInput)
@@ -132,7 +130,7 @@ public class FrameworkUtils {
     }
 
     public static void saveSelectionState(VisualModel visualModel, OutputStream os, ReferenceProducer visualRefs)
-            throws ParserConfigurationException, IOException {
+            throws ParserConfigurationException {
         Document stateDoc = XmlUtils.createDocument();
         Element stateRoot = stateDoc.createElement(Framework.STATE_WORK_ELEMENT);
         stateDoc.appendChild(stateRoot);

@@ -2,18 +2,17 @@ package org.workcraft.plugins.builtin.serialisation;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.workcraft.plugins.PluginProvider;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.WorkMathFormat;
+import org.workcraft.plugins.PluginProvider;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.serialisation.XMLSerialisationManager;
 import org.workcraft.utils.XmlUtils;
 
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.UUID;
 
@@ -63,8 +62,6 @@ public class XMLModelSerialiser implements ModelSerialiser {
 
             return internalRefs;
         } catch (ParserConfigurationException e) {
-            throw new SerialisationException(e);
-        } catch (IOException e) {
             throw new SerialisationException(e);
         }
     }

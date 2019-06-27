@@ -9,6 +9,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.Scanner;
 
 public class FileUtils {
+
     public static final String TEMP_DIRECTORY_PREFIX = "workcraft-";
 
     public static void copyFile(File inFile, File outFile) throws IOException {
@@ -306,6 +307,56 @@ public class FileUtils {
         if (checkAvailability(file, errorTitle, true)) {
             DesktopApi.open(file);
         }
+    }
+
+    public static String getFullPath(File file) {
+        if (file != null) {
+            try {
+                return file.getCanonicalPath();
+            } catch (IOException e) {
+            }
+        }
+        return null;
+    }
+
+    public static String getBasePath(File file) {
+        if (file != null) {
+            try {
+                return file.getCanonicalFile().getParent();
+            } catch (IOException e) {
+            }
+        }
+        return null;
+    }
+
+    public static String stripBase(String path, String base) {
+        path = fixSeparator(path);
+        if ((base != null) && (path != null) && path.startsWith(base)) {
+            String result = path.substring(base.length());
+            while (result.startsWith("/")) {
+                result = result.substring(1);
+            }
+            return result;
+        }
+        return path;
+    }
+
+    public static String fixSeparator(String path) {
+        if (path != null) {
+            return path.replace("\\", "/");
+        }
+        return null;
+    }
+
+    public static File getFileByPathAndBase(String path, String base) {
+        File result = null;
+        if (path != null) {
+            result = new File(path);
+            if (!result.isAbsolute()) {
+                result = new File(base, path);
+            }
+        }
+        return result;
     }
 
 }

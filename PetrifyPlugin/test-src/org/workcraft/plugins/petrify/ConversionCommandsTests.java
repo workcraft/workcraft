@@ -1,22 +1,22 @@
 package org.workcraft.plugins.petrify;
 
-import java.net.URL;
-import java.util.Set;
-
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.utils.DesktopApi;
+import org.workcraft.plugins.circuit.TestUtils;
 import org.workcraft.plugins.petrify.commands.CscConflictResolutionCommand;
 import org.workcraft.plugins.petrify.commands.UntoggleConversionCommand;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.utils.PackageUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
+import java.net.URL;
+import java.util.Set;
 
 public class ConversionCommandsTests {
 
@@ -24,18 +24,7 @@ public class ConversionCommandsTests {
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
-        switch (DesktopApi.getOs()) {
-        case LINUX:
-            PetrifySettings.setCommand("dist-template/linux/tools/PetrifyTools/petrify");
-            break;
-        case MACOS:
-            PetrifySettings.setCommand("dist-template/osx/Contents/Resources/tools/PetrifyTools/petrify");
-            break;
-        case WINDOWS:
-            PetrifySettings.setCommand("dist-template\\windows\\tools\\PetrifyTools\\petrify.exe");
-            break;
-        default:
-        }
+        PetrifySettings.setCommand(TestUtils.getToolPath("PetrifyTools", "petrify"));
     }
 
     @Test

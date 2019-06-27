@@ -4,13 +4,14 @@ import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.ConnectionUtils;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.tools.editors.AbstractInplaceEditor;
-import org.workcraft.gui.tools.editors.NameInplaceEditor;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.tools.SelectionTool;
+import org.workcraft.gui.tools.editors.AbstractInplaceEditor;
+import org.workcraft.gui.tools.editors.NameInplaceEditor;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.plugins.circuit.utils.RefinementUtils;
 import org.workcraft.utils.Hierarchy;
 
 import javax.swing.*;
@@ -32,6 +33,7 @@ public class CircuitSelectionTool extends SelectionTool {
                 popup = new JPopupMenu();
                 popup.setFocusable(false);
             }
+
             JMenuItem addOutputMenuItem = new JMenuItem("Add output pin");
             addOutputMenuItem.addActionListener(event -> {
                 editor.getWorkspaceEntry().saveMemento();
@@ -39,6 +41,7 @@ public class CircuitSelectionTool extends SelectionTool {
                 component.setPositionByDirection(contact, VisualContact.Direction.EAST, false);
             });
             popup.add(addOutputMenuItem);
+
             JMenuItem addInputMenuItem = new JMenuItem("Add input pin");
             addInputMenuItem.addActionListener(event -> {
                 editor.getWorkspaceEntry().saveMemento();
@@ -47,18 +50,21 @@ public class CircuitSelectionTool extends SelectionTool {
             });
             popup.add(addInputMenuItem);
             popup.addSeparator();
+
             JMenuItem defaultContactPositionMenuItem = new JMenuItem("Set contacts in default position");
             defaultContactPositionMenuItem.addActionListener(event -> {
                 editor.getWorkspaceEntry().saveMemento();
                 component.setContactsDefaultPosition();
             });
             popup.add(defaultContactPositionMenuItem);
+
             JMenuItem centerPivotPointMenuItem = new JMenuItem("Center pivot point");
             centerPivotPointMenuItem.addActionListener(event -> {
                 editor.getWorkspaceEntry().saveMemento();
                 component.centerPivotPoint(true, true);
             });
             popup.add(centerPivotPointMenuItem);
+
             JMenuItem removeUnusedPinsMenuItem = new JMenuItem("Remove unused pins");
             removeUnusedPinsMenuItem.addActionListener(event -> {
                 editor.getWorkspaceEntry().saveMemento();
@@ -66,6 +72,17 @@ public class CircuitSelectionTool extends SelectionTool {
                 CircuitUtils.removeUnusedPins(circuit, component);
             });
             popup.add(removeUnusedPinsMenuItem);
+            popup.addSeparator();
+
+            JMenuItem openRefinementStgMenuItem = new JMenuItem("Open refinement STG");
+            openRefinementStgMenuItem.setEnabled(RefinementUtils.hasRefinementStg(component));
+            openRefinementStgMenuItem.addActionListener(event -> RefinementUtils.openRefinementStg(component));
+            popup.add(openRefinementStgMenuItem);
+
+            JMenuItem openRefinementCircuitMenuItem = new JMenuItem("Open refinement circuit");
+            openRefinementCircuitMenuItem.setEnabled(RefinementUtils.hasRefinementCircuit(component));
+            openRefinementCircuitMenuItem.addActionListener(event -> RefinementUtils.openRefinementCircuit(component));
+            popup.add(openRefinementCircuitMenuItem);
         }
         return popup;
     }
@@ -84,6 +101,13 @@ public class CircuitSelectionTool extends SelectionTool {
                     textEditor.edit(contact.getName(), contact.getNameFont(),
                             contact.getNameOffset(), Alignment.CENTER, false);
                     processed = true;
+                }
+            } else if (node instanceof VisualCircuitComponent) {
+                VisualCircuitComponent component = (VisualCircuitComponent) node;
+                if (e.isCtrlKeyDown()) {
+                    processed = RefinementUtils.openRefinementCircuit(component);
+                } else {
+                    processed = RefinementUtils.openRefinementModel(component);
                 }
             }
         }

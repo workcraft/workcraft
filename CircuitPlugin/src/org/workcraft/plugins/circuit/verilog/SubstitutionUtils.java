@@ -2,7 +2,6 @@ package org.workcraft.plugins.circuit.verilog;
 
 import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
 import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.jj.substitution.ParseException;
 import org.workcraft.plugins.circuit.jj.substitution.SubstitutionParser;
 import org.workcraft.utils.FileUtils;
@@ -17,16 +16,26 @@ import java.util.List;
 
 public class SubstitutionUtils {
 
-    public static HashMap<String, SubstitutionRule> readSubsritutionRules() {
+    public static HashMap<String, SubstitutionRule> readExportSubsritutionRules() {
+        return readSubsritutionRules(
+                CircuitSettings.getExportSubstitutionLibrary(),
+                CircuitSettings.getInvertExportSubstitutionRules());
+    }
+
+    public static HashMap<String, SubstitutionRule> readImportSubsritutionRules() {
+        return readSubsritutionRules(
+                CircuitSettings.getImportSubstitutionLibrary(),
+                CircuitSettings.getInvertImportSubstitutionRules());
+    }
+
+    private static HashMap<String, SubstitutionRule> readSubsritutionRules(String fileName, boolean invert) {
         HashMap<String, SubstitutionRule> result = new HashMap<>();
-        String substitutionsFileName = CircuitSettings.getSubstitutionLibrary();
-        if ((substitutionsFileName != null) && !substitutionsFileName.isEmpty()) {
-            File libraryFile = new File(substitutionsFileName);
+        if ((fileName != null) && !fileName.isEmpty()) {
+            File libraryFile = new File(fileName);
             if (FileUtils.checkAvailability(libraryFile, "Access error for the file of substitutions", false)) {
                 try {
-                    InputStream substitutionInputStream = new FileInputStream(substitutionsFileName);
-                    boolean invertSubstitutionRules = CircuitSettings.getInvertSubstitutionRules();
-                    SubstitutionParser substitutionParser = new SubstitutionParser(substitutionInputStream, invertSubstitutionRules);
+                    InputStream substitutionInputStream = new FileInputStream(fileName);
+                    SubstitutionParser substitutionParser = new SubstitutionParser(substitutionInputStream, invert);
                     if (CommonDebugSettings.getParserTracing()) {
                         substitutionParser.enable_tracing();
                     } else {
@@ -37,25 +46,45 @@ public class SubstitutionUtils {
                         result.put(rule.oldName, rule);
                     }
                     LogUtils.logInfo("Renaming gates and pins using "
-                            + (invertSubstitutionRules ? "inverted" : "direct")
+                            + (invert ? "inverted" : "direct")
                             + " rules in the file of substitutions '"
-                            + substitutionsFileName + "'.");
+                            + fileName + "'.");
 
                 } catch (FileNotFoundException e) {
                 } catch (ParseException e) {
-                    LogUtils.logWarning("Could not parse the file of substitutions '" + substitutionsFileName + "'.");
+                    LogUtils.logWarning("Could not parse the file of substitutions '" + fileName + "'.");
                 }
             }
         }
         return result;
     }
 
-    public static String getContactSubstitutionName(Contact contact, SubstitutionRule substitutionRule, String instanceFlatName) {
-        String contactName = contact.getName();
+    public static String getModuleSubstitutionName(String moduleName,
+            SubstitutionRule substitutionRule, String msg) {
+
+        if (substitutionRule != null) {
+            String newModuleName = substitutionRule.newName;
+            if (newModuleName != null) {
+                if (msg == null) {
+                    msg = "";
+                }
+                LogUtils.logInfo(msg + "Renaming module '" + moduleName + "' to '" + newModuleName + "'.");
+                moduleName = newModuleName;
+            }
+        }
+        return moduleName;
+    }
+
+    public static String getContactSubstitutionName(String contactName,
+            SubstitutionRule substitutionRule, String msg) {
+
         if (substitutionRule != null) {
             String newContactName = substitutionRule.substitutions.get(contactName);
             if (newContactName != null) {
-                LogUtils.logInfo("In component '" + instanceFlatName + "' renaming contact '" + contactName + "' to '" + newContactName + "'.");
+                if (msg == null) {
+                    msg = "";
+                }
+                LogUtils.logInfo(msg + "Renaming contact '" + contactName + "' to '" + newContactName + "'.");
                 contactName = newContactName;
             }
         }

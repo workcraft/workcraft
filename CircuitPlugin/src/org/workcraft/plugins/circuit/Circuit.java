@@ -4,19 +4,24 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.references.FileReference;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.circuit.observers.FunctionConsistencySupervisor;
 import org.workcraft.plugins.circuit.observers.IOTypeConsistencySupervisor;
 import org.workcraft.plugins.circuit.observers.ZeroDelayConsistencySupervisor;
 import org.workcraft.plugins.circuit.references.CircuitReferenceManager;
-import org.workcraft.plugins.circuit.utils.EnvironmentUtils;
+import org.workcraft.serialisation.NoAutoSerialisation;
 import org.workcraft.serialisation.References;
-import org.workcraft.utils.Hierarchy;
 import org.workcraft.types.MultiSet;
+import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.Hierarchy;
 
+import java.io.File;
 import java.util.Collection;
 
 public class Circuit extends AbstractMathModel {
+
+    private FileReference environment = null;
 
     public Circuit() {
         this(null, null);
@@ -70,18 +75,37 @@ public class Circuit extends AbstractMathModel {
     }
 
     @Override
-    public void beforeSerialisation() {
-        super.beforeSerialisation();
-        // Update environment file in case the base directory has changed, e.g. if the work is saved in a new location.
-        EnvironmentUtils.updateEnvironmentFile(this);
-    }
-
-    @Override
     public MultiSet<String> getStatistics() {
         MultiSet<String> result = new MultiSet<>();
         result.add("Component", getFunctionComponents().size());
         result.add("Port", getPorts().size());
         return result;
+    }
+
+    public FileReference getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(FileReference value) {
+        environment = value;
+    }
+
+    @NoAutoSerialisation
+    public File getEnvironmentFile() {
+        return (environment == null) ? null : environment.getFile();
+    }
+
+    @NoAutoSerialisation
+    public void setEnvironmentFile(File file) {
+        setEnvironmentFile(FileUtils.getFullPath(file));
+    }
+
+    @NoAutoSerialisation
+    public void setEnvironmentFile(String path) {
+        if (environment == null) {
+            environment = new FileReference();
+        }
+        environment.setPath(path);
     }
 
 }

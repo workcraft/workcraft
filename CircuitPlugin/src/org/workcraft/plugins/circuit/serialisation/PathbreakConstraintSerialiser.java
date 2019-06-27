@@ -47,7 +47,7 @@ public class PathbreakConstraintSerialiser implements PathbreakSerialiser {
     }
 
     private void writeCircuit(PrintWriter out, Circuit circuit) {
-        HashMap<String, SubstitutionRule> substitutionRules = SubstitutionUtils.readSubsritutionRules();
+        HashMap<String, SubstitutionRule> substitutionRules = SubstitutionUtils.readExportSubsritutionRules();
         for (FunctionComponent component: Hierarchy.getDescendantsOfType(circuit.getRoot(), FunctionComponent.class)) {
             writeInstance(out, circuit, component, substitutionRules);
         }
@@ -58,6 +58,7 @@ public class PathbreakConstraintSerialiser implements PathbreakSerialiser {
 
         String instanceRef = circuit.getNodeReference(component);
         String instanceFlatName = NamespaceHelper.flattenReference(instanceRef);
+        String msg = "Processing instance '" + instanceFlatName + "': ";
         if (!component.isMapped()) {
             LogUtils.logWarning("Disabling timing arc in unmapped component '" + instanceRef + "'");
         }
@@ -68,9 +69,12 @@ public class PathbreakConstraintSerialiser implements PathbreakSerialiser {
             for (Contact inputContact: component.getInputs()) {
                 if (inputContact.getPathBreaker()) {
                     if (outputName == null) {
-                        outputName = SubstitutionUtils.getContactSubstitutionName(outputContact, substitutionRule, instanceFlatName);
+                        outputName = SubstitutionUtils.getContactSubstitutionName(
+                                outputContact.getName(), substitutionRule, msg);
                     }
-                    String inputName = SubstitutionUtils.getContactSubstitutionName(inputContact, substitutionRule, instanceFlatName);
+                    String inputName = SubstitutionUtils.getContactSubstitutionName(
+                            inputContact.getName(), substitutionRule, msg);
+
                     out.write(KEYWORD_SET_DISABLE_TIMING + " " + instanceFlatName + " " +
                             KEYWORD_FROM + " " + inputName + " " + KEYWORD_TO + " " + outputName + "\n");
                 }

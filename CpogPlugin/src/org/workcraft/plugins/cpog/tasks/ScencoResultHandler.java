@@ -51,7 +51,7 @@ public class ScencoResultHandler extends BasicProgressMonitor<ScencoResult> {
                     byte[] verilogBytes = solver.getVerilog();
                     final ByteArrayInputStream in = new ByteArrayInputStream(verilogBytes);
                     final VerilogImporter verilogImporter = new VerilogImporter(false);
-                    final Circuit circuit = verilogImporter.importCircuit(in);
+                    final Circuit circuit = verilogImporter.importTopModule(in);
                     final ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
                     final Path<String> path = we.getWorkspacePath();
                     final Framework framework = Framework.getInstance();

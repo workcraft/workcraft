@@ -1,16 +1,29 @@
 package org.workcraft.gui.properties;
 
-import java.awt.Component;
+import javax.swing.*;
+import javax.swing.table.TableCellEditor;
+import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Map;
 
-import javax.swing.AbstractCellEditor;
-import javax.swing.JTable;
-import javax.swing.table.TableCellEditor;
-
 @SuppressWarnings("serial")
 public class ChoiceCellEditor extends AbstractCellEditor implements TableCellEditor, ItemListener {
+
+    class ChoiceWrapper {
+        public Object value;
+        public String text;
+
+        ChoiceWrapper(String text, Object value) {
+            this.text = text;
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return text;
+        }
+    }
 
     private final FlatComboBox comboBox;
     private final ChoiceWrapper[] wrappers;

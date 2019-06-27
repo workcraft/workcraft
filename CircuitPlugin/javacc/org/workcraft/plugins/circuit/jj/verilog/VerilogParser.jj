@@ -16,8 +16,6 @@ package org.workcraft.plugins.circuit.jj.verilog;
 
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -109,10 +107,6 @@ TOKEN:
 |
     <INTEGER : ([ "0"-"9" ])+>
 |
-    <PETRIFY_EQUATION : "// Equation:" (~["\r", "\n"])* <NL>>
-|
-    <PETRIFY_UNMAPPED : "// Functions not mapped into library gates:"  <WS> <NL>>
-|
     <PETRIFY_ZERO_DELAY : "// This inverter should have a short delay" <WS> <NL>>
 |
     <MPSAT_ZERO_DELAY : "// #PRAGMA: zero delay" <WS> <NL>>
@@ -180,8 +174,6 @@ VerilogModule parseModule():
     List<VerilogAssign> assigns = new LinkedList<VerilogAssign>();
     VerilogInstance instance;
     List<VerilogInstance> instances = new LinkedList<VerilogInstance>();
-    List<VerilogInstance> group;
-    Set<List<VerilogInstance>> groups = new HashSet<List<VerilogInstance>>();
     Map<String, Boolean> signalStates = null;
 }
 {
@@ -200,21 +192,12 @@ VerilogModule parseModule():
             }
         )
     )*
-    [<PETRIFY_UNMAPPED>
-        (<PETRIFY_EQUATION>
-            group = parseInstances()
-            {
-                instances.addAll(group);
-                groups.add(group);
-            }
-        )*
-    ]
     [ (<PETRIFY50_INIT_STATE> | <PETRIFY51_INIT_STATE> | <MPSAT_INIT_STATE>)
         signalStates = parseInitialState()
     ]
     <ENDMODULE>
     {
-        return new VerilogModule(name, ports, assigns, instances, signalStates, groups);
+        return new VerilogModule(name, ports, assigns, instances, signalStates);
     }
 }
 

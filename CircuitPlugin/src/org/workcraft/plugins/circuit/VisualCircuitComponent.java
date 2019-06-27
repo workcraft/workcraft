@@ -3,22 +3,21 @@ package org.workcraft.plugins.circuit;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.visual.*;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.*;
 import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
+import org.workcraft.serialisation.NoAutoSerialisation;
 import org.workcraft.utils.Coloriser;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.*;
 import java.util.List;
 import java.util.*;
 
@@ -57,8 +56,21 @@ public class VisualCircuitComponent extends VisualComponent implements Container
                 return object.getIsEnvironment();
             }
         });
-// TODO: Rename label to module name (?)
-//        renamePropertyDeclarationByName(PROPERTY_LABEL, CircuitComponent.PROPERTY_MODULE);
+
+        addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, FileReference>(
+                this, CircuitComponent.PROPERTY_REFINEMENT, FileReference.class, false, false) {
+            @Override
+            public void setter(VisualCircuitComponent object, FileReference value) {
+                object.setRefinement(value);
+            }
+            @Override
+            public FileReference getter(VisualCircuitComponent object) {
+                return object.getRefinement();
+            }
+        });
+
+        // TODO: Rename label to module name (?)
+        //  renamePropertyDeclarationByName(PROPERTY_LABEL, CircuitComponent.PROPERTY_MODULE);
     }
 
     @Override
@@ -66,6 +78,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         return (CircuitComponent) super.getReferencedComponent();
     }
 
+    @NoAutoSerialisation
     public boolean getIsEnvironment() {
         if (getReferencedComponent() != null) {
             return getReferencedComponent().getIsEnvironment();
@@ -73,10 +86,33 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         return false;
     }
 
+    @NoAutoSerialisation
     public void setIsEnvironment(boolean value) {
         if (getReferencedComponent() != null) {
             getReferencedComponent().setIsEnvironment(value);
         }
+    }
+
+    @NoAutoSerialisation
+    public FileReference getRefinement() {
+        if (getReferencedComponent() != null) {
+            return getReferencedComponent().getRefinement();
+        }
+        return null;
+    }
+
+    @NoAutoSerialisation
+    public void setRefinement(FileReference value) {
+        if (getReferencedComponent() != null) {
+            getReferencedComponent().setRefinement(value);
+        }
+    }
+
+    public boolean hasRefinement() {
+        if (getReferencedComponent() != null) {
+            return getReferencedComponent().hasRefinement();
+        }
+        return false;
     }
 
     private LinkedList<VisualContact> getOrderedOutsideContacts(Direction dir) {
@@ -534,6 +570,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         // Cache rendered text to better estimate the bounding box
         cacheRenderedText(r);
         drawOutline(r);
+        drawRefinement(r);
         drawPivot(r);
         drawContactLines(r);
         drawContactLabels(r);
@@ -556,6 +593,32 @@ public class VisualCircuitComponent extends VisualComponent implements Container
             g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
             setStroke(g);
             g.draw(bb);
+        }
+    }
+
+    protected void drawRefinement(DrawRequest r) {
+        Graphics2D g = r.getGraphics();
+        Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+        if ((bb != null) && hasRefinement()) {
+            double dx = CommonVisualSettings.getNodeSize() / 5;
+            double dy = CommonVisualSettings.getNodeSize() / 5;
+            double x = bb.getCenterX();
+            double y = bb.getCenterY() + CommonVisualSettings.getNodeSize() / 10;
+            double w = CommonVisualSettings.getNodeSize() / 10;
+            double w2 = w / 2;
+            Path2D p = new Path2D.Double();
+            p.moveTo(x - dx - w2, y + dy);
+            p.lineTo(x - dx + w2, y + dy + w);
+            p.lineTo(x - dx + w2, y + dy + w2);
+            p.lineTo(x + dx + w2, y + dy + w2);
+            p.lineTo(x + dx + w2, y);
+            p.lineTo(x + dx - w2, y);
+            p.lineTo(x + dx - w2, y + dy - w2);
+            p.lineTo(x - dx + w2, y + dy - w2);
+            p.lineTo(x - dx + w2, y + dy - w);
+            p.closePath();
+            g.setStroke(new BasicStroke((float) CommonVisualSettings.getConnectionLineWidth()));
+            g.draw(p);
         }
     }
 

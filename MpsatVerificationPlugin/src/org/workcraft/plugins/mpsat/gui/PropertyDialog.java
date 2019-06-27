@@ -118,7 +118,7 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
         }
         modeCombo.addItem(VerificationMode.REACHABILITY);
 
-        result.add(GuiUtils.createWideLabeledComponent(modeCombo, "  Mode:      "), BorderLayout.NORTH);
+        result.add(GuiUtils.createLabeledComponent(modeCombo, "  Mode:      "), BorderLayout.NORTH);
 
         JPanel solutionModePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
         solutionModePanel.add(new JLabel("Solution:"));

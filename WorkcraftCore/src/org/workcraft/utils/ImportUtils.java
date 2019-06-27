@@ -1,11 +1,12 @@
 package org.workcraft.utils;
 
-import org.workcraft.plugins.PluginManager;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.interop.Format;
 import org.workcraft.interop.FormatFileFilter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginInfo;
+import org.workcraft.plugins.PluginManager;
 import org.workcraft.workspace.ModelEntry;
 
 import java.io.ByteArrayInputStream;
@@ -27,7 +28,7 @@ public class ImportUtils {
     }
 
     public static ModelEntry importFromFile(Importer importer, File file)
-            throws IOException, DeserialisationException {
+            throws IOException, DeserialisationException, OperationCancelledException {
 
         FileInputStream fileInputStream = new FileInputStream(file);
         ModelEntry model = importer.importFrom(fileInputStream);
@@ -36,7 +37,7 @@ public class ImportUtils {
     }
 
     public static ModelEntry importFromByteArray(Importer importer, byte[] array)
-            throws IOException, DeserialisationException {
+            throws IOException, DeserialisationException, OperationCancelledException {
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(array);
         ModelEntry model = importer.importFrom(inputStream);

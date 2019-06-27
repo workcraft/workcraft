@@ -13,12 +13,14 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
+import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.visual.NodeHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.*;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.Settings;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Exporter;
@@ -72,6 +74,8 @@ public final class Framework {
     private static final String VISUAL_MODEL_VARIABLE = "visualModel";
     private static final String ARGS_VARIABLE = "args";
 
+    private static final String CONFIG_LAST_DIRECTORY = "framework.lastDirectory";
+    private static final String CONFIG_RECENT_FILE = "framework.recentFile";
 
     public static final String META_WORK_ENTRY = "meta";
     public static final String STATE_WORK_ENTRY = "state.xml";
@@ -108,6 +112,8 @@ public final class Framework {
     private static final int JAVASCRIPT_FUNCTION_PARAMS_GROUP = 2;
 
     private static Framework instance = null;
+    private File lastDirectory = null;
+    private final LinkedHashSet<String> recentFilePaths = new LinkedHashSet<>();
 
     class ExecuteScriptAction implements ContextAction {
         private final String script;
@@ -223,7 +229,6 @@ public final class Framework {
 
     private boolean inGuiMode = false;
     private boolean shutdownRequested = false;
-    private boolean guiRestartRequested = false;
     private final ContextFactory contextFactory = new ContextFactory();
     private File workingDirectory = null;
     private MainWindow mainWindow;
@@ -268,9 +273,11 @@ public final class Framework {
         LogUtils.logMessage("Loading global preferences from " + file.getAbsolutePath());
         config.load(file);
         loadPluginsSettings();
+        loadRecentFilesFromConfig();
     }
 
     public void saveConfig() {
+        saveRecentFilesToConfig();
         savePluginsSettings();
         File file = new File(CONFIG_FILE_PATH);
         LogUtils.logMessage("Saving global preferences to " + file.getAbsolutePath());
@@ -304,7 +311,6 @@ public final class Framework {
         Logger.getRootLogger().setLevel(Level.INFO);
 
         initJavaScript();
-
         initPlugins();
     }
 
@@ -485,7 +491,6 @@ public final class Framework {
             System.out.println("Already in GUI mode");
             return;
         }
-        guiRestartRequested = false;
         System.out.println("Switching to GUI mode...");
 
         if (SwingUtilities.isEventDispatchThread()) {
@@ -765,8 +770,8 @@ public final class Framework {
                 try {
                     ByteArrayInputStream bis = compatibilityManager.process(file);
                     me = loadModel(bis);
+                    adjustFileReferenceProperties(me, FileUtils.getBasePath(file));
                 } catch (OperationCancelledException e) {
-                    return null;
                 }
             } else {
                 try {
@@ -775,6 +780,7 @@ public final class Framework {
                     me = ImportUtils.importFromFile(importer, file);
                 } catch (IOException e) {
                     throw new DeserialisationException(e);
+                } catch (OperationCancelledException e) {
                 }
             }
         }
@@ -787,8 +793,8 @@ public final class Framework {
             byte[] bi = DataAccumulator.loadStream(is);
             Document metaDoc = FrameworkUtils.loadMetaDoc(bi);
             ModelDescriptor descriptor = FrameworkUtils.loadMetaDescriptor(metaDoc);
-            Stamp stamp = FrameworkUtils.loadMetaStamp(metaDoc);
             Version version = FrameworkUtils.loadMetaVersion(metaDoc);
+            Stamp stamp = FrameworkUtils.loadMetaStamp(metaDoc);
 
             // load math model
             InputStream mathData = FrameworkUtils.getMathData(bi, metaDoc);
@@ -812,8 +818,8 @@ public final class Framework {
                 FrameworkUtils.loadVisualModelState(bi, (VisualModel) visualResult.model, visualResult.references);
             }
             ModelEntry modelEntry = new ModelEntry(descriptor, visualResult.model);
-            modelEntry.setStamp(stamp);
             modelEntry.setVersion(version);
+            modelEntry.setStamp(stamp);
             return modelEntry;
         } catch (IOException | ParserConfigurationException | InstantiationException | IllegalAccessException
                 | SAXException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException e) {
@@ -859,11 +865,16 @@ public final class Framework {
     @SuppressWarnings("unused")
     public void saveWork(WorkspaceEntry we, String path) throws SerialisationException {
         if (we == null) return;
-        File destination = getFileByAbsoluteOrRelativePath(path);
+        File file = getFileByAbsoluteOrRelativePath(path);
+        saveWork(we, file);
+    }
+
+    public void saveWork(WorkspaceEntry we, File file) throws SerialisationException {
+        if (we == null) return;
         Path<String> wsFrom = we.getWorkspacePath();
-        Path<String> wsTo = workspace.getPath(destination);
+        Path<String> wsTo = workspace.getPath(file);
         if (wsTo == null) {
-            wsTo = workspace.tempMountExternalFile(destination);
+            wsTo = workspace.tempMountExternalFile(file);
         }
         if (wsFrom != wsTo) {
             try {
@@ -872,24 +883,19 @@ public final class Framework {
                 LogUtils.logError(e.getMessage());
             }
         }
-        saveModel(we.getModelEntry(), path);
+        saveModel(we.getModelEntry(), file);
         we.setChanged(false);
         if (mainWindow != null) {
             mainWindow.refreshWorkspaceEntryTitle(we, true);
         }
     }
 
-    public void saveModel(ModelEntry modelEntry, String path) throws SerialisationException {
-        if (modelEntry == null) return;
-        File file = getFileByAbsoluteOrRelativePath(path);
-        saveModel(modelEntry, file);
-    }
-
-    public void saveModel(ModelEntry modelEntry, File file) throws SerialisationException {
-        if (modelEntry == null) return;
+    public void saveModel(ModelEntry me, File file) throws SerialisationException {
+        if (me == null) return;
         try {
+            adjustFileReferenceProperties(me, FileUtils.getBasePath(file));
             FileOutputStream stream = new FileOutputStream(file);
-            saveModel(modelEntry, stream);
+            saveModel(me, stream);
             stream.close();
         } catch (IOException e) {
             throw new SerialisationException(e);
@@ -956,7 +962,6 @@ public final class Framework {
                 visualElement.setAttribute(META_MODEL_FORMAT_UUID_WORK_ATTRIBUTE, visualSerialiser.getFormatUUID().toString());
                 metaRoot.appendChild(visualElement);
             }
-
             XmlUtils.writeDocument(metaDoc, zos);
             zos.closeEntry();
             zos.close();
@@ -975,20 +980,6 @@ public final class Framework {
         return new Memento(os.toByteArray());
     }
 
-    public ModelEntry importModel(String path) throws DeserialisationException {
-        File file = getFileByAbsoluteOrRelativePath(path);
-        return importModel(file);
-    }
-
-    public ModelEntry importModel(File file) throws DeserialisationException {
-        try {
-            final Importer importer = ImportUtils.chooseBestImporter(getPluginManager(), file);
-            return ImportUtils.importFromFile(importer, file);
-        } catch (IOException e) {
-            throw new DeserialisationException(e);
-        }
-    }
-
     public ModelEntry cloneModel(ModelEntry modelEntry) {
         Memento memento = saveModel(modelEntry);
         return loadModel(memento);
@@ -1001,6 +992,10 @@ public final class Framework {
     public void exportWork(WorkspaceEntry we, String path, String formatName) throws SerialisationException {
         File file = getFileByAbsoluteOrRelativePath(path);
         exportModel(we.getModelEntry(), file, formatName, null);
+    }
+
+    public void exportWork(WorkspaceEntry we, File file, Format format) throws SerialisationException {
+        exportModel(we.getModelEntry(), file, format.getName(), format.getUuid());
     }
 
     public void exportModel(ModelEntry me, File file, Format format) throws SerialisationException {
@@ -1027,21 +1022,84 @@ public final class Framework {
         }
     }
 
-    public void restartGUI() throws OperationCancelledException {
-        guiRestartRequested = true;
-        shutdownGUI();
-    }
-
-    public boolean isGUIRestartRequested() {
-        return guiRestartRequested;
-    }
-
     public void loadWorkspace(File file) throws DeserialisationException {
         workspace.load(file);
     }
 
     public Config getConfig() {
         return config;
+    }
+
+    private void loadRecentFilesFromConfig() {
+        String lastDirectoryName = getConfigVar(CONFIG_LAST_DIRECTORY, false);
+        File lastDirectory = (lastDirectoryName == null) ? null : new File(lastDirectoryName);
+        setLastDirectory(lastDirectory);
+        for (int i = 0; i < CommonEditorSettings.getRecentCount(); i++) {
+            String entry = getConfigVar(CONFIG_RECENT_FILE + i, false);
+            pushRecentFilePath(entry);
+        }
+    }
+
+    private void saveRecentFilesToConfig() {
+        if (getLastDirectory() != null) {
+            String lastDirectoryPath = getLastDirectory().getAbsolutePath();
+            setConfigVar(CONFIG_LAST_DIRECTORY, lastDirectoryPath, false);
+        }
+        int recentCount = CommonEditorSettings.getRecentCount();
+        String[] tmp = recentFilePaths.toArray(new String[recentCount]);
+        for (int i = 0; i < recentCount; i++) {
+            setConfigVar(CONFIG_RECENT_FILE + i, tmp[i], false);
+        }
+    }
+
+    public void pushRecentFilePath(File file) {
+        pushRecentFilePath(FileUtils.getFullPath(file));
+    }
+
+    public void pushRecentFilePath(String filePath) {
+        if ((filePath != null) && (new File(filePath).exists())) {
+            // Remove previous entry of the fileName
+            recentFilePaths.remove(filePath);
+            // Make sure there is not too many entries
+            int recentCount = CommonEditorSettings.getRecentCount();
+            for (String entry: new ArrayList<>(recentFilePaths)) {
+                if (recentFilePaths.size() < recentCount) {
+                    break;
+                }
+                recentFilePaths.remove(entry);
+            }
+            // Add the fileName if possible
+            if (recentFilePaths.size() < recentCount) {
+                recentFilePaths.add(filePath);
+            }
+        }
+    }
+
+    public void clearRecentFilePaths() {
+        recentFilePaths.clear();
+    }
+
+    public ArrayList<String> getRecentFilePaths() {
+        ArrayList<String> result = new ArrayList<>(recentFilePaths);
+        Collections.reverse(result);
+        return result;
+    }
+
+    public void setLastDirectory(File value) {
+        if (value != null) {
+            if (value.isDirectory()) {
+                lastDirectory = value;
+            } else {
+                File parentFile = value.getParentFile();
+                if ((parentFile != null) && parentFile.isDirectory()) {
+                    lastDirectory = parentFile;
+                }
+            }
+        }
+    }
+
+    public File getLastDirectory() {
+        return lastDirectory;
     }
 
     public File getFileByAbsoluteOrRelativePath(String path) {
@@ -1053,7 +1111,11 @@ public final class Framework {
     }
 
     public void setWorkingDirectory(String path) {
-        workingDirectory = new File(path);
+        setWorkingDirectory(new File(path));
+    }
+
+    public void setWorkingDirectory(File dir) {
+        workingDirectory = dir;
     }
 
     public File getWorkingDirectory() {
@@ -1070,6 +1132,26 @@ public final class Framework {
             }
         }
         return null;
+    }
+
+    public void adjustFileReferenceProperties(ModelEntry me, String base) {
+        VisualModel model = me.getVisualModel();
+        Set<PropertyDescriptor> properties = new HashSet<>();
+        properties.addAll(model.getProperties(null).getDescriptors());
+        for (VisualNode node : Hierarchy.getDescendantsOfType(model.getRoot(), VisualNode.class)) {
+            properties.addAll(node.getDescriptors());
+            properties.addAll(model.getProperties(node).getDescriptors());
+        }
+        Set<FileReference> fileReferences = new HashSet<>();
+        for (PropertyDescriptor property : properties) {
+            Object value = property.getValue();
+            if (value instanceof FileReference) {
+                fileReferences.add((FileReference) value);
+            }
+        }
+        for (FileReference fileReference : fileReferences) {
+            fileReference.setBase(base);
+        }
     }
 
 }

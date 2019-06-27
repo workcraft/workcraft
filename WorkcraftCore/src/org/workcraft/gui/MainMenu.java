@@ -353,11 +353,11 @@ public class MainMenu extends JMenuBar {
         mnWindows.add(miWindowItem);
     }
 
-    public final void setRecentMenu(ArrayList<String> entries) {
+    public final void updateRecentMenu() {
+        ArrayList<String> entries = Framework.getInstance().getRecentFilePaths();
         mnRecent.removeAll();
         mnRecent.setEnabled(false);
         int index = 0;
-        Collections.reverse(entries);
         for (final String entry : entries) {
             if (entry != null) {
                 JMenuItem miFile = new JMenuItem();
@@ -375,7 +375,11 @@ public class MainMenu extends JMenuBar {
         }
         mnRecent.addSeparator();
         JMenuItem miClear = new JMenuItem("Clear the list");
-        miClear.addActionListener(event -> mainWindow.clearRecentFilesMenu());
+        miClear.addActionListener(event -> {
+            Framework framework = Framework.getInstance();
+            framework.clearRecentFilePaths();
+            updateRecentMenu();
+        });
         mnRecent.add(miClear);
     }
 

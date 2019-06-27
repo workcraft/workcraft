@@ -1,18 +1,10 @@
 package org.workcraft.utils;
 
-import java.awt.Color;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetEncoder;
-import java.util.LinkedList;
-import java.util.List;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -23,13 +15,11 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
+import java.util.LinkedList;
+import java.util.List;
 
 public class XmlUtils {
 
@@ -62,7 +52,25 @@ public class XmlUtils {
         return result;
     }
 
-    public static void writeDocument(Document doc, OutputStream os) throws IOException {
+    public static Document createDocument() throws ParserConfigurationException {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        return db.newDocument();
+    }
+
+    public static Document loadDocument(File file) throws ParserConfigurationException, SAXException, IOException {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        return db.parse(file);
+    }
+
+    public static Document loadDocument(InputStream is) throws ParserConfigurationException, SAXException, IOException {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        return db.parse(is);
+    }
+
+    public static void writeDocument(Document doc, OutputStream os) {
         try {
             TransformerFactory tFactory = TransformerFactory.newInstance();
             Transformer transformer = tFactory.newTransformer();
@@ -84,142 +92,6 @@ public class XmlUtils {
             parentDir.mkdirs();
         }
         writeDocument(doc, new FileOutputStream(file));
-    }
-
-    public static void saveDocument(Document doc, File transform, File file) throws IOException {
-        try {
-            TransformerFactory tFactory = TransformerFactory.newInstance();
-            tFactory.setAttribute("indent-number", Integer.valueOf(2));
-            Transformer transformer = tFactory.newTransformer(new StreamSource(transform));
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-
-            FileOutputStream fos = new FileOutputStream(file.getPath());
-
-            DOMSource source = new DOMSource(doc);
-            CharsetEncoder utf8Encoder = Charset.forName("UTF-8").newEncoder();
-            StreamResult result = new StreamResult(new OutputStreamWriter(fos, utf8Encoder));
-
-            transformer.transform(source, result);
-            fos.close();
-        } catch (TransformerException e) {
-            throw new IOException(e);
-        }
-    }
-
-    public static void writeColorAttr(Element element, String attributeName, Color value) {
-        element.setAttribute(attributeName, String.format("#%x", value.getRGB() & 0xffffff));
-    }
-
-    public static Color readColorAttr(Element element, String attributeName, Color defaultValue) {
-        String s = element.getAttribute(attributeName);
-
-        if (s == null || s.charAt(0) != '#') {
-            return defaultValue;
-        }
-
-        try {
-            return new Color(Integer.parseInt(s.substring(1), 16), false);
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            return defaultValue;
-        }
-    }
-
-    public static int readIntAttr(Element element, String attributeName, int defaultValue) {
-        String attributeValue = element.getAttribute(attributeName);
-        try {
-            return Integer.parseInt(attributeValue);
-        } catch (NumberFormatException e) {
-            return defaultValue;
-        }
-    }
-
-    public static void writeIntAttr(Element element, String attributeName, int value) {
-        element.setAttribute(attributeName, Integer.toString(value));
-    }
-
-    public static double readDoubleAttr(Element element, String attributeName, double defaultValue) {
-        String attributeValue = element.getAttribute(attributeName);
-        try {
-            return Double.parseDouble(attributeValue);
-        } catch (NumberFormatException e) {
-            return defaultValue;
-        }
-    }
-
-    public static void writeDoubleAttr(Element element, String attributeName, double value) {
-        element.setAttribute(attributeName, Double.toString(value));
-    }
-
-    public static boolean readBoolAttr(Element element, String attributeName) {
-        String attributeValue = element.getAttribute(attributeName);
-        return Boolean.parseBoolean(attributeValue);
-    }
-
-    public static void writeBoolAttr(Element element, String attributeName, boolean value) {
-        element.setAttribute(attributeName, Boolean.toString(value));
-    }
-
-    public static String readStringAttr(Element element, String attributeName) {
-        return element.getAttribute(attributeName);
-    }
-
-    public static void writeStringAttr(Element element, String attributeName, String value) {
-        element.setAttribute(attributeName, (value == null) ? "" : value);
-    }
-
-    public static Document createDocument() throws ParserConfigurationException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        Document doc;
-        DocumentBuilder db;
-
-        db = dbf.newDocumentBuilder();
-        doc = db.newDocument();
-        return doc;
-    }
-
-    public static Document loadDocument(File file) throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        Document doc;
-        DocumentBuilder db;
-
-        db = dbf.newDocumentBuilder();
-        doc = db.parse(file);
-
-        return doc;
-    }
-
-    public static Document loadDocument(String path) throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        Document doc;
-        DocumentBuilder db;
-
-        db = dbf.newDocumentBuilder();
-        doc = db.parse(new File(path));
-
-        return doc;
-    }
-
-    public static Document loadDocument(InputStream is) throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        Document doc;
-        DocumentBuilder db;
-
-        db = dbf.newDocumentBuilder();
-        doc = db.parse(is);
-
-        return doc;
-    }
-
-    public static Document loadDocument(ReadableByteChannel in) throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        Document doc;
-        DocumentBuilder db;
-
-        db = dbf.newDocumentBuilder();
-        doc = db.parse(Channels.newInputStream(in));
-
-        return doc;
     }
 
 }

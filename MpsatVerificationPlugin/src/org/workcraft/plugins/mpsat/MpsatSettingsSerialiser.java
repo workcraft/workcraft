@@ -7,34 +7,57 @@ import org.workcraft.utils.XmlUtils;
 
 public class MpsatSettingsSerialiser implements SettingsSerialiser<VerificationParameters> {
 
-    public VerificationParameters fromXML(Element element) {
-        String name = XmlUtils.readStringAttr(element, "name");
-        VerificationMode mode = VerificationMode.getModeByArgument(element.getAttribute("mode"));
-        int verbosity = XmlUtils.readIntAttr(element, "verbosity", 0);
-        int solutionNumberLimit = XmlUtils.readIntAttr(element, "solutionNumberLimit", -1);
-        SolutionMode solutionMode = SolutionMode.valueOf(XmlUtils.readStringAttr(element, "solutionMode"));
+    public static final String SETTINGS_ELEMENT = "settings";
+    public static final String SETTINGS_NAME_ATTRIBUTE = "name";
+    public static final String SETTINGS_MODE_ATTRIBUTE = "mode";
+    public static final String SETTINGS_VERBOSITY_ATTRIBUTE = "verbosity";
+    public static final String SETTINGS_SOLUTION_LIMIT_ATTRIBUTE = "solutionNumberLimit";
+    public static final String SETTINGS_SOLUTION_MODE_ATTRIBUTE = "solutionMode";
+    public static final String SETTINGS_REACH_ELEMENT = "reach";
+    public static final String SETTINGS_INVERSE_PREDICATE_ATTRIBUTE = "inversePredicate";
 
-        Element re = XmlUtils.getChildElement("reach", element);
+    @Override
+    public VerificationParameters fromXML(Element element) {
+        String name = element.getAttribute(SETTINGS_NAME_ATTRIBUTE);
+        VerificationMode mode = VerificationMode.getModeByArgument(element.getAttribute(SETTINGS_MODE_ATTRIBUTE));
+        int verbosity = readIntAttr(element, SETTINGS_VERBOSITY_ATTRIBUTE, 0);
+        int solutionNumberLimit = readIntAttr(element, SETTINGS_SOLUTION_LIMIT_ATTRIBUTE, -1);
+        SolutionMode solutionMode = SolutionMode.valueOf(element.getAttribute(SETTINGS_SOLUTION_MODE_ATTRIBUTE));
+
+        Element re = XmlUtils.getChildElement(SETTINGS_REACH_ELEMENT, element);
         String reach = re.getTextContent();
-        boolean inversePredicate = XmlUtils.readBoolAttr(element, "inversePredicate");
+        boolean inversePredicate = Boolean.parseBoolean(element.getAttribute(SETTINGS_INVERSE_PREDICATE_ATTRIBUTE));
 
         return new VerificationParameters(name, mode, verbosity, solutionMode, solutionNumberLimit, reach, inversePredicate);
     }
 
-    public void toXML(VerificationParameters settings, Element parent) {
-        Element e = parent.getOwnerDocument().createElement("settings");
-        e.setAttribute("name", settings.getName());
-        e.setAttribute("mode", settings.getMode().getArgument());
-        e.setAttribute("verbosity", Integer.toString(settings.getVerbosity()));
-        e.setAttribute("solutionMode", settings.getSolutionMode().name());
-        e.setAttribute("solutionNumberLimit", Integer.toString(settings.getSolutionNumberLimit()));
 
-        Element reach = parent.getOwnerDocument().createElement("reach");
-        reach.setTextContent(settings.getExpression());
-        e.appendChild(reach);
-
-        e.setAttribute("inversePredicate", Boolean.toString(settings.getInversePredicate()));
-
-        parent.appendChild(e);
+    private int readIntAttr(Element element, String name, int defaultValue) {
+        String value = element.getAttribute(name);
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
     }
+
+
+    @Override
+    public void toXML(VerificationParameters settings, Element parent) {
+        Element element = parent.getOwnerDocument().createElement(SETTINGS_ELEMENT);
+        element.setAttribute(SETTINGS_NAME_ATTRIBUTE, settings.getName());
+        element.setAttribute(SETTINGS_MODE_ATTRIBUTE, settings.getMode().getArgument());
+        element.setAttribute(SETTINGS_VERBOSITY_ATTRIBUTE, Integer.toString(settings.getVerbosity()));
+        element.setAttribute(SETTINGS_SOLUTION_LIMIT_ATTRIBUTE, Integer.toString(settings.getSolutionNumberLimit()));
+        element.setAttribute(SETTINGS_SOLUTION_MODE_ATTRIBUTE, settings.getSolutionMode().name());
+
+        Element reach = parent.getOwnerDocument().createElement(SETTINGS_REACH_ELEMENT);
+        reach.setTextContent(settings.getExpression());
+        element.appendChild(reach);
+
+        element.setAttribute(SETTINGS_INVERSE_PREDICATE_ATTRIBUTE, Boolean.toString(settings.getInversePredicate()));
+
+        parent.appendChild(element);
+    }
+
 }

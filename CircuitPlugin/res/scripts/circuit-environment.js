@@ -18,7 +18,7 @@ function setCircuitEnvironment(circuitWork, env) {
 
     circuitMathModel=circuitWork.getModelEntry().getMathModel();
     envFile = getEnvironmentFile(env);
-    org.workcraft.plugins.circuit.utils.EnvironmentUtils.setEnvironmentFile(circuitMathModel, envFile);
+    circuitMathModel.setEnvironmentFile(envFile);
 }
 
 
@@ -27,5 +27,5 @@ framework.addJavaScriptHelp("getCircuitEnvironment", "work",
 
 function getCircuitEnvironment(circuitWork) {
     circuitMathModel=circuitWork.getModelEntry().getMathModel();
-    return org.workcraft.plugins.circuit.utils.EnvironmentUtils.getEnvironmentFile(circuitMathModel);
+    return circuitMathModel.getEnvironmentFile();
 }

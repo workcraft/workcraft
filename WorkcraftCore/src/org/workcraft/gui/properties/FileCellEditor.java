@@ -2,9 +2,6 @@ package org.workcraft.gui.properties;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.editor.GraphEditorPanel;
-import org.workcraft.utils.GuiUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
@@ -55,35 +52,17 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
     }
 
     private void chooseFile() {
-        final Framework framework = Framework.getInstance();
-        JFileChooser fc = new JFileChooser();
-        fc.setDialogType(JFileChooser.OPEN_DIALOG);
-        fc.setMultiSelectionEnabled(false);
-        boolean fcConfigured = false;
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        JFileChooser fc = mainWindow.createOpenDialog("Select file", false, false, null);
         if (file != null) {
-            if (file.exists()) {
-                fc.setSelectedFile(file);
-                fcConfigured = true;
-            } else {
-                File dir = file.getParentFile();
-                if ((dir != null) && dir.exists()) {
-                    fc.setCurrentDirectory(dir);
-                    fcConfigured = true;
-                }
-            }
-        }
-        final MainWindow mainWindow = framework.getMainWindow();
-        if (!fcConfigured) {
-            GraphEditorPanel editor = mainWindow.getCurrentEditor();
-            WorkspaceEntry we = editor.getWorkspaceEntry();
-            File file = we.getFile();
-            File dir = file.exists() ? file.getParentFile() : null;
+            File dir = file.getParentFile();
             if ((dir != null) && dir.exists()) {
                 fc.setCurrentDirectory(dir);
             }
+            if (file.exists()) {
+                fc.setSelectedFile(file);
+            }
         }
-        fc.setDialogTitle("Select file");
-        GuiUtils.sizeFileChooserToScreen(fc, mainWindow.getDisplayMode());
         if (fc.showDialog(mainWindow, "Open") == JFileChooser.APPROVE_OPTION) {
             file = fc.getSelectedFile();
         }

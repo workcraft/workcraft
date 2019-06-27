@@ -8,18 +8,19 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.utils.StringGenerator;
-import org.workcraft.gui.tools.CommentGeneratorTool;
-import org.workcraft.gui.tools.Decorator;
-import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.tools.CommentGeneratorTool;
+import org.workcraft.gui.tools.Decorator;
+import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
 import org.workcraft.plugins.circuit.routing.RouterClient;
@@ -28,12 +29,10 @@ import org.workcraft.plugins.circuit.routing.impl.Router;
 import org.workcraft.plugins.circuit.routing.impl.RouterTask;
 import org.workcraft.plugins.circuit.tools.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
-import org.workcraft.plugins.circuit.utils.EnvironmentUtils;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.io.File;
 import java.util.List;
 import java.util.*;
 
@@ -289,10 +288,14 @@ public class VisualCircuit extends AbstractVisualModel {
     @Override
     public void afterDeserialisation() {
         super.afterDeserialisation();
-        // FIXME: Move environment nodes to math model (for backward compatibility).
-        for (Environment env : Hierarchy.getChildrenOfType(getRoot(), Environment.class)) {
-            ((Container) env.getParent()).remove(env);
-            getMathModel().add(env);
+        // FIXME: For backward compatibility convert Environment nodes to Environment property.
+        Collection<Environment> environments = new ArrayList<>();
+        environments.addAll(Hierarchy.getChildrenOfType(getRoot(), Environment.class));
+        environments.addAll(Hierarchy.getChildrenOfType(getMathModel().getRoot(), Environment.class));
+        for (Environment environment : environments) {
+            Container container = (Container) environment.getParent();
+            container.remove(environment);
+            getMathModel().setEnvironmentFile(environment.getRelativePath());
         }
     }
 
@@ -317,7 +320,7 @@ public class VisualCircuit extends AbstractVisualModel {
     public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
-            properties.add(getEnvironmentFileProperty());
+            properties.add(getEnvironmentProperty());
         } else if (node instanceof VisualFunctionContact) {
             VisualFunctionContact contact = (VisualFunctionContact) node;
             properties.add(getSetFunctionProperty(contact));
@@ -340,17 +343,16 @@ public class VisualCircuit extends AbstractVisualModel {
         return properties;
     }
 
-    private PropertyDescriptor getEnvironmentFileProperty() {
-        return new PropertyDeclaration<Circuit, File>(
-                getMathModel(), PROPERTY_ENVIRONMENT, File.class, false, false) {
+    private PropertyDescriptor getEnvironmentProperty() {
+        return new PropertyDeclaration<Circuit, FileReference>(
+                getMathModel(), PROPERTY_ENVIRONMENT, FileReference.class) {
             @Override
-            public void setter(Circuit object, File value) {
-                EnvironmentUtils.setEnvironmentFile(object, value);
+            public void setter(Circuit object, FileReference value) {
+                object.setEnvironment(value);
             }
-
             @Override
-            public File getter(Circuit object) {
-                return EnvironmentUtils.getEnvironmentFile(object);
+            public FileReference getter(Circuit object) {
+                return object.getEnvironment();
             }
         };
     }

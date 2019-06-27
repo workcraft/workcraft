@@ -5,7 +5,6 @@ import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
-import org.workcraft.plugins.circuit.utils.EnvironmentUtils;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.tasks.*;
 import org.workcraft.plugins.pcomp.ComponentData;
@@ -53,7 +52,7 @@ public class CheckTask extends VerificationChainTask {
         try {
             // Common variables
             VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
-            File envFile = EnvironmentUtils.getEnvironmentFile(circuit.getMathModel());
+            File envFile = circuit.getMathModel().getEnvironmentFile();
             LinkedList<Pair<String, String>> grantPairs = getMutexGrantPairs(we);
 
             // Load device STG

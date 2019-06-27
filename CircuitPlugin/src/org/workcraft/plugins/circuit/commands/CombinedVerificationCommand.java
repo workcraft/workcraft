@@ -4,7 +4,6 @@ import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.tasks.CheckTask;
-import org.workcraft.plugins.circuit.utils.EnvironmentUtils;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
@@ -14,8 +13,8 @@ import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.DialogUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 
@@ -61,7 +60,7 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand {
         boolean checkPersistency = checkPersistency();
 
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-        File envFile = EnvironmentUtils.getEnvironmentFile(circuit);
+        File envFile = circuit.getEnvironmentFile();
         Stg envStg = StgUtils.loadStg(envFile);
         if (envStg == null) {
             String messagePrefix = "";

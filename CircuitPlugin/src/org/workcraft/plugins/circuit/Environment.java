@@ -1,9 +1,9 @@
 package org.workcraft.plugins.circuit;
 
-import java.io.File;
-
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
+
+import java.io.File;
 
 public class Environment extends MathNode {
     public static final String PROPERTY_FILE = "file";
@@ -31,6 +31,23 @@ public class Environment extends MathNode {
             base = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_BASE));
         }
+    }
+
+    public String getRelativePath() {
+        String result = null;
+        if (file != null) {
+            result = file.getPath().replace("\\", "/");
+        }
+        if (base != null) {
+            String path = base.getPath().replace("\\", "/");
+            if (!path.isEmpty() && result.startsWith(path)) {
+                result = result.substring(path.length());
+                while (result.startsWith("/")) {
+                    result = result.substring(1);
+                }
+            }
+        }
+        return result;
     }
 
 }

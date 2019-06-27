@@ -4,7 +4,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.TestUtils;
 import org.workcraft.plugins.petrify.commands.ComplexGateSynthesisCommand;
@@ -19,21 +18,8 @@ public class SynthesisCommandsTests {
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
-        switch (DesktopApi.getOs()) {
-        case LINUX:
-            PetrifySettings.setCommand("dist-template/linux/tools/PetrifyTools/petrify");
-            CircuitSettings.setGateLibrary("dist-template/linux/libraries/workcraft.lib");
-            break;
-        case MACOS:
-            PetrifySettings.setCommand("dist-template/osx/Contents/Resources/tools/PetrifyTools/petrify");
-            CircuitSettings.setGateLibrary("dist-template/osx/Contents/Resources/libraries/workcraft.lib");
-            break;
-        case WINDOWS:
-            PetrifySettings.setCommand("dist-template\\windows\\tools\\PetrifyTools\\petrify.exe");
-            CircuitSettings.setGateLibrary("dist-template\\windows\\libraries\\workcraft.lib");
-            break;
-        default:
-        }
+        PetrifySettings.setCommand(TestUtils.getToolPath("PetrifyTools", "petrify"));
+        CircuitSettings.setGateLibrary(TestUtils.getLibraryPath("workcraft.lib"));
     }
 
     @Test

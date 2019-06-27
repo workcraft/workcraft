@@ -1,7 +1,6 @@
 package org.workcraft.plugins.stg.utils;
 
 import org.workcraft.Framework;
-import org.workcraft.plugins.PluginManager;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -14,25 +13,22 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Exporter;
+import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.utils.PetriUtils;
-import org.workcraft.tasks.ExportOutput;
-import org.workcraft.tasks.ExportTask;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.converters.SignalStg;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.interop.StgImporter;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.Result;
-import org.workcraft.tasks.SubtaskMonitor;
-import org.workcraft.tasks.TaskManager;
+import org.workcraft.tasks.*;
 import org.workcraft.utils.ExportUtils;
+import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -139,7 +135,7 @@ public class StgUtils {
         Stg result = null;
         if (file != null) {
             Framework framework = Framework.getInstance();
-            String filePath = file.getAbsolutePath();
+            String filePath = FileUtils.getFullPath(file);
             try {
                 ModelEntry me = framework.loadModel(file);
                 if (me != null) {

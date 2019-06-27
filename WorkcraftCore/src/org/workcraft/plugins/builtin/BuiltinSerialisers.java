@@ -34,6 +34,8 @@ public class BuiltinSerialisers implements Plugin {
         pm.registerXmlSerialiser(VisualConnectionSerialiser.class);
         pm.registerXmlSerialiser(VisualReplicaSerialiser.class);
         pm.registerXmlSerialiser(FileSerialiser.class);
+        pm.registerXmlSerialiser(FileReferenceSerialiser.class);
+        pm.registerXmlSerialiser(AltFileReferenceSerialiser.class);
 
         pm.registerXmlDeserialiser(AffineTransformDeserialiser.class);
         pm.registerXmlDeserialiser(BooleanDeserialiser.class);
@@ -47,6 +49,8 @@ public class BuiltinSerialisers implements Plugin {
         pm.registerXmlDeserialiser(VisualConnectionDeserialiser.class);
         pm.registerXmlDeserialiser(VisualReplicaDeserialiser.class);
         pm.registerXmlDeserialiser(FileDeserialiser.class);
+        pm.registerXmlDeserialiser(FileReferenceDeserialiser.class);
+        pm.registerXmlDeserialiser(AltFileReferenceDeserialiser.class);
     }
 
 }

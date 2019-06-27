@@ -7,7 +7,6 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.circuit.interop.VerilogFormat;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -24,18 +23,7 @@ public class ImportExportTests {
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
-        switch (DesktopApi.getOs()) {
-        case LINUX:
-            CircuitSettings.setGateLibrary("dist-template/linux/libraries/workcraft.lib");
-            break;
-        case MACOS:
-            CircuitSettings.setGateLibrary("dist-template/osx/Contents/Resources/libraries/workcraft.lib");
-            break;
-        case WINDOWS:
-            CircuitSettings.setGateLibrary("dist-template\\windows\\libraries\\workcraft.lib");
-            break;
-        default:
-        }
+        CircuitSettings.setGateLibrary(TestUtils.getLibraryPath("workcraft.lib"));
     }
 
     @Test
@@ -101,7 +89,7 @@ public class ImportExportTests {
         try {
             File vFile = File.createTempFile("workcraft-", ".v");
             vFile.deleteOnExit();
-            framework.exportModel(wWe.getModelEntry(), vFile, VerilogFormat.getInstance());
+            framework.exportWork(wWe, vFile, VerilogFormat.getInstance());
             vWe = framework.loadWork(vFile);
             countNodes(vWe, vInputs, vOutputs, vGates);
         } catch (IOException | SerialisationException e) {

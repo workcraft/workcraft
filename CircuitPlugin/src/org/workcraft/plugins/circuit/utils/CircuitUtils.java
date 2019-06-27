@@ -515,4 +515,36 @@ public class CircuitUtils {
         return result;
     }
 
+    public static Set<String> getInputPortNames(Circuit circuit) {
+        Set<String> result = new HashSet<>();
+        for (Contact port : circuit.getInputPorts()) {
+            result.add(circuit.getName(port));
+        }
+        return result;
+    }
+
+    public static Set<String> getOutputPortNames(Circuit circuit) {
+        Set<String> result = new HashSet<>();
+        for (Contact port : circuit.getOutputPorts()) {
+            result.add(circuit.getName(port));
+        }
+        return result;
+    }
+
+    public static Set<String> getInputPinNames(Circuit circuit, FunctionComponent component) {
+        Set<String> result = new HashSet<>();
+        for (Contact pin : component.getInputs()) {
+            result.add(circuit.getName(pin));
+        }
+        return result;
+    }
+
+    public static Set<String> getOutputPinNames(Circuit circuit, FunctionComponent component) {
+        Set<String> result = new HashSet<>();
+        for (Contact pin : component.getOutputs()) {
+            result.add(circuit.getName(pin));
+        }
+        return result;
+    }
+
 }

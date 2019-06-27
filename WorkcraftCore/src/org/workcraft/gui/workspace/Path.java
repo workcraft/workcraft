@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Path<Node> {
+
     public abstract boolean isEmpty();
     public abstract Node getNode();
     public abstract Path<Node> getParent();
@@ -24,14 +25,14 @@ public abstract class Path<Node> {
     }
 
     public static <Node> Path<Node> root(Node root) {
-        return new RootPath<Node>(root);
+        return new RootPath<>(root);
     }
 
     public static <Node> Path<Node> append(Path<Node> path, Node suffix) {
         if (path.isEmpty()) {
             return root(suffix);
         } else {
-            return new NormalPath<Node>(path, suffix);
+            return new NormalPath<>(path, suffix);
         }
     }
 
@@ -73,7 +74,7 @@ public abstract class Path<Node> {
         }
         Path<Node> current = left;
         for (Node node : getPath(right)) {
-            current = new NormalPath<Node>(current, node);
+            current = new NormalPath<>(current, node);
         }
         return current;
     }
@@ -190,4 +191,5 @@ public abstract class Path<Node> {
             return false;
         }
     }
+
 }

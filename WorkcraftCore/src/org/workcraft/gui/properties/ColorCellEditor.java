@@ -1,17 +1,10 @@
 package org.workcraft.gui.properties;
 
-import java.awt.Color;
-import java.awt.Component;
+import javax.swing.*;
+import javax.swing.table.TableCellEditor;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import javax.swing.AbstractCellEditor;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JTable;
-import javax.swing.ListCellRenderer;
-import javax.swing.table.TableCellEditor;
 
 @SuppressWarnings("serial")
 public class ColorCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
@@ -23,24 +16,6 @@ public class ColorCellEditor extends AbstractCellEditor implements TableCellEdit
             Color.ORANGE, Color.PINK,
             };
 
-    class ColorCellRenderer implements ListCellRenderer {
-
-        private final DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
-
-        @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index,
-                boolean isSelected, boolean cellHasFocus) {
-
-            JLabel renderer = (JLabel) defaultRenderer.getListCellRendererComponent(
-                    list, " ", index, isSelected, cellHasFocus);
-
-            if (value instanceof Color) {
-                renderer.setBackground((Color) value);
-            }
-            return renderer;
-        }
-    }
-
     public ColorCellEditor() {
         comboBox = new FlatComboBox();
         for (Color color: colors) {
@@ -48,7 +23,7 @@ public class ColorCellEditor extends AbstractCellEditor implements TableCellEdit
         }
         comboBox.setEditable(true);
         comboBox.setFocusable(false);
-        comboBox.setRenderer(new ColorCellRenderer());
+        comboBox.setRenderer(new ColorComboBoxRenderer());
 
         Color color = (Color) comboBox.getSelectedItem();
         comboBox.setEditor(new ColorComboBoxEditor(color));

@@ -7,8 +7,17 @@ public class VisualTransformableNodeDeserialiser {
 
     public static void initTransformableNode(Element element, VisualTransformableNode node) {
         Element vnodeElement = XmlUtils.getChildElement(VisualTransformableNode.class.getSimpleName(), element);
-        node.setX(XmlUtils.readDoubleAttr(vnodeElement, "X", 0));
-        node.setY(XmlUtils.readDoubleAttr(vnodeElement, "Y", 0));
+        node.setX(readCoord(vnodeElement, "X", 0.0));
+        node.setY(readCoord(vnodeElement, "Y", 0.0));
+    }
+
+    private static double readCoord(Element element, String name, double defaultValue) {
+        String value = element.getAttribute(name);
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
     }
 
 }

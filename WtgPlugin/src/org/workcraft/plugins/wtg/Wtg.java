@@ -136,6 +136,7 @@ public class Wtg extends Dtd {
 
     @Override
     public void anonymise() {
+        setTitle("");
         HashSet<String> takenNames = new HashSet<>(getSignalNames());
         for (MathNode node : Hierarchy.getDescendantsOfType(getRoot(), MathNode.class)) {
             String name = getName(node);

@@ -44,7 +44,6 @@ import org.workcraft.interop.FormatFileFilter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.PluginManager;
-import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
 import org.workcraft.tasks.ExportTask;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.types.ListMap;
@@ -73,8 +72,6 @@ public class MainWindow extends JFrame {
     private static final String CONFIG_GUI_MAIN_MAXIMISED = "gui.main.maximised";
     private static final String CONFIG_GUI_MAIN_WIDTH = "gui.main.width";
     private static final String CONFIG_GUI_MAIN_HEIGHT = "gui.main.height";
-    private static final String CONFIG_GUI_MAIN_LAST_DIRECTORY = "gui.main.lastDirectory";
-    private static final String CONFIG_GUI_MAIN_RECENT_FILE = "gui.main.recentFile";
     private static final String CONFIG_GUI_MAIN_TOOLBAR_GLOBAL_VISIBILITY = "gui.main.toolbar.global.visibility";
     private static final String CONFIG_GUI_MAIN_TOOLBAR_GLOBAL_POSITION = "gui.main.toolbar.global.position";
     private static final String CONFIG_GUI_MAIN_TOOLBAR_MODEL_VISIBILITY = "gui.main.toolbar.model.visibility";
@@ -123,9 +120,6 @@ public class MainWindow extends JFrame {
     private ToolBar globalToolbar;
     private JToolBar modelToolbar;
     private JToolBar controlToolbar;
-
-    private File lastDirectory = null;
-    private final LinkedHashSet<String> recentFiles = new LinkedHashSet<>();
 
     private int dockableIDCounter = 0;
     private final HashMap<Integer, DockableWindow> idToDockableWindowMap = new HashMap<>();
@@ -256,6 +250,7 @@ public class MainWindow extends JFrame {
         mainMenu = new MainMenu(this);
         MenuBarUI menuUI = mainMenu.getUI();
         setJMenuBar(mainMenu);
+        mainMenu.updateRecentMenu();
 
         // Tweak look-and-feel.
         SilverOceanTheme.enable();
@@ -288,7 +283,6 @@ public class MainWindow extends JFrame {
         createWindows();
         createDockingLayout();
         loadWindowGeometryFromConfig();
-        loadRecentFilesFromConfig();
 
         // Display window in its default state.
         setVisible(true);
@@ -561,7 +555,6 @@ public class MainWindow extends JFrame {
             }
         }
         saveWindowGeometryToConfig();
-        saveRecentFilesToConfig();
         saveToolbarParametersToConfig();
 
         content.remove(rootDockingPort);
@@ -667,79 +660,6 @@ public class MainWindow extends JFrame {
         framework.setConfigVar(CONFIG_GUI_MAIN_HEIGHT, Integer.toString(getHeight()), false);
     }
 
-    public void loadRecentFilesFromConfig() {
-        final Framework framework = Framework.getInstance();
-        String lastDirectoryName = framework.getConfigVar(CONFIG_GUI_MAIN_LAST_DIRECTORY, false);
-        File lastDirectory = (lastDirectoryName == null) ? null : new File(lastDirectoryName);
-        setLastDirectory(lastDirectory);
-        for (int i = 0; i < CommonEditorSettings.getRecentCount(); i++) {
-            String entry = framework.getConfigVar(CONFIG_GUI_MAIN_RECENT_FILE + i, false);
-            pushRecentFile(entry, false);
-        }
-        updateRecentFilesMenu();
-    }
-
-    public void saveRecentFilesToConfig() {
-        final Framework framework = Framework.getInstance();
-        if (getLastDirectory() != null) {
-            String lastDirectoryPath = getLastDirectory().getAbsolutePath();
-            framework.setConfigVar(CONFIG_GUI_MAIN_LAST_DIRECTORY, lastDirectoryPath, false);
-        }
-        int recentCount = CommonEditorSettings.getRecentCount();
-        String[] tmp = recentFiles.toArray(new String[recentCount]);
-        for (int i = 0; i < recentCount; i++) {
-            framework.setConfigVar(CONFIG_GUI_MAIN_RECENT_FILE + i, tmp[i], false);
-        }
-    }
-
-    public void pushRecentFile(String fileName, boolean updateMenu) {
-        if ((fileName != null) && (new File(fileName).exists())) {
-            // Remove previous entry of the fileName
-            recentFiles.remove(fileName);
-            // Make sure there is not too many entries
-            int recentCount = CommonEditorSettings.getRecentCount();
-            for (String entry: new ArrayList<>(recentFiles)) {
-                if (recentFiles.size() < recentCount) {
-                    break;
-                }
-                recentFiles.remove(entry);
-            }
-            // Add the fileName if possible
-            if (recentFiles.size() < recentCount) {
-                recentFiles.add(fileName);
-            }
-        }
-        if (updateMenu) {
-            updateRecentFilesMenu();
-        }
-    }
-
-    public void clearRecentFilesMenu() {
-        recentFiles.clear();
-        mainMenu.setRecentMenu(new ArrayList<>(recentFiles));
-    }
-
-    public void updateRecentFilesMenu() {
-        mainMenu.setRecentMenu(new ArrayList<String>(recentFiles));
-    }
-
-    public void setLastDirectory(File value) {
-        if (value != null) {
-            if (value.isDirectory()) {
-                lastDirectory = value;
-            } else {
-                File parentFile = value.getParentFile();
-                if ((parentFile != null) && parentFile.isDirectory()) {
-                    lastDirectory = parentFile;
-                }
-            }
-        }
-    }
-
-    public File getLastDirectory() {
-        return lastDirectory;
-    }
-
     public void createWork() throws OperationCancelledException {
         createWork(Path.empty());
     }
@@ -819,17 +739,20 @@ public class MainWindow extends JFrame {
         JFileChooser fc = new JFileChooser();
         fc.setDialogType(JFileChooser.OPEN_DIALOG);
         fc.setDialogTitle(title);
+        boolean allowAllFileFilter = true;
         if (allowWorkFiles) {
             fc.setFileFilter(FileFilters.DOCUMENT_FILES);
+            allowAllFileFilter = false;
         }
         if (formats != null) {
             for (Format format : formats) {
                 fc.addChoosableFileFilter(new FormatFileFilter(format));
+                allowAllFileFilter = false;
             }
         }
         GuiUtils.sizeFileChooserToScreen(fc, getDisplayMode());
-        fc.setCurrentDirectory(getLastDirectory());
-        fc.setAcceptAllFileFilterUsed(false);
+        fc.setCurrentDirectory(Framework.getInstance().getLastDirectory());
+        fc.setAcceptAllFileFilterUsed(allowAllFileFilter);
         fc.setMultiSelectionEnabled(multiSelection);
         return fc;
     }
@@ -845,7 +768,7 @@ public class MainWindow extends JFrame {
         if (file.exists()) {
             fc.setCurrentDirectory(file.getParentFile());
         } else {
-            fc.setCurrentDirectory(getLastDirectory());
+            fc.setCurrentDirectory(Framework.getInstance().getLastDirectory());
         }
         // Set file filters
         fc.setAcceptAllFileFilterUsed(false);
@@ -900,8 +823,9 @@ public class MainWindow extends JFrame {
         if (FileUtils.checkAvailability(file, null, true)) {
             try {
                 we = framework.loadWork(file);
-                pushRecentFile(file.getPath(), true);
-                setLastDirectory(file);
+                framework.setLastDirectory(file);
+                framework.pushRecentFilePath(file);
+                mainMenu.updateRecentMenu();
             } catch (DeserialisationException e) {
                 DialogUtils.showError("A problem was encountered while trying to load '" + file.getPath() + "'.\n" + e.getMessage());
                 ExceptionUtils.printCause(e);
@@ -981,13 +905,15 @@ public class MainWindow extends JFrame {
             throw new RuntimeException(
                     "Cannot save workspace entry - it does not have an associated Workcraft model.");
         }
+        Framework framework = Framework.getInstance();
         try {
-            Framework.getInstance().saveWork(we, path);
+            framework.saveWork(we, path);
         } catch (SerialisationException e) {
             DialogUtils.showError(e.getMessage());
         }
-        setLastDirectory(we.getFile());
-        pushRecentFile(we.getFile().getPath(), true);
+        framework.setLastDirectory(we.getFile());
+        framework.pushRecentFilePath(we.getFile());
+        mainMenu.updateRecentMenu();
     }
 
     public void importFrom() {
@@ -1025,12 +951,12 @@ public class MainWindow extends JFrame {
                         me.getMathModel().setTitle(title);
                     }
                     final Framework framework = Framework.getInstance();
-                    framework.createWork(me, Path.<String>empty(), file.getName());
-                    setLastDirectory(file);
+                    framework.createWork(me, Path.empty(), file.getName());
+                    framework.setLastDirectory(file);
                     break;
                 } catch (IOException | DeserialisationException e) {
-                    e.printStackTrace();
                     DialogUtils.showError(e.getMessage());
+                } catch (OperationCancelledException e) {
                 }
             }
         }
@@ -1049,7 +975,7 @@ public class MainWindow extends JFrame {
         String description = "Exporting " + title;
         final TaskFailureNotifier monitor = new TaskFailureNotifier(description);
         taskManager.queue(exportTask, description, monitor);
-        setLastDirectory(fc.getCurrentDirectory());
+        framework.setLastDirectory(fc.getCurrentDirectory());
     }
 
     private String getFileNameForCurrentWork() {

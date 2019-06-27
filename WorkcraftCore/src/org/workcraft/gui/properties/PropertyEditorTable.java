@@ -1,9 +1,10 @@
 package org.workcraft.gui.properties;
 
 import org.workcraft.Framework;
-import org.workcraft.plugins.PluginManager;
+import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.PluginInfo;
+import org.workcraft.plugins.PluginManager;
 import org.workcraft.utils.DialogUtils;
 
 import javax.swing.*;
@@ -18,15 +19,20 @@ import java.util.HashMap;
 @SuppressWarnings("serial")
 public class PropertyEditorTable extends JTable {
 
-    HashMap<Class<?>, PropertyClass> propertyClasses;
-    TableCellRenderer[] cellRenderers;
-    TableCellEditor[] cellEditors;
-    PropertyEditorTableModel model;
+    private final PropertyEditorTableModel model;
+    private final HashMap<Class<?>, PropertyClass> propertyClasses;
+
+    private TableCellRenderer[] cellRenderers;
+    private TableCellEditor[] cellEditors;
 
     public PropertyEditorTable() {
+        this("", "");
+    }
+
+    public PropertyEditorTable(String propertyHeader, String valueHeader) {
         super();
 
-        model = new PropertyEditorTableModel();
+        model = new PropertyEditorTableModel(propertyHeader, valueHeader);
         setModel(model);
 
         getTableHeader().setDefaultRenderer(new FlatHeaderRenderer());
@@ -43,6 +49,7 @@ public class PropertyEditorTable extends JTable {
         propertyClasses.put(Boolean.class, new BooleanProperty());
         propertyClasses.put(Color.class, new ColorProperty());
         propertyClasses.put(File.class, new FileProperty());
+        propertyClasses.put(FileReference.class, new FileReferenceProperty());
 
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();

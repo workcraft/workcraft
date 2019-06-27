@@ -35,7 +35,7 @@ public class VerilogPort {
 
         @Override
         public String toString() {
-            return "[" + Integer.toString(getFirst()) + ":" + Integer.toString(getSecond()) + "]";
+            return "[" + getFirst() + ":" + getSecond() + "]";
         }
     }
 
