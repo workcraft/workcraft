@@ -69,15 +69,15 @@ public class MainWindow extends JFrame {
     private static final String FLEXDOCK_WORKSPACE = "defaultWorkspace";
     private static final String FLEXDOCK_DOCKING_PORT = "defaultDockingPort";
 
-    private static final String CONFIG_GUI_MAIN_MAXIMISED = "gui.main.maximised";
-    private static final String CONFIG_GUI_MAIN_WIDTH = "gui.main.width";
-    private static final String CONFIG_GUI_MAIN_HEIGHT = "gui.main.height";
-    private static final String CONFIG_GUI_MAIN_TOOLBAR_GLOBAL_VISIBILITY = "gui.main.toolbar.global.visibility";
-    private static final String CONFIG_GUI_MAIN_TOOLBAR_GLOBAL_POSITION = "gui.main.toolbar.global.position";
-    private static final String CONFIG_GUI_MAIN_TOOLBAR_MODEL_VISIBILITY = "gui.main.toolbar.model.visibility";
-    private static final String CONFIG_GUI_MAIN_TOOLBAR_MODEL_POSITION = "gui.main.toolbar.model.position";
-    private static final String CONFIG_GUI_MAIN_TOOLBAR_CONTROL_VISIBILITY = "gui.main.toolbar.tool.visibility";
-    private static final String CONFIG_GUI_MAIN_TOOLBAR_CONTROL_POSITION = "gui.main.toolbar.tool.position";
+    private static final String CONFIG_WINDOW_MAXIMISED = "window.maximised";
+    private static final String CONFIG_WINDOW_WIDTH = "window.width";
+    private static final String CONFIG_WINDOW_HEIGHT = "window.height";
+    private static final String CONFIG_TOOLBAR_GLOBAL_VISIBILITY = "toolbar.global.visibility";
+    private static final String CONFIG_TOOLBAR_GLOBAL_POSITION = "toolbar.global.position";
+    private static final String CONFIG_TOOLBAR_MODEL_VISIBILITY = "toolbar.model.visibility";
+    private static final String CONFIG_TOOLBAR_MODEL_POSITION = "toolbar.model.position";
+    private static final String CONFIG_TOOLBAR_CONTROL_VISIBILITY = "toolbar.tool.visibility";
+    private static final String CONFIG_TOOLBAR_CONTROL_POSITION = "toolbar.tool.position";
 
     private static final int MIN_WIDTH = 800;
     private static final int MIN_HEIGHT = 450;
@@ -566,16 +566,16 @@ public class MainWindow extends JFrame {
 
     private void loadToolbarParametersFromConfig() {
         loadToolbarParametersFromConfig(globalToolbar,
-                CONFIG_GUI_MAIN_TOOLBAR_GLOBAL_VISIBILITY,
-                CONFIG_GUI_MAIN_TOOLBAR_GLOBAL_POSITION);
+                CONFIG_TOOLBAR_GLOBAL_VISIBILITY,
+                CONFIG_TOOLBAR_GLOBAL_POSITION);
 
         loadToolbarParametersFromConfig(modelToolbar,
-                CONFIG_GUI_MAIN_TOOLBAR_MODEL_VISIBILITY,
-                CONFIG_GUI_MAIN_TOOLBAR_MODEL_POSITION);
+                CONFIG_TOOLBAR_MODEL_VISIBILITY,
+                CONFIG_TOOLBAR_MODEL_POSITION);
 
         loadToolbarParametersFromConfig(controlToolbar,
-                CONFIG_GUI_MAIN_TOOLBAR_CONTROL_VISIBILITY,
-                CONFIG_GUI_MAIN_TOOLBAR_CONTROL_POSITION);
+                CONFIG_TOOLBAR_CONTROL_VISIBILITY,
+                CONFIG_TOOLBAR_CONTROL_POSITION);
     }
 
     private void loadToolbarParametersFromConfig(JToolBar toolbar, String keyVisibility, String keyPosition) {
@@ -602,16 +602,16 @@ public class MainWindow extends JFrame {
 
     private void saveToolbarParametersToConfig() {
         saveToolbarParametersToConfig(globalToolbar,
-                CONFIG_GUI_MAIN_TOOLBAR_GLOBAL_VISIBILITY,
-                CONFIG_GUI_MAIN_TOOLBAR_GLOBAL_POSITION);
+                CONFIG_TOOLBAR_GLOBAL_VISIBILITY,
+                CONFIG_TOOLBAR_GLOBAL_POSITION);
 
         saveToolbarParametersToConfig(modelToolbar,
-                CONFIG_GUI_MAIN_TOOLBAR_MODEL_VISIBILITY,
-                CONFIG_GUI_MAIN_TOOLBAR_MODEL_POSITION);
+                CONFIG_TOOLBAR_MODEL_VISIBILITY,
+                CONFIG_TOOLBAR_MODEL_POSITION);
 
         saveToolbarParametersToConfig(controlToolbar,
-                CONFIG_GUI_MAIN_TOOLBAR_CONTROL_VISIBILITY,
-                CONFIG_GUI_MAIN_TOOLBAR_CONTROL_POSITION);
+                CONFIG_TOOLBAR_CONTROL_VISIBILITY,
+                CONFIG_TOOLBAR_CONTROL_POSITION);
     }
 
     private void saveToolbarParametersToConfig(JToolBar toolbar, String keyVisibility, String keyPosition) {
@@ -628,9 +628,9 @@ public class MainWindow extends JFrame {
 
     public void loadWindowGeometryFromConfig() {
         final Framework framework = Framework.getInstance();
-        String maximisedStr = framework.getConfigVar(CONFIG_GUI_MAIN_MAXIMISED, false);
-        String widthStr = framework.getConfigVar(CONFIG_GUI_MAIN_WIDTH, false);
-        String heightStr = framework.getConfigVar(CONFIG_GUI_MAIN_HEIGHT, false);
+        String maximisedStr = framework.getConfigVar(CONFIG_WINDOW_MAXIMISED, false);
+        String widthStr = framework.getConfigVar(CONFIG_WINDOW_WIDTH, false);
+        String heightStr = framework.getConfigVar(CONFIG_WINDOW_HEIGHT, false);
 
         boolean maximised = (maximisedStr == null) ? true : Boolean.parseBoolean(maximisedStr);
         setExtendedState(maximised ? JFrame.MAXIMIZED_BOTH : JFrame.NORMAL);
@@ -655,9 +655,9 @@ public class MainWindow extends JFrame {
     public void saveWindowGeometryToConfig() {
         final Framework framework = Framework.getInstance();
         boolean maximised = (getExtendedState() & JFrame.MAXIMIZED_BOTH) != 0;
-        framework.setConfigVar(CONFIG_GUI_MAIN_MAXIMISED, Boolean.toString(maximised), false);
-        framework.setConfigVar(CONFIG_GUI_MAIN_WIDTH, Integer.toString(getWidth()), false);
-        framework.setConfigVar(CONFIG_GUI_MAIN_HEIGHT, Integer.toString(getHeight()), false);
+        framework.setConfigVar(CONFIG_WINDOW_MAXIMISED, Boolean.toString(maximised), false);
+        framework.setConfigVar(CONFIG_WINDOW_WIDTH, Integer.toString(getWidth()), false);
+        framework.setConfigVar(CONFIG_WINDOW_HEIGHT, Integer.toString(getHeight()), false);
     }
 
     public void createWork() throws OperationCancelledException {

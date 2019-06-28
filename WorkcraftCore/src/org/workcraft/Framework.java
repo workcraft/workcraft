@@ -74,8 +74,8 @@ public final class Framework {
     private static final String VISUAL_MODEL_VARIABLE = "visualModel";
     private static final String ARGS_VARIABLE = "args";
 
-    private static final String CONFIG_LAST_DIRECTORY = "framework.lastDirectory";
-    private static final String CONFIG_RECENT_FILE = "framework.recentFile";
+    private static final String CONFIG_RECENT_LAST_DIRECTORY = "recent.lastDirectory";
+    private static final String CONFIG_RECENT_FILE = "recent.file";
 
     public static final String META_WORK_ENTRY = "meta";
     public static final String STATE_WORK_ENTRY = "state.xml";
@@ -1031,7 +1031,7 @@ public final class Framework {
     }
 
     private void loadRecentFilesFromConfig() {
-        String lastDirectoryName = getConfigVar(CONFIG_LAST_DIRECTORY, false);
+        String lastDirectoryName = getConfigVar(CONFIG_RECENT_LAST_DIRECTORY, false);
         File lastDirectory = (lastDirectoryName == null) ? null : new File(lastDirectoryName);
         setLastDirectory(lastDirectory);
         for (int i = 0; i < CommonEditorSettings.getRecentCount(); i++) {
@@ -1043,7 +1043,7 @@ public final class Framework {
     private void saveRecentFilesToConfig() {
         if (getLastDirectory() != null) {
             String lastDirectoryPath = getLastDirectory().getAbsolutePath();
-            setConfigVar(CONFIG_LAST_DIRECTORY, lastDirectoryPath, false);
+            setConfigVar(CONFIG_RECENT_LAST_DIRECTORY, lastDirectoryPath, false);
         }
         int recentCount = CommonEditorSettings.getRecentCount();
         String[] tmp = recentFilePaths.toArray(new String[recentCount]);
