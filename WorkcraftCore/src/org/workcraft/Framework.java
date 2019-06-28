@@ -13,14 +13,12 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
-import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.visual.NodeHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.*;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.Settings;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Exporter;
@@ -770,7 +768,7 @@ public final class Framework {
                 try {
                     ByteArrayInputStream bis = compatibilityManager.process(file);
                     me = loadModel(bis);
-                    adjustFileReferenceProperties(me, FileUtils.getBasePath(file));
+                    FileReferenceUtils.makeAbsolute(me.getVisualModel(), FileUtils.getBasePath(file));
                 } catch (OperationCancelledException e) {
                 }
             } else {
@@ -893,12 +891,14 @@ public final class Framework {
     public void saveModel(ModelEntry me, File file) throws SerialisationException {
         if (me == null) return;
         try {
-            adjustFileReferenceProperties(me, FileUtils.getBasePath(file));
             FileOutputStream stream = new FileOutputStream(file);
+            FileReferenceUtils.makeRelative(me.getVisualModel(), FileUtils.getBasePath(file));
             saveModel(me, stream);
             stream.close();
         } catch (IOException e) {
             throw new SerialisationException(e);
+        } finally {
+            FileReferenceUtils.makeAbsolute(me.getVisualModel());
         }
     }
 
@@ -1132,26 +1132,6 @@ public final class Framework {
             }
         }
         return null;
-    }
-
-    public void adjustFileReferenceProperties(ModelEntry me, String base) {
-        VisualModel model = me.getVisualModel();
-        Set<PropertyDescriptor> properties = new HashSet<>();
-        properties.addAll(model.getProperties(null).getDescriptors());
-        for (VisualNode node : Hierarchy.getDescendantsOfType(model.getRoot(), VisualNode.class)) {
-            properties.addAll(node.getDescriptors());
-            properties.addAll(model.getProperties(node).getDescriptors());
-        }
-        Set<FileReference> fileReferences = new HashSet<>();
-        for (PropertyDescriptor property : properties) {
-            Object value = property.getValue();
-            if (value instanceof FileReference) {
-                fileReferences.add((FileReference) value);
-            }
-        }
-        for (FileReference fileReference : fileReferences) {
-            fileReference.setBase(base);
-        }
     }
 
 }
