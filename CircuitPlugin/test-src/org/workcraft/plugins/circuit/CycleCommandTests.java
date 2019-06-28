@@ -52,7 +52,7 @@ public class CycleCommandTests {
         Assert.assertEquals(breakCount, count);
 
         if (count > 0) {
-            new TbufInsertionCommand().execute(we);
+            new TestableGateInsertionCommand().execute(we);
             Assert.assertEquals(breakCount, countPathBreaker(circuit));
 
             new ScanInsertionCommand().execute(we);

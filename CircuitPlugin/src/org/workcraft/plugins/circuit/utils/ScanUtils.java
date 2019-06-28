@@ -11,15 +11,15 @@ import java.util.*;
 
 public class ScanUtils {
 
-    public static Set<VisualFunctionComponent> insertTestableBuffers(VisualCircuit circuit) {
+    public static Set<VisualFunctionComponent> insertTestableGates(VisualCircuit circuit) {
         Set<VisualFunctionComponent> components = new HashSet<>();
         for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {
             for (VisualContact contact : component.getVisualOutputs()) {
                 if (contact.getReferencedContact().getPathBreaker()) {
                     contact.getReferencedContact().setPathBreaker(false);
-                    VisualFunctionComponent buffer = insertOrReuseBuffer(circuit, contact);
-                    if (buffer != null) {
-                        components.add(buffer);
+                    VisualFunctionComponent testableGate = insertTestableGate(circuit, contact);
+                    if (testableGate != null) {
+                        components.add(testableGate);
                     }
                 }
             }
@@ -27,39 +27,40 @@ public class ScanUtils {
         return components;
     }
 
-    private static VisualFunctionComponent insertOrReuseBuffer(VisualCircuit circuit, VisualContact contact) {
-        VisualFunctionComponent result = null;
-        Node parent = contact.getParent();
-        if (parent instanceof VisualFunctionComponent) {
-            VisualFunctionComponent component = (VisualFunctionComponent) parent;
-            if (component.isBuffer()) {
-                result = component;
-            }
-        }
-        if ((result == null) && contact.isOutput()) {
-            Collection<VisualContact> drivenContacts = CircuitUtils.findDriven(circuit, contact, false);
-            if (drivenContacts.size() == 1) {
-                VisualContact drivenContact = drivenContacts.iterator().next();
-                result = insertOrReuseBuffer(circuit, drivenContact);
-            }
-            if (result == null) {
-                SpaceUtils.makeSpaceAfterContact(circuit, contact, 3.0);
-                result = GateUtils.createBufferGate(circuit);
-                GateUtils.insertGateAfter(circuit, result, contact);
-                GateUtils.propagateInitialState(circuit, result);
-                result.getGateOutput().getReferencedContact().setPathBreaker(true);
-            }
-        }
-        if (result != null)  {
-            Gate2 tbuf = CircuitSettings.parseTbufData();
-            result.getReferencedComponent().setModule(tbuf.name);
-            circuit.setMathName(result.getFirstVisualInput(), tbuf.in);
-            circuit.setMathName(result.getFirstVisualOutput(), tbuf.out);
+    private static VisualFunctionComponent insertTestableGate(VisualCircuit circuit, VisualContact contact) {
+        VisualFunctionComponent result = getAdjacentBufferOrInverter(circuit, contact);
+        if (result == null) {
+            SpaceUtils.makeSpaceAfterContact(circuit, contact, 3.0);
+            result = GateUtils.createBufferGate(circuit);
+            GateUtils.insertGateAfter(circuit, result, contact);
+            GateUtils.propagateInitialState(circuit, result);
             result.getGateOutput().getReferencedContact().setPathBreaker(true);
         }
+        Gate2 testableGate = result.isInverter() ? CircuitSettings.parseTinvData() : CircuitSettings.parseTbufData();
+        result.getReferencedComponent().setModule(testableGate.name);
+        circuit.setMathName(result.getFirstVisualInput(), testableGate.in);
+        circuit.setMathName(result.getFirstVisualOutput(), testableGate.out);
+        result.getGateOutput().getReferencedContact().setPathBreaker(true);
         return result;
     }
 
+    private static VisualFunctionComponent getAdjacentBufferOrInverter(VisualCircuit circuit, VisualContact contact) {
+        Node parent = contact.getParent();
+        if (parent instanceof VisualFunctionComponent) {
+            VisualFunctionComponent component = (VisualFunctionComponent) parent;
+            if (component.isBuffer() || component.isInverter()) {
+                return component;
+            }
+        }
+        if (contact.isOutput()) {
+            Collection<VisualContact> drivenContacts = CircuitUtils.findDriven(circuit, contact, false);
+            if (drivenContacts.size() == 1) {
+                VisualContact drivenContact = drivenContacts.iterator().next();
+                return getAdjacentBufferOrInverter(circuit, drivenContact);
+            }
+        }
+        return null;
+    }
     public static void insertScan(VisualCircuit circuit) {
         Set<VisualFunctionComponent> components = new HashSet<>();
         for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {

@@ -116,29 +116,29 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private JPanel getScanControlsPanel(final GraphEditor editor) {
-        JButton insertTestButton = new JButton("<html><center>Insert<br>T-BUF</center></html>");
-        insertTestButton.addActionListener(l -> insertTbuf(editor));
-        insertTestButton.setToolTipText("Insert testable buffers for all path breaker components");
+        JButton insertTestableGatesButton = new JButton("<html><center>Insert<br><small>TBUF/TINV</small></center></html>");
+        insertTestableGatesButton.addActionListener(l -> insertTestableGates(editor));
+        insertTestableGatesButton.setToolTipText("Insert testable buffers/inverters for all path breaker components");
 
-        JButton insertScanButton = new JButton("<html><center>Insert<br>SCAN</center></html>");
+        JButton insertScanButton = new JButton("<html><center>Insert<br><small>SCAN</small></center></html>");
         insertScanButton.addActionListener(l -> insertScan(editor));
         insertScanButton.setToolTipText("Insert scan for all path breaker components");
 
-        JButton writeConstraintsButton = new JButton("<html><center>Write<br>SDC...</center></html>");
-        writeConstraintsButton.addActionListener(l -> writePathbreakConstraints(editor));
+        JButton writeConstraintsButton = new JButton("<html><center>Write<br><small>SDC...</small></center></html>");
+        writeConstraintsButton.addActionListener(l -> writeConstraints(editor));
         writeConstraintsButton.setToolTipText("Write set_disable_timing constraints for path breaker input pins");
 
         JPanel scanPanel = new JPanel(new WrapLayout());
-        scanPanel.add(insertTestButton);
+        scanPanel.add(insertTestableGatesButton);
         scanPanel.add(insertScanButton);
         scanPanel.add(writeConstraintsButton);
         return scanPanel;
     }
 
-    private void insertTbuf(GraphEditor editor) {
+    private void insertTestableGates(GraphEditor editor) {
         VisualCircuit circuit = (VisualCircuit) editor.getModel();
         editor.getWorkspaceEntry().saveMemento();
-        ScanUtils.insertTestableBuffers(circuit);
+        ScanUtils.insertTestableGates(circuit);
         updateState(editor);
         editor.requestFocus();
     }
@@ -151,7 +151,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         editor.requestFocus();
     }
 
-    private void writePathbreakConstraints(final GraphEditor editor) {
+    private void writeConstraints(final GraphEditor editor) {
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
         File file = new File(editor.getWorkspaceEntry().getFileName());

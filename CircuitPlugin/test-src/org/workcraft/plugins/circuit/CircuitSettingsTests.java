@@ -95,6 +95,9 @@ public class CircuitSettingsTests {
         Assert.assertEquals(Config.toString(CircuitSettings.getTbufData()),
                 framework.getConfigVar(prefix + ".tbufData", false));
 
+        Assert.assertEquals(Config.toString(CircuitSettings.getTinvData()),
+                framework.getConfigVar(prefix + ".tinvData", false));
+
         Assert.assertEquals(Config.toString(CircuitSettings.getScanPorts()),
                 framework.getConfigVar(prefix + ".scanPorts", false));
 

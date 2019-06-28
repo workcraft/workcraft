@@ -68,6 +68,7 @@ public class CircuitSettings implements Settings {
     private static final String keySetPin = prefix + ".setPin";
     private static final String keyClearPin = prefix + ".clearPin";
     private static final String keyTbufData = prefix + ".tbufData";
+    private static final String keyTinvData = prefix + ".tinvData";
     private static final String keyScanPorts = prefix + ".scanPorts";
     private static final String keyScanPins = prefix + ".scanPins";
     private static final String keyScanSuffix = prefix + ".scanSuffix";
@@ -98,6 +99,7 @@ public class CircuitSettings implements Settings {
     private static final String defaultSetPin = "S";
     private static final String defaultClearPin = "R";
     private static final String defaultTbufData = "TBUF (I, O)";
+    private static final String defaultTinvData = "TINV (I, ON)";
     private static final String defaultScanPorts = "scanin, clock";
     private static final String defaultScanPins = "SI, CK";
     private static final String defaultScanSuffix = "_scan";
@@ -128,6 +130,7 @@ public class CircuitSettings implements Settings {
     private static String setPin = defaultSetPin;
     private static String clearPin = defaultClearPin;
     private static String tbufData = defaultTbufData;
+    private static String tinvData = defaultTinvData;
     private static String scanPorts = defaultScanPorts;
     private static String scanPins = defaultScanPins;
     private static String scanSuffix = defaultScanSuffix;
@@ -483,6 +486,22 @@ public class CircuitSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, String>(
+                this, "Testable inverter name and input-output pins", String.class) {
+            @Override
+            public void setter(CircuitSettings object, String value) {
+                if (parseGate2Data(value) != null) {
+                    setTinvData(value);
+                } else {
+                    DialogUtils.showError("Testable inverter description format is incorrect. It should be as follows:\n" + defaultTinvData);
+                }
+            }
+            @Override
+            public String getter(CircuitSettings object) {
+                return getTinvData();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, String>(
                 this, "Scan ports (comma-separated, same order as scan pins)", String.class) {
             @Override
             public void setter(CircuitSettings object, String value) {
@@ -581,6 +600,7 @@ public class CircuitSettings implements Settings {
         setSetPin(config.getString(keySetPin, defaultSetPin));
         setClearPin(config.getString(keyClearPin, defaultClearPin));
         setTbufData(config.getString(keyTbufData, defaultTbufData));
+        setTinvData(config.getString(keyTinvData, defaultTinvData));
         setScanPorts(config.getString(keyScanPorts, defaultScanPorts));
         setScanPins(config.getString(keyScanPins, defaultScanPins));
         setScanSuffix(config.getString(keyScanSuffix, defaultScanSuffix));
@@ -614,6 +634,7 @@ public class CircuitSettings implements Settings {
         config.set(keySetPin, getSetPin());
         config.set(keyClearPin, getClearPin());
         config.set(keyTbufData, getTbufData());
+        config.set(keyTinvData, getTinvData());
         config.set(keyScanPorts, getScanPorts());
         config.set(keyScanPins, getScanPins());
         config.set(keyScanSuffix, getScanSuffix());
@@ -854,6 +875,18 @@ public class CircuitSettings implements Settings {
 
     public static Gate2 parseTbufData() {
         return parseGate2Data(getTbufData());
+    }
+
+    public static String getTinvData() {
+        return tinvData;
+    }
+
+    public static void setTinvData(String value) {
+        tinvData = value;
+    }
+
+    public static Gate2 parseTinvData() {
+        return parseGate2Data(getTinvData());
     }
 
     public static String getScanPorts() {
