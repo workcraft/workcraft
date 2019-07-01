@@ -19,8 +19,8 @@ public class AnalysisDecorationSettings extends AbstractDecorationSettings {
 
     private static final Color defaultDontTouchColor = Color.LIGHT_GRAY;
     private static final Color defaultProblemColor = new Color(1.0f, 0.4f, 1.0f);
-    private static final Color defaultFixerColor = new Color(0.4f, 1.0f, 0.4f);
-    private static final Color defaultClearColor = new Color(1.0f, 0.8f, 0.0f);
+    private static final Color defaultFixerColor = new Color(1.0f, 0.8f, 0.0f);
+    private static final Color defaultClearColor = new Color(0.4f, 1.0f, 0.4f);
 
     private static Color dontTouchColor = defaultDontTouchColor;
     private static Color problemColor = defaultProblemColor;

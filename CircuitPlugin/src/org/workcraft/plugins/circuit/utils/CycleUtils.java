@@ -13,7 +13,7 @@ public class CycleUtils {
 
     public static Collection<Contact> tagPathBreakerClearAll(Circuit circuit) {
         Collection<Contact> contacts = Hierarchy.getDescendantsOfType(circuit.getRoot(),
-                Contact.class, contact -> contact.isOutput() && contact.isPin());
+                Contact.class, contact -> contact.isPin());
 
         return setPathBreaker(contacts, false);
     }
@@ -94,16 +94,48 @@ public class CycleUtils {
         Map<Contact, Set<Contact>> result = new HashMap<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
             HashSet<Contact> drivers = new HashSet<>();
-            for (Contact contact : component.getInputs()) {
-                if (contact.getPathBreaker()) continue;
-                Contact driver = CircuitUtils.findDriver(circuit, contact, true);
-                if ((driver != null) && driver.isPin() && !driver.getPathBreaker()) {
+            for (Contact input : component.getInputs()) {
+                Contact driver = findUnbrokenPathDriverPin(circuit, input);
+                if (driver != null) {
                     drivers.add(driver);
                 }
             }
-            for (Contact contact : component.getOutputs()) {
-                if (contact.getPathBreaker()) continue;
-                result.put(contact, drivers);
+            for (Contact output : component.getOutputs()) {
+                if (!output.getPathBreaker()) {
+                    result.put(output, drivers);
+                }
+            }
+        }
+        return result;
+    }
+
+    public static Contact findUnbrokenPathDriverPin(Circuit circuit, Contact contact) {
+        if (!contact.getPathBreaker()) {
+            Contact driver = CircuitUtils.findDriver(circuit, contact, false);
+            if ((driver != null) && driver.isPin() && !driver.getPathBreaker()) {
+                if (!driver.isZeroDelayPin()) {
+                    return driver;
+                } else {
+                    FunctionComponent zeroComponent = (FunctionComponent) driver.getParent();
+                    return findUnbrokenPathDriverPin(circuit, zeroComponent.getFirstInput());
+                }
+            }
+        }
+        return null;
+    }
+
+    public static Set<Contact> findUnbrokenPathDrivenPins(Circuit circuit, Contact contact) {
+        Set<Contact> result = new HashSet<>();
+        if (!contact.getPathBreaker()) {
+            for (Contact driven : CircuitUtils.findDriven(circuit, contact, false)) {
+                if ((driven != null) && driven.isPin() && !driven.getPathBreaker()) {
+                    if (!driven.isZeroDelayPin()) {
+                        result.add(driven);
+                    } else {
+                        FunctionComponent zeroComponent = (FunctionComponent) driven.getParent();
+                        result.addAll(findUnbrokenPathDrivenPins(circuit, zeroComponent.getFirstOutput()));
+                    }
+                }
             }
         }
         return result;

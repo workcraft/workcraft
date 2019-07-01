@@ -374,7 +374,9 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         return new StateDecoration() {
             @Override
             public Color getColorisation() {
-                return contact.getInitToOne() ? CircuitSettings.getActiveWireColor() : CircuitSettings.getInactiveWireColor();
+                return (contact == null) ? null
+                        : contact.getInitToOne() ? CircuitSettings.getActiveWireColor()
+                        : CircuitSettings.getInactiveWireColor();
             }
 
             @Override

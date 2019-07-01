@@ -36,12 +36,14 @@ public class ResetUtils {
                     LinkedList<BooleanFormula> values = new LinkedList<>();
                     for (FunctionContact contact : component.getFunctionContacts()) {
                         Pair<Contact, Boolean> pair = CircuitUtils.findDriverAndInversionSkipZeroDelay(circuit, contact);
-                        Contact driver = pair.getFirst();
-                        if ((driver != null) && (driver != outputContact)) {
-                            variables.add(contact);
-                            boolean inverting = pair.getSecond();
-                            BooleanFormula value = (driver.getInitToOne() == inverting) ? Zero.instance() : One.instance();
-                            values.add(value);
+                        if (pair != null) {
+                            Contact driver = pair.getFirst();
+                            if ((driver != null) && (driver != outputContact)) {
+                                variables.add(contact);
+                                boolean inverting = pair.getSecond();
+                                BooleanFormula value = (driver.getInitToOne() == inverting) ? Zero.instance() : One.instance();
+                                values.add(value);
+                            }
                         }
                     }
                     if (isProblematicPin(outputContact, variables, values)) {
@@ -143,7 +145,9 @@ public class ResetUtils {
     }
 
     public static void insertReset(VisualCircuit circuit, String portName, boolean isActiveLow) {
-        VisualFunctionContact resetPort = CircuitUtils.getOrCreatePort(circuit, portName, Contact.IOType.INPUT);
+        VisualFunctionContact resetPort = CircuitUtils.getOrCreatePort(circuit, portName,
+                Contact.IOType.INPUT, VisualContact.Direction.WEST);
+
         if (resetPort == null) {
             return;
         }
@@ -171,7 +175,7 @@ public class ResetUtils {
                 }
             }
         }
-        SpaceUtils.positionPort(circuit, resetPort);
+        SpaceUtils.positionPort(circuit, resetPort, false);
         forceInitResetCircuit(circuit, resetPort, isActiveLow);
     }
 
