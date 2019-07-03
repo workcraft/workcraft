@@ -13,9 +13,9 @@ public class AnalysisDecorationSettings extends AbstractDecorationSettings {
     private static final String prefix = "AnalysisDecorationSettings";
 
     private static final String keyDontTouchColor = prefix + ".dontTouchColor";
-    private static final String keyProblemColor = prefix + ".problemColor";
-    private static final String keyFixerColor = prefix + ".fixerColor";
-    private static final String keyClearColor = prefix + ".clearColor";
+    private static final String keyProblemColor = prefix + ".problematicColor";
+    private static final String keyFixerColor = prefix + ".problemFixerColor";
+    private static final String keyClearColor = prefix + ".problemFreeColor";
 
     private static final Color defaultDontTouchColor = Color.LIGHT_GRAY;
     private static final Color defaultProblemColor = new Color(1.0f, 0.4f, 1.0f);

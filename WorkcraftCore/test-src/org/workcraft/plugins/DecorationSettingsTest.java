@@ -54,13 +54,13 @@ public class DecorationSettingsTest {
                 framework.getConfigVar(prefix + ".dontTouchColor", false));
 
         Assert.assertEquals(Config.toString(AnalysisDecorationSettings.getProblemColor()),
-                framework.getConfigVar(prefix + ".problemColor", false));
+                framework.getConfigVar(prefix + ".problematicColor", false));
 
         Assert.assertEquals(Config.toString(AnalysisDecorationSettings.getFixerColor()),
-                framework.getConfigVar(prefix + ".fixerColor", false));
+                framework.getConfigVar(prefix + ".problemFixerColor", false));
 
         Assert.assertEquals(Config.toString(AnalysisDecorationSettings.getClearColor()),
-                framework.getConfigVar(prefix + ".clearColor", false));
+                framework.getConfigVar(prefix + ".problemFreeColor", false));
     }
 
 }
