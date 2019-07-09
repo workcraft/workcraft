@@ -46,6 +46,10 @@ public class ZeroDelayConsistencySupervisor extends StateSupervisor {
 
     private void handleZeroDelayChange(FunctionComponent component) {
         if (component.getIsZeroDelay()) {
+            for (Contact contact : component.getOutputs()) {
+                contact.setForcedInit(false);
+                contact.setPathBreaker(false);
+            }
             if (!component.isInverter() && !component.isBuffer()) {
                 component.setIsZeroDelay(false);
                 throw new ArgumentException("Only inverters and buffers can be zero delay.");

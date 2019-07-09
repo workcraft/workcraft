@@ -334,7 +334,8 @@ public class VisualCircuit extends AbstractVisualModel {
                 for (PropertyDescriptor property : mainOutput.getDescriptors()) {
                     String propertyName = property.getName();
                     if (Contact.PROPERTY_INIT_TO_ONE.equals(propertyName)
-                            || Contact.PROPERTY_FORCED_INIT.equals(propertyName)) {
+                            || Contact.PROPERTY_FORCED_INIT.equals(propertyName)
+                            || Contact.PROPERTY_PATH_BREAKER.equals(propertyName)) {
                         properties.add(property);
                     }
                 }
