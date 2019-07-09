@@ -6,6 +6,7 @@ import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -38,10 +39,15 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     private final BasicTable<String> breakerTable = new BasicTable("<html><b>Path breakers</b></html>");
     private Set<Contact> cycleContacts;
     private Set<FunctionComponent> cycleComponents;
+    private JPanel panel;
+    private JButton writeConstraintsButton;
 
     @Override
     public JPanel getControlsPanel(final GraphEditor editor) {
-        JPanel panel = new JPanel(new BorderLayout());
+        if (panel != null) {
+            return panel;
+        }
+        panel = new JPanel(new BorderLayout());
         panel.add(getLegendControlsPanel(editor), BorderLayout.NORTH);
         panel.add(getBreakControlsPanel(editor), BorderLayout.CENTER);
         panel.add(getScanControlsPanel(editor), BorderLayout.SOUTH);
@@ -116,29 +122,29 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private JPanel getScanControlsPanel(final GraphEditor editor) {
-        JButton insertTestButton = new JButton("<html><center>Insert<br>T-BUF</center></html>");
-        insertTestButton.addActionListener(l -> insertTbuf(editor));
-        insertTestButton.setToolTipText("Insert testable buffers for all path breaker components");
+        JButton insertTestableGatesButton = new JButton("<html><center>Insert<br><small>TBUF/TINV</small></center></html>");
+        insertTestableGatesButton.addActionListener(l -> insertTestableGates(editor));
+        insertTestableGatesButton.setToolTipText("Insert testable buffers/inverters for path breaker components");
 
-        JButton insertScanButton = new JButton("<html><center>Insert<br>SCAN</center></html>");
+        JButton insertScanButton = new JButton("<html><center>Insert<br><small>SCAN</small></center></html>");
         insertScanButton.addActionListener(l -> insertScan(editor));
-        insertScanButton.setToolTipText("Insert scan for all path breaker components");
+        insertScanButton.setToolTipText("Insert scan for path breaker components");
 
-        JButton writeConstraintsButton = new JButton("<html><center>Write<br>SDC...</center></html>");
-        writeConstraintsButton.addActionListener(l -> writePathbreakConstraints(editor));
-        writeConstraintsButton.setToolTipText("Write set_disable_timing constraints for path breaker input pins");
+        writeConstraintsButton = new JButton("<html><center>Write<br><small>SDC...</small></center></html>");
+        writeConstraintsButton.addActionListener(l -> writeConstraints(editor));
+        writeConstraintsButton.setToolTipText("<html>Write <i>set_disable_timing</i> constraints for <b>input pin</b> path breakers</html>");
 
         JPanel scanPanel = new JPanel(new WrapLayout());
-        scanPanel.add(insertTestButton);
+        scanPanel.add(insertTestableGatesButton);
         scanPanel.add(insertScanButton);
         scanPanel.add(writeConstraintsButton);
         return scanPanel;
     }
 
-    private void insertTbuf(GraphEditor editor) {
+    private void insertTestableGates(GraphEditor editor) {
         VisualCircuit circuit = (VisualCircuit) editor.getModel();
         editor.getWorkspaceEntry().saveMemento();
-        ScanUtils.insertTestableBuffers(circuit);
+        ScanUtils.insertTestableGates(circuit);
         updateState(editor);
         editor.requestFocus();
     }
@@ -146,12 +152,16 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     private void insertScan(GraphEditor editor) {
         VisualCircuit circuit = (VisualCircuit) editor.getModel();
         editor.getWorkspaceEntry().saveMemento();
-        ScanUtils.insertScan(circuit);
+        try {
+            ScanUtils.insertScan(circuit);
+        } catch (InvalidConnectionException e) {
+            throw new RuntimeException(e);
+        }
         updateState(editor);
         editor.requestFocus();
     }
 
-    private void writePathbreakConstraints(final GraphEditor editor) {
+    private void writeConstraints(final GraphEditor editor) {
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
         File file = new File(editor.getWorkspaceEntry().getFileName());
@@ -219,6 +229,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     private void updateState(final GraphEditor editor) {
         Circuit circuit = (Circuit) editor.getModel().getMathModel();
         cycleContacts = CycleUtils.getCycledDrivers(circuit);
+        // Add components to "cycle" set if they have pins on a cycle
         cycleComponents = new HashSet<>();
         for (Contact contact : cycleContacts) {
             Node parent = contact.getParent();
@@ -226,22 +237,52 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
                 cycleComponents.add((FunctionComponent) parent);
             }
         }
-
-        List<String> breakers = new ArrayList<>();
+        // Add zero delay gates and their pins to "cycle" sets they are between components on a cycle
         for (FunctionComponent component : circuit.getFunctionComponents()) {
-            for (Contact contact : component.getContacts()) {
-                if (contact.getPathBreaker()) {
-                    breakers.add(circuit.getNodeReference(contact));
-                } else if (contact.isInput()) {
-                    Contact driver = CircuitUtils.findDriver(circuit, contact, true);
+            if (component.getIsZeroDelay()) {
+                boolean inputOnCycle = false;
+                boolean outputOnCycle = false;
+                for (Contact input : component.getInputs()) {
+                    Contact driver = CycleUtils.findUnbrokenPathDriverPin(circuit, input);
+                    if (driver != null) {
+                        inputOnCycle |= cycleComponents.contains(driver.getParent());
+                    }
+                }
+                for (Contact output : component.getOutputs()) {
+                    for (Contact driven : CycleUtils.findUnbrokenPathDrivenPins(circuit, output)) {
+                        outputOnCycle |= cycleComponents.contains(driven.getParent());
+                    }
+                }
+                if (inputOnCycle && outputOnCycle) {
+                    cycleComponents.add(component);
+                    cycleContacts.addAll(component.getContacts());
+                }
+            }
+        }
+        // Extend the set of cycled pins by input pins in cycled components that are driven by other cycled pins
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            for (Contact contact : component.getInputs()) {
+                if (!contact.getPathBreaker() && cycleComponents.contains(component)) {
+                    Contact driver = CycleUtils.findUnbrokenPathDriverPin(circuit, contact);
                     if (cycleContacts.contains(driver)) {
                         cycleContacts.add(contact);
                     }
                 }
             }
         }
+        // Populate path breaker table and check if there are input pins path breaker
+        boolean hasInputPinPathBreaker = false;
+        List<String> breakers = new ArrayList<>();
+        for (Contact contact : circuit.getFunctionContacts()) {
+            if (contact.getPathBreaker()) {
+                breakers.add(circuit.getNodeReference(contact));
+                hasInputPinPathBreaker |= contact.isInput();
+            }
+        }
         Collections.sort(breakers);
         breakerTable.set(breakers);
+        // Enable write SDC constraints button if there are path breaker input pins
+        writeConstraintsButton.setEnabled(hasInputPinPathBreaker);
     }
 
     @Override

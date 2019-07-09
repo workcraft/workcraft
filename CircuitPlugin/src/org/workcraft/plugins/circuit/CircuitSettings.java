@@ -1,7 +1,6 @@
 package org.workcraft.plugins.circuit;
 
 import org.workcraft.Config;
-import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.Settings;
@@ -10,6 +9,7 @@ import org.workcraft.plugins.circuit.utils.Gate3;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.StgSettings;
+import org.workcraft.types.Pair;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.ExecutableUtils;
@@ -18,7 +18,6 @@ import java.awt.*;
 import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -68,9 +67,12 @@ public class CircuitSettings implements Settings {
     private static final String keySetPin = prefix + ".setPin";
     private static final String keyClearPin = prefix + ".clearPin";
     private static final String keyTbufData = prefix + ".tbufData";
-    private static final String keyScanPorts = prefix + ".scanPorts";
-    private static final String keyScanPins = prefix + ".scanPins";
+    private static final String keyTinvData = prefix + ".tinvData";
     private static final String keyScanSuffix = prefix + ".scanSuffix";
+    private static final String keyScanckPortPin = prefix + ".scanckPortPin";
+    private static final String keyScanenPortPin = prefix + ".scanenPortPin";
+    private static final String keyScaninPortPin = prefix + ".scaninPortPin";
+    private static final String keyScanoutPortPin = prefix + ".scanoutPortPin";
     private static final String keyVerilogAssignDelay = prefix + ".verilogAssignDelay";
 
     private static final Double defaultBorderWidth = 0.06;
@@ -98,9 +100,12 @@ public class CircuitSettings implements Settings {
     private static final String defaultSetPin = "S";
     private static final String defaultClearPin = "R";
     private static final String defaultTbufData = "TBUF (I, O)";
-    private static final String defaultScanPorts = "scanin, clock";
-    private static final String defaultScanPins = "SI, CK";
+    private static final String defaultTinvData = "TINV (I, ON)";
     private static final String defaultScanSuffix = "_scan";
+    private static final String defaultScanckPortPin = "scanck / CK";
+    private static final String defaultScanenPortPin = "scanen / SE";
+    private static final String defaultScaninPortPin = "scanin / SI";
+    private static final String defaultScanoutPortPin = "scanout / SO";
     private static final boolean defaultVerilogAssignDelay = false;
 
     private static Double borderWidth = defaultBorderWidth;
@@ -128,9 +133,12 @@ public class CircuitSettings implements Settings {
     private static String setPin = defaultSetPin;
     private static String clearPin = defaultClearPin;
     private static String tbufData = defaultTbufData;
-    private static String scanPorts = defaultScanPorts;
-    private static String scanPins = defaultScanPins;
+    private static String tinvData = defaultTinvData;
     private static String scanSuffix = defaultScanSuffix;
+    private static String scanckPortPin = defaultScanckPortPin;
+    private static String scanenPortPin = defaultScanenPortPin;
+    private static String scaninPortPin = defaultScaninPortPin;
+    private static String scanoutPortPin = defaultScanoutPortPin;
     private static boolean verilogAssignDelay = defaultVerilogAssignDelay;
 
     public CircuitSettings() {
@@ -483,34 +491,18 @@ public class CircuitSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Scan ports (comma-separated, same order as scan pins)", String.class) {
+                this, "Testable inverter name and input-output pins", String.class) {
             @Override
             public void setter(CircuitSettings object, String value) {
-                if (ReferenceHelper.parseReferenceList(value) != null) {
-                    setScanPorts(value);
+                if (parseGate2Data(value) != null) {
+                    setTinvData(value);
                 } else {
-                    DialogUtils.showError("Scan ports should be a comma-separated list of valid names.");
+                    DialogUtils.showError("Testable inverter description format is incorrect. It should be as follows:\n" + defaultTinvData);
                 }
             }
             @Override
             public String getter(CircuitSettings object) {
-                return getScanPorts();
-            }
-        });
-
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Scan pins (comma-separated, same order as scan ports)", String.class) {
-            @Override
-            public void setter(CircuitSettings object, String value) {
-                if (ReferenceHelper.parseReferenceList(value) != null) {
-                    setScanPins(value);
-                } else {
-                    DialogUtils.showError("Scan pins should be a comma-separated list of valid names.");
-                }
-            }
-            @Override
-            public String getter(CircuitSettings object) {
-                return getScanPins();
+                return getTinvData();
             }
         });
 
@@ -523,6 +515,70 @@ public class CircuitSettings implements Settings {
             @Override
             public String getter(CircuitSettings object) {
                 return getScanSuffix();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, String>(
+                this, "Scan clock port / pin names", String.class) {
+            @Override
+            public void setter(CircuitSettings object, String value) {
+                if (parsePortPinPair(value) != null) {
+                    setScanckPortPin(value);
+                } else {
+                    DialogUtils.showError("Scan clock port and pin should be /-separated pair of valid names.");
+                }
+            }
+            @Override
+            public String getter(CircuitSettings object) {
+                return getScanckPortPin();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, String>(
+                this, "Scan enable port / pin name", String.class) {
+            @Override
+            public void setter(CircuitSettings object, String value) {
+                if (parsePortPinPair(value) != null) {
+                    setScanenPortPin(value);
+                } else {
+                    DialogUtils.showError("Scan enable port and pin should be /-separated pair of valid names.");
+                }
+            }
+            @Override
+            public String getter(CircuitSettings object) {
+                return getScanenPortPin();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, String>(
+                this, "Scan input port / pin names", String.class) {
+            @Override
+            public void setter(CircuitSettings object, String value) {
+                if (parsePortPinPair(value) != null) {
+                    setScaninPortPin(value);
+                } else {
+                    DialogUtils.showError("Scan input port and pin should be /-separated pair of valid names.");
+                }
+            }
+            @Override
+            public String getter(CircuitSettings object) {
+                return getScaninPortPin();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, String>(
+                this, "Scan output port / pin (for multi-output component) names", String.class) {
+            @Override
+            public void setter(CircuitSettings object, String value) {
+                if (parsePortPinPair(value) != null) {
+                    setScanoutPortPin(value);
+                } else {
+                    DialogUtils.showError("Scan output port and pin should be /-separated pair of valid names.");
+                }
+            }
+            @Override
+            public String getter(CircuitSettings object) {
+                return getScanoutPortPin();
             }
         });
 
@@ -581,9 +637,12 @@ public class CircuitSettings implements Settings {
         setSetPin(config.getString(keySetPin, defaultSetPin));
         setClearPin(config.getString(keyClearPin, defaultClearPin));
         setTbufData(config.getString(keyTbufData, defaultTbufData));
-        setScanPorts(config.getString(keyScanPorts, defaultScanPorts));
-        setScanPins(config.getString(keyScanPins, defaultScanPins));
+        setTinvData(config.getString(keyTinvData, defaultTinvData));
         setScanSuffix(config.getString(keyScanSuffix, defaultScanSuffix));
+        setScanckPortPin(config.getString(keyScanckPortPin, defaultScanckPortPin));
+        setScanenPortPin(config.getString(keyScanenPortPin, defaultScanenPortPin));
+        setScaninPortPin(config.getString(keyScaninPortPin, defaultScaninPortPin));
+        setScanoutPortPin(config.getString(keyScanoutPortPin, defaultScanoutPortPin));
         setVerilogAssignDelay(config.getBoolean(keyVerilogAssignDelay, defaultVerilogAssignDelay));
     }
 
@@ -614,9 +673,12 @@ public class CircuitSettings implements Settings {
         config.set(keySetPin, getSetPin());
         config.set(keyClearPin, getClearPin());
         config.set(keyTbufData, getTbufData());
-        config.set(keyScanPorts, getScanPorts());
-        config.set(keyScanPins, getScanPins());
+        config.set(keyTinvData, getTinvData());
         config.set(keyScanSuffix, getScanSuffix());
+        config.set(keyScanckPortPin, getScanckPortPin());
+        config.set(keyScanenPortPin, getScanenPortPin());
+        config.set(keyScaninPortPin, getScaninPortPin());
+        config.set(keyScanoutPortPin, getScanoutPortPin());
         config.setBoolean(keyVerilogAssignDelay, getVerilogAssignDelay());
     }
 
@@ -856,28 +918,16 @@ public class CircuitSettings implements Settings {
         return parseGate2Data(getTbufData());
     }
 
-    public static String getScanPorts() {
-        return scanPorts;
+    public static String getTinvData() {
+        return tinvData;
     }
 
-    public static void setScanPorts(String value) {
-        scanPorts = value;
+    public static void setTinvData(String value) {
+        tinvData = value;
     }
 
-    public static List<String> parseScanPorts() {
-        return ReferenceHelper.parseReferenceList(getScanPorts());
-    }
-
-    public static String getScanPins() {
-        return scanPins;
-    }
-
-    public static void setScanPins(String value) {
-        scanPins = value;
-    }
-
-    public static List<String> parseScanPins() {
-        return ReferenceHelper.parseReferenceList(getScanPins());
+    public static Gate2 parseTinvData() {
+        return parseGate2Data(getTinvData());
     }
 
     public static String getScanSuffix() {
@@ -886,6 +936,54 @@ public class CircuitSettings implements Settings {
 
     public static void setScanSuffix(String value) {
         scanSuffix = value;
+    }
+
+    public static String getScanckPortPin() {
+        return scanckPortPin;
+    }
+
+    public static void setScanckPortPin(String value) {
+        scanckPortPin = value;
+    }
+
+    public static Pair<String, String> parseScanckPortPin() {
+        return parsePortPinPair(getScanckPortPin());
+    }
+
+    public static String getScanenPortPin() {
+        return scanenPortPin;
+    }
+
+    public static void setScanenPortPin(String value) {
+        scanenPortPin = value;
+    }
+
+    public static Pair<String, String> parseScanenPortPin() {
+        return parsePortPinPair(getScanenPortPin());
+    }
+
+    public static String getScaninPortPin() {
+        return scaninPortPin;
+    }
+
+    public static void setScaninPortPin(String value) {
+        scaninPortPin = value;
+    }
+
+    public static Pair<String, String> parseScaninPortPin() {
+        return parsePortPinPair(getScaninPortPin());
+    }
+
+    public static String getScanoutPortPin() {
+        return scanoutPortPin;
+    }
+
+    public static void setScanoutPortPin(String value) {
+        scanoutPortPin = value;
+    }
+
+    public static Pair<String, String> parseScanoutPortPin() {
+        return parsePortPinPair(getScanoutPortPin());
     }
 
     public static boolean getVerilogAssignDelay() {
@@ -935,4 +1033,20 @@ public class CircuitSettings implements Settings {
         return result;
     }
 
+    public static Pair<String, String> parsePortPinPair(String str) {
+        String portName = null;
+        String pinName = null;
+        if ((str != null) && !str.isEmpty()) {
+            String[] split = str.replaceAll("\\s", "").split("/");
+            if (split.length > 0) {
+                portName = split[0];
+            }
+            if (split.length > 1) {
+                pinName = split[1];
+            } else {
+                pinName = portName;
+            }
+        }
+        return Pair.of(portName, pinName);
+    }
 }

@@ -95,14 +95,23 @@ public class CircuitSettingsTests {
         Assert.assertEquals(Config.toString(CircuitSettings.getTbufData()),
                 framework.getConfigVar(prefix + ".tbufData", false));
 
-        Assert.assertEquals(Config.toString(CircuitSettings.getScanPorts()),
-                framework.getConfigVar(prefix + ".scanPorts", false));
-
-        Assert.assertEquals(Config.toString(CircuitSettings.getScanPins()),
-                framework.getConfigVar(prefix + ".scanPins", false));
+        Assert.assertEquals(Config.toString(CircuitSettings.getTinvData()),
+                framework.getConfigVar(prefix + ".tinvData", false));
 
         Assert.assertEquals(Config.toString(CircuitSettings.getScanSuffix()),
                 framework.getConfigVar(prefix + ".scanSuffix", false));
+
+        Assert.assertEquals(Config.toString(CircuitSettings.getScanckPortPin()),
+                framework.getConfigVar(prefix + ".scanckPortPin", false));
+
+        Assert.assertEquals(Config.toString(CircuitSettings.getScanenPortPin()),
+                framework.getConfigVar(prefix + ".scanenPortPin", false));
+
+        Assert.assertEquals(Config.toString(CircuitSettings.getScaninPortPin()),
+                framework.getConfigVar(prefix + ".scaninPortPin", false));
+
+        Assert.assertEquals(Config.toString(CircuitSettings.getScanoutPortPin()),
+                framework.getConfigVar(prefix + ".scanoutPortPin", false));
 
         Assert.assertEquals(Config.toString(CircuitSettings.getVerilogAssignDelay()),
                 framework.getConfigVar(prefix + ".verilogAssignDelay", false));

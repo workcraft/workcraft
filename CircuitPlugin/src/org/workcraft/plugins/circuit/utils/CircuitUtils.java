@@ -3,6 +3,7 @@ package org.workcraft.plugins.circuit.utils;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
@@ -474,7 +475,9 @@ public class CircuitUtils {
         }
     }
 
-    public static VisualFunctionContact getOrCreatePort(VisualCircuit circuit, String portName, Contact.IOType ioType) {
+    public static VisualFunctionContact getOrCreatePort(VisualCircuit circuit, String portName,
+            Contact.IOType ioType, VisualContact.Direction direction) {
+
         VisualFunctionContact result = null;
         VisualComponent component = circuit.getVisualComponentByMathReference(portName, VisualComponent.class);
         if (component == null) {
@@ -493,6 +496,20 @@ public class CircuitUtils {
         } else {
             DialogUtils.showError("Cannot insert port '" + portName + "' because a component with the same name already exists.");
             return null;
+        }
+        result.setDirection(direction);
+        return result;
+    }
+
+    public static VisualFunctionContact getOrCreateContact(VisualCircuit circuit, VisualFunctionComponent component,
+            String contactName, Contact.IOType ioType, VisualContact.Direction direction) {
+
+        VisualFunctionContact result = null;
+        String ref = NamespaceHelper.getReference(circuit.getMathReference(component), contactName);
+        result = circuit.getVisualComponentByMathReference(ref, VisualFunctionContact.class);
+        if (result == null) {
+            result = circuit.getOrCreateContact(component, contactName, ioType);
+            component.setPositionByDirection(result, direction, false);
         }
         return result;
     }

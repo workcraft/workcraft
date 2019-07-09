@@ -202,6 +202,10 @@ public class Config {
             } else {
                 if (element.getTagName().equals("group")) {
                     String name = element.getAttribute("name");
+                    // FIXME: Skipping deprecated gui group (now split into window, toolbar, and recent)
+                    if ("gui".equals(name)) {
+                        continue;
+                    }
                     NodeList groupNodes = element.getChildNodes();
                     for (int j = 0; j < groupNodes.getLength(); j++) {
                         if (!(groupNodes.item(j) instanceof Element)) {

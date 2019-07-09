@@ -9,12 +9,12 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.commands.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.ScanUtils;
+import org.workcraft.types.Pair;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
-import java.util.Iterator;
 
 public class CycleCommandTests {
 
@@ -52,26 +52,37 @@ public class CycleCommandTests {
         Assert.assertEquals(breakCount, count);
 
         if (count > 0) {
-            new TbufInsertionCommand().execute(we);
+            new TestableGateInsertionCommand().execute(we);
             Assert.assertEquals(breakCount, countPathBreaker(circuit));
 
             new ScanInsertionCommand().execute(we);
 
-            Iterator<String> portNameIterator = CircuitSettings.parseScanPorts().iterator();
-            Iterator<String> pinNameIterator = CircuitSettings.parseScanPins().iterator();
+            Pair<String, String> scanckPortPin = CircuitSettings.parseScanckPortPin();
+            Pair<String, String> scanenPortPin = CircuitSettings.parseScanckPortPin();
+            Pair<String, String> scaninPortPin = CircuitSettings.parseScanckPortPin();
+            Pair<String, String> scanoutPortPin = CircuitSettings.parseScanckPortPin();
 
-            while (portNameIterator.hasNext() || pinNameIterator.hasNext()) {
-                String portName = portNameIterator.next();
-                MathNode port = circuit.getNodeByReference(portName);
-                Assert.assertTrue(port instanceof FunctionContact);
+            MathNode scanckPort = circuit.getNodeByReference(scanckPortPin.getFirst());
+            Assert.assertTrue(scanckPort instanceof FunctionContact);
 
-                String pinName = pinNameIterator.next();
-                for (FunctionComponent component : circuit.getFunctionComponents()) {
-                    if (ScanUtils.hasPathBreakerOutput(component)) {
-                        MathNode pin = circuit.getNodeByReference(component, pinName);
-                        Assert.assertTrue(pin instanceof FunctionContact);
-                        Assert.assertEquals(port, CircuitUtils.findDriver(circuit, pin, false));
-                    }
+            MathNode scanenPort = circuit.getNodeByReference(scanenPortPin.getFirst());
+            Assert.assertTrue(scanenPort instanceof FunctionContact);
+
+            MathNode scaninPort = circuit.getNodeByReference(scaninPortPin.getFirst());
+            Assert.assertTrue(scaninPort instanceof FunctionContact);
+
+            MathNode scanoutPort = circuit.getNodeByReference(scanoutPortPin.getFirst());
+            Assert.assertTrue(scanoutPort instanceof FunctionContact);
+
+            for (FunctionComponent component : circuit.getFunctionComponents()) {
+                if (ScanUtils.hasPathBreakerOutput(component)) {
+                    MathNode scanckPin = circuit.getNodeByReference(component, scanckPortPin.getSecond());
+                    Assert.assertTrue(scanckPin instanceof FunctionContact);
+                    Assert.assertEquals(scanckPort, CircuitUtils.findDriver(circuit, scanckPin, false));
+
+                    MathNode scanenPin = circuit.getNodeByReference(component, scanenPortPin.getSecond());
+                    Assert.assertTrue(scanenPin instanceof FunctionContact);
+                    Assert.assertEquals(scanenPort, CircuitUtils.findDriver(circuit, scanenPin, false));
                 }
             }
         }

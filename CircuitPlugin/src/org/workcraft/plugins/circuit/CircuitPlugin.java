@@ -120,8 +120,8 @@ public class CircuitPlugin implements Plugin {
         ScriptableCommandUtils.register(PathBreakerClearAllTagCommand.class, "tagCircuitPathBreakerClearAll",
                 "clear all path breaker pins in the Circuit 'work'");
 
-        ScriptableCommandUtils.register(TbufInsertionCommand.class, "insertCircuitTestableBuffers",
-                "insert testable buffers for path breaker components into the Circuit 'work'");
+        ScriptableCommandUtils.register(TestableGateInsertionCommand.class, "insertCircuitTestableGates",
+                "insert testable buffers/inverters for path breaker components in the Circuit 'work'");
         ScriptableCommandUtils.register(ScanInsertionCommand.class, "insertCircuitScan",
                 "insert scan for path breaker components into the Circuit 'work'");
 
