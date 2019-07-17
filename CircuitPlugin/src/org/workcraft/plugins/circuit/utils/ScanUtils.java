@@ -2,6 +2,8 @@ package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.Zero;
 import org.workcraft.plugins.circuit.*;
@@ -62,23 +64,21 @@ public class ScanUtils {
         }
         return null;
     }
+
     public static void insertScan(VisualCircuit circuit) throws InvalidConnectionException {
-        List<VisualFunctionComponent> components = new ArrayList<>();
+        List<VisualFunctionComponent> pathbreakerComponents = new ArrayList<>();
         for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {
             if (hasPathBreakerOutput(component.getReferencedComponent())) {
-                components.add(component);
+                pathbreakerComponents.add(component);
             }
         }
         // Arrange SCAN components from right-to-left (and in the same column from bottom-to-top)
-        Collections.sort(components, new Comparator<VisualFunctionComponent>() {
-            @Override
-            public int compare(VisualFunctionComponent o1, VisualFunctionComponent o2) {
-                int result = Double.compare(o2.getRootSpaceX(), o1.getRootSpaceX());
-                return result == 0 ? Double.compare(o2.getRootSpaceY(), o1.getRootSpaceY()) : result;
-            }
+        Collections.sort(pathbreakerComponents, (o1, o2) -> {
+            int result = Double.compare(o2.getRootSpaceX(), o1.getRootSpaceX());
+            return result == 0 ? Double.compare(o2.getRootSpaceY(), o1.getRootSpaceY()) : result;
         });
 
-        if (!components.isEmpty()) {
+        if (!pathbreakerComponents.isEmpty()) {
             String scanckName = CircuitSettings.parseScanckPortPin().getFirst();
             VisualFunctionContact scanckPort = CircuitUtils.getOrCreatePort(
                     circuit, scanckName, Contact.IOType.INPUT, VisualContact.Direction.WEST);
@@ -91,13 +91,29 @@ public class ScanUtils {
             VisualFunctionContact scaninPort = CircuitUtils.getOrCreatePort(
                     circuit, scaninName, Contact.IOType.INPUT, VisualContact.Direction.EAST);
 
-            VisualFunctionContact scanoutPin = scaninPort;
-            for (VisualFunctionComponent component : components) {
-                if (hasPathBreakerOutput(component.getReferencedComponent())) {
-                    scanoutPin = insertScan(circuit, component, scanckPort, scanenPort, scanoutPin);
+            insertScanChain(circuit, pathbreakerComponents, scanckPort, scanenPort, scaninPort);
+        }
+    }
+
+    private static void insertScanChain(VisualCircuit circuit, List<VisualFunctionComponent> pathbreakerComponents,
+            VisualFunctionContact scanckPort, VisualFunctionContact scanenPort, VisualFunctionContact scaninPort)
+            throws InvalidConnectionException {
+
+        // Is scanin port is connected then prepend existing scan chain, otherwise create a new scan chain
+        Set<VisualNode> scaninPostset = new HashSet<>(circuit.getPostset(scaninPort));
+        if (!scaninPostset.isEmpty()) {
+            for (VisualNode succNode : scaninPostset) {
+                VisualConnection connection = circuit.getConnection(scaninPort, succNode);
+                if (connection != null) {
+                    circuit.remove(connection);
                 }
             }
-
+            VisualFunctionContact scanoutPin = createScanChain(circuit, pathbreakerComponents, scanckPort, scanenPort, scaninPort);
+            for (VisualNode succNode : scaninPostset) {
+                circuit.connect(scanoutPin, succNode);
+            }
+        } else {
+            VisualFunctionContact scanoutPin = createScanChain(circuit, pathbreakerComponents, scanckPort, scanenPort, scaninPort);
             SpaceUtils.positionPort(circuit, scanckPort, false);
             scanckPort.setSetFunction(Zero.instance());
 
@@ -132,7 +148,17 @@ public class ScanUtils {
         }
     }
 
-    private static VisualFunctionContact insertScan(VisualCircuit circuit, VisualFunctionComponent component,
+    private static VisualFunctionContact createScanChain(VisualCircuit circuit, List<VisualFunctionComponent> components,
+            VisualFunctionContact scanckPort, VisualFunctionContact scanenPort, VisualFunctionContact scaninPort) {
+
+        VisualFunctionContact scanoutPin = scaninPort;
+        for (VisualFunctionComponent component : components) {
+            scanoutPin = insertScanChain(circuit, component, scanckPort, scanenPort, scanoutPin);
+        }
+        return scanoutPin;
+    }
+
+    private static VisualFunctionContact insertScanChain(VisualCircuit circuit, VisualFunctionComponent component,
             VisualFunctionContact scanckPort, VisualFunctionContact scanenPort, VisualFunctionContact dataContact) {
 
         component.setRenderType(ComponentRenderingResult.RenderType.BOX);
