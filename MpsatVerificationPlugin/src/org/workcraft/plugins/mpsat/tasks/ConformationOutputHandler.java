@@ -56,44 +56,46 @@ class ConformationOutputHandler extends ReachabilityOutputHandler {
         }
 
         StgModel compStg = getMpsatOutput().getInputStg();
-        HashMap<Solution, Enabledness> solutionToCompEnabledness = getSolutionToEnabledness(compStg, solutions);
-
-        for (Solution solution: solutions) {
+        for (Solution solution : solutions) {
             // Get unique projection trace
             Trace trace = getProjectedTrace(solution.getMainTrace(), data, substitutions);
             String traceText = trace.toText();
-            if (visitedTraces.contains(traceText)) continue;
-            visitedTraces.add(traceText);
+            if (!visitedTraces.contains(traceText)) {
+                visitedTraces.add(traceText);
 
-            if (needsMultiLineMessage) {
-                LogUtils.logMessage("  " + traceText);
-            } else {
-                LogUtils.logMessage("Projection to '" + we.getTitle() + "': " + traceText);
-            }
+                if (needsMultiLineMessage) {
+                    LogUtils.logMessage("  " + traceText);
+                } else {
+                    LogUtils.logMessage("Projection to '" + we.getTitle() + "': " + traceText);
+                }
 
-            Enabledness compEnabledness = solutionToCompEnabledness.get(solution);
-            Solution processedSolution = processSolution(stg, trace, compEnabledness);
-            if (processedSolution != null) {
-                result.add(processedSolution);
+                Enabledness compEnabledness = EnablednessUtils.getOutputEnablednessAfterTrace(compStg, solution.getMainTrace());
+                Solution processedSolution = processSolution(stg, trace, compEnabledness);
+                if (processedSolution != null) {
+                    result.add(processedSolution);
+                }
             }
         }
         return result;
     }
 
     private Solution processSolution(StgModel stg, Trace trace, Enabledness compEnabledness) {
-        // Execute trace to potentially interesting state
+        // Execute trace to a potentially problematic state
         HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
         if (!PetriUtils.fireTrace(stg, trace)) {
             PetriUtils.setMarking(stg, marking);
             throw new RuntimeException("Cannot execute projected trace: " + trace.toText());
         }
-        // Check if any output can be fired that is not enabled in the composition
+        // Check if any output can be fired that is not enabled in the composition STG
+
+        // Find enabled signals whose state is unknown (due to dummies) in the composition STG.
+        // If there is only one such signal, then it is actually the one disabled in the composition STG.
         HashSet<String> suspiciousSignals = EnablednessUtils.getEnabledSignals(stg, Signal.Type.OUTPUT);
         suspiciousSignals.retainAll(compEnabledness.getUnknownSet());
         if (suspiciousSignals.size() == 1) {
             compEnabledness.alter(Collections.emptySet(), suspiciousSignals, Collections.emptySet());
         }
-
+        // Find the first enabled transition that is definitely disabled in composition STG.
         SignalTransition problematicTransition = null;
         for (SignalTransition transition: stg.getSignalTransitions(Signal.Type.OUTPUT)) {
             String signalRef = stg.getSignalReference(transition);
@@ -102,6 +104,7 @@ class ConformationOutputHandler extends ReachabilityOutputHandler {
                 break;
             }
         }
+        // If problematic transition found, add it to the trace. Otherwise add suspicious signals to the trace description.
         Solution processedSolution = null;
         if (problematicTransition != null) {
             String ref = stg.getSignalReference(problematicTransition);
@@ -117,16 +120,6 @@ class ConformationOutputHandler extends ReachabilityOutputHandler {
         }
         PetriUtils.setMarking(stg, marking);
         return processedSolution;
-    }
-
-    private HashMap<Solution, Enabledness> getSolutionToEnabledness(StgModel stg, List<Solution> solutions) {
-        HashMap<Solution, Enabledness> result = new HashMap<>();
-        for (Solution solution: solutions) {
-            Trace trace = solution.getMainTrace();
-            Enabledness enabledness = EnablednessUtils.getOutputEnablednessAfterTrace(stg, trace);
-            result.put(solution, enabledness);
-        }
-        return result;
     }
 
 }
