@@ -65,8 +65,8 @@ public class ParallelCompositionCommand implements Command {
         }
 
         Collection<Mutex> mutexes = new HashSet<>();
-        String tmpPrefix = FileUtils.getTempPrefix(we.getTitle());
-        File tmpDirectory = FileUtils.createTempDirectory(tmpPrefix);
+        String prefix = FileUtils.getTempPrefix(we.getTitle());
+        File directory = FileUtils.createTempDirectory(prefix);
         ArrayList<File> inputFiles = new ArrayList<>();
         for (Path<String> path: paths) {
             Workspace workspace = framework.getWorkspace();
@@ -76,20 +76,20 @@ public class ParallelCompositionCommand implements Command {
             if (inputMutexes != null) {
                 mutexes.addAll(inputMutexes);
             }
-            File stgFile = exportStg(inputWe, tmpDirectory);
+            File stgFile = exportStg(inputWe, directory);
             inputFiles.add(stgFile);
         }
 
-        File outputFile = new File(tmpDirectory, RESULT_FILE_NAME);
+        File outputFile = new File(directory, RESULT_FILE_NAME);
         outputFile.deleteOnExit();
         File detailFile = null;
         if (dialog.isSaveDetailChecked()) {
-            detailFile = new File(tmpDirectory, DETAIL_FILE_NAME);
+            detailFile = new File(directory, DETAIL_FILE_NAME);
         }
 
         PcompTask pcompTask = new PcompTask(inputFiles.toArray(new File[0]), outputFile, detailFile,
                 dialog.getMode(), dialog.isSharedOutputsChecked(), dialog.isImprovedPcompChecked(),
-                tmpDirectory);
+                directory);
 
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
         PcompResultHandler pcompResult = new PcompResultHandler(dialog.showInEditor(), outputFile, mutexes);

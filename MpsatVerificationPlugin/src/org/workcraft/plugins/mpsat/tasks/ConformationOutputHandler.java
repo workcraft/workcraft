@@ -7,10 +7,12 @@ import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.utils.PetriUtils;
+import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.ExportOutput;
+import org.workcraft.types.Triple;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -30,12 +32,14 @@ class ConformationOutputHandler extends ReachabilityOutputHandler {
         if (needsMultiLineMessage) {
             LogUtils.logMessage("Violation traces of the composition:");
         }
+        StgModel compStg = getMpsatOutput().getInputStg();
         for (Solution solution: solutions) {
-            Trace trace = solution.getMainTrace();
+            // FIXME: This is to rename toggle events from x to x~
+            Trace compTrace = fixTraceToggleEvents(compStg, solution.getMainTrace());
             if (needsMultiLineMessage) {
-                LogUtils.logMessage("  " + trace.toText());
+                LogUtils.logMessage("  " + compTrace.toText());
             } else {
-                LogUtils.logMessage("Violation trace of the composition: " + trace.toText());
+                LogUtils.logMessage("Violation trace of the composition: " + compTrace.toText());
             }
         }
     }
@@ -62,19 +66,39 @@ class ConformationOutputHandler extends ReachabilityOutputHandler {
             String traceText = trace.toText();
             if (!visitedTraces.contains(traceText)) {
                 visitedTraces.add(traceText);
-
                 if (needsMultiLineMessage) {
                     LogUtils.logMessage("  " + traceText);
                 } else {
                     LogUtils.logMessage("Projection to '" + we.getTitle() + "': " + traceText);
                 }
-
-                Enabledness compEnabledness = EnablednessUtils.getOutputEnablednessAfterTrace(compStg, solution.getMainTrace());
+                // FIXME: This is to rename toggle events from x to x~
+                Trace compTrace = fixTraceToggleEvents(compStg, solution.getMainTrace());
+                Enabledness compEnabledness = EnablednessUtils.getOutputEnablednessAfterTrace(compStg, compTrace);
                 Solution processedSolution = processSolution(stg, trace, compEnabledness);
                 if (processedSolution != null) {
                     result.add(processedSolution);
                 }
             }
+        }
+        return result;
+    }
+
+    private Trace fixTraceToggleEvents(StgModel stg, Trace trace) {
+        Trace result = new Trace();
+        for (String ref : trace) {
+            if (stg.getNodeByReference(ref) == null) {
+                Triple<String, SignalTransition.Direction, Integer> r = LabelParser.parseSignalTransition(ref);
+                if (r != null) {
+                    String newRef = r.getFirst() + r.getSecond();
+                    if (r.getThird() != null) {
+                        newRef += "/" + r.getThird();
+                    }
+                    if (stg.getNodeByReference(newRef) != null) {
+                        ref = newRef;
+                    }
+                }
+            }
+            result.add(ref);
         }
         return result;
     }

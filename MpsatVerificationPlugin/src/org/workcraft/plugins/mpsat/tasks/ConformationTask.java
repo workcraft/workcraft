@@ -99,9 +99,9 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             monitor.progressUpdate(0.40);
 
             // Generating .g for the whole system (model and environment)
+            File sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
             File detailFile = new File(directory, StgUtils.DETAIL_FILE_PREFIX + StgUtils.XML_FILE_EXTENSION);
-            File stgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
-            PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile}, stgFile, detailFile,
+            PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile}, sysStgFile, detailFile,
                     ConversionMode.OUTPUT, true, false, directory);
 
             Result<? extends PcompOutput> pcompResult = taskManager.execute(
@@ -117,8 +117,8 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             monitor.progressUpdate(0.50);
 
             // Generate unfolding
-            File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + PunfTask.PNML_FILE_EXTENSION);
-            PunfTask punfTask = new PunfTask(stgFile, unfoldingFile, directory);
+            File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + PunfTask.PNML_FILE_EXTENSION);
+            PunfTask punfTask = new PunfTask(sysStgFile, unfoldingFile, directory);
             Result<? extends PunfOutput> punfResult = taskManager.execute(
                     punfTask, "Unfolding .g", subtaskMonitor);
 
@@ -137,7 +137,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             Set<String> devPlaceNames = devComponentData.getDstPlaces();
             VerificationParameters mpsatSettings = VerificationParameters.getConformationSettings(devPlaceNames);
             VerificationTask verificationTask = new VerificationTask(mpsatSettings.getMpsatArguments(directory),
-                    unfoldingFile, directory, stgFile);
+                    unfoldingFile, directory, sysStgFile);
             Result<? extends VerificationOutput>  mpsatResult = taskManager.execute(
                     verificationTask, "Running conformation check [MPSat]", subtaskMonitor);
 

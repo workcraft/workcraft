@@ -7,8 +7,8 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.serialisation.References;
-import org.workcraft.utils.Hierarchy;
 import org.workcraft.types.MultiSet;
+import org.workcraft.utils.Hierarchy;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -64,33 +64,8 @@ public class Petri extends AbstractMathModel implements PetriModel {
     }
 
     @Override
-    public boolean isUnfireEnabled(Transition t) {
-        return isUnfireEnabled(this, t);
-    }
-
-    @Override
     public final boolean isEnabled(Transition t) {
         return isEnabled(this, t);
-    }
-
-    public static final boolean isUnfireEnabled(PetriModel net, Transition t) {
-        // gather number of connections for each post-place
-        Map<Place, Integer> map = new HashMap<>();
-        for (MathConnection c: net.getConnections(t)) {
-            if (c.getFirst() == t) {
-                if (map.containsKey(c.getSecond())) {
-                    map.put((Place) c.getSecond(), map.get(c.getSecond()) + 1);
-                } else {
-                    map.put((Place) c.getSecond(), 1);
-                }
-            }
-        }
-        for (Node n : net.getPostset(t)) {
-            if (((Place) n).getTokens() < map.get((Place) n)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public static final boolean isEnabled(PetriModel net, Transition t) {
@@ -120,6 +95,49 @@ public class Petri extends AbstractMathModel implements PetriModel {
         fire(this, t);
     }
 
+    public static final void fire(PetriModel net, Transition t) {
+        if (net.isEnabled(t)) {
+            // first consume tokens and then produce tokens (to avoid extra capacity)
+            for (MathConnection c : net.getConnections(t)) {
+                if (t == c.getSecond()) {
+                    Place from = (Place) c.getFirst();
+                    from.setTokens(from.getTokens() - 1);
+                }
+            }
+            for (MathConnection c : net.getConnections(t)) {
+                if (t == c.getFirst()) {
+                    Place to = (Place) c.getSecond();
+                    to.setTokens(to.getTokens() + 1);
+                }
+            }
+        }
+    }
+
+    @Override
+    public boolean isUnfireEnabled(Transition t) {
+        return isUnfireEnabled(this, t);
+    }
+
+    public static final boolean isUnfireEnabled(PetriModel net, Transition t) {
+        // gather number of connections for each post-place
+        Map<Place, Integer> map = new HashMap<>();
+        for (MathConnection c: net.getConnections(t)) {
+            if (c.getFirst() == t) {
+                if (map.containsKey(c.getSecond())) {
+                    map.put((Place) c.getSecond(), map.get(c.getSecond()) + 1);
+                } else {
+                    map.put((Place) c.getSecond(), 1);
+                }
+            }
+        }
+        for (Node n : net.getPostset(t)) {
+            if (((Place) n).getTokens() < map.get((Place) n)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Override
     public final void unFire(Transition t) {
         unFire(this, t);
@@ -140,24 +158,6 @@ public class Petri extends AbstractMathModel implements PetriModel {
             if (t == c.getSecond()) {
                 Place from = (Place) c.getFirst();
                 from.setTokens(from.getTokens() + 1);
-            }
-        }
-    }
-
-    public static final void fire(PetriModel net, Transition t) {
-        if (net.isEnabled(t)) {
-            // first consume tokens and then produce tokens (to avoid extra capacity)
-            for (MathConnection c : net.getConnections(t)) {
-                if (t == c.getSecond()) {
-                    Place from = (Place) c.getFirst();
-                    from.setTokens(from.getTokens() - 1);
-                }
-            }
-            for (MathConnection c : net.getConnections(t)) {
-                if (t == c.getFirst()) {
-                    Place to = (Place) c.getSecond();
-                    to.setTokens(to.getTokens() + 1);
-                }
             }
         }
     }

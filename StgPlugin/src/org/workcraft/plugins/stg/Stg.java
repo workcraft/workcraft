@@ -100,13 +100,13 @@ public class Stg extends AbstractMathModel implements StgModel {
     }
 
     @Override
-    public boolean isUnfireEnabled(Transition t) {
-        return Petri.isUnfireEnabled(this, t);
+    public final void fire(Transition t) {
+        Petri.fire(this, t);
     }
 
     @Override
-    public final void fire(Transition t) {
-        Petri.fire(this, t);
+    public boolean isUnfireEnabled(Transition t) {
+        return Petri.isUnfireEnabled(this, t);
     }
 
     @Override
