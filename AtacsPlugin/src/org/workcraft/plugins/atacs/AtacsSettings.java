@@ -37,7 +37,7 @@ public class AtacsSettings implements Settings {
 
     public AtacsSettings() {
         properties.add(new PropertyDeclaration<AtacsSettings, Boolean>(
-                this, "Activate ATACS synthesis (experimental)", Boolean.class) {
+                this, "Activate ATACS synthesis (experimental) - requires restart", Boolean.class) {
             @Override
             public void setter(AtacsSettings object, Boolean value) {
                 setShowInMenu(value);

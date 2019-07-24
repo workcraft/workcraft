@@ -162,8 +162,10 @@ public class WorkspaceWindow extends JPanel {
         File file;
         while (true) {
             if (fc.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
-                String path = FileFilters.addExtension(fc.getSelectedFile().getPath(), FileFilters.WORKSPACE_EXTENSION);
-
+                String path = fc.getSelectedFile().getPath();
+                if (!path.endsWith(FileFilters.WORKSPACE_EXTENSION)) {
+                    path += FileFilters.WORKSPACE_EXTENSION;
+                }
                 file = new File(path);
                 if (!file.exists()) {
                     break;
