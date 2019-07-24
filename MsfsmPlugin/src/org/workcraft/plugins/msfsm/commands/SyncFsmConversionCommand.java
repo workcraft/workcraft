@@ -20,7 +20,7 @@ public class SyncFsmConversionCommand extends AbstractConversionCommand {
 
     @Override
     public String getDisplayName() {
-        return "Sync FSM [MSFSM]";
+        return "Synchronised FSMs [MSFSM]";
     }
 
 }

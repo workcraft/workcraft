@@ -6,7 +6,7 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.fst.interop.SgFormat;
 import org.workcraft.plugins.msfsm.MsfsmSettings;
-import org.workcraft.plugins.petri.Petri;
+import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
@@ -55,7 +55,7 @@ public class ConversionTask implements Task<ConversionOutput>, ExternalProcessLi
 
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
-        Petri petri = WorkspaceUtils.getAs(we, Petri.class);
+        PetriModel model = WorkspaceUtils.getAs(we, PetriModel.class);
 
         // Script file
         if (script != null) {
@@ -65,7 +65,7 @@ public class ConversionTask implements Task<ConversionOutput>, ExternalProcessLi
         }
 
         // Input file
-        getInputFile(petri, directory);
+        getInputFile(model, directory);
 
         boolean printStdout = MsfsmSettings.getPrintStdout();
         boolean printStderr = MsfsmSettings.getPrintStderr();
@@ -109,15 +109,15 @@ public class ConversionTask implements Task<ConversionOutput>, ExternalProcessLi
         return file;
     }
 
-    private File getInputFile(Petri petri, File directory) {
+    private File getInputFile(PetriModel model, File directory) {
         final Framework framework = Framework.getInstance();
         StgFormat format = StgFormat.getInstance();
-        Exporter exporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), petri, format);
+        Exporter exporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), model, format);
         if (exporter == null) {
-            throw new NoExporterException(petri, format);
+            throw new NoExporterException(model, format);
         }
         File file = new File(directory, fileName);
-        ExportTask exportTask = new ExportTask(exporter, petri, file.getAbsolutePath());
+        ExportTask exportTask = new ExportTask(exporter, model, file.getAbsolutePath());
         Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
         if (exportResult.getOutcome() != Outcome.SUCCESS) {
             throw new RuntimeException("Unable to export the model.");

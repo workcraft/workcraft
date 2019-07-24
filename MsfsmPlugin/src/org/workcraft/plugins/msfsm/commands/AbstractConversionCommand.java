@@ -3,10 +3,12 @@ package org.workcraft.plugins.msfsm.commands;
 import org.workcraft.Framework;
 import org.workcraft.commands.MenuOrdering;
 import org.workcraft.commands.ScriptableCommand;
+import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.msfsm.MsfsmSettings;
 import org.workcraft.plugins.msfsm.tasks.ConversionResultHandler;
 import org.workcraft.plugins.msfsm.tasks.ConversionTask;
 import org.workcraft.plugins.petri.PetriModel;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -17,7 +19,7 @@ public abstract class AbstractConversionCommand implements ScriptableCommand<Col
 
     @Override
     public final String getSection() {
-        return "!    Conversion"; // 4 spaces - positions 1st
+        return org.workcraft.commands.AbstractConversionCommand.SECTION_TITLE;
     }
 
     @Override
@@ -59,10 +61,16 @@ public abstract class AbstractConversionCommand implements ScriptableCommand<Col
         Framework framework = Framework.getInstance();
         TaskManager taskManager = framework.getTaskManager();
         ConversionTask task = new ConversionTask(we, getFileName(), getConversionCommands());
-        ConversionResultHandler monitor = new ConversionResultHandler(we);
+        boolean hasSignals = hasSignals(we);
+        ConversionResultHandler monitor = new ConversionResultHandler(we, !hasSignals);
         taskManager.queue(task, "MSFSM conversion", monitor);
         return monitor;
     }
+
+    public boolean hasSignals(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, Stg.class) || WorkspaceUtils.isApplicable(we, Fst.class);
+    }
+
     public abstract String getFileName();
 
     public abstract String[] getConversionCommands();
