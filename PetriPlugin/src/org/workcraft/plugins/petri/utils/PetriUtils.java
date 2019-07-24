@@ -1,9 +1,5 @@
 package org.workcraft.plugins.petri.utils;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.workcraft.dom.Node;
 import org.workcraft.gui.tools.Trace;
 import org.workcraft.plugins.petri.PetriModel;
@@ -11,6 +7,10 @@ import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class PetriUtils {
 
@@ -33,18 +33,20 @@ public class PetriUtils {
 
     public static boolean fireTrace(PetriModel net, Trace trace) {
         for (String ref: trace) {
-            Node node = net.getNodeByReference(ref);
-            if (node instanceof Transition) {
-                Transition transition = (Transition) node;
-                if (net.isEnabled(transition)) {
-                    net.fire(transition);
+            if (ref != null) {
+                Node node = net.getNodeByReference(ref);
+                if (node instanceof Transition) {
+                    Transition transition = (Transition) node;
+                    if (net.isEnabled(transition)) {
+                        net.fire(transition);
+                    } else {
+                        LogUtils.logError("Trace transition '" + ref + "' is not enabled.");
+                        return false;
+                    }
                 } else {
-                    LogUtils.logError("Trace transition '" + ref + "' is not enabled.");
+                    LogUtils.logError("Trace transition '" + ref + "' cannot be found.");
                     return false;
                 }
-            } else {
-                LogUtils.logError("Trace transition '" + ref + "' cannot be found.");
-                return false;
             }
         }
         return true;

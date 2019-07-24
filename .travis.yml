@@ -2,18 +2,18 @@ language: java
 
 matrix:
   include:
-    - jdk: oraclejdk8
+    - jdk: openjdk8
       env: TARGET=checkstyle
-    - jdk: oraclejdk8
+    - jdk: openjdk8
       env: TARGET=pmd
-    - jdk: oraclejdk8
+    - jdk: openjdk8
       env: TARGET=cpd
-    - jdk: oraclejdk8
-      env: TARGET=test
     - jdk: openjdk8
       env: TARGET=test
+      services: xvfb
     - jdk: openjdk11
       env: TARGET=test
+      services: xvfb
     - os: osx
       osx_image: xcode9.2
       env: TARGET=test
@@ -30,12 +30,9 @@ before_install:
 install:
   - ./gradlew assemble
 
-before_script:
-  - if [ $TARGET == test ]; then export DISPLAY=:0; ( Xvfb :0 -ac > /dev/null 2>&1 )& fi
-
 script:
   - ./gradlew $TARGET
   - if [ $TARGET == test ]; then ./integration-tests/run.sh; fi
 
 after_success:
-  - if [ $TARGET == test -a $TRAVIS_JDK_VERSION == oraclejdk8 ]; then ./gradlew coveralls; fi
+  - if [ $TARGET == test -a $TRAVIS_JDK_VERSION == openjdk8 ]; then ./gradlew coveralls; fi

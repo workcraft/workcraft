@@ -7,31 +7,32 @@ import org.workcraft.gui.tools.Trace;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.gui.ReachibilityDialog;
+import org.workcraft.plugins.mpsat.utils.EnablednessUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
-import org.workcraft.plugins.stg.LabelParser;
-import org.workcraft.plugins.stg.Signal;
-import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.petri.Transition;
+import org.workcraft.plugins.petri.utils.PetriUtils;
+import org.workcraft.plugins.stg.*;
 import org.workcraft.tasks.ExportOutput;
-import org.workcraft.types.Pair;
+import org.workcraft.types.Triple;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ConformationNwayOutputHandler extends ConformationOutputHandler {
+
+    // Right arrow symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
+    public static final char RIGHT_ARROW_SYMBOL = 0x2192;
 
     private static final String TAG_INPUT = "i";
     private static final String TAG_OUTPUT = "o";
     private static final String TAG_INTERNAL = "x";
     private static final String TAG_DUMMY = "d";
+    private static final String TAG_VIOLATION = "!";
     private static final String TAG_NONE = ".";
 
     public enum ConformationReportStyle {
@@ -51,10 +52,7 @@ public class ConformationNwayOutputHandler extends ConformationOutputHandler {
         }
     }
 
-    class TaggedTrace extends ArrayList<Pair<String, Signal.Type>> {
-    }
-
-    private final ArrayList<WorkspaceEntry> wes;
+    private final List<WorkspaceEntry> wes;
 
     ConformationNwayOutputHandler(ArrayList<WorkspaceEntry> wes, ExportOutput exportOutput,
             PcompOutput pcompOutput, VerificationOutput mpsatOutput, VerificationParameters settings) {
@@ -122,155 +120,240 @@ public class ConformationNwayOutputHandler extends ConformationOutputHandler {
     }
 
     private void writeTables(List<Solution> solutions) {
-        int indentCount = 2;
+        String indent = String.join("", Collections.nCopies(2, " "));
         for (Solution solution : solutions) {
-            LogUtils.logMessage("Violation trace of the composition: " + solution);
-            writeTableHeader(indentCount, "Projected events");
-            writeTableBody(solution, indentCount);
+            writeTableHeader("Projected events", indent);
+            writeTableBody(solution, indent);
         }
+        writeTableLegend("");
     }
 
-    private void writeTableHeader(int indentCount, String extraTitle) {
-        String indent = getString(' ', indentCount);
+    private void writeTableHeader(String extraTitle, String indent) {
         String prefix = "";
         for (WorkspaceEntry we : wes) {
             String title = we.getTitle();
             LogUtils.logMessage(indent + prefix + title);
             prefix += "| ";
         }
-        LogUtils.logMessage(indent + prefix + extraTitle);
-        String separator = getString('-', prefix.length() + extraTitle.length());
+        LogUtils.logMessage(indent + prefix + " " + extraTitle);
+        int n = prefix.length() + extraTitle.length() + 1;
+        String separator = String.join("", Collections.nCopies(n, "-"));
         LogUtils.logMessage(indent + separator);
     }
 
-    private void writeTableBody(Solution solution, int indentCount) {
-        Trace mainTrace = solution.getMainTrace();
-        List<TaggedTrace> taggedTraces = new ArrayList<>();
-        for (WorkspaceEntry we: wes) {
-            TaggedTrace taggedTrace = getProjectedTaggedTrace(mainTrace, we);
-            taggedTraces.add(taggedTrace);
-        }
-
-        String indent = getString(' ', indentCount);
-        for (int i = 0; i < mainTrace.size(); i++) {
-            List<String> tags = new ArrayList<>();
-            List<String> subs = new ArrayList<>();
-            for (TaggedTrace taggedTrace : taggedTraces) {
-                Pair<String, Signal.Type> taggedEvent = taggedTrace.get(i);
-                tags.add(getTraceEventTag(taggedEvent));
-                String event = taggedEvent.getFirst();
-                if (event != null) {
-                    subs.add(event);
-                }
+    private void writeTableBody(Solution solution, String indent) {
+        Trace compTrace = solution.getMainTrace();
+        Map<WorkspaceEntry, Trace> workToTraceMap = calcProjectionTraces(compTrace);
+        String unexpectedEvent = findUnexpectedOutputAfterTrace(compTrace, workToTraceMap);
+        Trace projectedEvents = calcProjectedEvents(compTrace, unexpectedEvent, workToTraceMap);
+        Map<WorkspaceEntry, Trace> workToTagsMap = calcProjectionTags(workToTraceMap, unexpectedEvent);
+        for (int i = 0; i < projectedEvents.size(); i++) {
+            String line = indent;
+            for (WorkspaceEntry we : wes) {
+                Trace tags = workToTagsMap.get(we);
+                line += (i < tags.size() ? tags.get(i) : TAG_NONE) + " ";
             }
-            String tagStr = String.join(" ", tags);
-            String ref = mainTrace.get(i);
-            if (subs.size() == 1) {
-                ref = subs.iterator().next();
-            }
-            String eventStr = LabelParser.getTransitionName(ref);
-            LogUtils.logMessage(indent + tagStr + " " + eventStr);
+            line += " " + projectedEvents.get(i);
+            LogUtils.logMessage(line);
         }
     }
 
-    private TaggedTrace getProjectedTaggedTrace(Trace trace, WorkspaceEntry we) {
-        StgModel stg = getSrcStg(we);
-        ComponentData data = getCompositionData(we);
-        Map<String, String> substitutions = getSubstitutions(we);
-        TaggedTrace result = new TaggedTrace();
-        for (String ref: trace) {
-            String srcRef = data.getSrcTransition(ref);
-            MathNode node = null;
-            if (srcRef != null) {
-                if (substitutions.containsKey(srcRef)) {
-                    srcRef = substitutions.get(srcRef);
-                }
-                node = stg.getNodeByReference(srcRef);
-            }
-            result.add(Pair.of(srcRef, getSignalType(node)));
+    private Map<WorkspaceEntry, Trace> calcProjectionTraces(Trace compTrace) {
+        Map<WorkspaceEntry, Trace> result = new HashMap<>();
+        for (WorkspaceEntry we : wes) {
+            Trace projTrace = calcProjectionTrace(compTrace, we);
+            result.put(we, projTrace);
         }
         return result;
     }
 
-    private Signal.Type getSignalType(MathNode node) {
-        if (node instanceof SignalTransition) {
-            SignalTransition transition = (SignalTransition) node;
-            return transition.getSignalType();
+    private Trace calcProjectionTrace(Trace compTrace, WorkspaceEntry we) {
+        ComponentData data = getCompositionData(we);
+        Map<String, String> substitutions = getSubstitutions(we);
+        Trace result = new Trace();
+        for (String ref : compTrace) {
+            String srcRef = data.getSrcTransition(ref);
+            if ((srcRef != null) && (substitutions.containsKey(srcRef))) {
+                srcRef = substitutions.get(srcRef);
+            }
+            result.add(srcRef);
+        }
+        return result;
+    }
+
+    private String findUnexpectedOutputAfterTrace(Trace compTrace, Map<WorkspaceEntry, Trace> workToTraceMap) {
+        // Find output enabled in component STG that is not enabled in the composition STG
+        StgModel compStg = getMpsatOutput().getInputStg();
+        Enabledness compEnabledness = EnablednessUtils.getOutputEnablednessAfterTrace(compStg, compTrace);
+        for (WorkspaceEntry we : wes) {
+            StgModel stg = getSrcStg(we);
+            Trace projTrace = workToTraceMap.get(we);
+            // Execute projected trace to a potentially problematic state
+            if (!PetriUtils.fireTrace(stg, projTrace)) {
+                throw new RuntimeException("Cannot execute projected trace: " + projTrace.toText());
+            }
+            // Find enabled signals whose state is unknown (due to dummies) in the composition STG.
+            // If there is only one such signal, then it is actually the one disabled in the composition STG.
+            HashSet<String> suspiciousSignals = EnablednessUtils.getEnabledSignals(stg, Signal.Type.OUTPUT);
+            suspiciousSignals.retainAll(compEnabledness.getUnknownSet());
+            if (suspiciousSignals.size() == 1) {
+                compEnabledness.alter(Collections.emptySet(), suspiciousSignals, Collections.emptySet());
+            }
+            // Find the first enabled transition that is definitely disabled in composition STG.
+            for (SignalTransition transition : stg.getSignalTransitions(Signal.Type.OUTPUT)) {
+                String signalRef = stg.getSignalReference(transition);
+                if (stg.isEnabled(transition) && compEnabledness.isDisabled(signalRef)) {
+                    return stg.getNodeReference(transition);
+                }
+            }
         }
         return null;
     }
 
-    private String getTraceEventTag(Pair<String, Signal.Type> traceEvent) {
-        if ((traceEvent != null) && (traceEvent.getFirst() != null)) {
-            Signal.Type type = traceEvent.getSecond();
-            if (type == null) {
-                return TAG_DUMMY;
+    private Trace calcProjectedEvents(Trace compTrace, String unexpectedEvent, Map<WorkspaceEntry, Trace> workToTraceMap) {
+        Trace result = new Trace(compTrace);
+        for (WorkspaceEntry we : wes) {
+            StgModel stg = getSrcStg(we);
+            Trace projTrace = workToTraceMap.get(we);
+            int i = 0;
+            for (String ref : projTrace) {
+                if ((ref != null) && (i < result.size())) {
+                    MathNode node = stg.getNodeByReference(ref);
+                    boolean isNonInputTransition = node != null;
+                    if (node instanceof SignalTransition) {
+                        SignalTransition st = (SignalTransition) node;
+                        isNonInputTransition = st.getSignalType() != Signal.Type.INPUT;
+                    }
+                    if (isNonInputTransition) {
+                        result.set(i, ref);
+                    }
+                }
+                i++;
             }
-            switch (type) {
-            case INPUT: return TAG_INPUT;
-            case OUTPUT: return TAG_OUTPUT;
-            case INTERNAL: return TAG_INTERNAL;
+        }
+        if (unexpectedEvent != null) {
+            result.add(unexpectedEvent);
+        }
+        return result;
+    }
+
+    private Map<WorkspaceEntry, Trace> calcProjectionTags(Map<WorkspaceEntry, Trace> workToTraceMap, String unexpectedEvent) {
+        Map<WorkspaceEntry, Trace> workToTagsMap = new HashMap<>();
+        for (WorkspaceEntry we : wes) {
+            Trace projTrace = workToTraceMap.get(we);
+            Trace tags = getTraceTags(projTrace, unexpectedEvent, we);
+            workToTagsMap.put(we, tags);
+        }
+        return workToTagsMap;
+    }
+
+    private Trace getTraceTags(Trace projTrace, String unexpectedEvent, WorkspaceEntry we) {
+        Trace result = new Trace();
+        StgModel stg = getSrcStg(we);
+        for (String ref : projTrace) {
+            String tag = getNodeTag(stg, ref);
+            result.add(tag);
+        }
+        if (unexpectedEvent != null) {
+            Triple<String, SignalTransition.Direction, Integer> r = LabelParser.parseSignalTransition(unexpectedEvent);
+            if (r != null) {
+                String signal = r.getFirst();
+                SignalTransition.Direction direction = r.getSecond();
+                Set<String> inputs = stg.getSignalReferences(Signal.Type.INPUT);
+                Set<String> outputs = stg.getSignalReferences(Signal.Type.OUTPUT);
+                String tag = TAG_NONE;
+                if (outputs.contains(signal)) {
+                    tag = TAG_OUTPUT;
+                } else if (inputs.contains(signal) && PetriUtils.fireTrace(stg, projTrace)) {
+                    boolean violation = true;
+                    for (Transition t : PetriUtils.getEnabledTransitions(stg)) {
+                        if (t instanceof SignalTransition) {
+                            SignalTransition st = (SignalTransition) t;
+                            if (signal.equals(st.getSignalName()) && (st.getDirection() == direction)) {
+                                violation = false;
+                            }
+                        }
+                    }
+                    tag = violation ? TAG_VIOLATION : TAG_INPUT;
+                }
+                result.add(tag);
+            }
+        }
+        return result;
+    }
+
+    private String getNodeTag(StgModel stg, String ref) {
+        if (ref != null) {
+            MathNode node = stg.getNodeByReference(ref);
+            if (node instanceof DummyTransition) {
+                return TAG_DUMMY;
+            } else if (node instanceof SignalTransition) {
+                switch (((SignalTransition) node).getSignalType()) {
+                case INPUT: return TAG_INPUT;
+                case OUTPUT: return TAG_OUTPUT;
+                case INTERNAL: return TAG_INTERNAL;
+                }
             }
         }
         return TAG_NONE;
     }
 
+    private void writeTableLegend(String indent) {
+        LogUtils.logMessage(indent + "Legend: "
+                + TAG_INPUT + " - input; "
+                + TAG_OUTPUT + " - output; "
+                + TAG_INTERNAL + " - internal; "
+                + TAG_DUMMY + " - dummy; "
+                + TAG_VIOLATION + " - violation");
+    }
+
     private void writeLists(List<Solution> solutions) {
         for (Solution solution : solutions) {
-            LogUtils.logMessage("Violation trace of the composition: " + solution);
-            writeList(solution);
+            writeList(solution, "  ");
         }
     }
 
-    private void writeList(Solution solution) {
-        Trace mainTrace = solution.getMainTrace();
-        List<String> titles = new ArrayList<>();
-        List<TaggedTrace> taggedTraces = new ArrayList<>();
-        for (WorkspaceEntry we: wes) {
-            titles.add(we.getTitle());
-            taggedTraces.add(getProjectedTaggedTrace(mainTrace, we));
-        }
-
-        for (int i = 0; i < mainTrace.size(); i++) {
+    private void writeList(Solution solution, String indent) {
+        Trace compTrace = solution.getMainTrace();
+        Map<WorkspaceEntry, Trace> workToTraceMap = calcProjectionTraces(compTrace);
+        String unexpectedEvent = findUnexpectedOutputAfterTrace(compTrace, workToTraceMap);
+        Trace projectedEvents = calcProjectedEvents(compTrace, unexpectedEvent, workToTraceMap);
+        Map<WorkspaceEntry, Trace> workToTagsMap = calcProjectionTags(workToTraceMap, unexpectedEvent);
+        int maxLen = projectedEvents.stream().mapToInt(String::length).max().orElse(0);
+        for (int i = 0; i < projectedEvents.size(); i++) {
             List<String> inputRefs = new ArrayList<>();
             List<String> outputRefs = new ArrayList<>();
             List<String> internalRefs = new ArrayList<>();
-            String event = mainTrace.get(i);
-            for (int j = 0; j < titles.size(); j++) {
-                String title = titles.get(j);
-                TaggedTrace taggedTrace = taggedTraces.get(j);
-                Pair<String, Signal.Type> taggedEvent = taggedTrace.get(i);
-                String ref = taggedEvent.getFirst();
-                if (ref != null) {
-                    Signal.Type type = taggedEvent.getSecond();
-                    if ((type == null) || (type == Signal.Type.INTERNAL)) {
-                        internalRefs.add(title);
-                        event = ref;
-                    }
-                    if (type == Signal.Type.INPUT) {
-                        inputRefs.add(title);
-                    }
-                    if (type == Signal.Type.OUTPUT) {
+            for (WorkspaceEntry we : wes) {
+                Trace tags = workToTagsMap.get(we);
+                String title = we.getTitle();
+                if (i < tags.size()) {
+                    String tag = tags.get(i);
+                    if (TAG_OUTPUT.equals(tag)) {
                         outputRefs.add(title);
                     }
+                    if (TAG_INPUT.equals(tag)) {
+                        inputRefs.add(title);
+                    }
+                    if (TAG_INTERNAL.equals(tag) || TAG_DUMMY.equals(tag)) {
+                        internalRefs.add(title);
+                    }
+                    if (TAG_VIOLATION.equals(tag)) {
+                        inputRefs.add(title + " (unexpected)");
+                    }
                 }
+
             }
-            String eventStr = LabelParser.getTransitionName(event);
             String inputStr = String.join(", ", inputRefs);
             String outputStr = String.join(", ", outputRefs);
             String internalStr = String.join(", ", internalRefs);
+            String prefix = String.format(indent + "%-" + maxLen + "s : ", projectedEvents.get(i));
             if (!internalStr.isEmpty()) {
-                LogUtils.logMessage("  " + eventStr + " : " + internalStr);
+                LogUtils.logMessage(prefix + internalStr);
             } else {
-                LogUtils.logMessage("  " + eventStr + " : " + outputStr + " -> " + inputStr);
+                LogUtils.logMessage(prefix + outputStr + " " + RIGHT_ARROW_SYMBOL + " " + inputStr);
             }
         }
-    }
-
-    private String getString(char symbol, int count) {
-        char[] buf = new char[count];
-        Arrays.fill(buf, symbol);
-        return String.valueOf(buf);
     }
 
 }

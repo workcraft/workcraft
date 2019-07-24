@@ -38,7 +38,7 @@ public class ConformationNwayTask implements Task<VerificationChainOutput> {
         Framework framework = Framework.getInstance();
         TaskManager taskManager = framework.getTaskManager();
 
-        String prefix = FileUtils.getTempPrefix("-pcomp");
+        String prefix = FileUtils.getTempPrefix("-nway_conformation");
         File directory = FileUtils.createTempDirectory(prefix);
         String stgFileExtension = StgFormat.getInstance().getExtension();
         VerificationParameters preparationSettings = VerificationParameters.getToolchainPreparationSettings();

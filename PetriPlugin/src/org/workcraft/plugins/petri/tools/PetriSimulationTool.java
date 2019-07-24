@@ -13,15 +13,15 @@ import org.workcraft.plugins.petri.*;
 import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.shared.ColorGenerator;
 import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 public class PetriSimulationTool extends SimulationTool {
+
+    private final Set<Place> badCapacityPlaces = new HashSet<>();
 
     public PetriSimulationTool() {
         this(false);
@@ -33,6 +33,12 @@ public class PetriSimulationTool extends SimulationTool {
 
     public PetriModel getUnderlyingPetri() {
         return (PetriModel) getUnderlyingModel().getMathModel();
+    }
+
+    @Override
+    public void activated(final GraphEditor editor) {
+        super.activated(editor);
+        badCapacityPlaces.clear();
     }
 
     @Override
@@ -130,14 +136,18 @@ public class PetriSimulationTool extends SimulationTool {
             }
             petri.fire(transition);
             coloriseTokens(transition);
+            Set<String> placeRefs = new HashSet<>();
             for (Node node: petri.getPostset(transition)) {
                 if (node instanceof Place) {
                     Place place = (Place) node;
-                    if (place.getCapacity() > capacity.get(place)) {
-                        String placeRef = petri.getNodeReference(place);
-                        LogUtils.logWarning("Capacity of place '" + placeRef + "' is incresed to " + place.getCapacity() + ".");
+                    if ((place.getCapacity() > capacity.get(place)) && !badCapacityPlaces.contains(place)) {
+                        badCapacityPlaces.add(place);
+                        placeRefs.add(petri.getNodeReference(place));
                     }
                 }
+            }
+            if (!placeRefs.isEmpty()) {
+                DialogUtils.showWarning(LogUtils.getTextWithRefs("Promised capacity is violated for place", placeRefs));
             }
             result = true;
         }
