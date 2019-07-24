@@ -1,7 +1,6 @@
 package org.workcraft.plugins.cpog.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.commands.Command;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.gui.PGMinerImportDialog;
@@ -15,21 +14,11 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.io.File;
 import java.util.Scanner;
 
-public class ImportEventLogPGMinerCommand implements Command {
-
-    @Override
-    public String getSection() {
-        return "! Process Mining";
-    }
+public class ImportEventLogPGMinerCommand extends AbstractPGMinerCommand {
 
     @Override
     public String getDisplayName() {
         return "Import an event log";
-    }
-
-    @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, VisualCpog.class);
     }
 
     @Override

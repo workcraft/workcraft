@@ -2,14 +2,16 @@ package org.workcraft.commands;
 
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.utils.DialogUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public abstract class AbstractStatisticsCommand implements ScriptableCommand<String> {
 
+    public static final String SECTION_TITLE = "Statistics";
+
     @Override
     public final String getSection() {
-        return "Statistics";
+        return SECTION_TITLE;
     }
 
     @Override

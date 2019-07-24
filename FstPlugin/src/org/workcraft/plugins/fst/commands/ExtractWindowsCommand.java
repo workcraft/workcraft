@@ -1,15 +1,8 @@
 package org.workcraft.plugins.fst.commands;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-
 import org.workcraft.Framework;
-import org.workcraft.commands.MenuOrdering;
 import org.workcraft.commands.Command;
-import org.workcraft.utils.DesktopApi;
+import org.workcraft.commands.MenuOrdering;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.ProcessWindowsSettings;
 import org.workcraft.plugins.fst.VisualFst;
@@ -17,16 +10,19 @@ import org.workcraft.plugins.fst.interop.SgExporter;
 import org.workcraft.plugins.fst.tasks.LtscatResultHandler;
 import org.workcraft.plugins.fst.tasks.LtscatTask;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.ExecutableUtils;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
+import java.io.*;
 
 public class ExtractWindowsCommand implements Command, MenuOrdering {
 
     @Override
     public final String getSection() {
-        return "!    Conversion"; // 4 spaces - positions 1st
+        return org.workcraft.commands.AbstractConversionCommand.SECTION_TITLE;
     }
 
     @Override

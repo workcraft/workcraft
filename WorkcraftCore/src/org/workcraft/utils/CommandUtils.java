@@ -15,6 +15,10 @@ import java.util.function.Function;
 
 public class CommandUtils {
 
+    public static String makePromotedSectionTitle(String title, int order) {
+        return "!" + String.join("", Collections.nCopies(9 - order, " ")) + title;
+    }
+
     public static List<Command> getCommands() {
         ArrayList<Command> result = new ArrayList<>();
         final Framework framework = Framework.getInstance();

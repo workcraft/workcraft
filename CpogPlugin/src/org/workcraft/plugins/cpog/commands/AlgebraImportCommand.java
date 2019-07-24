@@ -1,30 +1,16 @@
 package org.workcraft.plugins.cpog.commands;
 
-import java.io.File;
-
-import javax.swing.JFileChooser;
-
 import org.workcraft.Framework;
-import org.workcraft.commands.Command;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
-import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.tools.CpogSelectionTool;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
-public class AlgebraImportCommand implements Command {
+import javax.swing.*;
+import java.io.File;
 
-    @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, VisualCpog.class);
-    }
-
-    @Override
-    public String getSection() {
-        return "! Algebra";
-    }
+public class AlgebraImportCommand extends AbstractAlgebraCommand {
 
     @Override
     public String getDisplayName() {
