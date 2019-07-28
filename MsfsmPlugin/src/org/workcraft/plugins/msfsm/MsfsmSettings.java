@@ -1,4 +1,4 @@
-package org.workcraft.plugins.atacs;
+package org.workcraft.plugins.msfsm;
 
 import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
@@ -9,10 +9,10 @@ import org.workcraft.utils.DesktopApi;
 import java.util.LinkedList;
 import java.util.List;
 
-public class AtacsSettings implements Settings {
+public class MsfsmSettings implements Settings {
 
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
-    private static final String prefix = "Tools.atacs";
+    private static final String prefix = "Tools.msfsm";
 
     private static final String keyShowInMenu = prefix + ".showInMenu";
     private static final String keyCommand = prefix + ".command";
@@ -22,7 +22,7 @@ public class AtacsSettings implements Settings {
     private static final String keyPrintStderr = prefix + ".printStderr";
 
     private static final Boolean defaultShowInMenu = false;
-    private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\ATACS\\atacs.exe" : "tools/ATACS/atacs";
+    private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\MSFSM\\msfsm_tools.exe" : "tools/MSFSM/msfsm_tools";
     private static final String defaultArgs = "";
     private static final Boolean defaultAdvancedMode = false;
     private static final Boolean defaultPrintStdout = true;
@@ -35,75 +35,75 @@ public class AtacsSettings implements Settings {
     private static Boolean printStdout = defaultPrintStdout;
     private static Boolean printStderr = defaultPrintStderr;
 
-    public AtacsSettings() {
-        properties.add(new PropertyDeclaration<AtacsSettings, Boolean>(
-                this, "Activate ATACS synthesis (experimental) - requires restart", Boolean.class) {
+    public MsfsmSettings() {
+        properties.add(new PropertyDeclaration<MsfsmSettings, Boolean>(
+                this, "Activate MSFSM backend (experimental) - requires restart", Boolean.class) {
             @Override
-            public void setter(AtacsSettings object, Boolean value) {
+            public void setter(MsfsmSettings object, Boolean value) {
                 setShowInMenu(value);
             }
             @Override
-            public Boolean getter(AtacsSettings object) {
+            public Boolean getter(MsfsmSettings object) {
                 return getShowInMenu();
             }
         });
 
-        properties.add(new PropertyDeclaration<AtacsSettings, String>(
-                this, "ATACS command", String.class) {
+        properties.add(new PropertyDeclaration<MsfsmSettings, String>(
+                this, "MSFSM command", String.class) {
             @Override
-            public void setter(AtacsSettings object, String value) {
+            public void setter(MsfsmSettings object, String value) {
                 setCommand(value);
             }
             @Override
-            public String getter(AtacsSettings object) {
+            public String getter(MsfsmSettings object) {
                 return getCommand();
             }
         });
 
-        properties.add(new PropertyDeclaration<AtacsSettings, String>(
+        properties.add(new PropertyDeclaration<MsfsmSettings, String>(
                 this, "Additional parameters", String.class) {
             @Override
-            public void setter(AtacsSettings object, String value) {
+            public void setter(MsfsmSettings object, String value) {
                 setArgs(value);
             }
             @Override
-            public String getter(AtacsSettings object) {
+            public String getter(MsfsmSettings object) {
                 return getArgs();
             }
         });
 
-        properties.add(new PropertyDeclaration<AtacsSettings, Boolean>(
+        properties.add(new PropertyDeclaration<MsfsmSettings, Boolean>(
                 this, "Edit additional parameters before every call", Boolean.class) {
             @Override
-            public void setter(AtacsSettings object, Boolean value) {
+            public void setter(MsfsmSettings object, Boolean value) {
                 setAdvancedMode(value);
             }
             @Override
-            public Boolean getter(AtacsSettings object) {
+            public Boolean getter(MsfsmSettings object) {
                 return getAdvancedMode();
             }
         });
 
-        properties.add(new PropertyDeclaration<AtacsSettings, Boolean>(
+        properties.add(new PropertyDeclaration<MsfsmSettings, Boolean>(
                 this, "Output stdout", Boolean.class) {
             @Override
-            public void setter(AtacsSettings object, Boolean value) {
+            public void setter(MsfsmSettings object, Boolean value) {
                 setPrintStdout(value);
             }
             @Override
-            public Boolean getter(AtacsSettings object) {
+            public Boolean getter(MsfsmSettings object) {
                 return getPrintStdout();
             }
         });
 
-        properties.add(new PropertyDeclaration<AtacsSettings, Boolean>(
+        properties.add(new PropertyDeclaration<MsfsmSettings, Boolean>(
                 this, "Output stderr", Boolean.class) {
             @Override
-            public void setter(AtacsSettings object, Boolean value) {
+            public void setter(MsfsmSettings object, Boolean value) {
                 setPrintStderr(value);
             }
             @Override
-            public Boolean getter(AtacsSettings object) {
+            public Boolean getter(MsfsmSettings object) {
                 return getPrintStderr();
             }
         });
@@ -141,7 +141,7 @@ public class AtacsSettings implements Settings {
 
     @Override
     public String getName() {
-        return "ATACS";
+        return "MSFSM";
     }
 
     public static boolean getShowInMenu() {

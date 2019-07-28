@@ -1,7 +1,6 @@
 package org.workcraft.plugins.cpog.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.commands.Command;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.editor.GraphEditorPanel;
@@ -17,20 +16,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
-public class AlgebraExpressionFromGraphsCommand implements Command {
+public class AlgebraExpressionFromGraphsCommand extends AbstractAlgebraCommand {
 
     private static final String DIALOG_SAVE_FILE = "Save file";
     private static final String DIALOG_EXPRESSION_EXPORT_ERROR = "Expression export error";
-
-    @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, VisualCpog.class);
-    }
-
-    @Override
-    public String getSection() {
-        return "! Algebra";
-    }
 
     @Override
     public String getDisplayName() {

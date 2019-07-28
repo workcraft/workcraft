@@ -23,7 +23,7 @@ public class PetriToCpogConversionCommand extends AbstractConversionCommand {
 
     @Override
     public String getDisplayName() {
-        return "Conditional Partial Order Graph [Untanglingusing bots]";
+        return "Conditional Partial Order Graph [Untangling]";
     }
 
     @Override

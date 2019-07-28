@@ -1,34 +1,24 @@
 package org.workcraft.plugins.cpog.commands;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.ArrayList;
-
 import org.workcraft.Framework;
-import org.workcraft.commands.Command;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.tasks.PGMinerResultHandler;
 import org.workcraft.plugins.cpog.tasks.PGMinerTask;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.DialogUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
-public class ExtractSelectedGraphsPGMinerCommand implements Command {
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
 
-    public String getSection() {
-        return "! Process Mining";
-    }
+public class ExtractSelectedGraphsPGMinerCommand extends AbstractPGMinerCommand {
 
     public String getDisplayName() {
         return "Extract concurrency of selected graphs";
-    }
-
-    @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, VisualCpog.class);
     }
 
     public File getInputFile(WorkspaceEntry we) {

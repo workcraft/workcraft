@@ -4,14 +4,16 @@ import org.workcraft.Framework;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.editor.GraphEditorPanel;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public abstract class AbstractLayoutCommand implements ScriptableCommand<Void> {
 
+    public static final String SECTION_TITLE = "Graph layout";
+
     @Override
     public final String getSection() {
-        return "Graph layout";
+        return SECTION_TITLE;
     }
 
     @Override
