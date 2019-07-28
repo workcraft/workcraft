@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Scanner;
@@ -198,8 +199,9 @@ public class FileUtils {
      * Does not close the stream.
      */
     public static String readHeader(InputStream stream, int count) throws IOException {
-        byte[] buf = new byte[count];
-        int len = stream.read(buf);
+        BufferedReader in = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
+        char[] buf = new char[count];
+        int len = in.read(buf, 0, count);
         return new String(buf, 0, len);
     }
 

@@ -8,8 +8,8 @@ import org.workcraft.plugins.dfs.*;
 import org.workcraft.plugins.dfs.interop.VerilogFormat;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.utils.LogUtils;
 import org.workcraft.types.Pair;
+import org.workcraft.utils.LogUtils;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -47,7 +47,7 @@ public class VerilogSerialiser implements ModelSerialiser {
     public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) {
         if (model instanceof Dfs) {
             PrintWriter writer = new PrintWriter(out);
-            writer.write(Info.getGeneratedByText("// Verilog netlist ", "\n"));
+            writer.println(Info.getGeneratedByText("// Verilog netlist ", ""));
             writeModule(writer, (Dfs) model);
             writer.close();
         } else {
@@ -69,7 +69,7 @@ public class VerilogSerialiser implements ModelSerialiser {
     private void writeModule(PrintWriter out, Dfs dfs) {
         writeHeader(out, dfs);
         writeInstances(out, dfs);
-        out.write(KEYWORD_ENDMODULE + "\n");
+        out.println(KEYWORD_ENDMODULE);
     }
 
     private void writeHeader(PrintWriter out, Dfs dfs) {
@@ -99,28 +99,28 @@ public class VerilogSerialiser implements ModelSerialiser {
                 ports.add(new Pair<>(PREFIX_AO + ref, false));
             }
         }
-        out.write(KEYWORD_MODULE + " " + topName + " (\n");
+        out.println(KEYWORD_MODULE + " " + topName + " (");
         boolean isFirstPort = true;
         for (Pair<String, Boolean> port: ports) {
             if (!isFirstPort) {
-                out.write(",");
+                out.print(",");
             }
-            out.write("\n");
-            out.write("    " + port.getFirst());
+            out.println();
+            out.print("    " + port.getFirst());
             isFirstPort = false;
         }
-        out.write(" );\n");
-        out.write("\n");
+        out.println(" );");
+        out.println();
         for (Pair<String, Boolean> port: ports) {
-            out.write("    ");
+            out.print("    ");
             if (port.getSecond()) {
-                out.write(KEYWORD_OUTPUT);
+                out.print(KEYWORD_OUTPUT);
             } else {
-                out.write(KEYWORD_INPUT);
+                out.print(KEYWORD_INPUT);
             }
-            out.write(" " + port.getFirst() + ";\n");
+            out.println(" " + port.getFirst() + ";");
         }
-        out.write("\n");
+        out.println();
     }
 
     private void writeInstances(PrintWriter out, Dfs dfs) {
@@ -146,7 +146,7 @@ public class VerilogSerialiser implements ModelSerialiser {
         int inCount = preset.isEmpty() ? 1 : preset.size();
         int outCount = postset.isEmpty() ? 1 : postset.size();
         String moduleName = className + SEPARATOR + inCount + SEPARATOR + outCount;
-        out.write("    " + moduleName + " " + instanceName + " (");
+        out.print("    " + moduleName + " " + instanceName + " (");
         boolean isFirstContact = true;
         int inIndex = 0;
         if (preset.isEmpty()) {
@@ -187,14 +187,14 @@ public class VerilogSerialiser implements ModelSerialiser {
             writeContact(out, NAME_AO, PREFIX_WIRE + PREFIX_AO + ref, isFirstContact);
             isFirstContact = false;
         }
-        out.write(");\n");
+        out.println(");");
     }
 
     private void writeContact(PrintWriter out, String contactName, String wireName, boolean isFirstContact) {
         if (!isFirstContact) {
-            out.write(", ");
+            out.print(", ");
         }
-        out.write("." + contactName + "(" + wireName + ")");
+        out.print("." + contactName + "(" + wireName + ")");
     }
 
     private void writeCelementPred(PrintWriter out, Dfs dfs, MathNode node) {
@@ -238,14 +238,14 @@ public class VerilogSerialiser implements ModelSerialiser {
     private void writeCelement(PrintWriter out, String instanceName, ArrayList<String> inWireNames, String outWireName) {
         int inCount = inWireNames.size();
         if (inCount == 1) {
-            out.write("    " + NAME_BUFFER + " " + instanceName + " (");
+            out.print("    " + NAME_BUFFER + " " + instanceName + " (");
             String inWireName = inWireNames.get(0);
             writeContact(out, NAME_IN, inWireName, true);
             writeContact(out, NAME_OUT, outWireName, false);
-            out.write(");\n");
+            out.println(");");
         } else if (inCount > 1) {
             String moduleName = PREFIX_CELEMENT + inCount;
-            out.write("    " + moduleName + " " + instanceName + " (");
+            out.print("    " + moduleName + " " + instanceName + " (");
             boolean isFirstContact = true;
             int inIndex = 0;
             for (String inWireName: inWireNames) {
@@ -254,7 +254,7 @@ public class VerilogSerialiser implements ModelSerialiser {
                 isFirstContact = false;
             }
             writeContact(out, NAME_OUT, outWireName, isFirstContact);
-            out.write(");\n");
+            out.println(");");
         }
     }
 

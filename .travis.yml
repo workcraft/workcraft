@@ -19,20 +19,19 @@ matrix:
       env: TARGET=test
 
 before_install:
-  - if [ $TARGET == test ]; then
-        if [ $TRAVIS_OS_NAME == osx ]; then
+  - if [ $TARGET = test ]; then
+        if [ $TRAVIS_OS_NAME = osx ]; then
             brew update; brew upgrade python; brew install clasp;
         else
             sudo apt-get -qq update; sudo apt-get install -y clasp;
         fi
     fi
-
 install:
   - ./gradlew assemble
 
 script:
   - ./gradlew $TARGET
-  - if [ $TARGET == test ]; then ./integration-tests/run.sh; fi
+  - if [ $TARGET = test ]; then ./integration-tests/run.sh; fi
 
 after_success:
-  - if [ $TARGET == test -a $TRAVIS_JDK_VERSION == openjdk8 ]; then ./gradlew coveralls; fi
+  - if [ $TARGET = test -a $TRAVIS_JDK_VERSION = openjdk8 ]; then ./gradlew coveralls; fi

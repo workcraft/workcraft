@@ -66,7 +66,7 @@ public class CircuitLayoutSettings extends AbstractLayoutSettings {
         });
 
         properties.add(new PropertyDeclaration<CircuitLayoutSettings, Double>(
-                this, "Routing prefered margin to bypass obstacles", Double.class) {
+                this, "Routing preferred margin to bypass obstacles", Double.class) {
             @Override
             public void setter(CircuitLayoutSettings object, Double value) {
                 setMarginObstacle(value);
