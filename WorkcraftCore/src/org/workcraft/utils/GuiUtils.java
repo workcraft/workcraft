@@ -21,8 +21,8 @@ import java.net.URL;
 
 public class GuiUtils {
 
-    private static final int BUTTON_PREFERED_WIDTH = 100;
-    private static final int BUTTON_PREFERED_HEIGHT = 25;
+    private static final int BUTTON_PREFERRED_WIDTH = 100;
+    private static final int BUTTON_PREFERRED_HEIGHT = 25;
 
     public static JPanel createLabeledComponent(JComponent component, String labelText) {
         JPanel result = new JPanel(createBorderLayout());
@@ -203,8 +203,8 @@ public class GuiUtils {
     public static JButton createDialogButton(String text) {
         JButton result = new JButton(text);
         Dimension dimension = result.getPreferredSize();
-        int w = Math.max(dimension.width, BUTTON_PREFERED_WIDTH);
-        int h = Math.max(dimension.height, BUTTON_PREFERED_HEIGHT);
+        int w = Math.max(dimension.width, BUTTON_PREFERRED_WIDTH);
+        int h = Math.max(dimension.height, BUTTON_PREFERRED_HEIGHT);
         result.setPreferredSize(new Dimension(w, h));
         return result;
     }

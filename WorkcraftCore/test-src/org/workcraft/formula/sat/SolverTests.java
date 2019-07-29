@@ -1,14 +1,16 @@
 package org.workcraft.formula.sat;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.workcraft.formula.encoding.Encoding;
 import org.workcraft.plugins.builtin.settings.CommonSatSettings;
 import org.workcraft.plugins.builtin.settings.CommonSatSettings.SatSolver;
+import org.workcraft.utils.DesktopApi;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public abstract class SolverTests {
 
@@ -20,6 +22,11 @@ public abstract class SolverTests {
 
     protected LegacySolver<?> createSolver(int[] levels) {
         return null;
+    }
+
+    @BeforeClass
+    public static void skipOnWindows() {
+        Assume.assumeFalse(DesktopApi.getOs().isWindows());
     }
 
     @BeforeClass

@@ -1,7 +1,6 @@
 package org.workcraft.formula.sat;
 
 import org.junit.BeforeClass;
-import org.workcraft.formula.BinaryIntBooleanFormula;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.encoding.BinaryNumberProvider;
 import org.workcraft.plugins.builtin.settings.CommonSatSettings;
@@ -16,8 +15,8 @@ public class BinarySolverTests extends SolverTests {
 
     @Override
     protected LegacySolver<BooleanFormula> createSolver() {
-        return new LegacySolver<BooleanFormula>(
-                new Optimiser<BinaryIntBooleanFormula>(new BinaryNumberProvider()),
+        return new LegacySolver<>(
+                new Optimiser<>(new BinaryNumberProvider()),
                 new CleverCnfGenerator());
     }
 

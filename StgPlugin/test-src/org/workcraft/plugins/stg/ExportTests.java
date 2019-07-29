@@ -33,29 +33,37 @@ public class ExportTests {
     }
 
     @Test
-    public void testVmeCircuitExport()
-            throws DeserialisationException, IOException, SerialisationException {
+    public void testVmeCircuitExport() throws DeserialisationException, IOException, SerialisationException {
         String gHeader = Info.getGeneratedByText("# STG file ", "\n") +
                 ".model Untitled\n" +
                 ".inputs dsr dsw ldtack\n" +
                 ".outputs d dtack lds\n" +
                 ".graph\n";
+
         String lpnHeader = Info.getGeneratedByText("# LPN file ", "\n") +
                 ".name Untitled\n" +
                 "#@.init_state [000000]\n" +
                 ".inputs dsr dsw ldtack\n" +
                 ".outputs d dtack lds\n" +
-                ".grap";
-        String svgHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                "<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.0//EN'\n" +
-                "          'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>";
+                ".graph\n";
+
+        String svgHeader = String.format(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>%n" +
+                "<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.0//EN'%n" +
+                "          'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>");
+
         String pngHeader =  (char) 0xFFFD + "PNG";
+
         String pdfHeader = "%PDF-1.4";
+
         String epsHeader = "%!PS-Adobe-3.0 EPSF-3.0";
+
         String psHeader = "%!PS-Adobe-3.0";
-        String dotHeader = "digraph work {\n" +
-                "  graph [overlap=false, splines=true, nodesep=1.0, ranksep=1.0, rankdir=LR];\n" +
-                "  node [shape=box, fixedsize=true];\n";
+
+        String dotHeader = String.format(
+                "digraph work {%n" +
+                "  graph [overlap=false, splines=true, nodesep=1.0, ranksep=1.0, rankdir=LR];%n" +
+                "  node [shape=box, fixedsize=true];%n");
 
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
         testCircuitExport(workName, gHeader, lpnHeader, svgHeader, pngHeader, pdfHeader, epsHeader, psHeader, dotHeader);
