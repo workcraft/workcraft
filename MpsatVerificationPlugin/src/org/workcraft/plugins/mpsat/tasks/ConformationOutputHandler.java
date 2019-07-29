@@ -131,7 +131,7 @@ class ConformationOutputHandler extends ReachabilityOutputHandler {
         // If problematic transition found, add it to the trace. Otherwise add suspicious signals to the trace description.
         Solution processedSolution = null;
         if (problematicTransition != null) {
-            String ref = stg.getSignalReference(problematicTransition);
+            String ref = stg.getSignalReference(problematicTransition) + problematicTransition.getDirection();
             LogUtils.logWarning("Output '" + ref + "' becomes unexpectedly enabled");
             trace.add(stg.getNodeReference(problematicTransition));
             String comment = "Unexpected change of output '" + ref + "'";
