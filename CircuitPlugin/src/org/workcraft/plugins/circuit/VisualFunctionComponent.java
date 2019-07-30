@@ -10,10 +10,8 @@ import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
-import org.workcraft.serialisation.NoAutoSerialisation;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
@@ -22,14 +20,14 @@ import org.workcraft.plugins.circuit.renderers.CElementRenderingResult;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.circuit.renderers.GateRenderer;
+import org.workcraft.serialisation.NoAutoSerialisation;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.geom.*;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 @DisplayName("Function Component")
 @Hotkey(KeyEvent.VK_F)
@@ -134,18 +132,6 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
     public Collection<VisualFunctionContact> getVisualFunctionContacts() {
         return Hierarchy.filterNodesByType(getChildren(), VisualFunctionContact.class);
-    }
-
-    public List<VisualFunctionContact> getOrderedVisualFunctionContacts() {
-        List<VisualFunctionContact> result = new LinkedList<>();
-        if (getReferencedComponent() != null) {
-            for (FunctionContact contact: getReferencedComponent().getOrderedFunctionContacts()) {
-                VisualFunctionContact visualContact = getVisualContact(contact);
-                if (visualContact == null) continue;
-                result.add(visualContact);
-            }
-        }
-        return result;
     }
 
     public VisualFunctionContact getVisualContact(Contact contact) {

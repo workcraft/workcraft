@@ -4,7 +4,6 @@
 
 options {
     JDK_VERSION = "1.8";
-    LOOKAHEAD = 1;
     STATIC = false;
     DEBUG_PARSER = true;
     DEBUG_LOOKAHEAD = false;
@@ -218,7 +217,7 @@ List<VerilogPort> parsePorts():
 }
 {
     (
-        LOOKAHEAD(parseCompactPorts())
+        LOOKAHEAD(<INPUT> | <OUTPUT>)
         ports = parseCompactPorts()
     |
         ports = parseComplexPorts()
@@ -502,7 +501,7 @@ List<VerilogConnection> parseConnections():
 }
 {
     (
-        LOOKAHEAD(parseNamedConnections())
+        LOOKAHEAD(".")
         connections = parseNamedConnections()
     |
         connections = parseOrderedConnections()
@@ -518,12 +517,16 @@ List<VerilogConnection> parseNamedConnections():
     List<VerilogConnection> connections = new LinkedList<VerilogConnection>();
 }
 {
+    connection = parseNamedConnection()
+    {
+        connections.add(connection);
+    }
     (
-        connection = parseNamedConnection()
+        "," connection = parseNamedConnection()
         {
             connections.add(connection);
         }
-    )+
+    )*
     {
         return connections;
     }
@@ -536,37 +539,36 @@ VerilogConnection parseNamedConnection():
     Integer netIndex = null;
 }
 {
-    "." nameToken = <NAME> "(" wire = parseWire() ")" [","]
+    "." nameToken = <NAME> "(" wire = parseWire() ")"
     {
-        return new VerilogConnection(nameToken.image, wire.netName, wire.netIndex);
+        if (wire == null) {
+            return new VerilogConnection(nameToken.image, null, null);
+        } else {
+            return new VerilogConnection(nameToken.image, wire.netName, wire.netIndex);
+        }
     }
 }
 
 List<VerilogConnection> parseOrderedConnections():
 {
-    List<VerilogConnection> connections;
+    VerilogConnection connection;
+    List<VerilogConnection> connections = new LinkedList<VerilogConnection>();
 }
 {
-    connections = parseWires()
+    connection = parseWire()
     {
-        return connections;
+        if (connection != null) {
+            connections.add(connection);
+        }
     }
-}
-
-List<VerilogConnection> parseWires():
-{
-    VerilogConnection wire;
-    List<VerilogConnection> wires = new LinkedList<VerilogConnection>();
-}
-{
     (
-        wire = parseWire() [","]
+        "," connection = parseWire()
         {
-            wires.add(wire);
+            connections.add(connection);
         }
     )*
     {
-        return wires;
+        return connections;
     }
 }
 
@@ -574,11 +576,17 @@ VerilogConnection parseWire():
 {
     Token nameToken;
     Integer index = null;
+    VerilogConnection connection = null;
 }
 {
-    nameToken = <NAME> [ index = parseIndex()]
+    [
+        nameToken = <NAME> [ index = parseIndex()]
+        {
+            connection = new VerilogConnection(null, nameToken.image, index);
+        }
+    ]
     {
-        return new VerilogConnection(null, nameToken.image, index);
+        return connection;
     }
 }
 

@@ -27,6 +27,7 @@ import org.workcraft.plugins.circuit.genlib.Library;
 import org.workcraft.plugins.circuit.jj.expression.ExpressionParser;
 import org.workcraft.plugins.circuit.jj.verilog.VerilogParser;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.plugins.circuit.utils.GateUtils;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.plugins.circuit.utils.VerilogUtils;
 import org.workcraft.plugins.circuit.verilog.*;
@@ -607,14 +608,24 @@ public class VerilogImporter implements Importer {
 
         String msg = "Processing instance '" + verilogInstance.name + "' in module '" + circuit.getTitle() + "': ";
         FunctionComponent component = GenlibUtils.instantiateGate(gate, verilogInstance.name, circuit);
-        int index = 0;
+        List<FunctionContact> orderedContacts = getGateOrderedContacts(component);
+        int index = -1;
         for (VerilogConnection verilogConnection : verilogInstance.connections) {
+            index++;
+            if (verilogConnection == null) {
+                continue;
+            }
+
             String wireName = getWireName(verilogConnection);
+            if (wireName == null) {
+                continue;
+            }
             Wire wire = getOrCreateWire(wireName, wires);
-            String pinName = gate.isPrimitive() ? getPrimitiveGatePinName(index++)
+
+            String pinName = gate.isPrimitive() ? getPrimitiveGatePinName(index)
                     : SubstitutionUtils.getContactSubstitutionName(verilogConnection.name, substitutionRule, msg);
 
-            Node node = circuit.getNodeByReference(component, pinName);
+            Node node = pinName == null ? orderedContacts.get(index) : circuit.getNodeByReference(component, pinName);
             if (node instanceof FunctionContact) {
                 FunctionContact contact = (FunctionContact) node;
                 if (contact.isInput()) {
@@ -625,6 +636,16 @@ public class VerilogImporter implements Importer {
             }
         }
         return component;
+    }
+
+    private List<FunctionContact> getGateOrderedContacts(FunctionComponent component) {
+        List<FunctionContact> result = new ArrayList<>();
+        FunctionContact gateOutput = component.getGateOutput();
+        if (gateOutput != null) {
+            result.add(gateOutput);
+        }
+        result.addAll(GateUtils.getOrderedInputs(component));
+        return result;
     }
 
     private String getWireName(VerilogConnection verilogConnection) {
@@ -654,6 +675,9 @@ public class VerilogImporter implements Importer {
         }
         HashMap<String, VerilogPort> instancePorts = getModulePortMap(verilogModule);
         for (VerilogConnection verilogConnection : verilogInstance.connections) {
+            if (verilogConnection == null) {
+                continue;
+            }
             VerilogPort verilogPort = instancePorts.get(verilogConnection.name);
             Wire wire = getOrCreateWire(verilogConnection.netName, wires);
             FunctionContact contact = new FunctionContact();

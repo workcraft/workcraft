@@ -1,24 +1,20 @@
 package org.workcraft.plugins.circuit;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Node;
 import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
 import org.workcraft.formula.utils.BooleanUtils;
-import org.workcraft.formula.utils.LiteralsExtractor;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.utils.Hierarchy;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 @IdentifierPrefix("g")
 @VisualClass(org.workcraft.plugins.circuit.VisualFunctionComponent.class)
@@ -155,21 +151,6 @@ public class FunctionComponent extends CircuitComponent {
     public boolean isSequentialGate() {
         FunctionContact gateOutput = getGateOutput();
         return (gateOutput != null) && gateOutput.isSequential();
-    }
-
-    public List<FunctionContact> getOrderedFunctionContacts() {
-        List<FunctionContact> result = new LinkedList<>();
-        FunctionContact outputContact = getGateOutput();
-        if (outputContact != null) {
-            BooleanFormula setFunction = outputContact.getSetFunction();
-            List<BooleanVariable> orderedLiterals = setFunction.accept(new LiteralsExtractor());
-            for (BooleanVariable literal: orderedLiterals) {
-                if (!(literal instanceof FunctionContact)) continue;
-                FunctionContact contact = (FunctionContact) literal;
-                result.add(contact);
-            }
-        }
-        return result;
     }
 
 }
