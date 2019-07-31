@@ -70,6 +70,13 @@ public class ImportExportTests {
         testImportExport(workName, verilogName);
     }
 
+    @Test
+    public void testSkippedConnectionsImportExport() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "skipped_connections.circuit.work");
+        String verilogName = PackageUtils.getPackagePath(getClass(), "skipped_connections.circuit.v");
+        testImportExport(workName, verilogName);
+    }
+
     private void testImportExport(String workName, String verilogName) throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();

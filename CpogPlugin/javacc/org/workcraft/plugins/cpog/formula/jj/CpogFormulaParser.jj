@@ -3,9 +3,9 @@
 */
 
 options {
-  JDK_VERSION = "1.8";
-  STATIC = false;
-  UNICODE_INPUT = true;
+    JDK_VERSION = "1.8";
+    STATIC = false;
+    UNICODE_INPUT = true;
 }
 PARSER_BEGIN(CpogFormulaParser)
 package org.workcraft.plugins.cpog.formula.jj;
@@ -54,14 +54,16 @@ public class CpogFormulaParser {
 
     CpogFormula var(String name) throws ParseException {
         CpogFormula result = vars.eval(name);
-        if (result == null) {            throw new ParseException("Undefined variable: '" + name + "'");
+        if (result == null) {
+            throw new ParseException("Undefined variable: '" + name + "'");
         }
         return result;
     }
 
     CpogFormula var(String name, String boolExpression) throws ParseException {
         CpogFormula result = vars.eval(name, boolExpression);
-        if (result == null) {            throw new ParseException("Undefined variable: '" + name + "'");
+        if (result == null) {
+            throw new ParseException("Undefined variable: '" + name + "'");
         }
         return result;
     }

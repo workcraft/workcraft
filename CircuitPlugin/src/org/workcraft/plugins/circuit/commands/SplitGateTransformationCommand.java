@@ -221,11 +221,12 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
 
     private List<NodeConnectionPair> getComponentDriverNodes(VisualCircuit circuit, VisualFunctionComponent component) {
         List<NodeConnectionPair> result = new LinkedList<>();
-        for (VisualContact inputContact : component.getOrderedVisualFunctionContacts()) {
+        for (VisualContact inputContact : GateUtils.getOrderedInputs(component)) {
             VisualNode driver = null;
             VisualConnection visualConnection = null;
             for (VisualConnection connection : circuit.getConnections(inputContact)) {
                 driver = connection.getFirst();
+                visualConnection = connection;
                 break;
             }
             result.add(new NodeConnectionPair(driver, visualConnection));

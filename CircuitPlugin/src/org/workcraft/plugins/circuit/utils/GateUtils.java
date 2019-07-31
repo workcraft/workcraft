@@ -299,4 +299,33 @@ public class GateUtils {
         return literals;
     }
 
+    public static List<VisualFunctionContact> getOrderedInputs(VisualFunctionComponent component) {
+        List<VisualFunctionContact> result = new LinkedList<>();
+        if (component.getReferencedComponent() != null) {
+            for (FunctionContact contact: getOrderedInputs(component.getReferencedComponent())) {
+                VisualFunctionContact visualContact = component.getVisualContact(contact);
+                if (visualContact != null) {
+                    result.add(visualContact);
+                }
+            }
+        }
+        return result;
+    }
+
+    public static List<FunctionContact> getOrderedInputs(FunctionComponent component) {
+        List<FunctionContact> result = new LinkedList<>();
+        FunctionContact outputContact = component.getGateOutput();
+        if (outputContact != null) {
+            BooleanFormula setFunction = outputContact.getSetFunction();
+            List<BooleanVariable> orderedLiterals = setFunction.accept(new LiteralsExtractor());
+            for (BooleanVariable literal : orderedLiterals) {
+                if (literal instanceof FunctionContact) {
+                    FunctionContact contact = (FunctionContact) literal;
+                    result.add(contact);
+                }
+            }
+        }
+        return result;
+    }
+
 }

@@ -3,9 +3,9 @@
  */
 
 options {
-  JDK_VERSION = "1.8";
-  STATIC = false;
-  UNICODE_INPUT = true;
+    JDK_VERSION = "1.8";
+    STATIC = false;
+    UNICODE_INPUT = true;
 }
 PARSER_BEGIN(BooleanFormulaParser)
 package org.workcraft.formula.jj;

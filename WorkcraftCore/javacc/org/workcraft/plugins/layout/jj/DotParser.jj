@@ -3,9 +3,8 @@
  */
 
 options {
-  JDK_VERSION = "1.8";
-  LOOKAHEAD = 1;
-  STATIC = false;
+    JDK_VERSION = "1.8";
+    STATIC = false;
 }
 
 PARSER_BEGIN(DotParser)
