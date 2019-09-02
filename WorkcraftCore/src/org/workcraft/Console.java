@@ -4,11 +4,11 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.WrappedException;
 import org.workcraft.exceptions.OperationCancelledException;
-import org.workcraft.utils.DesktopApi;
-import org.workcraft.workspace.FileFilters;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.ResourceUtils;
+import org.workcraft.workspace.FileFilters;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -19,7 +19,12 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 public class Console {
+
     static {
+        // Enable font anti-aliasing
+        System.setProperty("awt.useSystemAAFontSettings","on");
+        System.setProperty("swing.aatext", "true");
+
         //Allows menu bar of OS X to be used instead of being in the Workcraft main window.
         if (DesktopApi.getOs().isMac()) {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
