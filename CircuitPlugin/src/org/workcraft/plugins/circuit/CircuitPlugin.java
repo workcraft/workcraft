@@ -61,6 +61,8 @@ public class CircuitPlugin implements Plugin {
                 "transform the given Circuit 'work' by toggling inversion of selected contacts and outputs of selected components");
         ScriptableCommandUtils.register(ToggleZeroDelayTransformationCommand.class, "transformCircuitToggleZeroDelay",
                 "transform the given Circuit 'work' by toggling zero delay of selected inverters and buffers");
+        ScriptableCommandUtils.register(OptimiseZeroDelayTransformationCommand.class, "transformCircuitOptimiseZeroDelay",
+                "transform the given Circuit 'work' by discarding redundant zero delay attribute for selected (or all) inverters and buffers");
         ScriptableCommandUtils.register(SplitGateTransformationCommand.class, "transformCircuitSplitGate",
                 "transform the given Circuit 'work' by splitting selected (or all) complex gates into simple gates");
         ScriptableCommandUtils.register(PropagateInversionTransformationCommand.class, "transformCircuitPropagateInversion",
