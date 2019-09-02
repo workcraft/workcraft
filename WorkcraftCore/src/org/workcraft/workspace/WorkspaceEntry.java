@@ -25,8 +25,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.zip.ZipEntry;
@@ -237,7 +236,7 @@ public class WorkspaceEntry implements ObservableState {
 
         if (CommonDebugSettings.getCopyModelOnChange()) {
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            String str = unzipInputStream(new ZipInputStream(capturedMemento.getStream()));
+            String str = unzipInputStream(new ZipInputStream(capturedMemento.getStream(), StandardCharsets.UTF_8));
             clipboard.setContents(new StringSelection(str), null);
         }
     }
@@ -324,8 +323,7 @@ public class WorkspaceEntry implements ObservableState {
             ZipEntry ze;
             while ((ze = zis.getNextEntry()) != null) {
                 StringBuilder isb = new StringBuilder();
-                CharsetDecoder utf8Decoder = Charset.forName("UTF-8").newDecoder();
-                BufferedReader br = new BufferedReader(new InputStreamReader(zis, utf8Decoder));
+                BufferedReader br = new BufferedReader(new InputStreamReader(zis, StandardCharsets.UTF_8));
                 String line = "=== " + ze.getName() + " ===";
                 while (line != null) {
                     isb.append(line);
@@ -343,7 +341,7 @@ public class WorkspaceEntry implements ObservableState {
 
     public String getClipboardAsString() {
         final Framework framework = Framework.getInstance();
-        return unzipInputStream(new ZipInputStream(framework.clipboard.getStream()));
+        return unzipInputStream(new ZipInputStream(framework.clipboard.getStream(), StandardCharsets.UTF_8));
     }
 
     public void copy() {

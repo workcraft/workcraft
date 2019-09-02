@@ -16,8 +16,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -78,8 +77,7 @@ public class XmlUtils {
             transformer.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "2");
 
             DOMSource source = new DOMSource(doc);
-            CharsetEncoder utf8Encoder = Charset.forName("UTF-8").newEncoder();
-            StreamResult result = new StreamResult(new OutputStreamWriter(os, utf8Encoder));
+            StreamResult result = new StreamResult(new OutputStreamWriter(os, StandardCharsets.UTF_8));
             transformer.transform(source, result);
         } catch (TransformerException e) {
             System.err.println(e.getMessage());

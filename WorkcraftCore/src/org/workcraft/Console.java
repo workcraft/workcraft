@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.LinkedList;
 
@@ -22,7 +23,7 @@ public class Console {
 
     static {
         // Enable font anti-aliasing
-        System.setProperty("awt.useSystemAAFontSettings","on");
+        System.setProperty("awt.useSystemAAFontSettings", "on");
         System.setProperty("swing.aatext", "true");
 
         //Allows menu bar of OS X to be used instead of being in the Workcraft main window.
@@ -126,7 +127,7 @@ public class Console {
             }
         }
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
         while (true) {
             if (framework.shutdownRequested()) {
                 try {
@@ -152,7 +153,7 @@ public class Console {
             } else {
                 System.out.print("js>");
                 try {
-                    String line = in.readLine();
+                    String line = reader.readLine();
                     Object result = framework.execJavaScript(line);
                     Context.enter();
                     String out = Context.toString(result);

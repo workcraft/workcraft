@@ -10,6 +10,7 @@ import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -191,10 +192,9 @@ public class CompatibilityManager {
 
     private Version extractVersion(InputStream is) throws IOException {
         Version result = null;
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader br = new BufferedReader(isr);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
         String line = null;
-        while ((result == null) && (line = br.readLine()) != null) {
+        while ((result == null) && (line = reader.readLine()) != null) {
             result = extractVersion(line);
         }
         return result;
@@ -221,7 +221,7 @@ public class CompatibilityManager {
     public ByteArrayInputStream process(File file) throws DeserialisationException, OperationCancelledException {
         ByteArrayInputStream result = null;
         try {
-            ZipFile zipFile = new ZipFile(file);
+            ZipFile zipFile = new ZipFile(file, StandardCharsets.UTF_8);
             Version workVersion = null;
             ZipEntry metaZipEntry = zipFile.getEntry(Framework.META_WORK_ENTRY);
             if (metaZipEntry != null) {
@@ -247,10 +247,10 @@ public class CompatibilityManager {
 
     public ByteArrayInputStream process(InputStream is, Version version) {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
-        ZipInputStream zis = new ZipInputStream(is);
-        ZipOutputStream zos = new ZipOutputStream(result);
+        ZipInputStream zis = new ZipInputStream(is, StandardCharsets.UTF_8);
+        ZipOutputStream zos = new ZipOutputStream(result, StandardCharsets.UTF_8);
         ZipEntry zei = null;
-        BufferedReader br = new BufferedReader(new InputStreamReader(zis));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(zis, StandardCharsets.UTF_8));
         try {
             while ((zei = zis.getNextEntry()) != null) {
                 ZipEntry zeo = new ZipEntry(zei.getName());
@@ -259,13 +259,13 @@ public class CompatibilityManager {
                 String modelName = null;
                 String className = null;
                 String line = null;
-                while ((line = br.readLine()) != null) {
+                while ((line = reader.readLine()) != null) {
                     if (isMetaEntry) {
-                        byte[] data = replaceMetaData(version, line).getBytes();
+                        byte[] data = replaceMetaData(version, line).getBytes(StandardCharsets.UTF_8);
                         zos.write(data, 0, data.length);
                     } else if (modelName == null) {
                         String processedLine = replaceModelName(version, line);
-                        byte[] data = processedLine.getBytes();
+                        byte[] data = processedLine.getBytes(StandardCharsets.UTF_8);
                         zos.write(data, 0, data.length);
                         modelName = extractModelName(processedLine);
                     } else {
@@ -273,7 +273,7 @@ public class CompatibilityManager {
                         if (s != null) {
                             className = s;
                         }
-                        byte[] data = replaceEntry(version, modelName, className, line).getBytes();
+                        byte[] data = replaceEntry(version, modelName, className, line).getBytes(StandardCharsets.UTF_8);
                         zos.write(data, 0, data.length);
                     }
                 }

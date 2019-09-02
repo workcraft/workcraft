@@ -183,26 +183,18 @@ public class FileUtils {
     }
 
     /**
-     * Reads first count characters from the file using the default charset.
+     * Reads first count characters from the file using UTF8 charset.
      */
-    public static String readHeader(File file, int count) throws IOException {
+    public static String readHeaderUtf8(File file, int count) throws IOException {
         InputStream stream = new FileInputStream(file);
         try {
-            return readHeader(stream, count);
+            BufferedReader in = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
+            char[] buf = new char[count];
+            int len = in.read(buf, 0, count);
+            return new String(buf, 0, len);
         } finally {
             stream.close();
         }
-    }
-
-    /**
-     * Reads first count characters from a stream using the default charset.
-     * Does not close the stream.
-     */
-    public static String readHeader(InputStream stream, int count) throws IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
-        char[] buf = new char[count];
-        int len = in.read(buf, 0, count);
-        return new String(buf, 0, len);
     }
 
     public static void moveFile(File from, File to) throws IOException {

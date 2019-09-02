@@ -1,13 +1,5 @@
 package org.workcraft.plugins.builtin.interop;
 
-import java.awt.Dimension;
-import java.awt.geom.Rectangle2D;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.w3c.dom.Document;
 import org.workcraft.dom.Model;
@@ -17,6 +9,14 @@ import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.interop.Exporter;
 import org.workcraft.utils.XmlUtils;
+
+import javax.xml.parsers.ParserConfigurationException;
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 
 public class SvgExporter implements Exporter {
 
@@ -40,7 +40,7 @@ public class SvgExporter implements Exporter {
             int canvasHeight = (int) (bounds.getHeight() * SCALE_FACTOR);
             g2d.setSVGCanvasSize(new Dimension(canvasWidth, canvasHeight));
             visualModel.draw(g2d, Decorator.Empty.INSTANCE);
-            g2d.stream(new OutputStreamWriter(out));
+            g2d.stream(new OutputStreamWriter(out, StandardCharsets.UTF_8));
         } catch (ParserConfigurationException e) {
             throw new SerialisationException(e);
         }

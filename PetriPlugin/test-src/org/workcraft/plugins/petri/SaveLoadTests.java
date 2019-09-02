@@ -10,6 +10,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
@@ -36,7 +37,7 @@ public class SaveLoadTests {
 
     InputStream stringToStream(String string) throws IOException {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        OutputStreamWriter writer = new OutputStreamWriter(bytes);
+        OutputStreamWriter writer = new OutputStreamWriter(bytes, StandardCharsets.UTF_8);
         writer.write(string);
         writer.close();
 
