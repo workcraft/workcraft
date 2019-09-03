@@ -1,11 +1,5 @@
 package org.workcraft.plugins.stg;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.dom.Connection;
@@ -19,6 +13,9 @@ import org.workcraft.utils.ImportUtils;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.ModelEntry;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+
 public class ImportTests {
 
     @Test
@@ -26,7 +23,7 @@ public class ImportTests {
         File tempFile = File.createTempFile("test-", ".g");
         tempFile.deleteOnExit();
         FileOutputStream fileStream = new FileOutputStream(tempFile);
-        OutputStreamWriter writer = new OutputStreamWriter(fileStream);
+        OutputStreamWriter writer = new OutputStreamWriter(fileStream, StandardCharsets.UTF_8);
         writer.write(" \n");
         writer.write(" \n");
         writer.write(".outputs  x\t y   z\n");

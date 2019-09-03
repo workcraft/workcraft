@@ -82,35 +82,35 @@ public class ExportTests {
 
         File gFile = new File(directory, "export.g");
         framework.exportModel(me, gFile, StgFormat.getInstance());
-        Assert.assertEquals(gHeader, FileUtils.readHeader(gFile, gHeader.length()));
+        Assert.assertEquals(gHeader, FileUtils.readHeaderUtf8(gFile, gHeader.length()));
 
         File lpnFile = new File(directory, "export.lpn");
         framework.exportModel(me, lpnFile, LpnFormat.getInstance());
-        Assert.assertEquals(lpnHeader, FileUtils.readHeader(lpnFile, lpnHeader.length()));
+        Assert.assertEquals(lpnHeader, FileUtils.readHeaderUtf8(lpnFile, lpnHeader.length()));
 
         File svgFile = new File(directory, "export.svg");
         framework.exportModel(me, svgFile, SvgFormat.getInstance());
-        Assert.assertEquals(svgHeader, FileUtils.readHeader(svgFile, svgHeader.length()));
+        Assert.assertEquals(svgHeader, FileUtils.readHeaderUtf8(svgFile, svgHeader.length()));
 
         File pngFile = new File(directory, "export.png");
         framework.exportModel(me, pngFile, PngFormat.getInstance());
-        Assert.assertEquals(pngHeader, FileUtils.readHeader(pngFile, pngHeader.length()));
+        Assert.assertEquals(pngHeader, FileUtils.readHeaderUtf8(pngFile, pngHeader.length()));
 
         File pdfFile = new File(directory, "export.pdf");
         framework.exportModel(me, pdfFile, PdfFormat.getInstance());
-        Assert.assertEquals(pdfHeader, FileUtils.readHeader(pdfFile, pdfHeader.length()));
+        Assert.assertEquals(pdfHeader, FileUtils.readHeaderUtf8(pdfFile, pdfHeader.length()));
 
         File epsFile = new File(directory, "export.eps");
         framework.exportModel(me, epsFile, EpsFormat.getInstance());
-        Assert.assertEquals(epsHeader, FileUtils.readHeader(epsFile, epsHeader.length()));
+        Assert.assertEquals(epsHeader, FileUtils.readHeaderUtf8(epsFile, epsHeader.length()));
 
         File psFile = new File(directory, "export.ps");
         framework.exportModel(me, psFile, PsFormat.getInstance());
-        Assert.assertEquals(psHeader, FileUtils.readHeader(psFile, psHeader.length()));
+        Assert.assertEquals(psHeader, FileUtils.readHeaderUtf8(psFile, psHeader.length()));
 
         File dotFile = new File(directory, "export.dot");
         framework.exportModel(me, dotFile, DotFormat.getInstance());
-        Assert.assertEquals(dotHeader, FileUtils.readHeader(dotFile, dotHeader.length()));
+        Assert.assertEquals(dotHeader, FileUtils.readHeaderUtf8(dotFile, dotHeader.length()));
 
         framework.closeWork(we);
         FileUtils.deleteOnExitRecursively(directory);
