@@ -22,8 +22,6 @@ public class EncodingSerialiser implements CustomXMLSerialiser<XbmState> {
 
     @Override
     public void serialise(Element element, XbmState object, ReferenceProducer internalReferences, ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser) throws SerialisationException {
-
-
         int counter = 0;
         for (Map.Entry<Signal, SignalState> entry: object.getEncoding().entrySet()) {
             element.setAttribute(CommonXbmSerialistionUtil.ENCODING_SIGNAL + counter, internalReferences.getReference(entry.getKey()));

@@ -10,8 +10,7 @@ import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.xbm.*;
 import org.workcraft.utils.Hierarchy;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class XbmToPetriConverter {
 
@@ -20,6 +19,7 @@ public class XbmToPetriConverter {
 
     private final Map<VisualXbmState, VisualPlace> stateToPlaceMap;
     private final Map<VisualBurstEvent, VisualTransition> eventToTransitionMap;
+    private final Map<Signal, ElementaryCycle> conditionalToElementaryMap;
     private final Map<String, String> refToBurstEventLabelMap;
 
     public XbmToPetriConverter(VisualXbm srcModel, VisualPetri dstModel) {
@@ -27,6 +27,7 @@ public class XbmToPetriConverter {
         this.dstModel = dstModel;
         stateToPlaceMap = convertStates();
         eventToTransitionMap = convertEvents();
+        conditionalToElementaryMap = convertConditionals();
         refToBurstEventLabelMap = cacheLabels();
         try {
             connectEvents();
@@ -64,7 +65,7 @@ public class XbmToPetriConverter {
     private Map<VisualBurstEvent, VisualTransition> convertEvents() {
         Map<VisualBurstEvent, VisualTransition> result = new HashMap<>();
         HierarchyReferenceManager refManager = dstModel.getPetriNet().getReferenceManager();
-        for (VisualBurstEvent event : Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualBurstEvent.class)) {
+        for (VisualBurstEvent event: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualBurstEvent.class)) {
             Burst burst = event.getReferencedBurstEvent().getBurst();
             String symbolName = burst.getAsString();
             String name = refManager.getName(event);
@@ -76,6 +77,14 @@ public class XbmToPetriConverter {
             }
             transition.setLabelColor(event.getLabelColor());
             result.put(event, transition);
+        }
+        return result;
+    }
+
+    private Map<Signal, ElementaryCycle> convertConditionals() {
+        Map<Signal, ElementaryCycle> result = new HashMap<>();
+        for (Signal signal: srcModel.getMathModel().getSignals(Signal.Type.CONDITIONAL)) {
+            result.put(signal, new ElementaryCycle(dstModel, signal));
         }
         return result;
     }
@@ -98,11 +107,24 @@ public class XbmToPetriConverter {
                         dstModel.connect(transition, outPlace);
                     }
                 }
+                if (event.getReferencedBurstEvent().hasConditional()) { //Connects the elementary cycle appropriate to the burst transition
+                    for (Map.Entry<String, Boolean> condition: event.getReferencedBurstEvent().getConditionalMapping().entrySet()) {
+                        VisualPlace readPlace;
+                        ElementaryCycle elemCycle = getRelatedElementaryCycle((Signal) srcModel.getMathModel().getNodeByReference(condition.getKey()));
+                        if (condition.getValue()) {
+                            readPlace = elemCycle.getHigh();
+                        }
+                        else {
+                            readPlace = elemCycle.getLow();
+                        }
+                        dstModel.connectUndirected(readPlace, transition);
+                    }
+                }
             }
         }
     }
 
-    public VisualFsm getSrcModel() {
+    public VisualXbm getSrcModel() {
         return srcModel;
     }
 
@@ -134,6 +156,10 @@ public class XbmToPetriConverter {
             }
         }
         return null;
+    }
+
+    public ElementaryCycle getRelatedElementaryCycle(Signal conditional) {
+        return conditionalToElementaryMap.get(conditional);
     }
 
     public boolean isRelated(Node highLevelNode, Node node) {
