@@ -4,14 +4,15 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualState;
-import org.workcraft.utils.Hierarchy;
 
-import java.awt.*;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
 
+//TODO Possibly make it reference two separate colour schemes and add them as separate visual nodes?
+//TODO or create two separate classes of input and output bursts and combine them
 public class VisualBurstEvent extends VisualEvent {
+
+//    private final InputBurst inputBurst;
+//    private final OutputBurst outputBurst;
 
     public VisualBurstEvent() {
         this(null, null, null);
@@ -23,6 +24,8 @@ public class VisualBurstEvent extends VisualEvent {
 
     public VisualBurstEvent(BurstEvent mathConnection, VisualState first, VisualState second) {
         super(mathConnection, first, second);
+//        inputBurst = new InputBurst(mathConnection.getBurst());
+//        outputBurst = new OutputBurst(mathConnection.getBurst());
     }
 
     public BurstEvent getReferencedBurstEvent() {
@@ -36,6 +39,14 @@ public class VisualBurstEvent extends VisualEvent {
     private Set<Signal> getReferencedSignals() {
         return getReferencedBurst().getSignals();
     }
+
+//    public InputBurst getInputBurst() {
+//        return inputBurst;
+//    }
+//
+//    public OutputBurst getOutputBurst() {
+//        return outputBurst;
+//    }
 
     @Override
     public String getLabel(DrawRequest r) {
@@ -51,3 +62,85 @@ public class VisualBurstEvent extends VisualEvent {
         }
     }
 }
+//
+//class InputBurst extends VisualEvent {
+//
+//    private final Set<Signal> signals = new LinkedHashSet<>();
+//    private final Burst burst;
+//
+//    public InputBurst(Burst burst) {
+//        this.burst = burst;
+//    }
+//
+//    public void add(Signal signal) {
+//        if (signal.getType() == Signal.Type.INPUT) {
+//            signals.add(signal);
+//        }
+//    }
+//
+//    public void remove(Signal signal) {
+//        if (signal.getType() == Signal.Type.INPUT && signals.contains(signal)) {
+//            signals.remove(signal);
+//        }
+//    }
+//
+//    public boolean contains(Signal signal) {
+//        return signals.contains(signal);
+//    }
+//
+//    @Override
+//    public String getLabel(DrawRequest r) {
+//        String result = "";
+//        for (Signal signal: signals) {
+//            if (!result.isEmpty()) result += ", ";
+//            result += signal.getName() + burst.getDirection().get(signal);
+//        }
+//        return result;
+//    }
+//
+//    @Override
+//    public Color getLabelColor() {
+//        return CommonSignalSettings.getInputColor();
+//    }
+//}
+//
+//class OutputBurst extends VisualEvent {
+//
+//    private final Set<Signal> signals = new LinkedHashSet<>();
+//    private final Burst burst;
+//
+//    public OutputBurst(Burst burst) {
+//        this.burst = burst;
+//    }
+//
+//    public void add(Signal signal) {
+//        if (signal.getType() == Signal.Type.INPUT) {
+//            signals.add(signal);
+//        }
+//    }
+//
+//    public void remove(Signal signal) {
+//        if (signal.getType() == Signal.Type.INPUT && signals.contains(signal)) {
+//            signals.remove(signal);
+//        }
+//    }
+//
+//    public boolean contains(Signal signal) {
+//        return signals.contains(signal);
+//    }
+//
+//    @Override
+//    public String getLabel(DrawRequest r) {
+//        String result = "";
+//        for (Signal signal: signals) {
+//            if (!result.isEmpty()) result += ", ";
+//            result += signal.getName() + burst.getDirection().get(signal);
+//        }
+//        return result;
+//    }
+//
+//    @Override
+//    public Color getLabelColor() {
+//        return CommonSignalSettings.getOutputColor();
+//    }
+//}

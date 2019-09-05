@@ -1,8 +1,6 @@
 package org.workcraft.plugins.xbm.properties;
 
-import org.workcraft.annotations.Annotations;
 import org.workcraft.dom.Node;
-import org.workcraft.gui.properties.ModelPropertyUtils;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.xbm.Signal;
 import org.workcraft.plugins.xbm.VisualXbm;

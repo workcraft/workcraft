@@ -2,14 +2,15 @@ package org.workcraft.plugins.xbm.serialisation;
 
 import org.w3c.dom.Element;
 import org.workcraft.exceptions.SerialisationException;
-import org.workcraft.plugins.xbm.*;
+import org.workcraft.plugins.xbm.Burst;
+import org.workcraft.plugins.xbm.BurstEvent;
+import org.workcraft.plugins.xbm.Signal;
 import org.workcraft.plugins.xbm.utils.CommonXbmSerialistionUtil;
 import org.workcraft.serialisation.CustomXMLSerialiser;
 import org.workcraft.serialisation.NodeSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 
 import java.util.Map;
-
 public class BurstEventSerialiser implements CustomXMLSerialiser<BurstEvent> {
 
     @Override

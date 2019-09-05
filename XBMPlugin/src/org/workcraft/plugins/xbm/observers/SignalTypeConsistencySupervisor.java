@@ -1,10 +1,8 @@
 package org.workcraft.plugins.xbm.observers;
 
-import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateSupervisor;
-import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.xbm.*;
 
 import java.util.Collection;
@@ -24,21 +22,23 @@ public class SignalTypeConsistencySupervisor extends StateSupervisor {
             final String propertyName = pce.getPropertyName();
             if (propertyName.equals(Signal.PROPERTY_TYPE)) {
                 final Signal s = (Signal) e.getSender();
-                final Collection<State> states = xbm.getStates();
+                final Collection<XbmState> states = xbm.getXbmStates();
                 final Collection<BurstEvent> burstEvents = xbm.getBurstEvents();
 
-                for (State st: states) {
-                    if (st instanceof XbmState) {
-                        XbmState state = (XbmState) st;
-                        findAndSetTypeForSignal(s, state.getSignals());
-                        if (s.getType() == Signal.Type.DUMMY || s.getType() == Signal.Type.CONDITIONAL) {
-                            state.addOrChangeSignalValue(s, SignalState.LOW);
-                        }
+                for (XbmState state: states) {
+                    if (state.getEncoding().get(s) == null) {
+                        state.addOrChangeSignalValue(s, SignalState.LOW);
                     }
+                    state.sendNotification(new PropertyChangedEvent(state, XbmState.PROPERTY_ENCODING));
                 }
                 for (BurstEvent event: burstEvents) {
                     Burst b = event.getBurst();
                     findAndSetTypeForSignal(s, b.getSignals());
+                    if (s.getType() != Signal.Type.CONDITIONAL && event.hasConditional()) {
+                        if (event.getConditionalMapping().keySet().contains(s.getName())) {
+                            event.getConditionalMapping().remove(s.getName());
+                        }
+                    }
                 }
             }
         }

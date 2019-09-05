@@ -1,19 +1,12 @@
 package org.workcraft.plugins.xbm.serialisation;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.Node;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.observation.NodesAddedEvent;
-import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.xbm.Signal;
 import org.workcraft.plugins.xbm.SignalState;
-import org.workcraft.plugins.xbm.Xbm;
 import org.workcraft.plugins.xbm.XbmState;
 import org.workcraft.plugins.xbm.utils.CommonXbmSerialistionUtil;
 import org.workcraft.serialisation.*;
-
-import java.util.Collection;
-import java.util.HashSet;
 
 public class EncodingDeserialiser implements CustomXMLDeserialiser<XbmState> {
 

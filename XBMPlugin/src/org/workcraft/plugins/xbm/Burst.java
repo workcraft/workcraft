@@ -4,7 +4,6 @@ import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.plugins.fsm.Symbol;
 import org.workcraft.plugins.fsm.VisualEvent;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.Set;

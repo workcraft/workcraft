@@ -2,7 +2,6 @@ package org.workcraft.plugins.xbm.serialisation;
 
 import org.w3c.dom.Element;
 import org.workcraft.exceptions.SerialisationException;
-import org.workcraft.plugins.layout.jj.DotParser;
 import org.workcraft.plugins.xbm.Signal;
 import org.workcraft.plugins.xbm.SignalState;
 import org.workcraft.plugins.xbm.XbmState;

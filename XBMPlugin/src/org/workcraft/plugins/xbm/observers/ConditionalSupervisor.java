@@ -5,15 +5,12 @@ import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateSupervisor;
-import org.workcraft.plugins.xbm.Burst;
 import org.workcraft.plugins.xbm.BurstEvent;
 import org.workcraft.plugins.xbm.Signal;
 import org.workcraft.plugins.xbm.Xbm;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 public class ConditionalSupervisor extends StateSupervisor {
 

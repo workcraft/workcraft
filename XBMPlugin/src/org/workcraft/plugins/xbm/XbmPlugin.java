@@ -2,13 +2,15 @@ package org.workcraft.plugins.xbm;
 
 import org.workcraft.Framework;
 import org.workcraft.plugins.Plugin;
-import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.xbm.commands.DistinguishabilityConstraintVerification;
 import org.workcraft.plugins.xbm.commands.MaximalSetPropertyVerification;
 import org.workcraft.plugins.xbm.commands.NonEmptyInputBurstsVerification;
 import org.workcraft.plugins.xbm.commands.UniqueStateEncodingVerification;
-import org.workcraft.plugins.xbm.serialisation.*;
+import org.workcraft.plugins.xbm.serialisation.BurstEventDeserialiser;
+import org.workcraft.plugins.xbm.serialisation.BurstEventSerialiser;
+import org.workcraft.plugins.xbm.serialisation.EncodingDeserialiser;
+import org.workcraft.plugins.xbm.serialisation.EncodingSerialiser;
 import org.workcraft.utils.ScriptableCommandUtils;
 
 //TODO Serialisation and deserialisation of the model needs work:

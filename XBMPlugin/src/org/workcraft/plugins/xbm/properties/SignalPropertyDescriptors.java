@@ -4,10 +4,9 @@ import org.workcraft.dom.Node;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.xbm.*;
 
-import java.util.Collection;
-import java.util.Map;
 import java.util.regex.Matcher;
 
 public class SignalPropertyDescriptors {
@@ -15,8 +14,10 @@ public class SignalPropertyDescriptors {
     public static final PropertyDescriptor nameProperty(final VisualXbm visualXbm, final Signal signal) {
         final Xbm xbm = visualXbm.getMathModel();
         final String propertyName = xbm.getName(signal) + " name";
+
         return new PropertyDeclaration<Signal, String>
                 (signal, propertyName, String.class, true, true) {
+
             @Override
             public void setter(Signal object, String value) {
                 Node node = xbm.getNodeByReference(value);

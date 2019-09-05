@@ -4,7 +4,6 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.interop.Format;
 import org.workcraft.interop.Importer;
-import org.workcraft.plugins.xbm.Xbm;
 import org.workcraft.workspace.ModelEntry;
 
 import java.io.IOException;

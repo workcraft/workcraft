@@ -4,7 +4,6 @@ import org.workcraft.Info;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.SerialisationException;
-import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.xbm.Xbm;
 import org.workcraft.plugins.xbm.interop.BmFormat;
 import org.workcraft.serialisation.ModelSerialiser;

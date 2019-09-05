@@ -2,10 +2,11 @@ package org.workcraft.plugins.xbm.observers;
 
 import org.workcraft.dom.Node;
 import org.workcraft.observation.*;
-import org.workcraft.plugins.xbm.*;
+import org.workcraft.plugins.xbm.*;;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 
 //FIXME Fixed state generation after running the simulation tool
 //FIXME However, the copy-paste is still broken
@@ -21,10 +22,9 @@ public class SignalSupervisor extends StateSupervisor {
     public void handleEvent(StateEvent e) {
         if (e instanceof PropertyChangedEvent) {
             PropertyChangedEvent pce = (PropertyChangedEvent) e;
+            Node node = pce.getSender();
             String propertyName = pce.getPropertyName();
             if (propertyName.equals(XbmState.PROPERTY_ENCODING)) {
-
-                Node node = ((PropertyChangedEvent) e).getSender();
                 if (node instanceof XbmState) {
                     XbmState state = (XbmState) node;
                     Collection<BurstEvent> burstEvents = xbm.getBurstEvents();
@@ -38,6 +38,12 @@ public class SignalSupervisor extends StateSupervisor {
                             }
                         }
                     }
+                }
+            }
+            else if (propertyName.equals(Signal.PROPERTY_NAME)) {
+                Collection<BurstEvent> burstEvents = xbm.getBurstEvents();
+                for (BurstEvent event: burstEvents) {
+                    event.setConditional(event.getConditional()); //A rather dirty way of refreshing the burst event
                 }
             }
         }
@@ -60,7 +66,10 @@ public class SignalSupervisor extends StateSupervisor {
                     assignSignalsToState((XbmState) node);
                 }
                 else if (node instanceof Signal) {
-                    assignSignalToStates((Signal) node);
+                    Signal signal = (Signal) node;
+                    if (signal.getType() == Signal.Type.INPUT || signal.getType() == Signal.Type.OUTPUT) {
+                        assignSignalToStates((Signal) node);
+                    }
                 }
             }
         }
@@ -68,7 +77,15 @@ public class SignalSupervisor extends StateSupervisor {
             NodesAddedEvent event = (NodesAddedEvent) e;
             for (Node node: event.getAffectedNodes()) {
                 if (node instanceof XbmState) {
-                    reassignSignalsInState((XbmState) node);
+                    XbmState state = (XbmState) node;
+                    reassignSignalsInState(state);
+
+                    String temp = "";
+                    for (Map.Entry<Signal, SignalState> entry: state.getEncoding().entrySet()) {
+                        if (!temp.isEmpty()) temp += ", ";
+                        temp += xbm.getName(entry.getKey()) + "=" + entry.getValue();
+                    }
+                    System.out.println(xbm.getName(state) + ":" + temp);
                 }
             }
         }

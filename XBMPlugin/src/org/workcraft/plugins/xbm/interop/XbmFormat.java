@@ -30,7 +30,7 @@ public class XbmFormat implements Format {
 
     @Override
     public String getExtension() {
-        return ".xbm";
+        return ".org.workcraft.plugins.xbm";
     }
 
     @Override
