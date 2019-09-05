@@ -15,6 +15,7 @@ import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.tools.*;
 import org.workcraft.plugins.fsm.Event;
+import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.xbm.properties.DeclaredSignalPropertyDescriptor;
 import org.workcraft.plugins.xbm.properties.SignalModifierDescriptors;
@@ -25,6 +26,9 @@ import org.workcraft.plugins.xbm.utils.ConversionUtils;
 import org.workcraft.utils.Hierarchy;
 
 import java.util.*;
+
+//TODO When renaming signals, have the property change accordingly
+//FIXME This needs to also be done to affect the model too
 
 @DisplayName("eXtended Burst-Mode Machine")
 @ShortName("XBM")
@@ -184,5 +188,15 @@ public class VisualXbm extends VisualFsm {
             }
         };
         return propertyDeclaration;
+    }
+
+    public Collection<VisualBurstEvent> getVisualBurstEvents(){
+        Collection<VisualBurstEvent> result = new LinkedHashSet<>();
+        for (VisualEvent vEvent: getVisualSymbols()) {
+            if (vEvent instanceof VisualBurstEvent) {
+                result.add((VisualBurstEvent) vEvent);
+            }
+        }
+        return result;
     }
 }

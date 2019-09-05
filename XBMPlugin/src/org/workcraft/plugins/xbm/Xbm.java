@@ -4,12 +4,13 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.ArgumentException;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.Symbol;
 import org.workcraft.plugins.xbm.observers.ConditionalSupervisor;
-import org.workcraft.plugins.xbm.observers.SignalTypeConsistencySupervisor;
 import org.workcraft.plugins.xbm.observers.SignalSupervisor;
+import org.workcraft.plugins.xbm.observers.SignalTypeConsistencySupervisor;
 import org.workcraft.serialisation.References;
 import org.workcraft.utils.Hierarchy;
 
@@ -108,6 +109,9 @@ public class Xbm extends Fsm {
     public void removeSignal(Signal s) {
         if (getSignals().contains(s)) {
             this.remove(s);
+            for (XbmState state: getXbmStates()) {
+                state.sendNotification(new PropertyChangedEvent(state, XbmState.PROPERTY_ENCODING));
+            }
         }
     }
 

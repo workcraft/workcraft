@@ -3,15 +3,10 @@ package org.workcraft.plugins.xbm;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
-import org.workcraft.dom.Container;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.VisualEvent;
-import org.workcraft.utils.Hierarchy;
-
-import java.util.Collection;
-import java.util.HashSet;
 
 @DisplayName("Burst event")
 @IdentifierPrefix(value = "e", isInternal = true)

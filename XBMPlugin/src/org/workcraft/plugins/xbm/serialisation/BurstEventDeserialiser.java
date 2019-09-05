@@ -2,16 +2,15 @@ package org.workcraft.plugins.xbm.serialisation;
 
 import org.w3c.dom.Element;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.plugins.xbm.*;
+import org.workcraft.plugins.xbm.Burst;
+import org.workcraft.plugins.xbm.BurstEvent;
+import org.workcraft.plugins.xbm.Signal;
+import org.workcraft.plugins.xbm.XbmState;
 import org.workcraft.plugins.xbm.utils.CommonXbmSerialistionUtil;
 import org.workcraft.serialisation.CustomXMLDeserialiser;
 import org.workcraft.serialisation.NodeFinaliser;
 import org.workcraft.serialisation.NodeInitialiser;
 import org.workcraft.serialisation.ReferenceResolver;
-
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.UUID;
 
 public class BurstEventDeserialiser implements CustomXMLDeserialiser<BurstEvent> {
 

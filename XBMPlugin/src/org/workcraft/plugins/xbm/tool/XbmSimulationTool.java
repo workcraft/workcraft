@@ -16,8 +16,8 @@ import org.workcraft.plugins.fsm.*;
 import org.workcraft.plugins.petri.*;
 import org.workcraft.plugins.petri.tools.PetriSimulationTool;
 import org.workcraft.plugins.xbm.*;
-import org.workcraft.plugins.xbm.converters.ElementaryCycle;
 import org.workcraft.plugins.xbm.converters.XbmToPetriConverter;
+import org.workcraft.plugins.xbm.converters.ElementaryCycle;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,6 +32,8 @@ public class XbmSimulationTool extends PetriSimulationTool {
     private XbmToPetriConverter converter;
     private final Map<Signal, Boolean> conditionalValue = new HashMap<>();
     private final Set<JCheckBox> conditionalCheckBoxes = new LinkedHashSet<>();
+
+    private final static String CHECKBOX_NAME_PREFIX = "checkBox";
 
     @Override
     public void activated(final GraphEditor editor) {
@@ -105,22 +107,21 @@ public class XbmSimulationTool extends PetriSimulationTool {
         return "Click on a highlighted arc to trigger its event.";
     }
 
-    //TODO Revamp this code and possibly make the elementary cycle as a separate class
     @Override
     public void updateState(GraphEditor editor) {
         super.updateState(editor);
-
         for (Signal signal: conditionalValue.keySet()) {
             ElementaryCycle elemCycle = converter.getRelatedElementaryCycle(signal);
             for (JCheckBox checkBox: conditionalCheckBoxes) {
-                VisualPlace placeLow = elemCycle.getLow();
-                VisualPlace placeHigh = elemCycle.getHigh();
-
-                if (placeLow.getReferencedPlace().getTokens() > 0 && placeHigh.getReferencedPlace().getTokens() <= 0) {
-                    checkBox.setSelected(false);
-                }
-                else if (placeLow.getReferencedPlace().getTokens() <= 0 && placeHigh.getReferencedPlace().getTokens() > 0) {
-                    checkBox.setSelected(true);
+                if (checkBox.getName().equals(signal.getName() + CHECKBOX_NAME_PREFIX)) {
+                    VisualPlace placeLow = elemCycle.getLow();
+                    VisualPlace placeHigh = elemCycle.getHigh();
+                    if (placeLow.getReferencedPlace().getTokens() > 0 && placeHigh.getReferencedPlace().getTokens() <= 0) {
+                        checkBox.setSelected(false);
+                    }
+                    else if (placeLow.getReferencedPlace().getTokens() <= 0 && placeHigh.getReferencedPlace().getTokens() > 0) {
+                        checkBox.setSelected(true);
+                    }
                 }
             }
         }
@@ -202,12 +203,14 @@ public class XbmSimulationTool extends PetriSimulationTool {
     }
 
     private JPanel createConditionalSignalSetters(GraphEditor editor) {
+        if (!conditionalCheckBoxes.isEmpty()) conditionalCheckBoxes.clear();
         JPanel conditionalSetterTools = new JPanel();
         conditionalSetterTools.setLayout(new GridLayout(conditionalValue.keySet().size(), 1));
         for (Map.Entry<Signal, Boolean> entry: conditionalValue.entrySet()) {
             JPanel signalEntry = new JPanel(new GridLayout(1,2));
             JLabel name = new JLabel(entry.getKey().getName(), SwingConstants.CENTER);
             JCheckBox value = new JCheckBox();
+            value.setName(entry.getKey().getName() + CHECKBOX_NAME_PREFIX);
             value.setHorizontalAlignment(SwingConstants.CENTER);
             value.addActionListener(event -> {
                 ElementaryCycle elemCycle = converter.getRelatedElementaryCycle(entry.getKey());

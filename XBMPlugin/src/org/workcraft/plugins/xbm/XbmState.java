@@ -2,11 +2,9 @@ package org.workcraft.plugins.xbm;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.IdentifierPrefix;
-import org.workcraft.annotations.ShortName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.fsm.State;
-import org.workcraft.utils.Hierarchy;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -31,7 +29,9 @@ public class XbmState extends State {
     }
 
     public void addOrChangeSignalValue(Signal signal, SignalState state) {
-        encoding.put(signal, state);
+        if (signal.getType() == Signal.Type.INPUT || signal.getType() == Signal.Type.OUTPUT) {
+            encoding.put(signal, state);
+        }
         PropertyChangedEvent pce = new PropertyChangedEvent(this, PROPERTY_ENCODING);
         sendNotification(pce);
     }

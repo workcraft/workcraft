@@ -5,7 +5,9 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.builtin.settings.CommonSignalSettings;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.regex.Pattern;
 
@@ -14,6 +16,7 @@ import java.util.regex.Pattern;
 @IdentifierPrefix(value = "x")
 public class Signal extends MathNode {
 
+    public static final String PROPERTY_NAME = "Name";
     public static final String PROPERTY_TYPE = "Type";
     public static final Pattern VALID_SIGNAL_NAME = Pattern.compile("^\\w+$");
     public static final Type DEFAULT_SIGNAL_TYPE = Type.DUMMY;
@@ -53,7 +56,10 @@ public class Signal extends MathNode {
     }
 
     public void setName(String value) {
-        name = value;
+        if (!name.equals(value)) {
+            name = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME));
+        }
     }
 
     public Type getType() {
