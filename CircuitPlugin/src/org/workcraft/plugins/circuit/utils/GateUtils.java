@@ -328,4 +328,38 @@ public class GateUtils {
         return result;
     }
 
+    public static VisualFunctionComponent createAndGate(VisualCircuit circuit, int count) {
+        VisualFunctionComponent component = circuit.createVisualComponent(new FunctionComponent(), VisualFunctionComponent.class);
+
+        VisualFunctionContact outputContact = circuit.getOrCreateContact(component, "o", Contact.IOType.OUTPUT);
+        outputContact.setPosition(new Point2D.Double(1.5, 0.0));
+
+        List<Contact> vars = createGateInputs(circuit, component, count);
+        BooleanFormula function = BooleanOperations.and(vars, new DumbBooleanWorker());
+        outputContact.setSetFunction(function);
+        return component;
+    }
+
+    public static VisualFunctionComponent createOrGate(VisualCircuit circuit, int count) {
+        VisualFunctionComponent component = circuit.createVisualComponent(new FunctionComponent(), VisualFunctionComponent.class);
+
+        VisualFunctionContact outputContact = circuit.getOrCreateContact(component, "o", Contact.IOType.OUTPUT);
+        outputContact.setPosition(new Point2D.Double(1.5, 0.0));
+
+        List<Contact> vars = createGateInputs(circuit, component, count);
+        BooleanFormula function = BooleanOperations.or(vars, new DumbBooleanWorker());
+        outputContact.setSetFunction(function);
+        return component;
+    }
+
+    private static List<Contact> createGateInputs(VisualCircuit circuit, VisualFunctionComponent component, int count) {
+        List<Contact> vars = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            VisualFunctionContact inputContact = circuit.getOrCreateContact(component, "i" + i, Contact.IOType.INPUT);
+            inputContact.setPosition(new Point2D.Double(-1.5, i - 0.5 * (count - 1)));
+            vars.add(inputContact.getReferencedContact());
+        }
+        return vars;
+    }
+
 }

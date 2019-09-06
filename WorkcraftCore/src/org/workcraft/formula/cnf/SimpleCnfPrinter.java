@@ -2,7 +2,7 @@ package org.workcraft.formula.cnf;
 
 import org.workcraft.formula.Literal;
 
-public class HumanReadableCnfPrinter implements CnfPrinter {
+public class SimpleCnfPrinter implements CnfPrinter {
 
     @Override
     public String print(Cnf cnf) {

@@ -16,11 +16,11 @@ public abstract class Nf<C> implements BooleanFormula {
     }
 
     public Nf(List<C> clauses) {
-        this.clauses = new ArrayList<C>(clauses);
+        this.clauses = new ArrayList<>(clauses);
     }
 
     public void setClauses(List<C> clauses) {
-        this.clauses = new ArrayList<C>(clauses);
+        this.clauses = new ArrayList<>(clauses);
     }
 
     public List<C> getClauses() {
@@ -40,7 +40,7 @@ public abstract class Nf<C> implements BooleanFormula {
     }
 
     public void addAll(List<? extends Nf<C>> nfs) {
-        for (Nf<C> nf: nfs) {
+        for (Nf<C> nf : nfs) {
             add(nf);
         }
     }

@@ -3,7 +3,6 @@ package org.workcraft.formula.sat;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.workcraft.formula.cnf.Cnf;
-import org.workcraft.formula.cnf.SimpleCnfTaskProvider;
 import org.workcraft.formula.encoding.onehot.CnfGeneratingOptimiser;
 import org.workcraft.plugins.builtin.settings.CommonSatSettings;
 import org.workcraft.plugins.builtin.settings.CommonSatSettings.SatSolver;

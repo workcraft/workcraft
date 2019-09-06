@@ -8,6 +8,7 @@ import org.workcraft.formula.encoding.Encoding;
 import org.workcraft.formula.utils.SolutionSubstitutor;
 
 public class SolutionPrettifier {
+
     public static <T> Encoding prettifySolution(OptimisationTask<T> task, BooleanSolution solution) {
         if (solution == null) {
             return null;
@@ -41,4 +42,5 @@ public class SolutionPrettifier {
 
         return new Encoding(encoding, functions);
     }
+
 }

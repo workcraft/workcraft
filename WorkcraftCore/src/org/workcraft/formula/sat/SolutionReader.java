@@ -1,17 +1,12 @@
 package org.workcraft.formula.sat;
 
+import org.workcraft.formula.BooleanSolution;
+import org.workcraft.formula.BooleanVariable;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.workcraft.formula.BooleanSolution;
-import org.workcraft.formula.BooleanVariable;
-import org.workcraft.formula.cnf.CnfTask;
+import java.util.*;
 
 public class SolutionReader {
     private static Map<Integer, String> extractCnfMapping(String cnf) {

@@ -1,4 +1,4 @@
-package org.workcraft.formula.cnf;
+package org.workcraft.formula.sat;
 
 public interface CnfGenerator<T> {
     CnfTask getCnf(T t);

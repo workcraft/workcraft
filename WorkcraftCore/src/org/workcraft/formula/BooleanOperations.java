@@ -25,19 +25,23 @@ public class BooleanOperations {
     }
 
     public static BooleanFormula and(List<? extends BooleanFormula> conditions) {
-        return createAnd(conditions, 0, conditions.size());
+        return and(conditions, defaultWorker);
     }
 
-    private static BooleanFormula createAnd(List<? extends BooleanFormula> conditions, int start, int end) {
+    public static BooleanFormula and(List<? extends BooleanFormula> operands, BooleanWorker worker) {
+        return createAnd(operands, 0, operands.size(), worker);
+    }
+
+    private static BooleanFormula createAnd(List<? extends BooleanFormula> operands, int start, int end, BooleanWorker worker) {
         int size = end - start;
         if (size == 0) {
             return One.instance();
         } else {
             if (size == 1) {
-                return conditions.get(start);
+                return operands.get(start);
             } else {
                 int split = (end + start) / 2;
-                return and(createAnd(conditions, start, split), createAnd(conditions, split, end));
+                return worker.and(createAnd(operands, start, split, worker), createAnd(operands, split, end, worker));
             }
         }
     }
@@ -51,19 +55,23 @@ public class BooleanOperations {
     }
 
     public static BooleanFormula or(List<? extends BooleanFormula> conditions) {
-        return createOr(conditions, 0, conditions.size());
+        return or(conditions, defaultWorker);
     }
 
-    private static BooleanFormula createOr(List<? extends BooleanFormula> conditions, int start, int end) {
+    public static BooleanFormula or(List<? extends BooleanFormula> operands, BooleanWorker worker) {
+        return createOr(operands, 0, operands.size(), worker);
+    }
+
+    private static BooleanFormula createOr(List<? extends BooleanFormula> operands, int start, int end, BooleanWorker worker) {
         int size = end - start;
         if (size == 0) {
             return Zero.instance();
         } else {
             if (size == 1) {
-                return conditions.get(start);
+                return operands.get(start);
             } else {
                 int split = (end + start) / 2;
-                return or(createOr(conditions, start, split), createOr(conditions, split, end));
+                return worker.or(createOr(operands, start, split, worker), createOr(operands, split, end, worker));
             }
         }
     }

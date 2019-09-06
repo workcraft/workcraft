@@ -1,8 +1,8 @@
-package org.workcraft.formula.cnf;
-
-import java.util.Map;
+package org.workcraft.formula.sat;
 
 import org.workcraft.formula.BooleanVariable;
+
+import java.util.Map;
 
 public class CnfTask {
 

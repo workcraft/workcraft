@@ -13,7 +13,7 @@ import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.Literal;
 import org.workcraft.formula.dnf.Dnf;
 import org.workcraft.formula.dnf.DnfClause;
-import org.workcraft.formula.dnf.DnfGenerator;
+import org.workcraft.formula.dnf.DnfConverter;
 import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
@@ -21,10 +21,10 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.converters.SignalStg;
-import org.workcraft.utils.Geometry;
-import org.workcraft.utils.Hierarchy;
 import org.workcraft.types.Pair;
 import org.workcraft.types.TwoWayMap;
+import org.workcraft.utils.Geometry;
+import org.workcraft.utils.Hierarchy;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -240,10 +240,10 @@ public class CircuitToStgConverter {
             } else if ((setFunc == null) && (resetFunc != null)) {
                 setFunc = BooleanOperations.not(resetFunc);
             }
-            Dnf setDnf = DnfGenerator.generate(setFunc);
+            Dnf setDnf = DnfConverter.generate(setFunc);
             createSignalStgTransitions(driver, setDnf, SignalTransition.Direction.PLUS);
 
-            Dnf resetDnf = DnfGenerator.generate(resetFunc);
+            Dnf resetDnf = DnfConverter.generate(resetFunc);
             createSignalStgTransitions(driver, resetDnf, SignalTransition.Direction.MINUS);
         }
     }
@@ -262,13 +262,10 @@ public class CircuitToStgConverter {
         Collection<VisualSignalTransition> transitions = direction == SignalTransition.Direction.PLUS ? driverStg.riseList : driverStg.fallList;
 
         TreeSet<DnfClause> clauses = new TreeSet<>(
-                new Comparator<DnfClause>() {
-                    @Override
-                    public int compare(DnfClause arg0, DnfClause arg1) {
-                        String st1 = StringGenerator.toString(arg0);
-                        String st2 = StringGenerator.toString(arg1);
-                        return st1.compareTo(st2);
-                    }
+                (arg0, arg1) -> {
+                    String st1 = StringGenerator.toString(arg0);
+                    String st2 = StringGenerator.toString(arg1);
+                    return st1.compareTo(st2);
                 });
 
         clauses.addAll(dnf.getClauses());

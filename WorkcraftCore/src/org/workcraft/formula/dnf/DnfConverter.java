@@ -17,7 +17,7 @@ import org.workcraft.formula.Or;
 import org.workcraft.formula.Xor;
 import org.workcraft.formula.Zero;
 
-public class DnfGenerator {
+public class DnfConverter {
 
     private static class DnfVisitor implements BooleanVisitor<Dnf> {
 

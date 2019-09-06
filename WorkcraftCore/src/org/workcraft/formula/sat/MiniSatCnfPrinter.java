@@ -1,14 +1,14 @@
 package org.workcraft.formula.sat;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
-
 import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.Literal;
 import org.workcraft.formula.cnf.Cnf;
 import org.workcraft.formula.cnf.CnfClause;
 import org.workcraft.formula.cnf.CnfPrinter;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class MiniSatCnfPrinter implements CnfPrinter {
     Map<BooleanVariable, Integer> numbers = new HashMap<>();
@@ -41,7 +41,7 @@ public class MiniSatCnfPrinter implements CnfPrinter {
     private String getHeadComments() {
         StringBuilder result = new StringBuilder();
 
-        for (BooleanVariable var : new TreeMap<BooleanVariable, Integer>(numbers).keySet()) {
+        for (BooleanVariable var : new TreeMap<>(numbers).keySet()) {
             String label = var.getLabel();
             if (!label.isEmpty()) {
                 result.append("c " + numbers.get(var) + " " + label + "\n");

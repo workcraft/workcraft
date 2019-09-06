@@ -21,7 +21,7 @@ public class Cnf extends Nf<CnfClause> {
 
     @Override
     public String toString() {
-        return new HumanReadableCnfPrinter().print(this);
+        return new SimpleCnfPrinter().print(this);
     }
 
     public String toString(CnfPrinter cnfPrinter) {

@@ -1,35 +1,15 @@
 package org.workcraft.formula.sat;
 
-import static org.workcraft.formula.encoding.CnfOperations.literal;
-import static org.workcraft.formula.encoding.CnfOperations.not;
-import static org.workcraft.formula.encoding.CnfOperations.or;
+import org.workcraft.formula.*;
+import org.workcraft.formula.cnf.Cnf;
+import org.workcraft.formula.cnf.CnfClause;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import org.workcraft.formula.And;
-import org.workcraft.formula.BinaryBooleanFormula;
-import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.BooleanVariable;
-import org.workcraft.formula.BooleanVisitor;
-import org.workcraft.formula.Iff;
-import org.workcraft.formula.Imply;
-import org.workcraft.formula.Literal;
-import org.workcraft.formula.Not;
-import org.workcraft.formula.One;
-import org.workcraft.formula.Or;
-import org.workcraft.formula.RecursiveBooleanVisitor;
-import org.workcraft.formula.Xor;
-import org.workcraft.formula.Zero;
-import org.workcraft.formula.cnf.Cnf;
-import org.workcraft.formula.cnf.CnfClause;
-import org.workcraft.formula.cnf.CnfGenerator;
-import org.workcraft.formula.cnf.CnfTask;
-import org.workcraft.formula.cnf.SimpleCnfTaskProvider;
-import org.workcraft.formula.utils.StringGenerator;
+import static org.workcraft.formula.encoding.CnfOperations.*;
 
 public class CleverCnfGenerator implements CnfGenerator<BooleanFormula>, BooleanVisitor<Literal> {
 
@@ -202,45 +182,11 @@ public class CleverCnfGenerator implements CnfGenerator<BooleanFormula>, Boolean
     }
 
     public CnfTask getCnf(BooleanFormula formula) {
-
-        Cnf cnf = generateCnf(formula);
+        Cnf cnf = generate(formula);
         return new SimpleCnfTaskProvider().getCnf(cnf);
     }
 
-    class FormulaCounter extends RecursiveBooleanVisitor<Object> {
-        int count = 0;
-        Map<BooleanFormula, Integer> met = new HashMap<>();
-
-        @Override
-        protected Object visitBinary(BinaryBooleanFormula node) {
-            count++;
-            Integer m = met.get(node);
-            if (m == null) {
-                met.put(node, 1);
-            } else {
-                met.put(node, m + 1);
-            }
-            return super.visitBinary(node);
-        }
-
-        public void printReport() {
-            for (Entry<BooleanFormula, Integer> entry : met.entrySet()) {
-                if (entry.getValue() > 100) {
-                    System.out.println(">100: " + entry.getValue() + ": " + StringGenerator.toString(entry.getKey()));
-                }
-            }
-        }
-
-        public int getCount() {
-            return count;
-        }
-
-        public int getUniques() {
-            return met.size();
-        }
-    }
-
-    public Cnf generateCnf(BooleanFormula formula) {
+    public Cnf generate(BooleanFormula formula) {
         formula.accept(new ConstantExpectingCnfGenerator(result, this));
         return result;
     }

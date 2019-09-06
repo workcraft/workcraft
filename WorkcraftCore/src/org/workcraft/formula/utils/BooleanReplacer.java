@@ -1,29 +1,12 @@
 package org.workcraft.formula.utils;
 
-import static org.workcraft.formula.BooleanOperations.and;
-import static org.workcraft.formula.BooleanOperations.iff;
-import static org.workcraft.formula.BooleanOperations.imply;
-import static org.workcraft.formula.BooleanOperations.not;
-import static org.workcraft.formula.BooleanOperations.or;
-import static org.workcraft.formula.BooleanOperations.xor;
+import org.workcraft.formula.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.workcraft.formula.And;
-import org.workcraft.formula.BinaryBooleanFormula;
-import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.BooleanVariable;
-import org.workcraft.formula.BooleanVisitor;
-import org.workcraft.formula.BooleanWorker;
-import org.workcraft.formula.Iff;
-import org.workcraft.formula.Imply;
-import org.workcraft.formula.Not;
-import org.workcraft.formula.One;
-import org.workcraft.formula.Or;
-import org.workcraft.formula.Xor;
-import org.workcraft.formula.Zero;
+import static org.workcraft.formula.BooleanOperations.*;
 
 public class BooleanReplacer implements BooleanVisitor<BooleanFormula> {
 
@@ -35,7 +18,7 @@ public class BooleanReplacer implements BooleanVisitor<BooleanFormula> {
     private final BooleanWorker worker;
 
     public BooleanReplacer(List<? extends BooleanVariable> from, List<? extends BooleanFormula> to, BooleanWorker worker) {
-        this.map = new HashMap<BooleanFormula, BooleanFormula>();
+        this.map = new HashMap<>();
         if (from.size() != to.size()) {
             throw new RuntimeException("Length of the variable list must be equal to that of formula list.");
         }
@@ -46,7 +29,7 @@ public class BooleanReplacer implements BooleanVisitor<BooleanFormula> {
     }
 
     public BooleanReplacer(Map<? extends BooleanVariable, ? extends BooleanFormula> map, BooleanWorker worker) {
-        this.map = new HashMap<BooleanFormula, BooleanFormula>(map);
+        this.map = new HashMap<>(map);
         this.worker = worker;
     }
 

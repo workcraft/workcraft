@@ -1,14 +1,15 @@
-package org.workcraft.formula.cnf;
+package org.workcraft.formula.sat;
 
-import static org.workcraft.formula.encoding.CnfOperations.not;
-import static org.workcraft.formula.encoding.CnfOperations.or;
+import org.workcraft.formula.BooleanVariable;
+import org.workcraft.formula.Literal;
+import org.workcraft.formula.cnf.Cnf;
+import org.workcraft.formula.cnf.CnfClause;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.workcraft.formula.BooleanVariable;
-import org.workcraft.formula.Literal;
-import org.workcraft.formula.sat.MiniSatCnfPrinter;
+import static org.workcraft.formula.encoding.CnfOperations.not;
+import static org.workcraft.formula.encoding.CnfOperations.or;
 
 public class SimpleCnfTaskProvider implements CnfGenerator<Cnf> {
 
