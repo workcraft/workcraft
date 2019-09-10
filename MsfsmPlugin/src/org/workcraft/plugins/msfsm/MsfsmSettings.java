@@ -3,13 +3,13 @@ package org.workcraft.plugins.msfsm;
 import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.Settings;
+import org.workcraft.plugins.builtin.settings.AbstractToolSettings;
 import org.workcraft.utils.DesktopApi;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class MsfsmSettings implements Settings {
+public class MsfsmSettings extends AbstractToolSettings {
 
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "Tools.msfsm";
@@ -132,11 +132,6 @@ public class MsfsmSettings implements Settings {
         config.setBoolean(keyAdvancedMode, getAdvancedMode());
         config.setBoolean(keyPrintStdout, getPrintStdout());
         config.setBoolean(keyPrintStderr, getPrintStderr());
-    }
-
-    @Override
-    public String getSection() {
-        return "External tools";
     }
 
     @Override

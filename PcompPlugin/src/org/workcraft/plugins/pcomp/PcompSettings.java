@@ -1,15 +1,15 @@
 package org.workcraft.plugins.pcomp;
 
 import org.workcraft.Config;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.Settings;
+import org.workcraft.plugins.builtin.settings.AbstractToolSettings;
+import org.workcraft.utils.DesktopApi;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class PcompSettings implements Settings {
+public class PcompSettings extends AbstractToolSettings {
 
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "Tools.pcomp";
@@ -98,11 +98,6 @@ public class PcompSettings implements Settings {
         config.set(keyArgs, getArgs());
         config.setBoolean(keyPrintStdout, getPrintStdout());
         config.setBoolean(keyPrintStderr, getPrintStderr());
-    }
-
-    @Override
-    public String getSection() {
-        return "External tools";
     }
 
     @Override

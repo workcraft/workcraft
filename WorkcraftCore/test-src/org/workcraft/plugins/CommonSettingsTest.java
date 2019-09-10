@@ -149,21 +149,6 @@ public class CommonSettingsTest {
     }
 
     @Test
-    public void commonSatSettingsTest() {
-        final Framework framework = Framework.getInstance();
-        String prefix = "CommonSatSettings";
-
-        Assert.assertEquals(Config.toString(CommonSatSettings.getSatSolver()),
-                framework.getConfigVar(prefix + ".satSolver", false));
-
-        Assert.assertEquals(Config.toString(CommonSatSettings.getClaspCommand()),
-                framework.getConfigVar(prefix + ".claspCommand", false));
-
-        Assert.assertEquals(Config.toString(CommonSatSettings.getMinisatCommand()),
-                framework.getConfigVar(prefix + ".minisatCommand", false));
-    }
-
-    @Test
     public void commonSignalSettingsTest() {
         final Framework framework = Framework.getInstance();
         String prefix = "CommonSignalSettings";

@@ -1,10 +1,10 @@
 package org.workcraft.plugins.xmas;
 
 import org.workcraft.Config;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.Settings;
+import org.workcraft.plugins.builtin.settings.AbstractModelSettings;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.FileUtils;
 
 import java.io.File;
@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 
-public class XmasSettings implements Settings {
+public class XmasSettings extends AbstractModelSettings {
     private static final String VSETTINGS_FILE_NAME = "vsettings";
     private static final String VSETTINGS_DEFAULT_CONTENT = "trace q1\nlevel normal\nhighlight none\ndisplay popup\nsoln 2\n";
     private static final String CPN_FILE_NAME = "CPNFile";
@@ -116,11 +116,6 @@ public class XmasSettings implements Settings {
         config.setDouble(keyBorderWidth, getBorderWidth());
         config.setDouble(keyWireWidth, getWireWidth());
         config.set(keyVxmCommand, getVxmCommand());
-    }
-
-    @Override
-    public String getSection() {
-        return "Models";
     }
 
     @Override

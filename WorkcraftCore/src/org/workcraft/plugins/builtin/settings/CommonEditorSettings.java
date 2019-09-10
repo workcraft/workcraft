@@ -3,13 +3,12 @@ package org.workcraft.plugins.builtin.settings;
 import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.Settings;
 
 import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CommonEditorSettings implements Settings {
+public class CommonEditorSettings extends AbstractCommonSettings {
 
     public enum TitleStyle {
         MINIMAL("minimal: Title"),
@@ -319,11 +318,6 @@ public class CommonEditorSettings implements Settings {
         config.setBoolean(keyShowAbsolutePaths, getShowAbsolutePaths());
         config.setBoolean(keyOpenNonvisual, getOpenNonvisual());
         config.setInt(keyRedrawInterval, getRedrawInterval());
-    }
-
-    @Override
-    public String getSection() {
-        return "Common";
     }
 
     @Override

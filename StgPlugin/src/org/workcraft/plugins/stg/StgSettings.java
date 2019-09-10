@@ -3,13 +3,13 @@ package org.workcraft.plugins.stg;
 import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.Settings;
+import org.workcraft.plugins.builtin.settings.AbstractModelSettings;
 import org.workcraft.utils.DialogUtils;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class StgSettings implements Settings {
+public class StgSettings extends AbstractModelSettings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "StgSettings";
 
@@ -155,11 +155,6 @@ public class StgSettings implements Settings {
         config.setBoolean(keyGroupSignalConversion, getGroupSignalConversion());
         config.setBoolean(keyShowTransitionInstance, getShowTransitionInstance());
         config.setEnum(keyMutexProtocol, StgSettings.getMutexProtocol());
-    }
-
-    @Override
-    public String getSection() {
-        return "Models";
     }
 
     @Override

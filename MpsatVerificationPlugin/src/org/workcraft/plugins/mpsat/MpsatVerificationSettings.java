@@ -3,7 +3,7 @@ package org.workcraft.plugins.mpsat;
 import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.Settings;
+import org.workcraft.plugins.builtin.settings.AbstractToolSettings;
 import org.workcraft.plugins.mpsat.VerificationParameters.SolutionMode;
 import org.workcraft.plugins.mpsat.tasks.ConformationNwayOutputHandler.ConformationReportStyle;
 import org.workcraft.utils.DesktopApi;
@@ -11,7 +11,7 @@ import org.workcraft.utils.DesktopApi;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MpsatVerificationSettings implements Settings {
+public class MpsatVerificationSettings extends AbstractToolSettings {
 
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "Tools.mpsatVerification";
@@ -185,11 +185,6 @@ public class MpsatVerificationSettings implements Settings {
         config.setBoolean(keyDebugReach, getDebugReach());
         config.setBoolean(keyDebugCores, getDebugCores());
         config.setEnum(keyConformationReportStyle, getConformationReportStyle());
-    }
-
-    @Override
-    public String getSection() {
-        return "External tools";
     }
 
     @Override

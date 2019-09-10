@@ -1,15 +1,15 @@
 package org.workcraft.plugins.plato;
 
 import org.workcraft.Config;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.Settings;
+import org.workcraft.plugins.builtin.settings.AbstractToolSettings;
+import org.workcraft.utils.DesktopApi;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
-public class PlatoSettings implements Settings {
+public class PlatoSettings extends AbstractToolSettings {
 
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "Tools.plato";
@@ -64,11 +64,6 @@ public class PlatoSettings implements Settings {
     public void load(Config config) {
         setPlatoFolderLocation(config.getString(keyPlatoFolderLocation, defaultPlatoFolderLocation));
         setPlatoIncludesList(config.getString(keyPlatoIncludesList, defaultPlatoIncludesList));
-    }
-
-    @Override
-    public String getSection() {
-        return "External tools";
     }
 
     @Override

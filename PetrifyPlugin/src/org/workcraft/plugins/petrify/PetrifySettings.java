@@ -1,15 +1,15 @@
 package org.workcraft.plugins.petrify;
 
 import org.workcraft.Config;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.Settings;
+import org.workcraft.plugins.builtin.settings.AbstractToolSettings;
+import org.workcraft.utils.DesktopApi;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class PetrifySettings implements Settings {
+public class PetrifySettings extends AbstractToolSettings {
 
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "Tools.petrify";
@@ -183,11 +183,6 @@ public class PetrifySettings implements Settings {
         config.setBoolean(keyPrintStdout, getPrintStdout());
         config.setBoolean(keyPrintStderr, getPrintStderr());
         config.setBoolean(keyOpenSynthesisStg, getOpenSynthesisStg());
-    }
-
-    @Override
-    public String getSection() {
-        return "External tools";
     }
 
     @Override

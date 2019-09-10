@@ -2,7 +2,7 @@ package org.workcraft.plugins.cpog.tasks;
 
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.encoding.Encoding;
+import org.workcraft.plugins.cpog.encoding.Encoding;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.cpog.*;

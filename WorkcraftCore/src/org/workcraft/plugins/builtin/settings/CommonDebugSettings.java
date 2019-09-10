@@ -3,12 +3,11 @@ package org.workcraft.plugins.builtin.settings;
 import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.Settings;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class CommonDebugSettings implements Settings {
+public class CommonDebugSettings extends AbstractCommonSettings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CommonDebugSettings";
 
@@ -113,11 +112,6 @@ public class CommonDebugSettings implements Settings {
         config.setBoolean(keyParserTracing, getParserTracing());
         config.setBoolean(keyVerboseCompatibilityManager, getVerboseCompatibilityManager());
         config.setBoolean(keyShortExportHeader, getShortExportHeader());
-    }
-
-    @Override
-    public String getSection() {
-        return "Common";
     }
 
     @Override

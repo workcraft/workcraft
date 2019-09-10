@@ -1,17 +1,16 @@
 package org.workcraft.plugins.builtin.settings;
 
 import org.workcraft.Config;
-import org.workcraft.utils.PluginUtils;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.Settings;
+import org.workcraft.utils.PluginUtils;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CommonFavoriteSettings implements Settings {
+public class CommonFavoriteSettings extends AbstractCommonSettings {
 
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CommonFavoriteSettings";
@@ -79,11 +78,6 @@ public class CommonFavoriteSettings implements Settings {
 
     private String getKey(String name) {
         return prefix + "." + name;
-    }
-
-    @Override
-    public String getSection() {
-        return "Common";
     }
 
     @Override

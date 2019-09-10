@@ -3,14 +3,14 @@ package org.workcraft.plugins.dtd;
 import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.Settings;
+import org.workcraft.plugins.builtin.settings.AbstractModelSettings;
 import org.workcraft.utils.DialogUtils;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class DtdSettings implements Settings {
+public class DtdSettings extends AbstractModelSettings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "DtdSettings";
 
@@ -86,11 +86,6 @@ public class DtdSettings implements Settings {
     public void save(Config config) {
         config.setDouble(keyVerticalSeparation, getVerticalSeparation());
         config.setDouble(keyTransitionSeparation, getTransitionSeparation());
-    }
-
-    @Override
-    public String getSection() {
-        return "Models";
     }
 
     @Override

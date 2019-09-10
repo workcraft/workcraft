@@ -9,9 +9,4 @@ public abstract class AbstractLayoutSettings implements Settings {
         return "Layout";
     }
 
-    @Override
-    public String getName() {
-        return "Common";
-    }
-
 }

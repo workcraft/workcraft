@@ -3,13 +3,12 @@ package org.workcraft.plugins.builtin.settings;
 import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.Settings;
 
 import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CommonLogSettings implements Settings {
+public class CommonLogSettings extends AbstractCommonSettings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CommonLogSettings";
 
@@ -131,11 +130,6 @@ public class CommonLogSettings implements Settings {
         config.setColor(keyErrorBackground, getErrorBackground());
         config.setColor(keyStdoutBackground, getStdoutBackground());
         config.setColor(keyStderrBackground, getStderrBackground());
-    }
-
-    @Override
-    public String getSection() {
-        return "Common";
     }
 
     @Override

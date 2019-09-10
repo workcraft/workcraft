@@ -3,13 +3,12 @@ package org.workcraft.plugins.builtin.settings;
 import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.Settings;
 
 import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CommonSignalSettings implements Settings {
+public class CommonSignalSettings extends AbstractCommonSettings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CommonSignalSettings";
 
@@ -114,11 +113,6 @@ public class CommonSignalSettings implements Settings {
         config.setColor(keyInternalColor, getInternalColor());
         config.setColor(keyDummyColor, getDummyColor());
         config.setBoolean(keyShowToggle, getShowToggle());
-    }
-
-    @Override
-    public String getSection() {
-        return "Common";
     }
 
     @Override
