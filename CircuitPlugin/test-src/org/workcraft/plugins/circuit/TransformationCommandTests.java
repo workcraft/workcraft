@@ -15,6 +15,7 @@ import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,24 +32,25 @@ public class TransformationCommandTests {
 
     @Test
     public void testVmeTransformationCommand() throws DeserialisationException {
-        String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
-        testTransformationCommand(workName, 12, 9);
-    }
-
-    private void testTransformationCommand(String workName, int expMappedGateCount, int expUnmappedGateCount)
-            throws DeserialisationException {
-
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
         URL url = classLoader.getResource(workName);
 
         WorkspaceEntry we = framework.loadWork(url.getFile());
         VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
 
+        Set<VisualFunctionComponent> optZeroDelays = getZeroDelayGates(circuit);
+        new OptimiseZeroDelayTransformationCommand().execute(we);
+        VisualFunctionComponent bubble25 = circuit.getVisualComponentByMathReference("IN_BUBBLE25",
+                VisualFunctionComponent.class);
+
+        optZeroDelays.removeAll(getZeroDelayGates(circuit));
+        Assert.assertEquals(new HashSet<>(Arrays.asList(bubble25)), optZeroDelays);
+
         circuit.selectAll();
 
-        PropagateInversionTransformationCommand command = new PropagateInversionTransformationCommand();
-        command.execute(we);
+        new PropagateInversionTransformationCommand().execute(we);
 
         int dstMappedGateCount = 0;
         int dstUnmappedGateCount = 0;
@@ -60,11 +62,10 @@ public class TransformationCommandTests {
             }
         }
 
-        Assert.assertEquals(expMappedGateCount, dstMappedGateCount);
-        Assert.assertEquals(expUnmappedGateCount, dstUnmappedGateCount);
+        Assert.assertEquals(12, dstMappedGateCount);
+        Assert.assertEquals(9, dstUnmappedGateCount);
 
-        CombinedVerificationCommand verificationCommand = new CombinedVerificationCommand();
-        Assert.assertEquals(true, verificationCommand.execute(we));
+        Assert.assertEquals(true, new CombinedVerificationCommand().execute(we));
 
         // Note that U31.C2 was renamed to U31.C2N after inversion propagation command
         VisualContact contact = circuit.getVisualComponentByMathReference("U31.C2N", VisualContact.class);
@@ -73,20 +74,18 @@ public class TransformationCommandTests {
         Set<VisualConnection> connections = circuit.getConnections(contact);
         Assert.assertEquals(1, connections.size());
 
-        InsertBufferTransformationCommand insertBufferCommand = new InsertBufferTransformationCommand();
         circuit.select(connections);
-        insertBufferCommand.execute(we);
+        new InsertBufferTransformationCommand().execute(we);
         Set<VisualFunctionComponent> buffers = getBuffers(circuit);
         Assert.assertEquals(connections.size(), buffers.size());
-        Assert.assertEquals(false, verificationCommand.execute(we));
+        Assert.assertEquals(false, new CombinedVerificationCommand().execute(we));
 
-        ToggleZeroDelayTransformationCommand toggleZeroDelayCommand = new ToggleZeroDelayTransformationCommand();
         circuit.select(buffers);
         Set<VisualFunctionComponent> zeroDelaysBefore = getZeroDelayGates(circuit);
-        toggleZeroDelayCommand.execute(we);
+        new ToggleZeroDelayTransformationCommand().execute(we);
         Set<VisualFunctionComponent> zeroDelaysAfter = getZeroDelayGates(circuit);
         Assert.assertEquals(zeroDelaysBefore.size() + buffers.size(), zeroDelaysAfter.size());
-        Assert.assertEquals(true, verificationCommand.execute(we));
+        Assert.assertEquals(true, new CombinedVerificationCommand().execute(we));
 
         ToggleBubbleTransformationCommand toggleBubbleCommand = new ToggleBubbleTransformationCommand();
         circuit.select(buffers);
@@ -94,7 +93,7 @@ public class TransformationCommandTests {
         toggleBubbleCommand.execute(we);
         Set<VisualFunctionComponent> invertersAfter = getInverters(circuit);
         Assert.assertEquals(invertersBefore.size() + buffers.size(), invertersAfter.size());
-        Assert.assertEquals(false, verificationCommand.execute(we));
+        Assert.assertEquals(false, new CombinedVerificationCommand().execute(we));
 
         ContractComponentTransformationCommand contractCommand = new ContractComponentTransformationCommand();
         circuit.select(buffers);
@@ -102,7 +101,7 @@ public class TransformationCommandTests {
         contractCommand.execute(we);
         Set<VisualFunctionComponent> trivialsAfter = getTrivialGates(circuit);
         Assert.assertEquals(trivialsBefore.size() - buffers.size(), trivialsAfter.size());
-        Assert.assertEquals(true, verificationCommand.execute(we));
+        Assert.assertEquals(true, new CombinedVerificationCommand().execute(we));
 
         framework.closeWork(we);
     }
