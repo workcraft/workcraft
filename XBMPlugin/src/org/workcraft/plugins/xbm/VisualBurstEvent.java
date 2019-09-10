@@ -7,8 +7,6 @@ import org.workcraft.plugins.fsm.VisualState;
 
 import java.util.Set;
 
-//TODO Possibly make it reference two separate colour schemes and add them as separate visual nodes?
-//TODO or create two separate classes of input and output bursts and combine them
 public class VisualBurstEvent extends VisualEvent {
 
 //    private final InputBurst inputBurst;
@@ -52,6 +50,8 @@ public class VisualBurstEvent extends VisualEvent {
     public String getLabel(DrawRequest r) {
         return getReferencedBurstEvent().getAsString();
     }
+
+
 
     @Override
     public void copyStyle(Stylable src) {

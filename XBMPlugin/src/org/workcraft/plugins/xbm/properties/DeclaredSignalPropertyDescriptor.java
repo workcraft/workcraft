@@ -10,14 +10,18 @@ import java.util.Map;
 
 public class DeclaredSignalPropertyDescriptor implements PropertyDescriptor<Boolean> {
 
-    public final static String PROPERTY_NEW_SIGNAL = "Create a new signal";
+    public static final String PROPERTY_NEW_SIGNAL = "Create a new signal";
+    public static final String PROPERTY_NEW_INPUT = "Create a new input signal";
+    public static final String PROPERTY_NEW_OUTPUT = "Create a new output signal";
 
     private final VisualXbm visualXbm;
     private final String signalName;
+    private final Signal.Type targetType;
 
-    public DeclaredSignalPropertyDescriptor(VisualXbm visualXbm, String signalName) {
+    public DeclaredSignalPropertyDescriptor(VisualXbm visualXbm, String signalName, Signal.Type targetType) {
         this.visualXbm = visualXbm;
         this.signalName = signalName;
+        this.targetType = targetType;
     }
 
     @Override
@@ -55,7 +59,8 @@ public class DeclaredSignalPropertyDescriptor implements PropertyDescriptor<Bool
 
     private void insertNewSignal() {
         final Xbm xbm = visualXbm.getMathModel();
-        xbm.createSignal(null);
+        Signal signal = xbm.createSignal(null);
+        signal.setType(targetType);
     }
 
     private void removeSignal() {

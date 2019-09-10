@@ -27,12 +27,12 @@ import org.workcraft.utils.Hierarchy;
 
 import java.util.*;
 
-//TODO When renaming signals, have the property change accordingly
-//FIXME This needs to also be done to affect the model too
-
 @DisplayName("eXtended Burst-Mode Machine")
 @ShortName("XBM")
 public class VisualXbm extends VisualFsm {
+
+    private static final PropertyDescriptor PROPERTY_INPUT_BURST_PLACEHOLDER = new UneditablePropertyDescriptor("Input Burst", "");
+    private static final PropertyDescriptor PROPERTY_OUTPUT_BURST_PLACEHOLDER = new UneditablePropertyDescriptor("Output Burst", "");
 
     public VisualXbm() {
         this(null, null);
@@ -98,14 +98,15 @@ public class VisualXbm extends VisualFsm {
             properties.addAll(getSignalNameAndTypeProperties());
             for (Signal s: xbm.getSignals()) {
                 final String signalName = xbm.getName(s);
-                properties.add(new DeclaredSignalPropertyDescriptor(this, signalName));
+                properties.add(new DeclaredSignalPropertyDescriptor(this, signalName, s.getType()));
             }
-            properties.add(new DeclaredSignalPropertyDescriptor(this, DeclaredSignalPropertyDescriptor.PROPERTY_NEW_SIGNAL));
+            properties.add(new DeclaredSignalPropertyDescriptor(this, DeclaredSignalPropertyDescriptor.PROPERTY_NEW_SIGNAL, Signal.DEFAULT_SIGNAL_TYPE));
         }
         else if (node instanceof VisualBurstEvent) {
             final VisualBurstEvent visualBurstevent = (VisualBurstEvent) node;
             final BurstEvent burstEvent = visualBurstevent.getReferencedBurstEvent();
             properties.add(getConditionalProperty(burstEvent));
+            properties.addAll(getSignalDirectionProperties(burstEvent));
             properties.removeByName(Event.PROPERTY_SYMBOL);
         }
         else if (node instanceof VisualXbmState) {
@@ -143,23 +144,48 @@ public class VisualXbm extends VisualFsm {
         final Set<Signal> inputs = new LinkedHashSet<>();
         final Set<Signal> outputs = new LinkedHashSet<>();
 
-        //Temporary fix to the XBM referencing old values
         inputs.addAll(xbm.getSignals(Signal.Type.INPUT));
         outputs.addAll(xbm.getSignals(Signal.Type.OUTPUT));
 
         if (!inputs.isEmpty()) {
-            list.add(new UneditablePropertyDescriptor("Inputs", ""));
+            list.add(PROPERTY_INPUT_BURST_PLACEHOLDER);
             for (Signal i: inputs) {
                 list.add(SignalPropertyDescriptors.valueProperty(this, state, i));
             }
         }
         if (!outputs.isEmpty()) {
-            list.add(new UneditablePropertyDescriptor("Outputs", ""));
+            list.add(PROPERTY_OUTPUT_BURST_PLACEHOLDER);
             for (Signal o: outputs) {
                 list.add(SignalPropertyDescriptors.valueProperty(this, state, o));
             }
         }
+        return list;
+    }
 
+    private List<PropertyDescriptor> getSignalDirectionProperties(final BurstEvent burstEvent) {
+
+        final Xbm xbm = getMathModel();
+        final List<PropertyDescriptor> list = new LinkedList<>();
+        final Set<Signal> inputs = new LinkedHashSet<>();
+        final Set<Signal> outputs = new LinkedHashSet<>();
+
+        inputs.addAll(xbm.getSignals(Signal.Type.INPUT));
+        outputs.addAll(xbm.getSignals(Signal.Type.OUTPUT));
+
+        if (!inputs.isEmpty()) {
+            list.add(PROPERTY_INPUT_BURST_PLACEHOLDER);
+            for (Signal i: inputs) {
+                list.add(SignalPropertyDescriptors.directionProperty(this, burstEvent, i));
+            }
+            list.add(new DeclaredSignalPropertyDescriptor(this, DeclaredSignalPropertyDescriptor.PROPERTY_NEW_INPUT, Signal.Type.INPUT));
+        }
+        if (!outputs.isEmpty()) {
+            list.add(PROPERTY_OUTPUT_BURST_PLACEHOLDER);
+            for (Signal o: outputs) {
+                list.add(SignalPropertyDescriptors.directionProperty(this, burstEvent, o));
+            }
+            list.add(new DeclaredSignalPropertyDescriptor(this, DeclaredSignalPropertyDescriptor.PROPERTY_NEW_OUTPUT, Signal.Type.OUTPUT));
+        }
         return list;
     }
 
