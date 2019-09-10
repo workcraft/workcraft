@@ -1,6 +1,7 @@
 package org.workcraft.plugins.cpog.sat;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 public class ProcessIO {
 
@@ -16,10 +17,10 @@ public class ProcessIO {
 
             limboole = Runtime.getRuntime().exec(process);
 
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(limboole.getOutputStream()));
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(limboole.getOutputStream(), StandardCharsets.UTF_8));
             writer.write(input);
             writer.close();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(limboole.getInputStream()));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(limboole.getInputStream(), StandardCharsets.UTF_8));
             String line;
             StringBuilder result = new StringBuilder();
             while ((line = reader.readLine()) != null) {
@@ -67,22 +68,19 @@ public class ProcessIO {
     }
 
     public static String readFile(File file) throws IOException {
-        String result;
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
 
         StringBuilder sb = new StringBuilder();
         String line;
         while ((line = reader.readLine()) != null) {
             sb.append(line + "\n");
         }
-
         reader.close();
-        result = sb.toString();
-        return result;
+        return sb.toString();
     }
 
     private static void writeFile(String text, File file) throws IOException {
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
         writer.write(text);
         writer.close();
     }

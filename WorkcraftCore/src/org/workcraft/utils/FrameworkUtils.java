@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.zip.ZipEntry;
@@ -29,7 +30,7 @@ import java.util.zip.ZipInputStream;
 public class FrameworkUtils {
 
     public static InputStream getUncompressedEntry(String name, InputStream zippedData) throws IOException {
-        ZipInputStream zis = new ZipInputStream(zippedData);
+        ZipInputStream zis = new ZipInputStream(zippedData, StandardCharsets.UTF_8);
         ZipEntry ze;
         while ((ze = zis.getNextEntry()) != null) {
             if (ze.getName().equals(name)) {

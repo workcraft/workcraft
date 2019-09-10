@@ -10,7 +10,6 @@ import java.awt.image.BufferedImage;
 
 public class SizeHelper {
 
-    private static final double FONT_SIZE = CommonVisualSettings.getFontSize();
     private static final double ICON_SCALE_THRESHOLD = 0.2;
     private static final int WRAP_LENGTH = 100;
 
@@ -27,7 +26,7 @@ public class SizeHelper {
     }
 
     public static double getBaseSize() {
-        return FONT_SIZE * getScreenDpi() / 72.0;
+        return CommonVisualSettings.getFontSize() * getScreenDpi() / 72.0;
     }
 
     public static int getBaseFontSize() {
