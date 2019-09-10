@@ -1,6 +1,7 @@
 package org.workcraft.plugins.xbm;
 
 import org.workcraft.exceptions.ArgumentException;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.fsm.Symbol;
 import org.workcraft.plugins.fsm.VisualEvent;
 
@@ -16,7 +17,8 @@ public class Burst extends Symbol {
         PLUS("+"),
         MINUS("-"),
         STABLE("~"),
-        UNSTABLE("*");
+        UNSTABLE("*"),
+        CLEAR("CLEAR");
 
         private final String name;
 
@@ -39,6 +41,8 @@ public class Burst extends Symbol {
                     return Direction.UNSTABLE;
                 case UNSTABLE:
                     return Direction.STABLE;
+                case CLEAR:
+                    return Direction.CLEAR;
                 default:
                     return this;
             }
@@ -57,9 +61,14 @@ public class Burst extends Symbol {
             else if (value.equals(UNSTABLE.toString())) {
                 return UNSTABLE;
             }
+            else if (value.equals(CLEAR)) {
+                return CLEAR;
+            }
             else throw new ArgumentException("An unknown direction was set for the signal.");
         }
     }
+
+    public static final String PROPERTY_DIRECTION = "Direction";
 
     private Map<Signal, Direction> direction = new LinkedHashMap<>();
     private XbmState from;
@@ -131,6 +140,9 @@ public class Burst extends Symbol {
                  (fromState == SignalState.DDC && toState == SignalState.DDC)) {
             direction.remove(s);
         }
+        else {
+            direction.put(s, Direction.CLEAR);
+        }
     }
 
     public void setFrom(XbmState from) {
@@ -165,18 +177,21 @@ public class Burst extends Symbol {
             Signal signal = entry.getKey();
             Burst.Direction direction = entry.getValue();
 
-            String signalName = signal.getName();
-            switch (signal.getType()) {
-                case INPUT:
-                    inputs = appendTargetToList(inputs, signalName + direction);
-                    break;
-                case OUTPUT:
-                    outputs = appendTargetToList(outputs, signalName + direction);
-                    break;
-                case DUMMY: case CONDITIONAL:
-                    break;
-                default:
-                    throw new RuntimeException("An unknown signal type was detected for signal " + signalName);
+            if (direction != Direction.CLEAR) {
+
+                String signalName = signal.getName();
+                switch (signal.getType()) {
+                    case INPUT:
+                        inputs = appendTargetToList(inputs, signalName + direction);
+                        break;
+                    case OUTPUT:
+                        outputs = appendTargetToList(outputs, signalName + direction);
+                        break;
+                    case DUMMY: case CONDITIONAL:
+                        break;
+                    default:
+                        throw new RuntimeException("An unknown signal type was detected for signal " + signalName);
+                }
             }
         }
         if (!inputs.isEmpty() || !outputs.isEmpty()) return inputs + " / " + outputs;

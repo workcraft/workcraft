@@ -85,4 +85,23 @@ public class SignalPropertyDescriptors {
             }
         };
     }
+
+    public static final PropertyDescriptor directionProperty(final VisualXbm visualXbm, final BurstEvent targetBurstEvent, final Signal targetSignal) {
+        final Xbm xbm = visualXbm.getMathModel();
+        final String propertyName = xbm.getName(targetSignal) + " direction";
+        return new PropertyDeclaration<BurstEvent, Burst.Direction>
+                (targetBurstEvent, propertyName, Burst.Direction.class, true, true) {
+
+            @Override
+            public void setter(BurstEvent object, Burst.Direction value) {
+                object.addOrChangeSignalDirection(targetSignal, value);
+            }
+
+            @Override
+            public Burst.Direction getter(BurstEvent object) {
+                Burst burst = object.getBurst();
+                return burst.getDirection().get(targetSignal);
+            }
+        };
+    }
 }

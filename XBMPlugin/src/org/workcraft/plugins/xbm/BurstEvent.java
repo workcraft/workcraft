@@ -65,6 +65,11 @@ public class BurstEvent extends Event {
         return !conditional.isEmpty();
     }
 
+    public void addOrChangeSignalDirection(Signal s, Burst.Direction d) {
+        burst.addOrChangeSignalDirection(s, d);
+        sendNotification(new PropertyChangedEvent(this, Burst.PROPERTY_DIRECTION));
+    }
+
     public String getAsString() {
 
         final Burst burst = getBurst();
