@@ -6,7 +6,7 @@ import java.util.List;
 
 public abstract class Nf<C> implements BooleanFormula {
 
-    private List<C> clauses = new ArrayList<>();
+    private final List<C> clauses = new ArrayList<>();
 
     public Nf() {
     }
@@ -16,11 +16,7 @@ public abstract class Nf<C> implements BooleanFormula {
     }
 
     public Nf(List<C> clauses) {
-        this.clauses = new ArrayList<>(clauses);
-    }
-
-    public void setClauses(List<C> clauses) {
-        this.clauses = new ArrayList<>(clauses);
+        this.clauses.addAll(clauses);
     }
 
     public List<C> getClauses() {

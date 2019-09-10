@@ -1,9 +1,9 @@
 package org.workcraft.formula.dnf;
 
 import org.workcraft.formula.*;
-import org.workcraft.formula.utils.BooleanUtils;
+import org.workcraft.formula.utils.ClauseUtils;
 
-public class DnfConverter {
+public class DnfGenerator {
 
     private static class DnfVisitor implements BooleanVisitor<Dnf> {
 
@@ -127,7 +127,7 @@ public class DnfConverter {
         }
 
         private static Dnf simplifyDnf(Dnf dnf) {
-            return new Dnf(BooleanUtils.extractEssentialClauses(dnf));
+            return new Dnf(ClauseUtils.extractEssentialClauses(dnf));
         }
 
     }

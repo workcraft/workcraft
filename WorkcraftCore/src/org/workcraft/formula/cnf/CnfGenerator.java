@@ -1,9 +1,9 @@
 package org.workcraft.formula.cnf;
 
 import org.workcraft.formula.*;
-import org.workcraft.formula.utils.BooleanUtils;
+import org.workcraft.formula.utils.ClauseUtils;
 
-public class CnfConverter {
+public class CnfGenerator {
 
     private static class CnfVisitor implements BooleanVisitor<Cnf> {
 
@@ -79,21 +79,14 @@ public class CnfConverter {
         }
 
         private Cnf and(Cnf left, Cnf right) {
-            return negation ? orCnf(left, right) : multiplyCnf(left, right);
+            return negation ? addCnf(left, right) : multiplyCnf(left, right);
         }
 
         private Cnf or(Cnf left, Cnf right) {
-            return negation ? multiplyCnf(left, right) : orCnf(left, right);
+            return negation ? multiplyCnf(left, right) : addCnf(left, right);
         }
 
-        private static Cnf orCnf(Cnf left, Cnf right) {
-            Cnf result = new Cnf();
-            result.add(left);
-            result.add(right);
-            return simplifyCnf(result);
-        }
-
-        private static Cnf multiplyCnf(Cnf left, Cnf right) {
+        private static Cnf addCnf(Cnf left, Cnf right) {
             Cnf result = new Cnf();
             for (CnfClause leftClause : left.getClauses()) {
                 for (CnfClause rightClause : right.getClauses()) {
@@ -126,8 +119,15 @@ public class CnfConverter {
             return simplifyCnf(result);
         }
 
+        private static Cnf multiplyCnf(Cnf left, Cnf right) {
+            Cnf result = new Cnf();
+            result.add(left);
+            result.add(right);
+            return simplifyCnf(result);
+        }
+
         private static Cnf simplifyCnf(Cnf cnf) {
-            return new Cnf(BooleanUtils.extractEssentialClauses(cnf));
+            return new Cnf(ClauseUtils.extractEssentialClauses(cnf));
         }
 
     }

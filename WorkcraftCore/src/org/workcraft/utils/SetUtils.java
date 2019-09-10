@@ -1,5 +1,6 @@
 package org.workcraft.utils;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -42,6 +43,22 @@ public class SetUtils {
         result.removeAll(tmp);
         return result;
 
+    }
+
+    public static <T> boolean isFirstSmaller(HashSet<T> set1, HashSet<T> set2, boolean equalWins) {
+        if (set2.containsAll(set1)) {
+            if (set2.size() > set1.size()) return true;
+            return equalWins;
+        }
+        return false;
+    }
+
+    public static <T> Set<Set<T>> convertArraysToSets(T[][] w) {
+        Set<Set<T>> result = new HashSet<>();
+        for (T[] v : w) {
+            result.add(new HashSet<>(Arrays.asList(v)));
+        }
+        return result;
     }
 
 }

@@ -13,7 +13,7 @@ import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.Literal;
 import org.workcraft.formula.dnf.Dnf;
 import org.workcraft.formula.dnf.DnfClause;
-import org.workcraft.formula.dnf.DnfConverter;
+import org.workcraft.formula.dnf.DnfGenerator;
 import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
@@ -240,10 +240,10 @@ public class CircuitToStgConverter {
             } else if ((setFunc == null) && (resetFunc != null)) {
                 setFunc = BooleanOperations.not(resetFunc);
             }
-            Dnf setDnf = DnfConverter.generate(setFunc);
+            Dnf setDnf = DnfGenerator.generate(setFunc);
             createSignalStgTransitions(driver, setDnf, SignalTransition.Direction.PLUS);
 
-            Dnf resetDnf = DnfConverter.generate(resetFunc);
+            Dnf resetDnf = DnfGenerator.generate(resetFunc);
             createSignalStgTransitions(driver, resetDnf, SignalTransition.Direction.MINUS);
         }
     }
