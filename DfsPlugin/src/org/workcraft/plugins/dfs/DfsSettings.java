@@ -3,13 +3,13 @@ package org.workcraft.plugins.dfs;
 import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.Settings;
+import org.workcraft.plugins.builtin.settings.AbstractModelSettings;
 
 import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 
-public class DfsSettings implements Settings {
+public class DfsSettings extends AbstractModelSettings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "DfsSettings";
 
@@ -105,11 +105,6 @@ public class DfsSettings implements Settings {
         config.setColor(keyComputedLogicColor, getComputedLogicColor());
         config.setColor(keySynchronisationRegisterColor, getSynchronisationRegisterColor());
         config.setEnum(keyTokenPalette, getTokenPalette());
-    }
-
-    @Override
-    public String getSection() {
-        return "Models";
     }
 
     @Override

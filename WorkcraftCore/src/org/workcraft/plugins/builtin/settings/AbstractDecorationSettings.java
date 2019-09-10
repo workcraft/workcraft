@@ -9,9 +9,4 @@ public abstract class AbstractDecorationSettings implements Settings {
         return "Decoration";
     }
 
-    @Override
-    public String getName() {
-        return "Common";
-    }
-
 }

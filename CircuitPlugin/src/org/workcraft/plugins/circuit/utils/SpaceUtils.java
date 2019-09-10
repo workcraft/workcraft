@@ -3,7 +3,6 @@ package org.workcraft.plugins.circuit.utils;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.ConnectionUtils;
-import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.utils.Hierarchy;
@@ -43,22 +42,21 @@ public class SpaceUtils {
         double xSpace = dx * (space - minSpace);
         double ySpace = dy * (space - minSpace);
 
-        Collection<VisualTransformableNode> components = Hierarchy.getDescendantsOfType(circuit.getRoot(),
-                VisualTransformableNode.class, node -> !(node instanceof VisualGroup)
-                        && !(node instanceof VisualPage) && !(node instanceof ControlPoint)
+        Collection<VisualComponent> components = Hierarchy.getDescendantsOfType(circuit.getRoot(),
+                VisualComponent.class, node -> !(node instanceof VisualPage)
                         && !((node instanceof VisualContact) && ((VisualContact) node).isPin()));
 
-        for (VisualTransformableNode node : components) {
-            Rectangle2D bb = node.getBoundingBoxInLocalSpace();
-            double x = node.getRootSpaceX();
+        for (VisualComponent component : components) {
+            Rectangle2D bb = component.getInternalBoundingBoxInLocalSpace();
+            double x = component.getRootSpaceX();
             double xBorder = x + bb.getX() + ((dx < 0) ? bb.getWidth() : 0.0);
             if ((xBorder - x0) * dx > 0) {
-                node.setRootSpaceX(x + xSpace);
+                component.setRootSpaceX(x + xSpace);
             }
-            double y = node.getRootSpaceY();
+            double y = component.getRootSpaceY();
             double yBorder = y + bb.getY() + ((dy < 0) ? bb.getHeight() : 0.0);
             if ((yBorder - y0) * dy > 0) {
-                node.setRootSpaceY(y + ySpace);
+                component.setRootSpaceY(y + ySpace);
             }
         }
     }
@@ -70,16 +68,16 @@ public class SpaceUtils {
         double x0 = contact.getRootSpaceX();
         double y0 = contact.getRootSpaceY();
         for (Node node : circuit.getPostset(contact)) {
-            if (node instanceof VisualTransformableNode) {
-                VisualTransformableNode transformableNode = (VisualTransformableNode) node;
-                Rectangle2D bb = transformableNode.getBoundingBoxInLocalSpace();
-                double x = transformableNode.getRootSpaceX();
+            if (node instanceof VisualComponent) {
+                VisualComponent component = (VisualComponent) node;
+                Rectangle2D bb = component.getInternalBoundingBoxInLocalSpace();
+                double x = component.getRootSpaceX();
                 double xBorder = x + bb.getX() + ((dx < 0) ? bb.getWidth() : 0.0);
                 double xSpace = Math.abs(xBorder - x0);
                 if (((xBorder - x0) * dx > 0) && (xSpace < result)) {
                     result = xSpace;
                 }
-                double y = transformableNode.getRootSpaceY();
+                double y = component.getRootSpaceY();
                 double yBorder = y + bb.getY() + ((dy < 0) ? bb.getHeight() : 0.0);
                 double ySpace = Math.abs(yBorder - y0);
                 if (((yBorder - y0) * dy > 0) && (ySpace < result)) {

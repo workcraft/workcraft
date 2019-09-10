@@ -12,7 +12,8 @@ if [ ! -f WorkcraftCore/build/libs/WorkcraftCore.jar ]; then
     exit 1
 fi
 
-# Run Workcraft with classpath for all plugins
-export CLASSPATH="$(ls -1 */build/libs/*.jar | tr '\n' ':')"
+# Run Workcraft with classpath for all plugins, excluding private plugins (their name strart with underscore)
+
+export CLASSPATH="$(ls -1 [^_]*/build/libs/*.jar | tr '\n' ':')"
 
 java org.workcraft.Console -dir:"$CURRENT_DIR" "$@"

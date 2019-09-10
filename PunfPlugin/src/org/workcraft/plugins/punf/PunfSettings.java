@@ -1,15 +1,15 @@
 package org.workcraft.plugins.punf;
 
 import org.workcraft.Config;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.Settings;
+import org.workcraft.plugins.builtin.settings.AbstractToolSettings;
+import org.workcraft.utils.DesktopApi;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class PunfSettings implements Settings {
+public class PunfSettings extends AbstractToolSettings {
 
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "Tools.punf";
@@ -115,11 +115,6 @@ public class PunfSettings implements Settings {
         config.setBoolean(keyPrintStdout, getPrintStdout());
         config.setBoolean(keyPrintStderr, getPrintStderr());
         config.setBoolean(keyUseMciCsc, getUseMciCsc());
-    }
-
-    @Override
-    public String getSection() {
-        return "External tools";
     }
 
     @Override

@@ -3,14 +3,14 @@ package org.workcraft.plugins.wtg;
 import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.Settings;
+import org.workcraft.plugins.builtin.settings.AbstractModelSettings;
 import org.workcraft.utils.DialogUtils;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class WtgSettings implements Settings {
+public class WtgSettings extends AbstractModelSettings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "WtgSettings";
 
@@ -197,11 +197,6 @@ public class WtgSettings implements Settings {
         config.set(keyEntryEventSuffix, getEntryEventSuffix());
         config.set(keyExitEventSuffix, getExitEventSuffix());
         config.set(keyInactivePlaceSuffix, getInactivePlaceSuffix());
-    }
-
-    @Override
-    public String getSection() {
-        return "Models";
     }
 
     @Override

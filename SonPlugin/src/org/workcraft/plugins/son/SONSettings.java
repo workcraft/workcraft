@@ -3,14 +3,14 @@ package org.workcraft.plugins.son;
 import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.Settings;
+import org.workcraft.plugins.builtin.settings.AbstractModelSettings;
 import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 
 import java.awt.*;
 import java.util.Collection;
 import java.util.LinkedList;
 
-public class SONSettings implements Settings {
+public class SONSettings extends AbstractModelSettings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "SONSettings";
 
@@ -129,11 +129,6 @@ public class SONSettings implements Settings {
         config.setColor(keyCyclePathColor, getCyclePathColor());
         config.setColor(keyConnectionErrColor, getConnectionErrColor());
         config.setColor(keyErrLabelColor, getErrLabelColor());
-    }
-
-    @Override
-    public String getSection() {
-        return "Models";
     }
 
     @Override

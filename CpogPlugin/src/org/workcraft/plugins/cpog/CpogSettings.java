@@ -1,15 +1,31 @@
 package org.workcraft.plugins.cpog;
 
 import org.workcraft.Config;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.Settings;
+import org.workcraft.plugins.builtin.settings.AbstractModelSettings;
+import org.workcraft.utils.DesktopApi;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
-public class CpogSettings implements Settings {
+public class CpogSettings extends AbstractModelSettings {
+
+    public enum SatSolver {
+        MINISAT("MiniSat"),
+        CLASP("Clasp");
+
+        public final String name;
+
+        SatSolver(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
 
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CpogSettings";
@@ -18,16 +34,25 @@ public class CpogSettings implements Settings {
     private static final String keyEspressoCommand = prefix + ".espressoCommand";
     private static final String keyAbcTool = prefix + ".abcTool";
     private static final String keyPGMinerCommand = prefix + ".PGMinerCommand";
+    private static final String keySatSolver = prefix + ".satSolver";
+    private static final String keyClaspCommand = prefix + ".claspCommand";
+    private static final String keyMinisatCommand = prefix + ".minisatCommand";
 
     private static final String defaultScencoCommand = DesktopApi.getOs().isWindows() ? "tools\\ScEnco\\scenco.exe" : "tools/ScEnco/scenco";
     private static final String defaultEspressoCommand = DesktopApi.getOs().isWindows() ? "tools\\Espresso\\espresso.exe" : "tools/Espresso/espresso";
     private static final String defaultAbcTool = DesktopApi.getOs().isWindows() ? "tools\\Abc\\abc.exe" : "tools/Abc/abc";
     private static final String defaultPgminerCommand = DesktopApi.getOs().isWindows() ? "tools\\PGMiner\\pgminer.exe" : "tools/PGMiner/pgminer";
+    private static final SatSolver defaultSatSolver = SatSolver.CLASP;
+    private static final String defaultClaspCommand = "clasp";
+    private static final String defaultMinisatCommand = "minisat";
 
     private static String scencoCommand = defaultScencoCommand;
     private static String espressoCommand = defaultEspressoCommand;
     private static String abcTool = defaultAbcTool;
     private static String pgminerCommand = defaultPgminerCommand;
+    private static SatSolver satSolver = defaultSatSolver;
+    private static String claspCommand = defaultClaspCommand;
+    private static String minisatCommand = defaultMinisatCommand;
 
     public CpogSettings() {
         properties.add(new PropertyDeclaration<CpogSettings, String>(
@@ -77,6 +102,42 @@ public class CpogSettings implements Settings {
                 return getPgminerCommand();
             }
         });
+
+        properties.add(new PropertyDeclaration<CpogSettings, SatSolver>(
+                this, "SAT solver", SatSolver.class) {
+            @Override
+            public void setter(CpogSettings object, SatSolver value) {
+                setSatSolver(value);
+            }
+            @Override
+            public SatSolver getter(CpogSettings object) {
+                return getSatSolver();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CpogSettings, String>(
+                this, "Clasp solver command", String.class) {
+            @Override
+            public void setter(CpogSettings object, String value) {
+                setClaspCommand(value);
+            }
+            @Override
+            public String getter(CpogSettings object) {
+                return getClaspCommand();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CpogSettings, String>(
+                this, "MiniSat solver command", String.class) {
+            @Override
+            public void setter(CpogSettings object, String value) {
+                setMinisatCommand(value);
+            }
+            @Override
+            public String getter(CpogSettings object) {
+                return getMinisatCommand();
+            }
+        });
     }
 
     @Override
@@ -85,6 +146,9 @@ public class CpogSettings implements Settings {
         setEspressoCommand(config.getString(keyEspressoCommand, defaultEspressoCommand));
         setAbcTool(config.getString(keyAbcTool, defaultAbcTool));
         setPgminerCommand(config.getString(keyPGMinerCommand, defaultPgminerCommand));
+        setSatSolver(config.getEnum(keySatSolver, SatSolver.class, defaultSatSolver));
+        setClaspCommand(config.getString(keyClaspCommand, defaultClaspCommand));
+        setMinisatCommand(config.getString(keyMinisatCommand, defaultMinisatCommand));
     }
 
     @Override
@@ -93,6 +157,9 @@ public class CpogSettings implements Settings {
         config.set(keyEspressoCommand, getEspressoCommand());
         config.set(keyAbcTool, getAbcTool());
         config.set(keyPGMinerCommand, getPgminerCommand());
+        config.setEnum(keySatSolver, getSatSolver());
+        config.set(keyClaspCommand, getClaspCommand());
+        config.set(keyMinisatCommand, getMinisatCommand());
     }
 
     @Override
@@ -101,13 +168,8 @@ public class CpogSettings implements Settings {
     }
 
     @Override
-    public String getSection() {
-        return "External tools";
-    }
-
-    @Override
     public String getName() {
-        return "SCENCO";
+        return "Conditional Partial Order Graph";
     }
 
     public static String getScencoCommand() {
@@ -140,6 +202,30 @@ public class CpogSettings implements Settings {
 
     public static String getPgminerCommand() {
         return pgminerCommand;
+    }
+
+    public static SatSolver getSatSolver() {
+        return satSolver;
+    }
+
+    public static void setSatSolver(SatSolver value) {
+        satSolver = value;
+    }
+
+    public static String getClaspCommand() {
+        return claspCommand;
+    }
+
+    public static void setClaspCommand(String value) {
+        claspCommand = value;
+    }
+
+    public static String getMinisatCommand() {
+        return minisatCommand;
+    }
+
+    public static void setMinisatCommand(String value) {
+        minisatCommand = value;
     }
 
 }

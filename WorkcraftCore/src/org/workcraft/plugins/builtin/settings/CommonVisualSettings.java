@@ -4,13 +4,12 @@ import org.workcraft.Config;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.Settings;
 
 import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CommonVisualSettings implements Settings {
+public class CommonVisualSettings extends AbstractCommonSettings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CommonVisualSettings";
 
@@ -431,11 +430,6 @@ public class CommonVisualSettings implements Settings {
         config.setDouble(keyConnectionBubbleSize, getConnectionBubbleSize());
         config.setColor(keyConnectionColor, getConnectionColor());
         config.setBoolean(keyUseSubscript, getUseSubscript());
-    }
-
-    @Override
-    public String getSection() {
-        return "Common";
     }
 
     @Override

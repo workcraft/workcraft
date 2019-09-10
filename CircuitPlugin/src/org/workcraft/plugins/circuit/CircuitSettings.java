@@ -3,7 +3,7 @@ package org.workcraft.plugins.circuit;
 import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.Settings;
+import org.workcraft.plugins.builtin.settings.AbstractModelSettings;
 import org.workcraft.plugins.circuit.utils.Gate2;
 import org.workcraft.plugins.circuit.utils.Gate3;
 import org.workcraft.plugins.stg.Mutex;
@@ -21,7 +21,7 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CircuitSettings implements Settings {
+public class CircuitSettings extends AbstractModelSettings {
 
     private static final Pattern MUTEX_DATA_PATTERN = Pattern.compile(
             "(\\w+)\\(\\((\\w+),(\\w+)\\),\\((\\w+),(\\w+)\\)\\)");
@@ -598,11 +598,6 @@ public class CircuitSettings implements Settings {
     @Override
     public Collection<PropertyDescriptor> getDescriptors() {
         return properties;
-    }
-
-    @Override
-    public String getSection() {
-        return "Models";
     }
 
     @Override

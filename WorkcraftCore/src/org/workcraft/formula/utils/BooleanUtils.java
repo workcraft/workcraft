@@ -1,16 +1,9 @@
 package org.workcraft.formula.utils;
 
+import org.workcraft.formula.*;
+
 import java.util.Arrays;
 import java.util.List;
-
-import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.BooleanOperations;
-import org.workcraft.formula.BooleanVariable;
-import org.workcraft.formula.BooleanWorker;
-import org.workcraft.formula.CleverBooleanWorker;
-import org.workcraft.formula.DumbBooleanWorker;
-import org.workcraft.formula.MemoryConservingBooleanWorker;
-import org.workcraft.formula.PrettifyBooleanWorker;
 
 public class BooleanUtils {
 

@@ -1,17 +1,16 @@
 package org.workcraft.plugins.fst;
 
-import org.workcraft.plugins.CompatibilityManager;
 import org.workcraft.Framework;
+import org.workcraft.Version;
+import org.workcraft.plugins.CompatibilityManager;
 import org.workcraft.plugins.Plugin;
 import org.workcraft.plugins.PluginManager;
-import org.workcraft.Version;
-import org.workcraft.utils.ScriptableCommandUtils;
-import org.workcraft.plugins.fst.commands.ExtractWindowsCommand;
 import org.workcraft.plugins.fst.commands.FsmToFstConversionCommand;
 import org.workcraft.plugins.fst.commands.FstToFsmConversionCommand;
 import org.workcraft.plugins.fst.commands.FstToStgConversionCommand;
 import org.workcraft.plugins.fst.interop.SgExporter;
 import org.workcraft.plugins.fst.interop.SgImporter;
+import org.workcraft.utils.ScriptableCommandUtils;
 
 @SuppressWarnings("unused")
 public class FstPlugin implements Plugin {
@@ -32,7 +31,6 @@ public class FstPlugin implements Plugin {
         final PluginManager pm = framework.getPluginManager();
 
         pm.registerModelDescriptor(FstDescriptor.class);
-        pm.registerSettings(ProcessWindowsSettings.class);
 
         pm.registerExporter(SgExporter.class);
         pm.registerImporter(SgImporter.class);
@@ -43,8 +41,6 @@ public class FstPlugin implements Plugin {
                 "convert the given FSM 'work' into a new FST work");
         ScriptableCommandUtils.register(FstToFsmConversionCommand.class, "convertFstToFsm",
                 "convert the given FST 'work' into a new FSM work");
-
-        pm.registerCommand(ExtractWindowsCommand.class);
     }
 
     private void initCompatibilityManager() {

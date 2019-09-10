@@ -1,15 +1,15 @@
 package org.workcraft.plugins.builtin.settings;
-import java.awt.Color;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.workcraft.Config;
 import org.workcraft.dom.visual.Alignment;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.Settings;
 
-public class CommonCommentSettings implements Settings {
+import java.awt.*;
+import java.util.LinkedList;
+import java.util.List;
+
+public class CommonCommentSettings extends AbstractCommonSettings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CommonCommentSettings";
 
@@ -131,11 +131,6 @@ public class CommonCommentSettings implements Settings {
         config.setColor(keyTextColor, getTextColor());
         config.setColor(keyBorderColor, getBorderColor());
         config.setColor(keyFillColor, getFillColor());
-    }
-
-    @Override
-    public String getSection() {
-        return "Common";
     }
 
     @Override

@@ -1,10 +1,10 @@
 package org.workcraft.formula.cnf;
 
-import java.util.List;
-
 import org.workcraft.formula.BooleanOperations;
 import org.workcraft.formula.BooleanVisitor;
 import org.workcraft.formula.Nf;
+
+import java.util.List;
 
 public class Cnf extends Nf<CnfClause> {
 
@@ -17,15 +17,6 @@ public class Cnf extends Nf<CnfClause> {
 
     public Cnf(List<CnfClause> clauses) {
         super(clauses);
-    }
-
-    @Override
-    public String toString() {
-        return new HumanReadableCnfPrinter().print(this);
-    }
-
-    public String toString(CnfPrinter cnfPrinter) {
-        return cnfPrinter.print(this);
     }
 
     @Override
