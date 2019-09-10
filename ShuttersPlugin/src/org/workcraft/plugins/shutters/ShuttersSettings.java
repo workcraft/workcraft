@@ -1,17 +1,18 @@
-package org.workcraft.plugins.fst;
+package org.workcraft.plugins.shutters;
 
 import org.workcraft.Config;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.Settings;
+import org.workcraft.plugins.builtin.settings.AbstractToolSettings;
+import org.workcraft.utils.DesktopApi;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
-public class ProcessWindowsSettings implements Settings {
+public class ShuttersSettings extends AbstractToolSettings {
+
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
-    private static final String prefix = "ProcessWindowsSettings";
+    private static final String prefix = "ShuttersSettings";
 
     private static final String keyShuttersCommand = prefix + ".shuttersCommand";
     private static final String keyLtscatFolder = prefix + ".ltscatfolder";
@@ -38,64 +39,64 @@ public class ProcessWindowsSettings implements Settings {
     private static String espressoCommand = defaultEspressoCommand;
     private static String abcCommand = defaultAbcCommand;
 
-    public ProcessWindowsSettings() {
+    public ShuttersSettings() {
 
-        properties.add(new PropertyDeclaration<ProcessWindowsSettings, String>(
+        properties.add(new PropertyDeclaration<ShuttersSettings, String>(
                 this, "Ltscat module path", String.class) {
             @Override
-            public void setter(ProcessWindowsSettings object, String value) {
+            public void setter(ShuttersSettings object, String value) {
                 setLtscatFolder(value);
             }
             @Override
-            public String getter(ProcessWindowsSettings object) {
+            public String getter(ShuttersSettings object) {
                 return getLtscatFolder();
             }
         });
 
-        properties.add(new PropertyDeclaration<ProcessWindowsSettings, String>(
+        properties.add(new PropertyDeclaration<ShuttersSettings, String>(
                 this, "Shutters command", String.class) {
             @Override
-            public void setter(ProcessWindowsSettings object, String value) {
+            public void setter(ShuttersSettings object, String value) {
                 setShuttersCommand(value);
             }
             @Override
-            public String getter(ProcessWindowsSettings object) {
+            public String getter(ShuttersSettings object) {
                 return getShuttersCommand();
             }
         });
 
-        properties.add(new PropertyDeclaration<ProcessWindowsSettings, String>(
+        properties.add(new PropertyDeclaration<ShuttersSettings, String>(
                 this, "Espresso command", String.class) {
             @Override
-            public void setter(ProcessWindowsSettings object, String value) {
+            public void setter(ShuttersSettings object, String value) {
                 setEspressoCommand(value);
             }
             @Override
-            public String getter(ProcessWindowsSettings object) {
+            public String getter(ShuttersSettings object) {
                 return getEspressoCommand();
             }
         });
 
-        properties.add(new PropertyDeclaration<ProcessWindowsSettings, String>(
+        properties.add(new PropertyDeclaration<ShuttersSettings, String>(
                 this, "Abc command", String.class) {
             @Override
-            public void setter(ProcessWindowsSettings object, String value) {
+            public void setter(ShuttersSettings object, String value) {
                 setAbcCommand(value);
             }
             @Override
-            public String getter(ProcessWindowsSettings object) {
+            public String getter(ShuttersSettings object) {
                 return getAbcCommand();
             }
         });
 
-        properties.add(new PropertyDeclaration<ProcessWindowsSettings, Boolean>(
+        properties.add(new PropertyDeclaration<ShuttersSettings, Boolean>(
                 this, "Force positive literals", Boolean.class) {
             @Override
-            public void setter(ProcessWindowsSettings object, Boolean value) {
+            public void setter(ShuttersSettings object, Boolean value) {
                 setForcePositiveMode(value);
             }
             @Override
-            public Boolean getter(ProcessWindowsSettings object) {
+            public Boolean getter(ShuttersSettings object) {
                 return getForcePositiveMode();
             }
         });
@@ -122,11 +123,6 @@ public class ProcessWindowsSettings implements Settings {
     @Override
     public Collection<PropertyDescriptor> getDescriptors() {
         return properties;
-    }
-
-    @Override
-    public String getSection() {
-        return "External tools";
     }
 
     @Override
@@ -187,7 +183,7 @@ public class ProcessWindowsSettings implements Settings {
     }
 
     public static void setEspressoCommand(String espressoCommand) {
-        ProcessWindowsSettings.espressoCommand = espressoCommand;
+        ShuttersSettings.espressoCommand = espressoCommand;
     }
 
     public static String getAbcCommand() {
@@ -195,6 +191,6 @@ public class ProcessWindowsSettings implements Settings {
     }
 
     public static void setAbcCommand(String abcCommand) {
-        ProcessWindowsSettings.abcCommand = abcCommand;
+        ShuttersSettings.abcCommand = abcCommand;
     }
 }

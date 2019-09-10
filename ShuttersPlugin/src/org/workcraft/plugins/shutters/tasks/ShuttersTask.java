@@ -1,7 +1,7 @@
-package org.workcraft.plugins.fst.tasks;
+package org.workcraft.plugins.shutters.tasks;
 
 import org.workcraft.interop.ExternalProcessListener;
-import org.workcraft.plugins.fst.ProcessWindowsSettings;
+import org.workcraft.plugins.shutters.ShuttersSettings;
 import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DesktopApi;
@@ -89,14 +89,14 @@ public class ShuttersTask implements Task<ShuttersResult>, ExternalProcessListen
         ArrayList<String> args = new ArrayList<>();
         File f = null;
 
-        args.add(ExecutableUtils.getAbsoluteCommandPath(ProcessWindowsSettings.getShuttersCommand()));
+        args.add(ExecutableUtils.getAbsoluteCommandPath(ShuttersSettings.getShuttersCommand()));
         args.add(tmpDir.getAbsolutePath()
                 + (DesktopApi.getOs().isWindows() ? "\\" : "/")
                 + we.getTitle()
-                + ProcessWindowsSettings.getMarkingsExtension());
+                + ShuttersSettings.getMarkingsExtension());
 
         // Espresso related arguments
-        f = new File(ExecutableUtils.getAbsoluteCommandPath(ProcessWindowsSettings.getEspressoCommand()));
+        f = new File(ExecutableUtils.getAbsoluteCommandPath(ShuttersSettings.getEspressoCommand()));
         if (!f.exists() || f.isDirectory()) {
             FileUtils.deleteOnExitRecursively(tmpDir);
             args.add("ERROR");
@@ -108,7 +108,7 @@ public class ShuttersTask implements Task<ShuttersResult>, ExternalProcessListen
         args.add(f.getAbsolutePath());
 
         // ABC related arguments
-        f = new File(ExecutableUtils.getAbsoluteCommandPath(ProcessWindowsSettings.getAbcCommand()));
+        f = new File(ExecutableUtils.getAbsoluteCommandPath(ShuttersSettings.getAbcCommand()));
         if (f.exists() && !f.isDirectory()) {
             args.add("-a");
             args.add(f.getAbsolutePath());
@@ -117,7 +117,7 @@ public class ShuttersTask implements Task<ShuttersResult>, ExternalProcessListen
         }
 
         // Positive mode related argument
-        if (ProcessWindowsSettings.getForcePositiveMode()) {
+        if (ShuttersSettings.getForcePositiveMode()) {
             args.add("-p");
         }
 

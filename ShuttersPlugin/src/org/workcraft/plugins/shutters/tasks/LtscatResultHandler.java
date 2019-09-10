@@ -1,15 +1,8 @@
-package org.workcraft.plugins.fst.tasks;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-
-import javax.swing.JOptionPane;
+package org.workcraft.plugins.shutters.tasks;
 
 import org.workcraft.Framework;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.plugins.fst.ProcessWindowsSettings;
+import org.workcraft.plugins.shutters.ShuttersSettings;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgImporter;
@@ -17,9 +10,15 @@ import org.workcraft.tasks.AbstractResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.TaskManager;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
 public class LtscatResultHandler extends AbstractResultHandler<LtscatResult>  {
 
@@ -86,6 +85,6 @@ public class LtscatResultHandler extends AbstractResultHandler<LtscatResult>  {
                 + (DesktopApi.getOs().isWindows() ? "\\" : "/")
                 + we.getTitle()
                 + window
-                + ProcessWindowsSettings.getWindowsExtension();
+                + ShuttersSettings.getWindowsExtension();
     }
 }

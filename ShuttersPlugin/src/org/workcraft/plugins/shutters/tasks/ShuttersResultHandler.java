@@ -1,4 +1,4 @@
-package org.workcraft.plugins.fst.tasks;
+package org.workcraft.plugins.shutters.tasks;
 
 import java.io.File;
 

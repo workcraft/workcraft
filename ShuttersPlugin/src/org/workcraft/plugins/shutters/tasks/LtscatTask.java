@@ -1,19 +1,14 @@
-package org.workcraft.plugins.fst.tasks;
+package org.workcraft.plugins.shutters.tasks;
+
+import org.workcraft.interop.ExternalProcessListener;
+import org.workcraft.plugins.shutters.ShuttersSettings;
+import org.workcraft.tasks.*;
+import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.utils.FileUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 import java.util.ArrayList;
-
-import org.workcraft.interop.ExternalProcessListener;
-import org.workcraft.plugins.fst.ProcessWindowsSettings;
-import org.workcraft.tasks.ExternalProcessOutput;
-import org.workcraft.tasks.ExternalProcessTask;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.tasks.SubtaskMonitor;
-import org.workcraft.tasks.Task;
-import org.workcraft.utils.FileUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 
 public class LtscatTask implements Task<LtscatResult>, ExternalProcessListener {
 
@@ -31,7 +26,7 @@ public class LtscatTask implements Task<LtscatResult>, ExternalProcessListener {
     public Result<? extends LtscatResult> run(ProgressMonitor<? super LtscatResult> monitor) {
         ArrayList<String> args = new ArrayList<>();
 
-        args.add(ProcessWindowsSettings.getPython3Command());
+        args.add(ShuttersSettings.getPython3Command());
         args.add(scriptFile.getAbsolutePath());
 
         // Running the tool through external process interface

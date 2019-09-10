@@ -1,14 +1,15 @@
-package org.workcraft.plugins.fst.commands;
+package org.workcraft.plugins.shutters.commands;
 
 import org.workcraft.Framework;
+import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.commands.Command;
 import org.workcraft.commands.MenuOrdering;
 import org.workcraft.plugins.fst.Fst;
-import org.workcraft.plugins.fst.ProcessWindowsSettings;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.fst.interop.SgExporter;
-import org.workcraft.plugins.fst.tasks.LtscatResultHandler;
-import org.workcraft.plugins.fst.tasks.LtscatTask;
+import org.workcraft.plugins.shutters.ShuttersSettings;
+import org.workcraft.plugins.shutters.tasks.LtscatResultHandler;
+import org.workcraft.plugins.shutters.tasks.LtscatTask;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.ExecutableUtils;
@@ -22,7 +23,7 @@ public class ExtractWindowsCommand implements Command, MenuOrdering {
 
     @Override
     public final String getSection() {
-        return org.workcraft.commands.AbstractConversionCommand.SECTION_TITLE;
+        return AbstractConversionCommand.SECTION_TITLE;
     }
 
     @Override
@@ -50,8 +51,8 @@ public class ExtractWindowsCommand implements Command, MenuOrdering {
         File dir;
         File sgFile;
         File scriptFile;
-        String sgFileName = we.getTitle() + ProcessWindowsSettings.getExportedFstExtension();
-        String scriptFileName = ProcessWindowsSettings.getScriptName();
+        String sgFileName = we.getTitle() + ShuttersSettings.getExportedFstExtension();
+        String scriptFileName = ShuttersSettings.getScriptName();
         SgExporter exporter = new SgExporter();
 
         // temporary directory
@@ -86,8 +87,8 @@ public class ExtractWindowsCommand implements Command, MenuOrdering {
 
     private File writeScript(File dir, String scriptName, String sgName, String title) {
         File script = new File(dir, scriptName);
-        File ltscatPath = new File(ExecutableUtils.getAbsoluteCommandPath(ProcessWindowsSettings.getLtscatFolder()));
-        String ltscatModule = ProcessWindowsSettings.getLtscatModuleName();
+        File ltscatPath = new File(ExecutableUtils.getAbsoluteCommandPath(ShuttersSettings.getLtscatFolder()));
+        String ltscatModule = ShuttersSettings.getLtscatModuleName();
 
         try {
             PrintWriter writer = new PrintWriter(script);
