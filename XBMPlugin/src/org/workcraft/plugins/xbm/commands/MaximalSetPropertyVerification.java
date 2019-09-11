@@ -4,12 +4,8 @@ import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.tools.SelectionTool;
-import org.workcraft.plugins.xbm.BurstEvent;
-import org.workcraft.plugins.xbm.VisualBurstEvent;
-import org.workcraft.plugins.xbm.VisualXbm;
-import org.workcraft.plugins.xbm.Xbm;
-import org.workcraft.plugins.xbm.Signal;
-import org.workcraft.plugins.xbm.Burst;
+import org.workcraft.plugins.xbm.*;
+import org.workcraft.plugins.xbm.XbmSignal;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.WorkspaceUtils;
@@ -72,17 +68,17 @@ public class MaximalSetPropertyVerification extends AbstractVerificationCommand 
                     Burst b1 = event1.getBurst();
                     Burst b2 = event2.getBurst();
 
-                    Set<Map.Entry<Signal, Burst.Direction>> b1map = new LinkedHashSet<>();
-                    Set<Map.Entry<Signal, Burst.Direction>> b2map = new LinkedHashSet<>();
-                    for (Map.Entry<Signal, Burst.Direction> entry: b1.getDirection().entrySet()) {
-                        Signal signal = entry.getKey();
-                        if (signal.getType() == Signal.Type.INPUT && (entry.getValue() == Burst.Direction.PLUS || entry.getValue() == Burst.Direction.MINUS)) {
+                    Set<Map.Entry<XbmSignal, Burst.Direction>> b1map = new LinkedHashSet<>();
+                    Set<Map.Entry<XbmSignal, Burst.Direction>> b2map = new LinkedHashSet<>();
+                    for (Map.Entry<XbmSignal, Burst.Direction> entry: b1.getDirection().entrySet()) {
+                        XbmSignal xbmSignal = entry.getKey();
+                        if (xbmSignal.getType() == XbmSignal.Type.INPUT && (entry.getValue() == Burst.Direction.PLUS || entry.getValue() == Burst.Direction.MINUS)) {
                             b1map.add(entry);
                         }
                     }
-                    for (Map.Entry<Signal, Burst.Direction> entry: b2.getDirection().entrySet()) {
-                        Signal signal = entry.getKey();
-                        if (signal.getType() == Signal.Type.INPUT && (entry.getValue() == Burst.Direction.PLUS || entry.getValue() == Burst.Direction.MINUS)) {
+                    for (Map.Entry<XbmSignal, Burst.Direction> entry: b2.getDirection().entrySet()) {
+                        XbmSignal xbmSignal = entry.getKey();
+                        if (xbmSignal.getType() == XbmSignal.Type.INPUT && (entry.getValue() == Burst.Direction.PLUS || entry.getValue() == Burst.Direction.MINUS)) {
                             b2map.add(entry);
                         }
                     }

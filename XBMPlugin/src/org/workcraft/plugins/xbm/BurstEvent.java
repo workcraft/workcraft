@@ -13,10 +13,10 @@ import org.workcraft.plugins.fsm.VisualEvent;
 @VisualClass(VisualBurstEvent.class)
 public class BurstEvent extends Event {
 
-    public static String PROPERTY_CONDITIONAL = "Conditional";
+    public final static String PROPERTY_CONDITIONAL = "Conditional";
 
     private Burst burst;
-    private Conditional conditional;
+    private final Conditional conditional;
 
     public BurstEvent() {
         conditional = new Conditional();
@@ -65,7 +65,7 @@ public class BurstEvent extends Event {
         return !conditional.isEmpty();
     }
 
-    public void addOrChangeSignalDirection(Signal s, Burst.Direction d) {
+    public void addOrChangeSignalDirection(XbmSignal s, Burst.Direction d) {
         burst.addOrChangeSignalDirection(s, d);
         sendNotification(new PropertyChangedEvent(this, Burst.PROPERTY_DIRECTION));
     }

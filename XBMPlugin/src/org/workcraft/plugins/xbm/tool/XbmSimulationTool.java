@@ -30,7 +30,7 @@ import java.util.Set;
 public class XbmSimulationTool extends PetriSimulationTool {
 
     private XbmToPetriConverter converter;
-    private final Map<Signal, Boolean> conditionalValue = new HashMap<>();
+    private final Map<XbmSignal, Boolean> conditionalValue = new HashMap<>();
     private final Set<JCheckBox> conditionalCheckBoxes = new LinkedHashSet<>();
 
     private final static String CHECKBOX_NAME_PREFIX = "checkBox";
@@ -62,8 +62,8 @@ public class XbmSimulationTool extends PetriSimulationTool {
         final VisualPetri petri = new VisualPetri(new Petri());
         converter = new XbmToPetriConverter(xbm, petri);
         if (!conditionalValue.isEmpty()) conditionalValue.clear();
-        for (Signal signal: xbm.getMathModel().getSignals(Signal.Type.CONDITIONAL)) {
-            conditionalValue.put(signal, false);
+        for (XbmSignal xbmSignal : xbm.getMathModel().getSignals(XbmSignal.Type.CONDITIONAL)) {
+            conditionalValue.put(xbmSignal, false);
         }
         setUnderlyingModel(converter.getDstModel());
     }
@@ -110,10 +110,10 @@ public class XbmSimulationTool extends PetriSimulationTool {
     @Override
     public void updateState(GraphEditor editor) {
         super.updateState(editor);
-        for (Signal signal: conditionalValue.keySet()) {
-            ElementaryCycle elemCycle = converter.getRelatedElementaryCycle(signal);
+        for (XbmSignal xbmSignal : conditionalValue.keySet()) {
+            ElementaryCycle elemCycle = converter.getRelatedElementaryCycle(xbmSignal);
             for (JCheckBox checkBox: conditionalCheckBoxes) {
-                if (checkBox.getName().equals(signal.getName() + CHECKBOX_NAME_PREFIX)) {
+                if (checkBox.getName().equals(xbmSignal.getName() + CHECKBOX_NAME_PREFIX)) {
                     VisualPlace placeLow = elemCycle.getLow();
                     VisualPlace placeHigh = elemCycle.getHigh();
                     if (placeLow.getReferencedPlace().getTokens() > 0 && placeHigh.getReferencedPlace().getTokens() <= 0) {
@@ -206,7 +206,7 @@ public class XbmSimulationTool extends PetriSimulationTool {
         if (!conditionalCheckBoxes.isEmpty()) conditionalCheckBoxes.clear();
         JPanel conditionalSetterTools = new JPanel();
         conditionalSetterTools.setLayout(new GridLayout(conditionalValue.keySet().size(), 1));
-        for (Map.Entry<Signal, Boolean> entry: conditionalValue.entrySet()) {
+        for (Map.Entry<XbmSignal, Boolean> entry: conditionalValue.entrySet()) {
             JPanel signalEntry = new JPanel(new GridLayout(1,2));
             JLabel name = new JLabel(entry.getKey().getName(), SwingConstants.CENTER);
             JCheckBox value = new JCheckBox();

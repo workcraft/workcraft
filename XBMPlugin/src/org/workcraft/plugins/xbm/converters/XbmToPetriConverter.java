@@ -19,7 +19,7 @@ public class XbmToPetriConverter {
 
     private final Map<VisualXbmState, VisualPlace> stateToPlaceMap;
     private final Map<VisualBurstEvent, VisualTransition> eventToTransitionMap;
-    private final Map<Signal, ElementaryCycle> conditionalToElementaryMap;
+    private final Map<XbmSignal, ElementaryCycle> conditionalToElementaryMap;
     private final Map<String, String> refToBurstEventLabelMap;
 
     public XbmToPetriConverter(VisualXbm srcModel, VisualPetri dstModel) {
@@ -72,19 +72,17 @@ public class XbmToPetriConverter {
             VisualTransition transition = dstModel.createTransition(name, null);
             transition.setPosition(event.getCenter());
             transition.setForegroundColor(event.getColor());
-            if (burst != null) {
-                transition.setLabel(symbolName);
-            }
+            transition.setLabel(symbolName);
             transition.setLabelColor(event.getLabelColor());
             result.put(event, transition);
         }
         return result;
     }
 
-    private Map<Signal, ElementaryCycle> convertConditionals() {
-        Map<Signal, ElementaryCycle> result = new HashMap<>();
-        for (Signal signal: srcModel.getMathModel().getSignals(Signal.Type.CONDITIONAL)) {
-            result.put(signal, new ElementaryCycle(dstModel, signal));
+    private Map<XbmSignal, ElementaryCycle> convertConditionals() {
+        Map<XbmSignal, ElementaryCycle> result = new HashMap<>();
+        for (XbmSignal xbmSignal : srcModel.getMathModel().getSignals(XbmSignal.Type.CONDITIONAL)) {
+            result.put(xbmSignal, new ElementaryCycle(dstModel, xbmSignal));
         }
         return result;
     }
@@ -110,7 +108,7 @@ public class XbmToPetriConverter {
                 if (event.getReferencedBurstEvent().hasConditional()) { //Connects the elementary cycle appropriate to the burst transition
                     for (Map.Entry<String, Boolean> condition: event.getReferencedBurstEvent().getConditionalMapping().entrySet()) {
                         VisualPlace readPlace;
-                        ElementaryCycle elemCycle = getRelatedElementaryCycle((Signal) srcModel.getMathModel().getNodeByReference(condition.getKey()));
+                        ElementaryCycle elemCycle = getRelatedElementaryCycle((XbmSignal) srcModel.getMathModel().getNodeByReference(condition.getKey()));
                         if (condition.getValue()) {
                             readPlace = elemCycle.getHigh();
                         }
@@ -158,7 +156,7 @@ public class XbmToPetriConverter {
         return null;
     }
 
-    public ElementaryCycle getRelatedElementaryCycle(Signal conditional) {
+    public ElementaryCycle getRelatedElementaryCycle(XbmSignal conditional) {
         return conditionalToElementaryMap.get(conditional);
     }
 

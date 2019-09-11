@@ -1,7 +1,6 @@
 package org.workcraft.plugins.xbm;
 
 import org.workcraft.exceptions.ArgumentException;
-import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.fsm.Symbol;
 import org.workcraft.plugins.fsm.VisualEvent;
 
@@ -61,7 +60,7 @@ public class Burst extends Symbol {
             else if (value.equals(UNSTABLE.toString())) {
                 return UNSTABLE;
             }
-            else if (value.equals(CLEAR)) {
+            else if (value.equals(CLEAR.toString())) {
                 return CLEAR;
             }
             else throw new ArgumentException("An unknown direction was set for the signal.");
@@ -70,7 +69,7 @@ public class Burst extends Symbol {
 
     public static final String PROPERTY_DIRECTION = "Direction";
 
-    private Map<Signal, Direction> direction = new LinkedHashMap<>();
+    private final Map<XbmSignal, Direction> direction = new LinkedHashMap<>();
     private XbmState from;
     private XbmState to;
 
@@ -80,7 +79,7 @@ public class Burst extends Symbol {
     public Burst(XbmState from, XbmState to) {
         this.from = from;
         this.to = to;
-        for (Signal s: this.from.getSignals()) {
+        for (XbmSignal s: this.from.getSignals()) {
 
             if (from.getEncoding().get(s) == SignalState.HIGH && to.getEncoding().get(s) == SignalState.LOW) direction.put(s, Direction.MINUS);
             else if (from.getEncoding().get(s) == SignalState.LOW && to.getEncoding().get(s) == SignalState.HIGH) direction.put(s, Direction.PLUS);
@@ -88,17 +87,17 @@ public class Burst extends Symbol {
         }
     }
 
-    public Map<Signal, Direction> getDirection() {
+    public Map<XbmSignal, Direction> getDirection() {
         return direction;
     }
 
-    public Set<Signal> getSignals() {
+    public Set<XbmSignal> getSignals() {
         return direction.keySet();
     }
 
-    public Set<Signal> getSignals(Signal.Type type) {
-        Set<Signal> result = new HashSet<>();
-        for (Signal s: getSignals()) {
+    public Set<XbmSignal> getSignals(XbmSignal.Type type) {
+        Set<XbmSignal> result = new HashSet<>();
+        for (XbmSignal s: getSignals()) {
             if (s.getType() == type) {
                 result.add(s);
             }
@@ -114,11 +113,11 @@ public class Burst extends Symbol {
         return to;
     }
 
-    public void addOrChangeSignalDirection(Signal s, Direction d) {
+    public void addOrChangeSignalDirection(XbmSignal s, Direction d) {
         direction.put(s, d);
     }
 
-    public void addOrChangeSignalDirection(Signal s, SignalState fromState, SignalState toState) {
+    public void addOrChangeSignalDirection(XbmSignal s, SignalState fromState, SignalState toState) {
 
         if (fromState == SignalState.LOW && toState == SignalState.HIGH) {
             direction.put(s, Direction.PLUS);
@@ -153,12 +152,12 @@ public class Burst extends Symbol {
         this.to = to;
     }
 
-    public void removeSignal(Signal s) {
+    public void removeSignal(XbmSignal s) {
         if (direction.containsKey(s)) direction.remove(s);
     }
 
     public boolean containsDirectedDontCare() {
-        for (Map.Entry<Signal, Direction> entry: direction.entrySet()) {
+        for (Map.Entry<XbmSignal, Direction> entry: direction.entrySet()) {
             if (entry.getValue() == Direction.UNSTABLE) {
                 return true;
             }
@@ -168,19 +167,17 @@ public class Burst extends Symbol {
 
     public String getAsString() {
 
-        final Map<Signal, Direction> targetSigs = new LinkedHashMap<>();
-        targetSigs.putAll(direction);
-
+        final Map<XbmSignal, Direction> targetSigs = new LinkedHashMap<>(direction);
         String inputs = "", outputs = "";
 
-        for (Map.Entry<Signal, Burst.Direction> entry: targetSigs.entrySet()) {
-            Signal signal = entry.getKey();
+        for (Map.Entry<XbmSignal, Burst.Direction> entry: targetSigs.entrySet()) {
+            XbmSignal xbmSignal = entry.getKey();
             Burst.Direction direction = entry.getValue();
 
             if (direction != Direction.CLEAR) {
 
-                String signalName = signal.getName();
-                switch (signal.getType()) {
+                String signalName = xbmSignal.getName();
+                switch (xbmSignal.getType()) {
                     case INPUT:
                         inputs = appendTargetToList(inputs, signalName + direction);
                         break;
@@ -190,7 +187,7 @@ public class Burst extends Symbol {
                     case DUMMY: case CONDITIONAL:
                         break;
                     default:
-                        throw new RuntimeException("An unknown signal type was detected for signal " + signalName);
+                        throw new RuntimeException("An unknown xbmSignal type was detected for xbmSignal " + signalName);
                 }
             }
         }
@@ -198,7 +195,7 @@ public class Burst extends Symbol {
         else return "" + VisualEvent.EPSILON_SYMBOL;
     }
 
-    private final static String appendTargetToList(final String list, final String target) {
+    private static String appendTargetToList(final String list, final String target) {
         String newList = list;
         if (!list.isEmpty()) newList += ", ";
         newList += target;

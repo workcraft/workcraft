@@ -35,8 +35,8 @@ public class Xbm extends Fsm {
         boolean result = true;
         if (symbol instanceof Burst) {
             Burst bSymbol = (Burst) symbol;
-            for (Signal s: bSymbol.getSignals()) {
-                result = result && (s.getType() != Signal.Type.DUMMY);
+            for (XbmSignal s: bSymbol.getSignals()) {
+                result = result && (s.getType() != XbmSignal.Type.DUMMY);
             }
         }
         else result = super.isDeterministicSymbol(symbol);
@@ -56,8 +56,8 @@ public class Xbm extends Fsm {
     @Override
     public XbmState createState(String name) {
         XbmState state = createNode(name, getRoot(), XbmState.class);
-        for (Signal signal: Hierarchy.getDescendantsOfType(getRoot(), Signal.class)) {
-            state.addOrChangeSignalValue(signal, XbmState.DEFAULT_SIGNAL_STATE);
+        for (XbmSignal xbmSignal : Hierarchy.getDescendantsOfType(getRoot(), XbmSignal.class)) {
+            state.addOrChangeSignalValue(xbmSignal, XbmState.DEFAULT_SIGNAL_STATE);
         }
         return state;
     }
@@ -73,30 +73,29 @@ public class Xbm extends Fsm {
         return state;
     }
 
-    public Signal createSignal(String name) {
-        Signal signal = createNode(name, getRoot(), Signal.class);
-        signal.setName(getNodeReference(signal));
+    public XbmSignal createSignal(String name) {
+        XbmSignal xbmSignal = createNode(name, getRoot(), XbmSignal.class);
+        xbmSignal.setName(getNodeReference(xbmSignal));
         for (XbmState state: Hierarchy.getDescendantsOfType(getRoot(), XbmState.class)) {
-            state.addOrChangeSignalValue(signal, XbmState.DEFAULT_SIGNAL_STATE);
+            state.addOrChangeSignalValue(xbmSignal, XbmState.DEFAULT_SIGNAL_STATE);
         }
-        return signal;
+        return xbmSignal;
     }
 
-    public Signal getOrCreateSignal(String name, Signal.Type type) {
-        Signal signal = null;
+    public XbmSignal getOrCreateSignal(String name, XbmSignal.Type type) {
+        XbmSignal xbmSignal = null;
         Node node = getNodeByReference(name);
         if (node == null) {
-            signal = createSignal(name);
+            xbmSignal = createSignal(name);
         }
-        else if (node instanceof Signal) {
-            signal = (Signal) node;
-            if (signal.getType() != type) throw new ArgumentException("Signal " + name + " already exists and its type \'" + signal.getType() + "\' is different from the \'" + type + "\' type.");
-            else signal = (Signal) node;
+        else if (node instanceof XbmSignal) {
+            xbmSignal = (XbmSignal) node;
+            if (xbmSignal.getType() != type) throw new ArgumentException("XbmSignal " + name + " already exists and its type \'" + xbmSignal.getType() + "\' is different from the \'" + type + "\' type.");
         }
         else {
-            throw new ArgumentException("Node " + name + " already exists and it is not a signal.");
+            throw new ArgumentException("Node " + name + " already exists and it is not a xbmSignal.");
         }
-        return signal;
+        return xbmSignal;
     }
 
     public BurstEvent createBurstEvent(XbmState from, XbmState to, Burst burst) {
@@ -106,7 +105,7 @@ public class Xbm extends Fsm {
         return event;
     }
 
-    public void removeSignal(Signal s) {
+    public void removeSignal(XbmSignal s) {
         if (getSignals().contains(s)) {
             this.remove(s);
             for (XbmState state: getXbmStates()) {
@@ -119,12 +118,12 @@ public class Xbm extends Fsm {
         return Hierarchy.getDescendantsOfType(getRoot(), XbmState.class);
     }
 
-    public final Collection<Signal> getSignals() {
-        return Hierarchy.getDescendantsOfType(getRoot(), Signal.class);
+    public final Collection<XbmSignal> getSignals() {
+        return Hierarchy.getDescendantsOfType(getRoot(), XbmSignal.class);
     }
 
-    public final Collection<Signal> getSignals(final Signal.Type type) {
-        return Hierarchy.getDescendantsOfType(getRoot(), Signal.class, signal -> (signal != null) && (signal.getType() == type));
+    public final Collection<XbmSignal> getSignals(final XbmSignal.Type type) {
+        return Hierarchy.getDescendantsOfType(getRoot(), XbmSignal.class, signal -> (signal != null) && (signal.getType() == type));
     }
 
     public final Collection<BurstEvent> getBurstEvents() {

@@ -23,11 +23,6 @@ public class VisualXbmState extends VisualState {
     }
 
     @Override
-    public Positioning getNamePositioning() {
-        return super.getNamePositioning();
-    }
-
-    @Override
     public String getLabel() {
         return getReferencedState().getStateEncoding();
     }
