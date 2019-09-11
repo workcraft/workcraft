@@ -5,16 +5,14 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.builtin.settings.CommonSignalSettings;
 
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.regex.Pattern;
 
 @Hotkey(KeyEvent.VK_S)
-@DisplayName("Signal")
+@DisplayName("XbmSignal")
 @IdentifierPrefix(value = "x")
-public class Signal extends MathNode {
+public class XbmSignal extends MathNode {
 
     public static final String PROPERTY_NAME = "Name";
     public static final String PROPERTY_TYPE = "Type";
@@ -42,11 +40,11 @@ public class Signal extends MathNode {
     private String name;
     private Type type;
 
-    public Signal() {
+    public XbmSignal() {
         this("", DEFAULT_SIGNAL_TYPE);
     }
 
-    public Signal(String name, Type type) {
+    public XbmSignal(String name, Type type) {
         this.name = name;
         this.type = type;
     }

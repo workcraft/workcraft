@@ -6,7 +6,7 @@ import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateSupervisor;
 import org.workcraft.plugins.xbm.BurstEvent;
-import org.workcraft.plugins.xbm.Signal;
+import org.workcraft.plugins.xbm.XbmSignal;
 import org.workcraft.plugins.xbm.Xbm;
 
 import java.util.Collection;
@@ -28,21 +28,27 @@ public class ConditionalSupervisor extends StateSupervisor {
             if (propertyName.equals(BurstEvent.PROPERTY_CONDITIONAL)) {
 
                 BurstEvent event = (BurstEvent) e.getSender();
-                Collection<Signal> declaredExistingCondSignals = new HashSet<>();
+                Collection<XbmSignal> declaredExistingCondXbmSignals = new HashSet<>();
                 Collection<String> declaredCondSignalsName = event.getConditionalMapping().keySet();
 
-                for (String sigName : declaredCondSignalsName) {
+                for (String sigName: declaredCondSignalsName) {
                     Node node = xbm.getNodeByReference(sigName);
-                    if (node instanceof Signal) {
-                        Signal signal = (Signal) node;
-                        if (signal.getType() == Signal.Type.CONDITIONAL) {
-                            declaredExistingCondSignals.add(signal);
+                    if (node instanceof XbmSignal) {
+                        XbmSignal xbmSignal = (XbmSignal) node;
+                        if (xbmSignal.getType() == XbmSignal.Type.CONDITIONAL) {
+                            declaredExistingCondXbmSignals.add(xbmSignal);
                         }
                         else {
-                            throw new ArgumentException("The provided literal contains signals that are not specified as a conditional.");
+                            //throw new ArgumentException("The provided literal contains signals that are not specified as a conditional.");
+                            throw new ArgumentException("Node " + sigName + " in literal \'" + event.getConditional() +"\' already exists and it is not a conditional xbmSignal.");
                         }
-                    } else {
-                        throw new ArgumentException("The provided literal contains non-existent signals.");
+                    }
+                    else {
+                       throw new ArgumentException("Node " + sigName + " in literal \'" + event.getConditional() +"\' does not exist.");
+//                       XbmSignal newConditional = xbm.createNode(sigName, xbm.getRoot(), XbmSignal.class);
+//                       newConditional.setName(xbm.getNodeReference(newConditional));
+//                       newConditional.setType(XbmSignal.Type.CONDITIONAL);
+//                       declaredExistingCondXbmSignals.add(newConditional);
                     }
                 }
             }

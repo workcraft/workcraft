@@ -3,10 +3,7 @@ package org.workcraft.plugins.xbm;
 import org.workcraft.Framework;
 import org.workcraft.plugins.Plugin;
 import org.workcraft.plugins.PluginManager;
-import org.workcraft.plugins.xbm.commands.DistinguishabilityConstraintVerification;
-import org.workcraft.plugins.xbm.commands.MaximalSetPropertyVerification;
-import org.workcraft.plugins.xbm.commands.NonEmptyInputBurstsVerification;
-import org.workcraft.plugins.xbm.commands.UniqueStateEncodingVerification;
+import org.workcraft.plugins.xbm.commands.*;
 import org.workcraft.plugins.xbm.serialisation.BurstEventDeserialiser;
 import org.workcraft.plugins.xbm.serialisation.BurstEventSerialiser;
 import org.workcraft.plugins.xbm.serialisation.EncodingDeserialiser;
@@ -34,6 +31,9 @@ public class XbmPlugin implements Plugin {
 
         pm.registerXmlSerialiser(BurstEventSerialiser.class);
         pm.registerXmlDeserialiser(BurstEventDeserialiser.class);
+
+        ScriptableCommandUtils.register(XbmToPetriConversionCommand.class, "convertXbmToPetri",
+                "convert the given XBM 'work' into a new Petri net work");
 
         ScriptableCommandUtils.register(UniqueStateEncodingVerification.class, "checkXbmStateEncoding",
                 "check the XBM model for any non-unique state encodings");

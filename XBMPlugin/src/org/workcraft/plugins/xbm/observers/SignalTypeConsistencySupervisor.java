@@ -20,8 +20,8 @@ public class SignalTypeConsistencySupervisor extends StateSupervisor {
         if (e instanceof PropertyChangedEvent) {
             final PropertyChangedEvent pce = (PropertyChangedEvent) e;
             final String propertyName = pce.getPropertyName();
-            if (propertyName.equals(Signal.PROPERTY_TYPE)) {
-                final Signal s = (Signal) e.getSender();
+            if (propertyName.equals(XbmSignal.PROPERTY_TYPE)) {
+                final XbmSignal s = (XbmSignal) e.getSender();
                 final Collection<XbmState> states = xbm.getXbmStates();
                 final Collection<BurstEvent> burstEvents = xbm.getBurstEvents();
 
@@ -34,7 +34,7 @@ public class SignalTypeConsistencySupervisor extends StateSupervisor {
                 for (BurstEvent event: burstEvents) {
                     Burst b = event.getBurst();
                     findAndSetTypeForSignal(s, b.getSignals());
-                    if (s.getType() != Signal.Type.CONDITIONAL && event.hasConditional()) {
+                    if (s.getType() != XbmSignal.Type.CONDITIONAL && event.hasConditional()) {
                         if (event.getConditionalMapping().keySet().contains(s.getName())) {
                             event.getConditionalMapping().remove(s.getName());
                         }
@@ -44,8 +44,8 @@ public class SignalTypeConsistencySupervisor extends StateSupervisor {
         }
     }
 
-    private void findAndSetTypeForSignal(Signal s, Collection<Signal> signals) {
-        for (Signal t: signals) {
+    private void findAndSetTypeForSignal(XbmSignal s, Collection<XbmSignal> xbmSignals) {
+        for (XbmSignal t: xbmSignals) {
             if (t == s) {
                 t.setType(s.getType());
                 break;

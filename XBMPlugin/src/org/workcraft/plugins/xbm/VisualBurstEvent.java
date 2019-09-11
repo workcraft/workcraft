@@ -34,7 +34,7 @@ public class VisualBurstEvent extends VisualEvent {
         return getReferencedBurstEvent().getBurst();
     }
 
-    private Set<Signal> getReferencedSignals() {
+    private Set<XbmSignal> getReferencedSignals() {
         return getReferencedBurst().getSignals();
     }
 
@@ -65,33 +65,33 @@ public class VisualBurstEvent extends VisualEvent {
 //
 //class InputBurst extends VisualEvent {
 //
-//    private final Set<Signal> signals = new LinkedHashSet<>();
+//    private final Set<XbmSignal> signals = new LinkedHashSet<>();
 //    private final Burst burst;
 //
 //    public InputBurst(Burst burst) {
 //        this.burst = burst;
 //    }
 //
-//    public void add(Signal signal) {
-//        if (signal.getType() == Signal.Type.INPUT) {
+//    public void add(XbmSignal signal) {
+//        if (signal.getType() == XbmSignal.Type.INPUT) {
 //            signals.add(signal);
 //        }
 //    }
 //
-//    public void remove(Signal signal) {
-//        if (signal.getType() == Signal.Type.INPUT && signals.contains(signal)) {
+//    public void remove(XbmSignal signal) {
+//        if (signal.getType() == XbmSignal.Type.INPUT && signals.contains(signal)) {
 //            signals.remove(signal);
 //        }
 //    }
 //
-//    public boolean contains(Signal signal) {
+//    public boolean contains(XbmSignal signal) {
 //        return signals.contains(signal);
 //    }
 //
 //    @Override
 //    public String getLabel(DrawRequest r) {
 //        String result = "";
-//        for (Signal signal: signals) {
+//        for (XbmSignal signal: signals) {
 //            if (!result.isEmpty()) result += ", ";
 //            result += signal.getName() + burst.getDirection().get(signal);
 //        }
@@ -106,33 +106,33 @@ public class VisualBurstEvent extends VisualEvent {
 //
 //class OutputBurst extends VisualEvent {
 //
-//    private final Set<Signal> signals = new LinkedHashSet<>();
+//    private final Set<XbmSignal> signals = new LinkedHashSet<>();
 //    private final Burst burst;
 //
 //    public OutputBurst(Burst burst) {
 //        this.burst = burst;
 //    }
 //
-//    public void add(Signal signal) {
-//        if (signal.getType() == Signal.Type.INPUT) {
+//    public void add(XbmSignal signal) {
+//        if (signal.getType() == XbmSignal.Type.INPUT) {
 //            signals.add(signal);
 //        }
 //    }
 //
-//    public void remove(Signal signal) {
-//        if (signal.getType() == Signal.Type.INPUT && signals.contains(signal)) {
+//    public void remove(XbmSignal signal) {
+//        if (signal.getType() == XbmSignal.Type.INPUT && signals.contains(signal)) {
 //            signals.remove(signal);
 //        }
 //    }
 //
-//    public boolean contains(Signal signal) {
+//    public boolean contains(XbmSignal signal) {
 //        return signals.contains(signal);
 //    }
 //
 //    @Override
 //    public String getLabel(DrawRequest r) {
 //        String result = "";
-//        for (Signal signal: signals) {
+//        for (XbmSignal signal: signals) {
 //            if (!result.isEmpty()) result += ", ";
 //            result += signal.getName() + burst.getDirection().get(signal);
 //        }

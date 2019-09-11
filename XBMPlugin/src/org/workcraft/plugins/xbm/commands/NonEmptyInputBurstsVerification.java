@@ -8,7 +8,7 @@ import org.workcraft.plugins.xbm.BurstEvent;
 import org.workcraft.plugins.xbm.VisualBurstEvent;
 import org.workcraft.plugins.xbm.VisualXbm;
 import org.workcraft.plugins.xbm.Xbm;
-import org.workcraft.plugins.xbm.Signal;
+import org.workcraft.plugins.xbm.XbmSignal;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.WorkspaceUtils;
@@ -37,7 +37,7 @@ public class NonEmptyInputBurstsVerification extends AbstractVerificationCommand
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
         final Xbm xbm = WorkspaceUtils.getAs(we, Xbm.class);
-        final Collection<Signal> inputs = xbm.getSignals(Signal.Type.INPUT);
+        final Collection<XbmSignal> inputs = xbm.getSignals(XbmSignal.Type.INPUT);
         if (inputs.isEmpty()) {
             DialogUtils.showInfo("There were no input signals to be found in this model.", TITLE);
             return null;
@@ -76,7 +76,7 @@ public class NonEmptyInputBurstsVerification extends AbstractVerificationCommand
         Collection<BurstEvent> burstEvents = xbm.getBurstEvents();
         HashSet<BurstEvent> result = new LinkedHashSet<>();
         for (BurstEvent event: burstEvents) {
-            boolean isEmptyInputBurst = event.getBurst().getSignals(Signal.Type.INPUT).isEmpty() && !event.hasConditional();
+            boolean isEmptyInputBurst = event.getBurst().getSignals(XbmSignal.Type.INPUT).isEmpty() && !event.hasConditional();
             if (isEmptyInputBurst) {
                 result.add(event);
             }

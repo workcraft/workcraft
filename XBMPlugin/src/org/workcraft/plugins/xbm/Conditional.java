@@ -26,7 +26,7 @@ public class Conditional extends LinkedHashMap<String, Boolean> {
                         else throw new RuntimeException("An unknown error was detected.");
                     }
                 }
-                else throw new RuntimeException("An unrecognisable literal was provided: " + str);
+                else throw new RuntimeException("The literal \'" + str + "\' is not valid. ");
             }
         }
         this.putAll(result);
@@ -36,7 +36,9 @@ public class Conditional extends LinkedHashMap<String, Boolean> {
     public String toString() {
         String result = "";
         for (Map.Entry<String, Boolean> e: this.entrySet()) {
-            if (!result.isEmpty()) result += ", ";
+            if (!result.isEmpty()) {
+                result += ", ";
+            }
             final String signalName = e.getKey();
             if (e.getValue()) {
                 result += signalName + "=1";

@@ -2,13 +2,11 @@ package org.workcraft.plugins.xbm.observers;
 
 import org.workcraft.dom.Node;
 import org.workcraft.observation.*;
-import org.workcraft.plugins.xbm.*;;
+import org.workcraft.plugins.xbm.*;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
-
-import static org.workcraft.plugins.xbm.SignalState.LOW;
 
 //FIXME Fixed state generation after running the simulation tool
 //FIXME However, the copy-paste is still broken
@@ -38,7 +36,7 @@ public class SignalSupervisor extends StateSupervisor {
                             XbmState from = b.getFrom();
                             XbmState to = b.getTo();
                             if (from == state || to == state) {
-                                for (Signal s: from.getSignals()) {
+                                for (XbmSignal s: from.getSignals()) {
                                     b.addOrChangeSignalDirection(s, from.getEncoding().get(s), to.getEncoding().get(s));
                                 }
                             }
@@ -52,9 +50,9 @@ public class SignalSupervisor extends StateSupervisor {
                         Burst burst = burstEvent.getBurst();
                         XbmState from = burst.getFrom();
                         XbmState to = burst.getTo();
-                        Map<Signal, Burst.Direction> direction = burstEvent.getBurst().getDirection();
-                        for (Map.Entry<Signal, Burst.Direction> entry: direction.entrySet()) {
-                            Signal s = entry.getKey();
+                        Map<XbmSignal, Burst.Direction> direction = burstEvent.getBurst().getDirection();
+                        for (Map.Entry<XbmSignal, Burst.Direction> entry: direction.entrySet()) {
+                            XbmSignal s = entry.getKey();
                             Burst.Direction d = entry.getValue();
                             if (d != null) {
                                 switch (d) {
@@ -78,7 +76,7 @@ public class SignalSupervisor extends StateSupervisor {
                     }
                     break;
 
-                case Signal.PROPERTY_NAME:
+                case XbmSignal.PROPERTY_NAME:
                     Collection<BurstEvent> burstEvents = xbm.getBurstEvents();
                     for (BurstEvent event: burstEvents) {
                         event.setConditional(event.getConditional()); //A rather dirty way of refreshing the burst event
@@ -93,8 +91,8 @@ public class SignalSupervisor extends StateSupervisor {
         if (e instanceof NodesDeletingEvent) {
             NodesDeletingEvent event = (NodesDeletingEvent) e;
             for (Node node: event.getAffectedNodes()) {
-                if (node instanceof Signal) {
-                    removeSignalFromNodes((Signal) node);
+                if (node instanceof XbmSignal) {
+                    removeSignalFromNodes((XbmSignal) node);
                 }
             }
         }
@@ -104,10 +102,10 @@ public class SignalSupervisor extends StateSupervisor {
                 if (node instanceof XbmState) {
                     assignSignalsToState((XbmState) node);
                 }
-                else if (node instanceof Signal) {
-                    Signal signal = (Signal) node;
-                    if (signal.getType() == Signal.Type.INPUT || signal.getType() == Signal.Type.OUTPUT) {
-                        assignSignalToStates((Signal) node);
+                else if (node instanceof XbmSignal) {
+                    XbmSignal xbmSignal = (XbmSignal) node;
+                    if (xbmSignal.getType() == XbmSignal.Type.INPUT || xbmSignal.getType() == XbmSignal.Type.OUTPUT) {
+                        assignSignalToStates((XbmSignal) node);
                     }
                 }
             }
@@ -120,7 +118,7 @@ public class SignalSupervisor extends StateSupervisor {
                     reassignSignalsInState(state);
 
                     String temp = "";
-                    for (Map.Entry<Signal, SignalState> entry: state.getEncoding().entrySet()) {
+                    for (Map.Entry<XbmSignal, SignalState> entry: state.getEncoding().entrySet()) {
                         if (!temp.isEmpty()) temp += ", ";
                         temp += xbm.getName(entry.getKey()) + "=" + entry.getValue();
                     }
@@ -131,40 +129,39 @@ public class SignalSupervisor extends StateSupervisor {
     }
 
     private void assignSignalsToState(XbmState state) {
-        for (Signal signal: xbm.getSignals()) {
-            state.addOrChangeSignalValue(signal, XbmState.DEFAULT_SIGNAL_STATE);
+        for (XbmSignal xbmSignal : xbm.getSignals()) {
+            state.addOrChangeSignalValue(xbmSignal, XbmState.DEFAULT_SIGNAL_STATE);
         }
     }
 
-    private void assignSignalToStates(Signal signal) {
+    private void assignSignalToStates(XbmSignal xbmSignal) {
         for (XbmState state: xbm.getXbmStates()) {
-            state.addOrChangeSignalValue(signal, XbmState.DEFAULT_SIGNAL_STATE);
+            state.addOrChangeSignalValue(xbmSignal, XbmState.DEFAULT_SIGNAL_STATE);
         }
     }
 
-    private void removeSignalFromNodes(Signal signal) {
+    private void removeSignalFromNodes(XbmSignal xbmSignal) {
         for (XbmState state: xbm.getXbmStates()) {
-            state.getEncoding().remove(signal);
+            state.getEncoding().remove(xbmSignal);
         }
         for (BurstEvent event: xbm.getBurstEvents()) {
             Burst burst = event.getBurst();
-            if (event.getConditionalMapping().containsKey(signal.getName())) {
-                event.getConditionalMapping().remove(signal.getName());
+            if (event.getConditionalMapping().containsKey(xbmSignal.getName())) {
+                event.getConditionalMapping().remove(xbmSignal.getName());
             }
-            if (burst.getDirection().containsKey(signal)) {
-                burst.removeSignal(signal);
+            if (burst.getDirection().containsKey(xbmSignal)) {
+                burst.removeSignal(xbmSignal);
             }
         }
     }
 
     private void reassignSignalsInState(XbmState state) {
-        Collection<Signal> xbmSignalsRef = xbm.getSignals();
-        Collection<Signal> stateSignalsRef = new HashSet<>();
-        stateSignalsRef.addAll(state.getSignals());
-        for (Signal xbmSignal: xbmSignalsRef) {
-            for (Signal stateSignal: stateSignalsRef) {
-                if (!state.getSignals().contains(xbmSignal) && xbmSignal.getName().equals(stateSignal.getName())) {
-                    state.addOrChangeSignalValue(xbmSignal, state.getEncoding().get(stateSignal));
+        Collection<XbmSignal> xbmSignalsRef = xbm.getSignals();
+        Collection<XbmSignal> stateSignalsRef = new HashSet<>(state.getSignals());
+        for (XbmSignal xbmSignal: xbmSignalsRef) {
+            for (XbmSignal stateXbmSignal : stateSignalsRef) {
+                if (!state.getSignals().contains(xbmSignal) && xbmSignal.getName().equals(stateXbmSignal.getName())) {
+                    state.addOrChangeSignalValue(xbmSignal, state.getEncoding().get(stateXbmSignal));
                 }
             }
         }

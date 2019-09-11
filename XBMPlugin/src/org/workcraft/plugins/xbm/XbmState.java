@@ -18,27 +18,27 @@ public class XbmState extends State {
     public static final String PROPERTY_ENCODING = "Encoding";
     public static final SignalState DEFAULT_SIGNAL_STATE = SignalState.LOW;
 
-    private final Map<Signal, SignalState> encoding = new LinkedHashMap<>();
+    private final Map<XbmSignal, SignalState> encoding = new LinkedHashMap<>();
 
-    public Map<Signal, SignalState> getEncoding() {
+    public Map<XbmSignal, SignalState> getEncoding() {
         return encoding;
     }
 
-    public Set<Signal> getSignals() {
+    public Set<XbmSignal> getSignals() {
         return encoding.keySet();
     }
 
-    public void addOrChangeSignalValue(Signal signal, SignalState state) {
-        if (signal.getType() == Signal.Type.INPUT || signal.getType() == Signal.Type.OUTPUT) {
-            encoding.put(signal, state);
+    public void addOrChangeSignalValue(XbmSignal xbmSignal, SignalState state) {
+        if (xbmSignal.getType() == XbmSignal.Type.INPUT || xbmSignal.getType() == XbmSignal.Type.OUTPUT) {
+            encoding.put(xbmSignal, state);
         }
         PropertyChangedEvent pce = new PropertyChangedEvent(this, PROPERTY_ENCODING);
         sendNotification(pce);
     }
 
-    public void removeSignal(Signal signal) {
-        if (encoding.containsKey(signal)) {
-            encoding.remove(signal);
+    public void removeSignal(XbmSignal xbmSignal) {
+        if (encoding.containsKey(xbmSignal)) {
+            encoding.remove(xbmSignal);
             sendNotification(new PropertyChangedEvent(this, PROPERTY_ENCODING));
         }
     }
@@ -47,7 +47,7 @@ public class XbmState extends State {
         String input = "";
         String output = "";
 
-        for (Signal s: getSignals()) {
+        for (XbmSignal s: getSignals()) {
             switch (s.getType()) {
                 case INPUT:
                     if (encoding.get(s) == SignalState.DDC) input += "X";
