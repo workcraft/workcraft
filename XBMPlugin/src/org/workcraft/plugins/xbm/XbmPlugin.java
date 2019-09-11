@@ -1,6 +1,7 @@
 package org.workcraft.plugins.xbm;
 
 import org.workcraft.Framework;
+import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.plugins.Plugin;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.xbm.commands.*;
@@ -34,6 +35,9 @@ public class XbmPlugin implements Plugin {
 
         ScriptableCommandUtils.register(XbmToPetriConversionCommand.class, "convertXbmToPetri",
                 "convert the given XBM 'work' into a new Petri net work");
+
+        ScriptableCommandUtils.register(XbmToStgConversionCommand.class, "convertXbmToStg",
+                "convert the given XBM 'work' into a new STG work");
 
         ScriptableCommandUtils.register(UniqueStateEncodingVerification.class, "checkXbmStateEncoding",
                 "check the XBM model for any non-unique state encodings");
