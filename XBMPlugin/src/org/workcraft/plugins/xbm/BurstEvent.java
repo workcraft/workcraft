@@ -88,4 +88,12 @@ public class BurstEvent extends Event {
         }
         return result;
     }
+
+    public String getInputBurstString() {
+        return burst.getInputBurstAsString();
+    }
+
+    public String getOutputBurstString() {
+        return burst.getOutputBurstAsString();
+    }
 }

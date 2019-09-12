@@ -116,13 +116,12 @@ public class SignalSupervisor extends StateSupervisor {
                 if (node instanceof XbmState) {
                     XbmState state = (XbmState) node;
                     reassignSignalsInState(state);
-
-                    String temp = "";
-                    for (Map.Entry<XbmSignal, SignalState> entry: state.getEncoding().entrySet()) {
-                        if (!temp.isEmpty()) temp += ", ";
-                        temp += xbm.getName(entry.getKey()) + "=" + entry.getValue();
-                    }
-                    System.out.println(xbm.getName(state) + ":" + temp);
+//                    String temp = "";
+//                    for (Map.Entry<XbmSignal, SignalState> entry: state.getEncoding().entrySet()) {
+//                        if (!temp.isEmpty()) temp += ", ";
+//                        temp += xbm.getName(entry.getKey()) + "=" + entry.getValue();
+//                    }
+//                    System.out.println(xbm.getName(state) + ":" + temp);
                 }
             }
         }
