@@ -192,11 +192,6 @@ public class VisualXbm extends VisualFsm {
             public String getter(BurstEvent object) {
                 return object.getConditional();
             }
-
-//            @Override
-//            public boolean isEditable() {
-//                return !xbm.getSignals(XbmSignal.Type.CONDITIONAL).isEmpty();
-//            }
         };
     }
 

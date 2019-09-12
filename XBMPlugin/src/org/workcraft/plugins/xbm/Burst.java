@@ -167,32 +167,56 @@ public class Burst extends Symbol {
 
     public String getAsString() {
 
-        final Map<XbmSignal, Direction> targetSigs = new LinkedHashMap<>(direction);
-        String inputs = "", outputs = "";
-
-        for (Map.Entry<XbmSignal, Burst.Direction> entry: targetSigs.entrySet()) {
-            XbmSignal xbmSignal = entry.getKey();
-            Burst.Direction direction = entry.getValue();
-
-            if (direction != Direction.CLEAR) {
-
-                String signalName = xbmSignal.getName();
-                switch (xbmSignal.getType()) {
-                    case INPUT:
-                        inputs = appendTargetToList(inputs, signalName + direction);
-                        break;
-                    case OUTPUT:
-                        outputs = appendTargetToList(outputs, signalName + direction);
-                        break;
-                    case DUMMY: case CONDITIONAL:
-                        break;
-                    default:
-                        throw new RuntimeException("An unknown xbmSignal type was detected for xbmSignal " + signalName);
-                }
-            }
-        }
+//        final Map<XbmSignal, Direction> targetSigs = new LinkedHashMap<>(direction);
+//        String inputs = "", outputs = "";
+//
+//        for (Map.Entry<XbmSignal, Burst.Direction> entry: targetSigs.entrySet()) {
+//            XbmSignal xbmSignal = entry.getKey();
+//            Burst.Direction direction = entry.getValue();
+//
+//            if (direction != Direction.CLEAR) {
+//
+//                String signalName = xbmSignal.getName();
+//                switch (xbmSignal.getType()) {
+//                    case INPUT:
+//                        inputs = appendTargetToList(inputs, signalName + direction);
+//                        break;
+//                    case OUTPUT:
+//                        outputs = appendTargetToList(outputs, signalName + direction);
+//                        break;
+//                    case DUMMY: case CONDITIONAL:
+//                        break;
+//                    default:
+//                        throw new RuntimeException("An unknown xbmSignal type was detected for xbmSignal " + signalName);
+//                }
+//            }
+//        }
+        String inputs = getInputBurstAsString();
+        String outputs = getOutputBurstAsString();
         if (!inputs.isEmpty() || !outputs.isEmpty()) return inputs + " / " + outputs;
         else return "" + VisualEvent.EPSILON_SYMBOL;
+    }
+
+    public String getInputBurstAsString() {
+        String input = "";
+        for (XbmSignal s: getSignals(XbmSignal.Type.INPUT)) {
+            if (direction.containsKey(s)) {
+                if (!input.isEmpty()) input += ", ";
+                input += s.getName() + direction.get(s);
+            }
+        }
+        return input;
+    }
+
+    public String getOutputBurstAsString() {
+        String output = "";
+        for (XbmSignal s: getSignals(XbmSignal.Type.OUTPUT)) {
+            if (direction.containsKey(s)) {
+                if (!output.isEmpty()) output += ", ";
+                output += s.getName() + direction.get(s);
+            }
+        }
+        return output;
     }
 
     private static String appendTargetToList(final String list, final String target) {
