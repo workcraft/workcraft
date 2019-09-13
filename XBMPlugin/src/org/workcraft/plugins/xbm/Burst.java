@@ -15,9 +15,9 @@ public class Burst extends Symbol {
 
         PLUS("+"),
         MINUS("-"),
-        STABLE("~"),
+        TOGGLE("~"),
         UNSTABLE("*"),
-        CLEAR("CLEAR");
+        STABLE("!");
 
         private final String name;
 
@@ -36,12 +36,6 @@ public class Burst extends Symbol {
                     return Direction.PLUS;
                 case PLUS:
                     return Direction.MINUS;
-                case STABLE:
-                    return Direction.UNSTABLE;
-                case UNSTABLE:
-                    return Direction.STABLE;
-                case CLEAR:
-                    return Direction.CLEAR;
                 default:
                     return this;
             }
@@ -60,8 +54,8 @@ public class Burst extends Symbol {
             else if (value.equals(UNSTABLE.toString())) {
                 return UNSTABLE;
             }
-            else if (value.equals(CLEAR.toString())) {
-                return CLEAR;
+            else if (value.equals(TOGGLE.toString())) {
+                return TOGGLE;
             }
             else throw new ArgumentException("An unknown direction was set for the signal.");
         }
@@ -140,7 +134,7 @@ public class Burst extends Symbol {
             direction.remove(s);
         }
         else {
-            direction.put(s, Direction.CLEAR);
+            direction.put(s, Direction.STABLE);
         }
     }
 

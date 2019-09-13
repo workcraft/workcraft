@@ -67,9 +67,12 @@ public class SignalSupervisor extends StateSupervisor {
                                     case UNSTABLE:
                                         if (to.getEncoding().get(s) != SignalState.DDC) to.addOrChangeSignalValue(s, SignalState.DDC);
                                         break;
-                                    case CLEAR: //This essentially pushes the signal(direction) to the next arc
+                                    case STABLE: //This essentially pushes the signal(direction) to the next arc
                                         if (to.getEncoding().get(s) != from.getEncoding().get(s)) to.addOrChangeSignalValue(s, from.getEncoding().get(s));
                                         break;
+//                                    case TOGGLE:
+//                                        if (to.getEncoding().get(s) != SignalState.DDC && to.getEncoding().get(s) == from.getEncoding().get(s)) to.addOrChangeSignalValue(s, to.getEncoding().get(s).toggle());
+//                                        break;
                                 }
                             }
                         }

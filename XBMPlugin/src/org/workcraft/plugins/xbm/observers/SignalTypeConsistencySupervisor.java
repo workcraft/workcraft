@@ -26,7 +26,7 @@ public class SignalTypeConsistencySupervisor extends StateSupervisor {
                 final Collection<BurstEvent> burstEvents = xbm.getBurstEvents();
 
                 for (XbmState state: states) {
-                    if (state.getEncoding().get(s) == null) {
+                    if (state.getEncoding().get(s) == null && (s.getType() == XbmSignal.Type.INPUT || s.getType() == XbmSignal.Type.OUTPUT)) {
                         state.addOrChangeSignalValue(s, SignalState.LOW);
                     }
                     state.sendNotification(new PropertyChangedEvent(state, XbmState.PROPERTY_ENCODING));
@@ -38,6 +38,9 @@ public class SignalTypeConsistencySupervisor extends StateSupervisor {
                         if (event.getConditionalMapping().keySet().contains(s.getName())) {
                             event.getConditionalMapping().remove(s.getName());
                         }
+                    }
+                    else if (s.getType() != XbmSignal.Type.INPUT || s.getType() != XbmSignal.Type.OUTPUT) {
+                        event.getBurst().removeSignal(s);
                     }
                 }
             }
