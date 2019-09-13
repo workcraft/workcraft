@@ -39,16 +39,21 @@ public class ConditionalSupervisor extends StateSupervisor {
                             declaredExistingCondXbmSignals.add(xbmSignal);
                         }
                         else {
-                            //throw new ArgumentException("The provided literal contains signals that are not specified as a conditional.");
-                            throw new ArgumentException("Node " + sigName + " in literal \'" + event.getConditional() +"\' already exists and it is not a conditional xbmSignal.");
+                            throw new ArgumentException("Signal " + sigName + " in literal \'" + event.getConditional() +"\' already exists and it is not a conditional signal.");
                         }
                     }
+                    else if (node != null){
+                        throw new ArgumentException("Node " + sigName + " in literal \'" + event.getConditional() +"\' already exists and is not a signal.");
+                    }
                     else {
-                       throw new ArgumentException("Node " + sigName + " in literal \'" + event.getConditional() +"\' does not exist.");
-//                       XbmSignal newConditional = xbm.createNode(sigName, xbm.getRoot(), XbmSignal.class);
-//                       newConditional.setName(xbm.getNodeReference(newConditional));
-//                       newConditional.setType(XbmSignal.Type.CONDITIONAL);
-//                       declaredExistingCondXbmSignals.add(newConditional);
+                        //throw new ArgumentException("Node " + sigName + " in literal \'" + event.getConditional() +"\' does not exist.");
+                        //FIXME When removing the signal, the conditionals are still held by the burst
+                        XbmSignal newConditional = new XbmSignal();
+                        newConditional.setName(sigName);
+                        newConditional.setType(XbmSignal.Type.CONDITIONAL);
+                        xbm.add(newConditional);
+                        xbm.setName(newConditional, newConditional.getName());
+                        declaredExistingCondXbmSignals.add(newConditional);
                     }
                 }
             }

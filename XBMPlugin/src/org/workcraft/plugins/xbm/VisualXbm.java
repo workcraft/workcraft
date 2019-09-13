@@ -21,6 +21,7 @@ import org.workcraft.plugins.xbm.properties.DeclaredSignalPropertyDescriptor;
 import org.workcraft.plugins.xbm.properties.SignalModifierDescriptors;
 import org.workcraft.plugins.xbm.properties.SignalPropertyDescriptors;
 import org.workcraft.plugins.xbm.properties.UneditablePropertyDescriptor;
+import org.workcraft.plugins.xbm.tool.XbmSignalSimulationTool;
 import org.workcraft.plugins.xbm.tool.XbmSimulationTool;
 import org.workcraft.plugins.xbm.utils.ConversionUtils;
 import org.workcraft.utils.Hierarchy;
@@ -54,6 +55,7 @@ public class VisualXbm extends VisualFsm {
         tools.add(new ConnectionTool(false, true, true));
         tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(XbmState.class)));
         tools.add(new XbmSimulationTool());
+        tools.add(new XbmSignalSimulationTool());
         setGraphEditorTools(tools);
     }
 
@@ -162,20 +164,20 @@ public class VisualXbm extends VisualFsm {
         final List<PropertyDescriptor> list = new LinkedList<>();
         final Set<XbmSignal> inputs = new LinkedHashSet<>(xbm.getSignals(XbmSignal.Type.INPUT));
         final Set<XbmSignal> outputs = new LinkedHashSet<>(xbm.getSignals(XbmSignal.Type.OUTPUT));
+        list.add(PROPERTY_INPUT_BURST_PLACEHOLDER);
         if (!inputs.isEmpty()) {
-            list.add(PROPERTY_INPUT_BURST_PLACEHOLDER);
             for (XbmSignal i: inputs) {
                 list.add(SignalPropertyDescriptors.directionProperty(this, burstEvent, i));
             }
-            list.add(new DeclaredSignalPropertyDescriptor(this, DeclaredSignalPropertyDescriptor.PROPERTY_NEW_INPUT, XbmSignal.Type.INPUT));
         }
+        list.add(new DeclaredSignalPropertyDescriptor(this, DeclaredSignalPropertyDescriptor.PROPERTY_NEW_INPUT, XbmSignal.Type.INPUT));
+        list.add(PROPERTY_OUTPUT_BURST_PLACEHOLDER);
         if (!outputs.isEmpty()) {
-            list.add(PROPERTY_OUTPUT_BURST_PLACEHOLDER);
             for (XbmSignal o: outputs) {
                 list.add(SignalPropertyDescriptors.directionProperty(this, burstEvent, o));
             }
-            list.add(new DeclaredSignalPropertyDescriptor(this, DeclaredSignalPropertyDescriptor.PROPERTY_NEW_OUTPUT, XbmSignal.Type.OUTPUT));
         }
+        list.add(new DeclaredSignalPropertyDescriptor(this, DeclaredSignalPropertyDescriptor.PROPERTY_NEW_OUTPUT, XbmSignal.Type.OUTPUT));
         return list;
     }
 
