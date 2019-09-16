@@ -13,7 +13,7 @@ import org.workcraft.plugins.fsm.VisualEvent;
 @VisualClass(VisualBurstEvent.class)
 public class BurstEvent extends Event {
 
-    public final static String PROPERTY_CONDITIONAL = "Conditional";
+    public static final String PROPERTY_CONDITIONAL = "Conditional";
 
     private Burst burst;
     private final Conditional conditional;
@@ -49,8 +49,7 @@ public class BurstEvent extends Event {
         try {
             conditional.setConditional(value);
             sendNotification(new PropertyChangedEvent(this, PROPERTY_CONDITIONAL));
-        }
-        catch (RuntimeException rxe) { //Determine if an error is thrown by either
+        } catch (RuntimeException rxe) { //Determine if an error is thrown by either
             conditional.clear();
             conditional.putAll(oldConditional);
             throw new ArgumentException(rxe.getMessage());
@@ -78,12 +77,10 @@ public class BurstEvent extends Event {
             result += "<" + getConditional() + "> ";
             if (!burst.getAsString().equals(VisualEvent.EPSILON_SYMBOL)) {
                 result += burst.getAsString();
-            }
-            else {
+            } else {
                 result += "/";
             }
-        }
-        else {
+        } else {
             result += burst.getAsString();
         }
         return result;

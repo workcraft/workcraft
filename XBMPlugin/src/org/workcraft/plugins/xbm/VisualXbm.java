@@ -15,7 +15,6 @@ import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.tools.*;
 import org.workcraft.plugins.fsm.Event;
-import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.xbm.properties.DeclaredSignalPropertyDescriptor;
 import org.workcraft.plugins.xbm.properties.SignalModifierDescriptors;
@@ -88,8 +87,11 @@ public class VisualXbm extends VisualFsm {
     public void validateConnection(VisualNode first, VisualNode second) throws InvalidConnectionException {
         super.validateConnection(first, second);
 
-        if (first == second) throw new InvalidConnectionException("Self-loops are not allowed.");
-        else if (ConversionUtils.doesArcExist(this, first, second)) throw new InvalidConnectionException("This arc already exists.");
+        if (first == second) {
+            throw new InvalidConnectionException("Self-loops are not allowed.");
+        } else if (ConversionUtils.doesArcExist(this, first, second)) {
+            throw new InvalidConnectionException("This arc already exists.");
+        }
     }
 
     @Override
@@ -103,15 +105,13 @@ public class VisualXbm extends VisualFsm {
                 properties.add(new DeclaredSignalPropertyDescriptor(this, signalName, s.getType()));
             }
             properties.add(new DeclaredSignalPropertyDescriptor(this, DeclaredSignalPropertyDescriptor.PROPERTY_NEW_SIGNAL, XbmSignal.DEFAULT_SIGNAL_TYPE));
-        }
-        else if (node instanceof VisualBurstEvent) {
+        } else if (node instanceof VisualBurstEvent) {
             final VisualBurstEvent visualBurstevent = (VisualBurstEvent) node;
             final BurstEvent burstEvent = visualBurstevent.getReferencedBurstEvent();
             properties.add(getConditionalProperty(burstEvent));
             properties.addAll(getSignalDirectionProperties(burstEvent));
             properties.removeByName(Event.PROPERTY_SYMBOL);
-        }
-        else if (node instanceof VisualXbmState) {
+        } else if (node instanceof VisualXbmState) {
             final VisualXbmState vXbmState = (VisualXbmState) node;
             final XbmState xbmState = vXbmState.getReferencedState();
             properties.add(SignalModifierDescriptors.toggleProperty(xbmState));
@@ -182,9 +182,7 @@ public class VisualXbm extends VisualFsm {
     }
 
     private PropertyDescriptor getConditionalProperty(final BurstEvent event) {
-        final Xbm xbm = getMathModel();
-        return new PropertyDeclaration<BurstEvent, String>
-                (event, BurstEvent.PROPERTY_CONDITIONAL, String.class, true, true) {
+        return new PropertyDeclaration<BurstEvent, String>(event, BurstEvent.PROPERTY_CONDITIONAL, String.class, true, true) {
             @Override
             public void setter(BurstEvent object, String value) {
                 object.setConditional(value);
@@ -195,15 +193,5 @@ public class VisualXbm extends VisualFsm {
                 return object.getConditional();
             }
         };
-    }
-
-    public Collection<VisualBurstEvent> getVisualBurstEvents(){
-        Collection<VisualBurstEvent> result = new LinkedHashSet<>();
-        for (VisualEvent vEvent: getVisualSymbols()) {
-            if (vEvent instanceof VisualBurstEvent) {
-                result.add((VisualBurstEvent) vEvent);
-            }
-        }
-        return result;
     }
 }

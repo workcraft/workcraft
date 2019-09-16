@@ -1,7 +1,6 @@
 package org.workcraft.plugins.xbm;
 
 import org.workcraft.Framework;
-import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.plugins.Plugin;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.xbm.commands.*;

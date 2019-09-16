@@ -38,8 +38,7 @@ public class SignalTypeConsistencySupervisor extends StateSupervisor {
                         if (event.getConditionalMapping().keySet().contains(s.getName())) {
                             event.getConditionalMapping().remove(s.getName());
                         }
-                    }
-                    else if (s.getType() != XbmSignal.Type.INPUT || s.getType() != XbmSignal.Type.OUTPUT) {
+                    } else if (s.getType() != XbmSignal.Type.INPUT || s.getType() != XbmSignal.Type.OUTPUT) {
                         event.getBurst().removeSignal(s);
                     }
                 }

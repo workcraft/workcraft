@@ -31,33 +31,30 @@ public class Burst extends Symbol {
         }
 
         public Direction toggle() {
-            switch(this) {
-                case MINUS:
-                    return Direction.PLUS;
-                case PLUS:
-                    return Direction.MINUS;
-                default:
-                    return this;
+            switch (this) {
+            case MINUS:
+                return Direction.PLUS;
+            case PLUS:
+                return Direction.MINUS;
+            default:
+                return this;
             }
         }
 
         public static Direction convertFromString(String value) {
             if (value.equals(PLUS.toString())) {
                 return PLUS;
-            }
-            else if (value.equals(MINUS.toString())) {
+            } else if (value.equals(MINUS.toString())) {
                 return MINUS;
-            }
-            else if (value.equals(STABLE.toString())) {
+            } else if (value.equals(STABLE.toString())) {
                 return STABLE;
-            }
-            else if (value.equals(UNSTABLE.toString())) {
+            } else if (value.equals(UNSTABLE.toString())) {
                 return UNSTABLE;
-            }
-            else if (value.equals(TOGGLE.toString())) {
+            } else if (value.equals(TOGGLE.toString())) {
                 return TOGGLE;
+            } else {
+                throw new ArgumentException("An unknown direction was set for the signal.");
             }
-            else throw new ArgumentException("An unknown direction was set for the signal.");
         }
     }
 
@@ -74,10 +71,13 @@ public class Burst extends Symbol {
         this.from = from;
         this.to = to;
         for (XbmSignal s: this.from.getSignals()) {
-
-            if (from.getEncoding().get(s) == SignalState.HIGH && to.getEncoding().get(s) == SignalState.LOW) direction.put(s, Direction.MINUS);
-            else if (from.getEncoding().get(s) == SignalState.LOW && to.getEncoding().get(s) == SignalState.HIGH) direction.put(s, Direction.PLUS);
-            else if (from.getEncoding().get(s) == SignalState.DDC) direction.put(s, Direction.UNSTABLE);
+            if (from.getEncoding().get(s) == SignalState.HIGH && to.getEncoding().get(s) == SignalState.LOW) {
+                direction.put(s, Direction.MINUS);
+            } else if (from.getEncoding().get(s) == SignalState.LOW && to.getEncoding().get(s) == SignalState.HIGH) {
+                direction.put(s, Direction.PLUS);
+            } else if (from.getEncoding().get(s) == SignalState.DDC) {
+                direction.put(s, Direction.UNSTABLE);
+            }
         }
     }
 
@@ -113,28 +113,23 @@ public class Burst extends Symbol {
 
     public void addOrChangeSignalDirection(XbmSignal s, SignalState fromState, SignalState toState) {
 
-        if (fromState == SignalState.LOW && toState == SignalState.HIGH) {
-            direction.put(s, Direction.PLUS);
-        }
-        else if (fromState == SignalState.HIGH && toState == SignalState.LOW) {
-            direction.put(s, Direction.MINUS);
-        }
-        else if ((fromState == SignalState.DDC && toState == SignalState.HIGH)) {
-            direction.put(s, Direction.PLUS);
-        }
-        else if ((fromState == SignalState.DDC && toState == SignalState.LOW)) {
-            direction.put(s, Direction.MINUS);
-        }
-        else if ((fromState != SignalState.DDC && toState == SignalState.DDC)) {
-            direction.put(s, Direction.UNSTABLE);
-        }
-        else if ((fromState == SignalState.HIGH && toState == SignalState.HIGH) ||
-                 (fromState == SignalState.LOW && toState == SignalState.LOW) ||
-                 (fromState == SignalState.DDC && toState == SignalState.DDC)) {
+        if (fromState == toState) {
             direction.remove(s);
-        }
-        else {
-            direction.put(s, Direction.STABLE);
+        } else {
+            Direction dir;
+            boolean isRising = (fromState == SignalState.LOW && toState == SignalState.HIGH) || (fromState == SignalState.DDC && toState == SignalState.HIGH);
+            boolean isFalling = (fromState == SignalState.HIGH && toState == SignalState.LOW) || (fromState == SignalState.DDC && toState == SignalState.LOW);
+            boolean isUnstable = fromState != SignalState.DDC && toState == SignalState.DDC;
+            if (isRising && !isFalling && !isUnstable) {
+                dir = Direction.PLUS;
+            } else if (!isRising && isFalling && !isUnstable) {
+                dir = Direction.MINUS;
+            } else if (!isRising && !isFalling && isUnstable) {
+                dir = Direction.UNSTABLE;
+            } else { //No changes to be made
+                dir = Direction.STABLE;
+            }
+            direction.put(s, dir);
         }
     }
 
@@ -147,76 +142,41 @@ public class Burst extends Symbol {
     }
 
     public void removeSignal(XbmSignal s) {
-        if (direction.containsKey(s)) direction.remove(s);
-    }
-
-    public boolean containsDirectedDontCare() {
-        for (Map.Entry<XbmSignal, Direction> entry: direction.entrySet()) {
-            if (entry.getValue() == Direction.UNSTABLE) {
-                return true;
-            }
+        if (direction.containsKey(s)) {
+            direction.remove(s);
         }
-        return false;
     }
 
     public String getAsString() {
-
-//        final Map<XbmSignal, Direction> targetSigs = new LinkedHashMap<>(direction);
-//        String inputs = "", outputs = "";
-//
-//        for (Map.Entry<XbmSignal, Burst.Direction> entry: targetSigs.entrySet()) {
-//            XbmSignal xbmSignal = entry.getKey();
-//            Burst.Direction direction = entry.getValue();
-//
-//            if (direction != Direction.CLEAR) {
-//
-//                String signalName = xbmSignal.getName();
-//                switch (xbmSignal.getType()) {
-//                    case INPUT:
-//                        inputs = appendTargetToList(inputs, signalName + direction);
-//                        break;
-//                    case OUTPUT:
-//                        outputs = appendTargetToList(outputs, signalName + direction);
-//                        break;
-//                    case DUMMY: case CONDITIONAL:
-//                        break;
-//                    default:
-//                        throw new RuntimeException("An unknown xbmSignal type was detected for xbmSignal " + signalName);
-//                }
-//            }
-//        }
         String inputs = getInputBurstAsString();
         String outputs = getOutputBurstAsString();
-        if (!inputs.isEmpty() || !outputs.isEmpty()) return inputs + " / " + outputs;
-        else return "" + VisualEvent.EPSILON_SYMBOL;
+        if (!inputs.isEmpty() || !outputs.isEmpty()) {
+            return inputs + " / " + outputs;
+        } else {
+            return "" + VisualEvent.EPSILON_SYMBOL;
+        }
     }
 
     public String getInputBurstAsString() {
-        String input = "";
-        for (XbmSignal s: getSignals(XbmSignal.Type.INPUT)) {
-            if (direction.containsKey(s)) {
-                if (!input.isEmpty()) input += ", ";
-                input += s.getName() + direction.get(s);
-            }
-        }
-        return input;
+        return getBurst(XbmSignal.Type.INPUT);
     }
 
     public String getOutputBurstAsString() {
-        String output = "";
-        for (XbmSignal s: getSignals(XbmSignal.Type.OUTPUT)) {
-            if (direction.containsKey(s)) {
-                if (!output.isEmpty()) output += ", ";
-                output += s.getName() + direction.get(s);
-            }
-        }
-        return output;
+        return getBurst(XbmSignal.Type.OUTPUT);
     }
 
-    private static String appendTargetToList(final String list, final String target) {
-        String newList = list;
-        if (!list.isEmpty()) newList += ", ";
-        newList += target;
-        return newList;
+    private String getBurst(XbmSignal.Type type) {
+        String burst = "";
+        for (XbmSignal s: getSignals(type)) {
+            if (direction.containsKey(s)) {
+                if (!burst.isEmpty()) {
+                    burst += ", ";
+                }
+                if (direction.get(s) != Direction.STABLE) {
+                    burst += s.getName() + direction.get(s);
+                }
+            }
+        }
+        return burst;
     }
 }

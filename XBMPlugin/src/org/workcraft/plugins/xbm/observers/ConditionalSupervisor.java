@@ -37,15 +37,12 @@ public class ConditionalSupervisor extends StateSupervisor {
                         XbmSignal xbmSignal = (XbmSignal) node;
                         if (xbmSignal.getType() == XbmSignal.Type.CONDITIONAL) {
                             declaredExistingCondXbmSignals.add(xbmSignal);
+                        } else {
+                            throw new ArgumentException("Signal " + sigName + " in literal \'" + event.getConditional() + "\' already exists and it is not a conditional signal.");
                         }
-                        else {
-                            throw new ArgumentException("Signal " + sigName + " in literal \'" + event.getConditional() +"\' already exists and it is not a conditional signal.");
-                        }
-                    }
-                    else if (node != null){
-                        throw new ArgumentException("Node " + sigName + " in literal \'" + event.getConditional() +"\' already exists and is not a signal.");
-                    }
-                    else {
+                    } else if (node != null) {
+                        throw new ArgumentException("Node " + sigName + " in literal \'" + event.getConditional() + "\' already exists and is not a signal.");
+                    } else {
                         //throw new ArgumentException("Node " + sigName + " in literal \'" + event.getConditional() +"\' does not exist.");
                         //FIXME When removing the signal, the conditionals are still held by the burst
                         XbmSignal newConditional = new XbmSignal();

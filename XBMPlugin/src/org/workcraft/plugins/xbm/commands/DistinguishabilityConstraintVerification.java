@@ -38,15 +38,12 @@ public class DistinguishabilityConstraintVerification extends AbstractVerificati
         Set<BurstEvent> subsetCompulsories = findSubsetCompulsoryEdges(xbm);
         String msg = "";
         if (commonConditionals.isEmpty() && subsetCompulsories.isEmpty()) {
-            DialogUtils.showInfo("This model holds the distinguishability constraint property.",TITLE);
-        }
-        else if (!commonConditionals.isEmpty() && subsetCompulsories.isEmpty()) {
+            DialogUtils.showInfo("This model holds the distinguishability constraint property.", TITLE);
+        } else if (!commonConditionals.isEmpty() && subsetCompulsories.isEmpty()) {
             msg = "The distinguishability constraint property was violated due to common conditionals found in the following bursts:\n" + getBurstEventsAsString(xbm, commonConditionals);
-        }
-        else if (commonConditionals.isEmpty() && !subsetCompulsories.isEmpty()) {
+        } else if (commonConditionals.isEmpty() && !subsetCompulsories.isEmpty()) {
             msg = "The distinguishability constraint property was violated due to compulsory edges found as a subset in the following bursts:\n" + getBurstEventsAsString(xbm, subsetCompulsories);
-        }
-        else {
+        } else {
             msg = "The distinguishability constraint property was violated due to non-mutually exclusive conditionals  in the following bursts:\n" + getBurstEventsAsString(xbm, commonConditionals) +
                          "\nAnd compulsory edges found as a subset:\n" + getBurstEventsAsString(xbm, subsetCompulsories);
         }
@@ -59,7 +56,6 @@ public class DistinguishabilityConstraintVerification extends AbstractVerificati
                 HashSet<BurstEvent> allBurstEvents = new HashSet<>();
                 allBurstEvents.addAll(commonConditionals);
                 allBurstEvents.addAll(subsetCompulsories);
-
                 visualXbm.selectNone();
                 for (VisualBurstEvent vBurstEvent: Hierarchy.getDescendantsOfType(visualXbm.getRoot(), VisualBurstEvent.class)) {
                     BurstEvent burstEvent = vBurstEvent.getReferencedBurstEvent();
@@ -93,17 +89,16 @@ public class DistinguishabilityConstraintVerification extends AbstractVerificati
         return result;
     }
 
-     private Set<BurstEvent> findSubsetCompulsoryEdges(Xbm xbm) {
+    private Set<BurstEvent> findSubsetCompulsoryEdges(Xbm xbm) {
         Collection<BurstEvent> burstEvents = xbm.getBurstEvents();
         Set<BurstEvent> result = new LinkedHashSet<>();
         for (BurstEvent first: burstEvents) {
             for (BurstEvent second : burstEvents) {
-                if (first != second && !first.hasConditional() && !second.hasConditional() && first.getBurst().getFrom() == second.getBurst().getFrom() ) {
+                if (first != second && !first.hasConditional() && !second.hasConditional() && first.getBurst().getFrom() == second.getBurst().getFrom()) {
                     Set<XbmSignal> firstBurstInputs = first.getBurst().getSignals(XbmSignal.Type.INPUT);
                     boolean isASubset = true;
                     for (XbmSignal input: firstBurstInputs) {
-                        if (!second.getBurst().getDirection().keySet().contains(input) || (second.getBurst().getDirection().get(input) != Burst.Direction.UNSTABLE &&
-                                first.getBurst().getDirection().get(input) != second.getBurst().getDirection().get(input))) {
+                        if (!second.getBurst().getDirection().keySet().contains(input) || (second.getBurst().getDirection().get(input) != Burst.Direction.UNSTABLE && first.getBurst().getDirection().get(input) != second.getBurst().getDirection().get(input))) {
                             isASubset = false;
                         }
                     }

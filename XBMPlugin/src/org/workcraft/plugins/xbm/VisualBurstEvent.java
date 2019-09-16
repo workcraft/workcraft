@@ -13,7 +13,6 @@ import org.workcraft.utils.Geometry;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Set;
@@ -23,9 +22,9 @@ public class VisualBurstEvent extends VisualEvent {
     private RenderedText labelRenderedText = new RenderedText("", labelFont, Positioning.CENTER, new Point2D.Double());
     private Color labelColor = CommonVisualSettings.getLabelColor();
 
-    private final static String BURST_SPLIT_SYMBOL = "/";
-    private final static double LABEL_X_POSITION_THRESHOLD = 0;
-    private final static double LABEL_Y_POSITION_THRESHOLD = 0.25;
+    private static final String BURST_SPLIT_SYMBOL = "/";
+    private static final double LABEL_X_POSITION_THRESHOLD = 0;
+    private static final double LABEL_Y_POSITION_THRESHOLD = 0.25;
 
     public VisualBurstEvent() {
         this(null, null, null);
@@ -53,17 +52,16 @@ public class VisualBurstEvent extends VisualEvent {
 
     @Override
     public void draw(DrawRequest r) {
-
         String input = "";
+        String output = "";
         if (getReferencedBurstEvent().hasConditional()) {
             input += "<" + getReferencedBurstEvent().getConditional() + "> ";
         }
         input += getReferencedBurstEvent().getInputBurstString();
-        String output = getReferencedBurstEvent().getOutputBurstString();
+        output += getReferencedBurstEvent().getOutputBurstString();
         if (input.isEmpty() && output.isEmpty()) {
             super.draw(r);
-        }
-        else {
+        } else {
             cacheLabelRenderedText(r);
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
@@ -82,7 +80,7 @@ public class VisualBurstEvent extends VisualEvent {
             double inputTextWidth = inputText.getBoundingBox().getWidth() / 2;
             double outputTextWidth = outputText.getBoundingBox().getWidth() / 2;
             double burstSplitTextWidth = burstSplitText.getBoundingBox().getWidth();
-            double burstSplitBoundary = (burstSplitTextWidth + 0.2 / 2);
+            double burstSplitBoundary = burstSplitTextWidth + 0.2 / 2;
 
             //Draw input burst first
             g.setColor(Coloriser.colorise(CommonSignalSettings.getInputColor(), d.getColorisation()));
@@ -140,8 +138,8 @@ public class VisualBurstEvent extends VisualEvent {
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualBurstEvent) {
-             VisualBurstEvent srcBurstEvent = (VisualBurstEvent) src;
-             getReferencedBurstEvent();
+            VisualBurstEvent srcBurstEvent = (VisualBurstEvent) src;
+            getReferencedBurstEvent();
         }
     }
 }

@@ -10,6 +10,7 @@ import org.workcraft.serialisation.NodeSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 
 import java.util.Map;
+
 public class BurstEventSerialiser implements CustomXMLSerialiser<BurstEvent> {
 
     @Override

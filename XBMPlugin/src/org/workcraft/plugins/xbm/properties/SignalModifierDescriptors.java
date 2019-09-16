@@ -18,10 +18,8 @@ public class SignalModifierDescriptors {
     private static final String PROPERTY_OUTPUTS_TO_ONE = "Set all outputs to 1";
     private static final String PROPERTY_OUTPUTS_TO_ZERO = "Set all outputs to 0";
 
-    public final static PropertyDescriptor toggleProperty(XbmState state) {
-
-        return new PropertyDeclaration<XbmState, Boolean>
-                (state, PROPERTY_TOGGLE, Boolean.class, true, true) {
+    public static PropertyDescriptor toggleProperty(XbmState state) {
+        return new PropertyDeclaration<XbmState, Boolean>(state, PROPERTY_TOGGLE, Boolean.class, true, true) {
             @Override
             public void setter(XbmState object, Boolean value) {
                 if (value) {
@@ -38,34 +36,32 @@ public class SignalModifierDescriptors {
         };
     }
 
-    public final static PropertyDescriptor allOneProperty(XbmState state) {
+    public static PropertyDescriptor allOneProperty(XbmState state) {
         return setToValueProperty(state, PROPERTY_ALL_ONE, SignalState.HIGH);
     }
 
-    public final static PropertyDescriptor allZeroProperty(XbmState state) {
+    public static PropertyDescriptor allZeroProperty(XbmState state) {
         return setToValueProperty(state, PROPERTY_ALL_ZERO, SignalState.LOW);
     }
 
-    public final static PropertyDescriptor allInputsOneProperty(XbmState state) {
+    public static PropertyDescriptor allInputsOneProperty(XbmState state) {
         return setToValueByTypeProperty(state, XbmSignal.Type.INPUT, PROPERTY_INPUTS_TO_ONE, SignalState.HIGH);
     }
 
-    public final static PropertyDescriptor allInputsZeroProperty(XbmState state) {
+    public static final PropertyDescriptor allInputsZeroProperty(XbmState state) {
         return setToValueByTypeProperty(state, XbmSignal.Type.INPUT, PROPERTY_INPUTS_TO_ZERO, SignalState.LOW);
     }
 
-    public final static PropertyDescriptor allOutputsOneProperty(XbmState state) {
+    public static PropertyDescriptor allOutputsOneProperty(XbmState state) {
         return setToValueByTypeProperty(state, XbmSignal.Type.OUTPUT, PROPERTY_OUTPUTS_TO_ONE, SignalState.HIGH);
     }
 
-    public final static PropertyDescriptor allOutputsZeroProperty(XbmState state) {
+    public static PropertyDescriptor allOutputsZeroProperty(XbmState state) {
         return setToValueByTypeProperty(state, XbmSignal.Type.OUTPUT, PROPERTY_OUTPUTS_TO_ZERO, SignalState.LOW);
     }
 
-    private final static PropertyDescriptor setToValueProperty(XbmState state, String propertyName, SignalState targetValue) {
-
-        return new PropertyDeclaration<XbmState, Boolean>
-                (state, propertyName, Boolean.class, true, true) {
+    private static PropertyDescriptor setToValueProperty(XbmState state, String propertyName, SignalState targetValue) {
+        return new PropertyDeclaration<XbmState, Boolean>(state, propertyName, Boolean.class, true, true) {
             @Override
             public void setter(XbmState object, Boolean value) {
                 if (value) {
@@ -80,10 +76,8 @@ public class SignalModifierDescriptors {
         };
     }
 
-    private final static PropertyDescriptor setToValueByTypeProperty(XbmState state, XbmSignal.Type type, String propertyName, SignalState targetValue) {
-
-        return new PropertyDeclaration<XbmState, Boolean>
-                (state, propertyName, Boolean.class, true, true) {
+    private static PropertyDescriptor setToValueByTypeProperty(XbmState state, XbmSignal.Type type, String propertyName, SignalState targetValue) {
+        return new PropertyDeclaration<XbmState, Boolean>(state, propertyName, Boolean.class, true, true) {
             @Override
             public void setter(XbmState object, Boolean value) {
                 if (value) {
@@ -98,15 +92,19 @@ public class SignalModifierDescriptors {
         };
     }
 
-    private final static void setSignalsToValue(XbmState state, SignalState value) {
+    private static void setSignalsToValue(XbmState state, SignalState value) {
         for (Map.Entry<XbmSignal, SignalState> entry: state.getEncoding().entrySet()) {
-            if (entry.getValue() != value) state.addOrChangeSignalValue(entry.getKey(), value);
+            if (entry.getValue() != value) {
+                state.addOrChangeSignalValue(entry.getKey(), value);
+            }
         }
     }
 
-    private final static void setSignalsToValueByType(XbmState state, XbmSignal.Type type, SignalState value) {
+    private static void setSignalsToValueByType(XbmState state, XbmSignal.Type type, SignalState value) {
         for (Map.Entry<XbmSignal, SignalState> entry: state.getEncoding().entrySet()) {
-            if (entry.getKey().getType() == type && entry.getValue() != value) state.addOrChangeSignalValue(entry.getKey(), value);
+            if (entry.getKey().getType() == type && entry.getValue() != value) {
+                state.addOrChangeSignalValue(entry.getKey(), value);
+            }
         }
     }
 }

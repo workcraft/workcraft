@@ -1,20 +1,18 @@
 package org.workcraft.plugins.xbm.converters;
 
 import org.workcraft.dom.Node;
-import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.fsm.VisualEvent;
-import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.plugins.stg.*;
+import org.workcraft.plugins.stg.VisualDummyTransition;
+import org.workcraft.plugins.stg.VisualSignalTransition;
+import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.plugins.stg.VisualStgPlace;
 import org.workcraft.plugins.xbm.*;
 import org.workcraft.utils.Hierarchy;
 
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class XbmToStgConverter {
 
@@ -25,8 +23,8 @@ public class XbmToStgConverter {
     private final Map<VisualBurstEvent, VisualBurstTransition> burstEventToTransitionsMap;
     private final Map<XbmSignal, StgElementaryCycle> signalToElementaryCycleMap;
 
-    private final static String IN_PREFIX = "_IN";
-    private final static String OUT_PREFIX = "_OUT";
+    private static final String IN_PREFIX = "_IN";
+    private static final String OUT_PREFIX = "_OUT";
 
     public XbmToStgConverter(VisualXbm srcModel, VisualStg dstModel) {
         this.srcModel = srcModel;
@@ -43,8 +41,7 @@ public class XbmToStgConverter {
         }
     }
 
-
-    private final Map<VisualXbmState, VisualStgPlace> convertStates() {
+    private Map<VisualXbmState, VisualStgPlace> convertStates() {
         Map<VisualXbmState, VisualStgPlace> result = new HashMap<>();
         for (VisualXbmState state: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualXbmState.class)) {
             String name = srcModel.getMathModel().getNodeReference(state.getReferencedState());
@@ -58,7 +55,7 @@ public class XbmToStgConverter {
         return result;
     }
 
-    private final Map<VisualBurstEvent, VisualBurstTransition> convertBurstEvents() {
+    private Map<VisualBurstEvent, VisualBurstTransition> convertBurstEvents() {
         Map<VisualBurstEvent, VisualBurstTransition> result = new HashMap<>();
         for (VisualBurstEvent event: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualBurstEvent.class)) {
             VisualBurstTransition burstTransition = new VisualBurstTransition(event, dstModel);
@@ -67,7 +64,7 @@ public class XbmToStgConverter {
         return result;
     }
 
-    private final Map<XbmSignal, StgElementaryCycle> convertSignalsToElementaryCycles() {
+    private Map<XbmSignal, StgElementaryCycle> convertSignalsToElementaryCycles() {
         Map<XbmSignal, StgElementaryCycle> result = new HashMap<>();
         for (XbmSignal xbmSignal : srcModel.getMathModel().getSignals(XbmSignal.Type.CONDITIONAL)) {
             result.put(xbmSignal, new StgElementaryCycle(dstModel, xbmSignal));
@@ -75,7 +72,7 @@ public class XbmToStgConverter {
         return result;
     }
 
-    private final void connectBurstEvents() throws InvalidConnectionException {
+    private void connectBurstEvents() throws InvalidConnectionException {
         for (VisualBurstEvent event: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualBurstEvent.class)) {
             VisualBurstTransition burstTransition = burstEventToTransitionsMap.get(event);
             if (burstTransition != null) {
@@ -90,6 +87,18 @@ public class XbmToStgConverter {
                             dstModel.connect(dummyOut, inputTransition);
                         }
                     }
+                    if (event.getReferencedBurstEvent().hasConditional()) { //Connects the elementary cycle appropriate to the burst transition
+                        for (Map.Entry<String, Boolean> condition: event.getReferencedBurstEvent().getConditionalMapping().entrySet()) {
+                            VisualStgPlace readPlace;
+                            StgElementaryCycle elemCycle = getRelatedStgElementaryCycle((XbmSignal) srcModel.getMathModel().getNodeByReference(condition.getKey()));
+                            if (condition.getValue()) {
+                                readPlace = elemCycle.getHigh();
+                            } else {
+                                readPlace = elemCycle.getLow();
+                            }
+                            dstModel.connectUndirected(readPlace, dummyOut);
+                        }
+                    }
                 }
                 Node second = event.getSecond();
                 if (second instanceof VisualXbmState) {
@@ -100,20 +109,6 @@ public class XbmToStgConverter {
                         for (VisualSignalTransition outputTransition: burstTransition.getOutputTransitions()) {
                             //dstModel.connect(outputTransition, outPlace);
                             dstModel.connect(outputTransition, dummyIn);
-                        }
-                    }
-                }
-                if (event.getReferencedBurstEvent().hasConditional()) { //Connects the elementary cycle appropriate to the burst transition
-                    for (Map.Entry<String, Boolean> condition: event.getReferencedBurstEvent().getConditionalMapping().entrySet()) {
-                        VisualPlace readPlace;
-                        StgElementaryCycle elemCycle = getRelatedStgElementaryCycle((XbmSignal) srcModel.getMathModel().getNodeByReference(condition.getKey()));
-                        if (condition.getValue()) {
-                            readPlace = elemCycle.getHigh();
-                        } else {
-                            readPlace = elemCycle.getLow();
-                        }
-                        for (VisualSignalTransition inputTransition : burstTransition.getInputTransitions()) {
-                            dstModel.connectUndirected(readPlace, inputTransition);
                         }
                     }
                 }
@@ -158,178 +153,48 @@ public class XbmToStgConverter {
     public StgElementaryCycle getRelatedStgElementaryCycle(XbmSignal conditional) {
         return signalToElementaryCycleMap.get(conditional);
     }
-}
 
-class VisualBurstTransition {
-
-    private final VisualStg visualStg;
-    private final Set<VisualSignalTransition> inputTransitions;
-    private final Set<VisualSignalTransition> outputTransitions;
-
-    public VisualBurstTransition(VisualBurstEvent ref, VisualStg target) {
-        visualStg = target;
-        inputTransitions = convertInputBursts(ref);
-        outputTransitions = convertOutputBursts(ref);
-
-        try {
-            for (VisualSignalTransition inputTransition: inputTransitions) {
-                for (VisualSignalTransition outputTransition: outputTransitions) {
-                    visualStg.connect(inputTransition, outputTransition);
+    public boolean isRelated(Node highLevelNode, Node node) {
+        boolean result = false;
+        if (highLevelNode instanceof VisualBurstEvent) {
+            VisualBurstTransition relatedTransition = getRelatedSignalBurstTransition((VisualBurstEvent) highLevelNode);
+            if (relatedTransition != null) {
+                boolean allSignalsFound = true;
+                if (node instanceof VisualBurstEvent) {
+                    VisualBurstEvent vbe = (VisualBurstEvent) node;
+                    for (XbmSignal s: vbe.getReferencedBurstEvent().getBurst().getSignals()) {
+                        boolean isInput = false;
+                        for (VisualSignalTransition i: relatedTransition.getInputTransitions()) {
+                            isInput = isInput || i.getName().equals(s.getName());
+                        }
+                        boolean isOutput = false;
+                        for (VisualSignalTransition o: relatedTransition.getOutputTransitions()) {
+                            isOutput = isOutput || o.getName().equals(s.getName());
+                        }
+                        allSignalsFound = true && (isInput || isOutput);
+                    }
+                } else if (node instanceof BurstEvent) {
+                    BurstEvent be = (BurstEvent) node;
+                    for (XbmSignal s: be.getBurst().getSignals()) {
+                        boolean isInput = false;
+                        for (VisualSignalTransition i: relatedTransition.getInputTransitions()) {
+                            isInput = isInput || i.getName().equals(s.getName());
+                        }
+                        boolean isOutput = false;
+                        for (VisualSignalTransition o: relatedTransition.getOutputTransitions()) {
+                            isOutput = isOutput || o.getName().equals(s.getName());
+                        }
+                        allSignalsFound = true && (isInput || isOutput);
+                    }
                 }
+                result = allSignalsFound;
             }
-        }
-        catch (InvalidConnectionException ice) {
-            //Remove the places if the check fails
-            for (VisualSignalTransition inputTransition: inputTransitions) {
-                visualStg.remove(inputTransition);
+        } else if (highLevelNode instanceof VisualXbmState) {
+            VisualPlace relatedPlace = getRelatedPlace((VisualXbmState) highLevelNode);
+            if (relatedPlace != null) {
+                result = (node == relatedPlace) || (node == relatedPlace.getReferencedComponent());
             }
-            for (VisualSignalTransition outputTransition: outputTransitions) {
-                visualStg.remove(outputTransition);
-            }
-        }
-    }
-
-    public Set<VisualSignalTransition> getInputTransitions() {
-        return inputTransitions;
-    }
-
-    public Set<VisualSignalTransition> getOutputTransitions() {
-        return outputTransitions;
-    }
-
-    private Set<VisualSignalTransition> convertInputBursts(VisualBurstEvent ref) {
-        return getBurst(ref, visualStg, XbmSignal.Type.INPUT);
-    }
-
-    private Set<VisualSignalTransition> convertOutputBursts(VisualBurstEvent ref) {
-        return getBurst(ref, visualStg, XbmSignal.Type.OUTPUT);
-    }
-
-    private static Set<VisualSignalTransition> getBurst(VisualBurstEvent ref, VisualStg visualStg, XbmSignal.Type targetType) {
-        Set<VisualSignalTransition> result = new LinkedHashSet<>();
-        Burst burst = ref.getReferencedBurstEvent().getBurst();
-        for (XbmSignal input: burst.getSignals(targetType)) {
-            VisualSignalTransition transition = visualStg.createVisualSignalTransition
-                    (input.getName(), XbmToStgConversionUtil.getReferredType(input.getType()), XbmToStgConversionUtil.getReferredDirection(burst.getDirection().get(input)));
-            transition.setPosition(ref.getCenter());
-            transition.setForegroundColor(ref.getColor());
-            transition.setLabelColor(ref.getLabelColor());
-            result.add(transition);
         }
         return result;
-    }
-}
-
-class StgElementaryCycle {
-
-    public final static String TRANSITION_NAME_RISING = "_PLUS";
-    public final static String TRANSITION_NAME_FALLING = "_MINUS";
-    public final static String PLACE_NAME_LOW = "_LOW";
-    public final static String PLACE_NAME_HIGH = "_HIGH";
-
-    private final VisualStgPlace low, high;
-    private final VisualSignalTransition falling, rising;
-
-    public StgElementaryCycle(VisualStg visualStg, XbmSignal xbmSignal) {
-        if (xbmSignal.getType() != XbmSignal.Type.DUMMY) {
-            low = generateLowState(visualStg, xbmSignal);
-            high = generateHighState(visualStg, xbmSignal);
-            falling = generateFallingTransition(visualStg, xbmSignal);
-            rising = generateRisingTransition(visualStg, xbmSignal);
-
-            try {
-                //Elementary cycle
-                visualStg.connect(low, rising);
-                visualStg.connect(rising, high);
-                visualStg.connect(high, falling);
-                visualStg.connect(falling, low);
-            }
-            catch (InvalidConnectionException ice) {
-                //Remove the places if the check fails
-                visualStg.remove(low);
-                visualStg.remove(high);
-                visualStg.remove(falling);
-                visualStg.remove(rising);
-            }
-        }
-        else {
-            low = null;
-            high = null;
-            falling = null;
-            rising = null;
-        }
-    }
-
-    public VisualPlace getLow() {
-        return low;
-    }
-
-    public VisualPlace getHigh() {
-        return high;
-    }
-
-    public VisualTransition getFalling() {
-        return falling;
-    }
-
-    public VisualTransition getRising() {
-        return rising;
-    }
-
-    private static final VisualStgPlace generateLowState(VisualStg visualStg, XbmSignal xbmSignal) {
-        return createPlace(visualStg, xbmSignal, PLACE_NAME_LOW, 1);
-    }
-
-    private static final VisualStgPlace generateHighState(VisualStg visualStg, XbmSignal xbmSignal) {
-        return createPlace(visualStg, xbmSignal, PLACE_NAME_HIGH, 0);
-    }
-
-    private static final VisualSignalTransition generateFallingTransition(VisualStg visualStg, XbmSignal xbmSignal) {
-        return createTransition(visualStg, xbmSignal, TRANSITION_NAME_FALLING);
-    }
-
-    private static final VisualSignalTransition generateRisingTransition(VisualStg visualStg, XbmSignal xbmSignal) {
-        return createTransition(visualStg, xbmSignal, TRANSITION_NAME_RISING);
-    }
-
-    private static VisualStgPlace createPlace(VisualStg visualStg, XbmSignal xbmSignal, String namePrefix, int tokenCount) {
-        final VisualStgPlace result = visualStg.createVisualPlace(xbmSignal.getName() + namePrefix, null);
-        final String prefixParse = namePrefix.equals(PLACE_NAME_HIGH) ? "=1" : "=0";
-        result.getReferencedComponent().setTokens(tokenCount);
-        result.setLabel(xbmSignal.getName() + prefixParse);
-        return result;
-    }
-
-    private static final VisualSignalTransition createTransition(VisualStg visualStg, XbmSignal xbmSignal, String namePrefix) {
-        final SignalTransition.Direction determineDirection = namePrefix.equals(TRANSITION_NAME_RISING) ? SignalTransition.Direction.PLUS : SignalTransition.Direction.MINUS;
-        final VisualSignalTransition result = visualStg.createVisualSignalTransition
-                (xbmSignal.getName() + namePrefix, XbmToStgConversionUtil.getReferredType(xbmSignal.getType()), determineDirection);
-        return result;
-    }
-}
-
-class XbmToStgConversionUtil {
-    public static Signal.Type getReferredType(XbmSignal.Type burstType) {
-        switch (burstType) {
-            case INPUT:
-                return Signal.Type.INPUT;
-            case OUTPUT:
-                return Signal.Type.OUTPUT;
-            case CONDITIONAL:
-                return Signal.Type.INTERNAL;
-            default:
-                return null;
-        }
-    }
-
-    public static SignalTransition.Direction getReferredDirection(Burst.Direction burstDirection) {
-        switch (burstDirection) {
-            case PLUS:
-                return SignalTransition.Direction.PLUS;
-            case MINUS:
-                return SignalTransition.Direction.MINUS;
-            default:
-                return SignalTransition.Direction.TOGGLE; //TODO Add conversion for XBM's stable and unstable signals
-        }
     }
 }

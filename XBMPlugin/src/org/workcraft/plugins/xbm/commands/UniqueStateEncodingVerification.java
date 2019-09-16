@@ -39,8 +39,7 @@ public class UniqueStateEncodingVerification extends AbstractVerificationCommand
 
         if (commonStateEncodings.isEmpty()) {
             DialogUtils.showInfo("All states have an unique state encoding.", TITLE);
-        }
-        else {
+        } else {
             String msg = "The unique state encoding property was violated due to the following states having the same encoding:\n" + getStatesAsString(xbm, commonStateEncodings)
                     + "\n\nSelect states with common encodings?\n";
             if (DialogUtils.showConfirmInfo(msg, TITLE, true)) {

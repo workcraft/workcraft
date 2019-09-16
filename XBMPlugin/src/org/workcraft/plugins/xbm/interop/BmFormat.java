@@ -4,7 +4,7 @@ import org.workcraft.interop.Format;
 
 import java.util.UUID;
 
-public class BmFormat implements Format {
+public final class BmFormat implements Format {
 
     private static BmFormat instance = null;
 
