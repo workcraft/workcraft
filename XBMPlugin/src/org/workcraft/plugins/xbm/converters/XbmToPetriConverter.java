@@ -111,8 +111,7 @@ public class XbmToPetriConverter {
                         ElementaryCycle elemCycle = getRelatedElementaryCycle((XbmSignal) srcModel.getMathModel().getNodeByReference(condition.getKey()));
                         if (condition.getValue()) {
                             readPlace = elemCycle.getHigh();
-                        }
-                        else {
+                        } else {
                             readPlace = elemCycle.getLow();
                         }
                         dstModel.connectUndirected(readPlace, transition);

@@ -24,17 +24,25 @@ public enum SignalState {
     }
 
     public SignalState toggle() {
-        switch(this) {
-            case LOW: return HIGH;
-            case HIGH: return LOW;
-            default: return this;
+        switch (this) {
+        case LOW:
+            return HIGH;
+        case HIGH:
+            return LOW;
+        default:
+            return this;
         }
     }
 
     public static SignalState convertFromString(String value) {
-        if (value.equals(LOW.toString())) return LOW;
-        else if (value.equals(HIGH.toString())) return HIGH;
-        else if (value.equals(DDC.toString())) return DDC;
-        else throw new ArgumentException("An unknown state was set for the signal.");
+        if (value.equals(LOW.toString())) {
+            return LOW;
+        } else if (value.equals(HIGH.toString())) {
+            return HIGH;
+        } else if (value.equals(DDC.toString())) {
+            return DDC;
+        } else {
+            throw new ArgumentException("An unknown state was set for the signal.");
+        }
     }
 }

@@ -10,7 +10,6 @@ public class Conditional extends LinkedHashMap<String, Boolean> {
     private static final Pattern LITERAL_PATTERN = Pattern.compile("^(\\w+)(=(0|1))$"); //Only include valid C syntax names
 
     public void setConditional(String str) {
-
         this.clear();
         Conditional result = new Conditional();
         if ((str != null) && !str.isEmpty()) {
@@ -21,12 +20,17 @@ public class Conditional extends LinkedHashMap<String, Boolean> {
                     String name = literal.split("=")[0];
                     if (!result.containsKey(name)) {
 
-                        if (literal.endsWith("0")) result.put(name, false);
-                        else if (literal.endsWith("1")) result.put(name, true);
-                        else throw new RuntimeException("An unknown error was detected.");
+                        if (literal.endsWith("0")) {
+                            result.put(name, false);
+                        } else if (literal.endsWith("1")) {
+                            result.put(name, true);
+                        } else {
+                            throw new RuntimeException("An unknown error was detected.");
+                        }
                     }
+                } else {
+                    throw new RuntimeException("The literal \'" + str + "\' is not valid. ");
                 }
-                else throw new RuntimeException("The literal \'" + str + "\' is not valid. ");
             }
         }
         this.putAll(result);
@@ -36,14 +40,13 @@ public class Conditional extends LinkedHashMap<String, Boolean> {
     public String toString() {
         String result = "";
         for (Map.Entry<String, Boolean> e: this.entrySet()) {
+            final String signalName = e.getKey();
             if (!result.isEmpty()) {
                 result += ", ";
             }
-            final String signalName = e.getKey();
             if (e.getValue()) {
                 result += signalName + "=1";
-            }
-            else {
+            } else {
                 result += signalName + "=0";
             }
         }

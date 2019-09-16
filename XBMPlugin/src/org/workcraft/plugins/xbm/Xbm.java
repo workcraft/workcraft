@@ -38,8 +38,9 @@ public class Xbm extends Fsm {
             for (XbmSignal s: bSymbol.getSignals()) {
                 result = result && (s.getType() != XbmSignal.Type.DUMMY);
             }
+        } else {
+            result = super.isDeterministicSymbol(symbol);
         }
-        else result = super.isDeterministicSymbol(symbol);
         return result;
     }
 
@@ -47,8 +48,7 @@ public class Xbm extends Fsm {
     public void remove(MathNode node) {
         if (node != null) {
             getRoot().remove(node);
-        }
-        else {
+        } else {
             throw new ArgumentException("Cannot delete a null node.");
         }
     }
@@ -66,10 +66,15 @@ public class Xbm extends Fsm {
     public XbmState getOrCreateState(String name) {
         XbmState state = null;
         Node node = getNodeByReference(name);
-        if (node == null) state = createState(name);
-        else if (node instanceof XbmState) state = (XbmState) node;
-        else if (node instanceof State) return (XbmState) super.getOrCreateState(name);
-        else throw new ArgumentException("Node \'" + name + "\' already exists and it is not a state.");
+        if (node == null) {
+            state = createState(name);
+        } else if (node instanceof XbmState) {
+            state = (XbmState) node;
+        } else if (node instanceof State) {
+            return (XbmState) super.getOrCreateState(name);
+        } else {
+            throw new ArgumentException("Node \'" + name + "\' already exists and it is not a state.");
+        }
         return state;
     }
 
@@ -87,12 +92,12 @@ public class Xbm extends Fsm {
         Node node = getNodeByReference(name);
         if (node == null) {
             xbmSignal = createSignal(name);
-        }
-        else if (node instanceof XbmSignal) {
+        } else if (node instanceof XbmSignal) {
             xbmSignal = (XbmSignal) node;
-            if (xbmSignal.getType() != type) throw new ArgumentException("XbmSignal " + name + " already exists and its type \'" + xbmSignal.getType() + "\' is different from the \'" + type + "\' type.");
-        }
-        else {
+            if (xbmSignal.getType() != type) {
+                throw new ArgumentException("XbmSignal " + name + " already exists and its type \'" + xbmSignal.getType() + "\' is different from the \'" + type + "\' type.");
+            }
+        } else {
             throw new ArgumentException("Node " + name + " already exists and it is not a xbmSignal.");
         }
         return xbmSignal;

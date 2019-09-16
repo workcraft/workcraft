@@ -69,8 +69,7 @@ public class DeclaredSignalPropertyDescriptor implements PropertyDescriptor<Bool
         if (node instanceof XbmSignal) {
             XbmSignal xbmSignal = (XbmSignal) node;
             xbm.removeSignal(xbmSignal);
-        }
-        else {
+        } else {
             throw new RuntimeException("Unknown error: Node " + signalName + " is not a signal.");
         }
     }

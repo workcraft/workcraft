@@ -33,7 +33,7 @@ public class XbmSimulationTool extends PetriSimulationTool {
     private final Map<XbmSignal, Boolean> conditionalValue = new HashMap<>();
     private final Set<JCheckBox> conditionalCheckBoxes = new LinkedHashSet<>();
 
-    private final static String CHECKBOX_NAME_PREFIX = "checkBox";
+    private static final String CHECKBOX_NAME_PREFIX = "checkBox";
 
     @Override
     public void activated(final GraphEditor editor) {
@@ -118,8 +118,7 @@ public class XbmSimulationTool extends PetriSimulationTool {
                     VisualPlace placeHigh = elemCycle.getHigh();
                     if (placeLow.getReferencedPlace().getTokens() > 0 && placeHigh.getReferencedPlace().getTokens() <= 0) {
                         checkBox.setSelected(false);
-                    }
-                    else if (placeLow.getReferencedPlace().getTokens() <= 0 && placeHigh.getReferencedPlace().getTokens() > 0) {
+                    } else if (placeLow.getReferencedPlace().getTokens() <= 0 && placeHigh.getReferencedPlace().getTokens() > 0) {
                         checkBox.setSelected(true);
                     }
                 }
@@ -144,9 +143,8 @@ public class XbmSimulationTool extends PetriSimulationTool {
 
     private Decoration getEventDecoration(VisualBurstEvent event) {
         Node transition = getTraceCurrentNode();
-        final boolean isExcited = getExcitedTransitionOfNode(event) != null ;
+        final boolean isExcited = getExcitedTransitionOfNode(event) != null;
         final boolean isSuggested = isExcited && converter.isRelated(event, transition);
-
         return new Decoration() {
             @Override
             public Color getColorisation() {
@@ -207,7 +205,7 @@ public class XbmSimulationTool extends PetriSimulationTool {
         JPanel conditionalSetterTools = new JPanel();
         conditionalSetterTools.setLayout(new GridLayout(conditionalValue.keySet().size(), 1));
         for (Map.Entry<XbmSignal, Boolean> entry: conditionalValue.entrySet()) {
-            JPanel signalEntry = new JPanel(new GridLayout(1,2));
+            JPanel signalEntry = new JPanel(new GridLayout(1, 2));
             JLabel name = new JLabel(entry.getKey().getName(), SwingConstants.CENTER);
             JCheckBox value = new JCheckBox();
             value.setName(entry.getKey().getName() + CHECKBOX_NAME_PREFIX);
@@ -218,8 +216,7 @@ public class XbmSimulationTool extends PetriSimulationTool {
                     conditionalValue.put(entry.getKey(), true);
                     VisualTransition transition = elemCycle.getRising();
                     fireElementaryCycleTransition(editor, transition);
-                }
-                else {
+                } else {
                     conditionalValue.put(entry.getKey(), false);
                     VisualTransition transition = elemCycle.getFalling();
                     fireElementaryCycleTransition(editor, transition);
@@ -233,7 +230,7 @@ public class XbmSimulationTool extends PetriSimulationTool {
         return conditionalSetterTools;
     }
 
-    private final void fireElementaryCycleTransition(GraphEditor editor, VisualTransition transition) {
+    private void fireElementaryCycleTransition(GraphEditor editor, VisualTransition transition) {
         if (super.isEnabledNode(transition.getReferencedTransition())) {
             executeTransition(editor, transition.getReferencedTransition());
             editor.requestFocus();

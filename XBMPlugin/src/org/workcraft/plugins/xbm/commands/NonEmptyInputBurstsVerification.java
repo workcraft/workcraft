@@ -41,13 +41,11 @@ public class NonEmptyInputBurstsVerification extends AbstractVerificationCommand
         if (inputs.isEmpty()) {
             DialogUtils.showInfo("There were no input signals to be found in this model.", TITLE);
             return null;
-        }
-        else {
+        } else {
             HashSet<BurstEvent> emptyBursts = findEmptyInputBursts(xbm);
             if (emptyBursts.isEmpty()) {
                 DialogUtils.showInfo("This model holds the non-empty input bursts property.", TITLE);
-            }
-            else {
+            } else {
                 String msg = "The non-empty input bursts property was violated to the following bursts having no input changes:\n" + getBurstEventsAsString(xbm, emptyBursts)
                         + "\n\nSelect empty input bursts?\n";
                 if (DialogUtils.showConfirmInfo(msg, TITLE, true)) {

@@ -34,14 +34,12 @@ public class MaximalSetPropertyVerification extends AbstractVerificationCommand 
 
         if (commonBursts.isEmpty()) {
             DialogUtils.showInfo("This model holds the maximal set property.", TITLE);
-        }
-        else {
+        } else {
             String msg = "The maximal set property was violated due to common signal changes found in the following bursts:\n" + getBurstEventsAsString(xbm, commonBursts)
                     + "\n\nSelect common input bursts?\n";
             if (DialogUtils.showConfirmInfo(msg, TITLE, true)) {
                 VisualXbm visualXbm = WorkspaceUtils.getAs(we, VisualXbm.class);
                 mainWindow.getToolbox(we).selectToolInstance(SelectionTool.class);
-
                 visualXbm.selectNone();
                 for (VisualBurstEvent vBurstEvent: Hierarchy.getDescendantsOfType(visualXbm.getRoot(), VisualBurstEvent.class)) {
                     BurstEvent burstEvent = vBurstEvent.getReferencedBurstEvent();
@@ -67,7 +65,6 @@ public class MaximalSetPropertyVerification extends AbstractVerificationCommand 
                 if (event1 != event2) {
                     Burst b1 = event1.getBurst();
                     Burst b2 = event2.getBurst();
-
                     Set<Map.Entry<XbmSignal, Burst.Direction>> b1map = new LinkedHashSet<>();
                     Set<Map.Entry<XbmSignal, Burst.Direction>> b2map = new LinkedHashSet<>();
                     for (Map.Entry<XbmSignal, Burst.Direction> entry: b1.getDirection().entrySet()) {

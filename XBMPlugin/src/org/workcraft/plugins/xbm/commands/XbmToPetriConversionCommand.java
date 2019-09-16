@@ -4,7 +4,6 @@ import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.plugins.petri.Petri;
 import org.workcraft.plugins.petri.PetriDescriptor;
 import org.workcraft.plugins.petri.VisualPetri;
-import org.workcraft.plugins.petri.VisualPetriDescriptor;
 import org.workcraft.plugins.xbm.VisualXbm;
 import org.workcraft.plugins.xbm.converters.XbmToPetriConverter;
 import org.workcraft.utils.WorkspaceUtils;

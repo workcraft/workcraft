@@ -3,7 +3,6 @@ package org.workcraft.plugins.xbm;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
-import org.workcraft.dom.visual.Positioning;
 import org.workcraft.plugins.fsm.VisualState;
 
 import java.awt.event.KeyEvent;

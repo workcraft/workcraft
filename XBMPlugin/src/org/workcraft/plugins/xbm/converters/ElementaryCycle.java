@@ -11,10 +11,10 @@ import java.awt.geom.Point2D;
 //Takes any signal and converts it into a corresponding elementary cycle in Petri Net form
 public class ElementaryCycle {
 
-    public final static String TRANSITION_NAME_RISING = "_PLUS";
-    public final static String TRANSITION_NAME_FALLING = "_MINUS";
-    public final static String PLACE_NAME_LOW = "_LOW";
-    public final static String PLACE_NAME_HIGH = "_HIGH";
+    public static final String TRANSITION_NAME_RISING = "_PLUS";
+    public static final String TRANSITION_NAME_FALLING = "_MINUS";
+    public static final String PLACE_NAME_LOW = "_LOW";
+    public static final String PLACE_NAME_HIGH = "_HIGH";
 
     private final VisualPlace low, high;
     private final VisualTransition falling, rising;
@@ -55,16 +55,14 @@ public class ElementaryCycle {
                 vPetri.connect(rising, high);
                 vPetri.connect(high, falling);
                 vPetri.connect(falling, low);
-            }
-            catch (InvalidConnectionException ice) {
+            } catch (InvalidConnectionException ice) {
                 //Remove the places if the check fails
                 vPetri.remove(low);
                 vPetri.remove(high);
                 vPetri.remove(falling);
                 vPetri.remove(rising);
             }
-        }
-        else {
+        } else {
             low = null;
             high = null;
             falling = null;
@@ -88,27 +86,27 @@ public class ElementaryCycle {
         return rising;
     }
 
-    private static final VisualPlace generateLowState(VisualPetri vPetri, XbmSignal xbmSignal) {
+    private static VisualPlace generateLowState(VisualPetri vPetri, XbmSignal xbmSignal) {
         VisualPlace result = vPetri.createPlace(xbmSignal.getName()  + PLACE_NAME_LOW, null);
         result.getReferencedPlace().setTokens(1);
         result.setLabel(xbmSignal.getName() + "=0");
         return result;
     }
 
-    private static final VisualPlace generateHighState(VisualPetri vPetri, XbmSignal xbmSignal) {
+    private static VisualPlace generateHighState(VisualPetri vPetri, XbmSignal xbmSignal) {
         VisualPlace result = vPetri.createPlace(xbmSignal.getName()  + PLACE_NAME_HIGH, null);
         result.getReferencedPlace().setTokens(0);
         result.setLabel(xbmSignal.getName() + "=1");
         return result;
     }
 
-    private static final VisualTransition generateFallingTransition(VisualPetri vPetri, XbmSignal xbmSignal) {
+    private static VisualTransition generateFallingTransition(VisualPetri vPetri, XbmSignal xbmSignal) {
         VisualTransition falling = vPetri.createTransition(xbmSignal.getName() + TRANSITION_NAME_FALLING, null);
         falling.setLabel(xbmSignal.getName() + "-");
         return falling;
     }
 
-    private static final VisualTransition generateRisingTransition(VisualPetri vPetri, XbmSignal xbmSignal) {
+    private static VisualTransition generateRisingTransition(VisualPetri vPetri, XbmSignal xbmSignal) {
         VisualTransition result = vPetri.createTransition(xbmSignal.getName() + TRANSITION_NAME_RISING, null);
         result.setLabel(xbmSignal.getName() + "+");
         return result;
