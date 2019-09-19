@@ -65,22 +65,9 @@ public class MaximalSetPropertyVerification extends AbstractVerificationCommand 
                 if (event1 != event2) {
                     Burst b1 = event1.getBurst();
                     Burst b2 = event2.getBurst();
-                    Set<Map.Entry<XbmSignal, Burst.Direction>> b1map = new LinkedHashSet<>();
-                    Set<Map.Entry<XbmSignal, Burst.Direction>> b2map = new LinkedHashSet<>();
-                    for (Map.Entry<XbmSignal, Burst.Direction> entry: b1.getDirection().entrySet()) {
-                        XbmSignal xbmSignal = entry.getKey();
-                        if (xbmSignal.getType() == XbmSignal.Type.INPUT && (entry.getValue() == Burst.Direction.PLUS || entry.getValue() == Burst.Direction.MINUS)) {
-                            b1map.add(entry);
-                        }
-                    }
-                    for (Map.Entry<XbmSignal, Burst.Direction> entry: b2.getDirection().entrySet()) {
-                        XbmSignal xbmSignal = entry.getKey();
-                        if (xbmSignal.getType() == XbmSignal.Type.INPUT && (entry.getValue() == Burst.Direction.PLUS || entry.getValue() == Burst.Direction.MINUS)) {
-                            b2map.add(entry);
-                        }
-                    }
-                    boolean moreThanOneOccurrence = (b1map.containsAll(b2map)) || b2map.containsAll(b1map);
-                    if (moreThanOneOccurrence) {
+                    Map<XbmSignal, Burst.Direction> b1Dir = new LinkedHashMap<>(b1.getDirections(XbmSignal.Type.INPUT));
+                    Map<XbmSignal, Burst.Direction> b2Dir = new LinkedHashMap<>(b2.getDirections(XbmSignal.Type.INPUT));
+                    if (b1Dir.entrySet().containsAll(b2Dir.entrySet())) {
                         result.add(event1);
                         result.add(event2);
                     }

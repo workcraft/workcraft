@@ -70,8 +70,4 @@ public class XbmSignal extends MathNode {
             sendNotification(new PropertyChangedEvent(this, PROPERTY_TYPE));
         }
     }
-
-    public boolean hasDirection() {
-        return type != Type.DUMMY && type != Type.CONDITIONAL;
-    }
 }

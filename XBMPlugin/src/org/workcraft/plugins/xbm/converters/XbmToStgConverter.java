@@ -4,7 +4,6 @@ import org.workcraft.dom.Node;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.VisualStgPlace;
@@ -22,9 +21,6 @@ public class XbmToStgConverter {
     private final Map<VisualXbmState, VisualStgPlace> stateToPlaceMap;
     private final Map<VisualBurstEvent, VisualBurstTransition> burstEventToTransitionsMap;
     private final Map<XbmSignal, StgElementaryCycle> signalToElementaryCycleMap;
-
-    private static final String IN_PREFIX = "_IN";
-    private static final String OUT_PREFIX = "_OUT";
 
     public XbmToStgConverter(VisualXbm srcModel, VisualStg dstModel) {
         this.srcModel = srcModel;
@@ -58,7 +54,7 @@ public class XbmToStgConverter {
     private Map<VisualBurstEvent, VisualBurstTransition> convertBurstEvents() {
         Map<VisualBurstEvent, VisualBurstTransition> result = new HashMap<>();
         for (VisualBurstEvent event: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualBurstEvent.class)) {
-            VisualBurstTransition burstTransition = new VisualBurstTransition(event, dstModel);
+            VisualBurstTransition burstTransition = new VisualBurstTransition(dstModel, event);
             result.put(event, burstTransition);
         }
         return result;
@@ -79,36 +75,44 @@ public class XbmToStgConverter {
                 Node first = event.getFirst();
                 if (first instanceof VisualXbmState) {
                     VisualStgPlace inPlace = stateToPlaceMap.get(first);
-                    VisualDummyTransition dummyOut = dstModel.createVisualDummyTransition(dstModel.getMathName(inPlace.getReferencedComponent()) + OUT_PREFIX);
-                    dstModel.connect(inPlace, dummyOut);
                     if (inPlace != null) {
-                        for (VisualSignalTransition inputTransition: burstTransition.getInputTransitions()) {
-                            //dstModel.connect(inPlace, inputTransition);
-                            dstModel.connect(dummyOut, inputTransition);
-                        }
-                    }
-                    if (event.getReferencedBurstEvent().hasConditional()) { //Connects the elementary cycle appropriate to the burst transition
-                        for (Map.Entry<String, Boolean> condition: event.getReferencedBurstEvent().getConditionalMapping().entrySet()) {
-                            VisualStgPlace readPlace;
-                            StgElementaryCycle elemCycle = getRelatedStgElementaryCycle((XbmSignal) srcModel.getMathModel().getNodeByReference(condition.getKey()));
-                            if (condition.getValue()) {
-                                readPlace = elemCycle.getHigh();
-                            } else {
-                                readPlace = elemCycle.getLow();
+                        if (burstTransition.getStart() != null) {
+                            dstModel.connect(inPlace, burstTransition.getStart());
+                        } else {
+                            for (VisualSignalTransition inputTransition: burstTransition.getInputTransitions()) {
+                                dstModel.connect(inPlace, inputTransition);
                             }
-                            dstModel.connectUndirected(readPlace, dummyOut);
+                        }
+                        if (event.getReferencedBurstEvent().hasConditional()) { //Connects the elementary cycle appropriate to the burst transition
+                            for (Map.Entry<String, Boolean> condition: event.getReferencedBurstEvent().getConditionalMapping().entrySet()) {
+                                VisualStgPlace readPlace;
+                                StgElementaryCycle elemCycle = getRelatedStgElementaryCycle((XbmSignal) srcModel.getMathModel().getNodeByReference(condition.getKey()));
+                                if (condition.getValue()) {
+                                    readPlace = elemCycle.getHigh();
+                                } else {
+                                    readPlace = elemCycle.getLow();
+                                }
+                                if (burstTransition.getStart() != null) {
+                                    dstModel.connectUndirected(readPlace, burstTransition.getStart());
+                                } else {
+                                    for (VisualSignalTransition inputTransition: burstTransition.getInputTransitions()) {
+                                        dstModel.connectUndirected(readPlace, inputTransition);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
                 Node second = event.getSecond();
                 if (second instanceof VisualXbmState) {
                     VisualPlace outPlace = stateToPlaceMap.get(second);
-                    VisualDummyTransition dummyIn = dstModel.createVisualDummyTransition(dstModel.getMathName(outPlace.getReferencedPlace()) + IN_PREFIX);
-                    dstModel.connect(dummyIn, outPlace);
                     if (outPlace != null) {
-                        for (VisualSignalTransition outputTransition: burstTransition.getOutputTransitions()) {
-                            //dstModel.connect(outputTransition, outPlace);
-                            dstModel.connect(outputTransition, dummyIn);
+                        if (burstTransition.getEnd() != null) {
+                            dstModel.connect(burstTransition.getEnd(), outPlace);
+                        } else {
+                            for (VisualSignalTransition outputTransition: burstTransition.getOutputTransitions()) {
+                                dstModel.connect(outputTransition, outPlace);
+                            }
                         }
                     }
                 }
