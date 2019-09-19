@@ -21,7 +21,6 @@ import org.workcraft.plugins.xbm.properties.SignalModifierDescriptors;
 import org.workcraft.plugins.xbm.properties.SignalPropertyDescriptors;
 import org.workcraft.plugins.xbm.properties.UneditablePropertyDescriptor;
 import org.workcraft.plugins.xbm.tool.XbmSignalSimulationTool;
-import org.workcraft.plugins.xbm.tool.XbmSimulationTool;
 import org.workcraft.plugins.xbm.utils.ConversionUtils;
 import org.workcraft.utils.Hierarchy;
 
@@ -53,7 +52,7 @@ public class VisualXbm extends VisualFsm {
         tools.add(new CommentGeneratorTool());
         tools.add(new ConnectionTool(false, true, true));
         tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(XbmState.class)));
-        tools.add(new XbmSimulationTool());
+//        tools.add(new XbmSimulationTool());
         tools.add(new XbmSignalSimulationTool());
         setGraphEditorTools(tools);
     }
@@ -86,7 +85,6 @@ public class VisualXbm extends VisualFsm {
     @Override
     public void validateConnection(VisualNode first, VisualNode second) throws InvalidConnectionException {
         super.validateConnection(first, second);
-
         if (first == second) {
             throw new InvalidConnectionException("Self-loops are not allowed.");
         } else if (ConversionUtils.doesArcExist(this, first, second)) {

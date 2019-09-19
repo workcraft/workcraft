@@ -61,8 +61,7 @@ public class Burst extends Symbol {
     public static final String PROPERTY_DIRECTION = "Direction";
 
     private final Map<XbmSignal, Direction> direction = new LinkedHashMap<>();
-    private XbmState from;
-    private XbmState to;
+    private XbmState from, to;
 
     public Burst() {
     }
@@ -81,6 +80,15 @@ public class Burst extends Symbol {
         }
     }
 
+    public Map<XbmSignal, Direction> getDirections(XbmSignal.Type type) {
+        Set<XbmSignal> signals = getSignals(type);
+        Map<XbmSignal, Direction> result = new LinkedHashMap<>(direction);
+        for (XbmSignal signal: signals) {
+            result.remove(signal);
+        }
+        return result;
+    }
+
     public Map<XbmSignal, Direction> getDirection() {
         return direction;
     }
@@ -90,12 +98,8 @@ public class Burst extends Symbol {
     }
 
     public Set<XbmSignal> getSignals(XbmSignal.Type type) {
-        Set<XbmSignal> result = new HashSet<>();
-        for (XbmSignal s: getSignals()) {
-            if (s.getType() == type) {
-                result.add(s);
-            }
-        }
+        Set<XbmSignal> result = new HashSet<>(getSignals());
+        result.removeIf(signal -> (signal != null) && signal.getType() != type);
         return result;
     }
 
@@ -112,7 +116,6 @@ public class Burst extends Symbol {
     }
 
     public void addOrChangeSignalDirection(XbmSignal s, SignalState fromState, SignalState toState) {
-
         if (fromState == toState) {
             direction.remove(s);
         } else {

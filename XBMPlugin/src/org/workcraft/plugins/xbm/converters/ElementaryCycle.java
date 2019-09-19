@@ -9,6 +9,7 @@ import org.workcraft.plugins.xbm.XbmSignal;
 import java.awt.geom.Point2D;
 
 //Takes any signal and converts it into a corresponding elementary cycle in Petri Net form
+//TODO Convert it mathematically
 public class ElementaryCycle {
 
     public static final String TRANSITION_NAME_RISING = "_PLUS";
