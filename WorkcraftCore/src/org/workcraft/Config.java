@@ -196,10 +196,10 @@ public class Config {
             }
             Element element = (Element) nodes.item(i);
 
-            if (element.getTagName().equals("var")) {
+            if ("var".equals(element.getTagName())) {
                 set(element.getAttribute("name"), element.getAttribute("value"));
             } else {
-                if (element.getTagName().equals("group")) {
+                if ("group".equals(element.getTagName())) {
                     String name = element.getAttribute("name");
                     // FIXME: Skipping deprecated gui group (now split into window, toolbar, and recent)
                     if ("gui".equals(name)) {
@@ -211,7 +211,7 @@ public class Config {
                             continue;
                         }
                         Element e2 = (Element) groupNodes.item(j);
-                        if (e2.getTagName().equals("var")) {
+                        if ("var".equals(e2.getTagName())) {
                             set(name + "." + e2.getAttribute("name"), e2.getAttribute("value"));
                         }
                     }

@@ -341,22 +341,24 @@ public class CpogParsingTool {
                 connections.add(c);
             }
         }
+        String currentCondition = formulaToString(current.getCondition());
         if (connections.size() == 1) {
             VisualArc arc = (VisualArc) connections.get(0);
             String insert = "";
 
-            if (!"1".equals(formulaToString(arc.getCondition()))) {
-                insert = "[" + formulaToString(arc.getCondition()) + "](";
+            String arcCondition = formulaToString(arc.getCondition());
+            if (!"1".equals(arcCondition)) {
+                insert = "[" + arcCondition + "](";
             }
 
-            if (!"1".equals(formulaToString(current.getCondition())) || formulaToString(current.getCondition()).compareTo(formulaToString(arc.getCondition())) != 0) {
-                insert = insert + "[" + formulaToString(current.getCondition()) + "]";
+            if (!"1".equals(currentCondition) || currentCondition.compareTo(arcCondition) != 0) {
+                insert = insert + "[" + currentCondition + "]";
             }
 
             insert = insert + current.getLabel() + " -> ";
             VisualVertex child = (VisualVertex) arc.getSecond();
 
-            if (!"1".equals(formulaToString(child.getCondition())) || !formulaToString(child.getCondition()).equals(formulaToString(arc.getCondition()))) {
+            if (!"1".equals(formulaToString(child.getCondition())) || !formulaToString(child.getCondition()).equals(arcCondition)) {
                 insert = insert + "[" + formulaToString(child.getCondition()) + "]";
             }
 
@@ -376,9 +378,11 @@ public class CpogParsingTool {
 
                     if (!localVisitedArcs.contains(nextArc)) {
 
-                        if (formulaToString(nextArc.getCondition()).equals(formulaToString(arc.getCondition()))) {
+                        if (formulaToString(nextArc.getCondition()).equals(arcCondition)) {
                             insert = insert + " -> ";
-                            if (!(formulaToString(nextVertex.getCondition()).equals("1")) || !(formulaToString(child.getCondition()).equals(formulaToString(arc.getCondition())))) {
+                            String nextVertexCondition = formulaToString(nextVertex.getCondition());
+                            String childCondition = formulaToString(child.getCondition());
+                            if (!"1".equals(nextVertexCondition) || !childCondition.equals(arcCondition)) {
                                 insert = insert + "[" + formulaToString(child.getCondition()) + "]";
                             }
                             insert = insert + nextVertex.getLabel();
@@ -395,7 +399,7 @@ public class CpogParsingTool {
                 }
             }
 
-            if (!(formulaToString(arc.getCondition()).equals("1"))) {
+            if (!"1".equals(arcCondition)) {
                 insert = insert + ")";
             }
             expression.add(insert);
@@ -405,12 +409,13 @@ public class CpogParsingTool {
                 VisualArc arc = (VisualArc) connections.get(0);
                 String insert = "";
 
-                if (!formulaToString(arc.getCondition()).equals("1")) {
-                    insert = "[" + formulaToString(arc.getCondition()) + "](";
+                String arcCondition = formulaToString(arc.getCondition());
+                if (!"1".equals(arcCondition)) {
+                    insert = "[" + arcCondition + "](";
                 }
 
-                if (!(formulaToString(current.getCondition()).equals("1")) || !(formulaToString(current.getCondition()).equals(formulaToString(arc.getCondition())))) {
-                    insert = insert + "[" + formulaToString(current.getCondition()) + "]";
+                if (!"1".equals(currentCondition) || !currentCondition.equals(arcCondition)) {
+                    insert = insert + "[" + currentCondition + "]";
                 }
 
                 insert = insert + current.getLabel() + " -> ";
@@ -449,8 +454,8 @@ public class CpogParsingTool {
 
         } else {
             String insert = "";
-            if (!(formulaToString(current.getCondition()).equals("1"))) {
-                insert = "[" + formulaToString(current.getCondition()) + "]";
+            if (!"1".equals(currentCondition)) {
+                insert = "[" + currentCondition + "]";
             }
             insert = insert + current.getLabel();
             expression.add(insert);

@@ -97,10 +97,10 @@ public class SolutionReader {
     private static List<Integer> extractNumbers(String solution) {
         String[] split = solution.split("\n");
 
-        if (split[0].equals("UNSAT")) {
+        if ("UNSAT".equals(split[0])) {
             return null;
         }
-        if (split[0].equals("SAT")) { //MPSAT file
+        if ("SAT".equals(split[0])) { //MPSAT file
             if (split.length != 2) {
                 throw new RuntimeException("Minisat output is more than 2 lines.");
             }
@@ -108,10 +108,10 @@ public class SolutionReader {
         } else { //clasp file
             boolean sat = false;
             for (int i = 0; i < split.length; i++) {
-                if (split[i].equals("s UNSATISFIABLE")) {
+                if ("s UNSATISFIABLE".equals(split[i])) {
                     return null;
                 }
-                if (split[i].equals("s SATISFIABLE")) {
+                if ("s SATISFIABLE".equals(split[i])) {
                     sat = true;
                     break;
                 }

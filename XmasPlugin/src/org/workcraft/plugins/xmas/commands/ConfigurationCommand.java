@@ -174,10 +174,10 @@ public class ConfigurationCommand implements Command {
         lvcombob.addActionListener(event -> {
             JComboBox comboBox = (JComboBox) event.getSource();
             Object selected = comboBox.getSelectedItem();
-            if (selected.toString().equals("normal")) {
+            if ("normal".equals(selected.toString())) {
                 hlcombob.removeItemAt(1);
                 hlcombob.addItem("local");
-            } else if (selected.toString().equals("advanced")) {
+            } else if ("advanced".equals(selected.toString())) {
                 hlcombob.removeItemAt(1);
                 hlcombob.addItem("rel");
             }

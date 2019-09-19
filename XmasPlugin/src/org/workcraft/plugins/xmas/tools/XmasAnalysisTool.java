@@ -91,10 +91,10 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
                 larg = "-v";
                 str = nxt.next();
                 level = str;
-                if (str.equals("normal")) {
+                if ("normal".equals(str)) {
                     //System.out.println("Read v1");
                     larg = "-v1";
-                } else if (str.equals("advanced")) {
+                } else if ("advanced".equals(str)) {
                     //System.out.println("Read v2");
                     larg = "-v2";
                 }
@@ -487,36 +487,36 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
                         n++;
                         System.out.println(s);
                     }
-                    if (level.equals("advanced")) {
+                    if ("advanced".equals(level)) {
                         System.out.println("LEVEL IS ADVANCED ");
                         File qslFile = XmasSettings.getTempVxmQslFile();
                         processQsl(qslFile.getAbsolutePath());
 
                         File equFile = XmasSettings.getTempVxmEquFile();
                         str = processEq(equFile.getAbsolutePath()); //testing str assignment - fpb
-                    } else if (level.equals("normal") && (test == 2)) {
+                    } else if ("normal".equals(level) && (test == 2)) {
                         System.out.println("LEVEL IS NORMAL ");
                         File locFile = XmasSettings.getTempVxmLocFile();
                         str = processLoc(locFile.getAbsolutePath());
                     }
                     if (test > 0) {
-                        if (display.equals("popup")) {
-                            if (!level.equals("advanced")) {
+                        if ("popup".equals(display)) {
+                            if (!"advanced".equals(level)) {
                                 new SolutionsDialog1(test, str);
                             } else {
                                 new SolutionsDialog2(test, str);
                             }
                         }
                         if (test == 2) {
-                            if (highlight.equals("local")) {
+                            if ("local".equals(highlight)) {
                                 localHighlight(str, xnet, vnet);
-                            } else if (highlight.equals("rel")) {
+                            } else if ("rel".equals(highlight)) {
                                 relHighlight(str, xnet, vnet);
                                 activeHighlight(xnet, vnet);
                             }
                         }
                     } else if (test == 0) {
-                        if (display.equals("popup")) {
+                        if ("popup".equals(display)) {
                             DialogUtils.showInfo("The system is deadlock-free.");
                         }
                     }

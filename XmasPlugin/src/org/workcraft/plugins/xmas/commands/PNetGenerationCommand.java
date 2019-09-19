@@ -409,30 +409,30 @@ public class PNetGenerationCommand implements Command {
         writer.println("t_" + id + "i_trdyminus1  p_" + id + "i_trdy0");
         String id2b = searchList(id);
         String id3 = searchList2(id);
-        if (id3.equals("a")) {
+        if ("a".equals(id3)) {
             writelink(id, id2b, "a_irdy0", "a_irdyminus1", writer);
-        } else if (id3.equals("b")) {
+        } else if ("b".equals(id3)) {
             writelink(id, id2b, "b_irdy0", "a_irdyminus1", writer);
         } else {
             writelink(id, id2b, "o_irdy0", "a_irdyminus1", writer);
         }
-        if (id3.equals("a")) {
+        if ("a".equals(id3)) {
             writelink(id, id2b, "a_irdy1", "a_irdyplus", writer);
-        } else if (id3.equals("b")) {
+        } else if ("b".equals(id3)) {
             writelink(id, id2b, "b_irdy1", "a_irdyplus", writer);
         } else {
             writelink(id, id2b, "o_irdy1", "a_irdyplus", writer);
         }
-        if (id3.equals("a")) {
+        if ("a".equals(id3)) {
             writelink(id, id2b, "a_irdy0", "b_irdyminus1", writer);
-        } else if (id3.equals("b")) {
+        } else if ("b".equals(id3)) {
             writelink(id, id2b, "b_irdy0", "b_irdyminus1", writer);
         } else {
             writelink(id, id2b, "o_irdy0", "b_irdyminus1", writer);
         }
-        if (id3.equals("a")) {
+        if ("a".equals(id3)) {
             writelink(id, id2b, "a_irdy1", "b_irdyplus", writer);
-        } else if (id3.equals("b")) {
+        } else if ("b".equals(id3)) {
             writelink(id, id2b, "b_irdy1", "b_irdyplus", writer);
         } else {
             writelink(id, id2b, "o_irdy1", "b_irdyplus", writer);
@@ -557,30 +557,30 @@ public class PNetGenerationCommand implements Command {
         writebidir(id, "b_irdy0", "i_trdyminus1", writer);
         String id2b = searchList(id);
         String id3 = searchList2(id);
-        if (id3.equals("a")) {
+        if ("a".equals(id3)) {
             writelink(id, id2b, "a_irdy0", "a_irdyminus", writer);
-        } else if (id3.equals("b")) {
+        } else if ("b".equals(id3)) {
             writelink(id, id2b, "b_irdy0", "a_irdyminus", writer);
         } else {
             writelink(id, id2b, "o_irdy0", "a_irdyminus", writer);
         }
-        if (id3.equals("a")) {
+        if ("a".equals(id3)) {
             writelink(id, id2b, "a_irdy1", "a_irdyplus", writer);
-        } else if (id3.equals("b")) {
+        } else if ("b".equals(id3)) {
             writelink(id, id2b, "b_irdy1", "a_irdyplus", writer);
         } else {
             writelink(id, id2b, "o_irdy1", "a_irdyplus", writer);
         }
-        if (id3.equals("a")) {
+        if ("a".equals(id3)) {
             writelink(id, id2b, "a_irdy0", "b_irdyminus", writer);
-        } else if (id3.equals("b")) {
+        } else if ("b".equals(id3)) {
             writelink(id, id2b, "b_irdy0", "b_irdyminus", writer);
         } else {
             writelink(id, id2b, "o_irdy0", "b_irdyminus", writer);
         }
-        if (id3.equals("a")) {
+        if ("a".equals(id3)) {
             writelink(id, id2b, "a_irdy1", "b_irdyplus", writer);
-        } else if (id3.equals("b")) {
+        } else if ("b".equals(id3)) {
             writelink(id, id2b, "b_irdy1", "b_irdyplus", writer);
         } else {
             writelink(id, id2b, "o_irdy1", "b_irdyplus", writer);
@@ -694,9 +694,9 @@ public class PNetGenerationCommand implements Command {
         writebidir(id, "i_trdy1", "_qplus", writer);
         String id2 = searchList(id);
         String id3 = searchList2(id);
-        if (id3.equals("a")) {
+        if ("a".equals(id3)) {
             writelink(id, id2, "a_irdy1", "_qplus", writer);
-        } else if (id3.equals("b")) {
+        } else if ("b".equals(id3)) {
             writelink(id, id2, "b_irdy1", "_qplus", writer);
         } else {
             writelink(id, id2, "o_irdy1", "_qplus", writer);
@@ -801,9 +801,9 @@ public class PNetGenerationCommand implements Command {
         String id2 = searchList(id);
         String id3 = searchList2(id);
         for (int i = 1; i <= size; i++) {
-            if (id3.equals("a")) {
+            if ("a".equals(id3)) {
                 writelink(id, id2, "a_irdy1", "_q" + i + "plus", writer);
-            } else if (id3.equals("b")) {
+            } else if ("b".equals(id3)) {
                 writelink(id, id2, "b_irdy1", "_q" + i + "plus", writer);
             } else {
                 writelink(id, id2, "o_irdy1", "_q" + i + "plus", writer);
@@ -836,7 +836,7 @@ public class PNetGenerationCommand implements Command {
             // move from field name to field value
             current = jp.nextToken();
 
-            if (fieldName.equals("NETWORK")) {
+            if ("NETWORK".equals(fieldName)) {
                 if (current == JsonToken.START_ARRAY) {
                     // For each of the records in the array
                     System.out.println("Generate CPNs");
@@ -858,9 +858,9 @@ public class PNetGenerationCommand implements Command {
                                     if (i == 0) {
                                         idName1 = y.get(i).get("id").getValueAsText();
                                         idNamep1 = y.get(i).get("in_port").getValueAsText();
-                                        if (typeName.equals("xfork")) {
+                                        if ("xfork".equals(typeName)) {
                                             lst.add(new Info(idName1, idName, "b", idNamep1));
-                                        } else if (typeName.equals("xswitch")) {
+                                        } else if ("xswitch".equals(typeName)) {
                                             lst.add(new Info(idName1, idName, "a", idNamep1));
                                         } else {
                                             lst.add(new Info(idName1, idName, "", idNamep1));
@@ -876,9 +876,9 @@ public class PNetGenerationCommand implements Command {
                                     } else if (i == 1) {
                                         idName2 = y.get(i).get("id").getValueAsText();
                                         idNamep2 = y.get(i).get("in_port").getValueAsText();
-                                        if (typeName.equals("xfork")) {
+                                        if ("xfork".equals(typeName)) {
                                             lst.add(new Info(idName2, idName, "a", idNamep2));
-                                        } else if (typeName.equals("xswitch")) {
+                                        } else if ("xswitch".equals(typeName)) {
                                             lst.add(new Info(idName2, idName, "b", idNamep2));
                                         } else {
                                             lst.add(new Info(idName2, idName, "", idNamep2));
@@ -952,22 +952,22 @@ public class PNetGenerationCommand implements Command {
                 String fieldName = jp.getCurrentName();
                 // move from field name to field value
                 current = jp.nextToken();
-                if (fieldName.equals("VARS")) {
+                if ("VARS".equals(fieldName)) {
                     if (current == JsonToken.START_ARRAY) {
                         while (jp.nextToken() != JsonToken.END_ARRAY) {
                         }
                     }
-                } else if (fieldName.equals("PACKET_TYPE")) {
+                } else if ("PACKET_TYPE".equals(fieldName)) {
                     if (current == JsonToken.START_OBJECT) {
                         while (jp.nextToken() != JsonToken.END_OBJECT) {
                         }
                     }
-                } else if (fieldName.equals("COMPOSITE_OBJECTS")) {
+                } else if ("COMPOSITE_OBJECTS".equals(fieldName)) {
                     if (current == JsonToken.START_ARRAY) {
                         while (jp.nextToken() != JsonToken.END_ARRAY) {
                         }
                     }
-                } else if (fieldName.equals("NETWORK")) {
+                } else if ("NETWORK".equals(fieldName)) {
                     if (current == JsonToken.START_ARRAY) {
                         // For each of the records in the array
                         while (jp.nextToken() != JsonToken.END_ARRAY) {
@@ -990,13 +990,13 @@ public class PNetGenerationCommand implements Command {
                                     if (y.get(i).has("id")) {
                                         if (i == 0) {
                                             idName1 = y.get(i).get("id").getValueAsText();
-                                            /*if (typeName.equals("xfork")) lst.add(new Info(idName1, idName, "b"));
-                                              else if (typeName.equals("xswitch")) lst.add(new Info(idName1, idName, "a"));
+                                            /*if ("xfork".equals(typeName)) lst.add(new Info(idName1, idName, "b"));
+                                              else if ("xswitch".equals(typeName)) lst.add(new Info(idName1, idName, "a"));
                                               else lst.add(new Info(idName1, idName, "")); */
                                         } else if (i == 1) {
                                             idName2 = y.get(i).get("id").getValueAsText();
-                                            /*if (typeName.equals("xfork")) lst.add(new Info(idName2, idName, "a"));
-                                              else if (typeName.equals("xswitch")) lst.add(new Info(idName2, idName, "b"));
+                                            /*if ("xfork".equals(typeName)) lst.add(new Info(idName2, idName, "a"));
+                                              else if ("xswitch".equals(typeName)) lst.add(new Info(idName2, idName, "b"));
                                               else lst.add(new Info(idName2, idName, "")); */
                                         }
                                     }
@@ -1004,21 +1004,21 @@ public class PNetGenerationCommand implements Command {
                                         if (i == 0) {
                                             String searchtyp = "";
                                             searchtyp = searchList3(idName1);
-                                            if (searchtyp.equals("join")) {
+                                            if ("join".equals(searchtyp)) {
                                                 //idNamep1 = y.get(i).get("in_port").getValueAsText();
-                                                if (y.get(i).get("in_port").getValueAsText().equals("0")) idNamep1 = "1";
+                                                if ("0".equals(y.get(i).get("in_port").getValueAsText())) idNamep1 = "1";
                                                 else idNamep1 = "0";
-                                            } else if (searchtyp.equals("merge")) {
+                                            } else if ("merge".equals(searchtyp)) {
                                                 idNamep1 = y.get(i).get("in_port").getValueAsText();
                                             }
                                         } else if (i == 1) {
                                             String searchtyp1 = "";
                                             searchtyp1 = searchList3(idName2);
-                                            if (searchtyp1.equals("join")) {
+                                            if ("join".equals(searchtyp1)) {
                                                 //idNamep2 = y.get(i).get("in_port").getValueAsText();
-                                                if (y.get(i).get("in_port").getValueAsText().equals("0")) idNamep2 = "1";
+                                                if ("0".equals(y.get(i).get("in_port").getValueAsText())) idNamep2 = "1";
                                                 else idNamep2 = "0";
-                                            } else if (searchtyp1.equals("merge")) {
+                                            } else if ("merge".equals(searchtyp1)) {
                                                 idNamep2 = y.get(i).get("in_port").getValueAsText();
                                             }
                                         }
@@ -1046,15 +1046,15 @@ public class PNetGenerationCommand implements Command {
                                 }
                             }
 
-                            if (typeName.equals("source")) gensource(idName, idName1, idNamep1, fieldgr, writer);
-                            if (typeName.equals("function")) genfunction(idName, idName1, idNamep1, fieldgr, writer);
-                            if (typeName.equals("xfork")) genfork(idName, idName1, idName2, idNamep1, idNamep2, fieldgr, writer);
-                            if (typeName.equals("join")) genjoin(idName, idName1, idNamep1, fieldgr, writer);
-                            if (typeName.equals("xswitch")) genswitch(idName, idName1, idName2, idNamep1, idNamep2, fieldgr, writer);
-                            if (typeName.equals("merge")) genmerge(idName, idName1, idNamep1, fieldgr, writer);
-                            if (typeName.equals("queue")) {
+                            if ("source".equals(typeName)) gensource(idName, idName1, idNamep1, fieldgr, writer);
+                            if ("function".equals(typeName)) genfunction(idName, idName1, idNamep1, fieldgr, writer);
+                            if ("xfork".equals(typeName)) genfork(idName, idName1, idName2, idNamep1, idNamep2, fieldgr, writer);
+                            if ("join".equals(typeName)) genjoin(idName, idName1, idNamep1, fieldgr, writer);
+                            if ("xswitch".equals(typeName)) genswitch(idName, idName1, idName2, idNamep1, idNamep2, fieldgr, writer);
+                            if ("merge".equals(typeName)) genmerge(idName, idName1, idNamep1, fieldgr, writer);
+                            if ("queue".equals(typeName)) {
                                 int size = Integer.parseInt(fieldsize);
-                                //if (fieldsize.equals("1")) genqueue(idName, idName1, idNamep1, fieldinit, writer);
+                                //if ("1".equals(fieldsize)) genqueue(idName, idName1, idNamep1, fieldinit, writer);
                                 //else genqueue2p(2, idName, idName1, idNamep1, writer);
                                 if (size <= 1) {
                                     genqueue(idName, idName1, idNamep1, fieldinit, fieldgpf, fieldgr, writer);
@@ -1062,7 +1062,7 @@ public class PNetGenerationCommand implements Command {
                                     genqueue2p(size, idName, idName1, idNamep1, fieldinit, fieldgpf, fieldgr, writer);
                                 }
                             }
-                            if (typeName.equals("sink")) gensink(idName, fieldgr, writer);
+                            if ("sink".equals(typeName)) gensink(idName, fieldgr, writer);
                         }
                     } else {
                         LogUtils.logError("Records should be an array: skipping.");

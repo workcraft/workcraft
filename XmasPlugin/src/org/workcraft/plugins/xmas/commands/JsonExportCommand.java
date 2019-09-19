@@ -1,10 +1,5 @@
 package org.workcraft.plugins.xmas.commands;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.util.Collection;
-
 import org.workcraft.commands.Command;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
@@ -13,27 +8,15 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.plugins.xmas.VisualXmas;
 import org.workcraft.plugins.xmas.Xmas;
 import org.workcraft.plugins.xmas.XmasSettings;
-import org.workcraft.plugins.xmas.components.ForkComponent;
-import org.workcraft.plugins.xmas.components.FunctionComponent;
-import org.workcraft.plugins.xmas.components.JoinComponent;
-import org.workcraft.plugins.xmas.components.MergeComponent;
-import org.workcraft.plugins.xmas.components.QueueComponent;
-import org.workcraft.plugins.xmas.components.SinkComponent;
-import org.workcraft.plugins.xmas.components.SourceComponent;
-import org.workcraft.plugins.xmas.components.SwitchComponent;
-import org.workcraft.plugins.xmas.components.VisualForkComponent;
-import org.workcraft.plugins.xmas.components.VisualFunctionComponent;
-import org.workcraft.plugins.xmas.components.VisualJoinComponent;
-import org.workcraft.plugins.xmas.components.VisualMergeComponent;
-import org.workcraft.plugins.xmas.components.VisualQueueComponent;
-import org.workcraft.plugins.xmas.components.VisualSinkComponent;
-import org.workcraft.plugins.xmas.components.VisualSourceComponent;
-import org.workcraft.plugins.xmas.components.VisualSwitchComponent;
-import org.workcraft.plugins.xmas.components.VisualSyncComponent;
-import org.workcraft.plugins.xmas.components.XmasContact;
+import org.workcraft.plugins.xmas.components.*;
 import org.workcraft.utils.Hierarchy;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.Collection;
 
 public class JsonExportCommand implements Command {
 
@@ -194,10 +177,10 @@ public class JsonExportCommand implements Command {
                 System.out.println("      \"id\": \"" + cnet.getName(node) + "\",");
                 //writer.println("      \"id\": \"" + cnet.getName(node) + "\",");
                 writer.println("      \"id\": \"" + rstr + "\",");
-                if (cnet.getType(node).equals("fork")) {
+                if ("fork".equals(cnet.getType(node))) {
                     System.out.println("      \"type\": \"" + "xfork" + "\",");
                     writer.println("      \"type\": \"" + "xfork" + "\",");
-                } else if (cnet.getType(node).equals("switch")) {
+                } else if ("switch".equals(cnet.getType(node))) {
                     System.out.println("      \"type\": \"" + "xswitch" + "\",");
                     writer.println("      \"type\": \"" + "xswitch" + "\",");
                 } else {

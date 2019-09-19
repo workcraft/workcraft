@@ -173,7 +173,7 @@ public class BlockConnector {
 
                     if (e != null && visualNet.getConnection(e, p) == null) {
                         //create input connection
-                        if (piece[0].equals("to")) {
+                        if ("to".equals(piece[0])) {
                             VisualSONConnection con = null;
                             try {
                                 if (piece[2].equals(Semantics.PNLINE.toString())) {
@@ -203,7 +203,7 @@ public class BlockConnector {
                                 con.getReferencedSONConnection().setTime(new Interval(min, max));
                             }
                             //create output connection
-                        } else if (piece[0].equals("from")) {
+                        } else if ("from".equals(piece[0])) {
                             VisualSONConnection con = null;
                             try {
                                 if (piece[2].equals(Semantics.PNLINE.toString())) {

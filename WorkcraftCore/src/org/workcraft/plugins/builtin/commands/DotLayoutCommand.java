@@ -1,7 +1,6 @@
 package org.workcraft.plugins.builtin.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.plugins.builtin.settings.DotLayoutSettings;
 import org.workcraft.commands.AbstractLayoutCommand;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
@@ -14,14 +13,11 @@ import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.builtin.interop.DotFormat;
+import org.workcraft.plugins.builtin.settings.DotLayoutSettings;
 import org.workcraft.plugins.layout.jj.DotParser;
 import org.workcraft.plugins.layout.jj.ParseException;
-import org.workcraft.tasks.ExternalProcessOutput;
-import org.workcraft.tasks.ExternalProcessTask;
-import org.workcraft.tasks.Result;
+import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.tasks.Task;
-import org.workcraft.tasks.TaskManager;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.*;
 
@@ -171,10 +167,10 @@ public class DotLayoutCommand extends AbstractLayoutCommand {
                 double x = +parseCoord(ss[1]);
                 double y = -parseCoord(ss[2]);
                 Point2D p = new Point2D.Double(x, y);
-                if (ss[0].equals("s")) {
+                if ("s".equals(ss[0])) {
                     result.add(0, p);
                 } else {
-                    if (ss[0].equals("e")) {
+                    if ("e".equals(ss[0])) {
                         end = p;
                     } else {
                         throw new ParseException("Bad connection position format.");

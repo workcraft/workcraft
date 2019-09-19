@@ -199,7 +199,7 @@ public class ConsistencyAlg extends TimeAlg {
             }
 
             if (sync.contains(cp)) {
-                if (cp.getDuration().isSpecified() && !cp.getDuration().toString().equals("0000-0000")
+                if (cp.getDuration().isSpecified() && !"0000-0000".equals(cp.getDuration().toString())
                         && (cp.getDuration() != input.getDuration() || cp.getDuration() != output.getDuration())) {
 
                     subResult.add("Sync inconsistency: duration" + nodeStr(cp) + " != Duration" + nodeStr(input)

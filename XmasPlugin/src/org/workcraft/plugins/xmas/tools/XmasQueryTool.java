@@ -95,10 +95,10 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
                 larg = "-v";
                 str = nxt.next();
                 level = str;
-                if (str.equals("normal")) {
+                if ("normal".equals(str)) {
                     //System.out.println("Read v1");
                     larg = "-v1";
-                } else if (str.equals("advanced")) {
+                } else if ("advanced".equals(str)) {
                     //System.out.println("Read v2");
                     larg = "-v2";
                 }
@@ -586,7 +586,7 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
                         n++;
                         System.out.println(s);
                     }
-                    if (level.equals("advanced") && (q3flag == 0)) {
+                    if ("advanced".equals(level) && (q3flag == 0)) {
                         System.out.println("LEVEL IS ADVANCED ");
                         File qslFile = XmasSettings.getTempVxmQslFile();
                         processQsl(qslFile.getAbsolutePath());
@@ -596,35 +596,35 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
 
                         File queFile = XmasSettings.getTempVxmQueFile();
                         str2 = processQue(queFile.getAbsolutePath());
-                    } else if (level.equals("advanced") && (q3flag == 1)) {
+                    } else if ("advanced".equals(level) && (q3flag == 1)) {
                         System.out.println("LEVEL IS ADVANCED ");
                         File equFile2 = XmasSettings.getTempVxmEquFile();
                         str = processEq(equFile2.getAbsolutePath());
-                    } else if (level.equals("normal") && test == 2) {
+                    } else if ("normal".equals(level) && test == 2) {
                         System.out.println("LEVEL IS NORMAL ");
                         File locFile = XmasSettings.getTempVxmLocFile();
                         str = processLoc(locFile.getAbsolutePath());
                     }
                     if (test > 0) {
-                        if (display.equals("popup")) {
-                            if (!level.equals("advanced") && (q3flag == 0)) {
+                        if ("popup".equals(display)) {
+                            if (!"advanced".equals(level) && (q3flag == 0)) {
                                 new SolutionsDialog1(test, str2);
-                            } else if (level.equals("advanced") && (q3flag == 1)) {
+                            } else if ("advanced".equals(level) && (q3flag == 1)) {
                                 new SolutionsDialog2(test, str);
                             } else {
                                 new SolutionsDialog2(test, str2);
                             }
                         }
                         if (test == 2) {
-                            if (highlight.equals("local")) {
+                            if ("local".equals(highlight)) {
                                 localHighlight(str, xnet, vnet);
-                            } else if (highlight.equals("rel")) {
+                            } else if ("rel".equals(highlight)) {
                                 relHighlight(str, xnet, vnet);
                                 activeHighlight(xnet, vnet);
                             }
                         }
                     } else if (test == 0) {
-                        if (display.equals("popup")) {
+                        if ("popup".equals(display)) {
                             DialogUtils.showInfo("The system is deadlock-free.");
                         }
                     }
