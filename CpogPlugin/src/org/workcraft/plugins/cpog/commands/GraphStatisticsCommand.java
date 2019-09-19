@@ -1,9 +1,5 @@
 package org.workcraft.plugins.cpog.commands;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.commands.Command;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -14,8 +10,12 @@ import org.workcraft.plugins.cpog.VisualArc;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.VisualScenario;
 import org.workcraft.plugins.cpog.VisualVertex;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class GraphStatisticsCommand implements Command {
 
@@ -66,13 +66,15 @@ public class GraphStatisticsCommand implements Command {
 
     private void printStatistics(VisualCpog cpog, Collection<Container> scenarios) {
         HashSet<String> conditions = new HashSet<>();
-        int allVertices = 0, simpleVertices = 0;
-        int allArcs = 0, simpleArcs = 0;
+        int allVertices = 0;
+        int simpleVertices = 0;
+        int allArcs = 0;
+        int simpleArcs = 0;
         int allVariables = 0;
         for (Container scenario: scenarios) {
             allVertices += cpog.getVertices(scenario).size();
             for (VisualVertex v : cpog.getVertices(scenario)) {
-                if (v.getCondition() == One.instance() || v.getCondition() == Zero.instance()) {
+                if (v.getCondition() == One.getInstance() || v.getCondition() == Zero.getInstance()) {
                     simpleVertices++;
                 } else {
                     conditions.add(StringGenerator.toString(v.getCondition()));
@@ -81,7 +83,7 @@ public class GraphStatisticsCommand implements Command {
 
             allArcs += cpog.getArcs(scenario).size();
             for (VisualArc a : cpog.getArcs(scenario)) {
-                if (a.getCondition() == One.instance() || a.getCondition() == Zero.instance()) {
+                if (a.getCondition() == One.getInstance() || a.getCondition() == Zero.getInstance()) {
                     simpleArcs++;
                 } else {
                     conditions.add(StringGenerator.toString(a.getCondition()));

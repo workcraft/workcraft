@@ -69,25 +69,25 @@ public class SynchronisationCommand implements Command {
         return WorkspaceUtils.isApplicable(we, VisualXmas.class);
     }
 
-    int cntSyncnodes = 0;
-    JFrame mainFrame = null;
-    JComboBox combob = null;
+    private int cntSyncnodes = 0;
+    private JFrame mainFrame = null;
+    private JComboBox combob = null;
 
     public void dispose() {
         mainFrame.setVisible(false);
     }
 
     private static class Sync {
-        String name1;
-        String name2;
-        String name3;
-        String l1;
-        String l2;
-        String typ;
-        int gr1;
-        int gr2;
-        String g1;
-        String g2;
+        public String name1;
+        public String name2;
+        public String name3;
+        public String l1;
+        public String l2;
+        public String typ;
+        public int gr1;
+        public int gr2;
+        public String g1;
+        public String g2;
 
         Sync(String s1, String s2, String s3, String s4, int gr, int cno) {
             name1 = s1;
@@ -115,8 +115,8 @@ public class SynchronisationCommand implements Command {
         }
     }
 
-    public List<String> slist = new ArrayList<>();
-    static List<Sync> synclist = new ArrayList<>();
+    public final List<String> slist = new ArrayList<>();
+    private static final List<Sync> synclist = new ArrayList<>();
 
     private static int checksynclist(String str) {
         for (Sync s : synclist) {
@@ -299,8 +299,8 @@ public class SynchronisationCommand implements Command {
         }
     }
 
-    int loaded = 0;
-    VisualXmas vnet1;
+    private int loaded = 0;
+    private VisualXmas vnet1;
     public List<Integer> grnums = new ArrayList<>();
     public List<Integer> grnums1 = new ArrayList<>();
     public List<Integer> grnums2 = new ArrayList<>();
@@ -318,11 +318,11 @@ public class SynchronisationCommand implements Command {
 
         cntSyncnodes = 0;
         if (loaded == 0) {
-            grnums = new ArrayList<Integer>();
-            grnums1 = new ArrayList<Integer>();
-            grnums2 = new ArrayList<Integer>();
-            slist2 = new ArrayList<String>();
-            slist2 = new ArrayList<String>();
+            grnums = new ArrayList<>();
+            grnums1 = new ArrayList<>();
+            grnums2 = new ArrayList<>();
+            slist2 = new ArrayList<>();
+            slist2 = new ArrayList<>();
         }
         setGroups(vnet);
         writeJson(vnet);

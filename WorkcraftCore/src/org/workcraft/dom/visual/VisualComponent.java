@@ -158,6 +158,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         return new Font(Font.SANS_SERIF, Font.PLAIN, 1).deriveFont(0.5f);
     }
 
+    @Override
     public String getLabel() {
         return label;
     }

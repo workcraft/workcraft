@@ -47,7 +47,7 @@ public class BlockConnector {
                     String type = "-" + con.getReferencedSONConnection().getSemantics();
                     String time = "-" + con.getTime();
                     String value = "";
-                    if (((VisualPlaceNode) first).getInterface() == "") {
+                    if (((VisualPlaceNode) first).getInterface().isEmpty()) {
                         value = "to-" + name + type + time + ";";
                     } else {
                         value = ((VisualPlaceNode) first).getInterface() + "to-" + name + type + time + ";";
@@ -77,7 +77,7 @@ public class BlockConnector {
                     String type = "-" + con.getReferencedSONConnection().getSemantics();
                     String time = "-" + con.getTime().toString();
                     String value = "";
-                    if (((VisualPlaceNode) second).getInterface() == "") {
+                    if (((VisualPlaceNode) second).getInterface().isEmpty()) {
                         value = "from-" + name + type + time + ";";
                     } else {
                         value = ((VisualPlaceNode) second).getInterface() + "from-" + name + type + time + ";";
@@ -192,7 +192,7 @@ public class BlockConnector {
                             }
                             //set time value
                             if (con != null) {
-                                int min = 0000;
+                                int min = 0;
                                 int max = 9999;
                                 try {
                                     min = Integer.parseInt(piece[3]);

@@ -14,7 +14,8 @@ import java.io.FileNotFoundException;
 public class PGMinerImportDialog extends JDialog {
 
     private final JTextField filePath;
-    private final JCheckBox extractConcurrencyCB, splitCB;
+    private final JCheckBox extractConcurrencyCB;
+    private final JCheckBox splitCB;
     private boolean modalResult;
 
     public PGMinerImportDialog() {

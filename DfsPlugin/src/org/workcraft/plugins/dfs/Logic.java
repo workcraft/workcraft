@@ -5,7 +5,7 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
 
 @IdentifierPrefix("l")
-@VisualClass(org.workcraft.plugins.dfs.VisualLogic.class)
+@VisualClass(VisualLogic.class)
 public class Logic extends MathDelayNode {
     public static final String PROPERTY_EARLY_EVALUATION = "Early evaluation";
     public static final String PROPERTY_COMPUTED = "Computed";

@@ -17,11 +17,16 @@ import java.util.ArrayList;
 @SuppressWarnings("serial")
 public class SatBasedScencoDialog extends AbstractScencoDialog {
 
-    private JCheckBox verboseModeCheck, abcCheck;
+    private JCheckBox verboseModeCheck;
+    private JCheckBox abcCheck;
     private JComboBox<String> optimiseBox;
-    private JPanel generationPanel, buttonsPanel, standardPanel;
-    private JTextField bitsText, circuitSizeText;
-    private int m, bits;
+    private JPanel generationPanel;
+    private JPanel buttonsPanel;
+    private JPanel standardPanel;
+    private JTextField bitsText;
+    private JTextField circuitSizeText;
+    private int m;
+    private int bits;
 
     public SatBasedScencoDialog(Window owner, String title, EncoderSettings settings, VisualCpog model) {
         super(owner, title, settings, model);
@@ -53,7 +58,7 @@ public class SatBasedScencoDialog extends AbstractScencoDialog {
 
         // OPTIMISE FOR MICROCONTROLLER/CPOG SIZE
         JLabel optimiseLabel = new JLabel(ScencoHelper.textOptimiseForLabel);
-        optimiseBox = new JComboBox<String>();
+        optimiseBox = new JComboBox<>();
         optimiseBox.setEditable(false);
         optimiseBox.setPreferredSize(ScencoHelper.dimensionOptimiseForBox);
         optimiseBox.addItem(ScencoHelper.textOptimiseForFirstElement);

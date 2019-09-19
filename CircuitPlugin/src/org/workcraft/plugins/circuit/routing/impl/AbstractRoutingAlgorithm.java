@@ -32,7 +32,7 @@ public abstract class AbstractRoutingAlgorithm {
         analyser = new CellAnalyser(coordinates);
 
         List<Route> routes = new ArrayList<>();
-        List<List<IndexedPoint>> paths = new ArrayList<List<IndexedPoint>>();
+        List<List<IndexedPoint>> paths = new ArrayList<>();
 
         for (RouterConnection connection: task.getConnections()) {
             IndexedPoint sourcePoint = coordinates.getIndexedCoordinate(connection.getSource().getLocation());
@@ -175,7 +175,7 @@ public abstract class AbstractRoutingAlgorithm {
      * @return list of indexed route coordinates
      */
     protected List<IndexedPoint> buildPath(IndexedPoint source, IndexedPoint[][] sourceCells) {
-        List<IndexedPoint> path = new ArrayList<IndexedPoint>();
+        List<IndexedPoint> path = new ArrayList<>();
         path.add(source);
 
         IndexedPoint next = source;

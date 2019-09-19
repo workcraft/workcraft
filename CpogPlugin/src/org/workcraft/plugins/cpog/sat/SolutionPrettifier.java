@@ -14,11 +14,12 @@ public class SolutionPrettifier {
             return null;
         }
 
-        BooleanFormula[][] encodingVars = task.getEncodingVars();
         BooleanFormula[] functionVars = task.getFunctionVars();
         if (functionVars == null) {
             throw new RuntimeException("functionVars is null");
         }
+
+        BooleanFormula[][] encodingVars = task.getEncodingVars();
         if (encodingVars == null) {
             throw new RuntimeException("encodingVars is null");
         }
@@ -40,7 +41,7 @@ public class SolutionPrettifier {
             }
         }
 
-        return new Encoding(encoding, functions);
+        return new Encoding(functions, encoding);
     }
 
 }

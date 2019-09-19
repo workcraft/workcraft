@@ -12,17 +12,17 @@ import java.util.function.Function;
 public class PathBreakerAutoAppendTagCommand extends AbstractTagCommand {
 
     @Override
-    Function<Circuit, Collection<Contact>> getFunction() {
+    public Function<Circuit, Collection<Contact>> getFunction() {
         return circuit -> CycleUtils.tagPathBreakerAutoAppend(circuit);
     }
 
     @Override
-    String getMessage() {
+    public String getMessage() {
         return "Auto-appended path breaker pin";
     }
 
     @Override
-    Class<? extends GraphEditorTool> getToolClass() {
+    public Class<? extends GraphEditorTool> getToolClass() {
         return CycleAnalyserTool.class;
     }
 

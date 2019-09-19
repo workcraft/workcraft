@@ -37,7 +37,7 @@ public class CSONCycleAlg extends ONCycleAlg {
                 int index = nodeIndex.get(nodes.get(i));
 
                 if (result[index] == null) {
-                    result[index] = new ArrayList<Integer>();
+                    result[index] = new ArrayList<>();
                 }
                 MathNode node = (MathNode) nodes.get(index);
                 for (MathNode post: net.getPostset(node)) {
@@ -47,7 +47,7 @@ public class CSONCycleAlg extends ONCycleAlg {
                         if (net.getSONConnectionType(node, post) == Semantics.SYNCLINE) {
                             int index2 = nodeIndex.get(post);
                             if (result[index2] == null) {
-                                result[index2] = new ArrayList<Integer>();
+                                result[index2] = new ArrayList<>();
                             }
                             result[index2].add(index);
                         }

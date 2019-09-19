@@ -8,11 +8,7 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 
 /**
- * The <code>Ruler</code> is used to displays a ruler-style header for the
- * viewport.
- *
- * @author Ivan Poliakov
- *
+ * The <code>Ruler</code> is used to displays a ruler-style header for the viewport.
  */
 public class Ruler implements GridListener {
     private Color background = new Color(225, 231, 242);
@@ -141,6 +137,7 @@ public class Ruler implements GridListener {
         return size;
     }
 
+    @Override
     public void gridChanged(Grid grid) {
         int[][] minorLinesScreen = grid.getMinorLinePositionsScreen();
         horizontalMinorTicks = minorLinesScreen[0];

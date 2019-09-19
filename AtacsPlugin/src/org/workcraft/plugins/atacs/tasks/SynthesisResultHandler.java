@@ -71,7 +71,7 @@ public class SynthesisResultHandler extends AbstractExtendedResultHandler<Synthe
         String verilogOutput = atacsOutput.getVerilog();
         if ((verilogOutput != null) && !verilogOutput.isEmpty()) {
             LogUtils.logInfo("ATACS synthesis result in Verilog format:");
-            System.out.println(verilogOutput);
+            LogUtils.logMessage(verilogOutput);
         }
 
         if ((verilogOutput != null) && !verilogOutput.isEmpty()) {

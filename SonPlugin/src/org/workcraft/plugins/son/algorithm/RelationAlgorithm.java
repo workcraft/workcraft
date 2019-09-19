@@ -26,16 +26,11 @@ public class RelationAlgorithm {
      * check if a given condition has more than one input events
      */
     public boolean hasPostConflictEvents(Node c) {
-        if (getPostConflictEvents(c).isEmpty()) {
-            return false;
-        } else {
-            return true;
-        }
+        return !getPostConflictEvents(c).isEmpty();
     }
 
     public Collection<TransitionNode> getPostConflictEvents(Node c) {
         Collection<TransitionNode> result = new ArrayList<>();
-
         if (c instanceof Condition) {
             Collection<Node> postset = getPostPNSet(c);
             if (postset.size() > 1) {
@@ -53,16 +48,11 @@ public class RelationAlgorithm {
      * check if a given condition has more than one output events
      */
     public boolean hasPreConflictEvents(Node c) {
-        if (getPreConflictEvents(c).isEmpty()) {
-            return false;
-        } else {
-            return true;
-        }
+        return !getPreConflictEvents(c).isEmpty();
     }
 
     public Collection<TransitionNode> getPreConflictEvents(Node c) {
         Collection<TransitionNode> result = new ArrayList<>();
-
         if (c instanceof Condition) {
             Collection<Node> preset = getPrePNSet(c);
             if (preset.size() > 1) {
@@ -80,22 +70,14 @@ public class RelationAlgorithm {
      * check if a given node is initial state (condition)
      */
     public boolean isInitial(Node n) {
-
-        if (getPrePNSet(n).size() == 0) {
-            return true;
-        }
-        return false;
+        return getPrePNSet(n).isEmpty();
     }
 
     /**
      * check if a given node is final state (condition)
      */
     public boolean isFinal(Node n) {
-
-        if (getPostPNSet(n).size() == 0) {
-            return true;
-        }
-        return false;
+        return getPostPNSet(n).isEmpty();
     }
 
     /**
@@ -103,7 +85,6 @@ public class RelationAlgorithm {
      */
     public boolean hasInitial(Collection<? extends Node> nodes) {
         boolean result = false;
-
         for (Node node : nodes) {
             if (isInitial(node)) {
                 result = true;
@@ -117,7 +98,6 @@ public class RelationAlgorithm {
      */
     public boolean hasFinal(Collection<? extends Node> nodes) {
         boolean result = false;
-
         for (Node node : nodes) {
             if (isFinal(node)) {
                 result = true;
@@ -456,4 +436,5 @@ public class RelationAlgorithm {
         }
         return result;
     }
+
 }

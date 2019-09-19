@@ -16,16 +16,14 @@ import org.workcraft.observation.TransformEvent;
 import org.workcraft.observation.TransformObserver;
 
 public class TransformEventPropagator extends HierarchySupervisor implements StateObserver, TransformDispatcher {
-    HashMap<Node, LinkedList<TransformObserver>> nodeToObservers
-            = new HashMap<Node, LinkedList<TransformObserver>>();
 
-    HashMap<TransformObserver, LinkedList<Node>> observerToNodes
-            = new HashMap<TransformObserver, LinkedList<Node>>();
+    private final HashMap<Node, LinkedList<TransformObserver>> nodeToObservers = new HashMap<>();
+    private final HashMap<TransformObserver, LinkedList<Node>> observerToNodes = new HashMap<>();
 
     private void addObserver(Node node, TransformObserver to) {
         LinkedList<TransformObserver> list = nodeToObservers.get(node);
         if (list == null) {
-            list = new LinkedList<TransformObserver>();
+            list = new LinkedList<>();
             nodeToObservers.put(node, list);
         }
         list.add(to);
@@ -42,7 +40,7 @@ public class TransformEventPropagator extends HierarchySupervisor implements Sta
     private void addObservedNode(TransformObserver to, Node node) {
         LinkedList<Node> list = observerToNodes.get(to);
         if (list == null) {
-            list = new LinkedList<Node>();
+            list = new LinkedList<>();
             observerToNodes.put(to, list);
         }
         list.add(node);
@@ -146,4 +144,5 @@ public class TransformEventPropagator extends HierarchySupervisor implements Sta
         removeObserver(observed, observer);
         removeObservedNode(observer, observed);
     }
+
 }

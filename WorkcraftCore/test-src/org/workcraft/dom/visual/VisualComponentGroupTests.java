@@ -1,6 +1,7 @@
 package org.workcraft.dom.visual;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
@@ -16,7 +17,7 @@ import java.util.Collections;
 
 public class VisualComponentGroupTests {
     class MockTransformObservingNode implements Node, TransformObserver {
-        Node parent = null;
+        private Node parent = null;
 
         public boolean notified = false;
 
@@ -52,8 +53,8 @@ public class VisualComponentGroupTests {
         VisualGroup node1 = createGroup(root);
         node1.setX(5);
 
-        SquareNode sq1 = new SquareNode(root, new Rectangle2D.Double(1, 1, 1, 1));
-        SquareNode sq2 = new SquareNode(node1, new Rectangle2D.Double(2, 2, 1, 1));
+        SquareNode sq1 = new SquareNode(new Rectangle2D.Double(1, 1, 1, 1));
+        SquareNode sq2 = new SquareNode(new Rectangle2D.Double(2, 2, 1, 1));
         root.add(sq1);
         node1.add(sq2);
 
@@ -62,19 +63,20 @@ public class VisualComponentGroupTests {
         Assert.assertEquals(null, HitMan.hitDeepest(new Point2D.Double(2.5, 2.5), root, VisualComponent.class));
     }
 
+    @Ignore @Test
     public void testHitConnection() {
         VisualGroup root = createGroup(null);
         VisualGroup group = createGroup(root);
         group.setX(5);
 
-        SquareNode sqr1 = new SquareNode(root, new Rectangle2D.Double(1, 1, 1, 1));
-        SquareNode sqr2 = new SquareNode(root, new Rectangle2D.Double(3, 3, 1, 1));
+        SquareNode sqr1 = new SquareNode(new Rectangle2D.Double(1, 1, 1, 1));
+        SquareNode sqr2 = new SquareNode(new Rectangle2D.Double(3, 3, 1, 1));
         root.add(sqr1);
         root.add(sqr2);
         VisualConnectionProperties connectionR = Tools.createConnection(sqr1, sqr2, root);
 
-        SquareNode sqg1 = new SquareNode(group, new Rectangle2D.Double(1, 1, 1, 1));
-        SquareNode sqg2 = new SquareNode(group, new Rectangle2D.Double(3, 3, 1, 1));
+        SquareNode sqg1 = new SquareNode(new Rectangle2D.Double(1, 1, 1, 1));
+        SquareNode sqg2 = new SquareNode(new Rectangle2D.Double(3, 3, 1, 1));
         group.add(sqg1);
         group.add(sqg2);
         Tools.createConnection(sqg1, sqg2, group);
@@ -101,9 +103,9 @@ public class VisualComponentGroupTests {
         r3.setRect(1, 1, 2, 2);
         r3b.setRect(1.1, 1.1, 1.8, 1.8);
 
-        VisualNode node1 = new SquareNode(group, r1, r1b);
-        VisualNode node2 = new SquareNode(group, r2, r2b);
-        VisualNode node3 = new SquareNode(group, r3, r3b);
+        VisualNode node1 = new SquareNode(r1, r1b);
+        VisualNode node2 = new SquareNode(r2, r2b);
+        VisualNode node3 = new SquareNode(r3, r3b);
 
     //    Assert.assertNull(group.getBoundingBoxInLocalSpace());
 
@@ -125,10 +127,6 @@ public class VisualComponentGroupTests {
         Assert.assertNull(HitMan.hitFirstChild(new Point2D.Double(2.95, 2.95), group));
     }
 
-    private SquareNode getSquareNode(VisualNode parent, double x, double y) {
-        return new SquareNode(null, new Rectangle2D.Double(x, y, 1, 1));
-    }
-
     @Test
     public void testHitSubGroup() {
         VisualGroup root = new VisualGroup();
@@ -137,8 +135,8 @@ public class VisualComponentGroupTests {
         VisualGroup node2 = new VisualGroup();
         root.add(node1);
         root.add(node2);
-        node1.add(getSquareNode(node1, 0, 0));
-        node2.add(getSquareNode(node2, 1, 1));
+        node1.add(new SquareNode(new Rectangle2D.Double(0, 0, 1, 1)));
+        node2.add(new SquareNode(new Rectangle2D.Double(1, 1, 1, 1)));
         Assert.assertEquals(node2, HitMan.hitFirstChild(new Point2D.Double(1.5, 1.5), root));
         Assert.assertEquals(node1, HitMan.hitFirstChild(new Point2D.Double(0.5, 0.5), root));
     }
@@ -156,11 +154,11 @@ public class VisualComponentGroupTests {
         VisualGroup node2 = new VisualGroup();
         node1.add(node2);
 
-        SquareNode sq1 = getSquareNode(node1, 0, 0);
+        SquareNode sq1 = new SquareNode(new Rectangle2D.Double(0, 0, 1, 1));
         node1.add(sq1);
-        SquareNode sq2 = getSquareNode(node1, 1, 1);
+        SquareNode sq2 = new SquareNode(new Rectangle2D.Double(1, 1, 1, 1));
         node1.add(sq2);
-        SquareNode sq3 = getSquareNode(node1, 2, 2);
+        SquareNode sq3 = new SquareNode(new Rectangle2D.Double(2, 2, 1, 1));
         node1.add(sq3);
 
         Assert.assertEquals(sq1, HitMan.hitFirstChild(new Point2D.Double(10.5, 15.5), node1));

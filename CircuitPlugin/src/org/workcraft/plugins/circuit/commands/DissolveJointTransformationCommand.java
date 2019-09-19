@@ -61,6 +61,7 @@ public class DissolveJointTransformationCommand extends AbstractTransformationCo
         return Position.BOTTOM_MIDDLE;
     }
 
+    @Override
     public Collection<VisualNode> collect(VisualModel model) {
         Collection<VisualNode> joints = new HashSet<>();
         if (model instanceof VisualCircuit) {

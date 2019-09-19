@@ -14,9 +14,9 @@ import java.io.IOException;
 
 public class ExportTask implements Task<ExportOutput> {
 
-    Exporter exporter;
-    Model model;
-    File file;
+    private final Exporter exporter;
+    private final Model model;
+    private final File file;
 
     public ExportTask(Exporter exporter, Model model, String path) {
         this(exporter, model, new File(path));
@@ -43,21 +43,22 @@ public class ExportTask implements Task<ExportOutput> {
         boolean success = false;
         try {
             // For incompatible visual model try exporting its underlying math model.
-            if ((model instanceof VisualModel) && !exporter.isCompatible(model)) {
-                VisualModel visualModel = (VisualModel) model;
+            Model exportModel = model;
+            if ((exportModel instanceof VisualModel) && !exporter.isCompatible(exportModel)) {
+                VisualModel visualModel = (VisualModel) exportModel;
                 MathModel mathModel = visualModel.getMathModel();
                 if (exporter.isCompatible(mathModel)) {
-                    model = mathModel;
+                    exportModel = mathModel;
                 } else {
                     String exporterName = exporter.getFormat().getName();
-                    String modelName = model.getDisplayName();
+                    String modelName = visualModel.getDisplayName();
                     String text = "Exporter to " + exporterName + " format is not compatible with " + modelName + " model.";
                     // FIXME: Is it really necessary to nest the exceptions?
                     Exception nestedException = new Exception(new RuntimeException(text));
                     return new Result<>(nestedException);
                 }
             }
-            exporter.export(model, fos);
+            exporter.export(exportModel, fos);
             success = true;
         } catch (Throwable e) {
             return new Result<>(e);
@@ -65,7 +66,6 @@ public class ExportTask implements Task<ExportOutput> {
             try {
                 fos.close();
             } catch (IOException e) {
-                return new Result<>(e);
             }
             if (!success) {
                 file.delete();

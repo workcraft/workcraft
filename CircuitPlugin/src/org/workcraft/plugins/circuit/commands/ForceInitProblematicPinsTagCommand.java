@@ -12,17 +12,17 @@ import java.util.function.Function;
 public class ForceInitProblematicPinsTagCommand extends AbstractTagCommand {
 
     @Override
-    Function<Circuit, Collection<Contact>> getFunction() {
+    public Function<Circuit, Collection<Contact>> getFunction() {
         return circuit -> ResetUtils.tagForceInitProblematicPins(circuit);
     }
 
     @Override
-    String getMessage() {
+    public String getMessage() {
         return "Force init problematic pin";
     }
 
     @Override
-    Class<? extends GraphEditorTool> getToolClass() {
+    public Class<? extends GraphEditorTool> getToolClass() {
         return InitialisationAnalyserTool.class;
     }
 

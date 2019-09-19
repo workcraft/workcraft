@@ -168,10 +168,9 @@ public class MultiBorderLayout extends BorderLayout {
             final Dimension westSize = sumVertical(westList, getPreferredSize);
             final Dimension eastSize = sumVertical(eastList, getPreferredSize);
 
-            int left, right, top, bottom;
 
-            left = availableBounds.x;
-            top = availableBounds.y;
+            int left = availableBounds.x;
+            int top = availableBounds.y;
             for (final Component c : northList) {
                 if (c.isVisible()) {
                     final Dimension d = sumHorizontal(asList(c), getPreferredSize);
@@ -181,7 +180,7 @@ public class MultiBorderLayout extends BorderLayout {
             }
 
             left = availableBounds.x;
-            bottom = availableBounds.y + availableBounds.height;
+            int bottom = availableBounds.y + availableBounds.height;
             for (final Component c : southList) {
                 if (c.isVisible()) {
                     final Dimension d = sumHorizontal(asList(c), getPreferredSize);
@@ -200,7 +199,7 @@ public class MultiBorderLayout extends BorderLayout {
                 }
             }
 
-            right = availableBounds.x + availableBounds.width;
+            int right = availableBounds.x + availableBounds.width;
             top = availableBounds.y + northSize.height;
             for (final Component c : eastList) {
                 if (c.isVisible()) {

@@ -2,31 +2,31 @@ package org.workcraft.gui.trees;
 
 import org.workcraft.gui.workspace.Path;
 
-public class TreeListenerAdapter<Node> implements TreeListener<Node> {
+public class TreeListenerAdapter<T> implements TreeListener<T> {
 
-    private final TreeListener<Node> chain;
+    private final TreeListener<T> chain;
 
-    public TreeListenerAdapter(TreeListener<Node> chain) {
+    public TreeListenerAdapter(TreeListener<T> chain) {
         this.chain = chain;
     }
 
     @Override
-    public void added(Path<Node> path) {
+    public void added(Path<T> path) {
         chain.added(path);
     }
 
     @Override
-    public void changed(Path<Node> path) {
+    public void changed(Path<T> path) {
         chain.changed(path);
     }
 
     @Override
-    public void removed(Path<Node> path) {
+    public void removed(Path<T> path) {
         chain.removed(path);
     }
 
     @Override
-    public void restructured(Path<Node> path) {
+    public void restructured(Path<T> path) {
         chain.restructured(path);
     }
 

@@ -14,13 +14,13 @@ public class ShuttersResultHandler extends BasicProgressMonitor<ShuttersResult> 
 
     private final File tmpDir;
 
-    public ShuttersResultHandler(ShuttersTask shuttersTask, File tmpDir) {
+    public ShuttersResultHandler(File tmpDir) {
         this.tmpDir = tmpDir;
     }
 
     @Override
-    public void finished(Result<? extends ShuttersResult> result) {
-        super.finished(result);
+    public void isFinished(Result<? extends ShuttersResult> result) {
+        super.isFinished(result);
         if (result.getOutcome() == Outcome.SUCCESS) {
             System.out.println(result.getPayload().getStdout());
         } else if (result.getOutcome() == Outcome.FAILURE) {

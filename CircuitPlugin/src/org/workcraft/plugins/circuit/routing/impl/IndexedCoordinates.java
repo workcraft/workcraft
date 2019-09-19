@@ -24,9 +24,9 @@ public class IndexedCoordinates {
     private final SortedMap<Coordinate, Integer> toIndex = new TreeMap<>();
     private Coordinate[] toCoordinate;
 
-    private final Set<Double> publicValues = new HashSet<Double>();
+    private final Set<Double> accessibleValues = new HashSet<>();
 
-    private boolean isBuilt = false;
+    private boolean built = false;
 
     /**
      * Returns the accumulated list of values.
@@ -43,7 +43,7 @@ public class IndexedCoordinates {
      * @return true if indices are built, false otherwise
      */
     public boolean isBuilt() {
-        return isBuilt;
+        return built;
     }
 
     /**
@@ -51,7 +51,7 @@ public class IndexedCoordinates {
      */
     public void clear() {
         values.clear();
-        publicValues.clear();
+        accessibleValues.clear();
         clearMaps();
     }
 
@@ -60,14 +60,14 @@ public class IndexedCoordinates {
      */
     public void remove(double value) {
         values.remove(value);
-        publicValues.remove(value);
+        accessibleValues.remove(value);
         clearMaps();
     }
 
     private void clearMaps() {
         toIndex.clear();
         toCoordinate = null;
-        isBuilt = false;
+        built = false;
     }
 
     /**
@@ -80,14 +80,14 @@ public class IndexedCoordinates {
 
         Coordinate oldValue = values.put(coordinate.getValue(), coordinate);
 
-        if (coordinate.isPublic()) {
-            publicValues.add(coordinate.getValue());
+        if (coordinate.isAccessible()) {
+            accessibleValues.add(coordinate.getValue());
         }
 
         return oldValue == null;
     }
 
-    private void addValue(boolean isPublic, CoordinateOrientation orientation, double... values) {
+    private void addValue(boolean isAccessible, CoordinateOrientation orientation, double... values) {
         boolean changed = false;
 
         for (double value : values) {
@@ -99,12 +99,12 @@ public class IndexedCoordinates {
                 newOrientation = orientation.merge(oldCoordinate.getOrientation());
             }
 
-            Coordinate newCoordinate = new Coordinate(newOrientation, isPublic || isPublic(value), value);
+            Coordinate newCoordinate = new Coordinate(newOrientation, isAccessible || isAccessible(value), value);
 
             changed |= add(newCoordinate);
         }
 
-        if (changed && isBuilt) {
+        if (changed && built) {
             clearMaps();
         }
     }
@@ -136,11 +136,11 @@ public class IndexedCoordinates {
 
             double snapMinor = CircuitLayoutSettings.getSnappingMinor();
             if (doHigher) {
-                addValue(coordinate.isPublic(), coordinate.getOrientation(),
+                addValue(coordinate.isAccessible(), coordinate.getOrientation(),
                         coordinate.getValue() + i * snapMinor);
             }
             if (doLower) {
-                addValue(coordinate.isPublic(), coordinate.getOrientation(),
+                addValue(coordinate.isAccessible(), coordinate.getOrientation(),
                         coordinate.getValue() - i * snapMinor);
             }
         }
@@ -177,7 +177,7 @@ public class IndexedCoordinates {
             idx++;
         }
 
-        isBuilt = true;
+        built = true;
     }
 
     /**
@@ -299,8 +299,8 @@ public class IndexedCoordinates {
         return toCoordinate[index];
     }
 
-    public boolean isPublic(double value) {
-        return publicValues.contains(value);
+    public boolean isAccessible(double value) {
+        return accessibleValues.contains(value);
     }
 
 }

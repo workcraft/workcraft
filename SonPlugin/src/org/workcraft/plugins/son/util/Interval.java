@@ -90,7 +90,7 @@ public class Interval {
     }
 
     public boolean isSpecified() {
-        if (getMin() != 0000 || getMax() != 9999) {
+        if ((getMin() != 0) || (getMax() != 9999)) {
             return true;
         }
         return false;
@@ -204,4 +204,10 @@ public class Interval {
         }
         return false;
     }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
 }

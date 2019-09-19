@@ -29,6 +29,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
         this.wsWindow = wsWindow;
     }
 
+    @Override
     public JPopupMenu getPopup(final Path<String> path) {
         JPopupMenu popup = new JPopupMenu();
 

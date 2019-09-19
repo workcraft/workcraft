@@ -41,9 +41,7 @@ public class MathModelSerialisation {
             Stg stg2 = (Stg) deserisaliser.deserialise(accum.getInputStream(), null, null).model;
 
             compareMathModels(stg, stg2);
-        } catch (SerialisationException e) {
-            throw new RuntimeException(e);
-        } catch (DeserialisationException e) {
+        } catch (SerialisationException | DeserialisationException e) {
             throw new RuntimeException(e);
         }
     }

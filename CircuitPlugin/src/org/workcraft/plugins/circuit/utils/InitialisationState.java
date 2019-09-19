@@ -67,7 +67,7 @@ public class InitialisationState {
             Set<MathNode> contactInitLevelSet = chooseNodeLevelSet(contact);
             if (contactInitLevelSet != null) {
                 variables.add(contact);
-                values.add(contactInitLevelSet == highSet ? One.instance() : Zero.instance());
+                values.add(contactInitLevelSet == highSet ? One.getInstance() : Zero.getInstance());
             }
         }
     }

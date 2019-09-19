@@ -1,19 +1,15 @@
 package org.workcraft.types;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ListMap<K, V> {
+
     private final HashMap<K, LinkedList<V>> map = new HashMap<>();
 
     public void put(K key, V value) {
         LinkedList<V> list = map.get(key);
         if (list == null) {
-            list = new LinkedList<V>();
+            list = new LinkedList<>();
             map.put(key, list);
         }
         list.add(value);
@@ -53,4 +49,5 @@ public class ListMap<K, V> {
     public void clear() {
         map.clear();
     }
+
 }

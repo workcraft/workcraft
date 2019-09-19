@@ -22,7 +22,7 @@ public class SymbolConsistencySupervisor extends StateSupervisor {
             Object sender = e.getSender();
             if ((sender instanceof Vertex) && pce.getPropertyName().equals(Vertex.PROPERTY_SYMBOL)) {
                 // Update the collection of symbols on a change of vertex symbol property
-                handleVertexSymbolChange((Vertex) sender);
+                handleVertexSymbolChange();
             }
         }
     }
@@ -39,7 +39,7 @@ public class SymbolConsistencySupervisor extends StateSupervisor {
         }
     }
 
-    private void handleVertexSymbolChange(Vertex vertex) {
+    private void handleVertexSymbolChange() {
         HashSet<Symbol> unusedSymbols = new HashSet<>(graph.getSymbols());
         for (Vertex v: graph.getVertices()) {
             Symbol symbol = v.getSymbol();

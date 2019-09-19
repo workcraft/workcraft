@@ -16,14 +16,16 @@ import java.util.Scanner;
 @SuppressWarnings("serial")
 public class WriterDialog extends JDialog {
 
-    private static File lastFileUsed, lastDirUsed;
+    private static final DefaultListModel<String> includeList = new DefaultListModel<>();
+    private static File lastFileUsed;
+    private static File lastDirUsed;
 
-    private final JPanel content, btnPanel;
+    private final JPanel content;
+    private final JPanel btnPanel;
     private JTextArea conceptsText;
     private JCheckBox dotLayoutCheckBox;
     private boolean changed = false;
     private final boolean fst;
-    private static DefaultListModel<String> includeList = new DefaultListModel<String>();
     private boolean modalResult;
 
     public WriterDialog(Window owner, boolean fst) {
@@ -222,7 +224,6 @@ public class WriterDialog extends JDialog {
     }
 
     private String readFile(File file) throws FileNotFoundException {
-
         Scanner scanner = new Scanner(file);
         String fileText = new String();
         if (scanner.hasNextLine()) {
@@ -235,7 +236,7 @@ public class WriterDialog extends JDialog {
             lastFileUsed = file;
             changed = false;
         }
-        return fileText == "" ? "" : fileText;
+        return fileText;
     }
 
     public File getFile() {
@@ -260,7 +261,7 @@ public class WriterDialog extends JDialog {
 
     public Object[] getIncludeList() {
         Object[] list = includeList.toArray();
-        if ((list.length == 1) && (list[0].toString() == "")) {
+        if ((list.length == 1) && (list[0].toString().isEmpty())) {
             return new Object[0];
         }
         return list;

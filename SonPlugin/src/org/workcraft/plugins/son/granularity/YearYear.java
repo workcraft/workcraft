@@ -14,8 +14,8 @@ public class YearYear extends AbstractTimeGranularity {
     @Override
     public Integer subtractTD(Integer time, Integer duration) {
         int result = time - duration;
-        if (result < 0000) {
-            return 0000;
+        if (result < 0) {
+            return 0;
         }
         return result;
     }
@@ -23,8 +23,8 @@ public class YearYear extends AbstractTimeGranularity {
     @Override
     public Integer subtractTT(Integer start, Integer end) {
         int result = end - start;
-        if (result < 0000) {
-            return 0000;
+        if (result < 0) {
+            return 0;
         }
         return result;
     }

@@ -3,8 +3,6 @@ package org.workcraft.gui.editor;
 /**
  * The <code>ViewportListener</code> interface defines methods for classes that wish
  * to be notified of the changes in viewport parameters.
- * @author Ivan Poliakov
- *
  */
 public interface ViewportListener {
     /**

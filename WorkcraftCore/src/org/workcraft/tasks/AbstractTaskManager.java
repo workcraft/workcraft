@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public abstract class AbstractTaskManager implements TaskManager {
 
-    TaskObserverList taskObserverList = new TaskObserverList();
+    public final TaskObserverList taskObserverList = new TaskObserverList();
 
     static class TaskObserverList extends ArrayList<TaskMonitor> implements TaskMonitor {
         private static final long serialVersionUID = 1L;

@@ -1,11 +1,6 @@
 package org.workcraft.plugins.stg.serialisation;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
-import java.util.Collection;
-import java.util.Iterator;
-
+import org.junit.Assert;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathGroup;
@@ -23,16 +18,19 @@ import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 public class SerialisationTestingUtils {
 
     public static void comparePlaces(Place p1, Place p2) {
-        assertEquals(p1.getTokens(), p2.getTokens());
-        //assertEquals(p1.getCapacity(), p2.getCapacity());
+        Assert.assertEquals(p1.getTokens(), p2.getTokens());
+        //Assert.assertEquals(p1.getCapacity(), p2.getCapacity());
     }
 
     public static void compareTransitions(SignalTransition t1, SignalTransition t2) {
-        assertEquals(t1.getSignalName(), t2.getSignalName());
-        assertEquals(t1.getDirection(), t2.getDirection());
+        Assert.assertEquals(t1.getSignalName(), t2.getSignalName());
+        Assert.assertEquals(t1.getDirection(), t2.getDirection());
     }
 
     public static void compareConnections(MathConnection con1, MathConnection con2) {
@@ -41,8 +39,8 @@ public class SerialisationTestingUtils {
     }
 
     public static void comparePreAndPostSets(VisualComponent c1, VisualComponent c2) {
-    /*    assertEquals(c1.getPreset().size(), c2.getPreset().size());
-        assertEquals(c1.getPostset().size(), c2.getPostset().size());
+    /*    Assert.assertEquals(c1.getPreset().size(), c2.getPreset().size());
+        Assert.assertEquals(c1.getPostset().size(), c2.getPostset().size());
 
         Iterator<VisualComponent> i1 = c1.getPreset().iterator();
         Iterator<VisualComponent> i2 = c2.getPreset().iterator();
@@ -51,7 +49,7 @@ public class SerialisationTestingUtils {
             VisualComponent n1 = i1.next();
             VisualComponent n2 = i2.next();
 
-            assertEquals(n1.getClass(), n2.getClass());
+            Assert.assertEquals(n1.getClass(), n2.getClass());
         }
 
         i1 = c1.getPostset().iterator();
@@ -61,13 +59,13 @@ public class SerialisationTestingUtils {
             VisualComponent n1 = i1.next();
             VisualComponent n2 = i2.next();
 
-            assertEquals(n1.getClass(), n2.getClass());
+            Assert.assertEquals(n1.getClass(), n2.getClass());
         }*/
     }
 
     public static void comparePreAndPostSets(MathNode c1, MathNode c2) {
-        /*assertEquals(c1.getPreset().size(), c2.getPreset().size());
-        assertEquals(c1.getPostset().size(), c2.getPostset().size());
+        /*Assert.assertEquals(c1.getPreset().size(), c2.getPreset().size());
+        Assert.assertEquals(c1.getPostset().size(), c2.getPostset().size());
 
         Iterator<MathComponent> i1 = c1.getPreset().iterator();
         Iterator<MathComponent> i2 = c2.getPreset().iterator();
@@ -76,7 +74,7 @@ public class SerialisationTestingUtils {
             Component n1 = i1.next();
             Component n2 = i2.next();
 
-            assertEquals(n1.getClass(), n2.getClass());
+            Assert.assertEquals(n1.getClass(), n2.getClass());
         }
 
         i1 = c1.getPostset().iterator();
@@ -86,28 +84,28 @@ public class SerialisationTestingUtils {
             Component n1 = i1.next();
             Component n2 = i2.next();
 
-            assertEquals(n1.getClass(), n2.getClass());
+            Assert.assertEquals(n1.getClass(), n2.getClass());
         }*/
     }
 
     public static void compareVisualPlaces(VisualPlace p1, VisualPlace p2) {
-        //assertEquals(p1.getID(), p2.getID());
-        assertEquals(p1.getTransform(), p2.getTransform());
+        //Assert.assertEquals(p1.getID(), p2.getID());
+        Assert.assertEquals(p1.getTransform(), p2.getTransform());
 
         comparePlaces(p1.getReferencedPlace(), p2.getReferencedPlace());
     }
 
     public static void compareVisualSignalTransitions(VisualSignalTransition t1, VisualSignalTransition t2) {
-        //assertEquals(t1.getID(), t2.getID());
-        assertEquals(t1.getTransform(), t2.getTransform());
+        //Assert.assertEquals(t1.getID(), t2.getID());
+        Assert.assertEquals(t1.getTransform(), t2.getTransform());
 
         compareTransitions(t1.getReferencedTransition(), t2.getReferencedTransition());
     }
 
     public static void compareVisualDummyTransitions(VisualDummyTransition t1, VisualDummyTransition t2) {
-        //assertEquals(t1.getID(), t2.getID());
-        assertEquals(t1.getTransform(), t2.getTransform());
-        assertEquals(t1.getName(), t2.getName());
+        //Assert.assertEquals(t1.getID(), t2.getID());
+        Assert.assertEquals(t1.getTransform(), t2.getTransform());
+        Assert.assertEquals(t1.getName(), t2.getName());
     }
 
     public static void compareVisualConnections(VisualConnection vc1, VisualConnection vc2) {
@@ -126,7 +124,7 @@ public class SerialisationTestingUtils {
     }
 
     public static void comparePolylines(Polyline p1, Polyline p2) {
-        assertEquals(p1.getChildren().size(), p2.getChildren().size());
+        Assert.assertEquals(p1.getChildren().size(), p2.getChildren().size());
 
         Iterator<Node> i1 = p1.getChildren().iterator();
         Iterator<Node> i2 = p2.getChildren().iterator();
@@ -135,13 +133,13 @@ public class SerialisationTestingUtils {
             ControlPoint cp1 = (ControlPoint) i1.next();
             ControlPoint cp2 = (ControlPoint) i2.next();
 
-            assertEquals(cp1.getX(), cp2.getX(), 0.0001);
-            assertEquals(cp1.getY(), cp2.getY(), 0.0001);
+            Assert.assertEquals(cp1.getX(), cp2.getX(), 0.0001);
+            Assert.assertEquals(cp1.getY(), cp2.getY(), 0.0001);
         }
     }
 
     public static void compareNodes(Node node1, Node node2) {
-        assertEquals(node1.getClass(), node2.getClass());
+        Assert.assertEquals(node1.getClass(), node2.getClass());
 
         if (node1 instanceof MathNode) {
             comparePreAndPostSets((MathNode) node1, (MathNode) node2);
@@ -168,12 +166,12 @@ public class SerialisationTestingUtils {
         } else if (node1 instanceof MathGroup) {
         } else if (node1 instanceof VisualGroup) {
         } else if (node1 instanceof ComponentsTransformObserver) {
-        } else fail("Unexpected class " + node1.getClass().getName());
+        } else Assert.fail("Unexpected class " + node1.getClass().getName());
 
         Collection<Node> ch1 = node1.getChildren();
         Collection<Node> ch2 = node2.getChildren();
 
-        assertEquals(ch1.size(), ch2.size());
+        Assert.assertEquals(ch1.size(), ch2.size());
 
         Iterator<Node> i1 = ch1.iterator();
         Iterator<Node> i2 = ch2.iterator();

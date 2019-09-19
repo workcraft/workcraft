@@ -253,8 +253,8 @@ CpogFormula literal1(String bool) :
     |
         t = < BRACKOPEN >
         {
-            while (str.compareTo(")") != 0) {
-                if (str.compareTo("]") == 0) {
+            while (!")".equals(str)) {
+                if ("]".equals(str)) {
                     exp = exp.substring(0, exp.length() - 1);
                 }
                 exp = exp + str;
@@ -339,7 +339,7 @@ String bracketInternals() :
         {
             String r = "";
             result = "(";
-            while (r.compareTo(")") != 0) {
+            while (!")".equals(r)) {
                 r = bracketInternals();
                 result = result + r;
             }

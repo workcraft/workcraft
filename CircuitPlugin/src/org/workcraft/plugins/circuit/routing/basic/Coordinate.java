@@ -2,12 +2,12 @@ package org.workcraft.plugins.circuit.routing.basic;
 
 public final class Coordinate implements Comparable<Coordinate> {
     private final CoordinateOrientation orientation;
-    private final boolean isPublic;
+    private final boolean accessible;
     private final double value;
 
-    public Coordinate(CoordinateOrientation orientation, boolean isPublic, double value) {
+    public Coordinate(CoordinateOrientation orientation, boolean accessible, double value) {
         this.orientation = orientation;
-        this.isPublic = isPublic;
+        this.accessible = accessible;
         this.value = value;
     }
 
@@ -15,7 +15,7 @@ public final class Coordinate implements Comparable<Coordinate> {
     public int hashCode() {
         int prime = 31;
         int result = 1;
-        result = prime * result + (isPublic() ? 1231 : 1237);
+        result = prime * result + (isAccessible() ? 1231 : 1237);
         result = prime * result + ((getOrientation() == null) ? 0 : getOrientation().hashCode());
         long temp;
         temp = Double.doubleToLongBits(getValue());
@@ -35,7 +35,7 @@ public final class Coordinate implements Comparable<Coordinate> {
             return false;
         }
         final Coordinate other = (Coordinate) obj;
-        if (isPublic() != other.isPublic()) {
+        if (isAccessible() != other.isAccessible()) {
             return false;
         }
         if (getOrientation() != other.getOrientation()) {
@@ -56,8 +56,8 @@ public final class Coordinate implements Comparable<Coordinate> {
         return orientation;
     }
 
-    public boolean isPublic() {
-        return isPublic;
+    public boolean isAccessible() {
+        return accessible;
     }
 
     public double getValue() {

@@ -13,6 +13,7 @@ public class FreeVariable implements BooleanVariable, Comparable<FreeVariable> {
         return visitor.visit(this);
     }
 
+    @Override
     public String getLabel() {
         return label;
     }

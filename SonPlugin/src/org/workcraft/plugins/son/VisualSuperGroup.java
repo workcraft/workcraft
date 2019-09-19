@@ -112,6 +112,7 @@ public class VisualSuperGroup extends VisualGroup {
         this.label = label;
     }
 
+    @Override
     public String getLabel() {
         return this.label;
     }

@@ -39,9 +39,9 @@ public class ProgressMonitorArray<T> extends ArrayList<ProgressMonitor<? super T
     }
 
     @Override
-    public void finished(Result<? extends T> result) {
+    public void isFinished(Result<? extends T> result) {
         for (ProgressMonitor<? super T> o : this) {
-            o.finished(result);
+            o.isFinished(result);
         }
         this.result = result;
         finished = true;

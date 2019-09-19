@@ -8,7 +8,7 @@ import org.workcraft.formula.BooleanVisitor;
 import org.workcraft.observation.PropertyChangedEvent;
 
 @IdentifierPrefix("var")
-@VisualClass(org.workcraft.plugins.cpog.VisualVariable.class)
+@VisualClass(VisualVariable.class)
 public class Variable extends MathNode implements Comparable<Variable>, BooleanVariable {
 
     public static final String PROPERTY_STATE = "State";
@@ -41,6 +41,7 @@ public class Variable extends MathNode implements Comparable<Variable>, BooleanV
         }
     }
 
+    @Override
     public String getLabel() {
         return label;
     }

@@ -35,8 +35,9 @@ public class PGMinerResultHandler extends BasicProgressMonitor<ExternalProcessOu
         this.weResult = null;
     }
 
-    public void finished(final Result<? extends ExternalProcessOutput> result) {
-        super.finished(result);
+    @Override
+    public void isFinished(final Result<? extends ExternalProcessOutput> result) {
+        super.isFinished(result);
         if (result.getOutcome() == Outcome.FAILURE) {
             DialogUtils.showError("PGMiner could not run, concurrency extraction failed.");
         } else {
@@ -73,7 +74,7 @@ public class PGMinerResultHandler extends BasicProgressMonitor<ExternalProcessOu
             final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
             for (int i = 0; i < stdout.length; i++) {
                 final String exp = stdout[i];
-                tool.insertExpression(exp, visualCpog, false, false, true, false);
+                tool.insertExpression(exp, visualCpog, false, true, false);
             }
             we.saveMemento();
         } catch (final Exception e) {

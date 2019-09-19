@@ -46,12 +46,12 @@ public class ConformationNwayVerificationCommand extends AbstractVerificationCom
 
     @Override
     public void run(WorkspaceEntry we) {
-        queueVerification(we);
+        queueVerification();
     }
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        VerificationChainResultHandler monitor = queueVerification(we);
+        VerificationChainResultHandler monitor = queueVerification();
         Result<? extends VerificationChainOutput> result = null;
         if (monitor != null) {
             result = monitor.waitResult();
@@ -59,7 +59,7 @@ public class ConformationNwayVerificationCommand extends AbstractVerificationCom
         return MpsatUtils.getChainOutcome(result);
     }
 
-    private VerificationChainResultHandler queueVerification(WorkspaceEntry we) {
+    private VerificationChainResultHandler queueVerification() {
         Framework framework = Framework.getInstance();
         Workspace workspace = framework.getWorkspace();
         List<WorkspaceEntry> wes = new ArrayList<>();

@@ -18,6 +18,10 @@ import java.util.LinkedList;
 
 public class CircuitSignalInfo {
 
+    public final Circuit circuit;
+    private final HashMap<Contact, String> contactSignalMap = new HashMap<>();
+    private final HashMap<String, BooleanFormula> signalLiteralMap;
+
     public static class SignalInfo {
         public final FunctionContact contact;
         public final BooleanFormula setFormula;
@@ -29,10 +33,6 @@ public class CircuitSignalInfo {
             this.resetFormula = resetFormula;
         }
     }
-
-    public final Circuit circuit;
-    private final HashMap<Contact, String> contactSignalMap = new HashMap<>();
-    private final HashMap<String, BooleanFormula> signalLiteralMap;
 
     public CircuitSignalInfo(Circuit circuit) {
         this(circuit, null, null);
@@ -66,7 +66,7 @@ public class CircuitSignalInfo {
         return result;
     }
 
-    public String getContactSignal(Contact contact) {
+    public final String getContactSignal(Contact contact) {
         String result = contactSignalMap.get(contact);
         if (result == null) {
             if (!circuit.getPreset(contact).isEmpty() || !circuit.getPostset(contact).isEmpty()) {

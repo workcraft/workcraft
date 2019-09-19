@@ -12,22 +12,23 @@ import org.workcraft.observation.StateObserver;
 /**
  * Base type for mathematical objects -- components (graph nodes)
  * and connections (graph arcs).
- * @author Ivan Poliakov
- *
  */
 public abstract class MathNode implements Node, ObservableState {
     private final ObservableStateImpl observableStateImpl = new ObservableStateImpl();
 
     private Node parent = null;
 
+    @Override
     public Collection<Node> getChildren() {
         return new HashSet<Node>();
     }
 
+    @Override
     public Node getParent() {
         return parent;
     }
 
+    @Override
     public void setParent(Node parent) {
         this.parent = parent;
     }

@@ -13,7 +13,7 @@ public class GraphReference {
     private final HashSet<VisualPage> refPages = new HashSet<>();
     private Point2D.Double pageCentre = null;
 
-    public GraphReference(String label, String normalForm, HashMap<String, VisualVertex> vertMap) {
+    public GraphReference(String normalForm, HashMap<String, VisualVertex> vertMap) {
         this.normalForm = normalForm;
         this.vertMap = vertMap;
     }

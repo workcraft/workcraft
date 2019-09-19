@@ -1,25 +1,13 @@
 package org.workcraft.formula.utils;
 
+import org.workcraft.formula.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import org.workcraft.formula.And;
-import org.workcraft.formula.BinaryBooleanFormula;
-import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.BooleanVariable;
-import org.workcraft.formula.BooleanVisitor;
-import org.workcraft.formula.Iff;
-import org.workcraft.formula.Imply;
-import org.workcraft.formula.Not;
-import org.workcraft.formula.One;
-import org.workcraft.formula.Or;
-import org.workcraft.formula.Xor;
-import org.workcraft.formula.Zero;
-
 public class StringGenerator implements BooleanVisitor<String> {
 
-    public final class Void {
-        private Void() { }
+    public enum Void {
     }
 
     public enum Style {
@@ -239,7 +227,7 @@ public class StringGenerator implements BooleanVisitor<String> {
     }
 
     public static class VariablePrinter extends DelegatingPrinter {
-        Map<String, BooleanVariable> varMap = new HashMap<>();
+        private final Map<String, BooleanVariable> varMap = new HashMap<>();
 
         @Override
         public Void visit(BooleanVariable var) {
@@ -300,7 +288,7 @@ public class StringGenerator implements BooleanVisitor<String> {
             return enclose(node);
         }
 
-        Void enclose(BooleanFormula node) {
+        private Void enclose(BooleanFormula node) {
             append("(");
             node.accept(next);
             append(")");

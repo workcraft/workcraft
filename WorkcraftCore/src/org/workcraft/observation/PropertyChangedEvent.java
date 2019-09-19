@@ -3,6 +3,7 @@ package org.workcraft.observation;
 import org.workcraft.dom.Node;
 
 public class PropertyChangedEvent implements StateEvent {
+
     private final Node sender;
     private final String propertyName;
 
@@ -11,6 +12,7 @@ public class PropertyChangedEvent implements StateEvent {
         this.propertyName = propertyName;
     }
 
+    @Override
     public Node getSender() {
         return sender;
     }
@@ -18,4 +20,5 @@ public class PropertyChangedEvent implements StateEvent {
     public String getPropertyName() {
         return propertyName;
     }
+
 }

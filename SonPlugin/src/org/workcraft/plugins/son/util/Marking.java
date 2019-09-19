@@ -24,4 +24,9 @@ public class Marking extends ArrayList<PlaceNode> {
         return true;
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
 }

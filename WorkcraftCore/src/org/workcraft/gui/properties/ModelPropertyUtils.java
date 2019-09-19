@@ -20,7 +20,7 @@ public class ModelPropertyUtils {
 
     public static ModelProperties getSelectionProperties(VisualModel model) {
         final Collection<? extends VisualNode> selection = model.getSelection();
-        if (selection.size() == 0) {
+        if (selection.isEmpty()) {
             return getProperties(model);
         } else if (selection.size() == 1) {
             final VisualNode node = selection.iterator().next();

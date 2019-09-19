@@ -27,7 +27,7 @@ import org.workcraft.utils.WorkspaceUtils;
 
 public class ContractNamedTransitionTransformationCommand extends ContractTransitionTransformationCommand {
 
-    HashSet<VisualStgPlace> convertedImplicitPlaces = new HashSet<>();
+    private final HashSet<VisualStgPlace> convertedImplicitPlaces = new HashSet<>();
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {

@@ -38,6 +38,7 @@ public class DockableWindowContentPanel extends JPanel {
             this.windowID = windowID;
         }
 
+        @Override
         public String getText() {
             return null;
         }
@@ -63,7 +64,9 @@ public class DockableWindowContentPanel extends JPanel {
     }
 
     class DockableViewHeader extends JPanel {
-        private ActionButton btnMin, btnMax, btnClose;
+        private ActionButton btnMin;
+        private ActionButton btnMax;
+        private ActionButton btnClose;
         private final JLabel titleLabel;
         private JPanel buttonPanel = null;
         private boolean maximized = false;

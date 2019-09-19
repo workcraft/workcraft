@@ -17,8 +17,8 @@ import java.lang.reflect.InvocationTargetException;
 public class TaskManagerWindow extends JPanel implements TaskMonitor {
 
     class TaskControlMonitor extends BasicProgressMonitor<Object> {
-        TaskManagerWindow window;
-        TaskControl taskControl;
+        private final TaskManagerWindow window;
+        private final TaskControl taskControl;
 
         TaskControlMonitor(TaskManagerWindow window, TaskControl taskControl) {
             this.taskControl = taskControl;
@@ -31,8 +31,8 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         }
 
         @Override
-        public void finished(Result<? extends Object> result) {
-            super.finished(result);
+        public void isFinished(Result<? extends Object> result) {
+            super.isFinished(result);
             SwingUtilities.invokeLater(() -> window.removeTaskControl(taskControl));
         }
 
@@ -45,22 +45,27 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
     public class ScrollPaneWidthTrackingPanel extends JPanel implements Scrollable {
         private static final long serialVersionUID = 1L;
 
+        @Override
         public Dimension getPreferredScrollableViewportSize() {
             return getPreferredSize();
         }
 
+        @Override
         public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
             return Math.max(visibleRect.height * 9 / 10, 1);
         }
 
+        @Override
         public boolean getScrollableTracksViewportHeight() {
             return false;
         }
 
+        @Override
         public boolean getScrollableTracksViewportWidth() {
             return true;
         }
 
+        @Override
         public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
             return Math.max(visibleRect.height / 10, 1);
         }

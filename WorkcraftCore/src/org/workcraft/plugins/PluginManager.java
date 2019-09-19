@@ -132,6 +132,7 @@ public class PluginManager implements PluginProvider {
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public <T> Collection<PluginInfo<? extends T>> getPlugins(Class<T> interf) {
         return (Collection<PluginInfo<? extends T>>) (Collection<?>) Collections.unmodifiableCollection(plugins.get(interf));
     }

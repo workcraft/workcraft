@@ -3,9 +3,9 @@ package org.workcraft.tasks;
 public abstract class AbstractResultHandler<T> extends BasicProgressMonitor<T> {
 
     @Override
-    public final void finished(Result<? extends T> result) {
+    public final void isFinished(Result<? extends T> result) {
         handleResult(result);
-        super.finished(result);
+        super.isFinished(result);
     }
 
     public abstract void handleResult(Result<? extends T> result);

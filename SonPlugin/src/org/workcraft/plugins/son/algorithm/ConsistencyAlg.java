@@ -1,11 +1,5 @@
 package org.workcraft.plugins.son.algorithm;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
@@ -23,6 +17,8 @@ import org.workcraft.plugins.son.util.Before;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.plugins.son.util.ScenarioRef;
 
+import java.util.*;
+
 public class ConsistencyAlg extends TimeAlg {
 
     private final Before before;
@@ -38,8 +34,8 @@ public class ConsistencyAlg extends TimeAlg {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
+    public void prepare() {
+        super.prepare();
         for (ChannelPlace cp : scenario.getChannelPlaces(net)) {
             TransitionNode input = (TransitionNode) net.getPreset(cp).iterator().next();
             TransitionNode output = (TransitionNode) net.getPostset(cp).iterator().next();

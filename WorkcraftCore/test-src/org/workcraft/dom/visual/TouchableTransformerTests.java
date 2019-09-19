@@ -1,18 +1,16 @@
 package org.workcraft.dom.visual;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.Assert;
+import org.junit.Test;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import org.junit.Test;
-
 public class TouchableTransformerTests {
 
     private static class Dummy implements Touchable {
+        @Override
         public Rectangle2D getBoundingBox() {
             throw new RuntimeException("not implemented");
         }
@@ -40,14 +38,14 @@ public class TouchableTransformerTests {
         Dummy dummy = new Dummy() {
             @Override
             public boolean hitTest(Point2D p) {
-                assertEquals(point, p);
+                Assert.assertEquals(point, p);
                 return result;
             }
         };
 
         TouchableTransformer transformer = new TouchableTransformer(dummy, new AffineTransform());
 
-        assertEquals(result, transformer.hitTest(point));
+        Assert.assertEquals(result, transformer.hitTest(point));
     }
 
     @Test
@@ -69,7 +67,7 @@ public class TouchableTransformerTests {
             }
         };
 
-        assertEquals(bb,
+        Assert.assertEquals(bb,
                 new TouchableTransformer(dummy, new AffineTransform()).getBoundingBox());
     }
 
@@ -90,10 +88,10 @@ public class TouchableTransformerTests {
         double sqrt2 = Math.sqrt(2.0);
         double sqrt2by2 = sqrt2 / 2.0;
 
-        assertEquals(sqrt2, result.getMaxY(), 1e-5);
-        assertEquals(0, result.getMinY(), 1e-5);
-        assertEquals(sqrt2by2, result.getMaxX(), 1e-5);
-        assertEquals(-sqrt2by2, result.getMinX(), 1e-5);
+        Assert.assertEquals(sqrt2, result.getMaxY(), 1e-5);
+        Assert.assertEquals(0, result.getMinY(), 1e-5);
+        Assert.assertEquals(sqrt2by2, result.getMaxX(), 1e-5);
+        Assert.assertEquals(-sqrt2by2, result.getMinX(), 1e-5);
     }
 
     @Test
@@ -106,15 +104,15 @@ public class TouchableTransformerTests {
                     }
                 }, AffineTransform.getTranslateInstance(10, 1));
 
-        assertTrue(toucher.hitTest(new Point2D.Double(10, 1)));
-        assertTrue(toucher.hitTest(new Point2D.Double(10.9, 1)));
-        assertTrue(toucher.hitTest(new Point2D.Double(9.1, 1)));
-        assertFalse(toucher.hitTest(new Point2D.Double(11.1, 1)));
-        assertFalse(toucher.hitTest(new Point2D.Double(8.9, 1)));
-        assertTrue(toucher.hitTest(new Point2D.Double(10.6, 1.6)));
-        assertFalse(toucher.hitTest(new Point2D.Double(10.8, 1.8)));
-        assertTrue(toucher.hitTest(new Point2D.Double(9.4, 0.4)));
-        assertFalse(toucher.hitTest(new Point2D.Double(9.2, 0.2)));
+        Assert.assertTrue(toucher.hitTest(new Point2D.Double(10, 1)));
+        Assert.assertTrue(toucher.hitTest(new Point2D.Double(10.9, 1)));
+        Assert.assertTrue(toucher.hitTest(new Point2D.Double(9.1, 1)));
+        Assert.assertFalse(toucher.hitTest(new Point2D.Double(11.1, 1)));
+        Assert.assertFalse(toucher.hitTest(new Point2D.Double(8.9, 1)));
+        Assert.assertTrue(toucher.hitTest(new Point2D.Double(10.6, 1.6)));
+        Assert.assertFalse(toucher.hitTest(new Point2D.Double(10.8, 1.8)));
+        Assert.assertTrue(toucher.hitTest(new Point2D.Double(9.4, 0.4)));
+        Assert.assertFalse(toucher.hitTest(new Point2D.Double(9.2, 0.2)));
     }
 
 }

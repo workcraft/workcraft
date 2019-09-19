@@ -14,27 +14,32 @@ import java.util.Collection;
 
 public class XmasComponent extends MathNode implements Container, ObservableHierarchy {
 
-    DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
+    private final DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
     private int gr = 0;
     private String gp = "0";
 
+    @Override
     public Node getParent() {
         return groupImpl.getParent();
     }
 
+    @Override
     public void setParent(Node parent) {
         groupImpl.setParent(parent);
     }
 
+    @Override
     public void addObserver(HierarchyObserver obs) {
         groupImpl.addObserver(obs);
     }
 
+    @Override
     public void removeObserver(HierarchyObserver obs) {
         groupImpl.removeObserver(obs);
     }
 
+    @Override
     public void removeAllObservers() {
         groupImpl.removeAllObservers();
     }

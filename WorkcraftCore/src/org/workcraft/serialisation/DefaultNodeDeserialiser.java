@@ -136,7 +136,7 @@ class DefaultNodeDeserialiser {
         }
     }
 
-    void doInitialisation(Element element, Object instance, Class<?> currentLevel, ReferenceResolver externalReferenceResolver)
+    public void doInitialisation(Element element, Object instance, Class<?> currentLevel, ReferenceResolver externalReferenceResolver)
             throws DeserialisationException {
 
         Element currentLevelElement = XmlUtils.getChildElement(currentLevel.getSimpleName(), element);
@@ -160,11 +160,10 @@ class DefaultNodeDeserialiser {
         }
     }
 
-    void doFinalisation(Element element, Object instance,
-            ReferenceResolver internalReferenceResolver,
-            ReferenceResolver externalReferenceResolver,
-            Class<?> currentLevel)
+    public void doFinalisation(Element element, Object instance, ReferenceResolver internalReferenceResolver,
+            ReferenceResolver externalReferenceResolver, Class<?> currentLevel)
             throws DeserialisationException {
+
         Element currentLevelElement = XmlUtils.getChildElement(currentLevel.getSimpleName(), element);
         if (currentLevelElement != null) {
             try {
@@ -174,9 +173,7 @@ class DefaultNodeDeserialiser {
                     customDeserialiser.finaliseInstance(currentLevelElement, instance,
                             internalReferenceResolver, externalReferenceResolver, finaliser);
                 }
-            } catch (InstantiationException e) {
-                throw new DeserialisationException(e);
-            } catch (IllegalAccessException e) {
+            } catch (InstantiationException | IllegalAccessException e) {
                 throw new DeserialisationException(e);
             }
         }

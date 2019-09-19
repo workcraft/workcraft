@@ -28,7 +28,7 @@ public class GateRenderer {
 
     private static class NaryBooleanFormulaRenderer implements NaryBooleanFormulaVisitor<ComponentRenderingResult> {
 
-        boolean isBuffer = true;
+        private boolean isBuffer = true;
 
         @Override
         public ComponentRenderingResult visit(final BooleanVariable var) {

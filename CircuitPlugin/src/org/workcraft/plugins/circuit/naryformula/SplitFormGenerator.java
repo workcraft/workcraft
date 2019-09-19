@@ -90,7 +90,7 @@ public class SplitFormGenerator {
 
     public static SplitForm generate(BooleanFormula formula) {
         if (formula == null) {
-            formula = One.instance();
+            formula = One.getInstance();
         }
         NaryBooleanFormula naryFormula = NaryBooleanFormulaBuilder.build(formula);
         return naryFormula.accept(new DelegatingPrinter());

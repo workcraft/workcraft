@@ -48,7 +48,7 @@ public class PlaceRedundancyVerificationCommand extends AbstractVerificationComm
 
     @Override
     public void run(WorkspaceEntry we) {
-        if (getSelectedPlaces(we).size() < 1) {
+        if (getSelectedPlaces(we).isEmpty()) {
             DialogUtils.showWarning("At least one place must be selected for redundancy check.");
             return;
         }

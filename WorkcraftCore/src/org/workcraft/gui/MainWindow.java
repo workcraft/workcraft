@@ -162,12 +162,12 @@ public class MainWindow extends JFrame {
 
     private DockableWindow createDockableWindow(JComponent component, String name, int options, String relativeRegion,
             float split) {
-        return createDockableWindow(component, name, null, null, options, relativeRegion, split, name);
+        return createDockableWindow(component, name, null, options, relativeRegion, split, name);
     }
 
     private DockableWindow createDockableWindow(JComponent component, String name, Dockable neighbour, int options,
             String relativeRegion, float split) {
-        return createDockableWindow(component, name, null, neighbour, options, relativeRegion, split, name);
+        return createDockableWindow(component, name, neighbour, options, relativeRegion, split, name);
     }
 
     private DockableWindow createDockableWindow(JComponent component, String title, Dockable neighbour,
@@ -186,8 +186,8 @@ public class MainWindow extends JFrame {
         return dockable;
     }
 
-    private DockableWindow createDockableWindow(JComponent component, String title, String tooltip,
-            Dockable neighbour, int options, String region, float split, String persistentID) {
+    private DockableWindow createDockableWindow(JComponent component, String title, Dockable neighbour,
+            int options, String region, float split, String persistentID) {
 
         DockableWindow dockable = createDockableWindow(component, title, neighbour, options, region, persistentID);
         DockingManager.setSplitProportion(dockable, split);
@@ -515,7 +515,7 @@ public class MainWindow extends JFrame {
                 propertyEditorDockable, DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
                 DockingManager.SOUTH_REGION, 0.4f);
 
-        documentPlaceholder = createDockableWindow(new DocumentPlaceholder(), TITLE_PLACEHOLDER, null, outputDockable,
+        documentPlaceholder = createDockableWindow(new DocumentPlaceholder(), TITLE_PLACEHOLDER, outputDockable,
                 0, DockingManager.NORTH_REGION, ySplit, "DocumentPlaceholder");
 
         registerUtilityWindow(outputDockable);
@@ -675,12 +675,12 @@ public class MainWindow extends JFrame {
             return;
         }
         try {
-            MathModel mathModel = md.createMathModel();
             VisualModelDescriptor vmd = md.getVisualModelDescriptor();
             if (vmd == null) {
                 DialogUtils.showError("Visual model is not defined for '" + md.getDisplayName() + "'.");
                 return;
             }
+            MathModel mathModel = md.createMathModel();
             VisualModel visualModel = vmd.create(mathModel);
             ModelEntry me = new ModelEntry(md, visualModel);
             final Framework framework = Framework.getInstance();
@@ -789,13 +789,13 @@ public class MainWindow extends JFrame {
         JFileChooser fc = createOpenDialog("Open work file(s)", true, true, null);
         if (fc.showDialog(this, "Open") == JFileChooser.APPROVE_OPTION) {
             final HashSet<WorkspaceEntry> newWorkspaceEntries = new HashSet<>();
-            for (File file: fc.getSelectedFiles()) {
+            for (File file : fc.getSelectedFiles()) {
+                File workFile = file;
                 String path = file.getPath();
                 if (!path.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
-                    path += FileFilters.DOCUMENT_EXTENSION;
-                    file = new File(path);
+                    workFile = new File(path + FileFilters.DOCUMENT_EXTENSION);
                 }
-                WorkspaceEntry we = openWork(file);
+                WorkspaceEntry we = openWork(workFile);
                 if (we != null) {
                     newWorkspaceEntries.add(we);
                 }
@@ -838,12 +838,12 @@ public class MainWindow extends JFrame {
         JFileChooser fc = createOpenDialog("Merge work file(s)", true, true, null);
         if (fc.showDialog(this, "Merge") == JFileChooser.APPROVE_OPTION) {
             for (File file: fc.getSelectedFiles()) {
+                File workFile = file;
                 String path = file.getPath();
                 if (!path.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
-                    path += FileFilters.DOCUMENT_EXTENSION;
-                    file = new File(path);
+                    workFile = new File(path + FileFilters.DOCUMENT_EXTENSION);
                 }
-                mergeWork(file);
+                mergeWork(workFile);
             }
         } else {
             throw new OperationCancelledException("Merge operation cancelled by user.");
@@ -1016,11 +1016,11 @@ public class MainWindow extends JFrame {
         GraphEditorPanel result = this.getCurrentEditor();
         if ((result == null) || (result.getWorkspaceEntry() != we)) {
             final List<GraphEditorPanel> editors = getEditors(we);
-            if (editors.size() > 0) {
+            if (editors.isEmpty()) {
+                result = this.createEditorWindow(we);
+            } else {
                 result = editors.get(0);
                 this.requestFocus(result);
-            } else {
-                result = this.createEditorWindow(we);
             }
         }
         return result;

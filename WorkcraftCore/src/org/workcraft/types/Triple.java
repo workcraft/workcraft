@@ -1,23 +1,23 @@
 package org.workcraft.types;
 
-public class Triple<T1, T2, T3> {
-    private final T1 first;
-    private final T2 second;
-    private final T3 third;
+public class Triple<R, S, T> {
+    private final R first;
+    private final S second;
+    private final T third;
 
-    public Triple(T1 first, T2 second, T3 third) {
+    public Triple(R first, S second, T third) {
         this.first = first;
         this.second = second;
         this.third = third;
     }
 
-    public T1 getFirst() {
+    public R getFirst() {
         return first;
     }
-    public T2 getSecond() {
+    public S getSecond() {
         return second;
     }
-    public T3 getThird() {
+    public T getThird() {
         return third;
     }
 

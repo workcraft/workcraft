@@ -4,7 +4,7 @@ import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 
 @IdentifierPrefix("sync")
-@VisualClass(org.workcraft.plugins.xmas.components.VisualSyncComponent.class)
+@VisualClass(VisualSyncComponent.class)
 public class SyncComponent extends XmasComponent {
 
     public String gp1 = "0";

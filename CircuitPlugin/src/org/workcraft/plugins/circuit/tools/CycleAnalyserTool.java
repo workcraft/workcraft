@@ -48,14 +48,14 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
             return panel;
         }
         panel = new JPanel(new BorderLayout());
-        panel.add(getLegendControlsPanel(editor), BorderLayout.NORTH);
+        panel.add(getLegendControlsPanel(), BorderLayout.NORTH);
         panel.add(getBreakControlsPanel(editor), BorderLayout.CENTER);
         panel.add(getScanControlsPanel(editor), BorderLayout.SOUTH);
         panel.setPreferredSize(new Dimension(0, 0));
         return panel;
     }
 
-    private JPanel getLegendControlsPanel(final GraphEditor editor) {
+    private JPanel getLegendControlsPanel() {
         ColorLegendTable colorLegendTable = new ColorLegendTable(Arrays.asList(
                 Pair.of(AnalysisDecorationSettings.getDontTouchColor(), "Don't touch zero delay"),
                 Pair.of(AnalysisDecorationSettings.getProblemColor(), "On a cycle"),

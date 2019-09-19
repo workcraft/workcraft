@@ -10,6 +10,7 @@ import org.workcraft.plugins.petri.PetriDescriptor;
 import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.converters.StgToPetriConverter;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.tasks.AbstractExtendedResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;

@@ -8,7 +8,7 @@ import org.workcraft.observation.PropertyChangedEvent;
 
 @DisplayName("Vertex")
 @IdentifierPrefix("v")
-@VisualClass(org.workcraft.plugins.graph.VisualVertex.class)
+@VisualClass(VisualVertex.class)
 public class Vertex extends MathNode {
 
     public static final String PROPERTY_SYMBOL = "Symbol";
@@ -20,7 +20,7 @@ public class Vertex extends MathNode {
 
     public Vertex(Symbol symbol) {
         super();
-        this.setSymbol(symbol);
+        this.symbol = symbol;
     }
 
     public Symbol getSymbol() {

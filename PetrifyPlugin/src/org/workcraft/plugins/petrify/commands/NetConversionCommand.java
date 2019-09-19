@@ -7,8 +7,8 @@ import org.workcraft.plugins.petrify.tasks.TransformationResultHandler;
 import org.workcraft.plugins.petrify.tasks.TransformationTask;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,8 +34,7 @@ public class NetConversionCommand extends AbstractPetrifyConversionCommand {
     public WorkspaceEntry execute(WorkspaceEntry we) {
         Collection<Mutex> mutexes = getMutexes(we);
         ArrayList<String> args = getArgs();
-        TransformationTask task = new TransformationTask(
-                we, "Net synthesis", args.toArray(new String[args.size()]), mutexes);
+        TransformationTask task = new TransformationTask(we, args, mutexes);
 
         boolean hasSignals = hasSignals(we);
         TransformationResultHandler monitor = new TransformationResultHandler(we, !hasSignals, mutexes);

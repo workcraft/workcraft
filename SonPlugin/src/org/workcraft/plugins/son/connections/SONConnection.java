@@ -13,7 +13,7 @@ import java.awt.*;
 @IdentifierPrefix("con")
 public class SONConnection extends MathConnection {
 
-    private Interval time = new Interval(0000, 9999);
+    private Interval time = new Interval(0, 9999);
     private Color timeColor = Color.BLACK;
     private Color color = CommonVisualSettings.getBorderColor();
 
@@ -40,6 +40,11 @@ public class SONConnection extends MathConnection {
     public SONConnection() {
     }
 
+    public SONConnection(MathNode first, MathNode second, Semantics semantics) {
+        super(first, second);
+        this.semantics = semantics;
+    }
+
     public Color getColor() {
         return color;
     }
@@ -49,11 +54,6 @@ public class SONConnection extends MathConnection {
             color = value;
             sendNotification(new PropertyChangedEvent(this, "color"));
         }
-    }
-
-    public SONConnection(MathNode first, MathNode second, Semantics semantics) {
-        super(first, second);
-        this.setSemantics(semantics);
     }
 
     public Semantics getSemantics() {

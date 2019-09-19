@@ -5,12 +5,14 @@ import org.workcraft.commands.NodeTransformer;
 import org.workcraft.commands.Command;
 
 public class PopupToolAction extends Action {
-    Command tool;
+
+    private final Command tool;
 
     public PopupToolAction(Command tool) {
         this.tool = tool;
     }
 
+    @Override
     public String getText() {
         String text = (tool instanceof NodeTransformer) ? ((NodeTransformer) tool).getPopupName() : tool.getDisplayName();
         return text.trim();

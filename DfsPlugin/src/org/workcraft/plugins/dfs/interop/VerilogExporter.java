@@ -5,7 +5,7 @@ import org.workcraft.plugins.dfs.serialisation.VerilogSerialiser;
 
 public class VerilogExporter extends AbstractSerialiseExporter {
 
-    VerilogSerialiser serialiser = new VerilogSerialiser();
+    private final VerilogSerialiser serialiser = new VerilogSerialiser();
 
     @Override
     public VerilogFormat getFormat() {

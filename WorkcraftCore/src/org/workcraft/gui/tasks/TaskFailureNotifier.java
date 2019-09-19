@@ -21,8 +21,8 @@ public class TaskFailureNotifier extends BasicProgressMonitor<Object> {
     }
 
     @Override
-    public void finished(final Result<? extends Object> result) {
-        super.finished(result);
+    public void isFinished(final Result<? extends Object> result) {
+        super.isFinished(result);
         if (result.getOutcome() == Outcome.FAILURE) {
             SwingUtilities.invokeLater(() -> {
                 String message = "Task '" + description + "' has failed to complete as expected.";

@@ -42,7 +42,7 @@ public class WorkspaceTree implements TreeSource<Path<String>> {
         }
     }
 
-    Workspace workspace;
+    private final Workspace workspace;
 
     public WorkspaceTree(Workspace workspace) {
         this.workspace = workspace;
@@ -53,7 +53,7 @@ public class WorkspaceTree implements TreeSource<Path<String>> {
         workspace.addListener(wrap(listener));
     }
 
-    Map<TreeListener<Path<String>>, WorkspaceListener> wrappers = new HashMap<>();
+    private final Map<TreeListener<Path<String>>, WorkspaceListener> wrappers = new HashMap<>();
 
     private WorkspaceListener wrap(TreeListener<Path<String>> listener) {
         WorkspaceListener res = wrappers.get(listener);

@@ -24,14 +24,22 @@ import java.util.ArrayList;
 public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
 
     private JLabel circuitSizeLabel;
-    private JCheckBox verboseModeCheck, customEncodings, abcCheck;
+    private JCheckBox verboseModeCheck;
+    private JCheckBox customEncodings;
+    private JCheckBox abcCheck;
     private JComboBox<String> optimiseBox;
-    private JPanel generationPanel, buttonsPanel, customPanel, standardPanel;
-    private JTextField numberOfSolutionsText, bitsText, circuitSizeText;
+    private JPanel generationPanel;
+    private JPanel buttonsPanel;
+    private JPanel customPanel;
+    private JPanel standardPanel;
+    private JTextField numberOfSolutionsText;
+    private JTextField bitsText;
+    private JTextField circuitSizeText;
     private JTable encodingTable;
-    private final int m;
+    private JRadioButton normal;
+    private JRadioButton fast;
     private int bits;
-    private JRadioButton normal, fast;
+    private final int m;
 
     public ConstrainedSearchScencoDialog(Window owner, String title, EncoderSettings settings, VisualCpog model, int mode) {
         super(owner, title, settings, model);
@@ -96,6 +104,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
         JLabel customEncLabel = new JLabel(ScencoHelper.textCustomiseLabel);
         customEncodings = new JCheckBox("", false);
         customEncLabel.addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseClicked(MouseEvent e) {
                 customEncodings.setSelected(!customEncodings.isSelected());
                 customEncodingAction();
@@ -216,6 +225,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
         abcCheck = new JCheckBox("", getSettings().isAbcFlag());
         JLabel abcLabel = new JLabel(ScencoHelper.textAbcLabel);
         abcLabel.addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseClicked(MouseEvent e) {
                 abcCheck.setSelected(!abcCheck.isSelected());
             }
@@ -225,6 +235,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
         JLabel verboseModeLabel = new JLabel(ScencoHelper.textVerboseMode);
         verboseModeCheck = new JCheckBox("", false);
         verboseModeLabel.addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseClicked(MouseEvent e) {
                 verboseModeCheck.setSelected(!verboseModeCheck.isSelected());
             }

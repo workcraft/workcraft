@@ -17,7 +17,6 @@ public class Cycle implements Comparable<Cycle> {
     public final double throughput;
     public final double minDelay;
     public final double maxDelay;
-    private final String toString;
 
     public Cycle(VisualDfs dfs, LinkedHashSet<VisualDelayComponent> components) {
         this.dfs = dfs;
@@ -27,7 +26,6 @@ public class Cycle implements Comparable<Cycle> {
         this.throughput = getThroughput();
         this.minDelay = getMinDelay();
         this.maxDelay = getMaxDelay();
-        this.toString = getStringRepresentation();
     }
 
     private int getTokenCount() {
@@ -36,7 +34,7 @@ public class Cycle implements Comparable<Cycle> {
         boolean isMarkedFirstRegister = false;
         boolean isMarkedLastRegister = false;
         boolean isFirstRegister = true;
-        for (VisualComponent c: components) {
+        for (VisualComponent c : components) {
             if (c instanceof VisualRegister || c instanceof VisualBinaryRegister) {
                 boolean hasToken = false;
                 if (c instanceof VisualRegister) {
@@ -71,13 +69,13 @@ public class Cycle implements Comparable<Cycle> {
 
     private double getTotalDelay() {
         double result = 0.0;
-        for (VisualDelayComponent component: components) {
+        for (VisualDelayComponent component : components) {
             result += getEffectiveDelay(component);
         }
         return result;
     }
 
-    public Set<VisualPushRegister> getPushPreset(VisualNode node) {
+    private Set<VisualPushRegister> getPushPreset(VisualNode node) {
         HashSet<VisualPushRegister> result = new HashSet<>();
         HashSet<VisualNode> visited = new HashSet<>();
         Queue<VisualNode> queue = new LinkedList<>();
@@ -86,7 +84,7 @@ public class Cycle implements Comparable<Cycle> {
             VisualNode cur = queue.remove();
             if (visited.contains(cur) || !components.contains(cur)) continue;
             visited.add(cur);
-            for (VisualNode pred: dfs.getPreset(cur)) {
+            for (VisualNode pred : dfs.getPreset(cur)) {
                 if (!(pred instanceof VisualComponent)) continue;
                 if (pred instanceof VisualPushRegister) {
                     result.add((VisualPushRegister) pred);
@@ -98,23 +96,10 @@ public class Cycle implements Comparable<Cycle> {
         return result;
     }
 
-    public double getEffectiveDelay(VisualDelayComponent component) {
-        HashSet<VisualControlRegister> controls = new HashSet<>();
-        for (VisualPushRegister push: getPushPreset(component)) {
-            controls.addAll(dfs.getPreset(push, VisualControlRegister.class));
-        }
-        double probability = 1.0;
-        for (VisualControlRegister control: controls) {
-            probability *= control.getReferencedControlRegister().getProbability();
-        }
-        double delay = ((MathDelayNode) component.getReferencedComponent()).getDelay();
-        return delay * probability;
-    }
-
     private double getMinDelay() {
         double result = 0.0;
         boolean first = true;
-        for (VisualDelayComponent component: components) {
+        for (VisualDelayComponent component : components) {
             double delay = getEffectiveDelay(component);
             if (first || delay < result) {
                 result = delay;
@@ -127,7 +112,7 @@ public class Cycle implements Comparable<Cycle> {
     private double getMaxDelay() {
         double result = 0.0;
         boolean first = true;
-        for (VisualDelayComponent component: components) {
+        for (VisualDelayComponent component : components) {
             double delay = getEffectiveDelay(component);
             if (first || delay > result) {
                 result = delay;
@@ -145,6 +130,19 @@ public class Cycle implements Comparable<Cycle> {
         return getTokenCount() / delay;
     }
 
+    public final double getEffectiveDelay(VisualDelayComponent component) {
+        HashSet<VisualControlRegister> controls = new HashSet<>();
+        for (VisualPushRegister push : getPushPreset(component)) {
+            controls.addAll(dfs.getPreset(push, VisualControlRegister.class));
+        }
+        double probability = 1.0;
+        for (VisualControlRegister control : controls) {
+            probability *= control.getReferencedControlRegister().getProbability();
+        }
+        double delay = ((MathDelayNode) component.getReferencedComponent()).getDelay();
+        return delay * probability;
+    }
+
     @Override
     public int compareTo(Cycle other) {
         double thisThroughput = this.getThroughput();
@@ -159,13 +157,9 @@ public class Cycle implements Comparable<Cycle> {
 
     @Override
     public String toString() {
-        return toString;
-    }
-
-    public String getStringRepresentation() {
         String result = "";
-        if (components != null && dfs != null) {
-            for (VisualDelayComponent component: components) {
+        if ((components != null) && (dfs != null)) {
+            for (VisualDelayComponent component : components) {
                 if (result.length() > 0) {
                     result += Character.toString(RIGHT_ARROW_SYMBOL);
                 }

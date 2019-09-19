@@ -4,7 +4,7 @@ import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 
 @IdentifierPrefix("snk")
-@VisualClass(org.workcraft.plugins.xmas.components.VisualSinkComponent.class)
+@VisualClass(VisualSinkComponent.class)
 public class SinkComponent extends XmasComponent {
 
 }

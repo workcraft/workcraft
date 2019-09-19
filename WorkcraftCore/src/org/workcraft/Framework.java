@@ -163,7 +163,7 @@ public final class Framework {
     }
 
     class SetArgs implements ContextAction {
-        Object[] args;
+        private Object[] args;
 
         public void setArgs(Object[] args) {
             this.args = args;
@@ -533,7 +533,7 @@ public final class Framework {
         shutdownRequested = true;
     }
 
-    public boolean shutdownRequested() {
+    public boolean isShutdownRequested() {
         return shutdownRequested;
     }
 
@@ -791,8 +791,6 @@ public final class Framework {
             byte[] bi = DataAccumulator.loadStream(is);
             Document metaDoc = FrameworkUtils.loadMetaDoc(bi);
             ModelDescriptor descriptor = FrameworkUtils.loadMetaDescriptor(metaDoc);
-            Version version = FrameworkUtils.loadMetaVersion(metaDoc);
-            Stamp stamp = FrameworkUtils.loadMetaStamp(metaDoc);
 
             // load math model
             InputStream mathData = FrameworkUtils.getMathData(bi, metaDoc);
@@ -816,6 +814,9 @@ public final class Framework {
                 FrameworkUtils.loadVisualModelState(bi, (VisualModel) visualResult.model, visualResult.references);
             }
             ModelEntry modelEntry = new ModelEntry(descriptor, visualResult.model);
+
+            Version version = FrameworkUtils.loadMetaVersion(metaDoc);
+            Stamp stamp = FrameworkUtils.loadMetaStamp(metaDoc);
             modelEntry.setVersion(version);
             modelEntry.setStamp(stamp);
             return modelEntry;
@@ -837,9 +838,6 @@ public final class Framework {
         ModelEntry me1 = loadModel(is1);
         ModelEntry me2 = loadModel(is2);
 
-        VisualModel vmodel1 = me1.getVisualModel();
-        VisualModel vmodel2 = me2.getVisualModel();
-
         String displayName1 = me1.getDescriptor().getDisplayName();
         String displayName2 = me2.getDescriptor().getDisplayName();
         if (!displayName1.equals(displayName2)) {
@@ -847,6 +845,8 @@ public final class Framework {
                     "Incompatible " + displayName1 + " and " + displayName2 + " model cannot be merged.");
         }
 
+        VisualModel vmodel1 = me1.getVisualModel();
+        VisualModel vmodel2 = me2.getVisualModel();
         Collection<VisualNode> children = NodeHelper.filterByType(vmodel2.getRoot().getChildren(), VisualNode.class);
 
         vmodel1.selectNone();

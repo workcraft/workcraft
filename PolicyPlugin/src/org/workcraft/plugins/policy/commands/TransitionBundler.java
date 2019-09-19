@@ -20,7 +20,7 @@ public class TransitionBundler {
 
     private final VisualPolicy policyNet;
     private final Petri model;
-    final Step unbundled;
+    private final Step unbundled;
 
     private final HashMap<Transition, VisualBundledTransition> t2vbt;
 
@@ -31,7 +31,7 @@ public class TransitionBundler {
         unbundled = new Step();
 
         HashMap<VisualBundledTransition, Transition> vbt2t = new HashMap<>();
-        this.t2vbt = new HashMap<Transition, VisualBundledTransition>();
+        this.t2vbt = new HashMap<>();
         for (VisualBundledTransition vbt: policyNet.getVisualBundledTransitions()) {
             Transition t = null;
             for (VisualTransition vt: converter.getRelatedTransitions(vbt)) {
@@ -48,23 +48,6 @@ public class TransitionBundler {
             }
         }
     }
-
-/*
-    private void printStep(Collection<Transition> step) {
-        boolean first = true;
-        System.out.printf("{");
-        for (Node n: step) {
-            if (first) {
-                first = false;
-            } else {
-                System.out.printf(", ");
-            }
-            System.out.print(model.getNodeReference(n));
-
-        }
-        System.out.println("}");
-    }
-*/
 
     private Marking getMarking() {
         Marking result = new Marking();
@@ -93,8 +76,6 @@ public class TransitionBundler {
                 result.add(c);
             }
         }
-//        System.out.printf("    confict(%s) = ", model.getNodeReference(t));
-//        printStep(result);
         return result;
     }
 
@@ -109,8 +90,6 @@ public class TransitionBundler {
                         newStep.addAll(enabled);
                         newStep.removeAll(conflict);
                         newStep.add(c);
-//                        System.out.print("    new step: ");
-//                        printStep(newStep);
                         result.addAll(resolveConflicts(newStep));
                     }
                     return result;
@@ -128,18 +107,7 @@ public class TransitionBundler {
                 enabled.add(t);
             }
         }
-//        System.out.print("enabled: ");
-//        printStep(enabled);
-
-        Collection<Step> result = resolveConflicts(enabled);
-
-//        System.out.println("steps: ");
-//        for (Step s: result) {
-//            System.out.print("  ");
-//            printStep(s);
-//        }
-
-        return result;
+        return resolveConflicts(enabled);
     }
 
     public void run() {
@@ -156,8 +124,8 @@ public class TransitionBundler {
         Queue<Step> queue = null;
         do {
             if (queue == null) {
-                queue = new LinkedList<Step>();
-                slice = new LinkedList<Step>();
+                queue = new LinkedList<>();
+                slice = new LinkedList<>();
             } else {
                 Step step = queue.remove();
                 setMarking(step2marking.get(step));
@@ -172,9 +140,6 @@ public class TransitionBundler {
                 for (Step n: step2marking.keySet()) {
                     if (n.containsAll(step) || step.containsAll(n)) {
                         ok = false;
-//                        System.out.println("problem b/w steps:");
-//                        System.out.print("  ");    printStep(n);
-//                        System.out.print("  "); printStep(step);
                         steps.remove(n);
                     }
                 }
@@ -186,10 +151,8 @@ public class TransitionBundler {
             }
             // If the queue is empty, proceed to the next slice
             if (queue.isEmpty()) {
-//                System.out.println("progress: ");
                 while (!slice.isEmpty()) {
                     Step step = slice.remove();
-//                    System.out.print("  ");    printStep(step);
                     unbundled.removeAll(step);
                     queue.add(step);
                 }

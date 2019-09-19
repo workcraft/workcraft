@@ -1,15 +1,15 @@
 package org.workcraft.gui.actions;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
-
-import javax.swing.JMenuItem;
 
 @SuppressWarnings("serial")
 public class ActionMenuItem extends JMenuItem implements Actor {
 
     class ActionForwarder implements ActionListener {
+        @Override
         public void actionPerformed(ActionEvent e) {
             ActionMenuItem.this.fireActionPerformed();
         }
@@ -47,7 +47,9 @@ public class ActionMenuItem extends JMenuItem implements Actor {
         listeners.remove(listener);
     }
 
+    @Override
     public void actionEnableStateChanged(boolean actionEnableState) {
         this.setEnabled(actionEnableState);
     }
+
 }

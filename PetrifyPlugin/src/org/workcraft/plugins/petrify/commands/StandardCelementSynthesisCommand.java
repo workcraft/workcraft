@@ -1,10 +1,13 @@
 package org.workcraft.plugins.petrify.commands;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class StandardCelementSynthesisCommand extends AbstractPetrifySynthesisCommand {
 
     @Override
-    public String[] getSynthesisParameter() {
-        return new String[] {"-mc"};
+    public List<String> getSynthesisParameter() {
+        return Arrays.asList("-mc");
     }
 
     @Override

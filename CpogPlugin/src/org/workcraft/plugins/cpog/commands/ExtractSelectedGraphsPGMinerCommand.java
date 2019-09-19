@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 public class ExtractSelectedGraphsPGMinerCommand extends AbstractPGMinerCommand {
 
+    @Override
     public String getDisplayName() {
         return "Extract concurrency of selected graphs";
     }
@@ -25,10 +26,9 @@ public class ExtractSelectedGraphsPGMinerCommand extends AbstractPGMinerCommand 
         try {
             VisualCpog visualCpog = WorkspaceUtils.getAs(we, VisualCpog.class);
             String allGraphs = CpogParsingTool.getExpressionFromGraph(visualCpog);
-            ArrayList<String> tempGraphs = new ArrayList<>();
-            ArrayList<String> graphs = new ArrayList<>();
-
-            if (allGraphs == "") throw new ArrayIndexOutOfBoundsException();
+            if (allGraphs.isEmpty()) {
+                throw new ArrayIndexOutOfBoundsException();
+            }
 
             int i = allGraphs.indexOf(" + ");
             while (i > -1) {
@@ -38,21 +38,21 @@ public class ExtractSelectedGraphsPGMinerCommand extends AbstractPGMinerCommand 
             allGraphs = allGraphs + "\n";
             allGraphs = allGraphs.replace(" -> ", " ");
             String[] graphList = allGraphs.split("\n");
-            allGraphs = "";
+
+            ArrayList<String> graphs = new ArrayList<>();
+            ArrayList<String> tempGraphs = new ArrayList<>();
             for (String g : graphList) {
                 tempGraphs.add(g);
             }
             for (String graph : tempGraphs) {
                 int index = graph.indexOf("= ");
                 if (index >= 0) {
-                    graph = graph.substring(index + 2);
+                    graphs.add(graph.substring(index + 2).trim());
                 } else {
                     DialogUtils.showError("Error: A graph which is not a scenario has been selected.\n"
                             + "Please remove this from the selection, or group this as a page to continue");
                     return null;
                 }
-                graph = graph.trim();
-                graphs.add(graph);
             }
 
             File inputFile = File.createTempFile("input", ".tr");

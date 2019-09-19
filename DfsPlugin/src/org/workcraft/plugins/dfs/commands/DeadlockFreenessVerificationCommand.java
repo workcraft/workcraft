@@ -19,6 +19,7 @@ public class DeadlockFreenessVerificationCommand extends AbstractVerificationCom
         return 1;
     }
 
+    @Override
     public String getDisplayName() {
         return "Deadlock [MPSat]";
     }

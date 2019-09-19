@@ -18,10 +18,9 @@ import org.workcraft.plugins.xmas.gui.SolutionsDialog2;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.LogUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
-import javax.swing.*;
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
@@ -44,8 +43,8 @@ public class XmasVerificationTool extends AbstractGraphEditorTool implements Com
     }
 
     private static class Qslist {
-        String name;
-        int chk;
+        public final String name;
+        public final int chk;
 
         Qslist(String s1, int n) {
             name = s1;
@@ -53,17 +52,10 @@ public class XmasVerificationTool extends AbstractGraphEditorTool implements Com
         }
     }
 
-    int cntSyncNodes = 0;
-    JFrame mainFrame = null;
-    static String level = "";
-    static String display = "";
-    static String highlight = "";
-    static String soln = "";
-    static List<Qslist> qslist = new ArrayList<>();
-
-    public void dispose() {
-        mainFrame.setVisible(false);
-    }
+    private static String level = "";
+    private static String display = "";
+    private static String highlight = "";
+    private static final List<Qslist> qslist = new ArrayList<>();
 
     private static List<String> processArg(String file) {
         Scanner sc = null;
@@ -89,10 +81,10 @@ public class XmasVerificationTool extends AbstractGraphEditorTool implements Com
                 larg = "-v";
                 str = nxt.next();
                 level = str;
-                if (str.equals("normal")) {
+                if ("normal".equals(str)) {
                     //System.out.println("Read v1");
                     larg = "-v1";
-                } else if (str.equals("advanced")) {
+                } else if ("advanced".equals(str)) {
                     //System.out.println("Read v2");
                     larg = "-v2";
                 }
@@ -110,7 +102,6 @@ public class XmasVerificationTool extends AbstractGraphEditorTool implements Com
                 nxt = new Scanner(line.next());
                 str = nxt.next();
                 //System.out.println("solnnnnnnnnnnnnnnnnn=" + str);
-                soln = str;
                 sarg = "-s" + str;
             }
         }
@@ -290,7 +281,7 @@ public class XmasVerificationTool extends AbstractGraphEditorTool implements Com
                             String rstr;
                             rstr = xnet.getName(qc);
                             rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
-                            if (rstr.equals(str) && typ == 1) {
+                            if (rstr.equals(str) && (typ == 1)) {
                                 vqc.setForegroundColor(Color.red);
                             }
                         } else if (node instanceof VisualSyncComponent) {
@@ -299,7 +290,7 @@ public class XmasVerificationTool extends AbstractGraphEditorTool implements Com
                             String rstr;
                             rstr = xnet.getName(sc);
                             rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
-                            if (rstr.equals(str) && typ == 1) {
+                            if (rstr.equals(str) && (typ == 1)) {
                                 vsc.setForegroundColor(Color.red);
                             }
                         }
@@ -368,7 +359,8 @@ public class XmasVerificationTool extends AbstractGraphEditorTool implements Com
             String[] cmdArray = vxmCommand.toArray(new String[vxmCommand.size()]);
             Process vxmProcess = Runtime.getRuntime().exec(cmdArray, null, XmasSettings.getTempVxmDirectory());
 
-            String s, str = "";
+            String s;
+            String str = "";
             InputStreamReader inputStreamReader = new InputStreamReader(vxmProcess.getInputStream());
             BufferedReader stdInput = new BufferedReader(inputStreamReader);
             int n = 0;
@@ -380,37 +372,37 @@ public class XmasVerificationTool extends AbstractGraphEditorTool implements Com
                 n++;
                 System.out.println(s);
             }
-            if (level.equals("advanced")) {
+            if ("advanced".equals(level)) {
                 System.out.println("LEVEL IS ADVANCED ");
                 File qslFile = XmasSettings.getTempVxmQslFile();
                 processQsl(qslFile.getAbsolutePath());
 
                 File equFile = XmasSettings.getTempVxmEquFile();
                 str = processEq(equFile.getAbsolutePath());
-            } else if (level.equals("normal") && test == 2) {
+            } else if ("normal".equals(level) && (test == 2)) {
                 System.out.println("LEVEL IS NORMAL ");
                 File locFile = XmasSettings.getTempVxmLocFile();
                 str = processLoc(locFile.getAbsolutePath());
             }
             if (test > 0) {
-                if (display.equals("popup")) {
-                    if (!level.equals("advanced")) {
-                        new SolutionsDialog1(test, str);
-                    } else {
+                if ("popup".equals(display)) {
+                    if ("advanced".equals(level)) {
                         new SolutionsDialog2(test, str);
+                    } else {
+                        new SolutionsDialog1(test, str);
                     }
                 }
                 if (test == 2) {
-                    if (highlight.equals("local")) {
+                    if ("local".equals(highlight)) {
                         localHighlight(str, xnet, vnet);
-                    } else if (highlight.equals("rel")) {
+                    } else if ("rel".equals(highlight)) {
                         relHighlight(str, xnet, vnet);
                         //System.out.println("str = " + str);
                         activeHighlight(xnet, vnet);
                     }
                 }
             } else if (test == 0) {
-                if (display.equals("popup")) {
+                if ("popup".equals(display)) {
                     DialogUtils.showInfo("The system is deadlock-free.");
                 }
             }

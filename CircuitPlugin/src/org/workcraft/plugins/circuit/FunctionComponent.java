@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 @IdentifierPrefix("g")
-@VisualClass(org.workcraft.plugins.circuit.VisualFunctionComponent.class)
+@VisualClass(VisualFunctionComponent.class)
 public class FunctionComponent extends CircuitComponent {
     public static final String PROPERTY_IS_ZERO_DELAY = "Zero delay";
 
@@ -38,9 +38,9 @@ public class FunctionComponent extends CircuitComponent {
 
         private void removeContactfromFunctions(final Contact contact) {
             for (FunctionContact fc: new ArrayList<>(getFunctionContacts())) {
-                BooleanFormula setFunction = BooleanUtils.replaceClever(fc.getSetFunction(), contact, Zero.instance());
+                BooleanFormula setFunction = BooleanUtils.replaceClever(fc.getSetFunction(), contact, Zero.getInstance());
                 fc.setSetFunction(setFunction);
-                BooleanFormula resetFunction = BooleanUtils.replaceClever(fc.getResetFunction(), contact, Zero.instance());
+                BooleanFormula resetFunction = BooleanUtils.replaceClever(fc.getResetFunction(), contact, Zero.getInstance());
                 fc.setResetFunction(resetFunction);
             }
         }
@@ -103,9 +103,9 @@ public class FunctionComponent extends CircuitComponent {
         if ((inputContact != null) && (outputContact != null)) {
             BooleanFormula setFunction = outputContact.getSetFunction();
             if ((setFunction != null) && (outputContact.getResetFunction() == null)) {
-                BooleanFormula zeroReplace = BooleanUtils.replaceClever(setFunction, inputContact, Zero.instance());
-                BooleanFormula oneReplace = BooleanUtils.replaceClever(setFunction, inputContact, One.instance());
-                result = (zeroReplace == Zero.instance()) && (oneReplace == One.instance());
+                BooleanFormula zeroReplace = BooleanUtils.replaceClever(setFunction, inputContact, Zero.getInstance());
+                BooleanFormula oneReplace = BooleanUtils.replaceClever(setFunction, inputContact, One.getInstance());
+                result = (zeroReplace == Zero.getInstance()) && (oneReplace == One.getInstance());
             }
         }
         return result;
@@ -123,9 +123,9 @@ public class FunctionComponent extends CircuitComponent {
         if ((inputContact != null) && (outputContact != null)) {
             BooleanFormula setFunction = outputContact.getSetFunction();
             if ((setFunction != null) && (outputContact.getResetFunction() == null)) {
-                BooleanFormula zeroReplace = BooleanUtils.replaceClever(setFunction, inputContact, Zero.instance());
-                BooleanFormula oneReplace = BooleanUtils.replaceClever(setFunction, inputContact, One.instance());
-                result = (zeroReplace == One.instance()) && (oneReplace == Zero.instance());
+                BooleanFormula zeroReplace = BooleanUtils.replaceClever(setFunction, inputContact, Zero.getInstance());
+                BooleanFormula oneReplace = BooleanUtils.replaceClever(setFunction, inputContact, One.getInstance());
+                result = (zeroReplace == One.getInstance()) && (oneReplace == Zero.getInstance());
             }
         }
         return result;

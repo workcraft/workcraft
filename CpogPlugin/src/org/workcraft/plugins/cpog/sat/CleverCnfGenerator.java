@@ -13,24 +13,26 @@ import static org.workcraft.plugins.cpog.encoding.CnfOperations.*;
 
 public class CleverCnfGenerator implements CnfGenerator<BooleanFormula>, BooleanVisitor<Literal> {
 
-    Cnf result = new Cnf();
+    private final Cnf result = new Cnf();
+    private final Map<BooleanFormula, Literal> cache = new HashMap<>();
 
-    private static final class Void {
-        private Void() { }
+    public enum Void {
+    }
+
+    interface BinaryGateImplementer {
+        void implement(Literal res, Literal x, Literal y);
     }
 
     static class ConstantExpectingCnfGenerator implements BooleanVisitor<Void> {
         private static boolean cleverOptimiseAnd = true;
-
         private final BooleanVisitor<Literal> dumbGenerator;
         private final Cnf result;
+        private boolean currentResult = true;
 
         ConstantExpectingCnfGenerator(Cnf result, BooleanVisitor<Literal> dumbGenerator) {
             this.result = result;
             this.dumbGenerator = dumbGenerator;
         }
-
-        boolean currentResult = true;
 
         @Override
         public Void visit(And and) {
@@ -63,11 +65,14 @@ public class CleverCnfGenerator implements CnfGenerator<BooleanFormula>, Boolean
             return null;
         }
 
-        static class BiClauseGenerator implements BooleanVisitor<Literal[][]> {
-            BooleanVisitor<Literal> dumbGenerator;
-            BiClauseGenerator(BooleanVisitor<Literal> dumbGenerator) {
+        static final class BiClauseGenerator implements BooleanVisitor<Literal[][]> {
+
+            private final BooleanVisitor<Literal> dumbGenerator;
+
+            private BiClauseGenerator(BooleanVisitor<Literal> dumbGenerator) {
                 this.dumbGenerator = dumbGenerator;
             }
+
             @Override
             public Literal[][] visit(And node) {
                 Literal[][] result = new Literal[1][];
@@ -76,18 +81,22 @@ public class CleverCnfGenerator implements CnfGenerator<BooleanFormula>, Boolean
                 result[0][1] = node.getY().accept(dumbGenerator);
                 return result;
             }
+
             @Override
             public Literal[][] visit(Iff node) {
                 throw new RuntimeException();
             }
+
             @Override
             public Literal[][] visit(Zero node) {
                 throw new RuntimeException();
             }
+
             @Override
             public Literal[][] visit(One node) {
                 throw new RuntimeException();
             }
+
             @Override
             public Literal[][] visit(Not node) {
                 Literal[][] preres = node.getX().accept(this);
@@ -101,10 +110,12 @@ public class CleverCnfGenerator implements CnfGenerator<BooleanFormula>, Boolean
                 }
                 return res;
             }
+
             @Override
             public Literal[][] visit(Imply node) {
                 throw new RuntimeException();
             }
+
             @Override
             public Literal[][] visit(BooleanVariable variable) {
                 Literal[][]result = new Literal[1][];
@@ -112,17 +123,19 @@ public class CleverCnfGenerator implements CnfGenerator<BooleanFormula>, Boolean
                 result[0][0] = literal(variable);
                 return result;
             }
+
             @Override
             public Literal[][] visit(Or node) {
                 throw new RuntimeException();
             }
+
             @Override
             public Literal[][] visit(Xor node) {
                 throw new RuntimeException();
             }
         }
 
-        Literal[][] getBiClause(BooleanFormula formula) {
+        private Literal[][] getBiClause(BooleanFormula formula) {
             return formula.accept(new BiClauseGenerator(dumbGenerator));
         }
 
@@ -158,18 +171,22 @@ public class CleverCnfGenerator implements CnfGenerator<BooleanFormula>, Boolean
             }
             return null;
         }
+
         @Override
         public Void visit(Zero node) {
             throw new RuntimeException("not implemented");
         }
+
         @Override
         public Void visit(One node) {
             throw new RuntimeException("not implemented");
         }
+
         @Override
         public Void visit(Imply node) {
             throw new RuntimeException("not implemented");
         }
+
         @Override
         public Void visit(Or node) {
             throw new RuntimeException("not implemented");
@@ -192,16 +209,10 @@ public class CleverCnfGenerator implements CnfGenerator<BooleanFormula>, Boolean
         return result;
     }
 
-    Map<BooleanFormula, Literal> cache = new HashMap<>();
-
-    Literal newVar(BooleanFormula node) {
+    private Literal newVar(BooleanFormula node) {
         Literal res = new Literal("");
         cache.put(node, res);
         return res;
-    }
-
-    interface BinaryGateImplementer {
-        void implement(Literal res, Literal x, Literal y);
     }
 
     public Literal visit(BinaryBooleanFormula node, BinaryGateImplementer impl) {

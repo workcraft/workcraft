@@ -30,27 +30,35 @@ public class DefaultAnchorGenerator implements GraphEditorMouseListener {
         }
     }
 
+    @Override
     public void mouseEntered(GraphEditorMouseEvent e) {
     }
 
+    @Override
     public void mouseExited(GraphEditorMouseEvent e) {
     }
 
+    @Override
     public void mouseMoved(GraphEditorMouseEvent e) {
     }
 
+    @Override
     public void mousePressed(GraphEditorMouseEvent e) {
     }
 
+    @Override
     public void mouseReleased(GraphEditorMouseEvent e) {
     }
 
+    @Override
     public void startDrag(GraphEditorMouseEvent e) {
     }
 
+    @Override
     public void finishDrag(GraphEditorMouseEvent e) {
     }
 
+    @Override
     public boolean isDragging() {
         return false;
     }

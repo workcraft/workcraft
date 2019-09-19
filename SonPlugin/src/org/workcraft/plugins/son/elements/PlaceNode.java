@@ -14,9 +14,9 @@ public class PlaceNode extends MathNode implements Time {
     private String label = "";
     private int errors = 0;
 
-    private Interval startTime = new Interval(0000, 9999);
-    private Interval endTime = new Interval(0000, 9999);
-    private Interval duration = new Interval(0000, 9999);
+    private Interval startTime = new Interval(0, 9999);
+    private Interval endTime = new Interval(0, 9999);
+    private Interval duration = new Interval(0, 9999);
 
     protected Color durationColor = Color.BLACK;
 
@@ -89,6 +89,7 @@ public class PlaceNode extends MathNode implements Time {
         }
     }
 
+    @Override
     public void setStartTime(Interval value) {
         if (startTime != value) {
             startTime = value;
@@ -96,10 +97,12 @@ public class PlaceNode extends MathNode implements Time {
         }
     }
 
+    @Override
     public Interval getStartTime() {
         return startTime;
     }
 
+    @Override
     public void setEndTime(Interval value) {
         if (endTime != value) {
             endTime = value;
@@ -107,10 +110,12 @@ public class PlaceNode extends MathNode implements Time {
         }
     }
 
+    @Override
     public Interval getEndTime() {
         return endTime;
     }
 
+    @Override
     public void setDuration(Interval value) {
         if (duration != value) {
             duration = value;
@@ -118,6 +123,7 @@ public class PlaceNode extends MathNode implements Time {
         }
     }
 
+    @Override
     public Interval getDuration() {
         return duration;
     }
@@ -129,4 +135,5 @@ public class PlaceNode extends MathNode implements Time {
     public void setDurationColor(Color value) {
         this.durationColor = value;
     }
+
 }

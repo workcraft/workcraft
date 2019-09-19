@@ -2,9 +2,9 @@ package org.workcraft.plugins.cpog.encoding;
 
 import org.workcraft.formula.BooleanFormula;
 
-public interface NumberProvider<Formula> {
-    Formula generate(String varPrefix, int range);
-    BooleanFormula select(BooleanFormula[] vars, Formula number);
+public interface NumberProvider<T> {
+    T generate(String varPrefix, int range);
+    BooleanFormula select(BooleanFormula[] vars, T number);
     BooleanFormula getConstraints();
-    BooleanFormula less(Formula a, Formula b);
+    BooleanFormula less(T a, T b);
 }

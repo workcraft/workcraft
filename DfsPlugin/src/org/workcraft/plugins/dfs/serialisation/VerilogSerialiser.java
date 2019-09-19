@@ -13,10 +13,7 @@ import org.workcraft.utils.LogUtils;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class VerilogSerialiser implements ModelSerialiser {
 
@@ -142,7 +139,7 @@ public class VerilogSerialiser implements ModelSerialiser {
         Set<MathNode> postset = dfs.getPostset(node);
         String ref = dfs.getNodeReference(node);
         String instanceName = PREFIX_INST + ref;
-        String className = node.getClass().getSimpleName().toUpperCase();
+        String className = node.getClass().getSimpleName().toUpperCase(Locale.ROOT);
         int inCount = preset.isEmpty() ? 1 : preset.size();
         int outCount = postset.isEmpty() ? 1 : postset.size();
         String moduleName = className + SEPARATOR + inCount + SEPARATOR + outCount;

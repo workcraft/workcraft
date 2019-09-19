@@ -1,15 +1,6 @@
 package org.workcraft.plugins.cpog.untangling;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-
-import org.jbpt.petri.Flow;
-import org.jbpt.petri.Marking;
-import org.jbpt.petri.NetSystem;
-import org.jbpt.petri.Node;
-import org.jbpt.petri.Place;
-import org.jbpt.petri.Transition;
+import org.jbpt.petri.*;
 import org.jbpt.petri.unfolding.BPNode;
 import org.jbpt.petri.unfolding.Condition;
 import org.jbpt.petri.unfolding.Event;
@@ -19,6 +10,10 @@ import org.jbpt.petri.untangling.SignificanceCheckType;
 import org.jbpt.petri.untangling.UntanglingSetup;
 import org.workcraft.plugins.cpog.commands.PetriToCpogParameters;
 import org.workcraft.utils.LogUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 public class Untanglings {
 
@@ -31,10 +26,10 @@ public class Untanglings {
 
     public Untanglings(PetriToCpogParameters settings) {
         this.sys = new NetSystem();
-        this.p = new LinkedList<Place>();
-        this.t = new LinkedList<Transition>();
+        this.p = new LinkedList<>();
+        this.t = new LinkedList<>();
         this.setup = new UntanglingSetup();
-        this.partialOrders = new ArrayList<PartialOrder>();
+        this.partialOrders = new ArrayList<>();
 
         // settings
         this.setup.ISOMORPHISM_REDUCTION = settings.isIsomorphism();

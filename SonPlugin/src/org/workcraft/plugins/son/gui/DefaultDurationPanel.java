@@ -1,25 +1,22 @@
 package org.workcraft.plugins.son.gui;
 
-import java.awt.Dimension;
-import java.awt.Font;
+import org.workcraft.plugins.son.util.Interval;
+
+import javax.swing.*;
+import javax.swing.text.AbstractDocument;
+import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.text.AbstractDocument;
-
-import org.workcraft.plugins.son.util.Interval;
 
 public class DefaultDurationPanel extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
     private JLabel durationLabel;
-    private JTextField min, max;
+    private JTextField min;
+    private JTextField max;
     private boolean validDuration = true;
 
     private static final int labelheight = 20;
@@ -28,11 +25,10 @@ public class DefaultDurationPanel extends JPanel {
     protected Font font = new Font("Arial", Font.PLAIN, 12);
 
     public DefaultDurationPanel() {
-        this(new Interval(0000, 0000));
+        this(new Interval(0, 0));
     }
 
     public DefaultDurationPanel(Interval duration) {
-
         durationLabel = new JLabel();
         durationLabel.setText("Default duration:");
         durationLabel.setFont(font);
@@ -180,4 +176,5 @@ public class DefaultDurationPanel extends JPanel {
         min.setEnabled(b);
         max.setEnabled(b);
     }
+
 }

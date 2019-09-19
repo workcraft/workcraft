@@ -12,11 +12,11 @@ public abstract class Action/* extends AbstractAction */ {
     public abstract String getText();
     public abstract void run();
 
-    void addActor(Actor actor) {
+    public void addActor(Actor actor) {
         actors.add(actor);
     }
 
-    void removeActor(Actor actor) {
+    public void removeActor(Actor actor) {
         actors.remove(actor);
     }
 

@@ -1,18 +1,16 @@
 package org.workcraft.gui;
 
-import java.awt.Color;
-import java.awt.Image;
+import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.utils.GuiUtils;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.InvocationTargetException;
 
-import javax.swing.ImageIcon;
-import javax.swing.SwingUtilities;
-
-import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.utils.GuiUtils;
-
 public class MainWindowIconManager {
+
     private static final class IconUpdater extends WindowAdapter {
         private final MainWindow window;
         private final Image inactiveIcon;
@@ -35,7 +33,7 @@ public class MainWindowIconManager {
         }
     }
 
-    static void apply(final MainWindow window) {
+    public static void apply(final MainWindow window) {
         int size = SizeHelper.getIconSize();
         Thread thread = new Thread(() -> {
             ImageIcon activeSvg = GuiUtils.createIconFromSVG("images/icon.svg", size, size, Color.WHITE);

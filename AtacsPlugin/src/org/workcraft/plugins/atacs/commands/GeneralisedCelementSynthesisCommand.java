@@ -1,10 +1,13 @@
 package org.workcraft.plugins.atacs.commands;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class GeneralisedCelementSynthesisCommand extends AbstractSynthesisCommand {
 
     @Override
-    public String[] getSynthesisParameter() {
-        return new String[] {"-og"};
+    public List<String> getSynthesisParameter() {
+        return Arrays.asList("-og");
     }
 
     @Override

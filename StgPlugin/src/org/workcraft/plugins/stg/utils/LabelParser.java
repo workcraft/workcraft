@@ -1,5 +1,6 @@
-package org.workcraft.plugins.stg;
+package org.workcraft.plugins.stg.utils;
 
+import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.types.Pair;
 import org.workcraft.types.Triple;
 
@@ -36,9 +37,9 @@ public class LabelParser {
             if (directionGroup == null) {
                 direction = SignalTransition.Direction.TOGGLE;
             } else {
-                if (directionGroup.equals("+")) {
+                if ("+".equals(directionGroup)) {
                     direction = SignalTransition.Direction.PLUS;
-                } else if (directionGroup.equals("-")) {
+                } else if ("-".equals(directionGroup)) {
                     direction = SignalTransition.Direction.MINUS;
                 } else {
                     direction = SignalTransition.Direction.TOGGLE;

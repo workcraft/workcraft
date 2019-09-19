@@ -32,7 +32,6 @@ public class VerificationCommandTests {
     public void bufferVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer.circuit.work");
         testVerificationCommands(workName,
-                true,  // combined
                 true,  // conformation
                 true,  // deadlock freeness
                 true,  // output persistency
@@ -44,7 +43,6 @@ public class VerificationCommandTests {
     public void withoutEnvironmentVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer-without_environment.circuit.work");
         testVerificationCommands(workName,
-                false, // combined
                 null,  // conformation
                 true,  // deadlock freeness
                 false, // output persistency
@@ -56,7 +54,6 @@ public class VerificationCommandTests {
     public void celementVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "celement.circuit.work");
         testVerificationCommands(workName,
-                true,  // combined
                 true,  // conformation
                 true,  // deadlock freeness
                 true,  // output persistency
@@ -68,7 +65,6 @@ public class VerificationCommandTests {
     public void mappedCelementDecomposedVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "celement-decomposed-tm.circuit.work");
         testVerificationCommands(workName,
-                true,  // combined
                 true,  // conformation
                 true,  // deadlock freeness
                 true,  // output persistency
@@ -80,7 +76,6 @@ public class VerificationCommandTests {
     public void mappedVmeVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
         testVerificationCommands(workName,
-                true,  // combined
                 true,  // conformation
                 true,  // deadlock freeness
                 true,  // output persistency
@@ -92,7 +87,6 @@ public class VerificationCommandTests {
     public void mappedAbcdBadVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "abcd-bad-tm.circuit.work");
         testVerificationCommands(workName,
-                false,  // combined
                 false,  // conformation
                 true,  // deadlock freeness
                 false,  // output persistency
@@ -100,7 +94,7 @@ public class VerificationCommandTests {
         );
     }
 
-    private void testVerificationCommands(String workName, Boolean combined,
+    private void testVerificationCommands(String workName,
             Boolean conformation, Boolean deadlockFreeness, Boolean outputPersistency,
             Boolean strictImplementation) throws DeserialisationException {
 

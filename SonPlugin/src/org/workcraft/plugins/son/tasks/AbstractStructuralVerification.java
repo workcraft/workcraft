@@ -24,6 +24,7 @@ abstract class AbstractStructuralVerification implements StructuralVerification 
         relationAlg = new RelationAlgorithm(net);
     }
 
+    @Override
     public abstract void task(Collection<ONGroup> groups);
 
     public Collection<String> getRelationErrorsSetRefs(Collection<Node> set) {

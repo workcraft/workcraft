@@ -12,17 +12,17 @@ import java.util.function.Function;
 public class ForceInitSequentialPinsTagCommand extends AbstractTagCommand {
 
     @Override
-    Function<Circuit, Collection<Contact>> getFunction() {
+    public Function<Circuit, Collection<Contact>> getFunction() {
         return circuit -> ResetUtils.tagForceInitSequentialPins(circuit);
     }
 
     @Override
-    String getMessage() {
+    public String getMessage() {
         return "Force init sequential pin";
     }
 
     @Override
-    Class<? extends GraphEditorTool> getToolClass() {
+    public Class<? extends GraphEditorTool> getToolClass() {
         return InitialisationAnalyserTool.class;
     }
 

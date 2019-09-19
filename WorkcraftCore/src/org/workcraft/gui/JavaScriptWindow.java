@@ -1,22 +1,15 @@
 package org.workcraft.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.InputMap;
-import javax.swing.JPanel;
-import javax.swing.JTextPane;
-import javax.swing.KeyStroke;
-
 import org.mozilla.javascript.Context;
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.utils.DesktopApi;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 @SuppressWarnings("serial")
 public class JavaScriptWindow extends JPanel {
@@ -38,7 +31,7 @@ public class JavaScriptWindow extends JPanel {
                     Context.enter();
                     String out = Context.toString(result);
                     Context.exit();
-                    if (!out.equals("undefined")) {
+                    if (!"undefined".equals(out)) {
                         System.out.println(out);
                     }
                     resetScript();

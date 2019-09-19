@@ -22,6 +22,7 @@ import java.awt.geom.Point2D;
 import java.util.*;
 
 public class DfsToStgConverter extends AbstractToStgConverter {
+
     public static final String nameC       = "C_";
     public static final String nameFwC     = "fwC_";
     public static final String nameBwC     = "bwC_";
@@ -50,6 +51,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
     private Map<VisualControlRegister, BinaryRegisterStg> controlRegisterMap;
     private Map<VisualPushRegister, BinaryRegisterStg> pushRegisterMap;
     private Map<VisualPopRegister, BinaryRegisterStg> popRegisterMap;
+    private Color[] tokenColors;
 
     public DfsToStgConverter(VisualDfs dfs) {
         super(dfs);
@@ -133,8 +135,6 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         }
     }
 
-    private Color[] tokenColors;
-
     private ColorGenerator createColorGenerator(boolean required) {
         ColorGenerator result = null;
         if (required) {
@@ -190,7 +190,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         preset.addAll(getDfsModel().getPreset(l, VisualControlRegister.class));
         preset.addAll(getDfsModel().getPreset(l, VisualPushRegister.class));
         preset.addAll(getDfsModel().getPreset(l, VisualPopRegister.class));
-        if (preset.size() == 0) {
+        if (preset.isEmpty()) {
             preset.add(l);
         }
         Map<Node, VisualSignalTransition> cRs = new HashMap<>();
@@ -425,7 +425,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         Set<Node> preset = new HashSet<>();
         preset.addAll(getDfsModel().getPreset(l, VisualCounterflowLogic.class));
         preset.addAll(getDfsModel().getPreset(l, VisualCounterflowRegister.class));
-        if (preset.size() == 0) {
+        if (preset.isEmpty()) {
             preset.add(l);
         }
         Map<Node, VisualSignalTransition> fwCRs = new HashMap<>();
@@ -481,7 +481,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         Set<Node> postset = new HashSet<>();
         postset.addAll(getDfsModel().getPostset(l, VisualCounterflowLogic.class));
         postset.addAll(getDfsModel().getPostset(l, VisualCounterflowRegister.class));
-        if (postset.size() == 0) {
+        if (postset.isEmpty()) {
             postset.add(l);
         }
         Map<Node, VisualSignalTransition> bwCRs = new HashMap<>();
@@ -787,7 +787,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
 
         Set<Node> preset = new HashSet<>();
         preset.addAll(getDfsModel().getRPreset(r, VisualControlRegister.class));
-        if (preset.size() == 0) {
+        if (preset.isEmpty()) {
             preset.add(r);
         }
 

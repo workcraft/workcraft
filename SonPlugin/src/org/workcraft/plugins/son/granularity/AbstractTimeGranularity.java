@@ -5,6 +5,7 @@ import org.workcraft.plugins.son.util.Interval;
 
 public abstract class AbstractTimeGranularity implements TimeGranularity {
 
+    @Override
     public abstract Integer plusTD(int time, int duration) throws TimeOutOfBoundsException;
 
     @Override
@@ -21,6 +22,7 @@ public abstract class AbstractTimeGranularity implements TimeGranularity {
         return result;
     }
 
+    @Override
     public abstract Integer subtractTD(Integer time, Integer duration) throws TimeOutOfBoundsException;
 
     @Override
@@ -37,6 +39,7 @@ public abstract class AbstractTimeGranularity implements TimeGranularity {
         return result;
     }
 
+    @Override
     public abstract Integer subtractTT(Integer start, Integer end) throws TimeOutOfBoundsException;
 
     @Override
@@ -52,4 +55,5 @@ public abstract class AbstractTimeGranularity implements TimeGranularity {
 
         return result;
     }
+
 }

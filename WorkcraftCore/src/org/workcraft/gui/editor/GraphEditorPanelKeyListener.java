@@ -16,6 +16,7 @@ class GraphEditorPanelKeyListener implements KeyListener {
         this.forwardListener = forwardListener;
     }
 
+    @Override
     public void keyPressed(KeyEvent e) {
         if (DesktopApi.isMenuKeyDown(e)) {
             switch (e.getKeyCode()) {
@@ -56,14 +57,17 @@ class GraphEditorPanelKeyListener implements KeyListener {
         forwardListener.keyPressed(geke);
     }
 
+    @Override
     public void keyReleased(KeyEvent e) {
         GraphEditorKeyEvent geke = new GraphEditorKeyEvent(editor, e);
         forwardListener.keyReleased(geke);
 
     }
 
+    @Override
     public void keyTyped(KeyEvent e) {
         GraphEditorKeyEvent geke = new GraphEditorKeyEvent(editor, e);
         forwardListener.keyTyped(geke);
     }
+
 }

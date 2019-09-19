@@ -1,28 +1,26 @@
 package org.workcraft.dom.visual;
 
-import static org.junit.Assert.assertSame;
+import org.junit.Assert;
+import org.junit.Test;
+import org.workcraft.dom.Node;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.junit.Test;
-import org.workcraft.dom.Node;
-
 public class HitmanTests {
 
     class DummyNode implements Node {
-        Collection<Node> children;
+        private final Collection<Node> children;
 
         DummyNode() {
-            children = Collections.emptyList();
+            this(Collections.emptyList());
         }
 
         DummyNode(Node[] children) {
-            this.children = new ArrayList<Node>(Arrays.asList(children));
+            this(Arrays.asList(children));
         }
 
         DummyNode(Collection<Node> children) {
@@ -72,7 +70,7 @@ public class HitmanTests {
                         new DummyNode(),
                 }
         );
-        assertSame(toHit, HitMan.hitDeepest(new Point2D.Double(0.5, 0.5), node, HitableNode.class));
+        Assert.assertSame(toHit, HitMan.hitDeepest(new Point2D.Double(0.5, 0.5), node, HitableNode.class));
     }
 
 }

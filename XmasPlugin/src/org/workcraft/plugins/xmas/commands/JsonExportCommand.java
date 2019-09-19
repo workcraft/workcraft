@@ -37,10 +37,12 @@ import org.workcraft.utils.WorkspaceUtils;
 
 public class JsonExportCommand implements Command {
 
+    @Override
     public String getDisplayName() {
         return "Export to JSON file";
     }
 
+    @Override
     public String getSection() {
         return "Export";
     }

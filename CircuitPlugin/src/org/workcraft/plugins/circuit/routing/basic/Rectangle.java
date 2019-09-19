@@ -90,13 +90,10 @@ public final class Rectangle {
     }
 
     public Rectangle merge(Rectangle other) {
-
-        double x1, x2, y1, y2;
-        x1 = Math.min(getX(), other.getX());
-        x2 = Math.max(getX() + getWidth(), other.getX() + other.getWidth());
-        y1 = Math.min(getY(), other.getY());
-        y2 = Math.max(getY() + getHeight(), other.getY() + other.getHeight());
-
+        double x1 = Math.min(getX(), other.getX());
+        double x2 = Math.max(getX() + getWidth(), other.getX() + other.getWidth());
+        double y1 = Math.min(getY(), other.getY());
+        double y2 = Math.max(getY() + getHeight(), other.getY() + other.getHeight());
         return new Rectangle(x1, y1, x2 - x1, y2 - y1);
     }
 

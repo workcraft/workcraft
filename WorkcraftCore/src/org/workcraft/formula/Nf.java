@@ -41,6 +41,7 @@ public abstract class Nf<C> implements BooleanFormula {
         }
     }
 
+    @Override
     public abstract <T> T accept(BooleanVisitor<T> visitor);
 
 }

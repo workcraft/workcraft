@@ -1,7 +1,7 @@
 package org.workcraft.plugins.circuit.commands;
 
-import org.workcraft.commands.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
+import org.workcraft.commands.NodeTransformer;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.formula.BooleanFormula;
@@ -10,9 +10,9 @@ import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -84,14 +84,15 @@ public class PropagateInversionTransformationCommand extends AbstractTransformat
         String gateStr = CircuitUtils.gateToString(circuit, gate);
 
         BooleanFormula setFunction = outputContact.getSetFunction();
-        BooleanFormula resetFunction = outputContact.getResetFunction();
         if (setFunction == null) {
             LogUtils.logWarning("Gate " + gateStr + " cannot be transformed as it does not have set functions defined");
             return;
         }
-
         BooleanFormula newSetFunction = BooleanUtils.propagateInversion(setFunction);
+
+        BooleanFormula resetFunction = outputContact.getResetFunction();
         BooleanFormula newResetFunction = BooleanUtils.propagateInversion(resetFunction);
+
         if (!BooleanUtils.compareFunctions(setFunction, newSetFunction)
                 || !BooleanUtils.compareFunctions(resetFunction, newResetFunction)) {
             outputContact.setSetFunction(newSetFunction);
@@ -110,50 +111,50 @@ public class PropagateInversionTransformationCommand extends AbstractTransformat
                 renameContactBubbleHeuristic(circuit, contact, bubbleContacts);
             }
             renameContactsOrderHeuristic(circuit, gate,
-                    new String[] {"A", "BN"},
-                    new String[] {"B", "AN"});
+                    Arrays.asList("A", "BN"),
+                    Arrays.asList("B", "AN"));
             renameContactsOrderHeuristic(circuit, gate,
-                    new String[] {"A", "B", "CN"},
-                    new String[] {"C", "B", "AN"});
+                    Arrays.asList("A", "B", "CN"),
+                    Arrays.asList("C", "B", "AN"));
             renameContactsOrderHeuristic(circuit, gate,
-                    new String[] {"A", "BN", "CN"},
-                    new String[] {"C", "BN", "AN"});
+                    Arrays.asList("A", "BN", "CN"),
+                    Arrays.asList("C", "BN", "AN"));
             renameContactsOrderHeuristic(circuit, gate,
-                    new String[] {"A", "B", "C", "DN"},
-                    new String[] {"D", "B", "C", "AN"});
+                    Arrays.asList("A", "B", "C", "DN"),
+                    Arrays.asList("D", "B", "C", "AN"));
             renameContactsOrderHeuristic(circuit, gate,
-                    new String[] {"A", "B", "CN", "DN"},
-                    new String[] {"D", "C", "BN", "AN"});
+                    Arrays.asList("A", "B", "CN", "DN"),
+                    Arrays.asList("D", "C", "BN", "AN"));
             renameContactsOrderHeuristic(circuit, gate,
-                    new String[] {"A", "BN", "CN", "DN"},
-                    new String[] {"D", "BN", "CN", "AN"});
+                    Arrays.asList("A", "BN", "CN", "DN"),
+                    Arrays.asList("D", "BN", "CN", "AN"));
             renameContactsOrderHeuristic(circuit, gate,
-                    new String[] {"A1", "A2N"},
-                    new String[] {"A2", "A1N"});
+                    Arrays.asList("A1", "A2N"),
+                    Arrays.asList("A2", "A1N"));
             renameContactsOrderHeuristic(circuit, gate,
-                    new String[] {"A1", "A2", "A3N"},
-                    new String[] {"A3", "A2", "A1N"});
+                    Arrays.asList("A1", "A2", "A3N"),
+                    Arrays.asList("A3", "A2", "A1N"));
             renameContactsOrderHeuristic(circuit, gate,
-                    new String[] {"A1", "A2N", "A3N"},
-                    new String[] {"A3", "A2N", "A1N"});
+                    Arrays.asList("A1", "A2N", "A3N"),
+                    Arrays.asList("A3", "A2N", "A1N"));
             renameContactsOrderHeuristic(circuit, gate,
-                    new String[] {"B1", "B2N"},
-                    new String[] {"B2", "B1N"});
+                    Arrays.asList("B1", "B2N"),
+                    Arrays.asList("B2", "B1N"));
             renameContactsOrderHeuristic(circuit, gate,
-                    new String[] {"B1", "B2", "B3N"},
-                    new String[] {"B3", "B2", "B1N"});
+                    Arrays.asList("B1", "B2", "B3N"),
+                    Arrays.asList("B3", "B2", "B1N"));
             renameContactsOrderHeuristic(circuit, gate,
-                    new String[] {"B1", "B2N", "B3N"},
-                    new String[] {"B3", "B2N", "B1N"});
+                    Arrays.asList("B1", "B2N", "B3N"),
+                    Arrays.asList("B3", "B2N", "B1N"));
             renameContactsOrderHeuristic(circuit, gate,
-                    new String[] {"C1", "C2N"},
-                    new String[] {"C2", "C1N"});
+                    Arrays.asList("C1", "C2N"),
+                    Arrays.asList("C2", "C1N"));
             renameContactsOrderHeuristic(circuit, gate,
-                    new String[] {"C1", "C2", "C3N"},
-                    new String[] {"C3", "C2", "C1N"});
+                    Arrays.asList("C1", "C2", "C3N"),
+                    Arrays.asList("C3", "C2", "C1N"));
             renameContactsOrderHeuristic(circuit, gate,
-                    new String[] {"C1", "C2N", "C3N"},
-                    new String[] {"C3", "C2N", "C1N"});
+                    Arrays.asList("C1", "C2N", "C3N"),
+                    Arrays.asList("C3", "C2N", "C1N"));
         }
     }
 
@@ -180,18 +181,18 @@ public class PropagateInversionTransformationCommand extends AbstractTransformat
         circuit.setName(contact, name);
     }
 
-    private void renameContactsOrderHeuristic(Circuit circuit, FunctionComponent gate, String[] srcNames, String[] dstNames) {
+    private void renameContactsOrderHeuristic(Circuit circuit, FunctionComponent gate, List<String> srcNames, List<String> dstNames) {
         Map<String, Contact> nameToContactMap = new HashMap<>();
         for (Contact contact: gate.getContacts()) {
             nameToContactMap.put(contact.getName(), contact);
         }
         Set<String> names = nameToContactMap.keySet();
-        Set<String> srcSet = new HashSet<>(Arrays.asList(srcNames));
+        Set<String> srcSet = new HashSet<>(srcNames);
         if (names.containsAll(srcSet)) {
-            int len = Math.min(srcNames.length, dstNames.length);
+            int len = Math.min(srcNames.size(), dstNames.size());
             for (int i = 0; i < len; i++) {
-                String srcName = srcNames[i];
-                String dstName = dstNames[i];
+                String srcName = srcNames.get(i);
+                String dstName = dstNames.get(i);
                 if (srcName.equals(dstName)) continue;
                 Contact contact = nameToContactMap.get(srcName);
                 if (contact != null) {

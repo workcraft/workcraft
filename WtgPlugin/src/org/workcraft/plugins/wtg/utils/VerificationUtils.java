@@ -7,9 +7,9 @@ import org.workcraft.plugins.wtg.Guard;
 import org.workcraft.plugins.wtg.State;
 import org.workcraft.plugins.wtg.Waveform;
 import org.workcraft.plugins.wtg.Wtg;
+import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
-import org.workcraft.types.Pair;
 
 import java.util.*;
 
@@ -630,15 +630,15 @@ public class VerificationUtils {
 
     public static boolean checkWaveformsOnlyConnectToStates(Wtg wtg) {
         for (Waveform waveform : wtg.getWaveforms()) {
-            Set<MathNode> preset = wtg.getPreset(waveform);
-            Set<MathNode> postset = wtg.getPostset(waveform);
             String msg = "Waveform '" + wtg.getName(waveform) + "' is connected to a non-state node.";
+            Set<MathNode> preset = wtg.getPreset(waveform);
             for (MathNode node : preset) {
                 if (!(node instanceof State)) {
                     DialogUtils.showError(msg);
                     return false;
                 }
             }
+            Set<MathNode> postset = wtg.getPostset(waveform);
             for (MathNode node : postset) {
                 if (!(node instanceof State)) {
                     DialogUtils.showError(msg);
@@ -1137,12 +1137,13 @@ public class VerificationUtils {
                     transitionIndex.get(visitingTransition), inputsFiredAfterOutput);
 
             for (MathNode node : wtg.getPostset(visitingTransition)) {
-                if ((node instanceof ExitEvent) && (wtg.getPostset(visitingTransition).size() == 1)) {
-                    node = finalEvent; //we set the event to the "ghost" final event
+                MathNode event = node;
+                if ((event instanceof ExitEvent) && (wtg.getPostset(visitingTransition).size() == 1)) {
+                    event = finalEvent; //we set the event to the "ghost" final event
                 }
 
-                if (node instanceof TransitionEvent) {
-                    TransitionEvent nextEvent = (TransitionEvent) node;
+                if (event instanceof TransitionEvent) {
+                    TransitionEvent nextEvent = (TransitionEvent) event;
                     if (outputHasFired.contains(visitingTransition)) {
                         //an output has fired in this or in past transitions
                         outputHasFired.add(nextEvent);

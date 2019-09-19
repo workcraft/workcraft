@@ -75,7 +75,7 @@ public class VisualModelTests {
         Assert.assertEquals(old[0], newNode[0]);
     }
 
-    VisualNode[] findMissing(VisualNode[] oldNodes, VisualNode[] newNodes) {
+    private VisualNode[] findMissing(VisualNode[] oldNodes, VisualNode[] newNodes) {
         VisualNode[] diffs = new VisualNode[oldNodes.length
                 - (newNodes.length - 1)];
 
@@ -94,7 +94,7 @@ public class VisualModelTests {
         return diffs;
     }
 
-    public void testGroup(VisualModel model, VisualNode[] toGroup) {
+    private void checkGroup(VisualModel model, VisualNode[] toGroup) {
         model.selectNone();
         for (VisualNode node : toGroup) {
             model.addToSelection(node);
@@ -147,7 +147,7 @@ public class VisualModelTests {
         VisualGroup node1 = createGroup(root);
         VisualGroup node2 = createGroup(root);
 
-        testGroup(model, new VisualNode[] {node1, node2 });
+        checkGroup(model, new VisualNode[] {node1, node2 });
     }
 
     @Test
@@ -174,16 +174,11 @@ public class VisualModelTests {
         VisualGroup node2 = new VisualGroup();
         VisualGroup node3 = new VisualGroup();
         VisualGroup node4 = new VisualGroup();
-        SquareNode sq1 = new SquareNode(root,
-                new Rectangle2D.Double(0, 0, 1, 1));
-        SquareNode sq2 = new SquareNode(root,
-                new Rectangle2D.Double(0, 0, 1, 1));
-        SquareNode sq3 = new SquareNode(root,
-                new Rectangle2D.Double(0, 0, 1, 1));
-        SquareNode sq4 = new SquareNode(root,
-                new Rectangle2D.Double(0, 0, 1, 1));
-        SquareNode sq5 = new SquareNode(root,
-                new Rectangle2D.Double(0, 0, 1, 1));
+        SquareNode sq1 = new SquareNode(new Rectangle2D.Double(0, 0, 1, 1));
+        SquareNode sq2 = new SquareNode(new Rectangle2D.Double(0, 0, 1, 1));
+        SquareNode sq3 = new SquareNode(new Rectangle2D.Double(0, 0, 1, 1));
+        SquareNode sq4 = new SquareNode(new Rectangle2D.Double(0, 0, 1, 1));
+        SquareNode sq5 = new SquareNode(new Rectangle2D.Double(0, 0, 1, 1));
 
         root.add(node1);
         root.add(node2);
@@ -195,7 +190,7 @@ public class VisualModelTests {
         root.add(sq4);
         root.add(sq5);
 
-        testGroup(model, new VisualNode[] {node1, node3, sq1, sq5 });
+        checkGroup(model, new VisualNode[] {node1, node3, sq1, sq5 });
     }
 
     @Test
@@ -448,27 +443,6 @@ public class VisualModelTests {
                 root.getChildren().toArray(new VisualNode[0]));
     }
 
-    class GroupNodeEqualityTest {
-        private final VisualNode[] expected;
-
-        GroupNodeEqualityTest(VisualNode[] expected) {
-            this.expected = expected;
-        }
-
-        public void assertEquals(Node node) {
-            Assert.assertTrue("Should be a visual group", node instanceof VisualGroup);
-            VisualGroup group = (VisualGroup) node;
-            VisualNode[] their = group.getChildren().toArray(new VisualNode[0]);
-            Assert.assertArrayEquals(expected, their);
-        }
-
-        public boolean equals(Object obj) {
-            Assert.assertTrue("Should be a visual group", obj instanceof VisualGroup);
-            assertEquals((Node) obj);
-            return true;
-        }
-    }
-
     @Test
     public void testGroupingDontGroupConnections() {
         VisualModel model = createModel();
@@ -525,7 +499,7 @@ public class VisualModelTests {
         VisualGroup root = (VisualGroup) model.getRoot();
         VisualGroup group1 = createGroup(root);
         group1.setX(101);
-        SquareNode sq = new SquareNode(group1, new Rectangle2D.Double(0, 0, 1, 1));
+        SquareNode sq = new SquareNode(new Rectangle2D.Double(0, 0, 1, 1));
         group1.add(sq);
 
         Assert.assertNull(HitMan.hitFirstInCurrentLevel(new Point2D.Double(0.5, 0.5), model));
@@ -543,10 +517,10 @@ public class VisualModelTests {
         VisualGroup group1 = createGroup(root);
         group1.setX(101);
         // Note that VisualGroup nodes have margin of 0.1 on each side.
-        SquareNode sq = new SquareNode(group1, new Rectangle2D.Double(0.1, 0.1, 0.8, 0.8));
+        SquareNode sq = new SquareNode(new Rectangle2D.Double(0.1, 0.1, 0.8, 0.8));
         group1.add(sq);
 
-        SquareNode sq2 = new SquareNode(root, new Rectangle2D.Double(0, 5, 1, 1));
+        SquareNode sq2 = new SquareNode(new Rectangle2D.Double(0, 5, 1, 1));
         root.add(sq2);
 
         Assert.assertEquals(0, boxHitTest(model, new Rectangle2D.Double(-0.01, -0.01, 1.02, 1.02)).size());

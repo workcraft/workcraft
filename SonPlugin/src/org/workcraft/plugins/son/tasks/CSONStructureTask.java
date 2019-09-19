@@ -31,8 +31,8 @@ public class CSONStructureTask extends AbstractStructuralVerification {
         csonCycleAlg = new CSONCycleAlg(net);
     }
 
+    @Override
     public void task(Collection<ONGroup> groups) {
-
         infoMsg("-----------------Communication-SON Structure Verification-----------------");
 
         // group info

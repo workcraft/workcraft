@@ -7,12 +7,14 @@ import java.util.LinkedHashSet;
 import org.workcraft.observation.ObservableHierarchy;
 
 public class DefaultGroupImpl extends AbstractGroup implements ObservableHierarchy, Container {
+
     private final Collection<Node> children = new LinkedHashSet<>();
 
     public DefaultGroupImpl(Container groupRef) {
         super(groupRef);
     }
 
+    @Override
     public Collection<Node> getChildren() {
         return Collections.unmodifiableCollection(children);
     }

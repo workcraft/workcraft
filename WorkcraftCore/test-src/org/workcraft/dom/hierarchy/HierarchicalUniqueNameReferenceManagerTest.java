@@ -1,16 +1,15 @@
 package org.workcraft.dom.hierarchy;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.types.Pair;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import static org.junit.Assert.assertEquals;
-
 public class HierarchicalUniqueNameReferenceManagerTest {
 
-    static HashMap<String, Pair<String, String>> headTails = new HashMap<String, Pair<String, String>>() {
+    private static HashMap<String, Pair<String, String>> headTails = new HashMap<String, Pair<String, String>>() {
         private static final long serialVersionUID = -2931077011392124649L;
         {
             put("abc", Pair.of("abc", ""));
@@ -27,7 +26,7 @@ public class HierarchicalUniqueNameReferenceManagerTest {
             String reference = en.getKey();
             String head = en.getValue().getFirst();
             String answer = NamespaceHelper.getReferenceHead(reference);
-            assertEquals(head, answer);
+            Assert.assertEquals(head, answer);
         }
     }
 
@@ -37,11 +36,11 @@ public class HierarchicalUniqueNameReferenceManagerTest {
             String reference = en.getKey();
             String tail = en.getValue().getSecond();
             String answer = NamespaceHelper.getReferenceTail(reference);
-            assertEquals(tail, answer);
+            Assert.assertEquals(tail, answer);
         }
     }
 
-    static HashMap<String, String> referencePaths = new HashMap<String, String>() {
+    private static HashMap<String, String> referencePaths = new HashMap<String, String>() {
         private static final long serialVersionUID = -2931077011392124649L;
         {
             put("abc", "");
@@ -59,7 +58,7 @@ public class HierarchicalUniqueNameReferenceManagerTest {
             String reference = en.getKey();
             String path = en.getValue();
             String answer = NamespaceHelper.getReferencePath(reference);
-            assertEquals(path, answer);
+            Assert.assertEquals(path, answer);
         }
     }
 

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class NodesReparentedEvent implements HierarchyEvent {
+
     private final Node oldParentNode;
     private final Node newParentNode;
     private final Collection<Node> affectedNodes;
@@ -23,6 +24,7 @@ public class NodesReparentedEvent implements HierarchyEvent {
         affectedNodes.add(affectedNode);
     }
 
+    @Override
     public Collection<Node> getAffectedNodes() {
         return affectedNodes;
     }
@@ -35,7 +37,9 @@ public class NodesReparentedEvent implements HierarchyEvent {
         return newParentNode;
     }
 
+    @Override
     public Object getSender() {
         return newParentNode;
     }
+
 }

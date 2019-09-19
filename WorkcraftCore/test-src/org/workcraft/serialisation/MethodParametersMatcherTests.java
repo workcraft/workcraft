@@ -1,14 +1,14 @@
 package org.workcraft.serialisation;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.serialisation.reflection.AmbiguousMethodException;
 import org.workcraft.serialisation.reflection.MethodParametersMatcher;
 import org.workcraft.serialisation.reflection.MethodParametersMatcher.MethodInfo;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class MethodParametersMatcherTests {
     class A {
@@ -26,7 +26,7 @@ public class MethodParametersMatcherTests {
     class ABp extends AB {
     }
 
-    int match(Class<?> type, Class<?>... parameters) throws Exception {
+    private int match(Class<?> type, Class<?>... parameters) throws Exception {
         TestMethodInfo match;
         try {
             match = MethodParametersMatcher.match(getMethods(type), parameters);
@@ -103,6 +103,7 @@ public class MethodParametersMatcherTests {
             this.method = method;
         }
 
+        @Override
         public Class<?>[] getParameterTypes() {
             return method.getParameterTypes();
         }
@@ -117,7 +118,7 @@ public class MethodParametersMatcherTests {
         ArrayList<TestMethodInfo> result = new ArrayList<>();
 
         for (Method method : clasz.getMethods()) {
-            if (method.getName() == "qq") {
+            if ("qq".equals(method.getName())) {
                 result.add(new TestMethodInfo(method));
             }
         }

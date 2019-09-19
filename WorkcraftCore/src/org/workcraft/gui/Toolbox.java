@@ -24,8 +24,8 @@ import java.util.LinkedHashMap;
 public class Toolbox implements ToolProvider, GraphEditorKeyListener {
 
     class ToolTracker {
-        ArrayList<GraphEditorTool> tools = new ArrayList<>();
-        int nextIndex = 0;
+        private final ArrayList<GraphEditorTool> tools = new ArrayList<>();
+        private int nextIndex = 0;
 
         public void addTool(GraphEditorTool tool) {
             tools.add(tool);

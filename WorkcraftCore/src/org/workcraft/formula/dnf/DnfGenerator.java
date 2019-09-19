@@ -134,7 +134,7 @@ public class DnfGenerator {
 
     public static Dnf generate(BooleanFormula formula) {
         if (formula == null) {
-            formula = One.instance();
+            formula = One.getInstance();
         }
         return formula.accept(new DnfVisitor());
     }

@@ -25,8 +25,8 @@ public class CycleAlgorithm {
         this.graph = graph;
         low = new int[mV];
         visited = new boolean[mV];
-        stack = new Stack<Integer>();
-        sccComp = new ArrayList<List<Integer>>();
+        stack = new Stack<>();
+        sccComp = new ArrayList<>();
 
         for (int v = 0; v < mV; v++) {
             if (!visited[v]) {

@@ -13,7 +13,7 @@ import org.workcraft.utils.DesktopApi;
 
 public class MaxCpogTest {
 
-    static String[] cpog = {"-0001", "00011", "11111", "10111", "1z1ZZ"};
+    private static final String[] cpog = {"-0001", "00011", "11111", "10111", "1z1ZZ"};
 
     @BeforeClass
     public static void skipOnWindows() {

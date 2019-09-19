@@ -23,21 +23,22 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class WaggingGenerator {
+
     private final VisualDfs dfs;
     private final int count;
-
-    class WaggingData {
-        HashSet<VisualComponent> dataComponents = new HashSet<>();
-        HashSet<VisualPushRegister> pushRegisters = new HashSet<>();
-        HashSet<VisualControlRegister> pushControls = new HashSet<>();
-        HashSet<VisualPopRegister> popRegisters = new HashSet<>();
-        HashSet<VisualControlRegister> popControls = new HashSet<>();
-    }
 
     private final HashSet<VisualComponent> selectedComponents = new HashSet<>();
     private final HashSet<VisualConnection> selectedConnections = new HashSet<>();
     private final HashMap<VisualComponent, VisualComponent> replicaToOriginalMap = new HashMap<>();
     private final ArrayList<WaggingData> wagging = new ArrayList<>();
+
+    private class WaggingData {
+        public HashSet<VisualComponent> dataComponents = new HashSet<>();
+        public HashSet<VisualPushRegister> pushRegisters = new HashSet<>();
+        public HashSet<VisualControlRegister> pushControls = new HashSet<>();
+        public HashSet<VisualPopRegister> popRegisters = new HashSet<>();
+        public HashSet<VisualControlRegister> popControls = new HashSet<>();
+    }
 
     public WaggingGenerator(VisualDfs dfs, int count) {
         this.dfs = dfs;

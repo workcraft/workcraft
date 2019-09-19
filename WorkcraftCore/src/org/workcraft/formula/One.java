@@ -7,7 +7,7 @@ public final class One implements BooleanFormula {
     private One() {
     }
 
-    public static One instance() {
+    public static One getInstance() {
         return instance;
     }
 

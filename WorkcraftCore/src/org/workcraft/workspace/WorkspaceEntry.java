@@ -177,7 +177,7 @@ public class WorkspaceEntry implements ObservableState {
         return workspace == null ? null : workspace.getFile(this);
     }
 
-    ObservableStateImpl observableState = new ObservableStateImpl();
+    private final ObservableStateImpl observableState = new ObservableStateImpl();
 
     @Override
     public void addObserver(StateObserver obs) {

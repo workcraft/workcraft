@@ -29,10 +29,10 @@ import org.workcraft.utils.Geometry;
 public class VisualArc extends VisualConnection {
 
     public static final String PROPERTY_CONDITION = "condition";
+
     private static Font labelFont;
     private Rectangle2D labelBB = null;
-
-    Arc mathConnection;
+    private final Arc mathConnection;
 
     static {
         try {
@@ -66,7 +66,7 @@ public class VisualArc extends VisualConnection {
     public Stroke getStroke() {
         BooleanFormula value = evaluate();
 
-        if (value == Zero.instance()) {
+        if (value == Zero.getInstance()) {
             return new BasicStroke((float) super.getLineWidth(), BasicStroke.CAP_BUTT,
                 BasicStroke.JOIN_MITER, 1.0f, new float[] {0.18f, 0.18f}, 0.00f);
         }
@@ -97,7 +97,7 @@ public class VisualArc extends VisualConnection {
     public void draw(DrawRequest r) {
         labelBB = null;
 
-        if (getCondition() == One.instance()) return;
+        if (getCondition() == One.getInstance()) return;
 
         Graphics2D g = r.getGraphics();
 

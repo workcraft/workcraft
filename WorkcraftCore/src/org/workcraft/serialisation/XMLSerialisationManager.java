@@ -22,6 +22,7 @@ public class XMLSerialisationManager implements SerialiserFactory, NodeSerialise
         serialisers.put(serialiser.getClassName(), serialiser);
     }
 
+    @Override
     public XMLSerialiser getSerialiserFor(Class<?> cls) {
         return serialisers.get(cls.getName());
     }
@@ -41,6 +42,7 @@ public class XMLSerialisationManager implements SerialiserFactory, NodeSerialise
         }
     }
 
+    @Override
     public void serialise(Element element, Object object) throws SerialisationException {
         element.setAttribute(Framework.COMMON_CLASS_WORK_ATTRIBUTE, object.getClass().getName());
 

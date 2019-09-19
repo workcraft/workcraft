@@ -5,9 +5,9 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.formula.utils.FormulaRenderingResult;
 import org.workcraft.formula.utils.FormulaToGraphics;
-import org.workcraft.utils.Coloriser;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
@@ -18,15 +18,12 @@ import java.io.IOException;
 import java.util.*;
 
 public class VisualScenario extends VisualGroup {
+
     public static final String PROPERTY_ENCODING = "Encoding";
     public static final String PROPERTY_LABEL = "Label";
 
-    private static final class ReverseComparator implements Comparator<Variable> {
-        @Override
-        public int compare(Variable o1, Variable o2) {
-            return -o1.compareTo(o2);
-        }
-    }
+    // Dash symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
+    public static final char DASH_SYMBOL = 0x2013;
 
     private static final float frameDepth = 0.25f;
     private static final float strokeWidth = 0.03f;
@@ -49,6 +46,13 @@ public class VisualScenario extends VisualGroup {
             labelFont = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/default.pfb")).deriveFont(0.5f);
         } catch (FontFormatException | IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private static final class ReverseComparator implements Comparator<Variable> {
+        @Override
+        public int compare(Variable o1, Variable o2) {
+            return -o1.compareTo(o2);
         }
     }
 
@@ -209,7 +213,9 @@ public class VisualScenario extends VisualGroup {
                 variableBBs.put(tmpBB, var);
 
                 text = encoding.getState(var).getValueAsString();
-                if (text.equals("?")) text = "\u2013";
+                if ("?".equals(text)) {
+                    text = Character.toString(DASH_SYMBOL);
+                }
 
                 result = FormulaToGraphics.print(text, labelFont, g.getFontRenderContext());
 
@@ -276,6 +282,7 @@ public class VisualScenario extends VisualGroup {
         }
     }
 
+    @Override
     public String getLabel() {
         return label;
     }
@@ -290,4 +297,5 @@ public class VisualScenario extends VisualGroup {
     public Encoding getEncoding() {
         return encoding;
     }
+
 }

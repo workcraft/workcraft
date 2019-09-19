@@ -35,6 +35,7 @@ public class StgToFstConversionCommand extends AbstractConversionCommand {
         return false;
     }
 
+    @Override
     public Position getPosition() {
         return Position.TOP;
     }

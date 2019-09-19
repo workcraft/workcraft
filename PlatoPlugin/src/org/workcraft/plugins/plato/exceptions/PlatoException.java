@@ -47,7 +47,7 @@ public class PlatoException extends Exception {
                     }
                 }
             }
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             ghcNotFound();
         }
     }

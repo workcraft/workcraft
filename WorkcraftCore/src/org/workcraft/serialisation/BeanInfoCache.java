@@ -7,9 +7,9 @@ import java.util.HashMap;
 
 public class BeanInfoCache {
 
-    static final HashMap<Class<?>, BeanInfo> beanInfo = new HashMap<>();
+    private static final HashMap<Class<?>, BeanInfo> beanInfo = new HashMap<>();
 
-    static BeanInfo getBeanInfo(Class<?> c) throws IntrospectionException {
+    public static BeanInfo getBeanInfo(Class<?> c) throws IntrospectionException {
         BeanInfo cached = beanInfo.get(c);
         if (cached != null) {
             return cached;

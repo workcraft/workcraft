@@ -9,10 +9,11 @@ import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.tools.GraphEditor;
 
 public class GraphEditorKeyEvent {
-    GraphEditor editor;
-    char keyChar;
-    int keyCode;
-    int modifiers;
+
+    private final GraphEditor editor;
+    private final char keyChar;
+    private final int keyCode;
+    private final int modifiers;
 
     public GraphEditorKeyEvent(GraphEditor editor, KeyEvent event) {
         this.editor = editor;

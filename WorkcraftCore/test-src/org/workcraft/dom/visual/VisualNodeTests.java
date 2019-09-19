@@ -1,8 +1,5 @@
 package org.workcraft.dom.visual;
 
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.exceptions.NotAnAncestorException;
@@ -11,26 +8,30 @@ import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.utils.Hierarchy;
 
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
+
 public class VisualNodeTests {
 
-    static VisualGroup createGroup(VisualGroup parent) {
+    public static VisualGroup createGroup(VisualGroup parent) {
         return Tools.createGroup(parent);
     }
 
     @Test
     public void testTransformChangeNotify() {
         final SquareNode node = new SquareNode(null, new Rectangle2D.Double(0, 0, 1, 1));
-        final Boolean[] hit = new Boolean[]{false};
+        final Boolean[] hit = {false};
         node.addObserver(new StateObserver() {
-                    public void notify(StateEvent e) {
-                        if (e instanceof TransformChangedEvent) {
-                            if (e.getSender() == node) {
-                                hit[0] = true;
-                            }
-
-                        }
+            @Override
+            public void notify(StateEvent e) {
+                if (e instanceof TransformChangedEvent) {
+                    if (e.getSender() == node) {
+                        hit[0] = true;
                     }
-                });
+
+                }
+            }
+        });
         Assert.assertFalse("already hit o_O", hit[0]);
         node.setX(8);
         Assert.assertTrue("not hit", hit[0]);

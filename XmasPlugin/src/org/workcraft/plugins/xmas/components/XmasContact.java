@@ -8,7 +8,7 @@ import org.workcraft.observation.PropertyChangedEvent;
 
 @DisplayName("Contact")
 @IdentifierPrefix(value = "p", isInternal = true)
-@VisualClass(org.workcraft.plugins.xmas.components.VisualXmasContact.class)
+@VisualClass(VisualXmasContact.class)
 public class XmasContact extends MathNode {
 
     public static final String PROPERTY_IO_TYPE = "I/O type";

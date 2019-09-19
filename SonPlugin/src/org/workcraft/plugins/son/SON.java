@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
-@VisualClass(org.workcraft.plugins.son.VisualSON.class)
+@VisualClass(VisualSON.class)
 public class SON extends AbstractMathModel {
 
     public SON() {
@@ -355,7 +355,7 @@ public class SON extends AbstractMathModel {
             throw new RuntimeException("Connection size between" + getNodeReference(first) + "and" + getNodeReference(first) + "> 1");
         }
 
-        if (connection.size() == 0) {
+        if (connection.isEmpty()) {
             return null;
         }
 

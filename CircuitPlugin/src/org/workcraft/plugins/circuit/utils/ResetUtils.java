@@ -41,7 +41,7 @@ public class ResetUtils {
                             if ((driver != null) && (driver != outputContact)) {
                                 variables.add(contact);
                                 boolean inverting = pair.getSecond();
-                                BooleanFormula value = (driver.getInitToOne() == inverting) ? Zero.instance() : One.instance();
+                                BooleanFormula value = (driver.getInitToOne() == inverting) ? Zero.getInstance() : One.getInstance();
                                 values.add(value);
                             }
                         }
@@ -84,12 +84,12 @@ public class ResetUtils {
     }
 
     public static boolean isEvaluatedHigh(BooleanFormula setFunction, BooleanFormula resetFunction) {
-        return One.instance().equals(setFunction) && ((resetFunction == null) || Zero.instance().equals(resetFunction));
+        return One.getInstance().equals(setFunction) && ((resetFunction == null) || Zero.getInstance().equals(resetFunction));
     }
 
 
     public static boolean isEvaluatedLow(BooleanFormula setFunction, BooleanFormula resetFunction) {
-        return Zero.instance().equals(setFunction) && ((resetFunction == null) || One.instance().equals(resetFunction));
+        return Zero.getInstance().equals(setFunction) && ((resetFunction == null) || One.getInstance().equals(resetFunction));
     }
 
     public static Set<Contact> tagForceInitAutoAppend(Circuit circuit) {
@@ -413,8 +413,8 @@ public class ResetUtils {
     private static void forceInitResetCircuit(VisualCircuit circuit, VisualFunctionContact resetPort, boolean activeLow) {
         resetPort.setInitToOne(!activeLow);
         resetPort.setForcedInit(true);
-        resetPort.setSetFunction(activeLow ? One.instance() : Zero.instance());
-        resetPort.setResetFunction(activeLow ? Zero.instance() : One.instance());
+        resetPort.setSetFunction(activeLow ? One.getInstance() : Zero.getInstance());
+        resetPort.setResetFunction(activeLow ? Zero.getInstance() : One.getInstance());
         for (VisualFunctionContact contact : circuit.getVisualFunctionContacts()) {
             if (contact.isPin() && contact.isOutput()) {
                 contact.setForcedInit(false);

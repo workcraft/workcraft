@@ -134,7 +134,7 @@ public class CnfGenerator {
 
     public static Cnf generate(BooleanFormula formula) {
         if (formula == null) {
-            formula = One.instance();
+            formula = One.getInstance();
         }
         return formula.accept(new CnfVisitor());
     }

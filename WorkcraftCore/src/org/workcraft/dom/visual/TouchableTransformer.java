@@ -49,8 +49,8 @@ public class TouchableTransformer implements Touchable {
         double[] minMaxY = new double[2];
         double[] minMaxX = new double[2];
 
-        double[] x = new double[]{corners[0].getX(), corners[1].getX(), corners[2].getX(), corners[3].getX()};
-        double[] y = new double[]{corners[0].getY(), corners[1].getY(), corners[2].getY(), corners[3].getY()};
+        double[] x = {corners[0].getX(), corners[1].getX(), corners[2].getX(), corners[3].getX()};
+        double[] y = {corners[0].getY(), corners[1].getY(), corners[2].getY(), corners[3].getY()};
 
         minMax(x, minMaxX);
         minMax(y, minMaxY);

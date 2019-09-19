@@ -53,6 +53,7 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
     }
 
     @NoAutoSerialisation
+    @Override
     public SignalTransition getReferencedTransition() {
         return (SignalTransition) getReferencedComponent();
     }

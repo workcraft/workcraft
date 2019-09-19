@@ -12,6 +12,7 @@ import org.workcraft.utils.WorkspaceUtils;
 
 public class WtgToStgConversionCommand extends AbstractConversionCommand {
 
+    @Override
     public Position getPosition() {
         return Position.TOP;
     }

@@ -5,7 +5,7 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
 
 @IdentifierPrefix("sw")
-@VisualClass(org.workcraft.plugins.xmas.components.VisualSwitchComponent.class)
+@VisualClass(VisualSwitchComponent.class)
 public class SwitchComponent extends XmasComponent {
 
     public static final String PROPERTY_TYPE = "Type";

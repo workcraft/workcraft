@@ -4,6 +4,7 @@ import org.w3c.dom.Element;
 import org.workcraft.utils.XmlUtils;
 
 public class Preset<T> {
+
     private String description;
     private T settings;
     private final boolean builtIn;
@@ -28,11 +29,11 @@ public class Preset<T> {
         return settings;
     }
 
-    void setDescription(String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
-    void setSettings(T settings) {
+    public void setSettings(T settings) {
         this.settings = settings;
     }
 
@@ -44,4 +45,5 @@ public class Preset<T> {
     public String toString() {
         return description.trim() + (builtIn ? " [built-in]" : "");
     }
+
 }

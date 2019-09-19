@@ -25,9 +25,9 @@ public class PrettifyBooleanReplacer extends BooleanReplacer {
     public BooleanFormula visit(BooleanVariable node) {
         switch (((Variable) node).getState()) {
         case TRUE:
-            return One.instance();
+            return One.getInstance();
         case FALSE:
-            return Zero.instance();
+            return Zero.getInstance();
         default:
             return node;
         }

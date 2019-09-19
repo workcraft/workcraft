@@ -68,9 +68,9 @@ public class LtscatResultHandler extends AbstractResultHandler<LtscatResult>  {
             }
 
             // calling shutters
-            final ShuttersTask shuttersTask = new ShuttersTask(we, tmpDir);
-            final ShuttersResultHandler shuttersResult = new ShuttersResultHandler(shuttersTask, tmpDir);
             final TaskManager taskManager = framework.getTaskManager();
+            final ShuttersTask shuttersTask = new ShuttersTask(we, tmpDir);
+            final ShuttersResultHandler shuttersResult = new ShuttersResultHandler(tmpDir);
             taskManager.queue(shuttersTask, "Shutters - process windows", shuttersResult);
 
         } else if (result.getOutcome() == Outcome.FAILURE) {
@@ -87,4 +87,5 @@ public class LtscatResultHandler extends AbstractResultHandler<LtscatResult>  {
                 + window
                 + ShuttersSettings.getWindowsExtension();
     }
+
 }

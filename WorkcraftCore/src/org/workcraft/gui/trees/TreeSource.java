@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.workcraft.gui.workspace.Path;
 
-public interface TreeSource<Node> {
-    void addListener(TreeListener<Node> listener);
-    void removeListener(TreeListener<Node> listener);
-    Node getRoot();
-    boolean isLeaf(Node node);
-    List<Node> getChildren(Node node);
-    Path<Node> getPath(Node node);
+public interface TreeSource<T> {
+    void addListener(TreeListener<T> listener);
+    void removeListener(TreeListener<T> listener);
+    T getRoot();
+    boolean isLeaf(T node);
+    List<T> getChildren(T node);
+    Path<T> getPath(T node);
 }

@@ -1,28 +1,20 @@
 package org.workcraft.plugins.xmas.commands;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import org.workcraft.commands.Command;
+import org.workcraft.plugins.xmas.Xmas;
+import org.workcraft.plugins.xmas.XmasSettings;
+import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
-import org.workcraft.commands.Command;
-import org.workcraft.plugins.xmas.Xmas;
-import org.workcraft.plugins.xmas.XmasSettings;
-import org.workcraft.utils.LogUtils;
-import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 public class ConfigurationCommand implements Command {
 
@@ -33,10 +25,12 @@ public class ConfigurationCommand implements Command {
         //this.framework = framework;
     //}
 
+    @Override
     public String getDisplayName() {
         return "Configure Verif";
     }
 
+    @Override
     public String getSection() {
         return "Verification";
     }
@@ -46,37 +40,36 @@ public class ConfigurationCommand implements Command {
         return WorkspaceUtils.isApplicable(we, Xmas.class);
     }
 
-    int cntSyncNodes = 0;
-    JFrame mainFrame = null;
-    JComboBox trcombob = null;
-    JComboBox lvcombob = null;
-    JComboBox hlcombob = null;
-    JComboBox dycombob = null;
-    JComboBox slcombob = null;
+    private JFrame mainFrame = null;
+    private JComboBox trcombob = null;
+    private JComboBox lvcombob = null;
+    private JComboBox hlcombob = null;
+    private JComboBox dycombob = null;
+    private JComboBox slcombob = null;
 
-    String[] trchoices = {
+    private final String[] trchoices = {
         "q1",
         "q2",
         "a1",
         "a2",
     };
 
-    String[] lvlchoices = {
+    private final String[] lvlchoices = {
         "normal",
         "advanced",
     };
 
-    String[] hlchoices = {
+    private final String[] hlchoices = {
         "none",
         "sel",
     };
 
-    String[] solchoices = {
+    private final String[] solchoices = {
         "text",
         "popup",
     };
 
-    String[] solno = {
+    private final String[] solno = {
         "1",
         "2",
         "3",
@@ -90,8 +83,6 @@ public class ConfigurationCommand implements Command {
     public void dispose() {
         mainFrame.setVisible(false);
     }
-
-    public List<String> slist = new ArrayList<>();
 
     private void initSettings() {
         Scanner sc = null;
@@ -151,14 +142,12 @@ public class ConfigurationCommand implements Command {
         }
     }
 
-    int loaded = 0;
-    public List<String> slist1;
-    public List<String> slist2;
+    private int loaded = 0;
 
     @Override
     public void run(WorkspaceEntry we) {
         System.out.println("Running tests");
-        cntSyncNodes = 0;
+        int cntSyncNodes = 0;
         mainFrame = new JFrame("Configure Verification");
         JPanel panelmain = new JPanel();
         mainFrame.getContentPane().add(panelmain, BorderLayout.PAGE_START);

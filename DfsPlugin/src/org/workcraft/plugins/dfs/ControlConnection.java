@@ -5,7 +5,7 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 
-@VisualClass(org.workcraft.plugins.dfs.VisualControlConnection.class)
+@VisualClass(VisualControlConnection.class)
 public class ControlConnection extends MathConnection {
     public static final String PROPERTY_INVERTING = "Inverting";
     private boolean inverting = false;

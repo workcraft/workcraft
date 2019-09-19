@@ -21,7 +21,7 @@ public class NaryBooleanFormulaBuilder {
 
     private static class NaryBooleanFormulaPrinter implements BooleanVisitor<NaryBooleanFormula> {
 
-        List<NaryBooleanFormula> visitBinaryOp(BinaryBooleanFormula op, NaryBooleanFormulaVisitor<List<NaryBooleanFormula>> extractor) {
+        public List<NaryBooleanFormula> visitBinaryOp(BinaryBooleanFormula op, NaryBooleanFormulaVisitor<List<NaryBooleanFormula>> extractor) {
             NaryBooleanFormula x = op.getX().accept(this);
             NaryBooleanFormula y = op.getY().accept(this);
             return extractAndMerge(x, y, extractor);

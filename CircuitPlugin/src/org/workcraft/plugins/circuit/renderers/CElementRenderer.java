@@ -26,13 +26,13 @@ import org.workcraft.types.Pair;
 
 public class CElementRenderer extends GateRenderer {
 
-    static boolean doNegate = false;
-    static boolean isNegated = false;
+    private static boolean doNegate = false;
+    private static boolean isNegated = false;
 
-    static boolean isFirstNode;
-    static boolean isGlobalNegation;
+    private static boolean isFirstNode;
+    private static boolean isGlobalNegation;
 
-    static BooleanVisitor<LinkedList<Pair<String, Boolean>>> defaultVisitor = new BooleanVisitor<LinkedList<Pair<String, Boolean>>>() {
+    private static BooleanVisitor<LinkedList<Pair<String, Boolean>>> defaultVisitor = new BooleanVisitor<LinkedList<Pair<String, Boolean>>>() {
 
         @Override
         public LinkedList<Pair<String, Boolean>> visit(And node) {

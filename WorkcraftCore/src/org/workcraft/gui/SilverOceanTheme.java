@@ -1,29 +1,17 @@
 package org.workcraft.gui;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
+import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.utils.DesktopApi;
 
-import javax.swing.AbstractButton;
-import javax.swing.ButtonModel;
-import javax.swing.Icon;
-import javax.swing.UIDefaults;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.metal.OceanTheme;
-
-import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.utils.DesktopApi;
+import java.awt.*;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 public class SilverOceanTheme extends OceanTheme {
 
@@ -181,12 +169,12 @@ public class SilverOceanTheme extends OceanTheme {
     @Override
     public void addCustomEntriesToTable(UIDefaults table) {
         super.addCustomEntriesToTable(table);
-        Object[] buttonTable = getCustomButtonTable(table);
-        Object[] gradientTable = getCustomGradientTable(table);
+        Object[] buttonTable = getCustomButtonTable();
+        Object[] gradientTable = getCustomGradientTable();
         Object[] iconTable = {};
         if (!DesktopApi.getOs().isMac()) {
             // FIXME: In OSX file/folder icons get corrupted and coloured close/min/max icons do not look right.
-            iconTable = getCustomIconTable(table);
+            iconTable = getCustomIconTable();
         }
         Object[] uiFullTable = mergeTables(buttonTable, gradientTable, iconTable);
         table.putDefaults(uiFullTable);
@@ -207,10 +195,10 @@ public class SilverOceanTheme extends OceanTheme {
         return result;
     }
 
-    private Object[] getCustomButtonTable(UIDefaults table) {
+    private Object[] getCustomButtonTable() {
         int swatchSize = SizeHelper.getColorChooserSwatchSize();
         int swatchRecentSize = SizeHelper.getColorChooserSwatchRecentSize();
-        Object[] result = {
+        return new Object[]{
                 "TabbedPane.selected", getPrimary2(),
                 "TabbedPane.contentAreaColor", getPrimary2(),
 
@@ -225,13 +213,11 @@ public class SilverOceanTheme extends OceanTheme {
                 "ColorChooser.swatchesSwatchSize", new Dimension(swatchSize, swatchSize),
                 "ColorChooser.swatchesRecentSwatchSize", new Dimension(swatchRecentSize, swatchRecentSize),
         };
-        return result;
     }
 
-    private Object[] getCustomGradientTable(UIDefaults table) {
+    private Object[] getCustomGradientTable() {
         List<Serializable> buttonGradient = Arrays.asList(1.0, 0.0, getSecondary3(), getSecondary2(), getSecondary2());
-
-        Object[] result = {
+        return new Object[]{
                 "Button.gradient", buttonGradient,
                 "CheckBox.gradient", buttonGradient,
                 "CheckBoxMenuItem.gradient", buttonGradient,
@@ -243,10 +229,9 @@ public class SilverOceanTheme extends OceanTheme {
                 "Slider.gradient", buttonGradient,
                 "ToggleButton.gradient", buttonGradient,
         };
-        return result;
     }
 
-    private Object[] getCustomIconTable(UIDefaults table) {
+    private Object[] getCustomIconTable() {
         Icon internalFrameIcon = UIManager.getIcon("InternalFrame.icon");
         Icon internalFrameIconifyIcon = UIManager.getIcon("InternalFrame.iconifyIcon");
         Icon internalFrameMinimizeIcon = UIManager.getIcon("InternalFrame.minimizeIcon");
@@ -265,7 +250,7 @@ public class SilverOceanTheme extends OceanTheme {
         Icon fileChooserNewFolderIcon = UIManager.getIcon("FileChooser.newFolderIcon");
         Icon fileChooserUpFolderIcon = UIManager.getIcon("FileChooser.upFolderIcon");
 
-        Object[] result = {
+        return new Object[]{
                 "InternalFrame.icon", SizeHelper.scaleFrameIcon(internalFrameIcon),
                 "InternalFrame.iconifyIcon", SizeHelper.scaleFrameIcon(internalFrameIconifyIcon),
                 "InternalFrame.minimizeIcon", SizeHelper.scaleFrameIcon(internalFrameMinimizeIcon),
@@ -284,7 +269,6 @@ public class SilverOceanTheme extends OceanTheme {
                 "FileChooser.newFolderIcon", SizeHelper.scaleFileChooserIcon(fileChooserNewFolderIcon),
                 "FileChooser.upFolderIcon", SizeHelper.scaleFileChooserIcon(fileChooserUpFolderIcon),
         };
-        return result;
     }
 
 }

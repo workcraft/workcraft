@@ -12,17 +12,17 @@ import java.util.function.Function;
 public class ForceInitAutoAppendTagCommand extends AbstractTagCommand {
 
     @Override
-    Function<Circuit, Collection<Contact>> getFunction() {
+    public Function<Circuit, Collection<Contact>> getFunction() {
         return circuit -> ResetUtils.tagForceInitAutoAppend(circuit);
     }
 
     @Override
-    String getMessage() {
+    public String getMessage() {
         return "Auto-appended force init pin";
     }
 
     @Override
-    Class<? extends GraphEditorTool> getToolClass() {
+    public Class<? extends GraphEditorTool> getToolClass() {
         return InitialisationAnalyserTool.class;
     }
 

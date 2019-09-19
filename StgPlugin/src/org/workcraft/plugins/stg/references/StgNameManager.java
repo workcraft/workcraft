@@ -5,6 +5,7 @@ import org.workcraft.dom.references.DefaultNameManager;
 import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.plugins.stg.*;
+import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.types.ListMap;
 import org.workcraft.types.Pair;

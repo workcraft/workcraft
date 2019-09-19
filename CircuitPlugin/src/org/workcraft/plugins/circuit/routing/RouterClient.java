@@ -82,6 +82,7 @@ public class RouterClient {
             break;
         default:
             assert false : "unsupported visual contact direction";
+            break;
         }
 
         if (contact.isPort()) {

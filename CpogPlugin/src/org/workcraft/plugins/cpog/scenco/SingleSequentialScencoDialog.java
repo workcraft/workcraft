@@ -15,10 +15,13 @@ import java.util.ArrayList;
 
 public class SingleSequentialScencoDialog extends AbstractScencoDialog {
 
-    private JCheckBox verboseModeCheck, abcCheck;
+    private JCheckBox verboseModeCheck;
+    private JCheckBox abcCheck;
     private JComboBox<String> optimiseBox;
-    private JPanel buttonsPanel, standardPanel;
-    private int m, bits;
+    private JPanel buttonsPanel;
+    private JPanel standardPanel;
+    private int m;
+    private  int bits;
 
     public SingleSequentialScencoDialog(Window owner, String title, EncoderSettings settings, VisualCpog model) {
         super(owner, title, settings, model);
@@ -51,7 +54,7 @@ public class SingleSequentialScencoDialog extends AbstractScencoDialog {
         JPanel optimisePanel = new JPanel();
         JLabel optimiseLabel = new JLabel(ScencoHelper.textOptimiseForLabel);
         //optimiseLabel.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForLabel);
-        optimiseBox = new JComboBox<String>();
+        optimiseBox = new JComboBox<>();
         optimiseBox.setEditable(false);
         optimiseBox.setPreferredSize(ScencoHelper.dimensionOptimiseForBox);
         optimiseBox.addItem(ScencoHelper.textOptimiseForFirstElement);

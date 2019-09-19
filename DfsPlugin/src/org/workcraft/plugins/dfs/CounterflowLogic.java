@@ -5,7 +5,7 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
 
 @IdentifierPrefix("l")
-@VisualClass(org.workcraft.plugins.dfs.VisualCounterflowLogic.class)
+@VisualClass(VisualCounterflowLogic.class)
 public class CounterflowLogic extends MathDelayNode {
     public static final String PROPERTY_FORWARD_COMPUTED = "Forward computed";
     public static final String PROPERTY_BACKWARD_COMPUTED = "Backward computed";

@@ -159,6 +159,7 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
         return transformShape(getShape()).getBounds2D();
     }
 
+    @Override
     public Rectangle2D getBoundingBoxInLocalSpace() {
         Rectangle2D bb = super.getBoundingBoxInLocalSpace();
         for (VisualXmasContact c: getContacts()) {
@@ -247,6 +248,7 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
         groupImpl.removeAllObservers();
     }
 
+    @Override
     public abstract Shape getShape();
 
     public Shape transformShape(Shape shape) {

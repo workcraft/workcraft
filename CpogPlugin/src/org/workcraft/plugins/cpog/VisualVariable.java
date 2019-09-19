@@ -28,27 +28,25 @@ public class VisualVariable extends VisualComponent {
     private static Font valueFont;
 
     private final RenderedFormula valueFalseRenderedFormula = new RenderedFormula(
-            VariableState.FALSE.getValueAsString(), One.instance(),
+            VariableState.FALSE.getValueAsString(), One.getInstance(),
             valueFont, Positioning.CENTER, new Point2D.Double(0.0, 0.0));
 
     private final RenderedFormula valueTrueRenderedFormula = new RenderedFormula(
-            VariableState.TRUE.getValueAsString(), One.instance(),
+            VariableState.TRUE.getValueAsString(), One.getInstance(),
             valueFont, Positioning.CENTER, new Point2D.Double(0.0, 0.0));
 
     private final RenderedFormula valueUndefinedRenderedFormula = new RenderedFormula(
-            VariableState.UNDEFINED.getValueAsString(), One.instance(),
+            VariableState.UNDEFINED.getValueAsString(), One.getInstance(),
             valueFont, Positioning.CENTER, new Point2D.Double(0.0, 0.0));
 
-    private RenderedFormula variableRenderedFormula = new RenderedFormula("", One.instance(), variableFont, getLabelPositioning(), getLabelOffset());
+    private RenderedFormula variableRenderedFormula = new RenderedFormula("", One.getInstance(), variableFont, getLabelPositioning(), getLabelOffset());
 
     static {
         try {
             Font font = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/default.pfb"));
             variableFont = font.deriveFont(0.5f);
             valueFont = font.deriveFont(0.75f);
-        } catch (FontFormatException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (FontFormatException | IOException e) {
             e.printStackTrace();
         }
     }
@@ -108,8 +106,8 @@ public class VisualVariable extends VisualComponent {
     }
 
     protected void cacheVariableRenderedFormula(DrawRequest r) {
-        if (variableRenderedFormula.isDifferent(getLabel(), One.instance(), variableFont, getLabelPositioning(), getLabelOffset())) {
-            variableRenderedFormula = new RenderedFormula(getLabel(), One.instance(), variableFont, getLabelPositioning(), getLabelOffset());
+        if (variableRenderedFormula.isDifferent(getLabel(), One.getInstance(), variableFont, getLabelPositioning(), getLabelOffset())) {
+            variableRenderedFormula = new RenderedFormula(getLabel(), One.getInstance(), variableFont, getLabelPositioning(), getLabelOffset());
         }
     }
 

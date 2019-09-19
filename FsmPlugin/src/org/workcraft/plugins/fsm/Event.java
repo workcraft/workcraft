@@ -8,7 +8,7 @@ import org.workcraft.observation.PropertyChangedEvent;
 
 @DisplayName("Event")
 @IdentifierPrefix(value = "e", isInternal = true)
-@VisualClass(org.workcraft.plugins.fsm.VisualEvent.class)
+@VisualClass(VisualEvent.class)
 public class Event extends MathConnection {
     public static final String PROPERTY_SYMBOL = "Symbol";
 
@@ -19,7 +19,7 @@ public class Event extends MathConnection {
 
     public Event(State first, State second, Symbol symbol) {
         super(first, second);
-        this.setSymbol(symbol);
+        this.symbol = symbol;
     }
 
     public Symbol getSymbol() {

@@ -35,6 +35,7 @@ public abstract class Clause implements BooleanFormula {
         literals.addAll(Arrays.asList(arr));
     }
 
+    @Override
     public abstract <T> T accept(BooleanVisitor<T> visitor);
 
 }

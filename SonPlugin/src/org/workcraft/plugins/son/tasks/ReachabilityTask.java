@@ -152,7 +152,7 @@ public class ReachabilityTask implements Task<VerificationResult> {
 //                initial.add(c);
 //            }
 //        }
-        causalPredecessors = new HashSet<Node>();
+        causalPredecessors = new HashSet<>();
 
         //get causalPredecessors for each marking
         for (String ref : markingRefs) {

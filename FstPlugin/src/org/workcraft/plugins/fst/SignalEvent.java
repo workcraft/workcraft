@@ -7,7 +7,7 @@ import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.State;
 
 @DisplayName("Signal event")
-@VisualClass(org.workcraft.plugins.fst.VisualSignalEvent.class)
+@VisualClass(VisualSignalEvent.class)
 public class SignalEvent extends Event {
 
     public static final String PROPERTY_DIRECTION = "Direction";

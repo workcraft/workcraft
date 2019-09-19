@@ -6,7 +6,7 @@ import org.workcraft.plugins.stg.serialisation.AstgSerialiser;
 
 public class StgExporter extends AbstractSerialiseExporter {
 
-    AstgSerialiser serialiser = new AstgSerialiser();
+    private final AstgSerialiser serialiser = new AstgSerialiser();
 
     @Override
     public Format getFormat() {

@@ -1,9 +1,6 @@
 package org.workcraft.plugins.petri.dom;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
+import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.dom.Connection;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -27,18 +24,18 @@ public class DOMTests {
         Connection con1 = petri.connect(p1, t1);
         Connection con2 = petri.connect(t1, p2);
 
-        assertSame(p1, petri.getNodeByReference(petri.getNodeReference(p1)));
-        assertSame(p2, petri.getNodeByReference(petri.getNodeReference(p2)));
+        Assert.assertSame(p1, petri.getNodeByReference(petri.getNodeReference(p1)));
+        Assert.assertSame(p2, petri.getNodeByReference(petri.getNodeReference(p2)));
 
-        assertTrue(petri.getPreset(p2).contains(t1));
-        assertTrue(petri.getPostset(p1).contains(t1));
+        Assert.assertTrue(petri.getPreset(p2).contains(t1));
+        Assert.assertTrue(petri.getPostset(p1).contains(t1));
 
-        assertTrue(petri.getConnections(p1).contains(con1));
+        Assert.assertTrue(petri.getConnections(p1).contains(con1));
 
         petri.remove(p1);
 
-        assertTrue(petri.getConnections(t1).contains(con2));
-        assertFalse(petri.getConnections(t1).contains(con1));
+        Assert.assertTrue(petri.getConnections(t1).contains(con2));
+        Assert.assertFalse(petri.getConnections(t1).contains(con1));
 
         boolean thrown = true;
         try {
@@ -46,7 +43,7 @@ public class DOMTests {
             thrown = false;
         } catch (Throwable th) { }
 
-        assertTrue(thrown);
+        Assert.assertTrue(thrown);
     }
 
 }

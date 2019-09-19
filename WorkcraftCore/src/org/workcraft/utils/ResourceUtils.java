@@ -14,7 +14,7 @@ import java.util.jar.JarFile;
 public class ResourceUtils {
 
     public static Set<String> getResources(String path) throws URISyntaxException, IOException {
-        HashMap<String, URL> resourceToDirMap = new HashMap<String, URL>();
+        HashMap<String, URL> resourceToDirMap = new HashMap<>();
         if (!path.endsWith("/")) {
             path += "/";
         }
@@ -34,7 +34,7 @@ public class ResourceUtils {
     }
 
     private static Set<String> getResources(String path, URL url) throws URISyntaxException, IOException {
-        HashSet<String> result = new HashSet<String>();
+        HashSet<String> result = new HashSet<>();
         String protocol = url.getProtocol();
         if ("file".equals(protocol)) {
             File dir = new File(url.toURI());

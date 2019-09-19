@@ -1,10 +1,13 @@
 package org.workcraft.plugins.atacs.commands;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class ComplexGateSynthesisCommand extends AbstractSynthesisCommand {
 
     @Override
-    public String[] getSynthesisParameter() {
-        return new String[] {"-ot"};
+    public List<String> getSynthesisParameter() {
+        return Arrays.asList("-ot");
     }
 
     @Override

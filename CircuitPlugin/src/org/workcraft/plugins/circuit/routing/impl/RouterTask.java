@@ -17,7 +17,7 @@ import org.workcraft.plugins.circuit.routing.basic.RouterPort;
  */
 public class RouterTask {
 
-    private final List<Rectangle> rectangles = new ArrayList<Rectangle>();
+    private final List<Rectangle> rectangles = new ArrayList<>();
     private final List<Line> segments = new ArrayList<>();
     private final Set<RouterPort> ports = new HashSet<>();
     private final Set<RouterConnection> connections = new TreeSet<>();

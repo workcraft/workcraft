@@ -1,12 +1,5 @@
 package org.workcraft.plugins.son.tasks;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.son.ONGroup;
@@ -17,6 +10,8 @@ import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.exception.UnboundedException;
 import org.workcraft.plugins.son.util.Marking;
+
+import java.util.*;
 
 public class ONStructureTask extends AbstractStructuralVerification {
 
@@ -37,12 +32,12 @@ public class ONStructureTask extends AbstractStructuralVerification {
     public ONStructureTask(SON net) {
         super(net);
         this.net = net;
-
         onCycleAlg = new ONCycleAlg(net);
         asonAlg = new ASONAlg(net);
-        reachableMarkings = new HashMap<ONGroup, List<Marking>>();
+        reachableMarkings = new HashMap<>();
     }
 
+    @Override
     public void task(Collection<ONGroup> groups) {
 
         infoMsg("-------------------------Occurrence Net Structure Verification-------------------------");
@@ -57,8 +52,8 @@ public class ONStructureTask extends AbstractStructuralVerification {
         infoMsg("Group Components = " + components.size() + "\n");
 
         for (ONGroup group : groups) {
-
-            Collection<MathNode> task1, task2;
+            Collection<MathNode> task1;
+            Collection<MathNode> task2;
             Collection<Path> cycleResult;
 
             // group info

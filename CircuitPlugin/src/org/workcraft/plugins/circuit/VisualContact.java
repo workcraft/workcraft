@@ -387,11 +387,11 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
         return hitTestInLocalSpace(pointInLocalSpace) ? this : null;
     }
 
-    public void setDefaultDirection() {
+    public final void setDefaultDirection() {
         setDirection(getReferencedContact().getIOType() == IOType.INPUT ? Direction.WEST : Direction.EAST);
     }
 
-    public void setDirection(Direction value) {
+    public final void setDirection(Direction value) {
         if (direction != value) {
             sendNotification(new TransformChangingEvent(this));
             direction = value;

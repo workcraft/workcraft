@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class PropertyDerivative implements PropertyDescriptor {
 
-    final PropertyDescriptor descriptor;
+    private final PropertyDescriptor descriptor;
 
     public PropertyDerivative(PropertyDescriptor descriptor) {
         this.descriptor = descriptor;

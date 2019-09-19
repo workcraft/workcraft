@@ -52,7 +52,7 @@ final class OperationCancelDialog<T> extends JDialog implements ProgressMonitor<
     }
 
     @Override
-    public void finished(Result<? extends T> result) {
+    public void isFinished(Result<? extends T> result) {
         this.result = result;
         SwingUtilities.invokeLater(() -> setVisible(false));
         finished = true;

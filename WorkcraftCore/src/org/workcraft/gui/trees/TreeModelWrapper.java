@@ -10,18 +10,18 @@ import javax.swing.tree.TreePath;
 
 import org.workcraft.gui.workspace.Path;
 
-final class TreeModelWrapper<Node> implements TreeModel {
+final class TreeModelWrapper<T> implements TreeModel {
 
-    private final TreeSource<Node> source;
-    Map<TreeModelListener, TreeListenerWrapper<Node>> listeners = new HashMap<>();
+    private final TreeSource<T> source;
+    private final Map<TreeModelListener, TreeListenerWrapper<T>> listeners = new HashMap<>();
 
-    public void update(Path<Node> path) {
-        for (TreeListenerWrapper<Node> l : listeners.values()) {
+    public void update(Path<T> path) {
+        for (TreeListenerWrapper<T> l : listeners.values()) {
             l.restructured(path);
         }
     }
 
-    TreeModelWrapper(TreeSource<Node> source) {
+    TreeModelWrapper(TreeSource<T> source) {
         this.source = source;
     }
 
@@ -30,10 +30,10 @@ final class TreeModelWrapper<Node> implements TreeModel {
         source.addListener(wrap(l));
     }
 
-    private TreeListenerWrapper<Node> wrap(final TreeModelListener l) {
-        TreeListenerWrapper<Node> result = listeners.get(l);
+    private TreeListenerWrapper<T> wrap(final TreeModelListener l) {
+        TreeListenerWrapper<T> result = listeners.get(l);
         if (result == null) {
-            listeners.put(l, result = new TreeListenerWrapper<Node>(l));
+            listeners.put(l, result = new TreeListenerWrapper<T>(l));
         }
         return result;
     }
@@ -41,7 +41,7 @@ final class TreeModelWrapper<Node> implements TreeModel {
     @Override
     public Object getChild(Object parent, int index) {
         Object result = null;
-        List<Node> children = source.getChildren(cast(parent));
+        List<T> children = source.getChildren(cast(parent));
         if (index < children.size()) {
             result = children.get(index);
         }
@@ -53,7 +53,7 @@ final class TreeModelWrapper<Node> implements TreeModel {
         return getChildren(parent).size();
     }
 
-    private List<Node> getChildren(Object parent) {
+    private List<T> getChildren(Object parent) {
         return source.getChildren(cast(parent));
     }
 
@@ -73,8 +73,8 @@ final class TreeModelWrapper<Node> implements TreeModel {
     }
 
     @SuppressWarnings("unchecked")
-    private Node cast(Object node) {
-        return (Node) node;
+    private T cast(Object node) {
+        return (T) node;
     }
 
     @Override

@@ -20,35 +20,40 @@ import java.util.List;
 public class ParallelSimDialog extends JDialog {
     private static final long serialVersionUID = 1L;
 
-    private final SON net;
-    boolean isRev = false;
     private static final Color selectedColor = new Color(255, 228, 181);
-    private final Step possibleFire, minFire;
+
+    private final SON net;
+    private final boolean isRev;
+    private final Step possibleFire;
+    private final Step minFire;
     private final TransitionNode clickedEvent;
-    private JPanel eventPanel, buttonsPanel, eventInfoPanel;
+    private JPanel eventPanel;
+    private JPanel buttonsPanel;
+    private JPanel eventInfoPanel;
     private final Collection<Path> sync;
-    protected Dimension buttonSize = new Dimension(80, 25);
+    private final Dimension buttonSize = new Dimension(80, 25);
     private final HashSet<TransitionNode> selectedEvents = new HashSet<>();
     private int modalResult = 0;
 
     class EventItem {
         private final String label;
-        private boolean isSelected = false;
+        private boolean selected = false;
         private final TransitionNode event;
 
-        EventItem(String label, TransitionNode event, List<TransitionNode> postEvents) {
+        EventItem(String label, TransitionNode event) {
             this.label = label;
             this.event = event;
         }
 
         public boolean isSelected() {
-            return isSelected;
+            return selected;
         }
 
-        public void setSelected(boolean isSelected) {
-            this.isSelected = isSelected;
+        public void setSelected(boolean selected) {
+            this.selected = selected;
         }
 
+        @Override
         public String toString() {
             return label;
         }
@@ -70,6 +75,7 @@ public class ParallelSimDialog extends JDialog {
 
         private static final long serialVersionUID = 1L;
 
+        @Override
         public Component getListCellRendererComponent(
                 JList list, Object value, int index,
                 boolean isSelected, boolean hasFocus) {
@@ -93,7 +99,7 @@ public class ParallelSimDialog extends JDialog {
         DefaultListModel listModel = new DefaultListModel();
 
         for (TransitionNode event : this.possibleFire) {
-            EventItem item = new EventItem(net.getNodeReference(event) + "  " + event.getLabel(), event, possibleFire);
+            EventItem item = new EventItem(net.getNodeReference(event) + "  " + event.getLabel(), event);
             listModel.addElement(item);
         }
 
@@ -102,6 +108,7 @@ public class ParallelSimDialog extends JDialog {
         eventList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         eventList.addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseClicked(MouseEvent event) {
                 JList list = (JList) event.getSource();
 
@@ -263,6 +270,7 @@ public class ParallelSimDialog extends JDialog {
         setLocationRelativeTo(owner);
 
         addWindowListener(new WindowAdapter() {
+            @Override
             public void windowClosing(WindowEvent e) {
                 getSONModel().refreshAllColor();
             }

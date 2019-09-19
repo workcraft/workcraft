@@ -5,7 +5,7 @@ import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.observation.PropertyChangedEvent;
 
-@VisualClass(org.workcraft.plugins.circuit.VisualFunctionContact.class)
+@VisualClass(VisualFunctionContact.class)
 public class FunctionContact extends Contact {
     public static final String PROPERTY_SET_FUNCTION = "Set function";
     public static final String PROPERTY_RESET_FUNCTION = "Reset function";

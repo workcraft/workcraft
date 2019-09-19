@@ -8,11 +8,11 @@ import org.workcraft.formula.One;
 import org.workcraft.observation.PropertyChangedEvent;
 
 @IdentifierPrefix("v")
-@VisualClass(org.workcraft.plugins.cpog.VisualVertex.class)
+@VisualClass(VisualVertex.class)
 public class Vertex extends MathNode {
     public static final String PROPERTY_CONDITION = "Condition";
 
-    private BooleanFormula condition = One.instance();
+    private BooleanFormula condition = One.getInstance();
 
     public void setCondition(BooleanFormula value) {
         if (condition != value) {

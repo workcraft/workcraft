@@ -1,12 +1,7 @@
 package org.workcraft.gui.layouts;
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Insets;
-import java.awt.LayoutManager;
-
-import javax.swing.JLabel;
+import javax.swing.*;
+import java.awt.*;
 
 public class SimpleFlowLayout implements LayoutManager {
     @SuppressWarnings("serial")
@@ -22,8 +17,6 @@ public class SimpleFlowLayout implements LayoutManager {
             this(0);
         }
     }
-
-    //public static final LineBreak BR = new LineBreak();
 
     private int hgap;
     private int vgap;
@@ -54,12 +47,15 @@ public class SimpleFlowLayout implements LayoutManager {
         this.vgap = vgap;
     }
 
+    @Override
     public void addLayoutComponent(String name, Component comp) {
     }
 
+    @Override
     public void removeLayoutComponent(Component comp) {
     }
 
+    @Override
     public Dimension preferredLayoutSize(Container target) {
         synchronized (target.getTreeLock()) {
             applyLayout = false;
@@ -67,10 +63,12 @@ public class SimpleFlowLayout implements LayoutManager {
         }
     }
 
+    @Override
     public Dimension minimumLayoutSize(Container target) {
         return new Dimension(0, 0);
     }
 
+    @Override
     public void layoutContainer(Container target) {
         applyLayout = true;
         doLayout(target);
@@ -82,7 +80,8 @@ public class SimpleFlowLayout implements LayoutManager {
             int maxwidth = target.getWidth() - (insets.left + insets.right + hgap * 2);
             int nmembers = target.getComponentCount();
 
-            int x = insets.left, y = insets.top + vgap;
+            int x = insets.left;
+            int y = insets.top + vgap;
             int rowh = 0;
 
             for (int i = 0; i < nmembers; i++) {
@@ -125,4 +124,5 @@ public class SimpleFlowLayout implements LayoutManager {
             return new Dimension(maxwidth, y + rowh + (rowh != 0 ? vgap : 0));
         }
     }
+
 }

@@ -18,7 +18,7 @@ import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.stg.DummyTransition;
-import org.workcraft.plugins.stg.LabelParser;
+import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;

@@ -19,6 +19,7 @@ public class OutputPersisitencyVerificationCommand extends AbstractVerificationC
         return 1;
     }
 
+    @Override
     public String getDisplayName() {
         return "Output persistency [MPSat]";
     }

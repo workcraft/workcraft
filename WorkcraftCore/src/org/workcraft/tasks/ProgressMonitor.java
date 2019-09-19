@@ -5,6 +5,6 @@ public interface ProgressMonitor<T> {
     void progressUpdate(double completion);
     void stdout(byte[] data);
     void stderr(byte[] data);
-    void finished(Result<? extends T> result);
+    void isFinished(Result<? extends T> result);
     Result<? extends T> waitResult();
 }

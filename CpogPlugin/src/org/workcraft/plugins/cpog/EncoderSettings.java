@@ -24,16 +24,29 @@ public class EncoderSettings {
         }
     }
 
-    private int solutionNumber = 10, numPO, bits, circuitSize;
+    private int solutionNumber = 10;
+    private int numPO;
+    private int bits;
+    private int circuitSize;
     private GenerationMode genMode = GenerationMode.OPTIMAL_ENCODING;
-    private boolean verboseMode, customEncMode, effort, contMode, cpogSize, costFunc, abcFlag;
+    private boolean verboseMode;
+    private boolean customEncMode;
+    private boolean effort;
+    private boolean contMode;
+    private boolean cpogSize;
+    private boolean costFunc;
+    private boolean abcFlag;
     private String[] customEnc;
-    private String espressoPath, abcPath, libPath;
+    private String espressoPath;
+    private String abcPath;
+    private String libPath;
 
-    public EncoderSettings(String espressoPath, String abcPath, String libPath) {
-        this.espressoPath = espressoPath;
-        this.abcPath = abcPath;
-        this.libPath = libPath;
+    public EncoderSettings(int solutionNumber, GenerationMode genMode, boolean verboseMode,
+            boolean customEncMode) {
+        this.solutionNumber = solutionNumber;
+        this.genMode = genMode;
+        this.verboseMode = verboseMode;
+        this.customEncMode = customEncMode;
     }
 
     public int getCircuitSize() {
@@ -107,24 +120,6 @@ public class EncoderSettings {
         this.abcPath = abcPath;
     }
 
-    public EncoderSettings(int solutionNumber, GenerationMode genMode, boolean verboseMode,
-            boolean customEncMode, String[] customEnc, int numPO) {
-        this.solutionNumber = solutionNumber;
-        this.genMode = genMode;
-        this.verboseMode = verboseMode;
-        this.customEncMode = customEncMode;
-        this.numPO = numPO;
-        this.customEnc = customEnc;
-    }
-
-    public EncoderSettings(int solutionNumber, GenerationMode genMode, boolean verboseMode,
-            boolean customEncMode) {
-        this.solutionNumber = solutionNumber;
-        this.genMode = genMode;
-        this.verboseMode = verboseMode;
-        this.customEncMode = customEncMode;
-    }
-
     public int getSolutionNumber() {
         return solutionNumber;
     }
@@ -155,6 +150,7 @@ public class EncoderSettings {
             break;
         default:
             System.out.println("Error.");
+            break;
         }
     }
 

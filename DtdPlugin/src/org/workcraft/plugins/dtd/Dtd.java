@@ -10,7 +10,7 @@ import org.workcraft.utils.Hierarchy;
 
 import java.util.Collection;
 
-@VisualClass(org.workcraft.plugins.dtd.VisualDtd.class)
+@VisualClass(VisualDtd.class)
 public class Dtd extends AbstractMathModel {
 
     public Dtd() {

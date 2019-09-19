@@ -5,13 +5,15 @@ import org.workcraft.plugins.atacs.AtacsSettings;
 import org.workcraft.plugins.atacs.tasks.SynthesisResultHandler;
 import org.workcraft.plugins.atacs.tasks.SynthesisTask;
 import org.workcraft.plugins.stg.*;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.DialogUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 
 public abstract class AbstractSynthesisCommand extends org.workcraft.commands.AbstractSynthesisCommand {
 
@@ -87,6 +89,6 @@ public abstract class AbstractSynthesisCommand extends org.workcraft.commands.Ab
         return false;
     }
 
-    public abstract String[] getSynthesisParameter();
+    public abstract List<String> getSynthesisParameter();
 
 }

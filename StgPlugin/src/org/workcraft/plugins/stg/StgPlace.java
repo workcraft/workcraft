@@ -8,7 +8,7 @@ import org.workcraft.plugins.petri.Place;
 
 @DisplayName("Place")
 @IdentifierPrefix("p")
-@VisualClass(org.workcraft.plugins.stg.VisualStgPlace.class)
+@VisualClass(VisualStgPlace.class)
 public class StgPlace extends Place {
     public static final String PROPERTY_IMPLICIT = "Implicit";
     public static final String PROPERTY_MUTEX = "Mutex";

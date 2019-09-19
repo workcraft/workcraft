@@ -17,20 +17,19 @@ import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.petrify.PetrifyUtils;
-import org.workcraft.tasks.ExportOutput;
-import org.workcraft.tasks.ExportTask;
-import org.workcraft.tasks.ExternalProcessOutput;
-import org.workcraft.tasks.ExternalProcessTask;
-import org.workcraft.plugins.stg.*;
+import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.plugins.stg.utils.MutexUtils;
+import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.plugins.stg.utils.StgUtils;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.Result;
+import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.tasks.SubtaskMonitor;
-import org.workcraft.tasks.Task;
-import org.workcraft.utils.*;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.ExecutableUtils;
+import org.workcraft.utils.ExportUtils;
+import org.workcraft.utils.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.ByteArrayInputStream;
@@ -38,14 +37,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 public class TransformationTask implements Task<TransformationOutput>, ExternalProcessListener {
 
     private final WorkspaceEntry we;
-    String[] args;
+    private final List<String> args;
     private final Collection<Mutex> mutexes;
 
-    public TransformationTask(WorkspaceEntry we, String description, String[] args, Collection<Mutex> mutexes) {
+    public TransformationTask(WorkspaceEntry we, List<String> args, Collection<Mutex> mutexes) {
         this.we = we;
         this.args = args;
         this.mutexes = mutexes;
@@ -64,9 +64,7 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
         command.add(toolName);
 
         // Built-in arguments
-        for (String arg : args) {
-            command.add(arg);
-        }
+        command.addAll(args);
 
         // Extra arguments (should go before the file parameters)
         String extraArgs = PetrifySettings.getArgs();
@@ -161,7 +159,6 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
     }
 
     private File getInputFile(Model model, File directory) {
-        final Framework framework = Framework.getInstance();
         Format format = null;
         String extension = null;
         if (model instanceof PetriModel) {
@@ -175,11 +172,12 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
             throw new RuntimeException("This tool is not applicable to " + model.getDisplayName() + " model.");
         }
 
-        File file = new File(directory, StgUtils.SPEC_FILE_PREFIX + extension);
+        final Framework framework = Framework.getInstance();
         Exporter exporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), model, format);
         if (exporter == null) {
             throw new NoExporterException(model, format);
         }
+        File file = new File(directory, StgUtils.SPEC_FILE_PREFIX + extension);
         ExportTask exportTask = new ExportTask(exporter, model, file);
         Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(exportTask, "Exporting model");
         if (exportResult.getOutcome() != Outcome.SUCCESS) {

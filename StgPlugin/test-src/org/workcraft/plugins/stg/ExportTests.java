@@ -66,10 +66,10 @@ public class ExportTests {
                 "  node [shape=box, fixedsize=true];%n");
 
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
-        testCircuitExport(workName, gHeader, lpnHeader, svgHeader, pngHeader, pdfHeader, epsHeader, psHeader, dotHeader);
+        checkCircuitExport(workName, gHeader, lpnHeader, svgHeader, pngHeader, pdfHeader, epsHeader, psHeader, dotHeader);
     }
 
-    public void testCircuitExport(String workName, String gHeader, String lpnHeader,
+    public void checkCircuitExport(String workName, String gHeader, String lpnHeader,
             String svgHeader, String pngHeader, String pdfHeader, String epsHeader, String psHeader, String dotHeader)
                     throws DeserialisationException, IOException, SerialisationException {
 

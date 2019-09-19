@@ -6,14 +6,14 @@ import org.workcraft.plugins.mpsat.tasks.PunfOutputParser.Cause;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
-import org.workcraft.tasks.ExportOutput;
-import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.tasks.AbstractResultHandler;
+import org.workcraft.tasks.ExportOutput;
+import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.utils.DialogUtils;
 import org.workcraft.types.Pair;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
@@ -137,8 +137,6 @@ public class CombinedChainResultHandler extends AbstractResultHandler<CombinedCh
 
     private boolean handlePartialFailure(final Result<? extends CombinedChainOutput> chainResult) {
         CombinedChainOutput chainOutput = chainResult.getPayload();
-        Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
-        ExportOutput exportOutput = (exportResult == null) ? null : exportResult.getPayload();
         Result<? extends PcompOutput> pcompResult = (chainOutput == null) ? null : chainOutput.getPcompResult();
         if ((pcompResult != null) && (pcompResult.getOutcome() == Outcome.FAILURE)) {
             return false;
@@ -167,6 +165,8 @@ public class CombinedChainResultHandler extends AbstractResultHandler<CombinedCh
                     VerificationOutput mpsatFakeOutput = new VerificationOutput(new ExternalProcessOutput(0,
                             mpsatFakeStdout.getBytes(), new byte[0]));
 
+                    Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
+                    ExportOutput exportOutput = (exportResult == null) ? null : exportResult.getPayload();
                     SwingUtilities.invokeLater(new ConsistencyOutputHandler(
                             we, exportOutput, pcompOutput, mpsatFakeOutput, VerificationParameters.getConsistencySettings()));
                 } else {

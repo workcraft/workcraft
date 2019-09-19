@@ -24,7 +24,7 @@ public class NwayDialog extends ModalDialog<Void> {
         // Check all works in the workspace
         Workspace workspace = Framework.getInstance().getWorkspace();
         for (WorkspaceEntry we : workspace.getWorks()) {
-            setChecked(we, true);
+            chooser.setChecked(we.getWorkspacePath(), true);
         }
     }
 
@@ -39,10 +39,6 @@ public class NwayDialog extends ModalDialog<Void> {
         result.setLayout(new BorderLayout());
         result.add(chooser, BorderLayout.CENTER);
         return result;
-    }
-
-    public void setChecked(WorkspaceEntry we, boolean value) {
-        chooser.setChecked(we.getWorkspacePath(), value);
     }
 
     public Set<Path<String>> getSourcePaths() {

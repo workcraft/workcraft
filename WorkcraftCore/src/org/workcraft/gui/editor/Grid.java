@@ -15,8 +15,6 @@ import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
 /**
  * The <code>Grid</code> class is used to generate and draw the background grid, guidelines,
  * as well as to handle the coordinate "snapping".
- * @author Ivan Poliakov
- *
  */
 public class Grid implements ViewportListener {
     protected double minorIntervalFactor = 0.1;
@@ -125,7 +123,7 @@ public class Grid implements ViewportListener {
         minorLinePositionsScreen = new int[2][];
         majorLinePositionsScreen = new int[2][];
 
-        listeners = new LinkedList<GridListener>();
+        listeners = new LinkedList<>();
 
         stroke = new BasicStroke();
     }
@@ -454,10 +452,12 @@ public class Grid implements ViewportListener {
         return majorLinePositionsScreen;
     }
 
+    @Override
     public void shapeChanged(Viewport sender) {
         updateGrid(sender);
     }
 
+    @Override
     public void viewChanged(Viewport sender) {
         updateGrid(sender);
     }
@@ -489,4 +489,5 @@ public class Grid implements ViewportListener {
         double m = majorInterval * minorIntervalFactor;
         return Math.floor(x / m + 0.5) * m;
     }
+
 }

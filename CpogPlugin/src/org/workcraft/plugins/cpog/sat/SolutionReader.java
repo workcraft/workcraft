@@ -9,6 +9,7 @@ import java.io.StringReader;
 import java.util.*;
 
 public class SolutionReader {
+
     private static Map<Integer, String> extractCnfMapping(String cnf) {
         HashMap<Integer, String> map = new HashMap<>();
 
@@ -56,16 +57,14 @@ public class SolutionReader {
     }
 
     public static BooleanSolution readSolution(CnfTask task, String solution) {
-        Map<String, BooleanVariable> vars = task.getVars();
-
-        Map<Integer, String> cnfToOriginal = extractCnfMapping(task.getBody());
-
         List<Integer> numbers = extractNumbers(solution);
         if (numbers == null) {
             return null;
         }
 
         final Map<BooleanVariable, Boolean> results = new HashMap<>();
+        Map<Integer, String> cnfToOriginal = extractCnfMapping(task.getBody());
+        Map<String, BooleanVariable> vars = task.getVars();
         for (int i = 0; i < numbers.size(); i++) {
             int cnfIndex = numbers.get(i);
             boolean value = cnfIndex >= 0;
@@ -74,11 +73,11 @@ public class SolutionReader {
             }
             String varName = cnfToOriginal.get(cnfIndex);
             if (varName != null) {
-                if (varName.equals("0")) {
+                if ("0".equals(varName)) {
                     if (value) {
                         throw new RuntimeException("0");
                     }
-                } else if (varName.equals("1")) {
+                } else if ("1".equals(varName)) {
                     if (!value) {
                         throw new RuntimeException("!1");
                     }

@@ -9,7 +9,10 @@ import org.workcraft.plugins.son.util.ScenarioRef;
 
 public class TimeConsistencySettings {
 
-    private final boolean inconsistencyHighlight, unspecifyHighlight, causalConsistency, causalHighlight;
+    private final boolean inconsistencyHighlight;
+    private final boolean unspecifyHighlight;
+    private final boolean causalConsistency;
+    private final boolean causalHighlight;
     private final ArrayList<ONGroup> selectedGroups;
     private final ScenarioRef seletedScenario;
     private final ArrayList<Node> seletedNodes;

@@ -4,6 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.generators.DefaultNodeGenerator;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.HierarchyReferenceManager;
@@ -12,19 +13,18 @@ import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.dom.generators.DefaultNodeGenerator;
-import org.workcraft.gui.tools.CommentGeneratorTool;
-import org.workcraft.gui.tools.GraphEditorTool;
-import org.workcraft.gui.tools.NodeGeneratorTool;
 import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.tools.CommentGeneratorTool;
+import org.workcraft.gui.tools.GraphEditorTool;
+import org.workcraft.gui.tools.NodeGeneratorTool;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
-import org.workcraft.plugins.son.elements.*;
 import org.workcraft.plugins.son.elements.Event;
+import org.workcraft.plugins.son.elements.*;
 import org.workcraft.plugins.son.tools.*;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.utils.Hierarchy;
@@ -32,8 +32,8 @@ import org.workcraft.utils.Hierarchy;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 @DisplayName ("Structured Occurrence Nets")
 public class VisualSON extends AbstractVisualModel {
@@ -242,8 +242,6 @@ public class VisualSON extends AbstractVisualModel {
 
     private Collection<VisualNode> getGroupableSelection() {
         Collection<VisualNode> result = new HashSet<>();
-        Collection<VisualNode> selection = new HashSet<>();
-        boolean validate = false;
 
         final Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
@@ -255,6 +253,7 @@ public class VisualSON extends AbstractVisualModel {
             return result;
         }
 
+        Collection<VisualNode> selection = new HashSet<>();
         for (VisualNode node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
             if (node instanceof VisualPage) {
                 selection.addAll(Hierarchy.getDescendantsOfType(node, VisualComponent.class));
@@ -284,6 +283,7 @@ public class VisualSON extends AbstractVisualModel {
             return result;
         }
 
+        boolean validate = false;
         for (VisualNode node : result) {
             if (node instanceof VisualCondition) {
                 validate = true;
@@ -318,11 +318,10 @@ public class VisualSON extends AbstractVisualModel {
         return true;
     }
 
+    @Override
     public VisualGroup groupSelection() {
         Collection<VisualNode> selected = getGroupableSelection();
-
-        if (selected.size() > 0) {
-
+        if (!selected.isEmpty()) {
             ONGroup mathGroup = new ONGroup();
             VisualONGroup group = new VisualONGroup(mathGroup);
             Container currentLevel = getCurrentLevel();

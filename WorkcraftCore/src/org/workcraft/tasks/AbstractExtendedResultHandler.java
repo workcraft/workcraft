@@ -4,9 +4,9 @@ public abstract class AbstractExtendedResultHandler<T, R> extends BasicProgressM
     private R handledResult = null;
 
     @Override
-    public final void finished(Result<? extends T> result) {
+    public final void isFinished(Result<? extends T> result) {
         handledResult = handleResult(result);
-        super.finished(result);
+        super.isFinished(result);
     }
 
     public final R waitForHandledResult() {

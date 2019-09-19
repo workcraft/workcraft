@@ -6,7 +6,7 @@ import org.workcraft.commands.AbstractSynthesisCommand;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.MutexUtils;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.utils.DesktopApi;
@@ -44,13 +44,13 @@ public class TestUtils {
         return dirName + "/" + fileName;
     }
 
-    public static <C extends AbstractSynthesisCommand> void testSynthesisCommand(Class<C> cls, String workName,
+    public static <C extends AbstractSynthesisCommand> void checkSynthesisCommand(Class<C> cls, String workName,
             int expectedComponentCount)
             throws DeserialisationException, InstantiationException, IllegalAccessException {
-        testSynthesisCommand(cls, workName, expectedComponentCount, expectedComponentCount);
+        checkSynthesisCommand(cls, workName, expectedComponentCount, expectedComponentCount);
     }
 
-    public static <C extends AbstractSynthesisCommand> void testSynthesisCommand(Class<C> cls, String workName,
+    public static <C extends AbstractSynthesisCommand> void checkSynthesisCommand(Class<C> cls, String workName,
             int minComponentCount, int maxComponentCount)
             throws DeserialisationException, InstantiationException, IllegalAccessException {
 

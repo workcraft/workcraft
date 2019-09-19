@@ -15,8 +15,8 @@ import org.workcraft.utils.GuiUtils;
 
 public class SignalTransitionGeneratorTool extends NodeGeneratorTool {
 
-    static boolean shiftKeyDown;
-    static boolean menuKeyDown;
+    private static boolean shiftKeyDown;
+    private static boolean menuKeyDown;
 
     public SignalTransitionGeneratorTool() {
         super(new DefaultNodeGenerator(SignalTransition.class) {

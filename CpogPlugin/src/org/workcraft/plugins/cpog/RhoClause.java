@@ -8,11 +8,11 @@ import org.workcraft.formula.One;
 import org.workcraft.observation.PropertyChangedEvent;
 
 @IdentifierPrefix("rho")
-@VisualClass(org.workcraft.plugins.cpog.VisualRhoClause.class)
+@VisualClass(VisualRhoClause.class)
 public class RhoClause extends MathNode {
     public static final String PROPERTY_FORMULA = "Formula";
 
-    private BooleanFormula formula = One.instance();
+    private BooleanFormula formula = One.getInstance();
 
     public void setFormula(BooleanFormula value) {
         if (formula != value) {

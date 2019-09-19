@@ -22,9 +22,9 @@ public class Block extends PageNode implements TransitionNode, Time {
     private Color fillColor = CommonVisualSettings.getFillColor();
     private boolean isCollapsed = false;
 
-    private Interval duration = new Interval(0000, 9999);
-    private Interval statTime = new Interval(0000, 9999);
-    private Interval endTime = new Interval(0000, 9999);
+    private Interval duration = new Interval(0, 9999);
+    private Interval statTime = new Interval(0, 9999);
+    private Interval endTime = new Interval(0, 9999);
 
     private Color durationColor = Color.BLACK;
 
@@ -120,6 +120,7 @@ public class Block extends PageNode implements TransitionNode, Time {
     public void setFaulty(boolean fault) {
     }
 
+    @Override
     public void setDuration(Interval value) {
         if (duration != value) {
             duration = value;

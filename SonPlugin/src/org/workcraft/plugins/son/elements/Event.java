@@ -18,9 +18,9 @@ public class Event extends MathNode implements TransitionNode, Time {
     private String label = "";
     private Boolean faulty = false;
 
-    private Interval statTime = new Interval(0000, 9999);
-    private Interval endTime = new Interval(0000, 9999);
-    private Interval duration = new Interval(0000, 0000);
+    private Interval statTime = new Interval(0, 9999);
+    private Interval endTime = new Interval(0, 9999);
+    private Interval duration = new Interval(0, 0);
 
     @Override
     public void setLabel(String value) {
@@ -54,6 +54,7 @@ public class Event extends MathNode implements TransitionNode, Time {
         return faulty;
     }
 
+    @Override
     public void setStartTime(Interval value) {
         if (endTime != value) {
             statTime = value;
@@ -61,10 +62,12 @@ public class Event extends MathNode implements TransitionNode, Time {
         }
     }
 
+    @Override
     public Interval getStartTime() {
         return statTime;
     }
 
+    @Override
     public void setEndTime(Interval value) {
         if (endTime != value) {
             endTime = value;
@@ -72,10 +75,12 @@ public class Event extends MathNode implements TransitionNode, Time {
         }
     }
 
+    @Override
     public Interval getEndTime() {
         return endTime;
     }
 
+    @Override
     public void setDuration(Interval value) {
         if (duration != value) {
             duration = value;
@@ -83,6 +88,7 @@ public class Event extends MathNode implements TransitionNode, Time {
         }
     }
 
+    @Override
     public Interval getDuration() {
         return duration;
     }
@@ -107,4 +113,5 @@ public class Event extends MathNode implements TransitionNode, Time {
     public Color getFillColor() {
         return fillColor;
     }
+
 }

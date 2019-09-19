@@ -4,13 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MemoryConservingBooleanWorker implements ReducedBooleanWorker {
-    Map<BooleanFormula, Integer> codes = new HashMap<>();
-    Map<IntPair, BooleanFormula> ands = new HashMap<>();
-    Map<IntPair, BooleanFormula> iffs = new HashMap<>();
-    Map<Integer, BooleanFormula> nots = new HashMap<>();
-    int nextCode = 0;
 
-    Integer getCode(BooleanFormula f) {
+    private final Map<BooleanFormula, Integer> codes = new HashMap<>();
+    private final Map<IntPair, BooleanFormula> ands = new HashMap<>();
+    private final Map<IntPair, BooleanFormula> iffs = new HashMap<>();
+    private final Map<Integer, BooleanFormula> nots = new HashMap<>();
+    private int nextCode = 0;
+
+    private Integer getCode(BooleanFormula f) {
         Integer code = codes.get(f);
         if (code == null) {
             // if (!(f instanceof FreeVariable))
@@ -31,6 +32,9 @@ public class MemoryConservingBooleanWorker implements ReducedBooleanWorker {
     }
 
     class IntPair {
+        private final Integer x;
+        private final Integer y;
+
         IntPair(Integer x, Integer y) {
             if (y < x) {
                 Integer tmp = x;
@@ -40,9 +44,6 @@ public class MemoryConservingBooleanWorker implements ReducedBooleanWorker {
             this.x = x;
             this.y = y;
         }
-
-        final Integer x;
-        final Integer y;
 
         @Override
         public boolean equals(Object obj) {
@@ -68,6 +69,7 @@ public class MemoryConservingBooleanWorker implements ReducedBooleanWorker {
         }
     }
 
+    @Override
     public BooleanFormula not(BooleanFormula f) {
         Integer code = getCode(f);
         BooleanFormula res = nots.get(code);
@@ -79,6 +81,7 @@ public class MemoryConservingBooleanWorker implements ReducedBooleanWorker {
         return res;
     }
 
+    @Override
     public BooleanFormula and(BooleanFormula x, BooleanFormula y) {
         IntPair pair = getCodePair(x, y);
         BooleanFormula result = ands.get(pair);
@@ -96,6 +99,7 @@ public class MemoryConservingBooleanWorker implements ReducedBooleanWorker {
         return new IntPair(xCode, yCode);
     }
 
+    @Override
     public BooleanFormula iff(BooleanFormula x, BooleanFormula y) {
         IntPair pair = getCodePair(x, y);
         IntPair pairInv = getCodePair(not(x), not(y));

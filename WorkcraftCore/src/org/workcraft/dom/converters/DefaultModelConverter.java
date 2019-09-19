@@ -15,9 +15,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel extends VisualModel> extends AbstractModelConverter<TSrcModel, TDstModel> {
+public class DefaultModelConverter<S extends VisualModel, T extends VisualModel>
+        extends AbstractModelConverter<S, T> {
 
-    public DefaultModelConverter(TSrcModel srcModel, TDstModel dstModel) {
+    public DefaultModelConverter(S srcModel, T dstModel) {
         super(srcModel, dstModel);
     }
 

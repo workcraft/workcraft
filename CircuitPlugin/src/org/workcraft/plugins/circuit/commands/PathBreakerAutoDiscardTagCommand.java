@@ -12,17 +12,17 @@ import java.util.function.Function;
 public class PathBreakerAutoDiscardTagCommand extends AbstractTagCommand {
 
     @Override
-    Function<Circuit, Collection<Contact>> getFunction() {
+    public Function<Circuit, Collection<Contact>> getFunction() {
         return circuit -> CycleUtils.tagPathBreakerAutoDiscard(circuit);
     }
 
     @Override
-    String getMessage() {
+    public String getMessage() {
         return "Auto-discarded path breaker pin";
     }
 
     @Override
-    Class<? extends GraphEditorTool> getToolClass() {
+    public Class<? extends GraphEditorTool> getToolClass() {
         return CycleAnalyserTool.class;
     }
 

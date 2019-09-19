@@ -1,8 +1,5 @@
 package org.workcraft.plugins.stg.references;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.IDGenerator;
 import org.workcraft.exceptions.ArgumentException;
@@ -13,6 +10,9 @@ import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.types.GeneralTwoWayMap;
 import org.workcraft.types.Pair;
 import org.workcraft.types.TwoWayMap;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class InstanceManager {
 
@@ -42,14 +42,13 @@ public class InstanceManager {
      */
     public void assign(Node node) {
         final Pair<String, Integer> assigned = instances.getValue(node);
-        final Integer instance;
         if (assigned != null) {
             throw new ArgumentException("Instance already assigned to '"
                     + getLabel(node) + "/" + assigned.getSecond() + "'");
         }
         final String label = getLabel(node);
-        instance = getGenerator(label).getNextID();
-        instances.put(node, new Pair<String, Integer>(label, instance));
+        final Integer instance = getGenerator(label).getNextID();
+        instances.put(node, Pair.of(label, instance));
     }
 
     /**

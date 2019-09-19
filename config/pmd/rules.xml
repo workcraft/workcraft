@@ -5,42 +5,85 @@
         xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd"
         xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd">
 
-    <rule ref="rulesets/java/basic.xml/ForLoopShouldBeWhileLoop"/>
-    <rule ref="rulesets/java/basic.xml/ExtendsObject"/>
-    <rule ref="rulesets/java/basic.xml/BrokenNullCheck"/>
-    <rule ref="rulesets/java/basic.xml/MisplacedNullCheck"/>
-    <rule ref="rulesets/java/basic.xml/AvoidMultipleUnaryOperators"/>
-    <rule ref="rulesets/java/basic.xml/UnconditionalIfStatement"/>
+    <description>Workcraft ruleset</description>
 
-    <rule ref="rulesets/java/imports.xml">
+    <rule ref="category/java/bestpractices.xml">
+        <exclude name="LooseCoupling"/> <!-- Used often -->
+        <exclude name="AvoidReassigningParameters"/> <!-- Used often -->
+        <exclude name="UnusedImports"/> <!-- Forbids on demand imports -->
+        <exclude name="JUnitTestsShouldIncludeAssert"/>
+        <exclude name="AvoidPrintStackTrace"/>
+        <exclude name="SwitchStmtsShouldHaveDefault"/>
+        <exclude name="SystemPrintln"/> <!-- Used often -->
+        <exclude name="UseVarargs"/> <!-- Used often -->
+        <exclude name="MethodReturnsInternalArray"/>
+        <exclude name="ArrayIsStoredDirectly"/>
+        <exclude name="AvoidStringBufferField"/>
+        <exclude name="ForLoopCanBeForeach"/>
+        <exclude name="PreserveStackTrace"/>
+        <exclude name="GuardLogStatement"/>
+        <exclude name="PositionLiteralsFirstInComparisons"/>
+    </rule>
+    <rule ref="category/java/bestpractices.xml/AvoidReassigningLoopVariables">
+        <properties>
+            <property name="foreachReassign" value="deny" />
+            <property name="forReassign" value="skip" />
+        </properties>
+    </rule>
+
+    <rule ref="category/java/codestyle.xml">
         <exclude name="TooManyStaticImports"/> <!-- Used often -->
-    </rule>
-    <rule ref="rulesets/java/unnecessary.xml">
+        <exclude name="FieldNamingConventions"/> <!-- Used often -->
+        <exclude name="CallSuperInConstructor"/> <!-- Used often -->
+        <exclude name="ConfusingTernary"/> <!-- Used often -->
+        <exclude name="UnnecessaryFullyQualifiedName"/> <!-- Used often -->
         <exclude name="UselessParentheses"/> <!--Too nitpicky-->
+        <exclude name="AtLeastOneConstructor"/>
+        <exclude name="MethodArgumentCouldBeFinal"/>
+        <exclude name="LocalVariableCouldBeFinal"/>
+        <exclude name="OnlyOneReturn"/>
+        <exclude name="ShortVariable"/> <!-- Used often -->
+        <exclude name="LongVariable"/> <!-- Used often -->
+        <exclude name="ShortMethodName"/> <!-- Used often -->
+        <exclude name="EmptyMethodInAbstractClassShouldBeAbstract"/>
+        <exclude name="ShortClassName"/>
+        <exclude name="ControlStatementBraces"/>
+        <exclude name="CommentDefaultAccessModifier"/>
+        <exclude name="BooleanGetMethodName"/>
+        <exclude name="LinguisticNaming"/>
+        <exclude name="FieldDeclarationsShouldBeAtStartOfClass"/> <!-- Used often -->
+        <exclude name="UseUnderscoresInNumericLiterals"/>
+        <exclude name="PrematureDeclaration"/>
     </rule>
-    <rule ref="rulesets/java/empty.xml">
+    <rule ref="category/java/codestyle.xml/ClassNamingConventions">
+        <properties>
+            <property name="utilityClassPattern" value="[A-Z][a-zA-Z0-9]*" />
+        </properties>
+    </rule>
+
+    <rule ref="category/java/errorprone.xml">
         <exclude name="EmptyCatchBlock"/> <!--Ignoring an exception-->
         <exclude name="EmptyIfStmt"/> <!--Can be useful sometimes-->
         <exclude name="EmptyWhileStmt"/> <!--Can be useful sometimes-->
+        <exclude name="AvoidLiteralsInIfCondition"/>
+        <exclude name="DataflowAnomalyAnalysis"/>
+        <exclude name="MissingSerialVersionUID"/>
+        <exclude name="BeanMembersShouldSerialize"/>
+        <exclude name="CloseResource"/>
+        <exclude name="AvoidCatchingThrowable"/>
+        <exclude name="AvoidDuplicateLiterals"/>
+        <exclude name="NullAssignment"/>
+        <exclude name="CompareObjectsWithEquals"/>
+        <exclude name="AvoidBranchingStatementAsLastInLoop"/>
+        <exclude name="AssignmentInOperand"/>
+        <exclude name="ConstructorCallsOverridableMethod"/> <!-- Used often -->
+        <exclude name="DoNotCallSystemExit"/>
     </rule>
-    <rule ref="rulesets/java/unusedcode.xml/UnusedLocalVariable"/>
-    <rule ref="rulesets/java/unusedcode.xml/UnusedModifier"/>
-    <rule ref="rulesets/java/unusedcode.xml/UnusedPrivateField"/>
 
-    <rule ref="rulesets/java/controversial.xml/UnnecessaryConstructor"/>
-    <rule ref="rulesets/java/controversial.xml/UnnecessaryParentheses"/>
-
-    <rule ref="rulesets/java/design.xml/NonCaseLabelInSwitchStatement"/>
-    <rule ref="rulesets/java/design.xml/DefaultLabelNotLastInSwitchStmt"/>
-    <rule ref="rulesets/java/design.xml/IdempotentOperations"/>
-    <rule ref="rulesets/java/design.xml/FinalFieldCouldBeStatic"/>
-    <rule ref="rulesets/java/design.xml/ImmutableField"/>
-    <rule ref="rulesets/java/design.xml/SingularField"/>
-    <rule ref="rulesets/java/design.xml/UnnecessaryLocalBeforeReturn"/>
-    <rule ref="rulesets/java/design.xml/LogicInversion"/>
-    <rule ref="rulesets/java/design.xml/EqualsNull"/>
-
-    <rule ref="rulesets/java/strictexception.xml/AvoidRethrowingException"/>
-    <rule ref="rulesets/java/strictexception.xml/DoNotExtendJavaLangError"/>
-    <rule ref="rulesets/java/strictexception.xml/DoNotThrowExceptionInFinally"/>
+    <rule ref="category/java/design.xml/FinalFieldCouldBeStatic"/>
+    <rule ref="category/java/design.xml/ImmutableField"/>
+    <rule ref="category/java/design.xml/SingularField"/>
+    <rule ref="category/java/design.xml/LogicInversion"/>
+    <rule ref="category/java/design.xml/AvoidRethrowingException"/>
+    <rule ref="category/java/design.xml/DoNotExtendJavaLangError"/>
 </ruleset>

@@ -23,7 +23,7 @@ public class SymbolConsistencySupervisor extends StateSupervisor {
             Object sender = e.getSender();
             if ((sender instanceof Event) && pce.getPropertyName().equals(Event.PROPERTY_SYMBOL)) {
                 // Update the collection of symbols on a change of event symbol property
-                handleEventSymbolChange((Event) sender);
+                handleEventSymbolChange();
             }
         }
     }
@@ -40,7 +40,7 @@ public class SymbolConsistencySupervisor extends StateSupervisor {
         }
     }
 
-    private void handleEventSymbolChange(Event event) {
+    private void handleEventSymbolChange() {
         HashSet<Symbol> unusedSymbols = new HashSet<>(fsm.getSymbols());
         for (Event e: fsm.getEvents()) {
             Symbol symbol = e.getSymbol();

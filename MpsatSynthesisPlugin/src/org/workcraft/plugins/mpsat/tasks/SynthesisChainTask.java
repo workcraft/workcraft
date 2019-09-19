@@ -9,7 +9,7 @@ import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.tasks.ExportTask;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.MutexUtils;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.StgUtils;

@@ -36,6 +36,7 @@ public class ControlPoint extends VisualTransformableNode implements Drawable, T
         g.fill(shape);
     }
 
+    @Override
     public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
         return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
     }

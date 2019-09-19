@@ -13,7 +13,8 @@ public class AlgebraExportDialog extends JDialog {
 
     private final JTextField filePath;
     private final JButton selectFileBtn;
-    private final JRadioButton pasteRB, exportRB;
+    private final JRadioButton pasteRB;
+    private final JRadioButton exportRB;
     private boolean modalResult;
 
     public AlgebraExportDialog() {

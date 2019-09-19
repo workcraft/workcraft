@@ -26,8 +26,8 @@ public class Workspace {
     private boolean temporary = true;
     private boolean changed = false;
     private File workspaceFile;
-    private final Map<Path<String>, File> mounts = new HashMap<Path<String>, File>();
-    private final Map<Path<String>, File> permanentMounts = new HashMap<Path<String>, File>();
+    private final Map<Path<String>, File> mounts = new HashMap<>();
+    private final Map<Path<String>, File> permanentMounts = new HashMap<>();
     private final LinkedTwoWayMap<Path<String>, WorkspaceEntry> openFiles = new LinkedTwoWayMap<>();
     private final List<WorkspaceListener> workspaceListeners = new ArrayList<>();
 
@@ -180,7 +180,7 @@ public class Workspace {
             Document doc = XmlUtils.loadDocument(workspaceFile);
             Element xmlroot = doc.getDocumentElement();
 
-            if (xmlroot.getNodeName() != "workcraft-workspace") {
+            if (!"workcraft-workspace".equals(xmlroot.getNodeName())) {
                 throw new DeserialisationException("not a Workcraft workspace file");
             }
             List<Element> mounts = XmlUtils.getChildElements("mount", xmlroot);
@@ -193,7 +193,7 @@ public class Workspace {
                 }
                 addMount(Path.fromString(mountPoint), file, false);
             }
-            addMount(Path.<String>empty(), getBaseDir(), true);
+            addMount(Path.empty(), getBaseDir(), true);
             setTemporary(false);
         } catch (ParserConfigurationException | SAXException | IOException e) {
             throw new DeserialisationException(e);
@@ -276,28 +276,28 @@ public class Workspace {
         }
     }
 
-    private void fireWorkspaceSaved() {
+    public void fireWorkspaceSaved() {
         changed = false;
         for (WorkspaceListener listener : workspaceListeners) {
             listener.workspaceSaved();
         }
     }
 
-    void fireEntryAdded(WorkspaceEntry we) {
+    public void fireEntryAdded(WorkspaceEntry we) {
         changed = true;
         for (WorkspaceListener listener : workspaceListeners) {
             listener.entryAdded(we);
         }
     }
 
-    void fireEntryRemoved(WorkspaceEntry we) {
+    public void fireEntryRemoved(WorkspaceEntry we) {
         changed = true;
         for (WorkspaceListener listener : workspaceListeners) {
             listener.entryRemoved(we);
         }
     }
 
-    void fireEntryChanged(WorkspaceEntry we) {
+    public void fireEntryChanged(WorkspaceEntry we) {
         changed = true;
         for (WorkspaceListener listener : workspaceListeners) {
             listener.entryChanged(we);
@@ -356,17 +356,17 @@ public class Workspace {
     }
 
     public void moveEntry(Path<String> from, Path<String> to) throws IOException {
-        final WorkspaceEntry openFileFrom = openFiles.getValue(from);
         final WorkspaceEntry openFileTo = openFiles.getValue(to);
         if (openFileTo != null) {
-            final Path<String> newName = createWorkPath(to.getParent(), to.getNode());
             final File toDelete = openFileTo.getFile();
             if (toDelete.exists() && !toDelete.delete()) {
                 throw new IOException("Unable to delete '" + toDelete.getAbsolutePath() + "'");
             }
+            final Path<String> newName = createWorkPath(to.getParent(), to.getNode());
             moveEntryHelper(to, newName);
         }
         String msg = "Work moved from " + from + " to " + to;
+        final WorkspaceEntry openFileFrom = openFiles.getValue(from);
         if (openFileFrom == null) {
             msg += ".";
         } else {

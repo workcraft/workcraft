@@ -1,20 +1,16 @@
 package org.workcraft.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.io.ByteArrayOutputStream;
-import java.io.FilterOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-
-import javax.swing.*;
-import javax.swing.text.*;
-
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.builtin.settings.CommonLogSettings;
 import org.workcraft.utils.LogUtils;
+
+import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultCaret;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
+import java.awt.*;
+import java.io.*;
 
 @SuppressWarnings("serial")
 public class OutputWindow extends JPanel {
@@ -112,7 +108,7 @@ public class OutputWindow extends JPanel {
                 type = LogType.STDERR;
                 text = LogUtils.getTextWithoutPrefix(text);
                 painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getStderrBackground());
-            } else if (!text.equals("\n")) {
+            } else if (!"\n".equals(text)) {
                 type = null;
                 painter = new DefaultHighlighter.DefaultHighlightPainter(target.getBackground());
             }

@@ -20,6 +20,7 @@ public class VisualDummyTransition extends VisualNamedTransition implements Stat
     }
 
     @NoAutoSerialisation
+    @Override
     public DummyTransition getReferencedTransition() {
         return (DummyTransition) getReferencedComponent();
     }

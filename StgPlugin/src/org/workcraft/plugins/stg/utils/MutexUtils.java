@@ -1,13 +1,14 @@
-package org.workcraft.plugins.stg;
+package org.workcraft.plugins.stg.utils;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.petri.Place;
+import org.workcraft.plugins.stg.*;
+import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
-import org.workcraft.types.Pair;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -57,9 +58,6 @@ public class MutexUtils {
     }
 
     public static Mutex getMutex(Stg stg, StgPlace place) {
-        String name = stg.getNodeReference(place);
-        Signal r1, g1;
-        Signal r2, g2;
         Set<MathNode> preset = stg.getPreset(place);
         Set<MathNode> postset = stg.getPostset(place);
         if ((preset.size() != 2) || (postset.size() != 2)) {
@@ -76,8 +74,6 @@ public class MutexUtils {
         if ((tSucc1.getSignalType() == Signal.Type.INPUT) || (tSucc2.getSignalType() == Signal.Type.INPUT)) {
             return null;
         }
-        g1 = createSignalFromTransition(stg, tSucc1);
-        g2 = createSignalFromTransition(stg, tSucc2);
         Set<SignalTransition> triggers1 = getTriggers(stg, tSucc1, place);
         Set<SignalTransition> triggers2 = getTriggers(stg, tSucc2, place);
         if ((triggers1.size() != 1) || (triggers2.size() != 1)) {
@@ -85,8 +81,12 @@ public class MutexUtils {
         }
         SignalTransition trigger1 = triggers1.iterator().next();
         SignalTransition trigger2 = triggers2.iterator().next();
-        r1 = createSignalFromTransition(stg, trigger1);
-        r2 = createSignalFromTransition(stg, trigger2);
+
+        String name = stg.getNodeReference(place);
+        Signal g1 = createSignalFromTransition(stg, tSucc1);
+        Signal g2 = createSignalFromTransition(stg, tSucc2);
+        Signal r1 = createSignalFromTransition(stg, trigger1);
+        Signal r2 = createSignalFromTransition(stg, trigger2);
         return new Mutex(name, r1, g1, r2, g2);
     }
 

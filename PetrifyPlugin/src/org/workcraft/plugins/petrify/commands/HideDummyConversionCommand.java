@@ -1,15 +1,16 @@
 package org.workcraft.plugins.petrify.commands;
 
-import java.util.Collection;
-
 import org.workcraft.Framework;
 import org.workcraft.plugins.petrify.tasks.TransformationResultHandler;
 import org.workcraft.plugins.petrify.tasks.TransformationTask;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 public class HideDummyConversionCommand extends AbstractPetrifyConversionCommand {
 
@@ -31,8 +32,7 @@ public class HideDummyConversionCommand extends AbstractPetrifyConversionCommand
     @Override
     public WorkspaceEntry execute(WorkspaceEntry we) {
         Collection<Mutex> mutexes = getMutexes(we);
-        TransformationTask task = new TransformationTask(
-                we, "Dummy contraction", new String[] {"-hide", ".dummy" }, mutexes);
+        TransformationTask task = new TransformationTask(we, Arrays.asList("-hide", ".dummy"), mutexes);
 
         boolean hasSignals = hasSignals(we);
         TransformationResultHandler monitor = new TransformationResultHandler(we, !hasSignals, mutexes);

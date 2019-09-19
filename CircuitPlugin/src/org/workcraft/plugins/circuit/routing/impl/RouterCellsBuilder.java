@@ -35,7 +35,7 @@ public class RouterCellsBuilder {
         int ylen = routerCells.cells[0].length;
         int x = 0;
         for (Coordinate dx: coordRegistry.getXCoords().getValues()) {
-            if (dx.isPublic()) {
+            if (dx.isAccessible()) {
                 routerCells.unmark(x, 0, x, ylen - 1, CellState.VERTICAL_PRIVATE);
             } else {
                 routerCells.mark(x, 0, x, ylen - 1, CellState.VERTICAL_PRIVATE);
@@ -44,7 +44,7 @@ public class RouterCellsBuilder {
         }
         int y = 0;
         for (Coordinate dy: coordRegistry.getYCoords().getValues()) {
-            if (dy.isPublic()) {
+            if (dy.isAccessible()) {
                 routerCells.unmark(0, y, xlen - 1, y, CellState.HORIZONTAL_PRIVATE);
             } else {
                 routerCells.mark(0, y, xlen - 1, y, CellState.HORIZONTAL_PRIVATE);
