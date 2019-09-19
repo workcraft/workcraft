@@ -68,6 +68,7 @@
         <exclude name="NullAssignment"/> <!-- Too restrictive and used often -->
         <exclude name="AssignmentInOperand"/> <!-- Too restrictive and used often -->
         <exclude name="CompareObjectsWithEquals"/> <!-- Too restrictive and used often -->
+        <exclude name="OverrideBothEqualsAndHashcode"/> <!-- Too restrictive and often results in UselessOverridingMethod -->
         <exclude name="EmptyCatchBlock"/> <!-- Too restrictive as forbids to ignoring an exception -->
         <exclude name="EmptyIfStmt"/> <!-- Interesting to enforce -->
         <exclude name="EmptyWhileStmt"/> <!-- Interesting to enforce -->
@@ -75,13 +76,31 @@
         <exclude name="AvoidCatchingThrowable"/> <!-- Interesting to enforce -->
         <exclude name="AvoidBranchingStatementAsLastInLoop"/> <!-- Interesting to enforce -->
         <exclude name="ConstructorCallsOverridableMethod"/> <!-- Interesting to enforce -->
-        <exclude name="DoNotCallSystemExit"/> <!-- Interesting to enforce -->
     </rule>
 
-    <rule ref="category/java/design.xml/FinalFieldCouldBeStatic"/>
-    <rule ref="category/java/design.xml/ImmutableField"/>
-    <rule ref="category/java/design.xml/SingularField"/>
-    <rule ref="category/java/design.xml/LogicInversion"/>
-    <rule ref="category/java/design.xml/AvoidRethrowingException"/>
-    <rule ref="category/java/design.xml/DoNotExtendJavaLangError"/>
+    <rule ref="category/java/design.xml">
+        <exclude name="LoosePackageCoupling"/> <!-- Too restrictive and used often -->
+        <exclude name="LawOfDemeter"/> <!-- Too restrictive and used often -->
+        <exclude name="DataClass"/> <!-- Too restrictive and used often -->
+        <exclude name="ExcessiveImports"/> <!-- Too restrictive and used often -->
+        <exclude name="CouplingBetweenObjects"/> <!-- Too restrictive and used often -->
+        <exclude name="ExcessivePublicCount"/> <!-- Too restrictive and used often -->
+        <exclude name="AvoidCatchingGenericException"/> <!-- Too restrictive and used often -->
+        <exclude name="AvoidThrowingRawExceptionTypes"/> <!-- Too restrictive and used often -->
+        <exclude name="AvoidDeeplyNestedIfStmts"/> <!-- Interesting to enforce but used often -->
+        <exclude name="GodClass"/> <!-- Interesting to enforce but used often -->
+        <exclude name="TooManyMethods"/> <!-- Interesting to enforce but used often -->
+        <exclude name="NcssCount"/> <!-- Interesting to enforce but used often -->
+        <exclude name="NPathComplexity"/> <!-- Interesting to enforce but used often -->
+        <exclude name="CyclomaticComplexity"/> <!-- Interesting to enforce but used often -->
+        <exclude name="SimplifiedTernary"/> <!-- Interesting to enforce but used often -->
+        <exclude name="CollapsibleIfStatements"/> <!-- Interesting to enforce but used often -->
+        <exclude name="ExcessiveParameterList"/> <!-- Interesting to enforce -->
+        <exclude name="UseUtilityClass"/> <!-- Interesting to enforce -->
+        <exclude name="TooManyFields"/> <!-- Interesting to enforce -->
+        <exclude name="ExcessiveMethodLength"/> <!-- Interesting to enforce -->
+        <exclude name="ExcessiveClassLength"/> <!-- Interesting to enforce -->
+        <exclude name="SimplifyBooleanReturns"/> <!-- Interesting to enforce -->
+    </rule>
+
 </ruleset>

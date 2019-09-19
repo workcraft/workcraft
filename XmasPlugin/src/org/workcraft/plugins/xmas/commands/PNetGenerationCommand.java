@@ -18,6 +18,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -819,7 +820,7 @@ public class PNetGenerationCommand implements Command {
         }
     }
 
-    public static void initParse(String args) throws Exception {
+    public static void initParse(String args) throws IOException {
         JsonFactory f = new MappingJsonFactory();
         JsonParser jp = f.createJsonParser(new File(args));
 

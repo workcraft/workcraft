@@ -145,18 +145,16 @@ public class Untanglings {
         untangling = new ReductionBasedRepresentativeUntangling(sys, setup);
 
         // if Petri Net is not safe, stop the conversion
-        if (untangling.isSafe() == false) {
+        if (!untangling.isSafe()) {
             LogUtils.logError("Untangling cannot be constructed because the Petri Net is not safe.");
             return false;
         }
         // checking correct execution of conversion
         for (IProcess<BPNode, Condition, Event, Flow, Node, Place, Transition, Marking> pi : untangling.getProcesses()) {
 
-            if (pi.getOccurrenceNet().getVertices().isEmpty() == false) {
-
+            if (!pi.getOccurrenceNet().getVertices().isEmpty()) {
                 // printing out how many processes are needed to represent the untangling representation
                 LogUtils.logInfo("Number of untangled processes: " + untangling.getProcesses().size());
-
                 return true;
             }
         }

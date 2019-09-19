@@ -170,9 +170,6 @@ public abstract class Path<T> {
         private final T node;
 
         NormalPath(Path<T> parent, T node) {
-            if (node == null || parent == null) {
-                throw new NullPointerException();
-            }
             this.parent = parent;
             this.node = node;
         }

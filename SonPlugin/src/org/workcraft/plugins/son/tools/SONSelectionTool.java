@@ -131,20 +131,12 @@ public class SONSelectionTool extends SelectionTool {
 
                 if (selectedNode instanceof VisualCondition) {
                     VisualCondition vc = (VisualCondition) selectedNode;
-                    if (vc.isMarked() == false) {
-                        vc.setIsMarked(true);
-                    } else if (vc.isMarked() == true) {
-                        vc.setIsMarked(false);
-                    }
+                    vc.setIsMarked(!vc.isMarked());
                 }
 
                 if (selectedNode instanceof VisualEvent) {
                     VisualEvent ve = (VisualEvent) selectedNode;
-                    if (ve.isFaulty() == false) {
-                        ve.setFaulty(true);
-                    } else if (ve.isFaulty() == true) {
-                        ve.setFaulty(false);
-                    }
+                    ve.setFaulty(!ve.isFaulty());
                 }
 
                 if (selectedNode instanceof VisualChannelPlace) {

@@ -323,7 +323,7 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
         }
 
         for (Node node : map.keySet()) {
-            if (map.get(node)[1] == false) {
+            if (!map.get(node)[1]) {
                 ((Time) node).setDuration(new Interval());
             }
         }

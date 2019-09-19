@@ -21,16 +21,11 @@ public class MountTree {
         return other.mountTo.equals(mountTo);
     }
 
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
-
     public MountTree(File defaultPath, Map<Path<String>, File> mounts, Path<String> workspacePath) {
         path = workspacePath;
 
         if (defaultPath == null) {
-            throw new NullPointerException("defaultPath");
+            throw new IllegalArgumentException("defaultPath is null");
         }
         File tmpMountTo = defaultPath;
 
@@ -43,7 +38,7 @@ public class MountTree {
                 File file = mounts.get(s);
 
                 if (file == null) {
-                    throw new NullPointerException("file");
+                    throw new IllegalArgumentException("file is null");
                 }
 
                 List<String> pathItems = Path.getPath(s);

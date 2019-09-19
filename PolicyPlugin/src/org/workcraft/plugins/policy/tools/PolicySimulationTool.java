@@ -155,7 +155,7 @@ public class PolicySimulationTool extends PetriSimulationTool {
 
     private Transition getExcitedTransitionOfNode(Node node) {
         Collection<VisualTransition> ts = null;
-        if (node != null && node instanceof VisualBundledTransition) {
+        if (node instanceof VisualBundledTransition) {
             ts = converter.getRelatedTransitions((VisualBundledTransition) node);
         }
         return getExcitedTransitionOfCollection(ts);

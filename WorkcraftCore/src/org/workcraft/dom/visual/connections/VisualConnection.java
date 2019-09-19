@@ -210,14 +210,15 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 
     public void setVisualConnectionDependencies(VisualNode first, VisualNode second,
             ConnectionGraphic graphic, MathConnection refConnection) {
+
         if (first == null) {
-            throw new NullPointerException("first");
+            throw new IllegalArgumentException("first is null");
         }
         if (second == null) {
-            throw new NullPointerException("second");
+            throw new IllegalArgumentException("second is null");
         }
         if (graphic == null) {
-            throw new NullPointerException("graphic");
+            throw new IllegalArgumentException("graphic is null");
         }
 
         this.first = first;

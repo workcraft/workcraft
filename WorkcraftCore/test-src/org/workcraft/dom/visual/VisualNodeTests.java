@@ -2,7 +2,6 @@ package org.workcraft.dom.visual;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.workcraft.exceptions.NotAnAncestorException;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.TransformChangedEvent;
@@ -38,7 +37,7 @@ public class VisualNodeTests {
     }
 
     @Test
-    public void testParentToAncestorTransform() throws NotAnAncestorException {
+    public void testParentToAncestorTransform() {
         VisualGroup root = createGroup(null);
         VisualGroup node1 = createGroup(root);
         VisualGroup node2 = createGroup(root);
@@ -127,7 +126,7 @@ public class VisualNodeTests {
         Assert.assertEquals(node12, Hierarchy.getCommonParent(node12, node12));
     }
 
-    private void ensureShiftX(VisualGroup node, VisualGroup ancestor, double i) throws NotAnAncestorException {
+    private void ensureShiftX(VisualGroup node, VisualGroup ancestor, double i) {
         ensureShiftX(TransformHelper.getTransform(node, ancestor), i);
         ensureShiftX(TransformHelper.getTransform(ancestor, node), -i);
     }

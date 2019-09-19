@@ -359,14 +359,13 @@ public class MainWindow extends JFrame {
     }
 
     public void closeDockableWindow(DockableWindow dockableWindow) throws OperationCancelledException {
-        if (dockableWindow == null) {
-            throw new NullPointerException();
-        }
-        GraphEditorPanel editor = getGraphEditorPanel(dockableWindow);
-        if (editor != null) {
-            closeDockableEditorWindow(dockableWindow, editor);
-        } else {
-            closeDockableUtilityWindow(dockableWindow);
+        if (dockableWindow != null) {
+            GraphEditorPanel editor = getGraphEditorPanel(dockableWindow);
+            if (editor != null) {
+                closeDockableEditorWindow(dockableWindow, editor);
+            } else {
+                closeDockableUtilityWindow(dockableWindow);
+            }
         }
     }
 

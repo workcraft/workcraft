@@ -1,10 +1,10 @@
 package org.workcraft.types;
 
+import org.workcraft.exceptions.ArgumentException;
+
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import org.workcraft.exceptions.ArgumentException;
 
 public class GeneralTwoWayMap<S, T> {
 
@@ -27,11 +27,10 @@ public class GeneralTwoWayMap<S, T> {
     public void put(S first, T second) {
         removeKey(first);
         removeValue(second);
-        if (first == null || second == null) {
-            throw new NullPointerException();
+        if ((first != null) && (second != null)) {
+            from1to2.put(first, second);
+            from2to1.put(second, first);
         }
-        from1to2.put(first, second);
-        from2to1.put(second, first);
     }
 
     public Set<S> keys() {

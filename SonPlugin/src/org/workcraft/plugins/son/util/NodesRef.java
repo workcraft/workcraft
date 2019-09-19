@@ -84,9 +84,4 @@ public class NodesRef extends ArrayList<String> {
         return true;
     }
 
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
-
 }

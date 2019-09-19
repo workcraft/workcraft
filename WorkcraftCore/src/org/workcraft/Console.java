@@ -33,6 +33,7 @@ public class Console {
         }
     }
 
+    @SuppressWarnings("PMD.DoNotCallSystemExit")
     public static void main(String[] args) {
         // Process -version and -help options
         for (String arg : args) {

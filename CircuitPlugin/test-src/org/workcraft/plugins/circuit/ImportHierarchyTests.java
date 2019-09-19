@@ -14,6 +14,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ImportHierarchyTests {
 
@@ -47,11 +49,29 @@ public class ImportHierarchyTests {
 
         File vOutFile = new File(tmpDirectory, fileName);
         framework.exportWork(we, vOutFile, VerilogFormat.getInstance());
-        Assert.assertEquals(FileUtils.readAllText(vFile), FileUtils.readAllText(vOutFile));
+
+        String expectedVerilog = FileUtils.readAllText(vFile);
+        String actualVerilog = FileUtils.readAllText(vOutFile);
+        Assert.assertEquals(getModuleData(expectedVerilog), getModuleData(actualVerilog));
 
         framework.closeWork(we);
         FileUtils.deleteOnExitRecursively(tmpDirectory);
     }
 
+    private Map<String, Integer> getModuleData(String text) {
+        Map<String, Integer> result = new HashMap<>();
+        String moduleHeader = null;
+        int lineCount = 0;
+        for (String line : text.split("\n")) {
+            lineCount++;
+            if (line.startsWith("module ")) {
+                moduleHeader = line;
+                lineCount = 0;
+            } else if (line.startsWith("endmodule")) {
+                result.put(moduleHeader, lineCount);
+            }
+        }
+        return result;
+    }
 
 }

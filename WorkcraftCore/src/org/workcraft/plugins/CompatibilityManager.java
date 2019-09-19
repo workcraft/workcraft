@@ -96,6 +96,7 @@ public class CompatibilityManager {
         replacementMap.put(pattern, replacement);
     }
 
+    @SuppressWarnings("PMD.UseObjectForClearerAPI")
     public void registerContextualReplacement(Version version, String modelName, String className, String pattern, String replacement) {
         ReplacementData replacementData = getReplacementData(version);
         ContextualReplacement contextualMap = replacementData.local.get(modelName);

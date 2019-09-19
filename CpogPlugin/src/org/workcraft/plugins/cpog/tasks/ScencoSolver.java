@@ -217,7 +217,7 @@ public class ScencoSolver {
 
             for (int i = 0; i < m; i++) {
                 for (int j = 0; j < settings.getBits(); j++) {
-                    char c = (encoding[i][j] == true) ? '1' : '0';
+                    char c = encoding[i][j] ? '1' : '0';
                     output.print(c);
                 }
                 output.println();
@@ -346,7 +346,7 @@ public class ScencoSolver {
                     i++;
                     v = 0;
                     a = 0;
-                    while (outputLines[i].contains(".end_formulae") == false) {
+                    while (!outputLines[i].contains(".end_formulae")) {
                         if (settings.isVerboseMode()) {
                             System.out.println(outputLines[i]);
                         }
@@ -374,7 +374,7 @@ public class ScencoSolver {
                 // Read statistics
                 if (outputLines[i].contains(".statistics")) {
                     i++;
-                    while (outputLines[i].contains(".end_statistics") == false) {
+                    while (!outputLines[i].contains(".end_statistics")) {
                         System.out.println(outputLines[i]);
                         i++;
                     }
