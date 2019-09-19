@@ -118,7 +118,7 @@ subprojects {
 
     checkstyleMain.exclude '**/jj/**'
 
-    task checkstyle(dependsOn: tasks.withType(Checkstyle))
+    task checkstyle(dependsOn: tasks.withType(Checkstyle)*.name)
 
     apply plugin: 'pmd'
 
@@ -131,7 +131,7 @@ subprojects {
 
     pmdMain.exclude '**/jj/**'
 
-    task pmd(dependsOn: tasks.withType(Pmd))
+    task pmd(dependsOn: tasks.withType(Pmd)*.name)
 
     cpd {
         toolVersion = pmdVersion
