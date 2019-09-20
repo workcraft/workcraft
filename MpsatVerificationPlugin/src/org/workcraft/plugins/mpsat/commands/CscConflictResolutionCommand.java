@@ -13,7 +13,7 @@ import org.workcraft.plugins.mpsat.tasks.VerificationChainTask;
 import org.workcraft.plugins.mpsat.tasks.CscConflictResolutionOutputHandler;
 import org.workcraft.plugins.mpsat.tasks.VerificationOutput;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.MutexUtils;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.Result;

@@ -12,17 +12,17 @@ import java.util.function.Function;
 public class ForceInitClearAllTagCommand extends AbstractTagCommand {
 
     @Override
-    Function<Circuit, Collection<Contact>> getFunction() {
+    public Function<Circuit, Collection<Contact>> getFunction() {
         return circuit -> ResetUtils.tagForceInitClearAll(circuit);
     }
 
     @Override
-    String getMessage() {
+    public String getMessage() {
         return "Cleared force init contact";
     }
 
     @Override
-    Class<? extends GraphEditorTool> getToolClass() {
+    public Class<? extends GraphEditorTool> getToolClass() {
         return InitialisationAnalyserTool.class;
     }
 

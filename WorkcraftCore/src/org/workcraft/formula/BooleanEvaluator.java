@@ -34,10 +34,10 @@ public class BooleanEvaluator implements BooleanVisitor<Boolean> {
 
     @Override
     public Boolean visit(BooleanVariable variable) {
-        if (variable.getLabel().equals("0")) {
+        if ("0".equals(variable.getLabel())) {
             return false;
         }
-        if (variable.getLabel().equals("1")) {
+        if ("1".equals(variable.getLabel())) {
             return true;
         }
         throw new RuntimeException("Unable to evaluate a function containing a free variable: " + variable.getLabel());
@@ -52,4 +52,5 @@ public class BooleanEvaluator implements BooleanVisitor<Boolean> {
     public Boolean visit(Xor node) {
         return node.getX().accept(this) ^ node.getY().accept(this);
     }
+
 }

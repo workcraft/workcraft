@@ -6,7 +6,7 @@ import org.workcraft.plugins.fst.serialisation.SgSerialiser;
 
 public class SgExporter extends AbstractSerialiseExporter {
 
-    SgSerialiser serialiser = new SgSerialiser();
+    private final SgSerialiser serialiser = new SgSerialiser();
 
     @Override
     public Format getFormat() {

@@ -4,11 +4,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CpogFormulaToString implements CpogVisitor<String> {
-    public final class Void {
-        private Void() { }
+
+    public enum Void {
     }
 
     public static class PrinterSuite {
+        public StringBuilder builder;
+        public OverlayPrinter overlay;
+        public SequencePrinter sequence;
+        public VariablePrinter vars;
+        public ParenthesesPrinter paren;
+
         public PrinterSuite() {
             overlay = new OverlayPrinter();
             sequence = new SequencePrinter();
@@ -34,12 +40,6 @@ public class CpogFormulaToString implements CpogVisitor<String> {
             printer.setBuilder(builder);
             printer.unicodeAllowed = unicodeAllowed;
         }
-
-        public StringBuilder builder;
-        public OverlayPrinter overlay;
-        public SequencePrinter sequence;
-        public VariablePrinter vars;
-        public ParenthesesPrinter paren;
     }
 
     public static class DelegatingPrinter implements CpogVisitor<Void> {
@@ -98,7 +98,8 @@ public class CpogFormulaToString implements CpogVisitor<String> {
     }
 
     public static class VariablePrinter extends DelegatingPrinter {
-        Map<String, CpogFormulaVariable> varMap = new HashMap<>();
+        private final Map<String, CpogFormulaVariable> varMap = new HashMap<>();
+
         @Override
         public Void visit(CpogFormulaVariable var) {
             String label = var.getLabel();
@@ -110,9 +111,7 @@ public class CpogFormulaToString implements CpogVisitor<String> {
                     throw new RuntimeException("name conflict! duplicate name " + label);
                 }
             }
-
             append(label);
-
             return null;
         }
     }
@@ -122,11 +121,13 @@ public class CpogFormulaToString implements CpogVisitor<String> {
         public Void visit(Overlay node) {
             return enclose(node);
         }
+
         @Override
         public Void visit(Sequence node) {
             return enclose(node);
         }
-        Void enclose(CpogFormula node) {
+
+        private Void enclose(CpogFormula node) {
             append("(");
             node.accept(next);
             append(")");
@@ -151,8 +152,6 @@ public class CpogFormulaToString implements CpogVisitor<String> {
         return suite.overlay;
     }
 
-    DelegatingPrinter printer;
-
     @Override
     public String visit(Overlay node) {
         return toString(node);
@@ -167,4 +166,5 @@ public class CpogFormulaToString implements CpogVisitor<String> {
     public String visit(CpogFormulaVariable node) {
         return toString(node);
     }
+
 }

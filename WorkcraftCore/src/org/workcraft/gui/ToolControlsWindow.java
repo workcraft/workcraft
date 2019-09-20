@@ -10,7 +10,7 @@ public class ToolControlsWindow extends JPanel {
 
     private final JPanel disabledPanel = new DisabledPanel();
     private final JScrollPane scrollPane  = new JScrollPane();
-    boolean empty = true;
+    private boolean empty = true;
 
     public ToolControlsWindow() {
         setLayout(new BorderLayout());

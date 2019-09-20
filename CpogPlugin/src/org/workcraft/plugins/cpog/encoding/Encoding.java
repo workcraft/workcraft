@@ -3,25 +3,33 @@ package org.workcraft.plugins.cpog.encoding;
 import org.workcraft.formula.BooleanFormula;
 
 public class Encoding {
-    public Encoding(boolean[][] encoding, BooleanFormula[] functions) {
-        this.encoding = encoding;
-        this.functions = functions;
+
+    private BooleanFormula[] formulas;
+    private boolean[][] code;
+
+    public Encoding(BooleanFormula[] functions, boolean[][] code) {
+        this.formulas = functions;
+        this.code = code;
     }
-    public BooleanFormula[] getFunctions() {
-        return functions;
+
+    public BooleanFormula[] getFormulas() {
+        return formulas;
     }
-    public boolean[][] getEncoding() {
-        return encoding;
+
+    public boolean[][] getCode() {
+        return code;
     }
-    public void setEncoding(boolean[][] encoding) {
-        this.encoding = encoding;
+
+    public void setCode(boolean[][] code) {
+        this.code = code;
     }
+
     public void setFormula(BooleanFormula formula, int index) {
-        this.functions[index] = formula;
+        this.formulas[index] = formula;
     }
-    public void setFormule(BooleanFormula[] formula) {
-        this.functions = formula;
+
+    public void setFormulas(BooleanFormula[] formulas) {
+        this.formulas = formulas;
     }
-    private  BooleanFormula[] functions;
-    private boolean[][] encoding;
+
 }

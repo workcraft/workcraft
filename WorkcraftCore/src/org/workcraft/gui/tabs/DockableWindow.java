@@ -20,6 +20,7 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.actions.ScriptedActionListener;
 
 public class DockableWindow extends AbstractDockable {
+
     private final DockableWindowContentPanel panel;
     private final LinkedList<Component> dragSources = new LinkedList<>();
     private final MainWindow mainWindow;
@@ -102,6 +103,7 @@ public class DockableWindow extends AbstractDockable {
         this.closed = closed;
     }
 
+    @Override
     public Component getComponent() {
         return panel;
     }

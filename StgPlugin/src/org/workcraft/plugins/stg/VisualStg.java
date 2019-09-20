@@ -71,6 +71,7 @@ public class VisualStg extends AbstractVisualModel {
         setGraphEditorTools(tools);
     }
 
+    @Override
     public Stg getMathModel() {
         return (Stg) super.getMathModel();
     }

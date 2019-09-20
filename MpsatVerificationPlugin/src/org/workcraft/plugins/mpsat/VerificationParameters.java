@@ -147,6 +147,7 @@ public class VerificationParameters {
             } else {
                 args.add("-a");
             }
+            break;
         }
 
         return args.toArray(new String[args.size()]);

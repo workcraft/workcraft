@@ -6,7 +6,7 @@ import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.BooleanVisitor;
 import org.workcraft.observation.PropertyChangedEvent;
 
-@VisualClass(org.workcraft.plugins.circuit.VisualContact.class)
+@VisualClass(VisualContact.class)
 public class Contact extends MathNode implements BooleanVariable {
 
     public static final String PROPERTY_NAME = "Name";
@@ -40,9 +40,9 @@ public class Contact extends MathNode implements BooleanVariable {
     public Contact() {
     }
 
-    public Contact(IOType ioType) {
+    public Contact(IOType type) {
         super();
-        setIOType(ioType);
+        this.type = type;
     }
 
     // FIXME: This setName method is only to enable accessing contact name via getName. Use setName of Circuit class to set all node names!

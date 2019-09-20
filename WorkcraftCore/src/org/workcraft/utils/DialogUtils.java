@@ -142,17 +142,4 @@ public class DialogUtils {
         return result;
     }
 
-    public static int showChoice(String msg, String title,
-            String yesText, String noText, String cancelText, int defaultChoice) {
-        int result = JOptionPane.CANCEL_OPTION;
-        Framework framework = Framework.getInstance();
-        MainWindow mainWindow = framework.getMainWindow();
-        if ((mainWindow != null) && framework.isInGuiMode()) {
-            String[] options = {yesText, noText, cancelText};
-            result = JOptionPane.showOptionDialog(mainWindow, msg, title, JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.QUESTION_MESSAGE, null, options, defaultChoice);
-        }
-        return result;
-    }
-
 }

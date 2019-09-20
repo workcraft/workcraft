@@ -5,7 +5,7 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
 
 @IdentifierPrefix("c")
-@VisualClass(org.workcraft.plugins.dfs.VisualControlRegister.class)
+@VisualClass(VisualControlRegister.class)
 public class ControlRegister extends BinaryRegister {
     public static final String PROPERTY_PROBABILITY = "Probability";
     public static final String PROPERTY_SYNCHRONISATION_TYPE = "Synchronisation type";

@@ -35,7 +35,7 @@ public class RenderedFormula implements Touchable {
         this.yOffset = offset.getY();
         final FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);
         renderingResult = FormulaToGraphics.print(text, font, context);
-        if (formula != One.instance()) {
+        if (formula != One.getInstance()) {
             renderingResult.add(FormulaToGraphics.render(formula, context, font));
         }
         Rectangle2D bb = renderingResult.boundingBox;

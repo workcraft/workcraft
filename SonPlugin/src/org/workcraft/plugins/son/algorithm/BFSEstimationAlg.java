@@ -1,14 +1,5 @@
 package org.workcraft.plugins.son.algorithm;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.elements.Time;
@@ -19,18 +10,15 @@ import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.plugins.son.util.ScenarioRef;
 
+import java.util.*;
+
 public class BFSEstimationAlg extends DFSEstimationAlg {
 
-    protected Map<Time, Boolean[]> modify;
-    protected boolean interm;
+    private final Map<Time, Boolean[]> modify = new HashMap<>();
 
-    protected Color color = Color.ORANGE;
-
-    public BFSEstimationAlg(SON net, Interval d, Granularity g, ScenarioRef s, boolean interm)
+    public BFSEstimationAlg(SON net, Interval d, Granularity g, ScenarioRef s)
             throws AlternativeStructureException {
         super(net, d, g, s);
-        modify = new HashMap<Time, Boolean[]>();
-        this.interm = interm;
     }
 
     public void estimateFinish(Time n)
@@ -40,7 +28,7 @@ public class BFSEstimationAlg extends DFSEstimationAlg {
         // nodes on paths from n to RBoundary nodes
         Set<Time> rNeighbourhood = new HashSet<>();
         rNeighbourhood.add(n);
-        initialize();
+        prepare();
 
         if (scenario != null) {
             findRightBoundary(n, rBoundary, rNeighbourhood);
@@ -52,7 +40,7 @@ public class BFSEstimationAlg extends DFSEstimationAlg {
         if (!n.getEndTime().isSpecified()) {
             throw new TimeEstimationException("cannot find causally time value (forward).");
         }
-        // finalize(n, );
+        // complete(n, );
     }
 
     private void findRightBoundary(Time n, Set<Time> boundary, Set<Time> neighbourhood) {

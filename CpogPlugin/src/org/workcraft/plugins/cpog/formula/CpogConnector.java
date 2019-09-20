@@ -1,14 +1,14 @@
 package org.workcraft.plugins.cpog.formula;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.VisualVertex;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class CpogConnector implements CpogVisitor<Set<VisualVertex>> {
 
-    VisualCpog cpog = null;
+    private final VisualCpog cpog;
 
     public CpogConnector(VisualCpog cpog) {
         this.cpog = cpog;

@@ -5,9 +5,12 @@ import java.awt.Color;
 import org.workcraft.gui.tools.Decoration;
 
 public interface StateDecoration extends Decoration {
+
     boolean showForcedInit();
 
     class Empty implements StateDecoration {
+
+        public static final StateDecoration.Empty INSTANCE = new StateDecoration.Empty();
 
         @Override
         public Color getColorisation() {
@@ -24,7 +27,6 @@ public interface StateDecoration extends Decoration {
             return true;
         }
 
-        public static final StateDecoration.Empty INSTANCE = new StateDecoration.Empty();
     }
 
 }

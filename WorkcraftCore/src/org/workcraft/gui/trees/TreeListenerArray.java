@@ -5,42 +5,43 @@ import java.util.List;
 
 import org.workcraft.gui.workspace.Path;
 
-public class TreeListenerArray<Node> implements TreeListener<Node> {
-    List<TreeListener<Node>> list = new ArrayList<>();
+public class TreeListenerArray<T> implements TreeListener<T> {
+
+    private final List<TreeListener<T>> list = new ArrayList<>();
 
     @Override
-    public void added(Path<Node> path) {
-        for (TreeListener<Node> l : list) {
+    public void added(Path<T> path) {
+        for (TreeListener<T> l : list) {
             l.added(path);
         }
     }
 
     @Override
-    public void changed(Path<Node> path) {
-        for (TreeListener<Node> l : list) {
+    public void changed(Path<T> path) {
+        for (TreeListener<T> l : list) {
             l.changed(path);
         }
     }
 
     @Override
-    public void removed(Path<Node> path) {
-        for (TreeListener<Node> l : list) {
+    public void removed(Path<T> path) {
+        for (TreeListener<T> l : list) {
             l.removed(path);
         }
     }
 
     @Override
-    public void restructured(Path<Node> path) {
-        for (TreeListener<Node> l : list) {
+    public void restructured(Path<T> path) {
+        for (TreeListener<T> l : list) {
             l.restructured(path);
         }
     }
 
-    public void add(TreeListener<Node> listener) {
+    public void add(TreeListener<T> listener) {
         list.add(listener);
     }
 
-    public void remove(TreeListener<Node> listener) {
+    public void remove(TreeListener<T> listener) {
         list.remove(listener);
     }
 }

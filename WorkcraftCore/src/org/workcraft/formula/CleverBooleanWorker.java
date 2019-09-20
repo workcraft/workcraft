@@ -6,21 +6,21 @@ public class CleverBooleanWorker implements BooleanWorker {
 
     @Override
     public BooleanFormula zero() {
-        return Zero.instance();
+        return Zero.getInstance();
     }
 
     @Override
     public BooleanFormula one() {
-        return One.instance();
+        return One.getInstance();
     }
 
     @Override
     public BooleanFormula not(BooleanFormula x) {
-        if (x == One.instance()) {
-            return Zero.instance();
+        if (x == One.getInstance()) {
+            return Zero.getInstance();
         }
-        if (x == Zero.instance()) {
-            return One.instance();
+        if (x == Zero.getInstance()) {
+            return One.getInstance();
         }
         return new Not(x);
     }
@@ -30,13 +30,13 @@ public class CleverBooleanWorker implements BooleanWorker {
         if (StringGenerator.toString(x).equals(StringGenerator.toString(y))) {
             return x;
         }
-        if ((x == Zero.instance()) || (y == Zero.instance())) {
-            return Zero.instance();
+        if ((x == Zero.getInstance()) || (y == Zero.getInstance())) {
+            return Zero.getInstance();
         }
-        if (x == One.instance()) {
+        if (x == One.getInstance()) {
             return y;
         }
-        if (y == One.instance()) {
+        if (y == One.getInstance()) {
             return x;
         }
         return new And(x, y);
@@ -51,15 +51,15 @@ public class CleverBooleanWorker implements BooleanWorker {
             return x;
         }
         if (checkStrings(StringGenerator.toString(x), invertString(StringGenerator.toString(y)), " + ")) {
-            return One.instance();
+            return One.getInstance();
         }
-        if ((x == One.instance()) || (y == One.instance())) {
-            return One.instance();
+        if ((x == One.getInstance()) || (y == One.getInstance())) {
+            return One.getInstance();
         }
-        if (x == Zero.instance()) {
+        if (x == Zero.getInstance()) {
             return y;
         }
-        if (y == Zero.instance()) {
+        if (y == Zero.getInstance()) {
             return x;
         }
         return new Or(x, y);
@@ -68,18 +68,18 @@ public class CleverBooleanWorker implements BooleanWorker {
     @Override
     public BooleanFormula xor(BooleanFormula x, BooleanFormula y) {
         if (StringGenerator.toString(x).equals(StringGenerator.toString(y))) {
-            return Zero.instance();
+            return Zero.getInstance();
         }
-        if (x == One.instance()) {
+        if (x == One.getInstance()) {
             return not(y);
         }
-        if (x == Zero.instance()) {
+        if (x == Zero.getInstance()) {
             return y;
         }
-        if (y == One.instance()) {
+        if (y == One.getInstance()) {
             return not(x);
         }
-        if (y == Zero.instance()) {
+        if (y == Zero.getInstance()) {
             return x;
         }
         return new Xor(x, y);
@@ -88,15 +88,15 @@ public class CleverBooleanWorker implements BooleanWorker {
     @Override
     public BooleanFormula imply(BooleanFormula x, BooleanFormula y) {
         if (StringGenerator.toString(x).equals(StringGenerator.toString(y))) {
-            return One.instance();
+            return One.getInstance();
         }
-        if ((x == Zero.instance()) || (y == One.instance())) {
-            return One.instance();
+        if ((x == Zero.getInstance()) || (y == One.getInstance())) {
+            return One.getInstance();
         }
-        if (x == One.instance()) {
+        if (x == One.getInstance()) {
             return y;
         }
-        if (y == Zero.instance()) {
+        if (y == Zero.getInstance()) {
             return not(x);
         }
         return new Imply(x, y);
@@ -105,18 +105,18 @@ public class CleverBooleanWorker implements BooleanWorker {
     @Override
     public BooleanFormula iff(BooleanFormula x, BooleanFormula y) {
         if (StringGenerator.toString(x).equals(StringGenerator.toString(y))) {
-            return One.instance();
+            return One.getInstance();
         }
-        if (x == One.instance()) {
+        if (x == One.getInstance()) {
             return y;
         }
-        if (x == Zero.instance()) {
+        if (x == Zero.getInstance()) {
             return not(y);
         }
-        if (y == One.instance()) {
+        if (y == One.getInstance()) {
             return x;
         }
-        if (y == Zero.instance()) {
+        if (y == Zero.getInstance()) {
             return not(x);
         }
         return new Iff(x, y);

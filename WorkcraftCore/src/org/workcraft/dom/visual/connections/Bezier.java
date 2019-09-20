@@ -3,10 +3,10 @@ package org.workcraft.dom.visual.connections;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawHelper;
 import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.utils.Coloriser;
 import org.workcraft.observation.SelectionChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.utils.Geometry;
 import org.workcraft.utils.Geometry.CurveSplitResult;
 
@@ -149,11 +149,9 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
     private CubicCurve2D getPartialCurve(double tStart, double tEnd) {
         CubicCurve2D fullCurve = new CubicCurve2D.Double();
         fullCurve.setCurve(connectionInfo.getFirstCenter(), cp1.getPosition(), cp2.getPosition(), connectionInfo.getSecondCenter());
-
         CurveSplitResult firstSplit = Geometry.splitCubicCurve(fullCurve, tStart);
-        CurveSplitResult secondSplit = Geometry.splitCubicCurve(firstSplit.curve2, (tEnd - tStart) / (1 - tStart));
-
-        return secondSplit.curve1;
+        double t = (tEnd - tStart) / (1 - tStart);
+        return Geometry.splitCubicCurve(firstSplit.curve2, t).curve1;
     }
 
     @Override

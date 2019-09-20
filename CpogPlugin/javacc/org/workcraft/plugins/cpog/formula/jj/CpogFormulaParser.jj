@@ -213,10 +213,10 @@ CpogFormula literal() :
     (
         t = < VARIABLE >
         {
-            if (globalBool != "") {
-                result = var(t.image, globalBool);
-            } else {
+            if (globalBool.isEmpty()) {
                 result = var(t.image);
+            } else {
+                result = var(t.image, globalBool);
             }
         }
     |
@@ -244,7 +244,7 @@ CpogFormula literal1(String bool) :
     (
         t = < VARIABLE >
         {
-            if (globalBool == "") {
+            if (globalBool.isEmpty()) {
                 result = var(t.image, bool);
             } else {
                 result = var (t.image, globalBool + "&" + bool);
@@ -253,8 +253,8 @@ CpogFormula literal1(String bool) :
     |
         t = < BRACKOPEN >
         {
-            while (str.compareTo(")") != 0) {
-                if (str.compareTo("]") == 0) {
+            while (!")".equals(str)) {
+                if ("]".equals(str)) {
                     exp = exp.substring(0, exp.length() - 1);
                 }
                 exp = exp + str;
@@ -339,7 +339,7 @@ String bracketInternals() :
         {
             String r = "";
             result = "(";
-            while (r.compareTo(")") != 0) {
+            while (!")".equals(r)) {
                 r = bracketInternals();
                 result = result + r;
             }

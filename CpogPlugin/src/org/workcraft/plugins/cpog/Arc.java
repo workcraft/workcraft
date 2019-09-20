@@ -15,7 +15,7 @@ public class Arc extends MathConnection {
 
     public Arc(Vertex first, Vertex second) {
         super(first, second);
-        condition = One.instance();
+        condition = One.getInstance();
     }
 
     public void setCondition(BooleanFormula value) {

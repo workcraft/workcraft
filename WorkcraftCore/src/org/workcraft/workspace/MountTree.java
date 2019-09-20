@@ -8,6 +8,7 @@ import java.util.Map;
 import org.workcraft.gui.workspace.Path;
 
 public class MountTree {
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {
@@ -24,11 +25,11 @@ public class MountTree {
         path = workspacePath;
 
         if (defaultPath == null) {
-            throw new NullPointerException("defaultPath");
+            throw new IllegalArgumentException("defaultPath is null");
         }
         File tmpMountTo = defaultPath;
 
-        subDirs = new HashMap<String, MountTree>();
+        subDirs = new HashMap<>();
 
         if (mounts != null) {
             Map<String, Map<Path<String>, File>> perSubDir = new HashMap<>();
@@ -37,23 +38,23 @@ public class MountTree {
                 File file = mounts.get(s);
 
                 if (file == null) {
-                    throw new NullPointerException("file");
+                    throw new IllegalArgumentException("file is null");
                 }
 
                 List<String> pathItems = Path.getPath(s);
 
-                if (pathItems.size() == 0) {
+                if (pathItems.isEmpty()) {
                     tmpMountTo = file;
                 } else {
                     String folder = pathItems.get(0);
-                    if (folder.length() == 0) {
+                    if (folder.isEmpty()) {
                         throw new RuntimeException("invalid mount path");
                     }
                     pathItems.remove(0);
                     Path<String> suffix = Path.create(pathItems);
 
                     if (!perSubDir.containsKey(folder)) {
-                        perSubDir.put(folder, new HashMap<Path<String>, File>());
+                        perSubDir.put(folder, new HashMap<>());
                     }
                     perSubDir.get(folder).put(suffix, file);
                 }

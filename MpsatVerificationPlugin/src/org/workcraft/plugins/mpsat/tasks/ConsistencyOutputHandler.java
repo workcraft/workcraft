@@ -9,7 +9,7 @@ import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.tasks.ExportOutput;
-import org.workcraft.plugins.stg.LabelParser;
+import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.types.Triple;

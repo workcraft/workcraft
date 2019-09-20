@@ -6,6 +6,7 @@ import java.util.Collection;
 import org.workcraft.dom.Node;
 
 public class NodesAddedEvent implements HierarchyEvent {
+
     private final Node parentNode;
     private final Collection<Node> affectedNodes;
 
@@ -20,11 +21,14 @@ public class NodesAddedEvent implements HierarchyEvent {
         affectedNodes.add(affectedNode);
     }
 
+    @Override
     public Collection<Node> getAffectedNodes() {
         return affectedNodes;
     }
 
+    @Override
     public Object getSender() {
         return parentNode;
     }
+
 }

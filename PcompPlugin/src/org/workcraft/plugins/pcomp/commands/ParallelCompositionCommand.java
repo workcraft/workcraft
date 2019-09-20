@@ -11,7 +11,7 @@ import org.workcraft.plugins.pcomp.gui.ParallelCompositionDialog;
 import org.workcraft.plugins.pcomp.tasks.PcompResultHandler;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.MutexUtils;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
@@ -32,10 +32,12 @@ public class ParallelCompositionCommand implements Command {
     public static final String RESULT_FILE_NAME = "result.g";
     public static final String DETAIL_FILE_NAME = "detail.xml";
 
+    @Override
     public String getSection() {
         return "Composition";
     }
 
+    @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.isApplicable(we, StgModel.class);
     }
@@ -92,7 +94,7 @@ public class ParallelCompositionCommand implements Command {
                 directory);
 
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-        PcompResultHandler pcompResult = new PcompResultHandler(dialog.showInEditor(), outputFile, mutexes);
+        PcompResultHandler pcompResult = new PcompResultHandler(dialog.isShowInEditor(), outputFile, mutexes);
         TaskManager taskManager = framework.getTaskManager();
         taskManager.queue(pcompTask, "Running parallel composition [PComp]", pcompResult);
     }

@@ -59,10 +59,10 @@ public abstract class AbstractTagCommand implements ScriptableCommand<Void> {
         return null;
     }
 
-    abstract Function<Circuit, Collection<Contact>> getFunction();
+    public abstract Function<Circuit, Collection<Contact>> getFunction();
 
-    abstract String getMessage();
+    public abstract String getMessage();
 
-    abstract <T extends GraphEditorTool> Class<T> getToolClass();
+    public abstract <T extends GraphEditorTool> Class<T> getToolClass();
 
 }

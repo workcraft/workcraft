@@ -1,5 +1,5 @@
 package org.workcraft.types;
 
-public interface Func2<Arg0, Arg1, Result> {
-    Result eval(Arg0 arg0, Arg1 arg1);
+public interface Func2<S, T, R> {
+    R eval(S arg0, T arg1);
 }

@@ -4,7 +4,7 @@ import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.MutexUtils;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;

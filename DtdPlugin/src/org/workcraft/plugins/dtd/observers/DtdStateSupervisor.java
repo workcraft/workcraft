@@ -24,7 +24,7 @@ public final class DtdStateSupervisor extends StateSupervisor {
         if ((e instanceof NodesAddedEvent) && (sender instanceof VisualSignal)) {
             for (Node node : e.getAffectedNodes()) {
                 if (node instanceof VisualEntryEvent) {
-                    handleSignalEntryCreation((VisualSignal) sender, (VisualEntryEvent) node);
+                    handleSignalEntryCreation((VisualEntryEvent) node);
                 } else if (node instanceof VisualExitEvent) {
                     handleSignalExitCreation((VisualSignal) sender, (VisualExitEvent) node);
                 }
@@ -58,7 +58,7 @@ public final class DtdStateSupervisor extends StateSupervisor {
         }
     }
 
-    private void handleSignalEntryCreation(VisualSignal signal, VisualEntryEvent entry) {
+    private void handleSignalEntryCreation(VisualEntryEvent entry) {
         entry.setPosition(new Point2D.Double(0.0, 0.0));
     }
 

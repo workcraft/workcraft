@@ -5,7 +5,7 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
 
 @IdentifierPrefix("src")
-@VisualClass(org.workcraft.plugins.xmas.components.VisualSourceComponent.class)
+@VisualClass(VisualSourceComponent.class)
 public class SourceComponent extends XmasComponent {
 
     public static final String PROPERTY_TYPE = "Type";

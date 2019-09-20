@@ -1,9 +1,8 @@
 package org.workcraft.utils;
 
-import java.awt.Color;
+import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class ColorUtils {
 
@@ -65,24 +64,6 @@ public class ColorUtils {
         return new Color(rgb[0], rgb[1], rgb[2]);
     }
 
-    public static Color[] getLabPalette(int lCount, int aCount, int bCount, float lMin, float lMax) {
-        ArrayList<Color> palette = new ArrayList<>();
-        if ((lMax > lMin) && (lCount > 0) && (aCount > 0) && (bCount > 0)) {
-            float dL = (lMax - lMin) / lCount;
-            float da = 1.0f / aCount;
-            float db = 1.0f / bCount;
-            for (float l = lMax; l >= lMin; l -= dL) {
-                for (float a = 0.0f; a <= 1.0f; a += da) {
-                    for (float b = 0.0f; b <= 1.0f; b += db) {
-                        palette.add(ColorUtils.getLabColor(l, a, b));
-                    }
-                }
-            }
-        }
-        Collections.shuffle(palette);
-        return palette.toArray(new Color[palette.size()]);
-    }
-
     public static Color[] getHsbPalette(float[] hs, float[] ss, float[] bs) {
         ArrayList<Color> palette = new ArrayList<>();
         for (float b: bs) {
@@ -96,8 +77,4 @@ public class ColorUtils {
         return palette.toArray(new Color[palette.size()]);
     }
 
-    public static Color invert(Color color) {
-        float[] rgb = color.getRGBComponents(null);
-        return new Color(1.0f - rgb[0], 1.0f - rgb[1], 1.0f - rgb[2]);
-    }
 }

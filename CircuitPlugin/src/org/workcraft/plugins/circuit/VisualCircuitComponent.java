@@ -28,10 +28,10 @@ public class VisualCircuitComponent extends VisualComponent implements Container
     private static final Color inputColor = VisualContact.inputColor;
     private static final Color outputColor = VisualContact.outputColor;
 
-    double labelMargin = 0.2;
-    double contactLength = 0.5;
-    double contactStep = 1.0;
-    double contactMargin = 0.5;
+    private static final double labelMargin = 0.2;
+    private static final double contactLength = 0.5;
+    private static final double contactStep = 1.0;
+    private static final double contactMargin = 0.5;
 
     public Rectangle2D internalBB = null;
     public DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
@@ -252,7 +252,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
     private void positionHorizontal(VisualContact vc, boolean reverseProgression) {
         LinkedList<VisualContact> contacts = getOrderedOutsideContacts(vc.getDirection());
         contacts.remove(vc);
-        if (contacts.size() == 0) {
+        if (contacts.isEmpty()) {
             vc.setX(0);
         } else {
             if (reverseProgression) {
@@ -278,7 +278,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
     private void positionVertical(VisualContact vc, boolean reverseProgression) {
         LinkedList<VisualContact> contacts = getOrderedOutsideContacts(vc.getDirection());
         contacts.remove(vc);
-        if (contacts.size() == 0) {
+        if (contacts.isEmpty()) {
             vc.setY(0);
         } else {
             if (reverseProgression) {

@@ -21,6 +21,10 @@ import java.util.*;
 
 public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> {
 
+    private VerilogModule topModule;
+    private File dir;
+    private Map<VerilogModule, String> moduleToFileMap;
+
     class ModuleFileProperties implements Properties {
         private final List<PropertyDescriptor> properties = new LinkedList<>();
 
@@ -70,10 +74,6 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
                     list, text, index, isSelected, cellHasFocus);
         }
     }
-
-    private VerilogModule topModule;
-    private File dir;
-    private Map<VerilogModule, String> moduleToFileMap;
 
     public ImportVerilogDialog(Window owner, Collection<VerilogModule> modules) {
         super(owner, "Import hierarchical Verilog", modules);

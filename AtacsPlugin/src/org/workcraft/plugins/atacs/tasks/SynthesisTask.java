@@ -5,38 +5,28 @@ import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.atacs.AtacsSettings;
-import org.workcraft.tasks.ExportOutput;
-import org.workcraft.tasks.ExportTask;
-import org.workcraft.tasks.ExternalProcessOutput;
-import org.workcraft.tasks.ExternalProcessTask;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.MutexUtils;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.LpnFormat;
 import org.workcraft.plugins.stg.utils.StgUtils;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.Result;
+import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.tasks.SubtaskMonitor;
-import org.workcraft.tasks.Task;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.ExportUtils;
-import org.workcraft.utils.FileUtils;
-import org.workcraft.utils.ExecutableUtils;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessListener {
     private final WorkspaceEntry we;
-    private final String[] args;
+    private final List<String> args;
     private final Collection<Mutex> mutexes;
 
-    public SynthesisTask(WorkspaceEntry we, String[] args, Collection<Mutex> mutexes) {
+    public SynthesisTask(WorkspaceEntry we, List<String> args, Collection<Mutex> mutexes) {
         this.we = we;
         this.args = args;
         this.mutexes = mutexes;
@@ -51,9 +41,7 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
         command.add(toolName);
 
         // Built-in arguments
-        for (String arg : args) {
-            command.add(arg);
-        }
+        command.addAll(args);
 
         // Extra arguments (should go before the file parameters)
         String extraArgs = AtacsSettings.getArgs();

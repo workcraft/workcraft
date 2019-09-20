@@ -15,6 +15,7 @@ import org.workcraft.formula.One;
 import org.workcraft.plugins.cpog.encoding.NumberProvider;
 
 public class OneHotNumberProvider implements NumberProvider<OneHotIntBooleanFormula> {
+
     private final List<BooleanFormula> rho = new ArrayList<>();
 
     @Override
@@ -29,26 +30,20 @@ public class OneHotNumberProvider implements NumberProvider<OneHotIntBooleanForm
                 rho.add(or(not(vars.get(i)), not(vars.get(j))));
             }
         }
-
         rho.add(or(vars));
-
         return new OneHotIntBooleanFormula(vars);
     }
 
     @Override
-    public BooleanFormula select(BooleanFormula[] booleanFormulas,
-            OneHotIntBooleanFormula number) {
-        List<BooleanFormula> conditions = new ArrayList<>();
-
+    public BooleanFormula select(BooleanFormula[] booleanFormulas, OneHotIntBooleanFormula number) {
         if (number.getRange() != booleanFormulas.length) {
             throw new RuntimeException("Lengths do not match");
         }
-
+        List<BooleanFormula> result = new ArrayList<>();
         for (int i = 0; i < booleanFormulas.length; i++) {
-            conditions.add(imply(number.get(i), booleanFormulas[i]));
+            result.add(imply(number.get(i), booleanFormulas[i]));
         }
-
-        return and(conditions);
+        return and(result);
     }
 
     @Override
@@ -57,8 +52,7 @@ public class OneHotNumberProvider implements NumberProvider<OneHotIntBooleanForm
     }
 
     @Override
-    public BooleanFormula less(OneHotIntBooleanFormula a,
-            OneHotIntBooleanFormula b) {
-        return One.instance();
+    public BooleanFormula less(OneHotIntBooleanFormula a, OneHotIntBooleanFormula b) {
+        return One.getInstance();
     }
 }

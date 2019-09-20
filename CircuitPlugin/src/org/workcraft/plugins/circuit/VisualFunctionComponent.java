@@ -200,7 +200,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
                 GateRenderer.foreground = getForegroundColor();
                 GateRenderer.background = getFillColor();
                 BooleanFormula setFunction = gateOutput.getSetFunction();
-                if ((setFunction == null) || setFunction.equals(Zero.instance()) || setFunction.equals(One.instance())) {
+                if ((setFunction == null) || setFunction.equals(Zero.getInstance()) || setFunction.equals(One.getInstance())) {
                     renderingResult = null;
                 } else {
                     BooleanFormula resetFunction = gateOutput.getResetFunction();

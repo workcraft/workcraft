@@ -1,16 +1,12 @@
 package org.workcraft.plugins.son.algorithm;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Stack;
-
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.util.Marking;
+
+import java.util.*;
 
 public class PathAlgorithm {
 
@@ -111,16 +107,15 @@ public class PathAlgorithm {
             visit.add(s1);
 
             while (!stack.empty()) {
-                s1 = stack.peek();
-
-                if (v.contains(s1)) {
-                    result.add(s1);
+                Node s2 = stack.peek();
+                if (v.contains(s2)) {
+                    result.add(s2);
                 }
 
                 Node post = null;
-                for (Node n: relation.getPostPNSet(s1)) {
+                for (Node n: relation.getPostPNSet(s2)) {
                     if (result.contains(n)) {
-                        result.add(s1);
+                        result.add(s2);
                     }
                     if (!visit.contains(n)) {
                         post = n;

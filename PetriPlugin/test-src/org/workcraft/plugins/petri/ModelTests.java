@@ -1,8 +1,6 @@
 package org.workcraft.plugins.petri;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
+import org.junit.Assert;
 import org.junit.Test;
 
 public class ModelTests {
@@ -12,16 +10,16 @@ public class ModelTests {
         Petri petriNet = new Petri();
 
         Transition tr = new Transition();
-        assertEquals(0, petriNet.getTransitions().size());
+        Assert.assertEquals(0, petriNet.getTransitions().size());
         petriNet.add(tr);
-        assertEquals(1, petriNet.getTransitions().size());
-        assertTrue(petriNet.getTransitions().contains(tr));
+        Assert.assertEquals(1, petriNet.getTransitions().size());
+        Assert.assertTrue(petriNet.getTransitions().contains(tr));
 
         Place pl = new Place();
-        assertEquals(0, petriNet.getPlaces().size());
+        Assert.assertEquals(0, petriNet.getPlaces().size());
         petriNet.add(pl);
-        assertEquals(1, petriNet.getPlaces().size());
-        assertTrue(petriNet.getPlaces().contains(pl));
+        Assert.assertEquals(1, petriNet.getPlaces().size());
+        Assert.assertTrue(petriNet.getPlaces().contains(pl));
     }
 
 }

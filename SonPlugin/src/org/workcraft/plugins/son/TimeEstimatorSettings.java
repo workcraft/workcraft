@@ -8,8 +8,7 @@ public class TimeEstimatorSettings {
     private int position;
 
     public TimeEstimatorSettings() {
-        duration = new Interval(0000, 0000);
-        position = 0;
+        this(new Interval(0, 0), 0);
     }
 
     public TimeEstimatorSettings(Interval duration, int position) {

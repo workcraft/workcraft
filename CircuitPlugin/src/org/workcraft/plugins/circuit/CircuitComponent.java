@@ -10,7 +10,7 @@ import org.workcraft.utils.Hierarchy;
 import java.util.ArrayList;
 import java.util.Collection;
 
-@VisualClass(org.workcraft.plugins.circuit.VisualCircuitComponent.class)
+@VisualClass(VisualCircuitComponent.class)
 public class CircuitComponent extends MathGroup {
 
     public static final String PROPERTY_MODULE = "Module";

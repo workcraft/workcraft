@@ -7,7 +7,7 @@ import org.workcraft.plugins.mpsat.tasks.*;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.MutexUtils;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;

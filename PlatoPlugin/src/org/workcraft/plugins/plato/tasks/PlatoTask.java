@@ -1,18 +1,13 @@
 package org.workcraft.plugins.plato.tasks;
 
+import org.workcraft.plugins.plato.PlatoSettings;
+import org.workcraft.tasks.*;
+import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.utils.DesktopApi;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-
-import org.workcraft.utils.DesktopApi;
-import org.workcraft.plugins.plato.PlatoSettings;
-import org.workcraft.tasks.ExternalProcessOutput;
-import org.workcraft.tasks.ExternalProcessTask;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.tasks.SubtaskMonitor;
-import org.workcraft.tasks.Task;
 
 public class PlatoTask implements Task<ExternalProcessOutput> {
 
@@ -37,25 +32,20 @@ public class PlatoTask implements Task<ExternalProcessOutput> {
 
     @Override
     public Result<? extends ExternalProcessOutput> run(ProgressMonitor<? super ExternalProcessOutput> monitor) {
-        try {
-            ArrayList<String> command = buildCommand();
+        ArrayList<String> command = buildCommand();
 
-            ExternalProcessTask task = new ExternalProcessTask(command, new File("."));
-            SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
-            Result<? extends ExternalProcessOutput> result = task.run(mon);
-            if (result.getOutcome() != Outcome.SUCCESS) {
-                return result;
-            }
-            ExternalProcessOutput output = result.getPayload();
-            if (output.getReturnCode() == 0) {
-                return Result.success(output);
-            } else {
-                return Result.failure(output);
-            }
-        } catch (NullPointerException e) {
-            // Open window dialog was cancelled, do nothing
+        ExternalProcessTask task = new ExternalProcessTask(command, new File("."));
+        SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
+        Result<? extends ExternalProcessOutput> result = task.run(mon);
+        if (result.getOutcome() != Outcome.SUCCESS) {
+            return result;
         }
-        return null;
+        ExternalProcessOutput output = result.getPayload();
+        if (output.getReturnCode() == 0) {
+            return Result.success(output);
+        } else {
+            return Result.failure(output);
+        }
     }
 
     private ArrayList<String> buildCommand() {
@@ -116,7 +106,7 @@ public class PlatoTask implements Task<ExternalProcessOutput> {
 
     private Object[] getIncludedSetting() {
         Object[] list = PlatoSettings.getPlatoIncludesList().split(";");
-        if ((list.length == 1) && (list[0].toString() == "")) {
+        if ((list.length == 1) && (list[0].toString().isEmpty())) {
             return new Object[0];
         }
         return list;
@@ -129,7 +119,7 @@ public class PlatoTask implements Task<ExternalProcessOutput> {
                 int k = path.lastIndexOf('.');
                 if (k != -1) {
                     String ex = path.substring(k);
-                    if (ex.compareTo(".hs") == 0) {
+                    if (".hs".equals(ex)) {
                         command.add("-i");
                         command.add(path);
                     }

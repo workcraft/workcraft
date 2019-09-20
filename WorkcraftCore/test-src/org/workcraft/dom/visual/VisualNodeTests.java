@@ -1,43 +1,43 @@
 package org.workcraft.dom.visual;
 
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
-
 import org.junit.Assert;
 import org.junit.Test;
-import org.workcraft.exceptions.NotAnAncestorException;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.utils.Hierarchy;
 
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
+
 public class VisualNodeTests {
 
-    static VisualGroup createGroup(VisualGroup parent) {
+    public static VisualGroup createGroup(VisualGroup parent) {
         return Tools.createGroup(parent);
     }
 
     @Test
     public void testTransformChangeNotify() {
         final SquareNode node = new SquareNode(null, new Rectangle2D.Double(0, 0, 1, 1));
-        final Boolean[] hit = new Boolean[]{false};
+        final Boolean[] hit = {false};
         node.addObserver(new StateObserver() {
-                    public void notify(StateEvent e) {
-                        if (e instanceof TransformChangedEvent) {
-                            if (e.getSender() == node) {
-                                hit[0] = true;
-                            }
-
-                        }
+            @Override
+            public void notify(StateEvent e) {
+                if (e instanceof TransformChangedEvent) {
+                    if (e.getSender() == node) {
+                        hit[0] = true;
                     }
-                });
+
+                }
+            }
+        });
         Assert.assertFalse("already hit o_O", hit[0]);
         node.setX(8);
         Assert.assertTrue("not hit", hit[0]);
     }
 
     @Test
-    public void testParentToAncestorTransform() throws NotAnAncestorException {
+    public void testParentToAncestorTransform() {
         VisualGroup root = createGroup(null);
         VisualGroup node1 = createGroup(root);
         VisualGroup node2 = createGroup(root);
@@ -126,7 +126,7 @@ public class VisualNodeTests {
         Assert.assertEquals(node12, Hierarchy.getCommonParent(node12, node12));
     }
 
-    private void ensureShiftX(VisualGroup node, VisualGroup ancestor, double i) throws NotAnAncestorException {
+    private void ensureShiftX(VisualGroup node, VisualGroup ancestor, double i) {
         ensureShiftX(TransformHelper.getTransform(node, ancestor), i);
         ensureShiftX(TransformHelper.getTransform(ancestor, node), -i);
     }

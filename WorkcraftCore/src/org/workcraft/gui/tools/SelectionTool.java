@@ -617,11 +617,11 @@ public class SelectionTool extends AbstractGraphEditorTool {
 
             @Override
             public Decoration getDecoration(Node node) {
-                VisualModel model = editor.getModel();
                 if ((currentNodes != null) && currentNodes.contains(node)) {
                     return Decoration.Highlighted.INSTANCE;
                 }
 
+                VisualModel model = editor.getModel();
                 if (node == model.getCurrentLevel()) {
                     return Decoration.Empty.INSTANCE;
                 }

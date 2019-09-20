@@ -64,6 +64,7 @@ public class VisualEvent extends VisualComponent implements VisualTransitionNode
         drawFault(r);
     }
 
+    @Override
     public void drawFault(DrawRequest r) {
         if (SONSettings.isErrorTracing()) {
             Graphics2D g = r.getGraphics();
@@ -89,15 +90,18 @@ public class VisualEvent extends VisualComponent implements VisualTransitionNode
         return (Math.abs(pointInLocalSpace.getX()) <= 0.5 * size) && (Math.abs(pointInLocalSpace.getY()) <= 0.5 * size);
     }
 
+    @Override
     public Event getMathTransitionNode() {
         return (Event) this.getReferencedComponent();
     }
 
+    @Override
     public void setLabel(String label) {
         super.setLabel(label);
         ((Event) getReferencedComponent()).setLabel(label);
     }
 
+    @Override
     public String getLabel() {
         super.getLabel();
         return ((Event) getReferencedComponent()).getLabel();
@@ -107,22 +111,27 @@ public class VisualEvent extends VisualComponent implements VisualTransitionNode
         ((Event) getReferencedComponent()).setFaulty(fault);
     }
 
+    @Override
     public boolean isFaulty() {
         return ((Event) getReferencedComponent()).isFaulty();
     }
 
+    @Override
     public Color getForegroundColor() {
         return ((Event) getReferencedComponent()).getForegroundColor();
     }
 
+    @Override
     public void setForegroundColor(Color foregroundColor) {
         ((Event) getReferencedComponent()).setForegroundColor(foregroundColor);
     }
 
+    @Override
     public void setFillColor(Color fillColor) {
         ((Event) getReferencedComponent()).setFillColor(fillColor);
     }
 
+    @Override
     public Color getFillColor() {
         return ((Event) getReferencedComponent()).getFillColor();
     }
@@ -162,4 +171,5 @@ public class VisualEvent extends VisualComponent implements VisualTransitionNode
             setFaulty(srcComponent.isFaulty());
         }
     }
+
 }

@@ -77,7 +77,7 @@ public class VisualPolicy extends VisualPetri {
             }
         }
         VisualLocality newLocality = null;
-        if (selected.size() > 0) {
+        if (!selected.isEmpty()) {
             VisualLocality curLocality = (VisualLocality) getCurrentLevel();
             newLocality = new VisualLocality(getMathModel().createLocality(refSelected, curLocality.getLocality()));
             curLocality.add(newLocality);
@@ -175,7 +175,7 @@ public class VisualPolicy extends VisualPetri {
     public String getBundlesOfTransitionAsString(VisualBundledTransition t) {
         String result = "";
         for (VisualBundle b: getBundlesOfTransition(t)) {
-            if (result != "") {
+            if (!result.isEmpty()) {
                 result += ", ";
             }
             result += getMathModel().getName(b.getReferencedBundle());
@@ -206,7 +206,7 @@ public class VisualPolicy extends VisualPetri {
     public String getTransitionsOfBundleAsString(VisualBundle b) {
         String result = "";
         for (VisualBundledTransition t: getTransitionsOfBundle(b)) {
-            if (result != "") {
+            if (!result.isEmpty()) {
                 result += ", ";
             }
             result += getMathModel().getName(t.getReferencedTransition());

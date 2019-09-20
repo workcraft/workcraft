@@ -14,6 +14,7 @@ class RedundancyOutputHandler extends ReachabilityOutputHandler {
         return "The selected places are " + (isSatisfiable ? "essential" : "redundant");
     }
 
+    @Override
     public String extendMessage(String message) {
         String traceInfo = "&#160;Trace(s) leading to the witness state(s):<br><br>";
         return "<html><br>&#160;" + message + "<br><br>" + traceInfo + "</html>";

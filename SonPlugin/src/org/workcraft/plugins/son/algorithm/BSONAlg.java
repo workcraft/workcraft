@@ -229,14 +229,11 @@ public class BSONAlg extends RelationAlgorithm {
     }
 
     public Map<Condition, Collection<Phase>> getAllPhases(Map<ONGroup, List<Marking>> allMarkings) {
-        Map<Condition, Collection<Phase>> result = new HashMap<>();
-
         if (allMarkings == null) {
             return getAllPhases();
         }
-
         Collection<ONGroup> upperGroups = getUpperGroups(net.getGroups());
-
+        Map<Condition, Collection<Phase>> result = new HashMap<>();
         for (ONGroup group : upperGroups) {
             for (Condition c : group.getConditions()) {
                 result.put(c, getPhases(c, allMarkings));
@@ -540,14 +537,11 @@ public class BSONAlg extends RelationAlgorithm {
     public Before before(TransitionNode e, Map<Condition, Collection<Phase>> phases) {
         Before result = new Before();
 
-        Collection<Condition> preSet = getPREset(e);
-        Collection<Condition> postSet = getPOSTset(e);
-
         //get Pre(e)
+        Collection<Condition> preSet = getPREset(e);
         for (Condition c : preSet) {
             //get phase collection for each Pre(e)
             Collection<Phase> prePhases = null;
-
             if (phases.containsKey(c)) {
                 prePhases = phases.get(c);
             } else {
@@ -573,6 +567,7 @@ public class BSONAlg extends RelationAlgorithm {
         }
 
         //get Post(e)
+        Collection<Condition> postSet = getPOSTset(e);
         for (Condition c : postSet) {
             //get phase collection for each Pre(e)
             Collection<Phase> postPhases = null;

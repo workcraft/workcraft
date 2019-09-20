@@ -62,8 +62,7 @@ public class HideConversionCommand extends AbstractPetrifyConversionCommand {
         }
 
         Collection<Mutex> mutexes = getMutexes(we);
-        TransformationTask task = new TransformationTask(
-                we, "Net synthesis", args.toArray(new String[args.size()]), mutexes);
+        TransformationTask task = new TransformationTask(we, args, mutexes);
 
         boolean hasSignals = hasSignals(we);
         TransformationResultHandler monitor = new TransformationResultHandler(we, !hasSignals, mutexes);

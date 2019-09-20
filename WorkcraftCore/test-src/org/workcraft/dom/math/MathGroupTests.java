@@ -1,8 +1,6 @@
 package org.workcraft.dom.math;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
+import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchyObserver;
@@ -27,6 +25,7 @@ public class MathGroupTests {
         MathGroup group = new MathGroup();
 
         group.addObserver(new HierarchyObserver() {
+            @Override
             public void notify(HierarchyEvent e) {
                 if (e instanceof NodesAddedEvent) {
                     if (e.getAffectedNodes().iterator().next() == n1) {
@@ -45,18 +44,18 @@ public class MathGroupTests {
         });
 
         group.add(n1);
-        assertTrue(receivedAddNotification1);
+        Assert.assertTrue(receivedAddNotification1);
         group.add(n2);
-        assertTrue(receivedAddNotification2);
+        Assert.assertTrue(receivedAddNotification2);
 
-        assertEquals(group.getChildren().size(), 2);
+        Assert.assertEquals(group.getChildren().size(), 2);
 
         group.remove(n2);
-        assertTrue(receivedRemoveNotification2);
+        Assert.assertTrue(receivedRemoveNotification2);
         group.remove(n1);
-        assertTrue(receivedRemoveNotification1);
+        Assert.assertTrue(receivedRemoveNotification1);
 
-        assertEquals(group.getChildren().size(), 0);
+        Assert.assertEquals(group.getChildren().size(), 0);
 
         receivedAddNotification1 = false;
         receivedAddNotification2 = false;

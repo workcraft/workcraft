@@ -34,6 +34,10 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
     private static final double size = 0.3;
     private static FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);
     private static Font font;
+
+    private FormulaRenderingResult renderedSetFormula = null;
+    private FormulaRenderingResult renderedResetFormula = null;
+
     static {
         try {
             font = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/eurm10.pfb")).deriveFont(0.5f);
@@ -41,9 +45,6 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
             e.printStackTrace();
         }
     }
-
-    private FormulaRenderingResult renderedSetFormula = null;
-    private FormulaRenderingResult renderedResetFormula = null;
 
     public VisualFunctionContact(FunctionContact contact) {
         super(contact);

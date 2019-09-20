@@ -2,9 +2,9 @@ package org.workcraft.types;
 
 import java.util.LinkedHashMap;
 
-public class LinkedTwoWayMap<T1, T2> extends GeneralTwoWayMap<T1, T2> {
+public class LinkedTwoWayMap<S, T> extends GeneralTwoWayMap<S, T> {
     public LinkedTwoWayMap() {
-        super(new LinkedHashMap<T1, T2>(), new LinkedHashMap<T2, T1>());
+        super(new LinkedHashMap<S, T>(), new LinkedHashMap<T, S>());
     }
 
 }

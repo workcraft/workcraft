@@ -15,7 +15,8 @@ import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.utils.Hierarchy;
 
 public class RandomLayoutCommand extends AbstractLayoutCommand {
-    Random r = new Random();
+
+    private static final Random r = new Random();
 
     @Override
     public String getDisplayName() {

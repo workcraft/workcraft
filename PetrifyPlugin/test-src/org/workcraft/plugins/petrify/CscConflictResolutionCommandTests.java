@@ -7,7 +7,7 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.TestUtils;
 import org.workcraft.plugins.petrify.commands.CscConflictResolutionCommand;
-import org.workcraft.plugins.stg.MutexUtils;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.utils.PackageUtils;

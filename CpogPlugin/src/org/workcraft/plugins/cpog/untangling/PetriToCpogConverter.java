@@ -80,7 +80,7 @@ public class PetriToCpogConverter {
         // insert tokens
         for (Place p : pn.getPlaces()) {
             if (p.getTokens() > 0) {
-                if (untangling.insertTokens(pn.getNodeReference(p), p.getTokens()) == false) {
+                if (!untangling.insertTokens(pn.getNodeReference(p), p.getTokens())) {
                     System.out.println("Place with this name not found. Tokens not inserted");
                     return null;
                 }
@@ -92,7 +92,7 @@ public class PetriToCpogConverter {
          *****************************************************/
 
         // start conversion from Petri net to Cpog
-        if (untangling.startConversion() == false) {
+        if (!untangling.startConversion()) {
             return null;
         }
 
@@ -158,20 +158,20 @@ public class PetriToCpogConverter {
                 // checking if they are already present
                 // if so do not create a new one but connect
                 // the one already available
-                if (nodes.containsKey(sourceName) == false) {
+                if (nodes.containsKey(sourceName)) {
+                    sourceVertex = nodes.get(sourceName);
+                } else {
                     sourceVertex.setPosition(new Point2D.Double(xPos, yPos));
                     xPos = xPos + 5;
                     nodes.put(sourceName, sourceVertex);
-                } else {
-                    sourceVertex = nodes.get(sourceName);
                 }
 
-                if (nodes.containsKey(targetName) == false) {
+                if (nodes.containsKey(targetName)) {
+                    targetVertex = nodes.get(targetName);
+                } else {
                     targetVertex.setPosition(new Point2D.Double(xPos, yPos));
                     xPos = xPos + 5;
                     nodes.put(targetName, targetVertex);
-                } else {
-                    targetVertex = nodes.get(targetName);
                 }
 
                 // connection

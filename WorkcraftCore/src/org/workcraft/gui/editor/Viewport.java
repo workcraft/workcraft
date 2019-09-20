@@ -12,9 +12,6 @@ import java.util.LinkedList;
  * The <code>Viewport</code> class represents a document viewport. It is used to map the
  * coordinates from user space (i.e. the coordinates as specified by the user) to screen space
  * (i.e. the portion of an on-screen window) and vice versa.
- *
- * @author Ivan Poliakov
- *
  */
 public class Viewport {
     /**
@@ -47,7 +44,7 @@ public class Viewport {
     /**
      * Current view scale factor.
      */
-    protected double scale = DEFAULT_SCALE;
+    protected double s = DEFAULT_SCALE;
 
     /**
      * The transformation from user space to screen space such that the point (0, 0) in user space is
@@ -66,12 +63,12 @@ public class Viewport {
     /**
      * The concatenation of the user-to-screen and pan/zoom transforms.
      */
-    AffineTransform finalTransform;
+    private AffineTransform finalTransform;
 
     /**
      * The reverse of the final (concatenated) transform.
      */
-    AffineTransform finalInverseTransform;
+    private AffineTransform finalInverseTransform;
 
     /**
      * The current viewport shape.
@@ -89,7 +86,7 @@ public class Viewport {
      */
     protected void viewChanged() {
         viewTransform.setToIdentity();
-        viewTransform.scale(scale, scale);
+        viewTransform.scale(s, s);
         viewTransform.translate(tx, ty);
 
         updateFinalTransform();
@@ -151,7 +148,7 @@ public class Viewport {
         finalTransform = new AffineTransform();
         finalInverseTransform = new AffineTransform();
         shape = new Rectangle();
-        listeners = new LinkedList<ViewportListener>();
+        listeners = new LinkedList<>();
 
         viewChanged();
 
@@ -257,7 +254,7 @@ public class Viewport {
         if (scale > 1.0f) {
             scale = 1.0f;
         }
-        this.scale = scale;
+        this.s = scale;
         viewChanged();
     }
 
@@ -273,7 +270,7 @@ public class Viewport {
      * The required change of the zoom level. Use positive value to zoom in, negative value to zoom out.
      */
     public void zoom(int levels) {
-        scale(scale * Math.pow(SCALE_FACTOR, levels));
+        scale(s * Math.pow(SCALE_FACTOR, levels));
     }
 
     /**

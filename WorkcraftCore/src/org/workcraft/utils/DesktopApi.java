@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class DesktopApi {
 
@@ -108,8 +109,8 @@ public class DesktopApi {
         parts.add(command);
         if (args != null) {
             for (String s : args.split("\\s")) {
-                s = String.format(s, file);
-                parts.add(s.trim());
+                String part = String.format(s, file);
+                parts.add(part.trim());
             }
         }
         return parts.toArray(new String[parts.size()]);
@@ -136,7 +137,7 @@ public class DesktopApi {
     }
 
     public static OsType getOs() {
-        String s = System.getProperty("os.name").toLowerCase();
+        String s = System.getProperty("os.name").toLowerCase(Locale.ROOT);
         OsType result = OsType.UNKNOWN;
         if (s.contains("win")) {
             result = OsType.WINDOWS;

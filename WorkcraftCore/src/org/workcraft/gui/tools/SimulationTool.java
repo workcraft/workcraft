@@ -70,14 +70,18 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
     protected JTable traceTable;
 
     private JSlider speedSlider;
-    private JButton playButton, backwardButton, forwardButton, recordButton, ejectButton;
+    private JButton playButton;
+    private JButton backwardButton;
+    private JButton forwardButton;
+    private JButton recordButton;
+    private JButton ejectButton;
     private JPanel panel;
 
     // cache of "excited" containers (the ones containing the excited simulation elements)
     protected HashMap<Container, Boolean> excitedContainers = new HashMap<>();
 
-    static final double DEFAULT_SIMULATION_DELAY = 0.3;
-    static final double EDGE_SPEED_MULTIPLIER = 10;
+    private static final double DEFAULT_SIMULATION_DELAY = 0.3;
+    private static final double EDGE_SPEED_MULTIPLIER = 10;
 
     protected Map<? extends Node, Integer> initialState;
     public HashMap<? extends Node, Integer> savedState;
@@ -86,7 +90,6 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
 
     private Timer timer = null;
     private boolean random = false;
-
 
     private final boolean enableTraceGraph;
 
@@ -459,7 +462,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
 
     private boolean randomStep(final GraphEditor editor) {
         ArrayList<? extends Node> enabledTransitions = getEnabledNodes();
-        if (enabledTransitions.size() == 0) {
+        if (enabledTransitions.isEmpty()) {
             return false;
         }
         int randomIndex = (int) (Math.random() * enabledTransitions.size());
@@ -579,7 +582,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
             }
         };
 
-        boolean isActive(int row, int column) {
+        private boolean isActive(int row, int column) {
             if (column == 0) {
                 if (!mainTrace.isEmpty() && branchTrace.isEmpty()) {
                     return row == mainTrace.getPosition();
@@ -711,10 +714,12 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         return "Click on a highlighted node to fire it.";
     }
 
+    @Override
     public String getLabel() {
         return "Simulation";
     }
 
+    @Override
     public int getHotKeyCode() {
         return KeyEvent.VK_M;
     }

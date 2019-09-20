@@ -120,7 +120,7 @@ public class VisualCpog extends AbstractVisualModel {
     public VisualScenario groupSelection(String graphName) {
         VisualScenario scenario = null;
         Collection<VisualNode> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
-        if (nodes.size() >= 1) {
+        if (!nodes.isEmpty()) {
             scenario = new VisualScenario();
             if (graphName != null) {
                 scenario.setLabel(graphName);
@@ -197,7 +197,7 @@ public class VisualCpog extends AbstractVisualModel {
         VisualScenarioPage scenario = null;
         PageNode pageNode = new PageNode();
         Collection<VisualNode> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
-        if (nodes.size() >= 1) {
+        if (!nodes.isEmpty()) {
             scenario = new VisualScenarioPage(pageNode);
             if (graphName != null) {
                 scenario.setLabel(graphName);

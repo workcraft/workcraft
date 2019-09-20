@@ -4,12 +4,12 @@ public class DumbBooleanWorker implements BooleanWorker {
 
     @Override
     public BooleanFormula zero() {
-        return Zero.instance();
+        return Zero.getInstance();
     }
 
     @Override
     public BooleanFormula one() {
-        return One.instance();
+        return One.getInstance();
     }
 
     @Override

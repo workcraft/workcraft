@@ -6,6 +6,7 @@ import org.workcraft.dom.visual.VisualNode;
 import java.util.Collection;
 
 public class SelectionChangedEvent implements StateEvent {
+
     private final VisualModel sender;
     private final Collection<? extends VisualNode> prevSelection;
 
@@ -14,6 +15,7 @@ public class SelectionChangedEvent implements StateEvent {
         this.prevSelection = prevSelection;
     }
 
+    @Override
     public VisualModel getSender() {
         return sender;
     }

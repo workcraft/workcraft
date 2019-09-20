@@ -1,36 +1,36 @@
 package org.workcraft.dom.references;
 
-import java.util.Comparator;
-import java.util.TreeSet;
-
 import org.workcraft.exceptions.DuplicateIDException;
 import org.workcraft.types.Pair;
 
+import java.util.Comparator;
+import java.util.TreeSet;
+
 public class IDGenerator {
+
     private static final Comparator<? super Pair<Integer, Integer>> comparator = new Comparator<Pair<Integer, Integer>>() {
                 @Override
-                public int compare(Pair<Integer, Integer> o1,
-                        Pair<Integer, Integer> o2) {
+                public int compare(Pair<Integer, Integer> o1, Pair<Integer, Integer> o2) {
                     return o1.getFirst().compareTo(o2.getFirst());
                 }
             };
 
-    TreeSet<Pair<Integer, Integer>> takenRanges = new TreeSet<>(comparator);
+    private final TreeSet<Pair<Integer, Integer>> takenRanges = new TreeSet<>(comparator);
 
     public void reserveID(int id) {
         final Pair<Integer, Integer> point = emptyRange(id);
         final Pair<Integer, Integer> floor = takenRanges.floor(point);
+        if ((floor != null) && (id < floor.getSecond())) {
+            throw new DuplicateIDException(id);
+        }
+
         final Pair<Integer, Integer> ceiling = takenRanges.ceiling(point);
-
-        if (floor != null && id < floor.getSecond()) {
-            throw new DuplicateIDException(id);
-        }
-        if (ceiling != null && id == ceiling.getFirst().intValue()) {
+        if ((ceiling != null) && (id == ceiling.getFirst().intValue())) {
             throw new DuplicateIDException(id);
         }
 
-        boolean mergeFirst = floor != null && id == floor.getSecond();
-        boolean mergeSecond = ceiling != null && id == ceiling.getFirst() - 1;
+        boolean mergeFirst = (floor != null) && (id == floor.getSecond());
+        boolean mergeSecond = (ceiling != null) && (id == ceiling.getFirst() - 1);
 
         if (mergeFirst) {
             takenRanges.remove(floor);
@@ -85,7 +85,8 @@ public class IDGenerator {
     }
 
     public int getNextID() {
-        final int result = (takenRanges.size() > 0 && takenRanges.first().getFirst().intValue() == 0) ? takenRanges.first().getSecond().intValue() : 0;
+        boolean b = !takenRanges.isEmpty() && (takenRanges.first().getFirst().intValue() == 0);
+        int result = b ? takenRanges.first().getSecond().intValue() : 0;
         reserveID(result);
         return result;
     }
@@ -93,4 +94,5 @@ public class IDGenerator {
     public boolean isEmpty() {
         return takenRanges.isEmpty();
     }
+
 }

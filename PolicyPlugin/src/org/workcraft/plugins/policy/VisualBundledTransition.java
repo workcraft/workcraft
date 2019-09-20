@@ -4,10 +4,10 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.utils.Coloriser;
 import org.workcraft.gui.tools.Decoration;
-import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.petri.VisualTransition;
+import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -24,6 +24,7 @@ public class VisualBundledTransition extends VisualTransition {
         removePropertyDeclarationByName(PROPERTY_FILL_COLOR);
     }
 
+    @Override
     public BundledTransition getReferencedTransition() {
         return (BundledTransition) getReferencedComponent();
     }
@@ -48,15 +49,12 @@ public class VisualBundledTransition extends VisualTransition {
         Shape shape = new Rectangle2D.Double(-w2, -h2, w, h);
 
         Collection<VisualBundle> bundles = model.getBundlesOfTransition(this);
-        if (bundles.size() > 0) {
-            h = (h - strokeWidth) / bundles.size();
-            h2 = h / 2;
-        }
-
         if (bundles.isEmpty()) {
             g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
             g.fill(shape);
         } else {
+            h = (h - strokeWidth) / bundles.size();
+            h2 = h / 2;
             double y = -size / 2 + strokeWidth + h2;
             for (VisualBundle b: bundles) {
                 Shape bundleShape = new Rectangle2D.Double(-w2, y - h2, w, h);

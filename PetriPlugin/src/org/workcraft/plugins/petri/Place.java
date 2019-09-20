@@ -7,7 +7,7 @@ import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.observation.PropertyChangedEvent;
 
 @IdentifierPrefix("p")
-@VisualClass(org.workcraft.plugins.petri.VisualPlace.class)
+@VisualClass(VisualPlace.class)
 public class Place extends MathNode {
     public static final String PROPERTY_CAPACITY = "Promised capacity";
     public static final String PROPERTY_TOKENS = "Tokens";

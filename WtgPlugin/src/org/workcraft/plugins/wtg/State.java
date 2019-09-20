@@ -8,7 +8,7 @@ import org.workcraft.observation.PropertyChangedEvent;
 
 @DisplayName("State")
 @IdentifierPrefix("s")
-@VisualClass(org.workcraft.plugins.wtg.VisualState.class)
+@VisualClass(VisualState.class)
 public class State extends MathNode {
     public static final String PROPERTY_INITIAL = "Initial";
 

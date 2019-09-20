@@ -5,7 +5,7 @@ import org.workcraft.commands.AbstractSynthesisCommand;
 import org.workcraft.plugins.petrify.tasks.SynthesisResultHandler;
 import org.workcraft.plugins.petrify.tasks.SynthesisTask;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.MutexUtils;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.TaskManager;
@@ -13,6 +13,7 @@ import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.LinkedList;
+import java.util.List;
 
 public abstract class AbstractPetrifySynthesisCommand extends AbstractSynthesisCommand {
 
@@ -70,6 +71,6 @@ public abstract class AbstractPetrifySynthesisCommand extends AbstractSynthesisC
         return false;
     }
 
-    public abstract String[] getSynthesisParameter();
+    public abstract List<String> getSynthesisParameter();
 
 }

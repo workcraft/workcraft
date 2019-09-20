@@ -51,7 +51,7 @@ public class TimeAlg extends RelationAlgorithm {
     }
 
     // assign specified value from connections to nodes
-    public void initialize() {
+    public void prepare() {
         for (SONConnection con : scenario.getConnections(net)) {
             if (con.getSemantics() == Semantics.PNLINE) {
                 if (con.getTime().isSpecified()) {
@@ -71,7 +71,7 @@ public class TimeAlg extends RelationAlgorithm {
     }
 
     // assign estimated time value from nodes to connections
-    public void finalize() {
+    public void complete() {
         SONAlg sonAlg = new SONAlg(net);
         Collection<PlaceNode> initial = sonAlg.getSONInitial();
         Collection<PlaceNode> finalM = sonAlg.getSONFinal();
@@ -131,7 +131,7 @@ public class TimeAlg extends RelationAlgorithm {
     }
 
     public void setDefaultTime(Node node) {
-        Interval input = new Interval(0000, 9999);
+        Interval input = new Interval(0, 9999);
         if (node instanceof Condition) {
             Condition c = (Condition) node;
             if (c.isInitial() && !c.isFinal()) {
@@ -168,4 +168,5 @@ public class TimeAlg extends RelationAlgorithm {
         }
         return result;
     }
+
 }

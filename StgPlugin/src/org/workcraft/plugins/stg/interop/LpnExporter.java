@@ -5,7 +5,7 @@ import org.workcraft.plugins.stg.serialisation.LpnSerialiser;
 
 public class LpnExporter extends AbstractSerialiseExporter {
 
-    LpnSerialiser serialiser = new LpnSerialiser();
+    private final LpnSerialiser serialiser = new LpnSerialiser();
 
     @Override
     public LpnFormat getFormat() {

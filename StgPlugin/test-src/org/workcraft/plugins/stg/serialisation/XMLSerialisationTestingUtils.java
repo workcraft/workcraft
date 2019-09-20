@@ -1,32 +1,10 @@
 package org.workcraft.plugins.stg.serialisation;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import org.workcraft.plugins.Initialiser;
-import org.workcraft.plugins.LegacyPluginInfo;
-import org.workcraft.plugins.PluginManager;
-import org.workcraft.plugins.PluginProvider;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.PluginInfo;
+import org.workcraft.plugins.*;
+import org.workcraft.plugins.builtin.serialisation.xml.*;
 import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.builtin.serialisation.xml.AffineTransformDeserialiser;
-import org.workcraft.plugins.builtin.serialisation.xml.AffineTransformSerialiser;
-import org.workcraft.plugins.builtin.serialisation.xml.BooleanDeserialiser;
-import org.workcraft.plugins.builtin.serialisation.xml.BooleanSerialiser;
-import org.workcraft.plugins.builtin.serialisation.xml.ConnectionDeserialiser;
-import org.workcraft.plugins.builtin.serialisation.xml.ConnectionSerialiser;
-import org.workcraft.plugins.builtin.serialisation.xml.DoubleDeserialiser;
-import org.workcraft.plugins.builtin.serialisation.xml.DoubleSerialiser;
-import org.workcraft.plugins.builtin.serialisation.xml.EnumDeserialiser;
-import org.workcraft.plugins.builtin.serialisation.xml.EnumSerialiser;
-import org.workcraft.plugins.builtin.serialisation.xml.IntDeserialiser;
-import org.workcraft.plugins.builtin.serialisation.xml.IntSerialiser;
-import org.workcraft.plugins.builtin.serialisation.xml.StringDeserialiser;
-import org.workcraft.plugins.builtin.serialisation.xml.StringSerialiser;
-import org.workcraft.plugins.builtin.serialisation.xml.VisualConnectionDeserialiser;
-import org.workcraft.plugins.builtin.serialisation.xml.VisualConnectionSerialiser;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualSignalTransition;
@@ -34,14 +12,18 @@ import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.serialisation.XMLDeserialiser;
 import org.workcraft.serialisation.XMLSerialiser;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 public class XMLSerialisationTestingUtils {
 
     static class MockPluginManager implements PluginProvider {
+
         @SuppressWarnings("unchecked")
         @Override
         public <T> Collection<PluginInfo<? extends T>> getPlugins(Class<T> interfaceType) {
             Initialiser<Object>[] legacy = getLegacyPlugins(interfaceType);
-            ArrayList<PluginInfo<? extends T>> result = new ArrayList<PluginInfo<? extends T>>();
+            ArrayList<PluginInfo<? extends T>> result = new ArrayList<>();
             for (Initialiser<Object> l : legacy) {
                 result.add(new PluginManager.PluginInstanceHolder<T>((Initialiser<? extends T>) l));
             }
@@ -172,4 +154,5 @@ public class XMLSerialisationTestingUtils {
             throw new RuntimeException(e);
         }
     }
+
 }

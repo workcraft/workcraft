@@ -45,7 +45,7 @@ public class BFSEntireEstimationAlg extends DFSEstimationAlg {
     }
 
     // assign specified value from connections to nodes
-    public void initializeSuperIni(MathNode n) {
+    public void prepareSuperIni(MathNode n) {
         for (SONConnection con : net.getOutputPNConnections(n)) {
             if (con.getTime().isSpecified()) {
                 Node first = con.getFirst();
@@ -57,7 +57,8 @@ public class BFSEntireEstimationAlg extends DFSEstimationAlg {
         }
     }
 
-    public void finalize() {
+    @Override
+    public void complete() {
         net.remove(superIni);
         if (twoDir) {
             net.remove(superFinal);
@@ -90,7 +91,6 @@ public class BFSEntireEstimationAlg extends DFSEstimationAlg {
         scenario.add(net.getNodeReference(superIni));
         SONAlg sonAlg = new SONAlg(net);
         Collection<PlaceNode> initial = sonAlg.getSONInitial();
-        Collection<PlaceNode> finalM = sonAlg.getSONFinal();
 
         // add arcs from super initial to SON initial
         for (PlaceNode p : initial) {
@@ -105,7 +105,7 @@ public class BFSEntireEstimationAlg extends DFSEstimationAlg {
                 e.printStackTrace();
             }
         }
-        initializeSuperIni(superIni);
+        prepareSuperIni(superIni);
         try {
             estimateEndTime(superIni);
         } catch (TimeEstimationException e) {
@@ -126,6 +126,7 @@ public class BFSEntireEstimationAlg extends DFSEstimationAlg {
             superFinal = net.createCondition("superFinal", null);
             scenario.add(net.getNodeReference(superFinal));
 
+            Collection<PlaceNode> finalM = sonAlg.getSONFinal();
             for (PlaceNode p : finalM) {
                 try {
                     SONConnection con = net.connect(p, superFinal, Semantics.PNLINE);

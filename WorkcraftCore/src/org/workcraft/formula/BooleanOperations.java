@@ -35,7 +35,7 @@ public class BooleanOperations {
     private static BooleanFormula createAnd(List<? extends BooleanFormula> operands, int start, int end, BooleanWorker worker) {
         int size = end - start;
         if (size == 0) {
-            return One.instance();
+            return One.getInstance();
         } else {
             if (size == 1) {
                 return operands.get(start);
@@ -65,7 +65,7 @@ public class BooleanOperations {
     private static BooleanFormula createOr(List<? extends BooleanFormula> operands, int start, int end, BooleanWorker worker) {
         int size = end - start;
         if (size == 0) {
-            return Zero.instance();
+            return Zero.getInstance();
         } else {
             if (size == 1) {
                 return operands.get(start);

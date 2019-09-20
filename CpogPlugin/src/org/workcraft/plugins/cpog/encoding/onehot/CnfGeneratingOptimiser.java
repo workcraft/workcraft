@@ -1,17 +1,6 @@
 package org.workcraft.plugins.cpog.encoding.onehot;
 
-import static org.workcraft.plugins.cpog.encoding.CnfOperations.literal;
-import static org.workcraft.plugins.cpog.encoding.CnfOperations.not;
-import static org.workcraft.plugins.cpog.encoding.CnfOperations.or;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.BooleanOperations;
-import org.workcraft.formula.BooleanVariable;
-import org.workcraft.formula.FreeVariable;
-import org.workcraft.formula.Literal;
+import org.workcraft.formula.*;
 import org.workcraft.formula.cnf.Cnf;
 import org.workcraft.formula.cnf.CnfClause;
 import org.workcraft.plugins.cpog.encoding.twohot.TwoHotRange;
@@ -19,10 +8,18 @@ import org.workcraft.plugins.cpog.encoding.twohot.TwoHotRangeProvider;
 import org.workcraft.plugins.cpog.sat.OptimisationTask;
 import org.workcraft.plugins.cpog.sat.SatProblemGenerator;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.workcraft.plugins.cpog.encoding.CnfOperations.*;
+
 public class CnfGeneratingOptimiser implements SatProblemGenerator<Cnf> {
+
     private final List<CnfClause> rho = new ArrayList<>();
 
-    TwoHotRange generateBinaryFunction(int variablesCount, int funcId) {
+    private final CnfGeneratingOneHotNumberProvider numberProvider;
+
+    private TwoHotRange generateBinaryFunction(int variablesCount, int funcId) {
         TwoHotRangeProvider prov = new TwoHotRangeProvider();
         TwoHotRange result = prov.generate("f" + funcId, variablesCount);
         rho.addAll(prov.getConstraints().getClauses());
@@ -32,8 +29,6 @@ public class CnfGeneratingOptimiser implements SatProblemGenerator<Cnf> {
     private OneHotIntBooleanFormula generateInt(String varPrefix, int variablesCount) {
         return numberProvider.generate(varPrefix, variablesCount);
     }
-
-    CnfGeneratingOneHotNumberProvider numberProvider;
 
     public CnfGeneratingOptimiser() {
         this.numberProvider = new CnfGeneratingOneHotNumberProvider();
@@ -160,10 +155,6 @@ public class CnfGeneratingOptimiser implements SatProblemGenerator<Cnf> {
         if (derivedFunctions.length > 0) {
             rho.add(or(derivedFunctions[0].get(0), derivedFunctions[0].get(1)));
             rho.add(or(derivedFunctions[0].get(2), derivedFunctions[0].get(3)));
-            if (derivedFunctions.length > 1) {
-                //rho.add(or(derivedFunctions[1].get(0), derivedFunctions[1].get(1), derivedFunctions[1].get(2), derivedFunctions[1].get(3), derivedFunctions[1].get(4), derivedFunctions[1].get(5)));
-                //rho.add(or(derivedFunctions[1].get(0), derivedFunctions[1].get(1), derivedFunctions[1].get(2), derivedFunctions[1].get(3), derivedFunctions[1].get(4), derivedFunctions[1].get(5)));
-            }
         }
 
         for (int i = 0; i < derivedFunctions.length; i++) {

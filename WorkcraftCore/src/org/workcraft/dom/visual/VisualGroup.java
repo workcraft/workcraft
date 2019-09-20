@@ -26,10 +26,10 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
     protected double size = CommonVisualSettings.getNodeSize();
     protected static final double margin = 0.20;
 
-    private boolean isCurrentLevelInside = false;
-    private boolean isCollapsed = false;
-    private boolean isExcited = false;
-    DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
+    private boolean currentLevelInside = false;
+    private boolean collapsed = false;
+    private boolean excited = false;
+    private final DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
     public VisualGroup() {
         super();
@@ -52,36 +52,37 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 
     @Override
     public void setIsCurrentLevelInside(boolean value) {
-        if (isCurrentLevelInside != value) {
+        if (currentLevelInside != value) {
             sendNotification(new TransformChangingEvent(this));
-            this.isCurrentLevelInside = value;
+            this.currentLevelInside = value;
             sendNotification(new TransformChangedEvent(this));
         }
     }
 
+    @Override
     public boolean isCurrentLevelInside() {
-        return isCurrentLevelInside;
+        return currentLevelInside;
     }
 
     @Override
     public void setIsCollapsed(boolean value) {
-        if (isCollapsed != value) {
+        if (collapsed != value) {
             sendNotification(new TransformChangingEvent(this));
-            isCollapsed = value;
+            collapsed = value;
             sendNotification(new TransformChangedEvent(this));
         }
     }
 
     @Override
     public boolean getIsCollapsed() {
-        return isCollapsed && !isExcited;
+        return collapsed && !excited;
     }
 
     @Override
     public void setIsExcited(boolean value) {
-        if (isExcited != value) {
+        if (excited != value) {
             sendNotification(new TransformChangingEvent(this));
-            isExcited = value;
+            excited = value;
             sendNotification(new TransformChangedEvent(this));
         }
     }

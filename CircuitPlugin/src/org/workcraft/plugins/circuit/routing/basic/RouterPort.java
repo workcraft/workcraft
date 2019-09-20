@@ -16,15 +16,20 @@ public final class RouterPort {
      * before making any turns. If false, the router can choose any neighbouring
      * direction on the first route segment.
      */
-    private final boolean isFixedDirection;
+    private final boolean fixedDirection;
 
-    public RouterPort(PortDirection direction, Point location, boolean isFixedDirection) {
+    public RouterPort(PortDirection direction, Point location, boolean fixedDirection) {
         if (direction == null || location == null) {
             throw new IllegalArgumentException();
         }
         this.direction = direction;
         this.location = location;
-        this.isFixedDirection = isFixedDirection;
+        this.fixedDirection = fixedDirection;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return this == other;
     }
 
     @Override
@@ -52,7 +57,7 @@ public final class RouterPort {
     }
 
     public boolean isFixedDirection() {
-        return isFixedDirection;
+        return fixedDirection;
     }
 
 }

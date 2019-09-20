@@ -1,24 +1,5 @@
 package org.workcraft.plugins.xmas.commands;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
 import org.workcraft.commands.Command;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
@@ -29,28 +10,19 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.xmas.VisualXmas;
 import org.workcraft.plugins.xmas.Xmas;
 import org.workcraft.plugins.xmas.XmasSettings;
-import org.workcraft.plugins.xmas.components.ForkComponent;
-import org.workcraft.plugins.xmas.components.FunctionComponent;
-import org.workcraft.plugins.xmas.components.JoinComponent;
-import org.workcraft.plugins.xmas.components.MergeComponent;
-import org.workcraft.plugins.xmas.components.QueueComponent;
-import org.workcraft.plugins.xmas.components.SinkComponent;
-import org.workcraft.plugins.xmas.components.SourceComponent;
-import org.workcraft.plugins.xmas.components.SwitchComponent;
-import org.workcraft.plugins.xmas.components.SyncComponent;
-import org.workcraft.plugins.xmas.components.VisualForkComponent;
-import org.workcraft.plugins.xmas.components.VisualFunctionComponent;
-import org.workcraft.plugins.xmas.components.VisualJoinComponent;
-import org.workcraft.plugins.xmas.components.VisualMergeComponent;
-import org.workcraft.plugins.xmas.components.VisualQueueComponent;
-import org.workcraft.plugins.xmas.components.VisualSinkComponent;
-import org.workcraft.plugins.xmas.components.VisualSourceComponent;
-import org.workcraft.plugins.xmas.components.VisualSwitchComponent;
-import org.workcraft.plugins.xmas.components.VisualSyncComponent;
-import org.workcraft.plugins.xmas.components.XmasContact;
+import org.workcraft.plugins.xmas.components.*;
 import org.workcraft.utils.Hierarchy;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class SynchronisationCommand implements Command {
 
@@ -69,31 +41,31 @@ public class SynchronisationCommand implements Command {
         return WorkspaceUtils.isApplicable(we, VisualXmas.class);
     }
 
-    int cntSyncnodes = 0;
-    JFrame mainFrame = null;
-    JComboBox combob = null;
+    private int cntSyncnodes = 0;
+    private JFrame mainFrame = null;
+    private JComboBox combob = null;
 
     public void dispose() {
         mainFrame.setVisible(false);
     }
 
     private static class Sync {
-        String name1;
-        String name2;
-        String name3;
-        String l1;
-        String l2;
-        String typ;
-        int gr1;
-        int gr2;
-        String g1;
-        String g2;
+        public String name1;
+        public String name2;
+        public String name3;
+        public String l1;
+        public String l2;
+        public String typ;
+        public int gr1;
+        public int gr2;
+        public String g1;
+        public String g2;
 
         Sync(String s1, String s2, String s3, String s4, int gr, int cno) {
             name1 = s1;
             name2 = s2;
             name3 = s3;
-            if (s4.equals("o")) {  //new
+            if ("o".equals(s4)) {  //new
                 if (cno == 0) {
                     l1 = s4;
                 } else if (cno == 1) {
@@ -115,8 +87,8 @@ public class SynchronisationCommand implements Command {
         }
     }
 
-    public List<String> slist = new ArrayList<>();
-    static List<Sync> synclist = new ArrayList<>();
+    public final List<String> slist = new ArrayList<>();
+    private static final List<Sync> synclist = new ArrayList<>();
 
     private static int checksynclist(String str) {
         for (Sync s : synclist) {
@@ -162,11 +134,11 @@ public class SynchronisationCommand implements Command {
     public void updatesynclist() {
         int no = 0;
         for (Sync s : synclist) {
-            if (slist.get(no).equals("asynchronous")) {
+            if ("asynchronous".equals(slist.get(no))) {
                 s.typ = "a";
-            } else if (slist.get(no).equals("mesochronous")) {
+            } else if ("mesochronous".equals(slist.get(no))) {
                 s.typ = "m";
-            } else if (slist.get(no).equals("pausible")) {
+            } else if ("pausible".equals(slist.get(no))) {
                 s.typ = "p";
             }
             s.g1 = slist1.get(no);
@@ -218,11 +190,11 @@ public class SynchronisationCommand implements Command {
                             JComboBox cb = (JComboBox) cn2;
                             String str = cb.getSelectedItem().toString();
                             //System.out.println("Found " + str);
-                            if (str.equals("asynchronous")) {
+                            if ("asynchronous".equals(str)) {
                                 slist.add(new String("asynchronous"));
-                            } else if (str.equals("mesochronous")) {
+                            } else if ("mesochronous".equals(str)) {
                                 slist.add(new String("mesochronous"));
-                            } else if (str.equals("pausible")) {
+                            } else if ("pausible".equals(str)) {
                                 slist.add(new String("pausible"));
                             }
                         }
@@ -272,19 +244,19 @@ public class SynchronisationCommand implements Command {
                             sel = (String) cb.getSelectedItem();
                         } else if (cn2 instanceof JTextField) {
                             JTextField tf = (JTextField) cn2;
-                            if (sel.equals("mesochronous")) {
+                            if ("mesochronous".equals(sel)) {
                                 if (n == 2) {
                                     tf.setEnabled(false);
                                 } else if (n == 3) {
                                     tf.setEnabled(false);
                                 }
-                            } else if (sel.equals("asynchronous")) {
+                            } else if ("asynchronous".equals(sel)) {
                                 if (n == 2) {
                                     tf.setEnabled(true);
                                 } else if (n == 3) {
                                     tf.setEnabled(true);
                                 }
-                            } else if (sel.equals("pausible")) {
+                            } else if ("pausible".equals(sel)) {
                                 if (n == 2) {
                                     tf.setEnabled(true);
                                 } else if (n == 3) {
@@ -299,8 +271,8 @@ public class SynchronisationCommand implements Command {
         }
     }
 
-    int loaded = 0;
-    VisualXmas vnet1;
+    private int loaded = 0;
+    private VisualXmas vnet1;
     public List<Integer> grnums = new ArrayList<>();
     public List<Integer> grnums1 = new ArrayList<>();
     public List<Integer> grnums2 = new ArrayList<>();
@@ -318,11 +290,11 @@ public class SynchronisationCommand implements Command {
 
         cntSyncnodes = 0;
         if (loaded == 0) {
-            grnums = new ArrayList<Integer>();
-            grnums1 = new ArrayList<Integer>();
-            grnums2 = new ArrayList<Integer>();
-            slist2 = new ArrayList<String>();
-            slist2 = new ArrayList<String>();
+            grnums = new ArrayList<>();
+            grnums1 = new ArrayList<>();
+            grnums2 = new ArrayList<>();
+            slist2 = new ArrayList<>();
+            slist2 = new ArrayList<>();
         }
         setGroups(vnet);
         writeJson(vnet);
@@ -351,7 +323,7 @@ public class SynchronisationCommand implements Command {
             combob.addActionListener(event -> {
                 JComboBox comboBox = (JComboBox) event.getSource();
                 Object selected = comboBox.getSelectedItem();
-                if (selected.toString().equals("mesochronous")) {
+                if ("mesochronous".equals(selected.toString())) {
                     setFields();
                 }
             });

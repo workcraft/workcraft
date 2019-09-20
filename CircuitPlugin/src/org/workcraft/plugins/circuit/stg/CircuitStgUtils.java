@@ -17,7 +17,7 @@ public class CircuitStgUtils {
             File sysStgFile, File detailFile, File directory, ProgressMonitor<?> monitor) {
 
         Framework framework = Framework.getInstance();
-        File[] inputFiles = new File[]{devStgFile, envStgFile};
+        File[] inputFiles = {devStgFile, envStgFile};
         PcompTask pcompTask = new PcompTask(inputFiles, sysStgFile, detailFile,
                 ConversionMode.OUTPUT, true, false, directory);
 

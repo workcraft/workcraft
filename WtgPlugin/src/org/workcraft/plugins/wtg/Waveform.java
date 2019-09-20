@@ -8,7 +8,7 @@ import org.workcraft.observation.PropertyChangedEvent;
 
 @DisplayName("Waveform")
 @IdentifierPrefix("w")
-@VisualClass(org.workcraft.plugins.wtg.VisualWaveform.class)
+@VisualClass(VisualWaveform.class)
 public class Waveform extends PageNode {
 
     public static final String PROPERTY_GUARD = "Guard";

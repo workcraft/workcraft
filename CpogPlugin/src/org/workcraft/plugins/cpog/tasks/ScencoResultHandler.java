@@ -38,8 +38,8 @@ public class ScencoResultHandler extends BasicProgressMonitor<ScencoResult> {
     }
 
     @Override
-    public void finished(Result<? extends ScencoResult> result) {
-        super.finished(result);
+    public void isFinished(Result<? extends ScencoResult> result) {
+        super.isFinished(result);
         if (result.getOutcome() == Outcome.SUCCESS) {
             String[] stdoutLines = result.getPayload().getStdout().split("\n");
             String resultDirectory = result.getPayload().getResultDirectory();

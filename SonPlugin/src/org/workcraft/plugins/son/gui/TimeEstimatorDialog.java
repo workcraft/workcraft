@@ -25,6 +25,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 public class TimeEstimatorDialog extends JDialog {
+
     private static final long serialVersionUID = 1L;
 
     protected SON net;
@@ -37,9 +38,15 @@ public class TimeEstimatorDialog extends JDialog {
     protected JScrollPane tabelPanel;
     protected ScenarioTable scenarioTable;
 
-    protected JPanel buttonsPanel, durationPanel;
-    protected JButton runButton, cancelButton;
-    protected JCheckBox setDuration, intermediate, entireEst, narrow, twoDir;
+    protected JPanel buttonsPanel;
+    protected JPanel durationPanel;
+    protected JButton runButton;
+    protected JButton cancelButton;
+    protected JCheckBox setDuration;
+    protected JCheckBox intermediate;
+    protected JCheckBox entireEst;
+    protected JCheckBox narrow;
+    protected JCheckBox twoDir;
     protected Dimension buttonSize = new Dimension(80, 25);
     protected boolean modalResult;
 
@@ -63,6 +70,7 @@ public class TimeEstimatorDialog extends JDialog {
         pack();
         setLocationRelativeTo(owner);
         addWindowListener(new WindowAdapter() {
+            @Override
             public void windowClosing(WindowEvent e) {
                 setParameters();
             }
@@ -210,9 +218,9 @@ public class TimeEstimatorDialog extends JDialog {
                     try {
                         alg1 = new BFSEntireEstimationAlg(net, getDefaultDuration(), granularity, getScenarioRef(),
                                 isTwodir);
-                        alg1.initialize();
+                        alg1.prepare();
                         alg1.estimateEntire();
-                        alg1.finalize();
+                        alg1.complete();
                     } catch (AlternativeStructureException e21) {
                         JOptionPane.showMessageDialog(mainWindow, e21.getMessage(),
                                 "Scenario selection error", JOptionPane.ERROR_MESSAGE);
@@ -229,7 +237,7 @@ public class TimeEstimatorDialog extends JDialog {
                     try {
                         alg = new DFSEstimationAlg(net, getDefaultDuration(), granularity, getScenarioRef());
                         setVisible(false);
-                        alg.initialize();
+                        alg.prepare();
 
                         try {
                             alg.estimateEndTime((Time) selection);
@@ -253,7 +261,7 @@ public class TimeEstimatorDialog extends JDialog {
                             errMsg(e18.getMessage());
                         }
 
-                        alg.finalize(selection);
+                        alg.complete(selection);
 
                     } catch (AlternativeStructureException e22) {
                         errMsg(e22.getMessage());

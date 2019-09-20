@@ -18,13 +18,13 @@ public class CoreDensityMap {
     private final HashMap<String, Integer> nameToDensity;
     private final HashMap<Integer, Color> densityToColor;
     private final ArrayList<Integer> densityPalette;
-    private final boolean isReduced;
+    private final boolean reduced;
 
     public CoreDensityMap(Collection<Core> cores) {
         nameToDensity = buildNameToDensityMap(cores);
         densityToColor = buildDensityToColorMap(nameToDensity);
         densityPalette = buidDensityPalette(densityToColor.keySet());
-        isReduced = getPaletteSize() < densityToColor.size();
+        reduced = getPaletteSize() < densityToColor.size();
     }
 
     private HashMap<String, Integer> buildNameToDensityMap(Collection<Core> cores) {
@@ -86,7 +86,7 @@ public class CoreDensityMap {
     }
 
     public boolean isReduced() {
-        return isReduced;
+        return reduced;
     }
 
     public int getPaletteSize() {

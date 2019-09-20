@@ -22,11 +22,20 @@ public class StructureVerifyDialog extends JDialog {
     protected SON net;
     private static final long serialVersionUID = 1L;
 
-    protected JPanel  selectionButtonPanel, groupItemPanel, groupSelectionPanel, typePanel, settingPanel, confirmButtonsPanel;
-    protected JButton runButton, cancelButton, addAllButton, removeAllButton;
+    protected JPanel  selectionButtonPanel;
+    protected JPanel groupItemPanel;
+    protected JPanel groupSelectionPanel;
+    protected JPanel typePanel;
+    protected JPanel settingPanel;
+    protected JPanel confirmButtonsPanel;
+    protected JButton runButton;
+    protected JButton cancelButton;
+    protected JButton addAllButton;
+    protected JButton removeAllButton;
     protected JComboBox typeCombo;
     protected JList groupList;
-    protected JCheckBox highLight, outputBefore;
+    protected JCheckBox highLight;
+    protected JCheckBox outputBefore;
 
     protected ArrayList<ONGroup> selectedGroups;
     protected Font font = new Font("Arial", Font.PLAIN, 12);
@@ -44,6 +53,7 @@ public class StructureVerifyDialog extends JDialog {
             this.description = description;
         }
 
+        @Override
         public String toString() {
             return description;
         }
@@ -51,7 +61,7 @@ public class StructureVerifyDialog extends JDialog {
 
     class ListItem {
         private final String label;
-        private boolean isSelected = true;
+        private boolean selected = true;
         private final Object obj;
 
         ListItem(String label, Object obj) {
@@ -60,13 +70,14 @@ public class StructureVerifyDialog extends JDialog {
         }
 
         public boolean isSelected() {
-            return isSelected;
+            return selected;
         }
 
-        public void setSelected(boolean isSelected) {
-            this.isSelected = isSelected;
+        public void setSelected(boolean selected) {
+            this.selected = selected;
         }
 
+        @Override
         public String toString() {
             return label;
         }
@@ -86,6 +97,7 @@ public class StructureVerifyDialog extends JDialog {
 
         private static final long serialVersionUID = 1L;
 
+        @Override
         public Component getListCellRendererComponent(
                 JList list, Object value, int index,
                 boolean isSelected, boolean hasFocus) {
@@ -128,7 +140,7 @@ public class StructureVerifyDialog extends JDialog {
 
     @SuppressWarnings("unchecked")
     protected void createGroupItemsPanel() {
-        selectedGroups = new ArrayList<ONGroup>();
+        selectedGroups = new ArrayList<>();
 
         DefaultListModel listModel = new DefaultListModel();
 
@@ -146,6 +158,7 @@ public class StructureVerifyDialog extends JDialog {
         groupList.setCellRenderer(new ItemListRenderer());
         groupList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         groupList.addMouseListener(new MouseAdapter() {
+            @Override
             public void mousePressed(MouseEvent event) {
                 JList list = (JList) event.getSource();
 
@@ -160,7 +173,7 @@ public class StructureVerifyDialog extends JDialog {
 
                     }
                     if (!item.isSelected()) {
-                        selectedGroups.remove((ONGroup) item.getListItem());
+                        selectedGroups.remove(item.getListItem());
                         item.setItemColor(Color.BLACK);
                     }
                     list.repaint(list.getCellBounds(index, index));

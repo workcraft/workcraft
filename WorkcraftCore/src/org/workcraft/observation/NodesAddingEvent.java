@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class NodesAddingEvent implements HierarchyEvent {
+
     private final Node parentNode;
     private final Collection<Node> affectedNodes;
 
@@ -20,11 +21,14 @@ public class NodesAddingEvent implements HierarchyEvent {
         affectedNodes.add(affectedNode);
     }
 
+    @Override
     public Collection<Node> getAffectedNodes() {
         return affectedNodes;
     }
 
+    @Override
     public Object getSender() {
         return parentNode;
     }
+
 }

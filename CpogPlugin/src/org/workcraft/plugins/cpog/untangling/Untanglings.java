@@ -1,15 +1,6 @@
 package org.workcraft.plugins.cpog.untangling;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-
-import org.jbpt.petri.Flow;
-import org.jbpt.petri.Marking;
-import org.jbpt.petri.NetSystem;
-import org.jbpt.petri.Node;
-import org.jbpt.petri.Place;
-import org.jbpt.petri.Transition;
+import org.jbpt.petri.*;
 import org.jbpt.petri.unfolding.BPNode;
 import org.jbpt.petri.unfolding.Condition;
 import org.jbpt.petri.unfolding.Event;
@@ -19,6 +10,10 @@ import org.jbpt.petri.untangling.SignificanceCheckType;
 import org.jbpt.petri.untangling.UntanglingSetup;
 import org.workcraft.plugins.cpog.commands.PetriToCpogParameters;
 import org.workcraft.utils.LogUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 public class Untanglings {
 
@@ -31,10 +26,10 @@ public class Untanglings {
 
     public Untanglings(PetriToCpogParameters settings) {
         this.sys = new NetSystem();
-        this.p = new LinkedList<Place>();
-        this.t = new LinkedList<Transition>();
+        this.p = new LinkedList<>();
+        this.t = new LinkedList<>();
         this.setup = new UntanglingSetup();
-        this.partialOrders = new ArrayList<PartialOrder>();
+        this.partialOrders = new ArrayList<>();
 
         // settings
         this.setup.ISOMORPHISM_REDUCTION = settings.isIsomorphism();
@@ -150,18 +145,16 @@ public class Untanglings {
         untangling = new ReductionBasedRepresentativeUntangling(sys, setup);
 
         // if Petri Net is not safe, stop the conversion
-        if (untangling.isSafe() == false) {
+        if (!untangling.isSafe()) {
             LogUtils.logError("Untangling cannot be constructed because the Petri Net is not safe.");
             return false;
         }
         // checking correct execution of conversion
         for (IProcess<BPNode, Condition, Event, Flow, Node, Place, Transition, Marking> pi : untangling.getProcesses()) {
 
-            if (pi.getOccurrenceNet().getVertices().isEmpty() == false) {
-
+            if (!pi.getOccurrenceNet().getVertices().isEmpty()) {
                 // printing out how many processes are needed to represent the untangling representation
                 LogUtils.logInfo("Number of untangled processes: " + untangling.getProcesses().size());
-
                 return true;
             }
         }

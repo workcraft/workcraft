@@ -4,7 +4,7 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
 
 @IdentifierPrefix("r")
-@VisualClass(org.workcraft.plugins.dfs.VisualRegister.class)
+@VisualClass(VisualRegister.class)
 public class Register extends MathDelayNode {
     public static final String PROPERTY_MARKED = "Marked";
 

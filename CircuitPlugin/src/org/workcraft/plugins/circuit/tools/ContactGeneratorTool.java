@@ -14,7 +14,7 @@ import org.workcraft.utils.GuiUtils;
 
 public class ContactGeneratorTool extends NodeGeneratorTool {
 
-    static boolean shiftKeyDown;
+    private static boolean shiftKeyDown;
 
     public ContactGeneratorTool() {
         super(new DefaultNodeGenerator(FunctionContact.class) {

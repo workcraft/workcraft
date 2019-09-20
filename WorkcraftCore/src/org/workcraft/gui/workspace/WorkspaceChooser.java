@@ -81,11 +81,11 @@ public class WorkspaceChooser extends JPanel {
     }
 
     private void updateFilter() {
-        filteredSource.setFilter(arg -> filter(arg));
+        filteredSource.setFilter(arg -> applyFilter(arg));
         expand(filteredSource.getRoot());
     }
 
-    private boolean filter(Path<String> arg) {
+    private boolean applyFilter(Path<String> arg) {
         return (filter.eval(arg) && arg.getNode().contains(nameFilter.getText())) || getCheckedNodes().contains(arg);
     }
 

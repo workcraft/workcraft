@@ -28,17 +28,16 @@ public class AlgebraExpressionFromGraphsCommand extends AbstractAlgebraCommand {
 
     @Override
     public void run(WorkspaceEntry we) {
-        final Framework framework = Framework.getInstance();
-        final MainWindow mainWindow = framework.getMainWindow();
+        VisualCpog visualCpog = WorkspaceUtils.getAs(we, VisualCpog.class);
+        String exp = CpogParsingTool.getExpressionFromGraph(visualCpog);
+        if (exp.isEmpty()) {
+            return;
+        }
+
+        final MainWindow mainWindow = Framework.getInstance().getMainWindow();
         final GraphEditorPanel editor = mainWindow.getCurrentEditor();
         final Toolbox toolbox = editor.getToolBox();
         final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
-
-        VisualCpog visualCpog = WorkspaceUtils.getAs(we, VisualCpog.class);
-        String exp = CpogParsingTool.getExpressionFromGraph(visualCpog);
-        if (exp == "") {
-            return;
-        }
         AlgebraExportDialog dialog = new AlgebraExportDialog();
         if (dialog.reveal()) {
             if (dialog.getPaste()) {
@@ -47,7 +46,7 @@ public class AlgebraExpressionFromGraphsCommand extends AbstractAlgebraCommand {
             }
             if (dialog.getExport()) {
                 String filePath = dialog.getFilePath();
-                if (filePath.compareTo(" ") == 0 || filePath == "") {
+                if (filePath.isEmpty() || " ".equals(filePath)) {
                     DialogUtils.showError("No export file has been given", DIALOG_EXPRESSION_EXPORT_ERROR);
                     return;
                 }

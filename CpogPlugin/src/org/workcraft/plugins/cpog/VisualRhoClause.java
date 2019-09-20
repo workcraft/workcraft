@@ -43,6 +43,7 @@ public class VisualRhoClause extends VisualComponent {
         removePropertyDeclarationByName(PROPERTY_NAME_COLOR);
     }
 
+    @Override
     public void draw(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         Color colorisation = r.getDecoration().getColorisation();
@@ -77,10 +78,10 @@ public class VisualRhoClause extends VisualComponent {
 
     private Color getColor() {
         BooleanFormula value = evaluate();
-        if (value == One.instance()) {
+        if (value == One.getInstance()) {
             return new Color(0x00cc00);
         } else {
-            if (value == Zero.instance()) {
+            if (value == Zero.getInstance()) {
                 return Color.RED;
             } else {
                 return getForegroundColor();

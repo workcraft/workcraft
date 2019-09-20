@@ -47,7 +47,8 @@ public class ScencoExecutionSupport {
     // UTILITY FUNCTIONS
     // FUNCTION TO CONVERT BINARY TO INT
     protected String binaryToInt(String string) {
-        int value = 0, wg = 1;
+        int value = 0;
+        int wg = 1;
         if (string != null) {
             for (int i = string.length() - 1; i >= 0; i--) {
                 if (string.charAt(i) == '1') {
@@ -197,7 +198,8 @@ public class ScencoExecutionSupport {
             for (VisualConnection c : scenarios.get(k).getConnections()) {
                 if (c instanceof VisualArc) {
                     VisualArc arc = (VisualArc) c;
-                    VisualNode c1 = arc.getFirst(), c2 = arc.getSecond();
+                    VisualNode c1 = arc.getFirst();
+                    VisualNode c2 = arc.getSecond();
                     if (c1 instanceof VisualVertex && c2 instanceof VisualVertex) {
                         int id1 = events.get(((VisualVertex) c1).getLabel());
                         int id2 = events.get(((VisualVertex) c2).getLabel());
@@ -289,7 +291,8 @@ public class ScencoExecutionSupport {
                 for (VisualConnection c : scenarios.get(k).getConnections()) {
                     if (c instanceof VisualArc) {
                         VisualArc arc = (VisualArc) c;
-                        VisualNode c1 = arc.getFirst(), c2 = arc.getSecond();
+                        VisualNode c1 = arc.getFirst();
+                        VisualNode c2 = arc.getSecond();
                         if (c1 instanceof VisualVertex && c2 instanceof VisualVertex) {
                             nodes.put(((VisualVertex) c1).getLabel(), 0);
                             nodes.put(((VisualVertex) c2).getLabel(), 0);
@@ -303,7 +306,7 @@ public class ScencoExecutionSupport {
                     if (component instanceof VisualVertex) {
                         VisualVertex vertex = (VisualVertex) component;
                         BooleanFormula condition = vertex.getCondition();
-                        if (condition != One.instance() && condition != Zero.instance()) {
+                        if (condition != One.getInstance() && condition != Zero.getInstance()) {
 
                             // Format output by substituting ' with !
                             String cond = StringGenerator.toString(condition).replace("'", "!");
@@ -464,7 +467,7 @@ public class ScencoExecutionSupport {
             if (formulaeName.containsKey(eventName)) {
                 vertices[id].setCondition(formulaeName.get(eventName));
             } else {
-                vertices[id].setCondition(One.instance());
+                vertices[id].setCondition(One.getInstance());
             }
         }
 
@@ -481,7 +484,7 @@ public class ScencoExecutionSupport {
                 char trivial = trivialEncoding(constraints, m, i, j);
                 if (trivial != '?') {
                     if (trivial == '1') {
-                        condition = One.instance();
+                        condition = One.getInstance();
                     } else {
                         continue;
                     }
@@ -493,7 +496,7 @@ public class ScencoExecutionSupport {
                     if (formulaeName.containsKey(arcName)) {
                         condition = formulaeName.get(arcName);
                     } else {
-                        condition = One.instance();
+                        condition = One.getInstance();
                     }
 
                     arc.setCondition(condition);

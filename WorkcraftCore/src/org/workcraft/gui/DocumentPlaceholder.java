@@ -1,17 +1,17 @@
 package org.workcraft.gui;
 
-import java.awt.Color;
-import java.awt.Graphics;
+import org.workcraft.utils.GuiUtils;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import javax.swing.JPanel;
-
-import org.workcraft.utils.GuiUtils;
-
 @SuppressWarnings("serial")
 public class DocumentPlaceholder extends JPanel {
-    private static BufferedImage logoImage;
+
+    private final BufferedImage logoImage;
+
     @Override
     public void paint(Graphics g) {
         super.paint(g);
@@ -32,18 +32,14 @@ public class DocumentPlaceholder extends JPanel {
         logoImage = getImage();
         setBackground(new Color(255, 255, 255));
         setLayout(null);
-
     }
 
     private BufferedImage getImage() {
-        if (logoImage == null) {
-            try {
-                logoImage = GuiUtils.loadImageFromResource("images/logo.png");
-            } catch (IOException e) {
-                logoImage = null;
-            }
+        try {
+            return GuiUtils.loadImageFromResource("images/logo.png");
+        } catch (IOException e) {
         }
-        return logoImage;
+        return null;
     }
 
 }

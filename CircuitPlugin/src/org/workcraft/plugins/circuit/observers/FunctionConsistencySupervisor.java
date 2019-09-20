@@ -1,7 +1,5 @@
 package org.workcraft.plugins.circuit.observers;
 
-import java.util.ArrayList;
-
 import org.workcraft.dom.Node;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.Zero;
@@ -9,15 +7,13 @@ import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletingEvent;
-import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.utils.Hierarchy;
 
-public class FunctionConsistencySupervisor extends HierarchySupervisor {
+import java.util.ArrayList;
 
-    public FunctionConsistencySupervisor(Circuit circuit) {
-    }
+public class FunctionConsistencySupervisor extends HierarchySupervisor {
 
     @Override
     public void handleEvent(HierarchyEvent e) {
@@ -38,12 +34,12 @@ public class FunctionConsistencySupervisor extends HierarchySupervisor {
 
         for (final FunctionContact functionContact : functionContacts) {
             final BooleanFormula setFunction = BooleanUtils.replaceClever(
-                    functionContact.getSetFunction(), contact, Zero.instance());
+                    functionContact.getSetFunction(), contact, Zero.getInstance());
 
             functionContact.setSetFunction(setFunction);
 
             final BooleanFormula resetFunction = BooleanUtils.replaceClever(
-                    functionContact.getResetFunction(), contact, Zero.instance());
+                    functionContact.getResetFunction(), contact, Zero.getInstance());
 
             functionContact.setResetFunction(resetFunction);
         }

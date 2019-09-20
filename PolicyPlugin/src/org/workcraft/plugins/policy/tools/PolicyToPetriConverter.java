@@ -55,7 +55,7 @@ public class PolicyToPetriConverter {
         Map<VisualBundledTransition, VisualTransition> result = new HashMap<>();
         for (VisualBundledTransition transition : Hierarchy.getDescendantsOfType(policyNet.getRoot(), VisualBundledTransition.class)) {
             Collection<Bundle> bundles = policyNet.getMathModel().getBundlesOfTransition(transition.getReferencedTransition());
-            if (bundles.size() == 0) {
+            if (bundles.isEmpty()) {
                 String name = policyNet.getMathModel().getNodeReference(transition.getReferencedTransition());
                 VisualTransition newTransition = petriNet.createTransition(name, null);
                 newTransition.copyPosition(transition);

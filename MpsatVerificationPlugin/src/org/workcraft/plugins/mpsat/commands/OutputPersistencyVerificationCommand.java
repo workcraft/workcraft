@@ -2,7 +2,7 @@ package org.workcraft.plugins.mpsat.commands;
 
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
-import org.workcraft.plugins.stg.MutexUtils;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.types.Pair;

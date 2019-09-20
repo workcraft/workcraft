@@ -32,7 +32,11 @@ import java.util.HashSet;
 
 public class ScenarioGeneratorTool extends SONSimulationTool {
 
-    protected JButton saveButton, removeButton, resetButton, importButton, exportButton;
+    protected JButton saveButton;
+    protected JButton removeButton;
+    protected JButton resetButton;
+    protected JButton importButton;
+    protected JButton exportButton;
     protected JToggleButton startButton;
     protected ScenarioTable scenarioTable;
 

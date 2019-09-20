@@ -1,19 +1,20 @@
 package org.workcraft.gui.events;
 
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.tools.GraphEditor;
+import org.workcraft.utils.DesktopApi;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 
 public class GraphEditorMouseEvent {
-    GraphEditor editor;
-    MouseEvent event;
-    Point2D position;
-    Point2D prevPosition;
-    Point2D startPosition;
+
+    private final GraphEditor editor;
+    private final MouseEvent event;
+    private final Point2D position;
+    private Point2D prevPosition;
+    private Point2D startPosition;
 
     public GraphEditorMouseEvent(GraphEditor editor, MouseEvent e) {
         this.editor = editor;

@@ -22,7 +22,7 @@ public class CoordinatesRegistry {
         return routerCells;
     }
 
-    void setRouterCells(RouterCells newRouterCells) {
+    public void setRouterCells(RouterCells newRouterCells) {
         routerCells = newRouterCells;
     }
 

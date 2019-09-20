@@ -12,7 +12,8 @@ import java.io.FileNotFoundException;
 @SuppressWarnings("serial")
 public class IncludesDialog extends JDialog {
 
-    private final JPanel content, btnPanel;
+    private final JPanel content;
+    private final JPanel btnPanel;
     private final File lastDirUsed;
     private static JList<String> includeList;
     private final DefaultListModel<String> includeListModel;

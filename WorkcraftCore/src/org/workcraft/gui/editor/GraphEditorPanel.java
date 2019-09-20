@@ -182,6 +182,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, DesktopApi.getMenuKeyMask()), "doNothing");
         this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, DesktopApi.getMenuKeyMask()), "doNothing");
         this.getActionMap().put("doNothing", new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 //do nothing
             }
@@ -261,10 +262,12 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         repaint();
     }
 
+    @Override
     public VisualModel getModel() {
         return we.getModelEntry().getVisualModel();
     }
 
+    @Override
     public Viewport getViewport() {
         return view;
     }
@@ -410,7 +413,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             final VisualModel model = getModel();
             properties = ModelPropertyUtils.getSelectionProperties(model);
             final Collection<? extends VisualNode> selection = model.getSelection();
-            if (selection.size() == 0) {
+            if (selection.isEmpty()) {
                 title += " [" + TITLE_SUFFIX_MODEL + "]";
             } else if (selection.size() == 1) {
                 title += " [" + TITLE_SUFFIX_SINGLE_ITEM + "]";
@@ -466,6 +469,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         return toolbox;
     }
 
+    @Override
     public void zoomIn() {
         SwingUtilities.invokeLater(() -> {
             getViewport().zoom(1);
@@ -474,6 +478,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         });
     }
 
+    @Override
     public void zoomOut() {
         SwingUtilities.invokeLater(() -> {
             getViewport().zoom(-1);
@@ -482,6 +487,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         });
     }
 
+    @Override
     public void zoomDefault() {
         SwingUtilities.invokeLater(() -> {
             getViewport().scaleDefault();
@@ -490,6 +496,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         });
     }
 
+    @Override
     public void zoomFit() {
         SwingUtilities.invokeLater(() -> {
             Viewport viewport = getViewport();
@@ -522,6 +529,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         });
     }
 
+    @Override
     public void panLeft() {
         SwingUtilities.invokeLater(() -> {
             getViewport().pan(20, 0);
@@ -530,6 +538,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         });
     }
 
+    @Override
     public void panUp() {
         SwingUtilities.invokeLater(() -> {
             getViewport().pan(0, 20);
@@ -538,6 +547,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         });
     }
 
+    @Override
     public void panRight() {
         SwingUtilities.invokeLater(() -> {
             getViewport().pan(-20, 0);
@@ -546,6 +556,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         });
     }
 
+    @Override
     public void panDown() {
         SwingUtilities.invokeLater(() -> {
             getViewport().pan(0, -20);
@@ -554,6 +565,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         });
     }
 
+    @Override
     public void panCenter() {
         SwingUtilities.invokeLater(() -> {
             Viewport viewport = getViewport();

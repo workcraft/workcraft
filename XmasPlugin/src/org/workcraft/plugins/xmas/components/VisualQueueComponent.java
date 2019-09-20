@@ -69,6 +69,7 @@ public class VisualQueueComponent extends VisualXmasComponent {
         });
     }
 
+    @Override
     public void setContactPosition(VisualXmasContact vc, Positioning positioning) {
         double factor2 = (double) getReferencedQueueComponent().getCapacity() / 2.0;
         double offset = factor2 * (SIZE / 2 - CONTACT_LENGTH) + CONTACT_LENGTH;

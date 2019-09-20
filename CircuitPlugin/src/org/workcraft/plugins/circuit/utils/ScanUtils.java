@@ -115,13 +115,13 @@ public class ScanUtils {
         } else {
             VisualFunctionContact scanoutPin = createScanChain(circuit, pathbreakerComponents, scanckPort, scanenPort, scaninPort);
             SpaceUtils.positionPort(circuit, scanckPort, false);
-            scanckPort.setSetFunction(Zero.instance());
+            scanckPort.setSetFunction(Zero.getInstance());
 
             SpaceUtils.positionPort(circuit, scanenPort, false);
-            scanenPort.setSetFunction(Zero.instance());
+            scanenPort.setSetFunction(Zero.getInstance());
 
             SpaceUtils.positionPort(circuit, scaninPort, true);
-            scaninPort.setSetFunction(Zero.instance());
+            scaninPort.setSetFunction(Zero.getInstance());
 
             // If the last pin of SCAN chain is connected to an output port, use that port as scanout.
             // (This is necessary because a fork to several output ports is not allowed.)
@@ -135,7 +135,7 @@ public class ScanUtils {
 
                 circuit.connect(scanoutPin, scanoutPort);
                 SpaceUtils.positionPort(circuit, scanoutPort, true);
-                scanoutPort.setSetFunction(Zero.instance());
+                scanoutPort.setSetFunction(Zero.getInstance());
             } else {
                 String ref = circuit.getMathReference(existingPort);
                 if (!scanoutName.equals(ref)) {

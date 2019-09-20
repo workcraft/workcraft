@@ -22,19 +22,19 @@ import org.workcraft.plugins.plato.commands.FstConversionCommand;
 import org.workcraft.plugins.plato.commands.StgConversionCommand;
 import org.workcraft.plugins.plato.exceptions.PlatoException;
 import org.workcraft.plugins.plato.layout.ConceptsLayout;
-import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.tasks.BasicProgressMonitor;
+import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.ImportUtils;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -95,13 +95,11 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
                     }
                 }
                 throw new PlatoException(result);
-            } catch (IOException | DeserialisationException e) {
-                e.printStackTrace();
-            } catch (NullPointerException e) {
-                new PlatoException(result).handleConceptsError();
+            } catch (OperationCancelledException e) {
             } catch (PlatoException e) {
                 e.handleConceptsError();
-            } catch (OperationCancelledException e) {
+            } catch (IOException | DeserialisationException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -122,8 +120,9 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
         this(sender, null, null, false);
     }
 
-    public void finished(final Result<? extends ExternalProcessOutput> result) {
-        super.finished(result);
+    @Override
+    public void isFinished(final Result<? extends ExternalProcessOutput> result) {
+        super.isFinished(result);
         try {
             SwingUtilities.invokeAndWait(new ProcessPlatoResult(result));
         } catch (InvocationTargetException | InterruptedException e) {
@@ -197,18 +196,17 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
         if (invariants.length != 0) {
             ArrayList<String> expression = new ArrayList<>();
 
-            for (String i : invariants) {
+            for (String invariant : invariants) {
                 ArrayList<String> exp = new ArrayList<>();
-                if (i.startsWith("invariant = not (")) {
-                    i = i.replace("invariant = not (", "");
-
-                    while (!i.startsWith(")")) {
-                        int x = i.indexOf(" && ");
+                if (invariant.startsWith("invariant = not (")) {
+                    String s = invariant.replace("invariant = not (", "");
+                    while (!s.startsWith(")")) {
+                        int x = s.indexOf(" && ");
                         if (x == -1) {
-                            x = i.length() - 1;
+                            x = s.length() - 1;
                         }
 
-                        String sig = i.substring(0, x);
+                        String sig = s.substring(0, x);
                         String sigExp = "";
                         if (sig.startsWith("not ")) {
                             sigExp = "~$S\"" + sig.substring(4) + "\"";
@@ -217,10 +215,10 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
                         }
                         exp.add(sigExp);
 
-                        if (x != i.length() - 1) {
+                        if (x != s.length() - 1) {
                             x += 4;
                         }
-                        i = i.substring(x);
+                        s = s.substring(x);
                     }
 
                     Iterator<String> it = exp.iterator();

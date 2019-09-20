@@ -11,6 +11,7 @@ import java.io.File;
 
 public class WorkcraftOpen implements FileHandler {
 
+    @Override
     public boolean accept(File f) {
         final Framework framework = Framework.getInstance();
         if (ImportUtils.chooseBestImporter(framework.getPluginManager(), f) != null) {
@@ -20,6 +21,7 @@ public class WorkcraftOpen implements FileHandler {
         }
     }
 
+    @Override
     public void execute(File file) {
         final Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
@@ -35,4 +37,5 @@ public class WorkcraftOpen implements FileHandler {
     public String getDisplayName() {
         return "Open in Workcraft";
     }
+
 }

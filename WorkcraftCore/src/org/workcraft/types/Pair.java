@@ -1,19 +1,19 @@
 package org.workcraft.types;
 
-public class Pair<T1, T2> {
-    private final T1 first;
-    private final T2 second;
+public class Pair<S, T> {
+    private final S first;
+    private final T second;
 
-    public Pair(T1 first, T2 second) {
+    public Pair(S first, T second) {
         this.first = first;
         this.second = second;
     }
 
-    public T1 getFirst() {
+    public S getFirst() {
         return first;
     }
 
-    public T2 getSecond() {
+    public T getSecond() {
         return second;
     }
 

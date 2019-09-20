@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public final class MethodParametersMatcher<T extends MethodParametersMatcher.MethodInfo> {
+
     private MethodParametersMatcher() {
     }
 
@@ -19,7 +20,7 @@ public final class MethodParametersMatcher<T extends MethodParametersMatcher.Met
     }
 
     private T instanceMatch(Collection<T> methods, Class<?>... parameters) throws NoSuchMethodException {
-        this.methods = new ArrayList<T>(methods);
+        this.methods = new ArrayList<>(methods);
 
         matchByParameters(parameters);
 
@@ -73,7 +74,7 @@ public final class MethodParametersMatcher<T extends MethodParametersMatcher.Met
         return true;
     }
 
-    boolean[] filtered;
+    private boolean[] filtered;
 
     private void filterByParameter(int parameterNumber) {
         Class<?> best = null;
@@ -91,9 +92,10 @@ public final class MethodParametersMatcher<T extends MethodParametersMatcher.Met
         }
     }
 
-    void remove(int i) {
+    private void remove(int i) {
         int last = methods.size() - 1;
         methods.set(i, methods.get(last));
         methods.remove(last);
     }
+
 }

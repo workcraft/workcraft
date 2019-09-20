@@ -23,7 +23,7 @@ public class SolutionSubstitutor extends BooleanReplacer {
     private static Map<BooleanVariable, BooleanFormula> buildMap(BooleanSolution solution) {
         Map<BooleanVariable, BooleanFormula> result = new HashMap<>();
         for (BooleanVariable var : solution.getVariables()) {
-            BooleanFormula value = solution.getSolution(var) ? One.instance() : Zero.instance();
+            BooleanFormula value = solution.getSolution(var) ? One.getInstance() : Zero.getInstance();
             result.put(var, value);
         }
         return result;

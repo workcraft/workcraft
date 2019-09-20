@@ -35,7 +35,7 @@ public class ProcessIO {
         }
     }
 
-    static String runViaStreams(String command, String input) {
+    public static String runViaStreams(String command, String input) {
         String result;
         try {
             File inputFile = File.createTempFile("stream-", ".in");

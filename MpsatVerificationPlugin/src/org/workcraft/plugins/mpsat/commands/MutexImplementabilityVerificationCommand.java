@@ -8,7 +8,7 @@ import org.workcraft.plugins.mpsat.tasks.CombinedChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.CombinedChainTask;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.MutexUtils;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.Result;

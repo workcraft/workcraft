@@ -17,12 +17,12 @@ public class BooleanComplementTransformer implements BooleanVisitor<BooleanFormu
 
     @Override
     public BooleanFormula visit(Zero node) {
-        return One.instance();
+        return One.getInstance();
     }
 
     @Override
     public BooleanFormula visit(One node) {
-        return Zero.instance();
+        return Zero.getInstance();
     }
 
     @Override

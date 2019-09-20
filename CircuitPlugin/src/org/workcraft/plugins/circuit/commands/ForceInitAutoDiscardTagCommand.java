@@ -12,17 +12,17 @@ import java.util.function.Function;
 public class ForceInitAutoDiscardTagCommand extends AbstractTagCommand {
 
     @Override
-    Function<Circuit, Collection<Contact>> getFunction() {
+    public Function<Circuit, Collection<Contact>> getFunction() {
         return circuit -> ResetUtils.tagForceInitAutoDiscard(circuit);
     }
 
     @Override
-    String getMessage() {
+    public String getMessage() {
         return "Auto-discarded force init pin";
     }
 
     @Override
-    Class<? extends GraphEditorTool> getToolClass() {
+    public Class<? extends GraphEditorTool> getToolClass() {
         return InitialisationAnalyserTool.class;
     }
 

@@ -154,13 +154,13 @@ public class SettingsEditorDialog extends JDialog {
             if (o1 == null) return -1;
             if (o2 == null) return 1;
             String s1 = o1.getSection();
-            String s2 = o2.getSection();
             if (s1 == null) return -1;
+            String s2 = o2.getSection();
             if (s2 == null) return 1;
             if (s1.equals(s2)) {
                 String n1 = o1.getName();
-                String n2 = o2.getName();
                 if (n1 == null) return -1;
+                String n2 = o2.getName();
                 if (n2 == null) return 1;
                 return n1.compareTo(n2);
             }

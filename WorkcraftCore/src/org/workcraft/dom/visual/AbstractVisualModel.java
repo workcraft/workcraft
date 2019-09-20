@@ -252,6 +252,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
         return result;
     }
 
+    @Override
     public <T extends VisualComponent> T getVisualComponentByMathReference(String ref, Class<T> type) {
         T result = null;
         Node node = getMathModel().getNodeByReference(ref);
@@ -357,6 +358,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
         return selection.contains(node);
     }
 
+    @Override
     public void select(Collection<? extends VisualNode> nodes) {
         if (nodes.isEmpty()) {
             selectNone();
@@ -514,7 +516,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
     public VisualGroup groupSelection() {
         VisualGroup group = null;
         Collection<VisualNode> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
-        if (nodes.size() >= 1) {
+        if (!nodes.isEmpty()) {
             group = new VisualGroup();
             getCurrentLevel().add(group);
             getCurrentLevel().reparent(nodes, group);
@@ -530,7 +532,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
     public VisualPage groupPageSelection() {
         VisualPage page = null;
         Collection<VisualNode> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
-        if (nodes.size() >= 1) {
+        if (!nodes.isEmpty()) {
             PageNode pageNode = new PageNode();
             getCurrentMathLevel().add(pageNode);
             page = new VisualPage(pageNode);
@@ -627,6 +629,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
         observableState.removeObserver(obs);
     }
 
+    @Override
     public void sendNotification(StateEvent e) {
         observableState.sendNotification(e);
     }

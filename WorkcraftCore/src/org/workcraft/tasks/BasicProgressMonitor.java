@@ -22,7 +22,7 @@ public class BasicProgressMonitor<T> implements ProgressMonitor<T> {
     }
 
     @Override
-    public void finished(Result<? extends T> result) {
+    public void isFinished(Result<? extends T> result) {
         this.result = result;
         finished = true;
     }

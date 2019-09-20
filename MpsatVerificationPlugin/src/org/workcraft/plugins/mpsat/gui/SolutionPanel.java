@@ -58,11 +58,11 @@ public class SolutionPanel extends JPanel {
         add(buttonsPanel, new TableLayoutConstraints(1, 1));
     }
 
-    public int getRowCount(Solution solution) {
+    private int getRowCount(Solution solution) {
         return solution.getBranchTrace() == null ? 1 : 2;
     }
 
-    public int getColumnCount(Solution solution) {
+    private int getColumnCount(Solution solution) {
         int result = 0;
         Trace mainTrace = solution.getMainTrace();
         if (mainTrace != null) {

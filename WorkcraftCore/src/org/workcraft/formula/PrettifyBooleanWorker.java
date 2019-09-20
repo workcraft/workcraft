@@ -10,21 +10,21 @@ public class PrettifyBooleanWorker implements BooleanWorker {
 
     @Override
     public BooleanFormula zero() {
-        return Zero.instance();
+        return Zero.getInstance();
     }
 
     @Override
     public BooleanFormula one() {
-        return One.instance();
+        return One.getInstance();
     }
 
     @Override
     public BooleanFormula not(BooleanFormula x) {
-        if (x == Zero.instance()) {
-            return One.instance();
+        if (x == Zero.getInstance()) {
+            return One.getInstance();
         }
-        if (x == One.instance()) {
-            return Zero.instance();
+        if (x == One.getInstance()) {
+            return Zero.getInstance();
         }
         return worker.not(x);
     }
@@ -34,13 +34,13 @@ public class PrettifyBooleanWorker implements BooleanWorker {
         if (x == y) {
             return x;
         }
-        if ((x == Zero.instance()) || (y == Zero.instance())) {
-            return Zero.instance();
+        if ((x == Zero.getInstance()) || (y == Zero.getInstance())) {
+            return Zero.getInstance();
         }
-        if (x == One.instance()) {
+        if (x == One.getInstance()) {
             return y;
         }
-        if (y == One.instance()) {
+        if (y == One.getInstance()) {
             return x;
         }
         return worker.and(x, y);
@@ -64,18 +64,18 @@ public class PrettifyBooleanWorker implements BooleanWorker {
     @Override
     public BooleanFormula iff(BooleanFormula x, BooleanFormula y) {
         if (x == y) {
-            return One.instance();
+            return One.getInstance();
         }
-        if (x == Zero.instance()) {
+        if (x == Zero.getInstance()) {
             return not(y);
         }
-        if (x == One.instance()) {
+        if (x == One.getInstance()) {
             return y;
         }
-        if (y == Zero.instance()) {
+        if (y == Zero.getInstance()) {
             return not(x);
         }
-        if (y == One.instance()) {
+        if (y == One.getInstance()) {
             return x;
         }
         return worker.iff(x, y);

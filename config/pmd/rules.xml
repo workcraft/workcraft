@@ -5,42 +5,102 @@
         xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd"
         xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd">
 
-    <rule ref="rulesets/java/basic.xml/ForLoopShouldBeWhileLoop"/>
-    <rule ref="rulesets/java/basic.xml/ExtendsObject"/>
-    <rule ref="rulesets/java/basic.xml/BrokenNullCheck"/>
-    <rule ref="rulesets/java/basic.xml/MisplacedNullCheck"/>
-    <rule ref="rulesets/java/basic.xml/AvoidMultipleUnaryOperators"/>
-    <rule ref="rulesets/java/basic.xml/UnconditionalIfStatement"/>
+    <description>Workcraft ruleset</description>
 
-    <rule ref="rulesets/java/imports.xml">
-        <exclude name="TooManyStaticImports"/> <!-- Used often -->
+    <rule ref="category/java/bestpractices.xml">
+        <exclude name="UnusedImports"/> <!-- Too restrictive as forbids on demand imports -->
+        <exclude name="SwitchStmtsShouldHaveDefault"/> <!-- Too restrictive as may mask new enum items -->
+        <exclude name="JUnitTestsShouldIncludeAssert"/>  <!-- Too restrictive as forbids test delegation -->
+        <exclude name="SystemPrintln"/> <!-- Too restrictive and used often -->
+        <exclude name="AvoidReassigningParameters"/> <!-- Probably harmless and used too often -->
+        <exclude name="LooseCoupling"/> <!-- Interesting to enforce but used too often -->
+        <exclude name="AvoidPrintStackTrace"/> <!-- Interesting to enforce but used too often -->
+        <exclude name="UseVarargs"/> <!-- Interesting to enforce but used often -->
+        <exclude name="MethodReturnsInternalArray"/> <!-- Interesting to enforce but used often -->
+        <exclude name="ArrayIsStoredDirectly"/> <!-- Interesting to enforce but used often -->
+        <exclude name="ForLoopCanBeForeach"/> <!-- Interesting to enforce but used often -->
+        <exclude name="PreserveStackTrace"/> <!-- Interesting to enforce but used often -->
+        <exclude name="GuardLogStatement"/> <!-- Interesting to enforce -->
+        <exclude name="AvoidStringBufferField"/> <!-- Interesting to enforce -->
     </rule>
-    <rule ref="rulesets/java/unnecessary.xml">
-        <exclude name="UselessParentheses"/> <!--Too nitpicky-->
+    <rule ref="category/java/bestpractices.xml/AvoidReassigningLoopVariables">
+        <properties>
+            <property name="foreachReassign" value="deny" />
+            <property name="forReassign" value="skip" />
+        </properties>
     </rule>
-    <rule ref="rulesets/java/empty.xml">
-        <exclude name="EmptyCatchBlock"/> <!--Ignoring an exception-->
-        <exclude name="EmptyIfStmt"/> <!--Can be useful sometimes-->
-        <exclude name="EmptyWhileStmt"/> <!--Can be useful sometimes-->
+
+    <rule ref="category/java/codestyle.xml">
+        <exclude name="UselessParentheses"/> <!--Too nitpicky and used often -->
+        <exclude name="MethodArgumentCouldBeFinal"/> <!--Too nitpicky and used often -->
+        <exclude name="LocalVariableCouldBeFinal"/> <!--Too nitpicky and used often -->
+        <exclude name="OnlyOneReturn"/> <!--Too nitpicky and used often -->
+        <exclude name="ShortVariable"/> <!--Too nitpicky and used often -->
+        <exclude name="LongVariable"/> <!--Too nitpicky and used often -->
+        <exclude name="ShortMethodName"/> <!--Too nitpicky and used often -->
+        <exclude name="ShortClassName"/> <!--Too nitpicky and used often -->
+        <exclude name="LinguisticNaming"/> <!--Too nitpicky and used often -->
+        <exclude name="ControlStatementBraces"/> <!--Too nitpicky and used often -->
+        <exclude name="CommentDefaultAccessModifier"/> <!--Too nitpicky and used often -->
+        <exclude name="ConfusingTernary"/> <!--Too restrictive as forbids if-the-else construct -->
+        <exclude name="UnnecessaryFullyQualifiedName"/> <!-- Too restrictive as forbids reference to nested classes -->
+        <exclude name="BooleanGetMethodName"/> <!-- Interesting to enforce but used often -->
+        <exclude name="EmptyMethodInAbstractClassShouldBeAbstract"/> <!-- Interesting to enforce but used often -->
+        <exclude name="FieldNamingConventions"/> <!-- Interesting to enforce -->
+        <exclude name="CallSuperInConstructor"/> <!-- Interesting to enforce -->
+        <exclude name="AtLeastOneConstructor"/> <!-- Interesting to enforce -->
+        <exclude name="FieldDeclarationsShouldBeAtStartOfClass"/> <!-- Interesting to enforce -->
+        <exclude name="UseUnderscoresInNumericLiterals"/> <!-- Interesting to enforce -->
+        <exclude name="PrematureDeclaration"/> <!-- Interesting to enforce -->
     </rule>
-    <rule ref="rulesets/java/unusedcode.xml/UnusedLocalVariable"/>
-    <rule ref="rulesets/java/unusedcode.xml/UnusedModifier"/>
-    <rule ref="rulesets/java/unusedcode.xml/UnusedPrivateField"/>
+    <rule ref="category/java/codestyle.xml/ClassNamingConventions">
+        <properties>
+            <property name="utilityClassPattern" value="[A-Z][a-zA-Z0-9]*" />
+        </properties>
+    </rule>
 
-    <rule ref="rulesets/java/controversial.xml/UnnecessaryConstructor"/>
-    <rule ref="rulesets/java/controversial.xml/UnnecessaryParentheses"/>
+    <rule ref="category/java/errorprone.xml">
+        <exclude name="MissingSerialVersionUID"/> <!--Too nitpicky and used often -->
+        <exclude name="BeanMembersShouldSerialize"/> <!--Too nitpicky and used often -->
+        <exclude name="DataflowAnomalyAnalysis"/> <!-- Too restrictive an does not work well -->
+        <exclude name="AvoidLiteralsInIfCondition"/> <!-- Too restrictive and used often -->
+        <exclude name="AvoidDuplicateLiterals"/> <!-- Too restrictive and used often -->
+        <exclude name="NullAssignment"/> <!-- Too restrictive and used often -->
+        <exclude name="AssignmentInOperand"/> <!-- Too restrictive and used often -->
+        <exclude name="CompareObjectsWithEquals"/> <!-- Too restrictive and used often -->
+        <exclude name="OverrideBothEqualsAndHashcode"/> <!-- Too restrictive and often results in UselessOverridingMethod -->
+        <exclude name="EmptyCatchBlock"/> <!-- Too restrictive as forbids to ignoring an exception -->
+        <exclude name="EmptyIfStmt"/> <!-- Interesting to enforce -->
+        <exclude name="EmptyWhileStmt"/> <!-- Interesting to enforce -->
+        <exclude name="CloseResource"/> <!-- Interesting to enforce -->
+        <exclude name="AvoidCatchingThrowable"/> <!-- Interesting to enforce -->
+        <exclude name="AvoidBranchingStatementAsLastInLoop"/> <!-- Interesting to enforce -->
+        <exclude name="ConstructorCallsOverridableMethod"/> <!-- Interesting to enforce -->
+    </rule>
 
-    <rule ref="rulesets/java/design.xml/NonCaseLabelInSwitchStatement"/>
-    <rule ref="rulesets/java/design.xml/DefaultLabelNotLastInSwitchStmt"/>
-    <rule ref="rulesets/java/design.xml/IdempotentOperations"/>
-    <rule ref="rulesets/java/design.xml/FinalFieldCouldBeStatic"/>
-    <rule ref="rulesets/java/design.xml/ImmutableField"/>
-    <rule ref="rulesets/java/design.xml/SingularField"/>
-    <rule ref="rulesets/java/design.xml/UnnecessaryLocalBeforeReturn"/>
-    <rule ref="rulesets/java/design.xml/LogicInversion"/>
-    <rule ref="rulesets/java/design.xml/EqualsNull"/>
+    <rule ref="category/java/design.xml">
+        <exclude name="LoosePackageCoupling"/> <!-- Too restrictive and used often -->
+        <exclude name="LawOfDemeter"/> <!-- Too restrictive and used often -->
+        <exclude name="DataClass"/> <!-- Too restrictive and used often -->
+        <exclude name="ExcessiveImports"/> <!-- Too restrictive and used often -->
+        <exclude name="CouplingBetweenObjects"/> <!-- Too restrictive and used often -->
+        <exclude name="ExcessivePublicCount"/> <!-- Too restrictive and used often -->
+        <exclude name="AvoidCatchingGenericException"/> <!-- Too restrictive and used often -->
+        <exclude name="AvoidThrowingRawExceptionTypes"/> <!-- Too restrictive and used often -->
+        <exclude name="AvoidDeeplyNestedIfStmts"/> <!-- Interesting to enforce but used often -->
+        <exclude name="GodClass"/> <!-- Interesting to enforce but used often -->
+        <exclude name="TooManyMethods"/> <!-- Interesting to enforce but used often -->
+        <exclude name="NcssCount"/> <!-- Interesting to enforce but used often -->
+        <exclude name="NPathComplexity"/> <!-- Interesting to enforce but used often -->
+        <exclude name="CyclomaticComplexity"/> <!-- Interesting to enforce but used often -->
+        <exclude name="SimplifiedTernary"/> <!-- Interesting to enforce but used often -->
+        <exclude name="CollapsibleIfStatements"/> <!-- Interesting to enforce but used often -->
+        <exclude name="ExcessiveParameterList"/> <!-- Interesting to enforce -->
+        <exclude name="UseUtilityClass"/> <!-- Interesting to enforce -->
+        <exclude name="TooManyFields"/> <!-- Interesting to enforce -->
+        <exclude name="ExcessiveMethodLength"/> <!-- Interesting to enforce -->
+        <exclude name="ExcessiveClassLength"/> <!-- Interesting to enforce -->
+        <exclude name="SimplifyBooleanReturns"/> <!-- Interesting to enforce -->
+    </rule>
 
-    <rule ref="rulesets/java/strictexception.xml/AvoidRethrowingException"/>
-    <rule ref="rulesets/java/strictexception.xml/DoNotExtendJavaLangError"/>
-    <rule ref="rulesets/java/strictexception.xml/DoNotThrowExceptionInFinally"/>
 </ruleset>

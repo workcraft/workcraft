@@ -11,11 +11,11 @@ import java.awt.*;
 
 @SuppressWarnings("serial")
 public class TaskControl extends JPanel {
-    JLabel label;
-    JProgressBar progressBar;
-    JButton btnCancel;
 
-    volatile boolean cancelRequested;
+    private final JProgressBar progressBar;
+    private final JButton btnCancel;
+
+    private volatile boolean cancelRequested;
 
     public TaskControl(String taskDescription) {
         setLayout(GuiUtils.createTableLayout(
@@ -27,7 +27,7 @@ public class TaskControl extends JPanel {
         Border lineBorder = BorderFactory.createCompoundBorder(outsideBorder, insideBorder);
         setBorder(lineBorder);
 
-        label = new JLabel(taskDescription);
+        JLabel label = new JLabel(taskDescription);
         label.setMinimumSize(new Dimension(100, 20));
         label.setPreferredSize(new Dimension(300, 20));
 
@@ -61,4 +61,5 @@ public class TaskControl extends JPanel {
         btnCancel.setEnabled(false);
         btnCancel.setText("Cancelling...");
     }
+
 }

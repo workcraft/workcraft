@@ -19,10 +19,10 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
     public static final int LEADING  = 3;
     public static final int TRAILING = 4;
 
-    int align;          // This is for 1.1 serialization compatibility
-    int newAlign;       // This is the one we actually use
-    int hgap;
-    int vgap;
+    private int align;          // This is for 1.1 serialization compatibility
+    private int newAlign;       // This is the one we actually use
+    private int hgap;
+    private int vgap;
 
     private boolean alignOnBaseline;
 
@@ -88,12 +88,15 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
         return alignOnBaseline;
     }
 
+    @Override
     public void addLayoutComponent(String name, Component comp) {
     }
 
+    @Override
     public void removeLayoutComponent(Component comp) {
     }
 
+    @Override
     public Dimension preferredLayoutSize(Container target) {
         synchronized (target.getTreeLock()) {
             applyLayout = false;
@@ -101,6 +104,7 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
         }
     }
 
+    @Override
     public Dimension minimumLayoutSize(Container target) {
         return preferredLayoutSize(target);
     }
@@ -137,6 +141,7 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
         }
     }
 
+    @Override
     public void layoutContainer(Container target) {
         applyLayout = true;
         doLayout(target);
@@ -144,19 +149,19 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
 
     private Dimension doLayout(Container target) {
         synchronized (target.getTreeLock()) {
-            Insets insets = target.getInsets();
-            int maxwidth = target.getWidth() - (insets.left + insets.right + hgap * 2);
-            int nmembers = target.getComponentCount();
-            int x = 0, y = insets.top + vgap;
-            int rowh = 0, start = 0;
-
-            boolean ltr = target.getComponentOrientation().isLeftToRight();
-
             boolean useBaseline = getAlignOnBaseline();
             if (useBaseline) {
                 throw new NotSupportedException("BaseLine is not supported.");
             }
 
+            Insets insets = target.getInsets();
+            int maxwidth = target.getWidth() - (insets.left + insets.right + hgap * 2);
+            int nmembers = target.getComponentCount();
+            int x = 0;
+            int y = insets.top + vgap;
+            int rowh = 0;
+            int start = 0;
+            boolean ltr = target.getComponentOrientation().isLeftToRight();
             for (int i = 0; i < nmembers; i++) {
                 Component m = target.getComponent(i);
                 if (m.isVisible()) {
@@ -324,6 +329,7 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
      * object and its values.
      * @return     a string representation of this layout
      */
+    @Override
     public String toString() {
         String str = "";
         switch (align) {

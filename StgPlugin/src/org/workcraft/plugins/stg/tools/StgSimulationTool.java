@@ -6,24 +6,25 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.gui.properties.*;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.tools.Trace;
-import org.workcraft.gui.properties.*;
 import org.workcraft.gui.workspace.Path;
+import org.workcraft.plugins.builtin.settings.CommonSignalSettings;
 import org.workcraft.plugins.dtd.DtdDescriptor;
 import org.workcraft.plugins.dtd.VisualDtd;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petri.tools.PetriSimulationTool;
-import org.workcraft.plugins.builtin.settings.CommonSignalSettings;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.converters.StgToDtdConverter;
+import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.shared.ColorGenerator;
-import org.workcraft.utils.DialogUtils;
 import org.workcraft.types.Pair;
+import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 
 import javax.activation.ActivationDataFlavor;
@@ -218,7 +219,7 @@ public class StgSimulationTool extends PetriSimulationTool {
 
     private final class SignalDataRenderer implements TableCellRenderer {
         @SuppressWarnings("serial")
-        final JLabel label = new JLabel() {
+        private final JLabel label = new JLabel() {
             @Override
             public void paint(final Graphics g) {
                 g.setColor(getBackground());
@@ -229,7 +230,8 @@ public class StgSimulationTool extends PetriSimulationTool {
 
         @Override
         public Component getTableCellRendererComponent(final JTable table, final Object value,
-                                                       final boolean isSelected, final boolean hasFocus, final int row, final int column) {
+                final boolean isSelected, final boolean hasFocus, final int row, final int column) {
+
             label.setText("");
             label.setBorder(SizeHelper.getTableCellBorder());
             label.setForeground(table.getForeground());
@@ -330,7 +332,7 @@ public class StgSimulationTool extends PetriSimulationTool {
             }
         };
 
-        boolean isActive(final int row, final int column) {
+        private boolean isActive(final int row, final int column) {
             if (column == 0) {
                 if (!mainTrace.isEmpty() && branchTrace.isEmpty()) {
                     return row == mainTrace.getPosition();
@@ -482,7 +484,7 @@ public class StgSimulationTool extends PetriSimulationTool {
             DialogUtils.showWarning("Cannot generate a timing diagram for an empty trace.");
         } else {
             final Stg stg = getUnderlyingStg();
-            final LinkedList<Pair<String, Color>> visibleSignals = getVisibleSignals(stg);
+            final LinkedList<Pair<String, Color>> visibleSignals = getVisibleSignals();
             final StgToDtdConverter converter = new StgToDtdConverter(stg, trace, visibleSignals);
             final VisualDtd dtd = converter.getVisualDtd();
             final Path<String> path = editor.getWorkspaceEntry().getWorkspacePath();
@@ -492,7 +494,7 @@ public class StgSimulationTool extends PetriSimulationTool {
         }
     }
 
-    private LinkedList<Pair<String, Color>> getVisibleSignals(final Stg stg) {
+    private LinkedList<Pair<String, Color>> getVisibleSignals() {
         final LinkedList<Pair<String, Color>> result = new LinkedList<>();
         for (final String signalRef : signals) {
             final SignalData signalData = signalDataMap.get(signalRef);
@@ -556,6 +558,7 @@ public class StgSimulationTool extends PetriSimulationTool {
         }
     }
 
+    @Override
     public void coloriseTokens(final Transition t) {
         final VisualStg visualStg = (VisualStg) getUnderlyingModel();
         final VisualTransition vt = visualStg.getVisualTransition(t);

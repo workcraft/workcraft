@@ -1,81 +1,37 @@
 package org.workcraft.plugins.cpog.sat;
 
-import static org.workcraft.formula.BooleanOperations.and;
-import static org.workcraft.formula.BooleanOperations.iff;
-import static org.workcraft.formula.BooleanOperations.not;
-import static org.workcraft.formula.BooleanOperations.or;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.BooleanVariable;
-import org.workcraft.formula.FreeVariable;
-import org.workcraft.formula.One;
-import org.workcraft.formula.Zero;
-import org.workcraft.plugins.cpog.encoding.NumberProvider;
-import org.workcraft.plugins.cpog.encoding.onehot.AndFunction;
-import org.workcraft.plugins.cpog.encoding.onehot.OneHotIntBooleanFormula;
+import org.workcraft.formula.*;
 import org.workcraft.formula.utils.BooleanUtils;
+import org.workcraft.plugins.cpog.encoding.NumberProvider;
 
-public class Optimiser<BooleanNumber> implements SatProblemGenerator<BooleanFormula> {
-    BooleanFormula generateBinaryFunction(BooleanFormula[] vars, int funcId) {
+import java.util.*;
+
+import static org.workcraft.formula.BooleanOperations.*;
+
+public class Optimiser<T> implements SatProblemGenerator<BooleanFormula> {
+
+    private NumberProvider<T> numberProvider;
+    private int[] levels;
+
+    private BooleanFormula generateBinaryFunction(BooleanFormula[] vars, int funcId) {
         return generateBinaryFunction(vars, vars, funcId);
     }
 
-    BooleanFormula generateBinaryFunction(BooleanFormula[] arg1, BooleanFormula[] arg2, int funcId) {
-        BooleanFormula isIff = Zero.instance(); //*/new FV("f" + funcId + "_isIff");
-        BooleanNumber var1Number = generateInt("f" + funcId + "_v1_", arg1.length);
-        BooleanNumber var2Number = generateInt("f" + funcId + "_v2_", arg2.length);
-        //BooleanFormula less = numberProvider.less(var1Number, var2Number);
-        //rho.add(less);
+    private BooleanFormula generateBinaryFunction(BooleanFormula[] arg1, BooleanFormula[] arg2, int funcId) {
+        BooleanFormula isIff = Zero.getInstance(); //*/new FV("f" + funcId + "_isIff");
+        T var1Number = generateInt("f" + funcId + "_v1_", arg1.length);
+        T var2Number = generateInt("f" + funcId + "_v2_", arg2.length);
+
         BooleanFormula noNegate1 = new FreeVariable("f" + funcId + "_v1_plain");
         BooleanFormula noNegate2 = new FreeVariable("f" + funcId + "_v2_plain");
         BooleanFormula var1 = numberProvider.select(arg1, var1Number);
         BooleanFormula var2 = numberProvider.select(arg2, var2Number);
-
-        //noNegate1 = ZERO;
-        //noNegate1 = ZERO;
-        /*if (funcId == 0) {
-            var1 = arg1[0];
-            var2 = arg2[1];
-            //noNegate1 = ZERO;
-            //noNegate2 = ZERO;
-        }
-
-        if (funcId == 1) {
-            var1 = arg1[1];
-            var2 = arg2[2];
-            //noNegate1 = ZERO;
-        }
-        if (funcId == 2) {
-            var1 = arg1[2];
-            var2 = arg2[3];
-            //noNegate1 = ZERO;
-        }
-        if (funcId == 3) {
-            var1 = arg1[3];
-            var2 = arg2[0];
-            //noNegate1 = ZERO;
-        }
-        if (funcId == 4) {
-            var1 = arg1[2];
-            var2 = arg2[0];
-            //noNegate1 = ZERO;
-        }*/
-        //noNegate1 = ZERO;
-        //noNegate2 = ZERO;
 
         BooleanFormula and = and(
                 iff(var1, noNegate1),
                 iff(var2, noNegate2)
                 );
 
-        //if (true)
-        //    return not(and(var1, var2));
         BooleanFormula iff = iff(var1, var2);
 
         return or(
@@ -84,14 +40,11 @@ public class Optimiser<BooleanNumber> implements SatProblemGenerator<BooleanForm
         );
     }
 
-    private BooleanNumber generateInt(String varPrefix, int variablesCount) {
+    private T generateInt(String varPrefix, int variablesCount) {
         return numberProvider.generate(varPrefix, variablesCount);
     }
 
-    NumberProvider<BooleanNumber> numberProvider;
-    private int[] levels;
-
-    public Optimiser(NumberProvider<BooleanNumber> numberProvider) {
+    public Optimiser(NumberProvider<T> numberProvider) {
         this.numberProvider = numberProvider;
     }
 
@@ -99,7 +52,7 @@ public class Optimiser<BooleanNumber> implements SatProblemGenerator<BooleanForm
      * @param levels
      * Specifies the number of gates to be found on each depth level. Null means no limit.
      */
-    public Optimiser(NumberProvider<BooleanNumber> numberProvider, int[] levels) {
+    public Optimiser(NumberProvider<T> numberProvider, int[] levels) {
         this(numberProvider);
         this.levels = levels;
     }
@@ -117,10 +70,10 @@ public class Optimiser<BooleanNumber> implements SatProblemGenerator<BooleanForm
                 Character c = s.charAt(j);
                 BooleanFormula cell;
                 if (c == '1') {
-                    cell = One.instance();
+                    cell = One.getInstance();
                 } else {
                     if (c == '0') {
-                        cell = Zero.instance();
+                        cell = Zero.getInstance();
                     } else {
                         if (c == '-') {
                             cell = null;
@@ -167,8 +120,8 @@ public class Optimiser<BooleanNumber> implements SatProblemGenerator<BooleanForm
     private BooleanFormula eliminateUnrestrictableVar(BooleanFormula result, BooleanVariable v) {
         //System.out.println("original: " + FormulaToString.toString(result));
 
-        BooleanFormula one = replace(result, v, One.instance());
-        BooleanFormula zero = replace(result, v, Zero.instance());
+        BooleanFormula one = replace(result, v, One.getInstance());
+        BooleanFormula zero = replace(result, v, Zero.getInstance());
         //System.out.println("one: " + FormulaToString.toString(one));
         //System.out.println("zero: " + FormulaToString.toString(zero));
         return and(one, zero);
@@ -193,7 +146,7 @@ public class Optimiser<BooleanNumber> implements SatProblemGenerator<BooleanForm
     public OptimisationTask<BooleanFormula> getFormula(BooleanFormula[][] scenarios, List<? extends BooleanFormula> forcedParams, BooleanVariable[] variables, int derivedVariables) {
         // Generate function parameters
 
-        List<BooleanFormula> parameters = new ArrayList<BooleanFormula>(Arrays.asList(variables));
+        List<BooleanFormula> parameters = new ArrayList<>(Arrays.asList(variables));
         parameters.addAll(forcedParams);
 
         // Generate functions
@@ -206,7 +159,7 @@ public class Optimiser<BooleanNumber> implements SatProblemGenerator<BooleanForm
         List<BooleanFormula> tableConditions = new ArrayList<>();
         //Try to match existing model functions with newly generated functions.
         for (int i = 0; i < functionCount; i++) {
-            BooleanNumber varId = generateInt("model_f" + i + "_", allVariables.size());
+            T varId = generateInt("model_f" + i + "_", allVariables.size());
             BooleanFormula plain = new FreeVariable("model_f" + i + "_plain");
 
             BooleanFormula value = iff(plain, numberProvider.select(allVariables.toArray(new BooleanFormula[0]), varId));
@@ -220,7 +173,7 @@ public class Optimiser<BooleanNumber> implements SatProblemGenerator<BooleanForm
             encodings[i] = new BooleanFormula[variables.length];
             if (i == 0) {
                 for (int j = 0; j < variables.length; j++) {
-                    encodings[i][j] = Zero.instance();
+                    encodings[i][j] = Zero.getInstance();
                 }
                 for (int j = 0; j < 0 && j < variables.length; j++) {
                     encodings[i][j] = new FreeVariable("x" + j + "_s" + i);
@@ -280,10 +233,10 @@ public class Optimiser<BooleanNumber> implements SatProblemGenerator<BooleanForm
             } else {
                 int cc = 0;
                 for (int level = 0; level < levels.length; level++) {
-                    List<BooleanFormula> currentLevel = new ArrayList<>();
                     if (levels[level] == 0) {
                         throw new RuntimeException("wtf?");
                     }
+                    List<BooleanFormula> currentLevel = new ArrayList<>();
                     for (int i = 0; i < levels[level]; i++) {
                         BooleanFormula[] firstArgPool;
                         int firstArgPoolSize = i * 2 + 1;
@@ -313,10 +266,4 @@ public class Optimiser<BooleanNumber> implements SatProblemGenerator<BooleanForm
         return allVariables;
     }
 
-    public static <BooleanNumber> BooleanFormula evaluateNoNeg(NumberProvider<OneHotIntBooleanFormula> numberProvider, AndFunction<OneHotIntBooleanFormula> function, BooleanFormula[] vars) {
-        return and(
-                numberProvider.select(vars, function.getVar1Number()),
-                numberProvider.select(vars, function.getVar2Number())
-                );
-    }
 }

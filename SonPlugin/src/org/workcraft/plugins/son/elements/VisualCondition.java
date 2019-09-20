@@ -7,10 +7,10 @@ import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.RenderedText;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.son.SONSettings;
+import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -112,8 +112,8 @@ public class VisualCondition extends VisualPlaceNode {
         return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
     }
 
-    private void cahceStartTimeRenderedText(DrawRequest r) {
-        String start = "Start: " + getStartTime().toString();
+    private void cahceStartTimeRenderedText() {
+        String start = "Start: " + getStartTime();
 
         Point2D offset = getOffset(startTimePositioning);
         offset.setLocation(offset.getX(), offset.getY() - labelOffset);
@@ -125,7 +125,7 @@ public class VisualCondition extends VisualPlaceNode {
 
     protected void drawStartTimeInLocalSpace(DrawRequest r) {
         if (isInitial() && SONSettings.getTimeVisibility() && ((Condition) getReferencedComponent()).getStartTime().isSpecified()) {
-            cahceStartTimeRenderedText(r);
+            cahceStartTimeRenderedText();
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
             g.setColor(Coloriser.colorise(getStartTimeColor(), d.getColorisation()));
@@ -133,8 +133,8 @@ public class VisualCondition extends VisualPlaceNode {
         }
     }
 
-    private void cahceEndTimeRenderedText(DrawRequest r) {
-        String end = "End: " + getEndTime().toString();
+    private void cahceEndTimeRenderedText() {
+        String end = "End: " + getEndTime();
 
         Point2D offset = getOffset(endTimePositioning);
         offset.setLocation(offset.getX(), offset.getY() - labelOffset);
@@ -146,7 +146,7 @@ public class VisualCondition extends VisualPlaceNode {
 
     protected void drawEndTimeInLocalSpace(DrawRequest r) {
         if (isFinal() && SONSettings.getTimeVisibility() && ((Condition) getReferencedComponent()).getEndTime().isSpecified()) {
-            cahceEndTimeRenderedText(r);
+            cahceEndTimeRenderedText();
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
             g.setColor(Coloriser.colorise(getEndTimeColor(), d.getColorisation()));
@@ -157,8 +157,8 @@ public class VisualCondition extends VisualPlaceNode {
     @Override
     public void cacheRenderedText(DrawRequest r) {
         super.cacheRenderedText(r);
-        cahceStartTimeRenderedText(r);
-        cahceEndTimeRenderedText(r);
+        cahceStartTimeRenderedText();
+        cahceEndTimeRenderedText();
     }
 
     @Override

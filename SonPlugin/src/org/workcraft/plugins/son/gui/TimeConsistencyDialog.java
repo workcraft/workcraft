@@ -27,13 +27,21 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
 
     protected VisualSON vNet;
 
-    protected JPanel scenarioItemPanel, nodeItemPanel, selectionPanel, causalConsistencyPanel;
+    protected JPanel scenarioItemPanel;
+    protected JPanel nodeItemPanel;
+    protected JPanel selectionPanel;
+    protected JPanel causalConsistencyPanel;
     protected DefaultDurationPanel defaultDurationPanel;
     protected GranularityPanel granularityPanel;
-    protected JPanel leftPanel, rightPanel;
+    protected JPanel leftPanel;
+    protected JPanel rightPanel;
     protected JTabbedPane selectionTabbedPane;
-    protected JList<ListItem> scenarioList, nodeList;
-    protected JCheckBox inconsistencyHighLight, unspecifyHighlight, causalHighlight, causalConsistency;
+    protected JList<ListItem> scenarioList;
+    protected JList<ListItem> nodeList;
+    protected JCheckBox inconsistencyHighLight;
+    protected JCheckBox unspecifyHighlight;
+    protected JCheckBox causalHighlight;
+    protected JCheckBox causalConsistency;
 
     private static final Color greyoutColor = Color.LIGHT_GRAY;
     protected ScenarioRef selectedScenario = null;
@@ -73,7 +81,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
             listModel.addElement(new ListItem("Scenario " + (i + 1), scenarioSavelist.get(i)));
         }
 
-        scenarioList = new JList<ListItem>(listModel);
+        scenarioList = new JList<>(listModel);
         scenarioList.setCellRenderer(new ScenarioListRenderer());
         scenarioList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         scenarioList.addMouseListener(new MouseAdapter() {
@@ -116,7 +124,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
     protected void createNodeItemPanel() {
         nodeItemPanel = new JPanel();
         vNet = WorkspaceUtils.getAs(we, VisualSON.class);
-        selectedNodes = new ArrayList<Node>();
+        selectedNodes = new ArrayList<>();
 
         DefaultListModel<ListItem> listModel = new DefaultListModel<>();
 
@@ -130,11 +138,12 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
             }
         }
 
-        nodeList = new JList<ListItem>(listModel);
+        nodeList = new JList<>(listModel);
         nodeList.setCellRenderer(new ItemListRenderer());
         nodeList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         nodeList.addMouseListener(new MouseAdapter() {
+            @Override
             public void mousePressed(MouseEvent event) {
                 JList<ListItem> list = (JList<ListItem>) event.getSource();
 
@@ -188,21 +197,12 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
         selectionTabbedPane.addTab("Node", nodeItemPanel);
 
         selectionTabbedPane.addChangeListener(new ChangeListener() {
+            @Override
             public void stateChanged(ChangeEvent e) {
                 net.refreshAllColor();
                 addAllButton.setEnabled(true);
                 removeAllButton.setEnabled(true);
                 int index = getTabIndex();
-
-                // if (index == 0) {
-                // updateCausalConsistencyPanel(false);
-                // for (int i = 0; i < groupList.getModel().getSize(); i++) {
-                // ListItem item = (ListItem)
-                // groupList.getModel().getElementAt(i);
-                // item.setItemColor(Color.ORANGE);
-                // }
-                //
-                // } else
                 if (index == 0) {
                     addAllButton.setEnabled(false);
                     removeAllButton.setEnabled(false);
@@ -436,6 +436,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
         return selectedNodes;
     }
 
+    @Override
     public ArrayList<ONGroup> getSelectedGroups() {
         return selectedGroups;
     }

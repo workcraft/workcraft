@@ -16,7 +16,7 @@ import java.util.Collection;
 
 @DisplayName("Signal")
 @IdentifierPrefix("x")
-@VisualClass(org.workcraft.plugins.dtd.VisualSignal.class)
+@VisualClass(VisualSignal.class)
 public class Signal extends MathNode implements ObservableHierarchy, Container {
 
     public static final String PROPERTY_NAME = "Name";

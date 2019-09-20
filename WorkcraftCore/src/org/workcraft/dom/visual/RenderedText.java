@@ -30,7 +30,7 @@ public class RenderedText {
         this.yOffset = offset.getY();
 
         Rectangle2D textBounds = null;
-        glyphVectors = new LinkedList<GlyphVector>();
+        glyphVectors = new LinkedList<>();
         String[] lines = {""};
         if (text != null) {
             lines = text.split("\\|");
@@ -80,6 +80,7 @@ public class RenderedText {
                 break;
             default:
                 xMargin = 0.0;
+                break;
             }
             double x = boundingBox.getX() - lineBoundingBox.getX() + xMargin * (1.0 - positioning.xSign);
             y += lineBoundingBox.getHeight();

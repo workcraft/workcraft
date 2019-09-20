@@ -1,26 +1,25 @@
 package org.workcraft.dom.visual;
 
+import org.workcraft.dom.math.MathNode;
+
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.workcraft.dom.Container;
-import org.workcraft.dom.math.MathNode;
-
 class SquareNode extends VisualComponent {
-    Rectangle2D.Double rectOuter;
-    Rectangle2D.Double rectInner;
-    int resultToReturn;
 
-    SquareNode(Container parent, Rectangle2D.Double rectOuter, Rectangle2D.Double rectInner) {
+    private final Rectangle2D.Double rectOuter;
+    private final Rectangle2D.Double rectInner;
+
+    SquareNode(Rectangle2D.Double rect) {
+        this(rect, rect);
+    }
+
+    SquareNode(Rectangle2D.Double rectOuter, Rectangle2D.Double rectInner) {
         super(null);
         this.rectOuter = rectOuter;
         this.rectInner = rectInner;
-    }
-
-    SquareNode(Container parent, Rectangle2D.Double rect) {
-        this(parent, rect, rect);
     }
 
     @Override

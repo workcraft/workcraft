@@ -5,11 +5,11 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.*;
-import org.workcraft.utils.Coloriser;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.*;
 import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 import org.workcraft.serialisation.NoAutoSerialisation;
+import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -80,9 +80,9 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
     private double arrowLength = CommonVisualSettings.getConnectionArrowLength();
     private double bubbleSize = CommonVisualSettings.getConnectionBubbleSize();
 
-    private boolean hasArrow = true;
-    private boolean hasBubble = false;
-    private boolean isTokenColorPropagator = false;
+    private boolean withArrow = true;
+    private boolean withBubble = false;
+    private boolean tokenColorPropagator = false;
     private Point2D splitPoint = null;
 
     private final LinkedHashSet<Node> children = new LinkedHashSet<>();
@@ -210,14 +210,15 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 
     public void setVisualConnectionDependencies(VisualNode first, VisualNode second,
             ConnectionGraphic graphic, MathConnection refConnection) {
+
         if (first == null) {
-            throw new NullPointerException("first");
+            throw new IllegalArgumentException("first is null");
         }
         if (second == null) {
-            throw new NullPointerException("second");
+            throw new IllegalArgumentException("second is null");
         }
         if (graphic == null) {
-            throw new NullPointerException("graphic");
+            throw new IllegalArgumentException("graphic is null");
         }
 
         this.first = first;
@@ -301,11 +302,11 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 
     @Override
     public boolean hasArrow() {
-        return hasArrow;
+        return withArrow;
     }
 
     public void setArrow(boolean value) {
-        hasArrow = value;
+        withArrow = value;
     }
 
     @Override
@@ -348,11 +349,11 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 
     @Override
     public boolean hasBubble() {
-        return hasBubble;
+        return withBubble;
     }
 
     public void setBubble(boolean value) {
-        hasBubble = value;
+        withBubble = value;
     }
 
     @Override
@@ -370,11 +371,11 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 
     @Override
     public boolean isTokenColorPropagator() {
-        return isTokenColorPropagator;
+        return tokenColorPropagator;
     }
 
     public void setTokenColorPropagator(boolean value) {
-        isTokenColorPropagator = value;
+        tokenColorPropagator = value;
     }
 
     @NoAutoSerialisation
@@ -422,6 +423,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
         return refConnection;
     }
 
+    @Override
     public boolean hitTest(Point2D pointInParentSpace) {
         return graphic.hitTest(pointInParentSpace);
     }
@@ -431,14 +433,17 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
         return graphic.getBoundingBox();
     }
 
+    @Override
     public VisualNode getFirst() {
         return first;
     }
 
+    @Override
     public VisualNode getSecond() {
         return second;
     }
 
+    @Override
     public Set<MathNode> getMathReferences() {
         Set<MathNode> ret = new HashSet<>();
         ret.add(getReferencedConnection());
@@ -454,14 +459,17 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
         return children;
     }
 
+    @Override
     public void addObserver(HierarchyObserver obs) {
         observableHierarchyImpl.addObserver(obs);
     }
 
+    @Override
     public void removeObserver(HierarchyObserver obs) {
         observableHierarchyImpl.removeObserver(obs);
     }
 
+    @Override
     public void removeAllObservers() {
         observableHierarchyImpl.removeAllObservers();
     }

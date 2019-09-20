@@ -173,8 +173,6 @@ public class Geometry {
     }
 
     public static Point2D changeBasis(Point2D p, Point2D vx, Point2D vy) {
-        Point2D result = (Point2D) p.clone();
-
         if (dotProduct(vx, vy) > 0.0000001) {
             throw new RuntimeException("Vectors vx and vy must be orthogonal");
         }
@@ -186,8 +184,8 @@ public class Geometry {
             throw new RuntimeException("Vectors vx and vy must not have zero length");
         }
 
+        Point2D result = (Point2D) p.clone();
         result.setLocation(dotProduct(p, vx) / vxsq, dotProduct(p, vy) / vysq);
-
         return result;
     }
 

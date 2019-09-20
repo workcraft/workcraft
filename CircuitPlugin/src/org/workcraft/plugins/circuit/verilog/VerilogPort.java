@@ -4,6 +4,10 @@ import org.workcraft.types.Pair;
 
 public class VerilogPort {
 
+    public final String name;
+    public final Type type;
+    public final Range range;
+
     public enum Type {
         INPUT("input"),
         OUTPUT("output");
@@ -38,10 +42,6 @@ public class VerilogPort {
             return "[" + getFirst() + ":" + getSecond() + "]";
         }
     }
-
-    public final String name;
-    public final Type type;
-    public final Range range;
 
     public VerilogPort(String name, Type type) {
         this(name, type, null);

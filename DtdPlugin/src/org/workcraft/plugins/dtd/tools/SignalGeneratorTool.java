@@ -1,11 +1,11 @@
 package org.workcraft.plugins.dtd.tools;
 
 import org.workcraft.dom.Container;
+import org.workcraft.dom.generators.DefaultNodeGenerator;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.dom.generators.DefaultNodeGenerator;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.tools.NodeGeneratorTool;
 import org.workcraft.plugins.dtd.DtdSettings;
@@ -18,7 +18,7 @@ import java.util.LinkedList;
 
 public class SignalGeneratorTool extends NodeGeneratorTool {
 
-    static boolean shiftKeyDown;
+    private static boolean shiftKeyDown;
 
     public SignalGeneratorTool() {
         super(new DefaultNodeGenerator(Signal.class) {

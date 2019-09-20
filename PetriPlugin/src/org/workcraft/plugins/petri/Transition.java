@@ -5,7 +5,7 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
 
 @IdentifierPrefix("t")
-@VisualClass(org.workcraft.plugins.petri.VisualTransition.class)
+@VisualClass(VisualTransition.class)
 public class Transition extends MathNode {
 
 }

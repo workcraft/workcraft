@@ -6,9 +6,9 @@ import java.util.Map;
 @SuppressWarnings("serial")
 public class PropertyEditorTableModel extends AbstractTableModel {
 
-    final String[] columnNames;
-    PropertyDescriptor[] declarations = null;
-    PropertyClass[] rowClasses = null;
+    private final String[] columnNames;
+    private PropertyDescriptor[] declarations = null;
+    private PropertyClass[] rowClasses = null;
 
     public PropertyEditorTableModel(String propertyHeader, String valueHeader) {
         columnNames = new String[]{propertyHeader, valueHeader};
@@ -44,6 +44,7 @@ public class PropertyEditorTableModel extends AbstractTableModel {
         rowClasses[i] = cls;
     }
 
+    @Override
     public int getColumnCount() {
         if (declarations == null) {
             return 0;
@@ -52,6 +53,7 @@ public class PropertyEditorTableModel extends AbstractTableModel {
         }
     }
 
+    @Override
     public int getRowCount() {
         if (declarations == null) {
             return 0;

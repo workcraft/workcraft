@@ -23,7 +23,8 @@ public class PetriToCpogDialog extends JDialog {
 
     //other elements
     private JComboBox<String> significanceBox;
-    private JPanel buttonPanel, settingPanel;
+    private JPanel buttonPanel;
+    private JPanel settingPanel;
     private boolean modalResult;
 
     public PetriToCpogDialog(Window owner, PetriToCpogParameters settings) {
@@ -59,6 +60,7 @@ public class PetriToCpogDialog extends JDialog {
         reduceCheck = new JCheckBox("", true);
         JLabel reduceLabel = new JLabel(PetriToCpogDialogSupport.textReduceLabel);
         reduceLabel.addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseClicked(MouseEvent e) {
                 reduceCheck.setSelected(reduceCheck.isSelected() ? false : true);
             }
@@ -76,7 +78,7 @@ public class PetriToCpogDialog extends JDialog {
 
         // algorithm for checking significance property of a run, combo box
         JLabel significanceLabel = new JLabel(PetriToCpogDialogSupport.textSignificanceLabel);
-        significanceBox = new JComboBox<String>();
+        significanceBox = new JComboBox<>();
         significanceBox.setEditable(false);
         significanceBox.setPreferredSize(PetriToCpogDialogSupport.significanceSize);
         significanceBox.addItem(PetriToCpogDialogSupport.significanceItems[0]);
@@ -89,6 +91,7 @@ public class PetriToCpogDialog extends JDialog {
         removeNodesCheck = new JCheckBox("", false);
         JLabel removeNodesLabel = new JLabel(PetriToCpogDialogSupport.textRemoveNodeLabel);
         removeNodesLabel.addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseClicked(MouseEvent e) {
                 removeNodesCheck.setSelected(removeNodesCheck.isSelected() ? false : true);
             }

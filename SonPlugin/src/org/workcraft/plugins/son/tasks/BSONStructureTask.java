@@ -51,6 +51,7 @@ public class BSONStructureTask extends AbstractStructuralVerification {
         bsonCycleAlg = new BSONCycleAlg(net, allPhases);
     }
 
+    @Override
     public void task(Collection<ONGroup> groups) {
 
         infoMsg("-----------------Behavioral-SON Structure Verification-----------------");

@@ -9,6 +9,7 @@ import java.io.StringReader;
 import java.util.*;
 
 public class SolutionReader {
+
     private static Map<Integer, String> extractCnfMapping(String cnf) {
         HashMap<Integer, String> map = new HashMap<>();
 
@@ -56,16 +57,14 @@ public class SolutionReader {
     }
 
     public static BooleanSolution readSolution(CnfTask task, String solution) {
-        Map<String, BooleanVariable> vars = task.getVars();
-
-        Map<Integer, String> cnfToOriginal = extractCnfMapping(task.getBody());
-
         List<Integer> numbers = extractNumbers(solution);
         if (numbers == null) {
             return null;
         }
 
         final Map<BooleanVariable, Boolean> results = new HashMap<>();
+        Map<Integer, String> cnfToOriginal = extractCnfMapping(task.getBody());
+        Map<String, BooleanVariable> vars = task.getVars();
         for (int i = 0; i < numbers.size(); i++) {
             int cnfIndex = numbers.get(i);
             boolean value = cnfIndex >= 0;
@@ -74,11 +73,11 @@ public class SolutionReader {
             }
             String varName = cnfToOriginal.get(cnfIndex);
             if (varName != null) {
-                if (varName.equals("0")) {
+                if ("0".equals(varName)) {
                     if (value) {
                         throw new RuntimeException("0");
                     }
-                } else if (varName.equals("1")) {
+                } else if ("1".equals(varName)) {
                     if (!value) {
                         throw new RuntimeException("!1");
                     }
@@ -98,10 +97,10 @@ public class SolutionReader {
     private static List<Integer> extractNumbers(String solution) {
         String[] split = solution.split("\n");
 
-        if (split[0].equals("UNSAT")) {
+        if ("UNSAT".equals(split[0])) {
             return null;
         }
-        if (split[0].equals("SAT")) { //MPSAT file
+        if ("SAT".equals(split[0])) { //MPSAT file
             if (split.length != 2) {
                 throw new RuntimeException("Minisat output is more than 2 lines.");
             }
@@ -109,10 +108,10 @@ public class SolutionReader {
         } else { //clasp file
             boolean sat = false;
             for (int i = 0; i < split.length; i++) {
-                if (split[i].equals("s UNSATISFIABLE")) {
+                if ("s UNSATISFIABLE".equals(split[i])) {
                     return null;
                 }
-                if (split[i].equals("s SATISFIABLE")) {
+                if ("s SATISFIABLE".equals(split[i])) {
                     sat = true;
                     break;
                 }

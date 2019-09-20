@@ -1,22 +1,6 @@
 package org.workcraft.plugins.son.elements;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.font.GlyphVector;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.Collection;
-
-import org.workcraft.dom.visual.BoundingBoxHelper;
-import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.Positioning;
-import org.workcraft.dom.visual.RenderedText;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualPage;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.dom.visual.*;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
@@ -24,7 +8,14 @@ import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.util.Interval;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.utils.Hierarchy;
+
+import java.awt.*;
+import java.awt.font.GlyphVector;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.Collection;
 
 public class VisualBlock extends VisualPage implements VisualTransitionNode {
     private final Block mathBlock;
@@ -103,10 +94,8 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode {
         }
     }
 
-    private void cahceDurationRenderedText(DrawRequest r) {
-        String duration = "D: " + getDuration().toString();
-        //double o = 0.8 * size;
-
+    private void cahceDurationRenderedText() {
+        String duration = "D: " + getDuration();
         Point2D offset = getOffset(durationLabelPositioning);
         if (durationLabelPositioning.ySign < 0) {
             offset.setLocation(offset.getX(), offset.getY() - 0.6);
@@ -121,7 +110,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode {
 
     protected void drawDurationInLocalSpace(DrawRequest r) {
         if (SONSettings.getTimeVisibility() && getReferencedComponent().getDuration().isSpecified()) {
-            cahceDurationRenderedText(r);
+            cahceDurationRenderedText();
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
             g.setColor(Coloriser.colorise(getDurationColor(), d.getColorisation()));
@@ -132,7 +121,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode {
     @Override
     public void cacheRenderedText(DrawRequest r) {
         super.cacheRenderedText(r);
-        cahceDurationRenderedText(r);
+        cahceDurationRenderedText();
     }
 
     @Override
@@ -229,6 +218,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode {
         return this.getReferencedComponent().getFillColor();
     }
 
+    @Override
     public Block getReferencedComponent() {
         return mathBlock;
     }
@@ -245,4 +235,5 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode {
     public Block getMathTransitionNode() {
         return getReferencedComponent();
     }
+
 }

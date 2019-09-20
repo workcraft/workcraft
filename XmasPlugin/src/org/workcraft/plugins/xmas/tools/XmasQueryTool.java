@@ -3,7 +3,6 @@ package org.workcraft.plugins.xmas.tools;
 import org.workcraft.commands.Command;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.gui.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditor;
@@ -17,12 +16,8 @@ import org.workcraft.plugins.xmas.components.VisualQueueComponent;
 import org.workcraft.plugins.xmas.components.VisualSyncComponent;
 import org.workcraft.plugins.xmas.gui.SolutionsDialog1;
 import org.workcraft.plugins.xmas.gui.SolutionsDialog2;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.FileUtils;
-import org.workcraft.utils.Hierarchy;
-import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -49,8 +44,8 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
     }
 
     private static class Qslist {
-        String name;
-        int chk;
+        public String name;
+        public int chk;
 
         Qslist(String s1, int n) {
             name = s1;
@@ -58,19 +53,17 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
         }
     }
 
-    int cntSyncNodes = 0;
-    int index = 0;
-    static int q3flag = 0;
-    JFrame mainFrame = null;
-    JComboBox mdcombob = null;
-    static JComboBox q1combob = null;
-    static JComboBox q2combob = null;
-    static JComboBox qscombob = null;
-    static String level = "";
-    static String display = "";
-    static String highlight = "";
-    static String soln = "";
-    static List<Qslist> qslist = new ArrayList<>();
+    private int index = 0;
+    private static int q3flag = 0;
+    private JFrame mainFrame = null;
+    private JComboBox mdcombob = null;
+    private static JComboBox q1combob = null;
+    private static JComboBox q2combob = null;
+    private static JComboBox qscombob = null;
+    private static String level = "";
+    private static String display = "";
+    private static String highlight = "";
+    private static List<Qslist> qslist = new ArrayList<>();
 
     public void dispose() {
         mainFrame.setVisible(false);
@@ -102,10 +95,10 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
                 larg = "-v";
                 str = nxt.next();
                 level = str;
-                if (str.equals("normal")) {
+                if ("normal".equals(str)) {
                     //System.out.println("Read v1");
                     larg = "-v1";
-                } else if (str.equals("advanced")) {
+                } else if ("advanced".equals(str)) {
                     //System.out.println("Read v2");
                     larg = "-v2";
                 }
@@ -123,7 +116,6 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
                 nxt = new Scanner(line.next());
                 str = nxt.next();
                 //System.out.println("solnnnnnnnnnnnnnnnnn=" + str);
-                soln = str;
                 sarg = "-s" + str;
             }
         }
@@ -404,13 +396,11 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
         return WorkspaceUtils.isApplicable(we, Xmas.class);
     }
 
-    GraphEditorPanel editor1;
-    Graphics2D g;
+    private static List<JCheckBox> jcbn = new ArrayList<>();
+    private JCheckBox jcb;
+    private JCheckBox jcblast;
 
-    static List<JCheckBox> jcbn = new ArrayList<>();
-    JCheckBox jcb, jcblast;
-
-    void populateMd(int grnum) {
+    private void populateMd(int grnum) {
         int i;
 
         mdcombob.addItem("ALL");
@@ -420,7 +410,7 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
         }
     }
 
-    void populateQlists(Xmas cnet) {
+    private void populateQlists(Xmas cnet) {
         for (Node node : cnet.getNodes()) {
             if (node instanceof QueueComponent) {
                 //System.out.println("QQQQ " + cnet.getName(node) + ".");
@@ -430,24 +420,7 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
         }
     }
 
-    void populateQslists(Xmas cnet) {
-        int cnt = 0;
-
-        for (Node node : cnet.getNodes()) {
-            if (node instanceof SyncComponent) {
-                //System.out.println("QQQQ " + cnet.getName(node) + ".");
-                qscombob.addItem(cnet.getName(node));
-                cnt++;
-            }
-        }
-        if (cnt > 1) {
-            qscombob.addItem("ALL");
-        } else {
-            qscombob.addItem("NONE");
-        }
-    }
-
-    void populateQslists(VisualXmas vnet, Xmas cnet) {
+    private void populateQslists(VisualXmas vnet, Xmas cnet) {
         int cnt = 0;
         SyncComponent sc;
         VisualSyncComponent vsc;
@@ -470,7 +443,7 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
         }
     }
 
-    void createPanel(List<JPanel> panellist, Xmas cnet, VisualXmas vnet, int grnum) {
+    private void createPanel(List<JPanel> panellist, Xmas cnet, VisualXmas vnet, int grnum) {
         panellist.add(new JPanel());
         panellist.get(panellist.size() - 1).add(new JLabel(" Sources" + ": "));
         panellist.get(panellist.size() - 1).add(mdcombob = new JComboBox());
@@ -599,7 +572,9 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
                     String[] cmdArray = vxmCommand.toArray(new String[vxmCommand.size()]);
                     Process vxmProcess = Runtime.getRuntime().exec(cmdArray, null, XmasSettings.getTempVxmDirectory());
 
-                    String s, str = "", str2 = "";
+                    String s;
+                    String str = "";
+                    String str2 = "";
                     InputStreamReader inputStreamReader = new InputStreamReader(vxmProcess.getInputStream());
                     BufferedReader stdInput = new BufferedReader(inputStreamReader);
                     int n = 0;
@@ -611,7 +586,7 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
                         n++;
                         System.out.println(s);
                     }
-                    if (level.equals("advanced") && (q3flag == 0)) {
+                    if ("advanced".equals(level) && (q3flag == 0)) {
                         System.out.println("LEVEL IS ADVANCED ");
                         File qslFile = XmasSettings.getTempVxmQslFile();
                         processQsl(qslFile.getAbsolutePath());
@@ -621,35 +596,35 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
 
                         File queFile = XmasSettings.getTempVxmQueFile();
                         str2 = processQue(queFile.getAbsolutePath());
-                    } else if (level.equals("advanced") && (q3flag == 1)) {
+                    } else if ("advanced".equals(level) && (q3flag == 1)) {
                         System.out.println("LEVEL IS ADVANCED ");
                         File equFile2 = XmasSettings.getTempVxmEquFile();
                         str = processEq(equFile2.getAbsolutePath());
-                    } else if (level.equals("normal") && test == 2) {
+                    } else if ("normal".equals(level) && test == 2) {
                         System.out.println("LEVEL IS NORMAL ");
                         File locFile = XmasSettings.getTempVxmLocFile();
                         str = processLoc(locFile.getAbsolutePath());
                     }
                     if (test > 0) {
-                        if (display.equals("popup")) {
-                            if (!level.equals("advanced") && (q3flag == 0)) {
+                        if ("popup".equals(display)) {
+                            if (!"advanced".equals(level) && (q3flag == 0)) {
                                 new SolutionsDialog1(test, str2);
-                            } else if (level.equals("advanced") && (q3flag == 1)) {
+                            } else if ("advanced".equals(level) && (q3flag == 1)) {
                                 new SolutionsDialog2(test, str);
                             } else {
                                 new SolutionsDialog2(test, str2);
                             }
                         }
                         if (test == 2) {
-                            if (highlight.equals("local")) {
+                            if ("local".equals(highlight)) {
                                 localHighlight(str, xnet, vnet);
-                            } else if (highlight.equals("rel")) {
+                            } else if ("rel".equals(highlight)) {
                                 relHighlight(str, xnet, vnet);
                                 activeHighlight(xnet, vnet);
                             }
                         }
                     } else if (test == 0) {
-                        if (display.equals("popup")) {
+                        if ("popup".equals(display)) {
                             DialogUtils.showInfo("The system is deadlock-free.");
                         }
                     }

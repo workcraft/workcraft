@@ -104,7 +104,7 @@ public class ReachabilityTask implements Task<VerificationResult> {
                 Map<PlaceNode, Boolean> finalStates = simulation();
                 for (String ref : markingRefs) {
                     Node node = net.getNodeByReference(ref);
-                    if (finalStates.get(node) == false) {
+                    if (!finalStates.get(node)) {
                         throw new RuntimeException("Reachability task error, doesn't reach selected marking" + ref);
                     }
                 }
@@ -152,7 +152,7 @@ public class ReachabilityTask implements Task<VerificationResult> {
 //                initial.add(c);
 //            }
 //        }
-        causalPredecessors = new HashSet<Node>();
+        causalPredecessors = new HashSet<>();
 
         //get causalPredecessors for each marking
         for (String ref : markingRefs) {

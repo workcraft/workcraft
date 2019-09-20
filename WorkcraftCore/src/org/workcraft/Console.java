@@ -33,10 +33,8 @@ public class Console {
         }
     }
 
+    @SuppressWarnings("PMD.DoNotCallSystemExit")
     public static void main(String[] args) {
-        final Framework framework = Framework.getInstance();
-        LinkedList<String> arglist = new LinkedList<>(Arrays.asList(args));
-
         // Process -version and -help options
         for (String arg : args) {
             if (arg.equals(Info.OPTION_VERSION)) {
@@ -50,6 +48,8 @@ public class Console {
         }
 
         // Process -nogui, -noconfig and -dir: options
+        final Framework framework = Framework.getInstance();
+        LinkedList<String> arglist = new LinkedList<>(Arrays.asList(args));
         boolean startGui = true;
         boolean useConfig = true;
         for (String arg : args) {
@@ -129,7 +129,7 @@ public class Console {
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
         while (true) {
-            if (framework.shutdownRequested()) {
+            if (framework.isShutdownRequested()) {
                 try {
                     framework.shutdownGUI();
                     if (useConfig) {
@@ -138,7 +138,7 @@ public class Console {
                 } catch (OperationCancelledException e) {
                     framework.abortShutdown();
                 }
-                if (!framework.shutdownRequested()) {
+                if (!framework.isShutdownRequested()) {
                     continue;
                 }
                 LogUtils.logMessage("Shutting down...");
@@ -158,7 +158,7 @@ public class Console {
                     Context.enter();
                     String out = Context.toString(result);
                     Context.exit();
-                    if (!out.equals("undefined")) {
+                    if (!"undefined".equals(out)) {
                         System.out.println(out);
                     }
                 } catch (WrappedException e) {

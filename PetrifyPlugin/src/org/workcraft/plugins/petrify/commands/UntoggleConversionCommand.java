@@ -6,9 +6,10 @@ import org.workcraft.plugins.petrify.tasks.TransformationTask;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 public class UntoggleConversionCommand extends AbstractPetrifyConversionCommand {
@@ -18,6 +19,7 @@ public class UntoggleConversionCommand extends AbstractPetrifyConversionCommand 
         return "Untoggle signal transitions [Petrify]";
     }
 
+    @Override
     public Position getPosition() {
         return Position.TOP;
     }
@@ -30,8 +32,7 @@ public class UntoggleConversionCommand extends AbstractPetrifyConversionCommand 
     @Override
     public WorkspaceEntry execute(WorkspaceEntry we) {
         Collection<Mutex> mutexes = getMutexes(we);
-        TransformationTask task = new TransformationTask(
-                we, "Signal transition untoggle", new String[] {"-untog"}, mutexes);
+        TransformationTask task = new TransformationTask(we, Arrays.asList("-untog"), mutexes);
 
         boolean hasSignals = hasSignals(we);
         TransformationResultHandler monitor = new TransformationResultHandler(we, !hasSignals, mutexes);

@@ -1,14 +1,15 @@
 package org.workcraft.serialisation;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.serialisation.reflection.AmbiguousMethodException;
 import org.workcraft.serialisation.reflection.MethodParametersMatcher;
 import org.workcraft.serialisation.reflection.MethodParametersMatcher.MethodInfo;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class MethodParametersMatcherTests {
     class A {
@@ -26,7 +27,7 @@ public class MethodParametersMatcherTests {
     class ABp extends AB {
     }
 
-    int match(Class<?> type, Class<?>... parameters) throws Exception {
+    private int match(Class<?> type, Class<?>... parameters) throws InvocationTargetException, IllegalAccessException {
         TestMethodInfo match;
         try {
             match = MethodParametersMatcher.match(getMethods(type), parameters);
@@ -45,7 +46,7 @@ public class MethodParametersMatcherTests {
     }
 
     @Test
-    public void testSimple() throws Exception {
+    public void testSimple() throws InvocationTargetException, IllegalAccessException {
         Assert.assertEquals(1, match(Simple.class));
         Assert.assertEquals(-1, match(Simple.class, Object.class));
     }
@@ -69,7 +70,7 @@ public class MethodParametersMatcherTests {
     }
 
     @Test
-    public void testMostSpecific() throws Exception {
+    public void testMostSpecific() throws InvocationTargetException, IllegalAccessException {
         Assert.assertEquals(1, match(Advanced.class));
         Assert.assertEquals(2, match(Advanced.class, A.class));
         Assert.assertEquals(3, match(Advanced.class, ABq.class));
@@ -88,7 +89,7 @@ public class MethodParametersMatcherTests {
     }
 
     @Test
-    public void testAmbiguous() throws Exception {
+    public void testAmbiguous() throws InvocationTargetException, IllegalAccessException {
         Assert.assertEquals(1, match(Ambiguous.class, A.class, AC.class));
         Assert.assertEquals(-1, match(Ambiguous.class, AB.class, A.class));
         Assert.assertEquals(2, match(Ambiguous.class, ABq.class, A.class));
@@ -103,11 +104,12 @@ public class MethodParametersMatcherTests {
             this.method = method;
         }
 
+        @Override
         public Class<?>[] getParameterTypes() {
             return method.getParameterTypes();
         }
 
-        public int execute() throws Exception {
+        public int execute() throws InvocationTargetException, IllegalAccessException {
             Object[] args = new Object[getParameterTypes().length];
             return (Integer) method.invoke(null, args);
         }
@@ -117,7 +119,7 @@ public class MethodParametersMatcherTests {
         ArrayList<TestMethodInfo> result = new ArrayList<>();
 
         for (Method method : clasz.getMethods()) {
-            if (method.getName() == "qq") {
+            if ("qq".equals(method.getName())) {
                 result.add(new TestMethodInfo(method));
             }
         }

@@ -66,7 +66,7 @@ public class ScenarioTable extends JTable {
     @SuppressWarnings("serial")
     protected class ScenarioTableCellRendererImplementation implements TableCellRenderer {
 
-        JLabel label = new JLabel() {
+        private final JLabel label = new JLabel() {
             @Override
             public void paint(Graphics g) {
                 g.setColor(getBackground());
@@ -143,7 +143,7 @@ public class ScenarioTable extends JTable {
         setColors(nodes, Color.BLACK);
     }
 
-    public void updateColor(Node exclude) {
+    public final void updateColor(Node exclude) {
         net.clearMarking();
         setColors(net.getNodes(), exclude, greyoutColor);
         Collection<Node> nodes = new ArrayList<>();

@@ -5,14 +5,14 @@ import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.ContainerDecoration;
 import org.workcraft.gui.tools.Decoration;
-import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
@@ -21,17 +21,20 @@ import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
 public class VisualPage extends VisualComponent implements Collapsible, Container, ObservableHierarchy {
+
     public static final String PROPERTY_IS_COLLAPSED = "Is collapsed";
 
-    private boolean isCurrentLevelInside = false;
-    private boolean isCollapsed = false;
-    private boolean isExcited = false;
+    private boolean currentLevelInside = false;
+    private boolean collapsed = false;
+    private boolean excited = false;
     private final DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
+    @Override
     public Collection<VisualComponent> getComponents() {
         return Hierarchy.getDescendantsOfType(this, VisualComponent.class);
     }
 
+    @Override
     public Collection<VisualConnection> getConnections() {
         return Hierarchy.getDescendantsOfType(this, VisualConnection.class);
     }
@@ -43,6 +46,7 @@ public class VisualPage extends VisualComponent implements Collapsible, Containe
             public void setter(VisualPage object, Boolean value) {
                 object.setIsCollapsed(value);
             }
+
             @Override
             public Boolean getter(VisualPage object) {
                 return object.getIsCollapsed();
@@ -52,37 +56,37 @@ public class VisualPage extends VisualComponent implements Collapsible, Containe
 
     @Override
     public void setIsCurrentLevelInside(boolean value) {
-        if (isCurrentLevelInside != value) {
+        if (currentLevelInside != value) {
             sendNotification(new TransformChangingEvent(this));
-            isCurrentLevelInside = value;
+            currentLevelInside = value;
             sendNotification(new TransformChangedEvent(this));
         }
     }
 
     @Override
     public boolean isCurrentLevelInside() {
-        return isCurrentLevelInside;
+        return currentLevelInside;
     }
 
     @Override
     public void setIsCollapsed(boolean value) {
-        if (isCollapsed != value) {
+        if (collapsed != value) {
             sendNotification(new TransformChangingEvent(this));
-            isCollapsed = value;
+            collapsed = value;
             sendNotification(new TransformChangedEvent(this));
         }
     }
 
     @Override
     public boolean getIsCollapsed() {
-        return isCollapsed && !isExcited;
+        return collapsed && !excited;
     }
 
     @Override
     public void setIsExcited(boolean value) {
-        if (isExcited != value) {
+        if (excited != value) {
             sendNotification(new TransformChangingEvent(this));
-            isExcited = value;
+            excited = value;
             sendNotification(new TransformChangedEvent(this));
         }
     }

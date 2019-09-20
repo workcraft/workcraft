@@ -89,13 +89,13 @@ public class ContractComponentTransformationCommand extends AbstractTransformati
             LogUtils.logError("Cannot contract component '" + componentName + "' with " + inputContacts.size() + " inputs.");
             return false;
         }
-        VisualContact inputContact = component.getFirstVisualInput();
         Collection<VisualContact> outputContacts = component.getVisualOutputs();
         if (outputContacts.size() > 2) {
             LogUtils.logError("Cannot contract component '" + componentName + "' with " + outputContacts.size() + " outputs.");
             return false;
         }
         VisualContact outputContact = component.getFirstVisualOutput();
+        VisualContact inputContact = component.getFirstVisualInput();
 
         // Input and output ports
         Circuit mathCircuit = circuit.getMathModel();

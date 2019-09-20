@@ -83,9 +83,6 @@ public class WtgToStgConverter {
                     SignalTransition.Direction.MINUS, null);
             fallTransition.setSignalType(signalType);
 
-            UnstableSignalStg signalStg = new UnstableSignalStg(lowPlace, highPlace,
-                    fallTransition, riseTransition, stablePlace, unstablePlace);
-
             try {
                 dstModel.connect(lowPlace, riseTransition);
                 dstModel.connect(riseTransition, highPlace);
@@ -100,6 +97,9 @@ public class WtgToStgConverter {
             } catch (InvalidConnectionException e) {
                 throw new RuntimeException(e);
             }
+
+            UnstableSignalStg signalStg = new UnstableSignalStg(lowPlace, highPlace,
+                    fallTransition, riseTransition, stablePlace, unstablePlace);
             result.put(signalName, signalStg);
         }
         return result;

@@ -8,7 +8,7 @@ import org.workcraft.serialisation.NoAutoSerialisation;
 
 @DisplayName("Dummy transition")
 @IdentifierPrefix("dum")
-@VisualClass(org.workcraft.plugins.stg.VisualDummyTransition.class)
+@VisualClass(VisualDummyTransition.class)
 public class DummyTransition extends NamedTransition {
     public static final String PROPERTY_NAME = "Name";
     private String name;

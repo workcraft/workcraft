@@ -14,7 +14,7 @@ import org.workcraft.formula.Zero;
 
 public class BinaryNumberProvider implements NumberProvider<BinaryIntBooleanFormula> {
 
-    List<BooleanFormula> constraints = new ArrayList<>();
+    private final List<BooleanFormula> constraints = new ArrayList<>();
 
     @Override
     public BinaryIntBooleanFormula generate(String varPrefix, int range) {
@@ -46,7 +46,7 @@ public class BinaryNumberProvider implements NumberProvider<BinaryIntBooleanForm
             if (bn) {
                 return nan;
             } else {
-                return Zero.instance();
+                return Zero.getInstance();
             }
         }
         BooleanFormula l = less(a, n - 1, b);
@@ -64,17 +64,17 @@ public class BinaryNumberProvider implements NumberProvider<BinaryIntBooleanForm
 
     @Override
     public BooleanFormula select(BooleanFormula[] vars, BinaryIntBooleanFormula number) {
-        List<BooleanVariable> bits = number.getVars();
         if (number.getValuesCount() != vars.length) {
             throw new RuntimeException(
                     "lengths do not match: vars=" + vars.length + ", number=" + number.getValuesCount());
         }
+        List<BooleanVariable> bits = number.getVars();
         return select(vars, bits, bits.size(), 0, number.getValuesCount());
     }
 
     private BooleanFormula select(BooleanFormula[] vars, List<BooleanVariable> bits, int length, int offset, int threshold) {
         if (offset >= threshold) {
-            return Zero.instance();
+            return Zero.getInstance();
         }
         if (length == 0) {
             return vars[offset];

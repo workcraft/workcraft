@@ -23,7 +23,7 @@ public class ExternalProcess {
             this.channel = channel;
         }
 
-        abstract void handleData(byte[] data);
+        public abstract void handleData(byte[] data);
 
         @Override
         public void run() {
@@ -55,7 +55,7 @@ public class ExternalProcess {
             super(inputStream);
         }
         @Override
-        void handleData(byte[] data) {
+        public void handleData(byte[] data) {
             outputData(data);
         }
     }
@@ -65,7 +65,7 @@ public class ExternalProcess {
             super(errorStream);
         }
         @Override
-        void handleData(byte[] data) {
+        public void handleData(byte[] data) {
             errorData(data);
         }
     }

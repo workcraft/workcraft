@@ -63,14 +63,21 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
     protected JTable traceTable;
 
     protected JSlider speedSlider;
-    protected JButton playButton, stopButton, backwardButton, forwardButton, reverseButton, errorButton;
-    protected JButton copyStateButton, pasteStateButton, mergeTraceButton;
+    protected JButton playButton;
+    protected JButton stopButton;
+    protected JButton backwardButton;
+    protected JButton forwardButton;
+    protected JButton reverseButton;
+    protected JButton errorButton;
+    protected JButton copyStateButton;
+    protected JButton pasteStateButton;
+    protected JButton mergeTraceButton;
     protected JToggleButton autoSimuButton;
 
     protected HashMap<Container, Boolean> excitedContainers = new HashMap<>();
 
-    static final double DEFAULT_SIMULATION_DELAY = 0.3;
-    static final double EDGE_SPEED_MULTIPLIER = 10;
+    private static final double DEFAULT_SIMULATION_DELAY = 0.3;
+    private static final double EDGE_SPEED_MULTIPLIER = 10;
 
     protected final Trace mainTrace = new Trace();
     protected final Trace branchTrace = new Trace();
@@ -84,10 +91,12 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         return "Click on a highlighted node to fire it.";
     }
 
+    @Override
     public String getLabel() {
         return "Simulation";
     }
 
+    @Override
     public int getHotKeyCode() {
         return KeyEvent.VK_M;
     }
@@ -554,10 +563,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         if (hasTransferableText) {
             try {
                 str = (String) contents.getTransferData(DataFlavor.stringFlavor);
-            } catch (UnsupportedFlavorException ex) {
-                System.out.println(ex);
-                ex.printStackTrace();
-            } catch (IOException ex) {
+            } catch (UnsupportedFlavorException | IOException ex) {
                 System.out.println(ex);
                 ex.printStackTrace();
             }
@@ -778,7 +784,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
 
     @SuppressWarnings("serial")
     protected final class TraceTableCellRendererImplementation implements TableCellRenderer {
-        JLabel label = new JLabel() {
+        private final JLabel label = new JLabel() {
             @Override
             public void paint(Graphics g) {
                 g.setColor(getBackground());
@@ -787,7 +793,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
             }
         };
 
-        boolean isActive(int row, int column) {
+        private boolean isActive(int row, int column) {
             if (column == 0) {
                 if (!mainTrace.isEmpty() && branchTrace.isEmpty()) {
                     return row == mainTrace.getPosition();
@@ -806,7 +812,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
 
             if (!(value instanceof StepRef)) return null;
 
-            label.setText(((StepRef) value).toString());
+            label.setText(value.toString());
 
             if (isActive(row, column)) {
                 label.setBackground(Color.YELLOW);
@@ -916,17 +922,12 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         boolean ret = false;
 
         for (Node node: container.getChildren()) {
-            try {
-                Step enabled = null;
+            Step enabled = null;
+            enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
 
-                enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
-
-                if (node instanceof VisualTransitionNode) {
-                    TransitionNode event = ((VisualTransitionNode) node).getMathTransitionNode();
-                    ret = ret || isEnabled(event, enabled);
-                }
-            } catch (NullPointerException ex) {
-
+            if (node instanceof VisualTransitionNode) {
+                TransitionNode event = ((VisualTransitionNode) node).getMathTransitionNode();
+                ret = ret || isEnabled(event, enabled);
             }
 
             if (node instanceof Container) {

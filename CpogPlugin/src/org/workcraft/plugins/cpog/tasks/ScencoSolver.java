@@ -2,11 +2,11 @@ package org.workcraft.plugins.cpog.tasks;
 
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.formula.BooleanFormula;
-import org.workcraft.plugins.cpog.encoding.Encoding;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.cpog.*;
 import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
+import org.workcraft.plugins.cpog.encoding.Encoding;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.utils.ExecutableUtils;
 import org.workcraft.utils.FileUtils;
@@ -67,7 +67,8 @@ public class ScencoSolver {
 
     private int v;
     private int a;
-    private int n, m;
+    private int n;
+    private int m;
     private char[][][] constraints;
     private ArrayList<VisualTransformableNode> scenarios;
     private HashMap<String, Integer> events;
@@ -89,10 +90,6 @@ public class ScencoSolver {
     }
 
     public ArrayList<String> getScencoArguments() {
-        ArrayList<String> args = new ArrayList<>();
-        ArrayList<String> check;
-        HashMap<String, Integer> task;
-
         cpog = WorkspaceUtils.getAs(we, VisualCpog.class);
         scenarios = CpogParsingTool.getScenarios(cpog);
         we.captureMemento();
@@ -100,9 +97,9 @@ public class ScencoSolver {
         cpogBuilder.resetVars(verbose, genMode, numSol, customFlag, customPath, effort,
                                 espressoFlag, abcFlag, gateLibFlag, cpogSize, disableFunction, oldSynt);
 
-        events = new HashMap<String, Integer>();
-        positions = new ArrayList<Point2D>();
-        count = new ArrayList<Integer>();
+        events = new HashMap<>();
+        positions = new ArrayList<>();
+        count = new ArrayList<>();
 
         // Scenario contains single graphs compose CPOG
         m = scenarios.size();
@@ -112,7 +109,7 @@ public class ScencoSolver {
         // construct constraints
         constraints = new char[m][n][n];
         int[][] graph = new int[n][n];
-        check = cpogBuilder.constructConstraints(constraints, graph, m, n,
+        ArrayList<String> check = cpogBuilder.constructConstraints(constraints, graph, m, n,
                 scenarios, events, positions, count);
         if (check.get(0).contains("ERROR")) {
             return check;
@@ -120,7 +117,7 @@ public class ScencoSolver {
 
         // group similar constraints
         optEnc = new String[m];
-        task = new HashMap<>();
+        HashMap<String, Integer> task = new HashMap<>();
         formulaeName = new HashMap<>();
         cpogBuilder.groupConstraints(n, m, constraints, task);
 
@@ -153,6 +150,8 @@ public class ScencoSolver {
         File resultDirectory = new File(directory, "result");
         verilogFile = new File(directory, VERILOG_TMP_NAME);
         resultDirectory.mkdir();
+
+        ArrayList<String> args = new ArrayList<>();
         if ((cpogBuilder.writeCpogIntoFile(m, scenarios, scenarioFile, encodingFile, settings)) != 0) {
             FileUtils.deleteOnExitRecursively(directory);
             args.add("ERROR");
@@ -161,7 +160,7 @@ public class ScencoSolver {
             return args;
         }
 
-        instantiateParameters(n, m);
+        instantiateParameters();
 
         if (settings.isAbcFlag()) {
             File f = new File(abcTool);
@@ -208,7 +207,7 @@ public class ScencoSolver {
                 return args;
             }
 
-            boolean[][] encoding = solution.getEncoding();
+            boolean[][] encoding = solution.getCode();
             PrintStream output = null;
             try {
                 output = new PrintStream(encodingFile);
@@ -218,7 +217,7 @@ public class ScencoSolver {
 
             for (int i = 0; i < m; i++) {
                 for (int j = 0; j < settings.getBits(); j++) {
-                    char c = (encoding[i][j] == true) ? '1' : '0';
+                    char c = encoding[i][j] ? '1' : '0';
                     output.print(c);
                 }
                 output.println();
@@ -347,16 +346,15 @@ public class ScencoSolver {
                     i++;
                     v = 0;
                     a = 0;
-                    while (outputLines[i].contains(".end_formulae") == false) {
+                    while (!outputLines[i].contains(".end_formulae")) {
                         if (settings.isVerboseMode()) {
                             System.out.println(outputLines[i]);
                         }
                         StringTokenizer st2 = new StringTokenizer(outputLines[i], ",");
                         String el = (String) st2.nextElement();
-                        if (el.equals("V")) { //formula of a vertex
+                        if ("V".equals(el)) { //formula of a vertex
                             String vertexName = (String) st2.nextElement();
-                            if (!vertexName.equals(settings.GO_SIGNAL) &&
-                                    !vertexName.equals(settings.DONE_SIGNAL)) {
+                            if (!settings.GO_SIGNAL.equals(vertexName) && !settings.DONE_SIGNAL.equals(vertexName)) {
                                 optVertices[v] = vertexName;
                                 st2.nextElement();
                                 optFormulaeVertices[v++] = (String) st2.nextElement();
@@ -376,7 +374,7 @@ public class ScencoSolver {
                 // Read statistics
                 if (outputLines[i].contains(".statistics")) {
                     i++;
-                    while (outputLines[i].contains(".end_statistics") == false) {
+                    while (!outputLines[i].contains(".end_statistics")) {
                         System.out.println(outputLines[i]);
                         i++;
                     }
@@ -409,7 +407,7 @@ public class ScencoSolver {
             }
 
             solution = new Encoding(null, null);
-            BooleanFormula[] formule = new BooleanFormula[v + a];
+            BooleanFormula[] formulas = new BooleanFormula[v + a];
 
             if (settings.getGenMode() == GenerationMode.OLD_SYNT) {
                 vars = new Variable[freeVariables + pr];
@@ -425,8 +423,8 @@ public class ScencoSolver {
                 e.printStackTrace();
             }
 
-            //Set Formule
-            solution.setFormule(formule);
+            //Set formulas
+            solution.setFormulas(formulas);
 
             // Set optimal encoding to graphs
             boolean[][] optEncoding = new boolean[m][];
@@ -441,9 +439,9 @@ public class ScencoSolver {
                 }
 
             }
-            solution.setEncoding(optEncoding);
+            solution.setCode(optEncoding);
 
-            boolean[][] encoding = solution.getEncoding();
+            boolean[][] encoding = solution.getCode();
 
             // CREATE RESULT PART
             VisualScenario resultCpog = cpog.createVisualScenario();
@@ -464,7 +462,7 @@ public class ScencoSolver {
         }
     }
 
-    private void instantiateParameters(int elements, int scenarios) {
+    private void instantiateParameters() {
         scencoCommand = ExecutableUtils.getAbsoluteCommandPath(CpogSettings.getScencoCommand());
         espressoCommand = ExecutableUtils.getAbsoluteCommandPath(CpogSettings.getEspressoCommand());
         abcTool = CpogSettings.getAbcTool();

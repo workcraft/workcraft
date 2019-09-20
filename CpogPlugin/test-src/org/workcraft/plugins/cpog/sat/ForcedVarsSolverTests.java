@@ -8,26 +8,22 @@ import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.plugins.cpog.CpogSettings;
 import org.workcraft.plugins.cpog.encoding.Encoding;
-import org.workcraft.plugins.cpog.encoding.onehot.OneHotIntBooleanFormula;
 import org.workcraft.plugins.cpog.encoding.onehot.OneHotNumberProvider;
 
 @Ignore // This only works with MINISAT solver which is not supported in Travis OSX
 public class ForcedVarsSolverTests {
 
     private static final boolean DEBUG = false;
-    String[] smallTest1 = new String[] {"a"};
-    String[] smallTest2 = new String[] {"a", "b"};
-
-    String[] smallTest3 = new String[] {"a", "1"};
-
-    String[] smallTest4 = new String[] {"0", "a"};
-
-    String[] smallTest5 = new String[] {"0", "1", "a"};
-    String[] smallTest6 = new String[] {"0", "1", "a", "A"};
+    private static final String[] smallTest1 = {"a"};
+    private static final String[] smallTest2 = {"a", "b"};
+    private static final String[] smallTest3 = {"a", "1"};
+    private static final String[] smallTest4 = {"0", "a"};
+    private static final String[] smallTest5 = {"0", "1", "a"};
+    private static final String[] smallTest6 = {"0", "1", "a", "A"};
 
     private LegacySolver<BooleanFormula> createSolver() {
-        return new LegacySolver<BooleanFormula>(
-                new Optimiser<OneHotIntBooleanFormula>(new OneHotNumberProvider()), new CleverCnfGenerator());
+        return new LegacySolver<>(
+                new Optimiser<>(new OneHotNumberProvider()), new CleverCnfGenerator());
     }
 
     private void testSolve(String[] scenarios, int free, int derived, boolean solutionExists) {
@@ -45,7 +41,7 @@ public class ForcedVarsSolverTests {
         if (solution == null) {
             System.out.println("No solution.");
         } else {
-            boolean[][] encoding = solution.getEncoding();
+            boolean[][] encoding = solution.getCode();
             for (int i = 0; i < encoding.length; i++) {
                 for (int j = 0; j < encoding[i].length; j++) {
                     System.out.print(encoding[i][j] ? 1 : 0);
@@ -54,7 +50,7 @@ public class ForcedVarsSolverTests {
             }
 
             System.out.println("Functions:");
-            BooleanFormula[] functions = solution.getFunctions();
+            BooleanFormula[] functions = solution.getFormulas();
             for (int i = 0; i < functions.length; i++) {
                 System.out.println(StringGenerator.toString(functions[i]));
             }

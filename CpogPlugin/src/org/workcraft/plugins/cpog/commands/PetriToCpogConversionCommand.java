@@ -28,12 +28,11 @@ public class PetriToCpogConversionCommand extends AbstractConversionCommand {
 
     @Override
     public ModelEntry convert(ModelEntry me) {
-        final Framework framework = Framework.getInstance();
-        final MainWindow mainWindow = framework.getMainWindow();
         if (Hierarchy.isHierarchical(me)) {
             DialogUtils.showError("Conditional Partial Order Graph cannot be derived from a hierarchical Petri Net.");
             return null;
         }
+        final MainWindow mainWindow = Framework.getInstance().getMainWindow();
         PetriToCpogParameters settings = new PetriToCpogParameters();
         PetriToCpogDialog dialog = new PetriToCpogDialog(mainWindow, settings);
         if (dialog.reveal()) {

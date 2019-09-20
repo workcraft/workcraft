@@ -1,14 +1,15 @@
 package org.workcraft.gui.actions;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
 
-import javax.swing.JCheckBoxMenuItem;
-
 @SuppressWarnings("serial")
 public class ActionCheckBoxMenuItem extends JCheckBoxMenuItem implements Actor {
+
     class ActionForwarder implements ActionListener {
+        @Override
         public void actionPerformed(ActionEvent e) {
             ActionCheckBoxMenuItem.this.fireActionPerformed();
         }
@@ -46,7 +47,9 @@ public class ActionCheckBoxMenuItem extends JCheckBoxMenuItem implements Actor {
         listeners.remove(listener);
     }
 
+    @Override
     public void actionEnableStateChanged(boolean actionEnableState) {
         this.setEnabled(actionEnableState);
     }
+
 }

@@ -12,17 +12,17 @@ import java.util.function.Function;
 public class PathBreakerClearAllTagCommand extends AbstractTagCommand {
 
     @Override
-    Function<Circuit, Collection<Contact>> getFunction() {
+    public Function<Circuit, Collection<Contact>> getFunction() {
         return circuit -> CycleUtils.tagPathBreakerClearAll(circuit);
     }
 
     @Override
-    String getMessage() {
+    public String getMessage() {
         return "Cleared path breaker pin";
     }
 
     @Override
-    Class<? extends GraphEditorTool> getToolClass() {
+    public Class<? extends GraphEditorTool> getToolClass() {
         return CycleAnalyserTool.class;
     }
 

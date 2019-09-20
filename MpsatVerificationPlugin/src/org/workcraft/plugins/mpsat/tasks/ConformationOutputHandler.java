@@ -7,7 +7,7 @@ import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.utils.PetriUtils;
-import org.workcraft.plugins.stg.LabelParser;
+import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.StgModel;
@@ -86,7 +86,9 @@ class ConformationOutputHandler extends ReachabilityOutputHandler {
     private Trace fixTraceToggleEvents(StgModel stg, Trace trace) {
         Trace result = new Trace();
         for (String ref : trace) {
-            if (stg.getNodeByReference(ref) == null) {
+            if (stg.getNodeByReference(ref) != null) {
+                result.add(ref);
+            } else {
                 Triple<String, SignalTransition.Direction, Integer> r = LabelParser.parseSignalTransition(ref);
                 if (r != null) {
                     String newRef = r.getFirst() + r.getSecond();
@@ -94,11 +96,10 @@ class ConformationOutputHandler extends ReachabilityOutputHandler {
                         newRef += "/" + r.getThird();
                     }
                     if (stg.getNodeByReference(newRef) != null) {
-                        ref = newRef;
+                        result.add(newRef);
                     }
                 }
             }
-            result.add(ref);
         }
         return result;
     }

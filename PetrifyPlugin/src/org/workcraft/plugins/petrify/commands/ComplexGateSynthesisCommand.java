@@ -1,10 +1,13 @@
 package org.workcraft.plugins.petrify.commands;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class ComplexGateSynthesisCommand extends AbstractPetrifySynthesisCommand {
 
     @Override
-    public String[] getSynthesisParameter() {
-        return new String[] {"-cg"};
+    public List<String> getSynthesisParameter() {
+        return Arrays.asList("-cg");
     }
 
     @Override

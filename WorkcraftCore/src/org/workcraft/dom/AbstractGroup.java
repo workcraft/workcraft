@@ -15,10 +15,12 @@ public abstract class AbstractGroup implements Container, ObservableHierarchy {
         this.groupRef = groupRef;
     }
 
+    @Override
     public Node getParent() {
         return parent;
     }
 
+    @Override
     public void setParent(Node parent) {
         if (parent != this.parent) {
             if (parent != null && this.parent != null) {
@@ -72,14 +74,17 @@ public abstract class AbstractGroup implements Container, ObservableHierarchy {
         }
     }
 
+    @Override
     public void addObserver(HierarchyObserver obs) {
         observableHierarchyImpl.addObserver(obs);
     }
 
+    @Override
     public void removeObserver(HierarchyObserver obs) {
         observableHierarchyImpl.removeObserver(obs);
     }
 
+    @Override
     public void removeAllObservers() {
         observableHierarchyImpl.removeAllObservers();
     }
@@ -160,4 +165,5 @@ public abstract class AbstractGroup implements Container, ObservableHierarchy {
     protected abstract void addInternal(Node node);
 
     protected abstract void removeInternal(Node node);
+
 }

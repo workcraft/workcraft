@@ -1,18 +1,19 @@
 package org.workcraft.plugins.cpog.encoding.twohot;
 
-import static org.workcraft.plugins.cpog.encoding.CnfOperations.not;
-import static org.workcraft.plugins.cpog.encoding.CnfOperations.or;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.Literal;
 import org.workcraft.formula.cnf.Cnf;
 import org.workcraft.formula.cnf.CnfClause;
 import org.workcraft.plugins.cpog.encoding.CnfSorter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.workcraft.plugins.cpog.encoding.CnfOperations.not;
+import static org.workcraft.plugins.cpog.encoding.CnfOperations.or;
+
 public class TwoHotRangeProvider {
+
     private final Cnf constraints = new Cnf();
 
     public Cnf getConstraints() {
@@ -55,54 +56,38 @@ public class TwoHotRangeProvider {
         return literals;
     }
 
-    public static List<CnfClause> selectAnd(Literal result, Literal[] vars, TwoHotRange code) {
-        List<CnfClause> conditions = new ArrayList<>();
-
+    public static List<CnfClause> selectAnd(Literal literal, Literal[] vars, TwoHotRange code) {
         if (code.size() != vars.length) {
             throw new RuntimeException("Lengths do not match: code=" + code.size() + ", vars=" + vars.length);
         }
 
         List<Literal> preResult = new ArrayList<>();
         for (int i = 0; i < vars.length; i++) {
-            preResult.add(new Literal(result.getVariable().getLabel() + (result.getNegation() ? "i" : "") + "_sv" + i));
+            preResult.add(new Literal(literal.getVariable().getLabel() + (literal.getNegation() ? "i" : "") + "_sv" + i));
         }
 
+        List<CnfClause> result = new ArrayList<>();
         for (int i = 0; i < vars.length; i++) {
             Literal res = preResult.get(i);
             Literal sel = code.get(i);
             Literal var = vars[i];
-            conditions.add(or(not(res), not(sel), var));
-            conditions.add(or(res, sel));
-            conditions.add(or(res, not(var)));
-
-            conditions.add(or(not(result), res));
+            result.add(or(not(res), not(sel), var));
+            result.add(or(res, sel));
+            result.add(or(res, not(var)));
+            result.add(or(not(literal), res));
         }
+
         CnfClause resTrue = new CnfClause();
-        resTrue.add(result);
+        resTrue.add(literal);
         for (int i = 0; i < vars.length; i++) {
             resTrue.add(not(preResult.get(i)));
         }
-        conditions.add(resTrue);
-
-        return conditions;
+        result.add(resTrue);
+        return result;
     }
 
     public static BooleanFormula selectAnd(BooleanFormula[] vars, TwoHotRange number) {
         throw new RuntimeException("incorrect");
-
-        /*List<FreeVariable> params = new ArrayList<>();
-        CnfLiteral[]literals = new CnfLiteral[vars.length];
-
-        for (int i = 0; i < vars.length; i++) {
-            FreeVariable var = new FreeVariable("param" + i);
-            params.add(var);
-            literals[i] = new CnfLiteral(var);
-        }
-
-        List<CnfClause> result = selectAnd(CnfLiteral.One, literals, number);
-
-        Cnf cnf = new Cnf(result);
-        BooleanFormula res = BooleanReplacer.replace(cnf, params, Arrays.asList(vars));
-        return res; */
     }
+
 }

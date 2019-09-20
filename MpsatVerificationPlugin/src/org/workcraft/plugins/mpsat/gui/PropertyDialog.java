@@ -32,8 +32,11 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
     private JComboBox<VerificationMode> modeCombo;
     private JTextField solutionLimitText;
     private JTextArea propertyText;
-    private JRadioButton allSolutionsRadioButton, firstSolutionRadioButton, cheapestSolutionRadioButton;
-    private JRadioButton satisfiableRadioButton, unsatisfiableRadioButton;
+    private JRadioButton allSolutionsRadioButton;
+    private JRadioButton firstSolutionRadioButton;
+    private JRadioButton cheapestSolutionRadioButton;
+    private JRadioButton satisfiableRadioButton;
+    private JRadioButton unsatisfiableRadioButton;
 
     public PropertyDialog(Window owner, MpsatPresetManager presetManager) {
         super(owner, "Custom property", presetManager);
@@ -251,10 +254,8 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
             solutionLimin = 0;
         }
 
-        VerificationParameters settings = new VerificationParameters(null, (VerificationMode) modeCombo.getSelectedItem(),
+        return new VerificationParameters(null, (VerificationMode) modeCombo.getSelectedItem(),
                 0, solutionMode, solutionLimin, propertyText.getText(), unsatisfiableRadioButton.isSelected());
-
-        return settings;
     }
 
 }

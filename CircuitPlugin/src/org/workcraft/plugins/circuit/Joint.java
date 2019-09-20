@@ -5,7 +5,7 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
 
 @IdentifierPrefix(value = "joint", isInternal = true)
-@VisualClass(org.workcraft.plugins.circuit.VisualJoint.class)
+@VisualClass(VisualJoint.class)
 public class Joint extends MathNode {
 
 }

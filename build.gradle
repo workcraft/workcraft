@@ -1,14 +1,14 @@
 plugins {
     id 'ca.coglinc.javacc' version '2.4.0'
-    id 'de.aaschmid.cpd' version '1.2'
-    id 'com.github.kt3k.coveralls' version '2.8.2'
-    id 'org.jetbrains.kotlin.jvm' version '1.3.20'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.50'
+    id 'com.github.kt3k.coveralls' version '2.8.4'
+    id 'de.aaschmid.cpd' version '1.2' // Problems with versions above 1.2
 }
 
 ext {
-    checkstyleVersion = '8.1'
-    pmdVersion = '5.5.3'
-    jacocoVersion = '0.8.3'
+    checkstyleVersion = '8.1' // Problems with versions above 8.1
+    pmdVersion = '6.18.0'
+    jacocoVersion = '0.8.4'
 }
 
 repositories {
@@ -113,12 +113,12 @@ subprojects {
 
     checkstyle {
         toolVersion = checkstyleVersion
-        configFile file("${project.rootDir}/config/checkstyle/checkstyle.xml")
+        configFile = file("${project.rootDir}/config/checkstyle/checkstyle.xml")
     }
 
     checkstyleMain.exclude '**/jj/**'
 
-    task checkstyle(dependsOn: tasks.withType(Checkstyle))
+    task checkstyle(dependsOn: tasks.withType(Checkstyle)*.name)
 
     apply plugin: 'pmd'
 
@@ -131,7 +131,7 @@ subprojects {
 
     pmdMain.exclude '**/jj/**'
 
-    task pmd(dependsOn: tasks.withType(Pmd))
+    task pmd(dependsOn: tasks.withType(Pmd)*.name)
 
     cpd {
         toolVersion = pmdVersion

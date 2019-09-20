@@ -5,12 +5,14 @@ import org.workcraft.commands.Command;
 import org.workcraft.gui.MainWindow;
 
 public class CommandAction extends Action {
-    Command command;
+
+    private final Command command;
 
     public CommandAction(Command command) {
         this.command = command;
     }
 
+    @Override
     public String getText() {
         return command.getDisplayName().trim();
     }

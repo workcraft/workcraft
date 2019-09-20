@@ -14,11 +14,11 @@ public class Library {
         addAll(gates);
     }
 
-    public void add(Gate gate) {
+    public final void add(Gate gate) {
         gates.put(gate.name, gate);
     }
 
-    public void addAll(Collection<Gate> gates) {
+    public final void addAll(Collection<Gate> gates) {
         for (Gate gate: gates) {
             add(gate);
         }

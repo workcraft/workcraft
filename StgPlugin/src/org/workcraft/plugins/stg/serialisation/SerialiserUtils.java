@@ -68,7 +68,7 @@ public class SerialiserUtils {
             for (final Signal.Type type: Signal.Type.values()) {
                 for (String signal: getSortedSignals(stg, type)) {
                     Boolean signalState = initialState.get(signal);
-                    if ((signalState == null) || (signalState == false)) {
+                    if ((signalState == null) || !signalState) {
                         writer.write("0");
                     } else {
                         writer.write("1");

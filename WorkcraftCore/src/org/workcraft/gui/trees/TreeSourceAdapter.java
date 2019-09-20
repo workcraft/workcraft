@@ -4,51 +4,51 @@ import org.workcraft.gui.workspace.Path;
 
 import java.util.List;
 
-public class TreeSourceAdapter<Node> implements TreeSource<Node> {
+public class TreeSourceAdapter<T> implements TreeSource<T> {
 
-    private final TreeSource<Node> source;
-    private final TreeListenerArray<Node> ls = new TreeListenerArray<>();
+    private final TreeSource<T> source;
+    private final TreeListenerArray<T> ls = new TreeListenerArray<>();
 
-    public TreeSourceAdapter(TreeSource<Node> source) {
+    public TreeSourceAdapter(TreeSource<T> source) {
         this.source = source;
         source.addListener(getListener(ls));
     }
 
-    protected TreeListener<Node> getListener(final TreeListener<Node> chain) {
+    protected TreeListener<T> getListener(final TreeListener<T> chain) {
         return chain;
     }
 
-    public TreeListener<Node> getListener() {
+    public TreeListener<T> getListener() {
         return getListener(ls);
     }
 
     @Override
-    public void addListener(TreeListener<Node> listener) {
+    public void addListener(TreeListener<T> listener) {
         ls.add(listener);
     }
 
     @Override
-    public List<Node> getChildren(Node node) {
+    public List<T> getChildren(T node) {
         return source.getChildren(node);
     }
 
     @Override
-    public Node getRoot() {
+    public T getRoot() {
         return source.getRoot();
     }
 
     @Override
-    public boolean isLeaf(Node node) {
+    public boolean isLeaf(T node) {
         return source.isLeaf(node);
     }
 
     @Override
-    public void removeListener(TreeListener<Node> listener) {
+    public void removeListener(TreeListener<T> listener) {
         ls.remove(listener);
     }
 
     @Override
-    public Path<Node> getPath(Node node) {
+    public Path<T> getPath(T node) {
         return source.getPath(node);
     }
 

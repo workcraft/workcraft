@@ -108,7 +108,7 @@ public abstract class AbstractMathModel extends AbstractModel<MathNode, MathConn
         // Collect the nodes to reparent - need to assign the whole tree to new providers
         Collection<Node> nodes = null;
         if (srcChildren != null) {
-            nodes = new HashSet<Node>(srcChildren);
+            nodes = new HashSet<>(srcChildren);
         } else {
             nodes = Hierarchy.getChildrenOfType(srcRoot, Node.class);
         }

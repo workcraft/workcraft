@@ -263,11 +263,11 @@ public class SimulationAlg extends RelationAlgorithm {
             stack.push(e);
 
             while (!stack.isEmpty()) {
-                e = stack.peek();
-                visit.add(e);
+                TransitionNode e1 = stack.peek();
+                visit.add(e1);
 
                 TransitionNode e2 = null;
-                for (MathNode pre : net.getPreset((MathNode) e)) {
+                for (MathNode pre : net.getPreset((MathNode) e1)) {
                     if (pre instanceof ChannelPlace) {
                         if (!((ChannelPlace) pre).isMarked()) {
                             for (MathNode pre2 : net.getPreset(pre)) {
@@ -288,8 +288,8 @@ public class SimulationAlg extends RelationAlgorithm {
                 }
                 if (e2 == null) {
                     while (!stack.isEmpty()) {
-                        e = stack.peek();
-                        if (!visit.isEmpty() && e == visit.peekLast()) {
+                        TransitionNode e3 = stack.peek();
+                        if (!visit.isEmpty() && (e3 == visit.peekLast())) {
                             stack.pop();
                             visit.removeLast();
                         } else {
@@ -380,19 +380,17 @@ public class SimulationAlg extends RelationAlgorithm {
             stack.push(e);
 
             while (!stack.isEmpty()) {
-                e = stack.peek();
-                visit.add(e);
+                TransitionNode e1 = stack.peek();
+                visit.add(e1);
 
                 TransitionNode e2 = null;
-                for (MathNode post : net.getPostset((MathNode) e)) {
+                for (MathNode post : net.getPostset((MathNode) e1)) {
                     if (post instanceof ChannelPlace) {
                         if (!((ChannelPlace) post).isMarked()) {
                             for (MathNode post2 : net.getPostset(post)) {
                                 if (visit.contains(post2)) {
                                     continue;
                                 } else if (!result.contains(post2) || del.contains(post2)) {
-//                                    e2 = (TransitionNode)pre2;
-//                                    stack.push(e2);
                                     visit.add(e2);
                                     del.addAll(visit);
                                     visit.removeLast();
@@ -407,8 +405,8 @@ public class SimulationAlg extends RelationAlgorithm {
                 }
                 if (e2 == null) {
                     while (!stack.isEmpty()) {
-                        e = stack.peek();
-                        if (!visit.isEmpty() && e == visit.peekLast()) {
+                        TransitionNode e3 = stack.peek();
+                        if (!visit.isEmpty() && (e3 == visit.peekLast())) {
                             stack.pop();
                             visit.removeLast();
                         } else {

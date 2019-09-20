@@ -65,7 +65,8 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
     protected SON net;
     protected VisualSON visualNet;
 
-    private JPanel timeInputPanel, timePropertyPanel;
+    private JPanel timeInputPanel;
+    private JPanel timePropertyPanel;
     private GranularityPanel granularityPanel;
     private JButton estimatorButton;
     private JPanel panel;

@@ -22,8 +22,7 @@ public class DefaultNodeSerialiser {
     }
 
     private void autoSerialiseProperties(Element element, Object object, Class<?> currentLevel)
-            throws IntrospectionException, InstantiationException, IllegalAccessException,
-            IllegalArgumentException, SerialisationException, InvocationTargetException {
+            throws IntrospectionException, InvocationTargetException, InstantiationException, SerialisationException, IllegalAccessException {
 
         if (object == null) {
             return;
@@ -71,9 +70,7 @@ public class DefaultNodeSerialiser {
     private void doSerialisation(Element parentElement, Object object,
             ReferenceProducer internalReferences,
             ReferenceProducer externalReferences, Class<?> currentLevel)
-            throws InstantiationException, IllegalAccessException,
-            IllegalArgumentException, IntrospectionException,
-            SerialisationException, InvocationTargetException {
+            throws InstantiationException, IllegalAccessException, SerialisationException, IntrospectionException, InvocationTargetException {
 
         Element curLevelElement = parentElement.getOwnerDocument().createElement(currentLevel.getSimpleName());
 
@@ -112,8 +109,7 @@ public class DefaultNodeSerialiser {
             doSerialisation(parentElement, object, internalReferences, externalReferences, object.getClass());
 
             parentElement.setAttribute("ref", internalReferences.getReference(object));
-        } catch (IllegalArgumentException | InstantiationException | IllegalAccessException |
-                IntrospectionException | SerialisationException | InvocationTargetException e) {
+        } catch (IllegalArgumentException | InstantiationException | IllegalAccessException | IntrospectionException | InvocationTargetException e) {
             throw new SerialisationException(e);
         }
     }

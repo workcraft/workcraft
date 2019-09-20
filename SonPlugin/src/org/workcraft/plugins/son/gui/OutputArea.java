@@ -13,10 +13,10 @@ public class OutputArea extends JFrame {
     private static final long serialVersionUID = 1L;
     private static final Font font = new Font("Calibri", Font.PLAIN, 15);
 
+    private final JToolBar toolBar = new JToolBar();
     private final JTextArea textArea;
     private JMenuBar menu;
 
-    JToolBar toolBar = new JToolBar();
 
     private void createMenu() {
         menu = new JMenuBar();

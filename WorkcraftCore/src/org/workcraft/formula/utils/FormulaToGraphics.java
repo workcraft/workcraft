@@ -1,7 +1,9 @@
 package org.workcraft.formula.utils;
 
-import java.awt.Font;
-import java.awt.FontFormatException;
+import org.workcraft.formula.*;
+import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+
+import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.font.TextAttribute;
@@ -12,25 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.workcraft.formula.And;
-import org.workcraft.formula.BinaryBooleanFormula;
-import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.BooleanVariable;
-import org.workcraft.formula.BooleanVisitor;
-import org.workcraft.formula.Iff;
-import org.workcraft.formula.Imply;
-import org.workcraft.formula.Not;
-import org.workcraft.formula.One;
-import org.workcraft.formula.Or;
-import org.workcraft.formula.Xor;
-import org.workcraft.formula.Zero;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
-
 public class FormulaToGraphics {
-
-    public final class Void {
-        private Void() { }
-    }
 
     public static Font defaultFont;
     public static Font defaultSubFont;
@@ -96,11 +80,11 @@ public class FormulaToGraphics {
                 glyphs.getLogicalBounds().getCenterY()));
 
         result.visualTop = glyphs.getVisualBounds().getMinY();
-        result.glyphs = new ArrayList<GlyphVector>();
+        result.glyphs = new ArrayList<>();
         result.glyphs.add(glyphs);
-        result.glyphCoordinates = new ArrayList<Point2D>();
+        result.glyphCoordinates = new ArrayList<>();
         result.glyphCoordinates.add(new Point2D.Double(0, 0));
-        result.inversionLines = new ArrayList<Line2D>();
+        result.inversionLines = new ArrayList<>();
 
         return result;
     }
@@ -236,7 +220,8 @@ public class FormulaToGraphics {
     }
 
     public static class VariablePrinter extends DelegatingPrinter {
-        Map<String, BooleanVariable> varMap = new HashMap<>();
+        private final Map<String, BooleanVariable> varMap = new HashMap<>();
+
         @Override
         public FormulaRenderingResult visit(BooleanVariable var) {
             String label = var.getLabel();
@@ -348,7 +333,7 @@ public class FormulaToGraphics {
             return enclose(node);
         }
 
-        FormulaRenderingResult enclose(BooleanFormula node) {
+        private FormulaRenderingResult enclose(BooleanFormula node) {
             FormulaRenderingResult res = print("(");
             res.add(node.accept(next));
             res.add(print(")"));
@@ -365,4 +350,5 @@ public class FormulaToGraphics {
         ps.init(fontRenderContext, font, unicodeAllowed);
         return formula.accept(ps.iff);
     }
+
 }

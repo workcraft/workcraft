@@ -1,10 +1,10 @@
 package org.workcraft.plugins.circuit.routing.impl;
 
-import java.util.List;
-import java.util.PriorityQueue;
-
 import org.workcraft.plugins.circuit.routing.basic.IndexedPoint;
 import org.workcraft.plugins.circuit.routing.basic.PointToVisit;
+
+import java.util.List;
+import java.util.PriorityQueue;
 
 public class DijkstraRouter extends AbstractRoutingAlgorithm {
 
@@ -29,7 +29,7 @@ public class DijkstraRouter extends AbstractRoutingAlgorithm {
 
 
     private void solve() {
-        final PriorityQueue<PointToVisit> visitQueue = new PriorityQueue<PointToVisit>();
+        final PriorityQueue<PointToVisit> visitQueue = new PriorityQueue<>();
         visitQueue.add(new PointToVisit(1.0, destination));
 
         while (!visitQueue.isEmpty()) {

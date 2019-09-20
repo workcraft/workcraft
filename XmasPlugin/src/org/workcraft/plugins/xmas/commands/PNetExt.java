@@ -1,5 +1,11 @@
 package org.workcraft.plugins.xmas.commands;
 
+import org.workcraft.plugins.xmas.XmasSettings;
+import org.workcraft.plugins.xmas.components.FunctionComponent;
+import org.workcraft.plugins.xmas.components.SourceComponent;
+import org.workcraft.plugins.xmas.components.SwitchComponent;
+import org.workcraft.utils.LogUtils;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -8,19 +14,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 
-import org.workcraft.plugins.xmas.XmasSettings;
-import org.workcraft.plugins.xmas.components.FunctionComponent;
-import org.workcraft.plugins.xmas.components.SinkComponent;
-import org.workcraft.plugins.xmas.components.SourceComponent;
-import org.workcraft.plugins.xmas.components.SwitchComponent;
-import org.workcraft.utils.LogUtils;
-
 public class PNetExt {
 
     private static class Source {
-
-        String name1;
-        String name2;
+        public final String name1;
+        public final String name2;
 
         Source(String s1, String s2) {
             name1 = s1;
@@ -29,9 +27,8 @@ public class PNetExt {
     }
 
     private static class Switch {
-
-        String name1;
-        String name2;
+        public final String name1;
+        public final String name2;
 
         Switch(String s1, String s2) {
             name1 = s1;
@@ -40,9 +37,8 @@ public class PNetExt {
     }
 
     private static class Merge {
-
-        String name1;
-        String name2;
+        public final String name1;
+        public final String name2;
 
         Merge(String s1, String s2) {
             name1 = s1;
@@ -51,19 +47,18 @@ public class PNetExt {
     }
 
     private static class Fun {
-
-        String name1;
+        public final String name1;
 
         Fun(String s1) {
             name1 = s1;
         }
     }
 
-    static List<Source> sourcelist = new ArrayList<>();
-    static List<Fun> funlist = new ArrayList<>();
-    static List<Switch> switchlist = new ArrayList<>();
-    static List<Merge> mergelist = new ArrayList<>();
-    static List<Source> sinklist = new ArrayList<>();
+    private static final List<Source> sourcelist = new ArrayList<>();
+    private static final List<Fun> funlist = new ArrayList<>();
+    private static final List<Switch> switchlist = new ArrayList<>();
+    private static final List<Merge> mergelist = new ArrayList<>();
+    private static final List<Source> sinklist = new ArrayList<>();
 
     private static void initlist() {
         sourcelist.clear();
@@ -73,7 +68,7 @@ public class PNetExt {
         sinklist.clear();
     }
 
-    private static void readFile(String file, int syncflag) {
+    private static void readFile(String file) {
         Scanner sc = null;
         try {
             sc = new Scanner(new File(file));
@@ -158,15 +153,15 @@ public class PNetExt {
         System.out.print("Output written to CPNFile");
     }
 
-    public PNetExt(Collection<SourceComponent> srcNodes, Collection<FunctionComponent> funNodes,
-            Collection<SwitchComponent> swNodes, Collection<SinkComponent> snkNodes, int syncflag) {
+    public PNetExt(Collection<SourceComponent> srcNodes, Collection<FunctionComponent> funNodes, Collection<SwitchComponent> swNodes) {
+
         initlist();
         File pncFile = XmasSettings.getTempVxmPncFile();
         PrintWriter writer = null;
         try {
             writer = new PrintWriter(pncFile);
             File cpnFile = XmasSettings.getTempVxmCpnFile();
-            readFile(cpnFile.getAbsolutePath(), syncflag);
+            readFile(cpnFile.getAbsolutePath());
             writeNet(writer, srcNodes, funNodes, swNodes);
         } catch (Exception e) {
             e.printStackTrace();

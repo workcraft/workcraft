@@ -36,14 +36,14 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     @Override
     public JPanel getControlsPanel(final GraphEditor editor) {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.add(getLegendControlsPanel(editor), BorderLayout.NORTH);
+        panel.add(getLegendControlsPanel(), BorderLayout.NORTH);
         panel.add(getForcedControlsPanel(editor), BorderLayout.CENTER);
         panel.add(getResetControlsPanel(editor), BorderLayout.SOUTH);
         panel.setPreferredSize(new Dimension(0, 0));
         return panel;
     }
 
-    private JPanel getLegendControlsPanel(final GraphEditor editor) {
+    private JPanel getLegendControlsPanel() {
         ColorLegendTable colorLegendTable = new ColorLegendTable(Arrays.asList(
                 Pair.of(CommonVisualSettings.getFillColor(), "Unknown initial state"),
                 Pair.of(AnalysisDecorationSettings.getDontTouchColor(), "Don't touch zero delay"),

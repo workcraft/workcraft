@@ -49,16 +49,14 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
     public static final String PROPERTY_CONDITION = "Condition";
     public static final String PROPERTY_RENDER_TYPE = "Render type";
     public static Font conditionFont;
-    private RenderedFormula conditionRenderedFormula = new RenderedFormula("", One.instance(), conditionFont, getLabelPositioning(), getLabelOffset());
+    private RenderedFormula conditionRenderedFormula = new RenderedFormula("", One.getInstance(), conditionFont, getLabelPositioning(), getLabelOffset());
     private RenderType renderType = RenderType.CIRCLE;
 
     static {
         try {
             Font font = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/default.pfb"));
             conditionFont = font.deriveFont(0.5f);
-        } catch (FontFormatException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (FontFormatException | IOException e) {
             e.printStackTrace();
         }
     }
@@ -119,7 +117,7 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
         g.fill(shape);
         g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
         double strokeWidth = CommonVisualSettings.getStrokeWidth();
-        if (value == Zero.instance()) {
+        if (value == Zero.getInstance()) {
             g.setStroke(new BasicStroke((float) strokeWidth, BasicStroke.CAP_BUTT,
                     BasicStroke.JOIN_MITER, 1.0f, new float[] {0.18f, 0.18f}, 0.00f));
         } else {
@@ -134,7 +132,7 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 
     public void cacheConditionRenderedFormula(DrawRequest r) {
         String text = getLabel();
-        if (getCondition() != One.instance()) {
+        if (getCondition() != One.getInstance()) {
             text += ": ";
         }
         if (conditionRenderedFormula.isDifferent(text, getCondition(), conditionFont, getLabelPositioning(), getLabelOffset())) {

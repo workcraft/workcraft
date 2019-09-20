@@ -62,7 +62,7 @@ public class SynthesisCommandsTests {
 
     private void testComplexGateSynthesisCommand(String workName, int expectedGateCount) {
         try {
-            TestUtils.testSynthesisCommand(ComplexGateSynthesisCommand.class, workName, expectedGateCount);
+            TestUtils.checkSynthesisCommand(ComplexGateSynthesisCommand.class, workName, expectedGateCount);
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -87,7 +87,7 @@ public class SynthesisCommandsTests {
 
     private void testGeneralisedCelementSynthesisCommand(String workName, int expectedGateCount) {
         try {
-            TestUtils.testSynthesisCommand(GeneralisedCelementSynthesisCommand.class, workName, expectedGateCount);
+            TestUtils.checkSynthesisCommand(GeneralisedCelementSynthesisCommand.class, workName, expectedGateCount);
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -119,7 +119,7 @@ public class SynthesisCommandsTests {
 
     private void testStandardCelementSynthesisCommand(String workName, int minGateCount, int maxGateCount) {
         try {
-            TestUtils.testSynthesisCommand(StandardCelementSynthesisCommand.class, workName,
+            TestUtils.checkSynthesisCommand(StandardCelementSynthesisCommand.class, workName,
                     minGateCount, maxGateCount);
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
@@ -164,7 +164,7 @@ public class SynthesisCommandsTests {
 
     private void testTechnologyMappingSynthesisCommand(String workName, int expectedGateCount) {
         try {
-            TestUtils.testSynthesisCommand(TechnologyMappingSynthesisCommand.class, workName, expectedGateCount);
+            TestUtils.checkSynthesisCommand(TechnologyMappingSynthesisCommand.class, workName, expectedGateCount);
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }

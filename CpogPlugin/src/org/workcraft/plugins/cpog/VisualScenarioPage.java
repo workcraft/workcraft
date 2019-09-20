@@ -9,6 +9,8 @@ public class VisualScenarioPage extends VisualPage {
 
     public static final String PROPERTY_ENCODING = "Encoding";
 
+    private Encoding encoding = new Encoding();
+
     public VisualScenarioPage(MathNode refNode) {
         super(refNode);
 
@@ -24,8 +26,6 @@ public class VisualScenarioPage extends VisualPage {
             }
         });
     }
-
-    private Encoding encoding = new Encoding();
 
     public void setEncoding(Encoding value) {
         if (encoding != value) {

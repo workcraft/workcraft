@@ -1,9 +1,13 @@
 package org.workcraft.plugins.circuit.routing.basic;
 
 public enum PortDirection {
-    NORTH(0, -1), SOUTH(0, 1), EAST(1, 0), WEST(-1, 0);
+    NORTH(0, -1),
+    SOUTH(0, 1),
+    EAST(1, 0),
+    WEST(-1, 0);
 
-    private final int dx, dy;
+    private final int dx;
+    private final int dy;
 
     PortDirection(int dx, int dy) {
         this.dx = dx;
@@ -86,4 +90,5 @@ public enum PortDirection {
 
         return CoordinateOrientation.ORIENT_BOTH;
     }
+
 }

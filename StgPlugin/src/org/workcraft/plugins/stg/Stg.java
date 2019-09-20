@@ -18,6 +18,7 @@ import org.workcraft.plugins.petri.Petri;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.observers.SignalTypeConsistencySupervisor;
 import org.workcraft.plugins.stg.references.StgReferenceManager;
+import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.serialisation.References;
 import org.workcraft.types.MultiSet;
 import org.workcraft.types.Pair;
@@ -31,7 +32,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-@VisualClass(org.workcraft.plugins.stg.VisualStg.class)
+@VisualClass(VisualStg.class)
 public class Stg extends AbstractMathModel implements StgModel {
 
     private FileReference refinement = null;

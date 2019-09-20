@@ -130,7 +130,7 @@ public class VisualPlaceNode extends VisualComponent {
         }
     }
 
-    private void cahceErrorRenderedText(DrawRequest r) {
+    private void cahceErrorRenderedText() {
         String error = "Err = " + ((Integer) getErrors()).toString();
 
         Point2D offset = getOffset(errLabelPositioning);
@@ -147,7 +147,7 @@ public class VisualPlaceNode extends VisualComponent {
 
     protected void drawErrorInLocalSpace(DrawRequest r) {
         if (SONSettings.isErrorTracing()) {
-            cahceErrorRenderedText(r);
+            cahceErrorRenderedText();
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
             g.setColor(Coloriser.colorise(errLabelColor, d.getColorisation()));
@@ -155,8 +155,8 @@ public class VisualPlaceNode extends VisualComponent {
         }
     }
 
-    private void cahceDurationRenderedText(DrawRequest r) {
-        String duration = "D: " + getDuration().toString();
+    private void cahceDurationRenderedText() {
+        String duration = "D: " + getDuration();
 
         Point2D offset = getOffset(durationLabelPositioning);
         if (durationLabelPositioning.ySign < 0) {
@@ -172,7 +172,7 @@ public class VisualPlaceNode extends VisualComponent {
 
     protected void drawDurationInLocalSpace(DrawRequest r) {
         if (SONSettings.getTimeVisibility() && ((PlaceNode) getReferencedComponent()).getDuration().isSpecified()) {
-            cahceDurationRenderedText(r);
+            cahceDurationRenderedText();
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
             g.setColor(Coloriser.colorise(getDurationColor(), d.getColorisation()));
@@ -183,8 +183,8 @@ public class VisualPlaceNode extends VisualComponent {
     @Override
     public void cacheRenderedText(DrawRequest r) {
         super.cacheRenderedText(r);
-        cahceErrorRenderedText(r);
-        cahceDurationRenderedText(r);
+        cahceErrorRenderedText();
+        cahceDurationRenderedText();
     }
 
     @Override
@@ -237,27 +237,33 @@ public class VisualPlaceNode extends VisualComponent {
         ((PlaceNode) getReferencedComponent()).setTokenColor(tokenColor);
     }
 
+    @Override
     public Color getForegroundColor() {
         return ((PlaceNode) getReferencedComponent()).getForegroundColor();
     }
 
+    @Override
     public void setForegroundColor(Color foregroundColor) {
         ((PlaceNode) getReferencedComponent()).setForegroundColor(foregroundColor);
     }
 
+    @Override
     public void setFillColor(Color fillColor) {
         ((PlaceNode) getReferencedComponent()).setFillColor(fillColor);
     }
 
+    @Override
     public Color getFillColor() {
         return ((PlaceNode) getReferencedComponent()).getFillColor();
     }
 
+    @Override
     public void setLabel(String label) {
         super.setLabel(label);
         ((PlaceNode) getReferencedComponent()).setLabel(label);
     }
 
+    @Override
     public String getLabel() {
         super.getLabel();
         return ((PlaceNode) getReferencedComponent()).getLabel();
@@ -323,4 +329,5 @@ public class VisualPlaceNode extends VisualComponent {
             setIsMarked(srcComponent.isMarked());
         }
     }
+
 }

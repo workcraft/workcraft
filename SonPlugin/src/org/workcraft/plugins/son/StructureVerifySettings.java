@@ -4,7 +4,8 @@ import java.util.ArrayList;
 
 public class StructureVerifySettings {
 
-    private final boolean errNodesHighlight, outputBefore;
+    private final boolean errNodesHighlight;
+    private final boolean outputBefore;
     private final ArrayList<ONGroup> selectedGroups;
     private final int type;
 
@@ -30,4 +31,5 @@ public class StructureVerifySettings {
     public int getType() {
         return type;
     }
+
 }

@@ -7,10 +7,10 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 
 import java.util.Map;
 
-public interface ModelConverter<TSrcModel extends VisualModel, TDstModel extends VisualModel> {
+public interface ModelConverter<S extends VisualModel, T extends VisualModel> {
 
-    TSrcModel getSrcModel();
-    TDstModel getDstModel();
+    S getSrcModel();
+    T getDstModel();
     Map<Class<? extends MathNode>, Class<? extends MathNode>> getComponentClassMap();
     Map<Class<? extends VisualReplica>, Class<? extends VisualReplica>> getReplicaClassMap();
 

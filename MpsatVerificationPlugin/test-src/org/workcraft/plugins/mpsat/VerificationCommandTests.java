@@ -177,6 +177,9 @@ public class VerificationCommandTests {
         OutputPersistencyVerificationCommand persistencyCommand = new OutputPersistencyVerificationCommand();
         Assert.assertEquals(outputPersistency, persistencyCommand.execute(we));
 
+        OutputDeterminacyVerificationCommand determinacyCommand = new OutputDeterminacyVerificationCommand();
+        Assert.assertEquals(outputDeterminacy, determinacyCommand.execute(we));
+
         CscVerificationCommand cscCommand = new CscVerificationCommand();
         Assert.assertEquals(csc, cscCommand.execute(we));
 

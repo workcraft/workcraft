@@ -1,6 +1,8 @@
 package org.workcraft.plugins.stg.serialisation;
 
 import org.junit.Test;
+import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.PluginProvider;
 import org.workcraft.plugins.builtin.commands.RandomLayoutCommand;
 import org.workcraft.plugins.builtin.serialisation.XMLModelDeserialiser;
@@ -16,7 +18,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class StgSerialisationTests {
 
     @Test
-    public void simpleVisualSaveLoadWithImplicitArcs() throws Exception {
+    public void simpleVisualSaveLoadWithImplicitArcs() throws SerialisationException, DeserialisationException {
 
         VisualStg stg = XMLSerialisationTestingUtils.createTestSTG3();
 

@@ -177,7 +177,7 @@ public class WorkspaceEntry implements ObservableState {
         return workspace == null ? null : workspace.getFile(this);
     }
 
-    ObservableStateImpl observableState = new ObservableStateImpl();
+    private final ObservableStateImpl observableState = new ObservableStateImpl();
 
     @Override
     public void addObserver(StateObserver obs) {
@@ -230,7 +230,7 @@ public class WorkspaceEntry implements ObservableState {
     public void captureMemento() {
         final Framework framework = Framework.getInstance();
         capturedMemento = framework.saveModel(modelEntry);
-        if (changed == false) {
+        if (!changed) {
             savedMemento = capturedMemento;
         }
 
@@ -261,7 +261,7 @@ public class WorkspaceEntry implements ObservableState {
             final Framework framework = Framework.getInstance();
             currentMemento = framework.saveModel(modelEntry);
         }
-        if (changed == false) {
+        if (!changed) {
             savedMemento = currentMemento;
         }
         history.pushUndo(currentMemento);
@@ -275,7 +275,7 @@ public class WorkspaceEntry implements ObservableState {
             if (undoMemento != null) {
                 final Framework framework = Framework.getInstance();
                 Memento currentMemento = framework.saveModel(modelEntry);
-                if (changed == false) {
+                if (!changed) {
                     savedMemento = currentMemento;
                 }
                 history.pushRedo(currentMemento);
@@ -292,7 +292,7 @@ public class WorkspaceEntry implements ObservableState {
             if (redoMemento != null) {
                 final Framework framework = Framework.getInstance();
                 Memento currentMemento = framework.saveModel(modelEntry);
-                if (changed == false) {
+                if (!changed) {
                     savedMemento = currentMemento;
                 }
                 history.pushUndo(currentMemento);

@@ -30,6 +30,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 
 public class FstSimulationTool extends StgSimulationTool {
+
     private FstToStgConverter converter;
 
     @Override
@@ -43,7 +44,9 @@ public class FstSimulationTool extends StgSimulationTool {
         String label = null;
         if (ref != null) {
             label = converter.getEventLabel(ref);
-            if (label == "") label = Character.toString(VisualEvent.EPSILON_SYMBOL);
+            if (label.isEmpty()) {
+                label = Character.toString(VisualEvent.EPSILON_SYMBOL);
+            }
         }
         if (label == null) {
             label = super.getTraceLabelByReference(ref);

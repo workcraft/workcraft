@@ -5,6 +5,7 @@ import java.awt.geom.AffineTransform;
 import org.workcraft.dom.visual.Movable;
 
 public class TransformEvent {
+
     public Movable sender;
 
     public TransformEvent(Movable sender) {
@@ -18,4 +19,5 @@ public class TransformEvent {
     public AffineTransform getTransform() {
         return sender.getTransform();
     }
+
 }

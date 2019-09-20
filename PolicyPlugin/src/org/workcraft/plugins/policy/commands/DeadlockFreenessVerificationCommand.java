@@ -14,6 +14,7 @@ import org.workcraft.utils.WorkspaceUtils;
 
 public class DeadlockFreenessVerificationCommand extends AbstractVerificationCommand {
 
+    @Override
     public String getDisplayName() {
         return "Deadlock with bundels [MPSat]";
     }

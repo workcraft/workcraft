@@ -226,7 +226,7 @@ public class GateUtils {
             BooleanFormula setFunction = BooleanUtils.replaceClever(output.getSetFunction(),
                     variableAsignment.getFirst(), variableAsignment.getSecond());
 
-            boolean isOne = One.instance().equals(setFunction);
+            boolean isOne = One.getInstance().equals(setFunction);
             output.setInitToOne(isOne);
         }
     }
@@ -236,11 +236,11 @@ public class GateUtils {
         for (FunctionContact output : component.getFunctionOutputs()) {
             BooleanFormula setFunction = BooleanUtils.replaceClever(output.getSetFunction(),
                     variableAsignment.getFirst(), variableAsignment.getSecond());
-            if ((setFunction != null) && (One.instance().equals(setFunction) != output.getInitToOne())) {
+            if ((setFunction != null) && (One.getInstance().equals(setFunction) != output.getInitToOne())) {
                 BooleanFormula resetFunction = BooleanUtils.replaceClever(output.getResetFunction(),
                         variableAsignment.getFirst(), variableAsignment.getSecond());
 
-                if ((resetFunction == null) || (One.instance().equals(resetFunction) == output.getInitToOne())) {
+                if ((resetFunction == null) || (One.getInstance().equals(resetFunction) == output.getInitToOne())) {
                     return true;
                 }
             }
@@ -259,7 +259,7 @@ public class GateUtils {
                 boolean initToOne = pair.getFirst().getInitToOne();
                 boolean inversion = pair.getSecond();
                 variables.add(input);
-                BooleanFormula state = initToOne ^ inversion ? One.instance() : Zero.instance();
+                BooleanFormula state = initToOne ^ inversion ? One.getInstance() : Zero.getInstance();
                 values.add(state);
             }
         }

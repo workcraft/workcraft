@@ -10,13 +10,15 @@ import org.workcraft.utils.Hierarchy;
 
 import java.util.HashMap;
 
-public abstract class AbstractModelConverter<TSrcModel extends VisualModel, TDstModel extends VisualModel> implements ModelConverter<TSrcModel, TDstModel> {
-    private final TSrcModel srcModel;
-    private final TDstModel dstModel;
+public abstract class AbstractModelConverter<S extends VisualModel, T extends VisualModel>
+        implements ModelConverter<S, T> {
+
+    private final S srcModel;
+    private final T dstModel;
     private final HashMap<VisualNode, VisualNode> srcToDstNodes = new HashMap<>();
     private final HashMap<String, Container> refToDstPage = new HashMap<>();
 
-    public AbstractModelConverter(TSrcModel srcModel, TDstModel dstModel) {
+    public AbstractModelConverter(S srcModel, T dstModel) {
         this.srcModel = srcModel;
         this.dstModel = dstModel;
         preprocessing();
@@ -30,12 +32,12 @@ public abstract class AbstractModelConverter<TSrcModel extends VisualModel, TDst
     }
 
     @Override
-    public TSrcModel getSrcModel() {
+    public S getSrcModel() {
         return srcModel;
     }
 
     @Override
-    public TDstModel getDstModel() {
+    public T getDstModel() {
         return dstModel;
     }
 

@@ -1,13 +1,5 @@
 package org.workcraft.plugins.son.algorithm;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.son.SON;
@@ -23,6 +15,10 @@ import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
 import org.workcraft.plugins.son.util.Before;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.plugins.son.util.ScenarioRef;
+
+import java.awt.*;
+import java.util.List;
+import java.util.*;
 
 public class DFSEstimationAlg extends TimeAlg {
 
@@ -41,14 +37,12 @@ public class DFSEstimationAlg extends TimeAlg {
         BSONAlg bsonAlg = new BSONAlg(net);
         before = bsonAlg.getBeforeList();
 
-        possibleTimes = new ArrayList<Interval>();
-        boundary = new ArrayList<Interval>();
-        duration = new HashSet<Time>();
+        possibleTimes = new ArrayList<>();
+        boundary = new ArrayList<>();
+        duration = new HashSet<>();
     }
 
     public void estimateEndTime(Node n) throws TimeOutOfBoundsException, TimeEstimationException {
-        Interval result = null;
-
         if (((Time) n).getEndTime().isSpecified()) {
             return;
         }
@@ -56,6 +50,7 @@ public class DFSEstimationAlg extends TimeAlg {
         visited.add((Time) n);
         forwardDFSDurations(visited);
 
+        Interval result = null;
         if (!possibleTimes.isEmpty()) {
             result = Interval.getOverlapping(possibleTimes);
             possibleTimes.clear();
@@ -73,7 +68,6 @@ public class DFSEstimationAlg extends TimeAlg {
     }
 
     public void estimateStartTime(Node n) throws TimeOutOfBoundsException, TimeEstimationException {
-        Interval result = null;
 
         if (((Time) n).getStartTime().isSpecified()) {
             return;
@@ -82,6 +76,7 @@ public class DFSEstimationAlg extends TimeAlg {
         visited.add((Time) n);
         backwardDFSDurations(visited);
 
+        Interval result = null;
         if (!possibleTimes.isEmpty()) {
             result = Interval.getOverlapping(possibleTimes);
             possibleTimes.clear();
@@ -101,17 +96,14 @@ public class DFSEstimationAlg extends TimeAlg {
 
     public void estimatDuration(Node n)
             throws TimeInconsistencyException, TimeOutOfBoundsException, AlternativeStructureException {
-        Interval preD = ((Time) n).getDuration();
-        Interval d = null;
-        ConsistencyAlg alg = new ConsistencyAlg(net, d, g, scenario);
 
         Time t = (Time) n;
-
         if (!t.getStartTime().isSpecified() || !t.getEndTime().isSpecified()) {
             return;
         }
 
-        d = granularity.subtractTT(t.getStartTime(), t.getEndTime());
+        Interval preD = ((Time) n).getDuration();
+        Interval d = granularity.subtractTT(t.getStartTime(), t.getEndTime());
         d = Interval.getOverlapping(d, preD);
 
         if (d != null) {
@@ -121,6 +113,7 @@ public class DFSEstimationAlg extends TimeAlg {
             throw new TimeInconsistencyException("Warning: duration and time intervals are inconsistent.");
         }
 
+        ConsistencyAlg alg = new ConsistencyAlg(net, null, g, scenario);
         if (!alg.nodeConsistency(n).isEmpty()) {
             throw new TimeInconsistencyException("Warning: Estimated start and end time intervals are inconsistent.\n");
         }
@@ -174,13 +167,13 @@ public class DFSEstimationAlg extends TimeAlg {
 
     // assign specified value from connections to nodes
     @Override
-    public void initialize() {
-        super.initialize();
+    public void prepare() {
+        super.prepare();
         duration.clear();
     }
 
     // assign estimated time value from nodes to connections
-    public void finalize(Node n) {
+    public void complete(Node n) {
 
         if (b[0]) {
             Interval s = ((Time) n).getStartTime();
@@ -215,11 +208,11 @@ public class DFSEstimationAlg extends TimeAlg {
             ((Time) node).setDuration(new Interval());
         }
 
-        super.finalize();
+        super.complete();
     }
 
     private Interval accumulatedDurations(LinkedList<Time> visited) {
-        Interval result = new Interval(0000, 0000);
+        Interval result = new Interval(0, 0);
         Time first = visited.getFirst();
         for (Time time : visited) {
             if (time != first) {
@@ -294,4 +287,5 @@ public class DFSEstimationAlg extends TimeAlg {
         }
         return "(" + strs.toString() + ")";
     }
+
 }

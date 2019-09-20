@@ -1,11 +1,11 @@
 package org.workcraft.plugins.son.util;
 
+import org.workcraft.dom.Node;
+import org.workcraft.plugins.son.SON;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-
-import org.workcraft.dom.Node;
-import org.workcraft.plugins.son.SON;
 
 public class NodesRef extends ArrayList<String> {
 
@@ -29,6 +29,7 @@ public class NodesRef extends ArrayList<String> {
         return false;
     }
 
+    @Override
     public String toString() {
         StringBuffer result = new StringBuffer("");
         // step
@@ -48,7 +49,7 @@ public class NodesRef extends ArrayList<String> {
     public void fromString(String str) {
         clear();
         for (String s : str.trim().split(" ")) {
-            if (s == "<" || s == ">") {
+            if ("<".equals(s) || ">".equals(s)) {
                 add(s);
                 break;
             }
@@ -57,7 +58,7 @@ public class NodesRef extends ArrayList<String> {
         for (String s : str.trim().split(",")) {
             if (first) {
                 for (String fir : s.trim().split(" ")) {
-                    if (fir != "<" || fir != ">") {
+                    if (!"<".equals(fir) || !">".equals(fir)) {
                         add(fir);
                     }
                 }
@@ -82,4 +83,5 @@ public class NodesRef extends ArrayList<String> {
         }
         return true;
     }
+
 }

@@ -115,7 +115,7 @@ public class ScenarioRef extends ArrayList<String> {
     public String toString() {
         String result = "";
         for (String s : this) {
-            if (result != "") {
+            if (!result.isEmpty()) {
                 result += ", ";
             }
             result += s;
@@ -133,4 +133,5 @@ public class ScenarioRef extends ArrayList<String> {
             }
         }
     }
+
 }

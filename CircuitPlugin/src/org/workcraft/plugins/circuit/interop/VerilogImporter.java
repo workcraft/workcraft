@@ -47,6 +47,21 @@ import java.util.*;
 
 public class VerilogImporter implements Importer {
 
+    private static final String MSG_NO_MODULE = "No module found.";
+    private static final String MSG_NO_TOP_MODULE = "No top module found.";
+    private static final String MSG_MANY_TOP_MODULES = "More than one top module is found.";
+    private static final String MSG_CANCELED_BY_USER = "Import operation cancelled by user.";
+    private static final String MSG_CLASH_OF_FILE_NAMES = "Clash of file names.";
+
+    private static final String PRIMITIVE_GATE_INPUT_PREFIX = "i";
+    private static final String PRIMITIVE_GATE_OUTPUT_NAME = "o";
+
+    private final boolean sequentialAssign;
+
+    private Library library = null;
+    private Map<String, SubstitutionRule> substitutionRules = null;
+    private Map<VerilogModule, String> moduleFileNames = null;
+
     private class AssignGate {
         public final String outputName;
         public final String setFunction;
@@ -66,21 +81,6 @@ public class VerilogImporter implements Importer {
         public HashSet<FunctionContact> sinks = new HashSet<>();
         public HashSet<FunctionContact> undefined = new HashSet<>();
     }
-
-    private static final String MSG_NO_MODULE = "No module found.";
-    private static final String MSG_NO_TOP_MODULE = "No top module found.";
-    private static final String MSG_MANY_TOP_MODULES = "More than one top module is found.";
-    private static final String MSG_CANCELED_BY_USER = "Import operation cancelled by user.";
-    private static final String MSG_CLASH_OF_FILE_NAMES = "Clash of file names.";
-
-    private static final String PRIMITIVE_GATE_INPUT_PREFIX = "i";
-    private static final String PRIMITIVE_GATE_OUTPUT_NAME = "o";
-
-    private final boolean sequentialAssign;
-
-    private Library library = null;
-    private Map<String, SubstitutionRule> substitutionRules = null;
-    private Map<VerilogModule, String> moduleFileNames = null;
 
     // Default constructor is required for PluginManager -- it is called via reflection.
     public VerilogImporter() {
@@ -227,7 +227,7 @@ public class VerilogImporter implements Importer {
 
     private VerilogModule getTopModule(Collection<VerilogModule> verilogModules) throws DeserialisationException {
         Collection<VerilogModule> topVerilogModules = VerilogUtils.getTopModules(verilogModules);
-        if (topVerilogModules.size() == 0) {
+        if (topVerilogModules.isEmpty()) {
             throw new DeserialisationException(MSG_NO_TOP_MODULE);
         }
         if (topVerilogModules.size() > 1) {
@@ -306,7 +306,7 @@ public class VerilogImporter implements Importer {
         }
         insertMutexes(mutexes, circuit, wires);
         createConnections(circuit, wires);
-        setInitialState(circuit, wires, verilogModule.signalStates);
+        setInitialState(wires, verilogModule.signalStates);
         setZeroDelayAttribute(instanceComponentMap);
         checkImportResult(circuit);
         return circuit;
@@ -966,7 +966,7 @@ public class VerilogImporter implements Importer {
         }
     }
 
-    private void setInitialState(Circuit circuit, Map<String, Wire> wires, Map<String, Boolean> signalStates) {
+    private void setInitialState(Map<String, Wire> wires, Map<String, Boolean> signalStates) {
         // Set all signals first to 1 and then to 0, to make sure a switch and initiates switching of the neighbours.
         for (String signalName: wires.keySet()) {
             Wire wire = wires.get(signalName);

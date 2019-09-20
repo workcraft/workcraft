@@ -159,7 +159,7 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
                 if (!s[2] && n.getEndTime().isSpecified()) {
                     value += "Estimated finish = " + ((Time) node).getEndTime();
                 }
-                if (!value.equals("")) {
+                if (!value.isEmpty()) {
                     infoMsg("-" + value);
                 }
 
@@ -236,7 +236,7 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
         unspecifyHighlight(settings.getUnspecifyHighlight(), unspecifyNodes);
         causalHighlight(settings.isCausalHighlight(), causalInconsistencyNodes);
 
-        finalize(timeInfoMap);
+        complete(timeInfoMap);
         logger.info("\n\nVerification-Result : " + totalErrNum + " Error(s).");
 
         return new Result<>(Outcome.SUCCESS);
@@ -277,9 +277,7 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
             if (!s[0]) {
                 try {
                     estimationAlg.estimateStartTime(node);
-                } catch (TimeOutOfBoundsException e1) {
-                    subStr.add(e1.getMessage());
-                } catch (TimeEstimationException e1) {
+                } catch (TimeOutOfBoundsException | TimeEstimationException e1) {
                     subStr.add(e1.getMessage());
                 }
             }
@@ -291,9 +289,7 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
             if (!s[2]) {
                 try {
                     estimationAlg.estimateEndTime(node);
-                } catch (TimeOutOfBoundsException e1) {
-                    subStr.add(e1.getMessage());
-                } catch (TimeEstimationException e1) {
+                } catch (TimeOutOfBoundsException | TimeEstimationException e1) {
                     subStr.add(e1.getMessage());
                 }
             }
@@ -304,7 +300,7 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
         return result;
     }
 
-    protected void initialise() {
+    public void initialise() {
         try {
             consistencyAlg = new ConsistencyAlg(net, settings.getDefaultDuration(), settings.getGranularity(),
                     settings.getSeletedScenario());
@@ -315,24 +311,24 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
             return;
         }
 
-        consistencyAlg.initialize();
+        consistencyAlg.prepare();
 
         TimeAlg.removeProperties(net);
         TimeAlg.setProperties(net);
     }
 
-    protected void finalize(Map<Node, Boolean[]> map) {
+    protected void complete(Map<Node, Boolean[]> map) {
         if (!SONSettings.getTimeVisibility()) {
             TimeAlg.removeProperties(net);
         }
 
         for (Node node : map.keySet()) {
-            if (map.get(node)[1] == false) {
+            if (!map.get(node)[1]) {
                 ((Time) node).setDuration(new Interval());
             }
         }
 
-        consistencyAlg.finalize();
+        consistencyAlg.complete();
     }
 
     private void inconsistencyHighlight(boolean b, Collection<Node> nodes) {
