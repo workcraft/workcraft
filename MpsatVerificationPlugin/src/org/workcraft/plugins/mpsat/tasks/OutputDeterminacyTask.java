@@ -34,6 +34,7 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
         this.we = we;
     }
 
+    @SuppressWarnings("PMD.PrematureDeclaration")
     @Override
     public Result<? extends VerificationChainOutput> run(ProgressMonitor<? super VerificationChainOutput> monitor) {
         Framework framework = Framework.getInstance();

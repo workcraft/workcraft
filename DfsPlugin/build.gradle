@@ -4,3 +4,8 @@ dependencies {
     compile project(':StgPlugin')
     compile project(':MpsatVerificationPlugin')
 }
+
+cpdCheck {
+    exclude "**/VisualPopRegister.java"
+    exclude "**/VisualPushRegister.java"
+}

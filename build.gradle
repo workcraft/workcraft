@@ -2,7 +2,7 @@ plugins {
     id 'ca.coglinc.javacc' version '2.4.0'
     id 'org.jetbrains.kotlin.jvm' version '1.3.50'
     id 'com.github.kt3k.coveralls' version '2.8.4'
-    id 'de.aaschmid.cpd' version '1.2' // Problems with versions above 1.2
+    id 'de.aaschmid.cpd' version '2.0'
 }
 
 ext {
@@ -125,6 +125,7 @@ subprojects {
     pmd {
         toolVersion = pmdVersion
         consoleOutput = true
+        // incrementalAnalysis = true // This setting requires Gradle v5.6.2 or newer
         ruleSetFiles = files("${project.rootDir}/config/pmd/rules.xml")
         ruleSets = []
     }
@@ -133,20 +134,17 @@ subprojects {
 
     task pmd(dependsOn: tasks.withType(Pmd)*.name)
 
+    apply plugin: 'de.aaschmid.cpd'
+
     cpd {
         toolVersion = pmdVersion
-        minimumTokenCount = 1400
+        minimumTokenCount = 250
     }
 
     cpdCheck {
-        reports {
-            text.enabled = true
-            xml.enabled = false
-        }
-        source = sourceSets.main.allJava
+        exclude '**/jj/**'
     }
 
-    cpdCheck.exclude '**/jj/**'
 
     apply plugin: 'jacoco'
 
@@ -160,6 +158,11 @@ subprojects {
             html.enabled = false
         }
     }
+}
+
+cpdCheck {
+    source = sourceSets.main.allJava
+    exclude '**/jj/**'
 }
 
 apply plugin: 'jacoco'
@@ -179,10 +182,10 @@ def coverallsProjects = subprojects.findAll {
 task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
     dependsOn(coverallsProjects.test)
 
-    additionalSourceDirs = files(coverallsProjects.sourceSets.main.allSource.srcDirs)
-    sourceDirectories = files(coverallsProjects.sourceSets.main.allSource.srcDirs)
-    classDirectories = files(coverallsProjects.sourceSets.main.output)
-    executionData = files(coverallsProjects.jacocoTestReport.executionData)
+    sourceDirectories.from = coverallsProjects.sourceSets.main.allSource.srcDirs
+    additionalSourceDirs.from = coverallsProjects.sourceSets.main.allSource.srcDirs
+    classDirectories.from = coverallsProjects.sourceSets.main.output
+    executionData.from = coverallsProjects.jacocoTestReport.executionData
 
     reports {
         html.enabled = true // human readable
@@ -190,13 +193,9 @@ task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
     }
 
     afterEvaluate {
-        classDirectories = files(classDirectories.files.collect {
+        classDirectories.from = classDirectories.files.collect {
             fileTree(dir: it, exclude: '**/jj/**')
-        })
-    }
-
-    doFirst {
-        executionData = files(executionData.findAll { it.exists() })
+        }
     }
 }
 
