@@ -33,6 +33,7 @@ public class ConformationNwayTask implements Task<VerificationChainOutput> {
         this.wes = wes;
     }
 
+    @SuppressWarnings("PMD.PrematureDeclaration")
     @Override
     public Result<? extends VerificationChainOutput> run(ProgressMonitor<? super VerificationChainOutput> monitor) {
         Framework framework = Framework.getInstance();

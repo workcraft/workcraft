@@ -125,6 +125,7 @@ subprojects {
     pmd {
         toolVersion = pmdVersion
         consoleOutput = true
+        // incrementalAnalysis = true // This setting requires Gradle v5.6.2 or newer
         ruleSetFiles = files("${project.rootDir}/config/pmd/rules.xml")
         ruleSets = []
     }

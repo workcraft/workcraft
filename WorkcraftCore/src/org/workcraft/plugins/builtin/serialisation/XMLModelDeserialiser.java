@@ -37,12 +37,19 @@ public class XMLModelDeserialiser implements ModelDeserialiser {
     @Override
     public DeserialisationResult deserialise(InputStream is, ReferenceResolver extRef,
             Model underlyingModel) throws DeserialisationException {
+
         try {
             XMLDeserialisationManager deserialisation = new XMLDeserialisationManager();
             deserialisation.processPlugins(plugins);
 
             Document doc = XmlUtils.loadDocument(is);
             Element modelElement = doc.getDocumentElement();
+
+            // create model
+            String modelClassName = modelElement.getAttribute("class");
+            if (modelClassName == null || modelClassName.isEmpty()) {
+                throw new DeserialisationException("Class name attribute is not set\n" + modelElement.toString());
+            }
 
             deserialisation.begin(extRef);
 
@@ -52,12 +59,6 @@ public class XMLModelDeserialiser implements ModelDeserialiser {
 
             // 2nd pass -- finalise instances
             deserialisation.finaliseInstances();
-
-            // create model
-            String modelClassName = modelElement.getAttribute("class");
-            if (modelClassName == null || modelClassName.isEmpty()) {
-                throw new DeserialisationException("Class name attribute is not set\n" + modelElement.toString());
-            }
             Class<?> cls = Class.forName(modelClassName);
 
             References intRef = deserialisation.getReferenceResolver();
