@@ -4,3 +4,8 @@ dependencies {
     compile project(':PunfPlugin')
     compile project(':PcompPlugin')
 }
+
+cpdCheck {
+    exclude '**/CombinedChainResultHandler.java'
+    exclude '**/VerificationChainResultHandler.java'
+}

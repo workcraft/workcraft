@@ -1,16 +1,12 @@
 package org.workcraft.gui.editor;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Stroke;
+import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
+
+import java.awt.*;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.LinkedList;
-
-import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
 
 /**
  * The <code>Grid</code> class is used to generate and draw the background grid, guidelines,
@@ -170,6 +166,20 @@ public class Grid implements ViewportListener {
     }
 
     private void updateGridMinorCrosses(Viewport viewport, double interval) {
+        minorLinesPath = new Path2D.Double();
+        double d = Math.max(1.0, CommonEditorSettings.getLightGridSize() * SizeHelper.getScreenDpmm() / 3.0);
+        a(viewport, interval, d, minorLinePositions, minorLinePositionsScreen, minorLinesPath);
+    }
+
+    private void updateGridMajorCrosses(Viewport viewport, double interval) {
+        majorLinesPath = new Path2D.Double();
+        double d = Math.max(1.0, CommonEditorSettings.getLightGridSize() * SizeHelper.getScreenDpmm() / 2.0);
+        a(viewport, interval, d, majorLinePositions, majorLinePositionsScreen, majorLinesPath);
+    }
+
+    private void a(Viewport viewport, double interval, double step,
+            double[][] linePositions, int[][] linePositionsScreen, Path2D linesPath) {
+
         Rectangle view = viewport.getShape();
 
         // Compute the visible user space area from the viewport
@@ -180,165 +190,65 @@ public class Grid implements ViewportListener {
         viewport.getInverseTransform().transform(viewLL, visibleUL);
         viewport.getInverseTransform().transform(viewUR, visibleLR);
 
-        int left = (int) Math.ceil(visibleUL.getX() / interval);
-        int right = (int) Math.floor(visibleLR.getX() / interval);
+        // Compute the leftmost, rightmost, topmost and bottom visible grid lines
         int bottom = (int) Math.ceil(visibleLR.getY() / interval);
         int top = (int) Math.floor(visibleUL.getY() / interval);
+        int left = (int) Math.ceil(visibleUL.getX() / interval);
+        int right = (int) Math.floor(visibleLR.getX() / interval);
 
         // Build the gridlines positions, store them as user-space coordinates,
         // screen-space coordinates, and as a drawable path (in screen-space)
-        minorLinesPath = new Path2D.Double();
-        Point2D p = new Point2D.Double();
-        Point2D pScreen = new Point2D.Double();
-
         final int countMinH = Math.max(0, right - left + 1);
-        minorLinePositions[0] = new double[countMinH];
-        minorLinePositionsScreen[0] = new int[countMinH];
+        linePositions[0] = new double[countMinH];
+        linePositionsScreen[0] = new int[countMinH];
 
         final int countMinV = Math.max(0, top - bottom + 1);
-        minorLinePositions[1] = new double[countMinV];
-        minorLinePositionsScreen[1] = new int[countMinV];
+        linePositions[1] = new double[countMinV];
+        linePositionsScreen[1] = new int[countMinV];
 
+        Point2D p = new Point2D.Double();
+        Point2D pScreen = new Point2D.Double();
         for (int x = left; x <= right; x++) {
-            minorLinePositions[0][x - left] = x * interval;
+            linePositions[0][x - left] = x * interval;
             p.setLocation(x * interval, 0);
             viewport.getTransform().transform(p, pScreen);
-            minorLinePositionsScreen[0][x - left] = (int) pScreen.getX();
+            linePositionsScreen[0][x - left] = (int) pScreen.getX();
         }
 
         for (int y = bottom; y <= top; y++) {
-            minorLinePositions[1][y - bottom] = y * interval;
+            linePositions[1][y - bottom] = y * interval;
             p.setLocation(0, y * interval);
             viewport.getTransform().transform(p, pScreen);
-            minorLinePositionsScreen[1][y - bottom] = (int) pScreen.getY();
+            linePositionsScreen[1][y - bottom] = (int) pScreen.getY();
         }
 
-        double d = Math.max(1.0, CommonEditorSettings.getLightGridSize() * SizeHelper.getScreenDpmm() / 3.0);
         for (int x = left; x <= right; x++) {
-            int xScreen = minorLinePositionsScreen[0][x - left];
+            int xScreen = linePositionsScreen[0][x - left];
             for (int y = bottom; y <= top; y++) {
-                int yScreen = minorLinePositionsScreen[1][y - bottom];
-                minorLinesPath.moveTo(xScreen - d, yScreen);
-                minorLinesPath.lineTo(xScreen + d, yScreen);
-                minorLinesPath.moveTo(xScreen, yScreen - d);
-                minorLinesPath.lineTo(xScreen, yScreen + d);
+                int yScreen = linePositionsScreen[1][y - bottom];
+                linesPath.moveTo(xScreen - step, yScreen);
+                linesPath.lineTo(xScreen + step, yScreen);
+                linesPath.moveTo(xScreen, yScreen - step);
+                linesPath.lineTo(xScreen, yScreen + step);
             }
         }
     }
 
     private void updateGridMinorLines(Viewport viewport, double interval) {
-        Rectangle view = viewport.getShape();
-
-        // Compute the visible user space area from the viewport
-        Point2D visibleUL = new Point2D.Double();
-        Point2D visibleLR = new Point2D.Double();
-        Point viewLL = new Point(view.x, view.height + view.y);
-        Point viewUR = new Point(view.width + view.x, view.y);
-        viewport.getInverseTransform().transform(viewLL, visibleUL);
-        viewport.getInverseTransform().transform(viewUR, visibleLR);
-
-        int left = (int) Math.ceil(visibleUL.getX() / interval);
-        int right = (int) Math.floor(visibleLR.getX() / interval);
-        int bottom = (int) Math.ceil(visibleLR.getY() / interval);
-        int top = (int) Math.floor(visibleUL.getY() / interval);
-
-        // Build the gridlines positions, store them as user-space coordinates,
-        // screen-space coordinates, and as a drawable path (in screen-space)
         minorLinesPath = new Path2D.Double();
-        Point2D p = new Point2D.Double();
-        Point2D pScreen = new Point2D.Double();
-
-        final int countMinH = Math.max(0, right - left + 1);
-        minorLinePositions[0] = new double[countMinH];
-        minorLinePositionsScreen[0] = new int[countMinH];
-
-        final int countMinV = Math.max(0, top - bottom + 1);
-        minorLinePositions[1] = new double[countMinV];
-        minorLinePositionsScreen[1] = new int[countMinV];
-
-        for (int x = left; x <= right; x++) {
-            minorLinePositions[0][x - left] = x * interval;
-            p.setLocation(x * interval, 0);
-            viewport.getTransform().transform(p, pScreen);
-            minorLinePositionsScreen[0][x - left] = (int) pScreen.getX();
-
-            minorLinesPath.moveTo(pScreen.getX(), viewLL.getY());
-            minorLinesPath.lineTo(pScreen.getX(), viewUR.getY());
-        }
-
-        for (int y = bottom; y <= top; y++) {
-            minorLinePositions[1][y - bottom] = y * interval;
-            p.setLocation(0, y * interval);
-            viewport.getTransform().transform(p, pScreen);
-            minorLinePositionsScreen[1][y - bottom] = (int) pScreen.getY();
-
-            minorLinesPath.moveTo(viewLL.getX(), pScreen.getY());
-            minorLinesPath.lineTo(viewUR.getX(), pScreen.getY());
-        }
-    }
-
-    private void updateGridMajorCrosses(Viewport viewport, double interval) {
-        Rectangle view = viewport.getShape();
-
-        // Compute the visible user space area from the viewport
-        Point2D visibleUL = new Point2D.Double();
-        Point2D visibleLR = new Point2D.Double();
-        Point viewLL = new Point(view.x, view.height + view.y);
-        Point viewUR = new Point(view.width + view.x, view.y);
-        viewport.getInverseTransform().transform(viewLL, visibleUL);
-        viewport.getInverseTransform().transform(viewUR, visibleLR);
-
-        // Compute the leftmost, rightmost, topmost and bottom visible grid lines
-        int bottom = (int) Math.ceil(visibleLR.getY() / interval);
-        int top = (int) Math.floor(visibleUL.getY() / interval);
-        int left = (int) Math.ceil(visibleUL.getX() / interval);
-        int right = (int) Math.floor(visibleLR.getX() / interval);
-
-        // Build the gridlines positions, store them as user-space coordinates,
-        // screen-space coordinates, and as a drawable path (in screen-space)
-        majorLinesPath = new Path2D.Double();
-        Point2D p = new Point2D.Double();
-        Point2D pScreen = new Point2D.Double();
-
-        final int countMajH = Math.max(0, right - left + 1);
-        majorLinePositions[0] = new double[countMajH];
-        majorLinePositionsScreen[0] = new int[countMajH];
-
-        final int countMajV = Math.max(0, top - bottom + 1);
-        majorLinePositions[1] = new double[countMajV];
-        majorLinePositionsScreen[1] = new int[countMajV];
-
-        for (int x = left; x <= right; x++) {
-            majorLinePositions[0][x - left] = x * interval;
-            p.setLocation(x * interval, 0);
-            viewport.getTransform().transform(p, pScreen);
-            majorLinePositionsScreen[0][x - left] = (int) pScreen.getX();
-        }
-
-        for (int y = bottom; y <= top; y++) {
-            majorLinePositions[1][y - bottom] = y * interval;
-            p.setLocation(0, y * interval);
-            viewport.getTransform().transform(p, pScreen);
-            majorLinePositionsScreen[1][y - bottom] = (int) pScreen.getY();
-        }
-
-        double d = Math.max(1.0, CommonEditorSettings.getLightGridSize() * SizeHelper.getScreenDpmm() / 2.0);
-        for (int x = left; x <= right; x++) {
-            int xScreen = majorLinePositionsScreen[0][x - left];
-            for (int y = bottom; y <= top; y++) {
-                int yScreen = majorLinePositionsScreen[1][y - bottom];
-                majorLinesPath.moveTo(xScreen - d, yScreen);
-                majorLinesPath.lineTo(xScreen + d, yScreen);
-                majorLinesPath.moveTo(xScreen, yScreen - d);
-                majorLinesPath.lineTo(xScreen, yScreen + d);
-            }
-        }
+        b(viewport, interval, minorLinePositions, minorLinePositionsScreen, minorLinesPath);
     }
 
     private void updateGridMajorLines(Viewport viewport, double interval) {
-        Rectangle view = viewport.getShape();
+        majorLinesPath = new Path2D.Double();
+        b(viewport, interval, majorLinePositions, majorLinePositionsScreen, majorLinesPath);
+    }
+
+    private void b(Viewport viewport, double interval,
+            double[][] linePositions, int[][] linePositionsScreen, Path2D linesPath) {
 
         // Compute the visible user space area from the viewport
+        Rectangle view = viewport.getShape();
         Point2D visibleUL = new Point2D.Double();
         Point2D visibleLR = new Point2D.Double();
         Point viewLL = new Point(view.x, view.height + view.y);
@@ -354,36 +264,33 @@ public class Grid implements ViewportListener {
 
         // Build the gridlines positions, store them as user-space coordinates,
         // screen-space coordinates, and as a drawable path (in screen-space)
-        majorLinesPath = new Path2D.Double();
-
         final int countMajH = Math.max(0, right - left + 1);
-        majorLinePositions[0] = new double[countMajH];
-        majorLinePositionsScreen[0] = new int[countMajH];
+        linePositions[0] = new double[countMajH];
+        linePositionsScreen[0] = new int[countMajH];
 
         final int countMajV = Math.max(0, top - bottom + 1);
-        majorLinePositions[1] = new double[countMajV];
-        majorLinePositionsScreen[1] = new int[countMajV];
+        linePositions[1] = new double[countMajV];
+        linePositionsScreen[1] = new int[countMajV];
 
         Point2D p = new Point2D.Double();
         Point2D pScreen = new Point2D.Double();
-
         for (int x = left; x <= right; x++) {
-            majorLinePositions[0][x - left] = x * majorInterval;
-            p.setLocation(x * majorInterval, 0);
+            linePositions[0][x - left] = x * interval;
+            p.setLocation(x * interval, 0);
             viewport.getTransform().transform(p, pScreen);
-            majorLinePositionsScreen[0][x - left] = (int) pScreen.getX();
-            majorLinesPath.moveTo((int) pScreen.getX(), viewLL.getY());
-            majorLinesPath.lineTo((int) pScreen.getX(), viewUR.getY());
+            linePositionsScreen[0][x - left] = (int) pScreen.getX();
+            linesPath.moveTo((int) pScreen.getX(), viewLL.getY());
+            linesPath.lineTo((int) pScreen.getX(), viewUR.getY());
         }
 
         for (int y = bottom; y <= top; y++) {
-            majorLinePositions[1][y - bottom] = y * majorInterval;
-            p.setLocation(0, y * majorInterval);
+            linePositions[1][y - bottom] = y * interval;
+            p.setLocation(0, y * interval);
             viewport.getTransform().transform(p, pScreen);
-            majorLinePositionsScreen[1][y - bottom] = (int) pScreen.getY();
+            linePositionsScreen[1][y - bottom] = (int) pScreen.getY();
 
-            majorLinesPath.moveTo(viewLL.getX(), pScreen.getY());
-            majorLinesPath.lineTo(viewUR.getX(), pScreen.getY());
+            linesPath.moveTo(viewLL.getX(), pScreen.getY());
+            linesPath.lineTo(viewUR.getX(), pScreen.getY());
         }
     }
 
