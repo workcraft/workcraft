@@ -1,13 +1,12 @@
 package org.workcraft.gui.tools;
 
-import java.awt.Graphics2D;
-
-import javax.swing.JPanel;
-import javax.swing.JToolBar;
-
 import org.workcraft.dom.visual.VisualNode;
 
+import javax.swing.*;
+import java.awt.*;
+
 public interface GraphEditorTool extends Tool, GraphEditorKeyListener, GraphEditorMouseListener {
+    boolean checkPrerequisites(GraphEditor editor);
     void activated(GraphEditor editor);
     void deactivated(GraphEditor editor);
 

@@ -1,10 +1,9 @@
 package org.workcraft.gui.tools;
 
-import java.awt.Cursor;
-
-import javax.swing.Icon;
-
 import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import java.awt.*;
 
 public interface Tool {
     String getLabel();

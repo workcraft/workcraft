@@ -1,9 +1,9 @@
 package org.workcraft.gui.tools;
 
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -16,6 +16,11 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
     private Timer issueTimer = null;
     private String issueText = null;
     private VisualNode templateNode = null;
+
+    @Override
+    public boolean checkPrerequisites(final GraphEditor editor) {
+        return true;
+    }
 
     @Override
     public void activated(final GraphEditor editor) {

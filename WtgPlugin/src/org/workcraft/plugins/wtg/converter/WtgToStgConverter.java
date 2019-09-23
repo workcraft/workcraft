@@ -489,11 +489,9 @@ public class WtgToStgConverter {
         if (unstableSignalStg != null) {
             if (unstableSignalStg.unstablePlace.getTokens() > 0) {
                 if (unstableSignalStg.highPlace.getTokens() > 0) {
-                    System.out.println("fall");
                     return unstableSignalStg.fallTransition;
                 }
                 if (unstableSignalStg.lowPlace.getTokens() > 0) {
-                    System.out.println("rise");
                     return unstableSignalStg.riseTransition;
                 }
             }
