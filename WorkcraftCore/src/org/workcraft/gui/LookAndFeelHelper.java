@@ -1,18 +1,12 @@
 package org.workcraft.gui;
 
+import org.workcraft.utils.DesktopApi;
+
+import javax.swing.*;
+import javax.swing.text.DefaultEditorKit;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import javax.swing.InputMap;
-import javax.swing.KeyStroke;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.text.DefaultEditorKit;
-
-import org.jvnet.substance.SubstanceLookAndFeel;
-import org.jvnet.substance.api.SubstanceConstants.TabContentPaneBorderKind;
-import org.workcraft.utils.DesktopApi;
 
 public class LookAndFeelHelper {
 
@@ -56,8 +50,4 @@ public class LookAndFeelHelper {
         }
     }
 
-    public static void setSubstance(String laf) {
-        setLookAndFeel(laf);
-        UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND, TabContentPaneBorderKind.SINGLE_FULL);
-    }
 }

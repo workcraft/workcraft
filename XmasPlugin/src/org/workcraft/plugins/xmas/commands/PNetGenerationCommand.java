@@ -843,13 +843,13 @@ public class PNetGenerationCommand implements Command {
                     System.out.println("Generate CPNs");
                     while (jp.nextToken() != JsonToken.END_ARRAY) {
                         JsonNode node = jp.readValueAsTree();
-                        String idName = node.get("id").getValueAsText();
+                        String idName = node.get("id").toString();
                         String idName1 = "";
                         String idName2 = "";
                         String idNamep = "";
                         String idNamep1 = "";
                         String idNamep2 = "";
-                        String typeName = node.get("type").getValueAsText();
+                        String typeName = node.get("type").toString();
                         //System.out.println("id: " + idName + "type: " + typeName);
                         lst2.add(new Ids(idName, typeName));
                         JsonNode y = node.get("outs");
@@ -857,8 +857,8 @@ public class PNetGenerationCommand implements Command {
                             for (int i = 0; y.has(i); i++) {
                                 if (y.get(i).has("id")) {
                                     if (i == 0) {
-                                        idName1 = y.get(i).get("id").getValueAsText();
-                                        idNamep1 = y.get(i).get("in_port").getValueAsText();
+                                        idName1 = y.get(i).get("id").toString();
+                                        idNamep1 = y.get(i).get("in_port").toString();
                                         if ("xfork".equals(typeName)) {
                                             lst.add(new Info(idName1, idName, "b", idNamep1));
                                         } else if ("xswitch".equals(typeName)) {
@@ -875,8 +875,8 @@ public class PNetGenerationCommand implements Command {
                                             slsto2.add(new Info(idName1, idName, "", idNamep1));
                                         }
                                     } else if (i == 1) {
-                                        idName2 = y.get(i).get("id").getValueAsText();
-                                        idNamep2 = y.get(i).get("in_port").getValueAsText();
+                                        idName2 = y.get(i).get("id").toString();
+                                        idNamep2 = y.get(i).get("in_port").toString();
                                         if ("xfork".equals(typeName)) {
                                             lst.add(new Info(idName2, idName, "a", idNamep2));
                                         } else if ("xswitch".equals(typeName)) {
@@ -889,8 +889,8 @@ public class PNetGenerationCommand implements Command {
                                             slsto2.add(new Info(idName2, idName, "", idNamep2));
                                         }
                                     } else {
-                                        idName1 = y.get(i).get("id").getValueAsText();
-                                        idNamep = y.get(i).get("in_port").getValueAsText();
+                                        idName1 = y.get(i).get("id").toString();
+                                        idNamep = y.get(i).get("in_port").toString();
                                         if (idName.contains("Sync")) {
                                             slsto2.add(new Info(idName, idName1, "", idNamep));
                                         }
@@ -974,7 +974,7 @@ public class PNetGenerationCommand implements Command {
                         while (jp.nextToken() != JsonToken.END_ARRAY) {
                             // read the record into a tree model,
                             JsonNode node = jp.readValueAsTree();
-                            String idName = node.get("id").getValueAsText();
+                            String idName = node.get("id").toString();
                             String idName1 = "";
                             String idName2 = "";
                             String idNamep1 = "";
@@ -983,19 +983,19 @@ public class PNetGenerationCommand implements Command {
                             String fieldgpf = "";
                             int fieldinit = 0;
                             int fieldgr = 0;
-                            String typeName = node.get("type").getValueAsText();
+                            String typeName = node.get("type").toString();
 
                             JsonNode y = node.get("outs");
                             if (y != null) {
                                 for (int i = 0; y.has(i); i++) {
                                     if (y.get(i).has("id")) {
                                         if (i == 0) {
-                                            idName1 = y.get(i).get("id").getValueAsText();
+                                            idName1 = y.get(i).get("id").toString();
                                             /*if ("xfork".equals(typeName)) lst.add(new Info(idName1, idName, "b"));
                                               else if ("xswitch".equals(typeName)) lst.add(new Info(idName1, idName, "a"));
                                               else lst.add(new Info(idName1, idName, "")); */
                                         } else if (i == 1) {
-                                            idName2 = y.get(i).get("id").getValueAsText();
+                                            idName2 = y.get(i).get("id").toString();
                                             /*if ("xfork".equals(typeName)) lst.add(new Info(idName2, idName, "a"));
                                               else if ("xswitch".equals(typeName)) lst.add(new Info(idName2, idName, "b"));
                                               else lst.add(new Info(idName2, idName, "")); */
@@ -1006,21 +1006,21 @@ public class PNetGenerationCommand implements Command {
                                             String searchtyp = "";
                                             searchtyp = searchList3(idName1);
                                             if ("join".equals(searchtyp)) {
-                                                //idNamep1 = y.get(i).get("in_port").getValueAsText();
-                                                if ("0".equals(y.get(i).get("in_port").getValueAsText())) idNamep1 = "1";
+                                                //idNamep1 = y.get(i).get("in_port").toString();
+                                                if ("0".equals(y.get(i).get("in_port").toString())) idNamep1 = "1";
                                                 else idNamep1 = "0";
                                             } else if ("merge".equals(searchtyp)) {
-                                                idNamep1 = y.get(i).get("in_port").getValueAsText();
+                                                idNamep1 = y.get(i).get("in_port").toString();
                                             }
                                         } else if (i == 1) {
                                             String searchtyp1 = "";
                                             searchtyp1 = searchList3(idName2);
                                             if ("join".equals(searchtyp1)) {
-                                                //idNamep2 = y.get(i).get("in_port").getValueAsText();
-                                                if ("0".equals(y.get(i).get("in_port").getValueAsText())) idNamep2 = "1";
+                                                //idNamep2 = y.get(i).get("in_port").toString();
+                                                if ("0".equals(y.get(i).get("in_port").toString())) idNamep2 = "1";
                                                 else idNamep2 = "0";
                                             } else if ("merge".equals(searchtyp1)) {
-                                                idNamep2 = y.get(i).get("in_port").getValueAsText();
+                                                idNamep2 = y.get(i).get("in_port").toString();
                                             }
                                         }
                                     }
@@ -1030,19 +1030,19 @@ public class PNetGenerationCommand implements Command {
                             if (y2 != null) {
                                 for (int i = 0; y2.has(i); i++) {
                                     if (y2.get(i).has("size")) {
-                                        fieldsize = y2.get(i).get("size").getValueAsText();
+                                        fieldsize = y2.get(i).get("size").toString();
                                     }
                                     if (y2.get(i).has("init")) {
-                                        fieldinit = y2.get(i).get("init").getValueAsInt();
+                                        fieldinit = y2.get(i).get("init").asInt();
                                     }
                                     if (y2.get(i).has("gr")) {
-                                        fieldgr = y2.get(i).get("gr").getValueAsInt();
+                                        fieldgr = y2.get(i).get("gr").asInt();
                                     }
                                     if (y2.get(i).has("gpf")) {
-                                        fieldgpf = y2.get(i).get("gpf").getValueAsText();
+                                        fieldgpf = y2.get(i).get("gpf").toString();
                                     }
                                     if (y2.get(i).has("gpf1")) {
-                                        fieldgpf = y2.get(i).get("gpf1").getValueAsText();
+                                        fieldgpf = y2.get(i).get("gpf1").toString();
                                     }
                                 }
                             }

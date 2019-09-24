@@ -15,8 +15,6 @@ import org.flexdock.perspective.persist.FilePersistenceHandler;
 import org.flexdock.perspective.persist.PersistenceHandler;
 import org.flexdock.perspective.persist.xml.XMLPersister;
 import org.flexdock.plaf.common.border.ShadowBorder;
-import org.jvnet.substance.SubstanceLookAndFeel;
-import org.jvnet.substance.api.SubstanceConstants.TabContentPaneBorderKind;
 import org.workcraft.Framework;
 import org.workcraft.commands.Command;
 import org.workcraft.dom.ModelDescriptor;
@@ -243,7 +241,6 @@ public class MainWindow extends JFrame {
     public void startup() {
         MainWindowIconManager.apply(this);
         JDialog.setDefaultLookAndFeelDecorated(true);
-        UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND, TabContentPaneBorderKind.SINGLE_FULL);
         setTitle(TITLE_WORKCRAFT);
 
         // Create main menu.

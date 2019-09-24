@@ -60,21 +60,30 @@ subprojects {
         delete compileJavacc.outputDirectory
     }
 
-    dependencies {
-        compile fileTree(dir: '../ThirdParty', include: ['*.jar'])
-        compile fileTree(dir: '../ThirdParty/batik', include: ['*.jar'])
-        compile 'org.jetbrains.kotlin:kotlin-stdlib'
-        compile 'com.sun.activation:javax.activation:1.2.0'
+    configurations {
+        libs
+    }
 
+    dependencies {
+        libs fileTree(dir: 'libs', include: ['**/*.jar'])
+        configurations.compile.extendsFrom(configurations.libs)
         testCompile 'junit:junit:4.12'
         javacc 'net.java.dev.javacc:javacc:7.0.4'
+    }
+
+    jar {
+        from {
+            configurations.libs.collect {
+                it.isDirectory() ? it : zipTree(it)
+            }
+        }
     }
 
     apply plugin: 'eclipse'
 
     eclipse {
         project {
-            buildCommand  'org.jetbrains.kotlin.ui.kotlinBuilder'
+            buildCommand 'org.jetbrains.kotlin.ui.kotlinBuilder'
             natures 'org.jetbrains.kotlin.core.kotlinNature'
         }
         classpath {
