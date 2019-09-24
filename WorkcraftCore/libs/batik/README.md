@@ -4,19 +4,25 @@ This cut down version of Batik is the minimal set of JARs necessary
 for building a functioning Workcraft. This effort was made in order
 to reduce the distribution size of Workcraft by ~40MB.
 
-The JARs of Batik v1.9.1 were collected from:
+The JARs of Batik v1.11 were collected from:
 https://repo1.maven.org/maven2/org/apache/xmlgraphics/
 
 Note that fop-transcoder-allinone was built from source to further
-reduce the size (1.7MB vs 4.3MB of the prebuilt fop v2.2).
+reduce the size (1.7MB vs 4.3MB of the prebuilt fop v2.3) as follows:
 
-If extra 40Mb is not a problem then Batik can be downloaded by
-Gradle. For this add the following compile dependencies to the
-main build.gradle:
+  1. Download fop-2.3-src.tar.gz from
+     https://xmlgraphics.apache.org/fop/download.html
+  2. Build FOP: tar xzf fop-2.3-src.tar.gz; cd fop-2.3/fop; ant
+  3. Copy build/fop-transcoder-allinone.jar into
+     WorkcraftrCore/libs/batik/fop-transcoder-allinone-v2.3.jar
 
-    compile group: 'org.apache.xmlgraphics', name: 'batik-transcoder', version: '1.9.1'
-    compile group: 'org.apache.xmlgraphics', name: 'batik-codec', version: '1.9.1'
-    compile group: 'org.apache.xmlgraphics', name: 'fop', version: '2.2'
+If extra 40Mb is not a problem then Batik and FOP can be downloaded
+via Gradle. For this add the following libs category dependencies
+to the WorkcraftCore\build.gradle:
+
+    libs 'org.apache.xmlgraphics:batik-codec:1.11'
+    libs 'org.apache.xmlgraphics:batik-transcoder:1.11'
+    libs 'org.apache.xmlgraphics:fop:2.3'
 
 
 ## Dependency analysis
@@ -94,7 +100,7 @@ functionality of Workcraft.
   * batik-gui-util
   * batik-js
   * batik-rasterizer
-  * batik-rasterizer
+  * batik-rasterizer-ext
   * batik-slideshow
   * batik-squiggle
   * batik-squiggle-ext
@@ -102,6 +108,9 @@ functionality of Workcraft.
   * batik-svgrasterizer
   * batik-swing
   * batik-test
+  * batik-test-old
+  * batik-test-svg
+  * batik-test-swing
   * batic-ttf2svg
   * fop-pdf-images
   * xml-apis  -- there is still run-time dependency on xml-apis-ext
