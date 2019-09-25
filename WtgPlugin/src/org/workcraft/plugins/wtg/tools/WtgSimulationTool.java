@@ -23,6 +23,7 @@ import org.workcraft.plugins.wtg.*;
 import org.workcraft.plugins.wtg.converter.WtgToStgConverter;
 import org.workcraft.plugins.wtg.decorations.StateDecoration;
 import org.workcraft.plugins.wtg.decorations.WaveformDecoration;
+import org.workcraft.plugins.wtg.utils.VerificationUtils;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -30,6 +31,12 @@ import java.awt.geom.Point2D;
 
 public class WtgSimulationTool extends StgSimulationTool {
     private WtgToStgConverter converter;
+
+    @Override
+    public boolean checkPrerequisites(final GraphEditor editor) {
+        final Wtg wtg = (Wtg) editor.getModel().getMathModel();
+        return VerificationUtils.checkStructure(wtg) && VerificationUtils.checkNameCollisions(wtg);
+    }
 
     @Override
     public void activated(final GraphEditor editor) {
@@ -41,8 +48,10 @@ public class WtgSimulationTool extends StgSimulationTool {
     public void generateUnderlyingModel(VisualModel model) {
         final Wtg wtg = (Wtg) model.getMathModel();
         final Stg stg = new Stg();
-        converter = new WtgToStgConverter(wtg, stg);
-        setUnderlyingModel(new VisualStg(converter.getDstModel()));
+        if (VerificationUtils.checkStructure(wtg) && VerificationUtils.checkNameCollisions(wtg)) {
+            converter = new WtgToStgConverter(wtg, stg);
+            setUnderlyingModel(new VisualStg(converter.getDstModel()));
+        }
     }
 
     @Override

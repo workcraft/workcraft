@@ -168,35 +168,37 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
     }
 
     public void selectTool(GraphEditorTool tool) {
-        if (selectedTool != null) {
-            ToolTracker oldTracker = hotkeyMap.get(selectedTool.getHotKeyCode());
-            if (oldTracker != null) {
-                oldTracker.reset();
+        if ((tool == null) || tool.checkPrerequisites(editor)) {
+            if (selectedTool != null) {
+                ToolTracker oldTracker = hotkeyMap.get(selectedTool.getHotKeyCode());
+                if (oldTracker != null) {
+                    oldTracker.reset();
+                }
+                selectedTool.deactivated(editor);
+                setToolButtonSelection(selectedTool, false);
             }
-            selectedTool.deactivated(editor);
-            setToolButtonSelection(selectedTool, false);
-        }
-        if (tool != null) {
-            ToolTracker tracker = hotkeyMap.get(tool.getHotKeyCode());
-            if (tracker != null) {
-                tracker.track(tool);
+            if (tool != null) {
+                ToolTracker tracker = hotkeyMap.get(tool.getHotKeyCode());
+                if (tracker != null) {
+                    tracker.track(tool);
+                }
             }
+            // Setup and activate the selected tool (before updating Property editor and Tool controls).
+            selectedTool = tool;
+            setToolButtonSelection(selectedTool, true);
+            if (selectedTool != null) {
+                selectedTool.activated(editor);
+            }
+            // Update the content of Property editor (first) and Tool controls (second).
+            if (editor != null) {
+                editor.updatePropertyView();
+                editor.updateToolsView();
+            }
+            // Update visibility of Property editor and Tool controls.
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            mainWindow.updateDockableWindowVisibility();
         }
-        // Setup and activate the selected tool (before updating Property editor and Tool controls).
-        selectedTool = tool;
-        setToolButtonSelection(selectedTool, true);
-        if (selectedTool != null) {
-            selectedTool.activated(editor);
-        }
-        // Update the content of Property editor (first) and Tool controls (second).
-        if (editor != null) {
-            editor.updatePropertyView();
-            editor.updateToolsView();
-        }
-        // Update visibility of Property editor and Tool controls.
-        final Framework framework = Framework.getInstance();
-        final MainWindow mainWindow = framework.getMainWindow();
-        mainWindow.updateDockableWindowVisibility();
     }
 
     public void setToolsForModel(JToolBar toolbar) {

@@ -1,22 +1,14 @@
+dependencies {
+    libs 'org.jetbrains.kotlin:kotlin-stdlib:1.3.50' // for Kotlin support
+    libs 'log4j:log4j:1.2.8'  // for configuration of log in FOP
+    libs 'net.sf.jga:jga:0.8.3'  // for UnaryFunctor class
+    libs 'org.mozilla:rhino:1.7.11'  // for JavaScript execution
+    libs 'info.clearthought:table-layout:4.3.0'  // for TableLayout
+    libs 'com.sun.activation:javax.activation:1.2.0'
+}
+
 jar {
-    // Include all dependencies in the jar
-    from {
-        (configurations.runtime).collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    }
-    // Main class to run
     manifest {
         attributes 'Main-Class': 'org.workcraft.Console'
     }
-}
-
-dependencies {
-    compile 'org.codehaus.jackson:jackson-mapper-asl:1.8.11'
-    compile 'log4j:log4j:1.2.8'
-    compile 'org.mozilla:rhino:1.7.7.1'
-    compile 'net.sf.jga:jga:0.8.3'
-    compile 'net.sf.jedit-syntax:jedit-syntax:2.2.2'
-    compile 'info.clearthought:table-layout:4.3.0'
-    compile 'org.java.net.substance:substance:5.3'
 }
