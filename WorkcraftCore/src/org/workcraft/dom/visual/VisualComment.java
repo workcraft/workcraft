@@ -4,10 +4,10 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.math.CommentNode;
-import org.workcraft.utils.Coloriser;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.builtin.settings.CommonCommentSettings;
+import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -59,6 +59,11 @@ public class VisualComment extends VisualComponent {
             textAlignment = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_TEXT_ALIGNMENT));
         }
+    }
+
+    @Override
+    public Font getLabelFont() {
+        return LABEL_FONT.deriveFont((float) CommonCommentSettings.getFontSize());
     }
 
     @Override

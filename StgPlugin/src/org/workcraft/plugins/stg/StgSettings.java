@@ -19,20 +19,23 @@ public class StgSettings extends AbstractModelSettings {
     private static final String keyGroupSignalConversion = prefix + ".groupSignalConversion";
     private static final String keyShowTransitionInstance = prefix + ".showTransitionInstance";
     private static final String keyMutexProtocol = prefix + ".mutexProtocol";
+    private static final String keyTransitionFontSize = prefix + ".transitionFontSize";
 
-    private static final Integer defaultDensityMapLevelLimit = 5;
+    private static final int defaultDensityMapLevelLimit = 5;
     private static final String defaultLowLevelSuffix = "_LOW";
     private static final String defaultHighLevelSuffix = "_HIGH";
-    private static final Boolean defaultGroupSignalConversion = false;
-    private static final Boolean defaultShowTransitionInstance = false;
+    private static final boolean defaultGroupSignalConversion = false;
+    private static final boolean defaultShowTransitionInstance = false;
     private static final Mutex.Protocol defaultMutexProtocol = Mutex.Protocol.STRICT;
+    private static final double defaultTransitionFontSize = 0.75f;
 
-    private static Integer densityMapLevelLimit = defaultDensityMapLevelLimit;
+    private static int densityMapLevelLimit = defaultDensityMapLevelLimit;
     private static String lowLevelSuffix = defaultLowLevelSuffix;
     private static String highLevelSuffix = defaultHighLevelSuffix;
-    private static Boolean groupSignalConversion = defaultGroupSignalConversion;
-    private static Boolean showTransitionInstance = defaultShowTransitionInstance;
+    private static boolean groupSignalConversion = defaultGroupSignalConversion;
+    private static boolean showTransitionInstance = defaultShowTransitionInstance;
     private static Mutex.Protocol mutexProtocol = defaultMutexProtocol;
+    private static double transitionFontSize = defaultTransitionFontSize;
 
     public StgSettings() {
         properties.add(new PropertyDeclaration<StgSettings, Integer>(
@@ -97,7 +100,6 @@ public class StgSettings extends AbstractModelSettings {
             }
         });
 
-
         properties.add(new PropertyDeclaration<StgSettings, Boolean>(
                 this, "Show transition instance property", Boolean.class) {
             @Override
@@ -107,6 +109,18 @@ public class StgSettings extends AbstractModelSettings {
             @Override
             public Boolean getter(StgSettings object) {
                 return getShowTransitionInstance();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<StgSettings, Double>(
+                this, "Transition font size (cm)", Double.class) {
+            @Override
+            public void setter(StgSettings object, Double value) {
+                setTransitionFontSize(value);
+            }
+            @Override
+            public Double getter(StgSettings object) {
+                return getTransitionFontSize();
             }
         });
     }
@@ -145,6 +159,7 @@ public class StgSettings extends AbstractModelSettings {
         setGroupSignalConversion(config.getBoolean(keyGroupSignalConversion, defaultGroupSignalConversion));
         setShowTransitionInstance(config.getBoolean(keyShowTransitionInstance, defaultShowTransitionInstance));
         setMutexProtocol(config.getEnum(keyMutexProtocol, Mutex.Protocol.class, defaultMutexProtocol));
+        setTransitionFontSize(config.getDouble(keyTransitionFontSize, defaultTransitionFontSize));
     }
 
     @Override
@@ -155,6 +170,7 @@ public class StgSettings extends AbstractModelSettings {
         config.setBoolean(keyGroupSignalConversion, getGroupSignalConversion());
         config.setBoolean(keyShowTransitionInstance, getShowTransitionInstance());
         config.setEnum(keyMutexProtocol, StgSettings.getMutexProtocol());
+        config.setDouble(keyTransitionFontSize, getTransitionFontSize());
     }
 
     @Override
@@ -162,11 +178,11 @@ public class StgSettings extends AbstractModelSettings {
         return "Signal Transition Graph";
     }
 
-    public static Integer getDensityMapLevelLimit() {
+    public static int getDensityMapLevelLimit() {
         return densityMapLevelLimit;
     }
 
-    public static void setDensityMapLevelLimit(Integer value) {
+    public static void setDensityMapLevelLimit(int value) {
         densityMapLevelLimit = value;
     }
 
@@ -190,19 +206,19 @@ public class StgSettings extends AbstractModelSettings {
         }
     }
 
-    public static Boolean getGroupSignalConversion() {
+    public static boolean getGroupSignalConversion() {
         return groupSignalConversion;
     }
 
-    public static void setGroupSignalConversion(Boolean value) {
+    public static void setGroupSignalConversion(boolean value) {
         groupSignalConversion = value;
     }
 
-    public static Boolean getShowTransitionInstance() {
+    public static boolean getShowTransitionInstance() {
         return showTransitionInstance;
     }
 
-    public static void setShowTransitionInstance(Boolean value) {
+    public static void setShowTransitionInstance(boolean value) {
         showTransitionInstance = value;
     }
 
@@ -212,6 +228,14 @@ public class StgSettings extends AbstractModelSettings {
 
     public static void setMutexProtocol(Mutex.Protocol value) {
         mutexProtocol = value;
+    }
+
+    public static double getTransitionFontSize() {
+        return transitionFontSize;
+    }
+
+    public static void setTransitionFontSize(double value) {
+        transitionFontSize = value;
     }
 
 }

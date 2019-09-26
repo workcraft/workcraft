@@ -2,11 +2,11 @@ package org.workcraft.dom.visual;
 
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -18,7 +18,7 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
     public static final String PROPERTY_COLOR = "Color";
     public static final String PROPERTY_FILL_COLOR = "Fill color";
 
-    public static final Font nameFont = new Font(Font.SANS_SERIF, Font.ITALIC, 1).deriveFont(0.5f);
+    public static final Font NAME_FONT = new Font(Font.SANS_SERIF, Font.ITALIC, 1);
 
     protected double size = CommonVisualSettings.getNodeSize();
     protected double strokeWidth = CommonVisualSettings.getStrokeWidth();
@@ -26,7 +26,7 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
     private Color fillColor = CommonVisualSettings.getFillColor();
 
     private Positioning namePositioning = CommonVisualSettings.getNamePositioning();
-    private RenderedText nameRenderedText = new RenderedText("", nameFont, getNamePositioning(), getNameOffset());
+    private RenderedText nameRenderedText = new RenderedText("", getNameFont(), getNamePositioning(), getNameOffset());
     private Color nameColor = CommonVisualSettings.getNameColor();
 
     private VisualComponent master = null;
@@ -119,6 +119,10 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
         }
     }
 
+    public Font getNameFont() {
+        return NAME_FONT.deriveFont((float) CommonVisualSettings.getNameFontSize());
+    }
+
     public Color getForegroundColor() {
         return foregroundColor;
     }
@@ -156,7 +160,7 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
         return getOffset(getNamePositioning());
     }
 
-    private void cacheNameRenderedText(DrawRequest r) {
+    private boolean cacheNameRenderedText(DrawRequest r) {
         String name = null;
         MathModel mathModel = r.getModel().getMathModel();
         if (getMaster() instanceof VisualComponent) {
@@ -167,11 +171,15 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
         if (name == null) {
             name = "";
         }
+        return cacheNameRenderedText(name, getNameFont(), getNamePositioning(), getNameOffset());
+    }
 
-        Point2D offset = getNameOffset();
-        if (nameRenderedText.isDifferent(name, nameFont, getNamePositioning(), offset)) {
-            nameRenderedText = new RenderedText(name, nameFont, getNamePositioning(), getNameOffset());
+    protected boolean cacheNameRenderedText(String text, Font font, Positioning positioning, Point2D offset) {
+        if (nameRenderedText.isDifferent(text, font, positioning, offset)) {
+            nameRenderedText = new RenderedText(text, font, positioning, offset);
+            return true;
         }
+        return false;
     }
 
     protected void drawNameInLocalSpace(DrawRequest r) {

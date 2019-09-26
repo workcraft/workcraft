@@ -20,17 +20,23 @@ public class CircuitSettingsTests {
         final Framework framework = Framework.getInstance();
         String prefix = "CircuitSettings";
 
+        Assert.assertEquals(Config.toString(CircuitSettings.getShowContacts()),
+                framework.getConfigVar(prefix + ".showContacts", false));
+
+        Assert.assertEquals(Config.toString(CircuitSettings.getContactFontSize()),
+                framework.getConfigVar(prefix + ".contactFontSize", false));
+
+        Assert.assertEquals(Config.toString(CircuitSettings.getFunctionFontSize()),
+                framework.getConfigVar(prefix + ".functionFontSize", false));
+
+        Assert.assertEquals(Config.toString(CircuitSettings.getShowZeroDelayNames()),
+                framework.getConfigVar(prefix + ".showZeroDelayNames", false));
+
         Assert.assertEquals(Config.toString(CircuitSettings.getBorderWidth()),
                 framework.getConfigVar(prefix + ".borderWidth", false));
 
         Assert.assertEquals(Config.toString(CircuitSettings.getWireWidth()),
                 framework.getConfigVar(prefix + ".wireWidth", false));
-
-        Assert.assertEquals(Config.toString(CircuitSettings.getShowContacts()),
-                framework.getConfigVar(prefix + ".showContacts", false));
-
-        Assert.assertEquals(Config.toString(CircuitSettings.getShowZeroDelayNames()),
-                framework.getConfigVar(prefix + ".showZeroDelayNames", false));
 
         Assert.assertEquals(Config.toString(CircuitSettings.getActiveWireColor()),
                 framework.getConfigVar(prefix + ".activeWireColor", false));

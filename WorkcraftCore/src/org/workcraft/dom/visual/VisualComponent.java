@@ -27,6 +27,9 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
     public static final String PROPERTY_COLOR = "Color";
     public static final String PROPERTY_FILL_COLOR = "Fill color";
 
+    public static final Font NAME_FONT = new Font(Font.SANS_SERIF, Font.ITALIC, 1);
+    public static final Font LABEL_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 1);
+
     private MathNode refNode = null;
     private Color foregroundColor = CommonVisualSettings.getBorderColor();
     private Color fillColor = CommonVisualSettings.getFillColor();
@@ -155,7 +158,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
     }
 
     public Font getLabelFont() {
-        return new Font(Font.SANS_SERIF, Font.PLAIN, 1).deriveFont(0.5f);
+        return LABEL_FONT.deriveFont((float) CommonVisualSettings.getLabelFontSize());
     }
 
     @Override
@@ -194,7 +197,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
     }
 
     public Font getNameFont() {
-        return new Font(Font.SANS_SERIF, Font.ITALIC, 1).deriveFont(0.5f);
+        return NAME_FONT.deriveFont((float) CommonVisualSettings.getNameFontSize());
     }
 
     public Positioning getNamePositioning() {

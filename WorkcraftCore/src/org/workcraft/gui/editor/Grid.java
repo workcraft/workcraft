@@ -167,17 +167,17 @@ public class Grid implements ViewportListener {
 
     private void updateGridMinorCrosses(Viewport viewport, double interval) {
         minorLinesPath = new Path2D.Double();
-        double d = Math.max(1.0, CommonEditorSettings.getLightGridSize() * SizeHelper.getScreenDpmm() / 3.0);
-        a(viewport, interval, d, minorLinePositions, minorLinePositionsScreen, minorLinesPath);
+        double radius = Math.max(1.0, CommonEditorSettings.getLightGridSize() * SizeHelper.getScreenDpmm() / 3.0);
+        updateGridCrosses(viewport, interval, radius, minorLinePositions, minorLinePositionsScreen, minorLinesPath);
     }
 
     private void updateGridMajorCrosses(Viewport viewport, double interval) {
         majorLinesPath = new Path2D.Double();
-        double d = Math.max(1.0, CommonEditorSettings.getLightGridSize() * SizeHelper.getScreenDpmm() / 2.0);
-        a(viewport, interval, d, majorLinePositions, majorLinePositionsScreen, majorLinesPath);
+        double radius = Math.max(1.0, CommonEditorSettings.getLightGridSize() * SizeHelper.getScreenDpmm() / 2.0);
+        updateGridCrosses(viewport, interval, radius, majorLinePositions, majorLinePositionsScreen, majorLinesPath);
     }
 
-    private void a(Viewport viewport, double interval, double step,
+    private void updateGridCrosses(Viewport viewport, double interval, double crossRadius,
             double[][] linePositions, int[][] linePositionsScreen, Path2D linesPath) {
 
         Rectangle view = viewport.getShape();
@@ -226,25 +226,25 @@ public class Grid implements ViewportListener {
             int xScreen = linePositionsScreen[0][x - left];
             for (int y = bottom; y <= top; y++) {
                 int yScreen = linePositionsScreen[1][y - bottom];
-                linesPath.moveTo(xScreen - step, yScreen);
-                linesPath.lineTo(xScreen + step, yScreen);
-                linesPath.moveTo(xScreen, yScreen - step);
-                linesPath.lineTo(xScreen, yScreen + step);
+                linesPath.moveTo(xScreen - crossRadius, yScreen);
+                linesPath.lineTo(xScreen + crossRadius, yScreen);
+                linesPath.moveTo(xScreen, yScreen - crossRadius);
+                linesPath.lineTo(xScreen, yScreen + crossRadius);
             }
         }
     }
 
     private void updateGridMinorLines(Viewport viewport, double interval) {
         minorLinesPath = new Path2D.Double();
-        b(viewport, interval, minorLinePositions, minorLinePositionsScreen, minorLinesPath);
+        updateGridLines(viewport, interval, minorLinePositions, minorLinePositionsScreen, minorLinesPath);
     }
 
     private void updateGridMajorLines(Viewport viewport, double interval) {
         majorLinesPath = new Path2D.Double();
-        b(viewport, interval, majorLinePositions, majorLinePositionsScreen, majorLinesPath);
+        updateGridLines(viewport, interval, majorLinePositions, majorLinePositionsScreen, majorLinesPath);
     }
 
-    private void b(Viewport viewport, double interval,
+    private void updateGridLines(Viewport viewport, double interval,
             double[][] linePositions, int[][] linePositionsScreen, Path2D linesPath) {
 
         // Compute the visible user space area from the viewport

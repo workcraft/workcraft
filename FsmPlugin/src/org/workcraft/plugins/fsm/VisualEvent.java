@@ -22,9 +22,9 @@ public class VisualEvent extends VisualConnection {
 
     public static final String PROPERTY_LABEL_COLOR = "Label color";
 
-    public static final Font labelFont = new Font(Font.SANS_SERIF, Font.PLAIN, 1).deriveFont(0.5f);
+    public static final Font LABEL_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 1);
 
-    private RenderedText labelRenderedText = new RenderedText("", labelFont, Positioning.CENTER, new Point2D.Double());
+    private RenderedText labelRenderedText = new RenderedText("", getLabelFont(), Positioning.CENTER, new Point2D.Double());
     private Color labelColor = CommonVisualSettings.getLabelColor();
 
     public VisualEvent() {
@@ -63,11 +63,20 @@ public class VisualEvent extends VisualConnection {
         return true;
     }
 
-    protected void cacheLabelRenderedText(DrawRequest r) {
-        String labelText = getLabel(r);
-        if (labelRenderedText.isDifferent(labelText, labelFont, Positioning.CENTER, new Point2D.Double())) {
-            labelRenderedText = new RenderedText(labelText, labelFont, Positioning.CENTER, new Point2D.Double());
+    public Font getLabelFont() {
+        return LABEL_FONT.deriveFont((float) CommonVisualSettings.getLabelFontSize());
+    }
+
+    protected boolean cacheLabelRenderedText(DrawRequest r) {
+        return cacheLabelRenderedText(getLabel(r), getLabelFont(), Positioning.CENTER, new Point2D.Double());
+    }
+
+    protected boolean cacheLabelRenderedText(String text, Font font, Positioning positioning, Point2D offset) {
+        if (labelRenderedText.isDifferent(text, font, positioning, offset)) {
+            labelRenderedText = new RenderedText(text, font, positioning, offset);
+            return true;
         }
+        return false;
     }
 
     public String getLabel(DrawRequest r) {

@@ -33,14 +33,15 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
     private static final double size = 0.3;
     private static FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);
-    private static Font font;
+    private static Font functionFont;
 
-    private FormulaRenderingResult renderedSetFormula = null;
-    private FormulaRenderingResult renderedResetFormula = null;
+    private FormulaRenderingResult renderedSetFunction = null;
+    private FormulaRenderingResult renderedResetFunction = null;
+    private static double functionFontSize = CircuitSettings.getFunctionFontSize();
 
     static {
         try {
-            font = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/eurm10.pfb")).deriveFont(0.5f);
+            functionFont = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/eurm10.pfb"));
         } catch (FontFormatException | IOException e) {
             e.printStackTrace();
         }
@@ -66,7 +67,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
             VisualFunctionComponent p = (VisualFunctionComponent) getParent();
             p.invalidateRenderingResult();
         }
-        renderedSetFormula = null;
+        renderedSetFunction = null;
         getReferencedContact().setSetFunction(setFunction);
     }
 
@@ -101,28 +102,37 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
             VisualFunctionComponent p = (VisualFunctionComponent) getParent();
             p.invalidateRenderingResult();
         }
-        renderedResetFormula = null;
+        renderedResetFunction = null;
         getReferencedContact().setResetFunction(resetFunction);
     }
 
     public void invalidateRenderedFormula() {
-        renderedSetFormula = null;
-        renderedResetFormula = null;
+        renderedSetFunction = null;
+        renderedResetFunction = null;
     }
 
-    private FormulaRenderingResult getRenderedSetFormula() {
-        if (getReferencedContact().getSetFunction() == null) {
-            renderedSetFormula = null;
-        } else if (renderedSetFormula == null) {
-            renderedSetFormula = FormulaToGraphics.render(getReferencedContact().getSetFunction(), context, font);
+    private Font getFunctionFont() {
+        return functionFont.deriveFont((float) CircuitSettings.getFunctionFontSize());
+    }
+
+    private FormulaRenderingResult getRenderedSetFunction() {
+        if (Math.abs(CircuitSettings.getFunctionFontSize() - functionFontSize) > 0.001) {
+            functionFontSize = CircuitSettings.getContactFontSize();
+            renderedSetFunction = null;
         }
-        return renderedSetFormula;
+        BooleanFormula setFunction = getReferencedContact().getSetFunction();
+        if (setFunction == null) {
+            renderedSetFunction = null;
+        } else if (renderedSetFunction == null) {
+            renderedSetFunction = FormulaToGraphics.render(setFunction, context, getFunctionFont());
+        }
+        return renderedSetFunction;
     }
 
     private Point2D getSetFormulaOffset() {
         double xOffset = size;
         double yOffset = -size / 2;
-        FormulaRenderingResult renderingResult = getRenderedSetFormula();
+        FormulaRenderingResult renderingResult = getRenderedSetFunction();
         if (renderingResult != null) {
             Direction dir = getDirection();
             if (!(getParent() instanceof VisualFunctionComponent)) {
@@ -137,7 +147,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
     private Rectangle2D getSetBoundingBox() {
         Rectangle2D bb = null;
-        FormulaRenderingResult setRenderingResult = getRenderedSetFormula();
+        FormulaRenderingResult setRenderingResult = getRenderedSetFunction();
         if (setRenderingResult != null) {
             bb = BoundingBoxHelper.move(setRenderingResult.boundingBox, getSetFormulaOffset());
             Direction dir = getDirection();
@@ -153,19 +163,24 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
         return bb;
     }
 
-    private FormulaRenderingResult getRenderedResetFormula() {
-        if (getReferencedContact().getResetFunction() == null) {
-            renderedResetFormula = null;
-        } else if (renderedResetFormula == null) {
-            renderedResetFormula = FormulaToGraphics.render(getReferencedContact().getResetFunction(), context, font);
+    private FormulaRenderingResult getRenderedResetFunction() {
+        if (Math.abs(CircuitSettings.getFunctionFontSize() - functionFontSize) > 0.001) {
+            functionFontSize = CircuitSettings.getContactFontSize();
+            renderedResetFunction = null;
         }
-        return renderedResetFormula;
+        BooleanFormula resetFunction = getReferencedContact().getResetFunction();
+        if (resetFunction == null) {
+            renderedResetFunction = null;
+        } else if (renderedResetFunction == null) {
+            renderedResetFunction = FormulaToGraphics.render(resetFunction, context, getFunctionFont());
+        }
+        return renderedResetFunction;
     }
 
     private Point2D getResetFormulaOffset() {
         double xOffset = size;
         double yOffset = size / 2;
-        FormulaRenderingResult renderingResult = getRenderedResetFormula();
+        FormulaRenderingResult renderingResult = getRenderedResetFunction();
         if (renderingResult != null) {
             Direction dir = getDirection();
             if (!(getParent() instanceof VisualFunctionComponent)) {
@@ -181,7 +196,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
     private Rectangle2D getResetBoundingBox() {
         Rectangle2D bb = null;
-        FormulaRenderingResult renderingResult = getRenderedResetFormula();
+        FormulaRenderingResult renderingResult = getRenderedResetFunction();
         if (renderingResult != null) {
             bb = BoundingBoxHelper.move(renderingResult.boundingBox, getResetFormulaOffset());
             Direction dir = getDirection();
@@ -198,24 +213,28 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
     }
 
     private void drawArrow(Graphics2D g, int arrowType, double arrX, double arrY) {
-        g.setStroke(new BasicStroke((float) 0.02));
+        double s = CircuitSettings.getFunctionFontSize();
+        g.setStroke(new BasicStroke((float) s / 25));
+        double s1 = 0.75 * s;
+        double s2 = 0.45 * s;
+        double s3 = 0.30 * s;
         if (arrowType == 1) {
             // arrow down
-            Line2D line = new Line2D.Double(arrX, arrY - 0.15, arrX, arrY - 0.375);
+            Line2D line = new Line2D.Double(arrX, arrY - s1, arrX, arrY - s3);
             Path2D path = new Path2D.Double();
-            path.moveTo(arrX - 0.05, arrY - 0.15);
-            path.lineTo(arrX + 0.05, arrY - 0.15);
+            path.moveTo(arrX - 0.05, arrY - s3);
+            path.lineTo(arrX + 0.05, arrY - s3);
             path.lineTo(arrX, arrY);
             path.closePath();
             g.fill(path);
             g.draw(line);
         } else if (arrowType == 2) {
             // arrow up
-            Line2D line = new Line2D.Double(arrX, arrY, arrX, arrY - 0.225);
+            Line2D line = new Line2D.Double(arrX, arrY, arrX, arrY - s2);
             Path2D path = new Path2D.Double();
-            path.moveTo(arrX - 0.05, arrY - 0.225);
-            path.lineTo(arrX + 0.05, arrY - 0.225);
-            path.lineTo(arrX, arrY - 0.375);
+            path.moveTo(arrX - 0.05, arrY - s2);
+            path.lineTo(arrX + 0.05, arrY - s2);
+            path.lineTo(arrX, arrY - s1);
             path.closePath();
             g.fill(path);
             g.draw(line);
@@ -256,12 +275,12 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
             Decoration d = r.getDecoration();
             g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
             FormulaRenderingResult renderingResult;
-            renderingResult = getRenderedSetFormula();
+            renderingResult = getRenderedSetFunction();
             if (renderingResult != null) {
                 Point2D offset = getSetFormulaOffset();
                 drawFormula(g, 2, offset, renderingResult);
             }
-            renderingResult = getRenderedResetFormula();
+            renderingResult = getRenderedResetFunction();
             if (renderingResult != null) {
                 Point2D offset = getResetFormulaOffset();
                 drawFormula(g, 1, offset, renderingResult);

@@ -42,10 +42,12 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CircuitSettings";
 
+    private static final String keyShowContacts = prefix + ".showContacts";
+    private static final String keyContactFontSize = prefix + ".contactFontSize";
+    private static final String keyFunctionFontSize = prefix + ".functionFontSize";
+    private static final String keyShowZeroDelayNames = prefix + ".showZeroDelayNames";
     private static final String keyBorderWidth = prefix + ".borderWidth";
     private static final String keyWireWidth = prefix + ".wireWidth";
-    private static final String keyShowContacts = prefix + ".showContacts";
-    private static final String keyShowZeroDelayNames = prefix + ".showZeroDelayNames";
     private static final String keyActiveWireColor = prefix + ".activeWireColor";
     private static final String keyInactiveWireColor = prefix + ".inactiveWireColor";
     private static final String keySimplifyStg = prefix + ".simplifyStg";
@@ -75,10 +77,12 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyScanoutPortPin = prefix + ".scanoutPortPin";
     private static final String keyVerilogAssignDelay = prefix + ".verilogAssignDelay";
 
+    private static final boolean defaultShowContacts = false;
+    private static final double defaultContactFontSize = 0.4f;
+    private static final double defaultFunctionFontSize = 0.5f;
+    private static final boolean defaultShowZeroDelayNames = false;
     private static final Double defaultBorderWidth = 0.06;
     private static final Double defaultWireWidth = 0.04;
-    private static final boolean defaultShowContacts = false;
-    private static final boolean defaultShowZeroDelayNames = false;
     private static final Color defaultActiveWireColor = new Color(1.0f, 0.0f, 0.0f);
     private static final Color defaultInactiveWireColor = new Color(0.0f, 0.0f, 1.0f);
     private static final boolean defaultSimplifyStg = true;
@@ -108,10 +112,12 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String defaultScanoutPortPin = "scanout / SO";
     private static final boolean defaultVerilogAssignDelay = false;
 
+    private static boolean showContacts = defaultShowContacts;
+    private static double contactFontSize = defaultContactFontSize;
+    private static double functionFontSize = defaultFunctionFontSize;
+    private static boolean showZeroDelayNames = defaultShowZeroDelayNames;
     private static Double borderWidth = defaultBorderWidth;
     private static Double wireWidth = defaultWireWidth;
-    private static boolean showContacts = defaultShowContacts;
-    private static boolean showZeroDelayNames = defaultShowZeroDelayNames;
     private static Color activeWireColor = defaultActiveWireColor;
     private static Color inactiveWireColor = defaultInactiveWireColor;
     private static boolean simplifyStg = defaultSimplifyStg;
@@ -151,6 +157,30 @@ public class CircuitSettings extends AbstractModelSettings {
             @Override
             public Boolean getter(CircuitSettings object) {
                 return getShowContacts();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, Double>(
+                this, "Contact font size (cm)", Double.class) {
+            @Override
+            public void setter(CircuitSettings object, Double value) {
+                setContactFontSize(value);
+            }
+            @Override
+            public Double getter(CircuitSettings object) {
+                return getContactFontSize();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, Double>(
+                this, "Function font size (cm)", Double.class) {
+            @Override
+            public void setter(CircuitSettings object, Double value) {
+                setFunctionFontSize(value);
+            }
+            @Override
+            public Double getter(CircuitSettings object) {
+                return getFunctionFontSize();
             }
         });
 
@@ -607,10 +637,12 @@ public class CircuitSettings extends AbstractModelSettings {
 
     @Override
     public void load(Config config) {
+        setShowContacts(config.getBoolean(keyShowContacts, defaultShowContacts));
+        setContactFontSize(config.getDouble(keyContactFontSize, defaultContactFontSize));
+        setFunctionFontSize(config.getDouble(keyFunctionFontSize, defaultFunctionFontSize));
+        setShowZeroDelayNames(config.getBoolean(keyShowZeroDelayNames, defaultShowZeroDelayNames));
         setBorderWidth(config.getDouble(keyBorderWidth, defaultBorderWidth));
         setWireWidth(config.getDouble(keyWireWidth, defaultWireWidth));
-        setShowContacts(config.getBoolean(keyShowContacts, defaultShowContacts));
-        setShowZeroDelayNames(config.getBoolean(keyShowZeroDelayNames, defaultShowZeroDelayNames));
         setActiveWireColor(config.getColor(keyActiveWireColor, defaultActiveWireColor));
         setInactiveWireColor(config.getColor(keyInactiveWireColor, defaultInactiveWireColor));
         setSimplifyStg(config.getBoolean(keySimplifyStg, defaultSimplifyStg));
@@ -643,10 +675,12 @@ public class CircuitSettings extends AbstractModelSettings {
 
     @Override
     public void save(Config config) {
+        config.setBoolean(keyShowContacts, getShowContacts());
+        config.setDouble(keyContactFontSize, getContactFontSize());
+        config.setDouble(keyFunctionFontSize, getFunctionFontSize());
+        config.setBoolean(keyShowZeroDelayNames, getShowZeroDelayNames());
         config.setDouble(keyBorderWidth, getBorderWidth());
         config.setDouble(keyWireWidth, getWireWidth());
-        config.setBoolean(keyShowContacts, getShowContacts());
-        config.setBoolean(keyShowZeroDelayNames, getShowZeroDelayNames());
         config.setColor(keyActiveWireColor, getActiveWireColor());
         config.setColor(keyInactiveWireColor, getInactiveWireColor());
         config.setBoolean(keySimplifyStg, getSimplifyStg());
@@ -677,6 +711,38 @@ public class CircuitSettings extends AbstractModelSettings {
         config.setBoolean(keyVerilogAssignDelay, getVerilogAssignDelay());
     }
 
+    public static boolean getShowContacts() {
+        return showContacts;
+    }
+
+    public static void setShowContacts(boolean value) {
+        showContacts = value;
+    }
+
+    public static double getContactFontSize() {
+        return contactFontSize;
+    }
+
+    public static void setContactFontSize(double value) {
+        contactFontSize = value;
+    }
+
+    public static double getFunctionFontSize() {
+        return functionFontSize;
+    }
+
+    public static void setFunctionFontSize(double value) {
+        functionFontSize = value;
+    }
+
+    public static boolean getShowZeroDelayNames() {
+        return showZeroDelayNames;
+    }
+
+    public static void setShowZeroDelayNames(boolean value) {
+        showZeroDelayNames = value;
+    }
+
     public static double getBorderWidth() {
         return borderWidth;
     }
@@ -691,22 +757,6 @@ public class CircuitSettings extends AbstractModelSettings {
 
     public static void setWireWidth(double value) {
         wireWidth = value;
-    }
-
-    public static boolean getShowContacts() {
-        return showContacts;
-    }
-
-    public static void setShowContacts(boolean value) {
-        showContacts = value;
-    }
-
-    public static boolean getShowZeroDelayNames() {
-        return showZeroDelayNames;
-    }
-
-    public static void setShowZeroDelayNames(boolean value) {
-        showZeroDelayNames = value;
     }
 
     public static Color getActiveWireColor() {
