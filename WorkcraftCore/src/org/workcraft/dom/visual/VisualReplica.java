@@ -160,7 +160,7 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
         return getOffset(getNamePositioning());
     }
 
-    private boolean cacheNameRenderedText(DrawRequest r) {
+    private void cacheNameRenderedText(DrawRequest r) {
         String name = null;
         MathModel mathModel = r.getModel().getMathModel();
         if (getMaster() instanceof VisualComponent) {
@@ -171,15 +171,13 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
         if (name == null) {
             name = "";
         }
-        return cacheNameRenderedText(name, getNameFont(), getNamePositioning(), getNameOffset());
+        cacheNameRenderedText(name, getNameFont(), getNamePositioning(), getNameOffset());
     }
 
-    protected boolean cacheNameRenderedText(String text, Font font, Positioning positioning, Point2D offset) {
+    protected void cacheNameRenderedText(String text, Font font, Positioning positioning, Point2D offset) {
         if (nameRenderedText.isDifferent(text, font, positioning, offset)) {
             nameRenderedText = new RenderedText(text, font, positioning, offset);
-            return true;
         }
-        return false;
     }
 
     protected void drawNameInLocalSpace(DrawRequest r) {

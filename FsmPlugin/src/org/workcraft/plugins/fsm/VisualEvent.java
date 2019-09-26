@@ -67,16 +67,14 @@ public class VisualEvent extends VisualConnection {
         return LABEL_FONT.deriveFont((float) CommonVisualSettings.getLabelFontSize());
     }
 
-    protected boolean cacheLabelRenderedText(DrawRequest r) {
-        return cacheLabelRenderedText(getLabel(r), getLabelFont(), Positioning.CENTER, new Point2D.Double());
+    protected void cacheLabelRenderedText(DrawRequest r) {
+        cacheLabelRenderedText(getLabel(r), getLabelFont(), Positioning.CENTER, new Point2D.Double());
     }
 
-    protected boolean cacheLabelRenderedText(String text, Font font, Positioning positioning, Point2D offset) {
+    protected void cacheLabelRenderedText(String text, Font font, Positioning positioning, Point2D offset) {
         if (labelRenderedText.isDifferent(text, font, positioning, offset)) {
             labelRenderedText = new RenderedText(text, font, positioning, offset);
-            return true;
         }
-        return false;
     }
 
     public String getLabel(DrawRequest r) {

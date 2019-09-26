@@ -127,23 +127,18 @@ public class VisualVertex extends VisualComponent {
         return super.getLabelPositioning();
     }
 
-    public Vertex getReferencedVertex() {
-        return (Vertex) getReferencedComponent();
-    }
-
     @Override
     public boolean getLabelVisibility() {
         return true;
     }
 
     @Override
-    protected boolean cacheLabelRenderedText(DrawRequest r) {
-        Symbol symbol = getReferencedVertex().getSymbol();
+    protected void cacheLabelRenderedText(DrawRequest r) {
+        Symbol symbol = getReferencedComponent().getSymbol();
         if (symbol != null) {
             String label = r.getModel().getMathName(symbol);
-            return cacheLabelRenderedText(label, getLabelFont(), getLabelPositioning(), getLabelOffset());
+            cacheLabelRenderedText(label, getLabelFont(), getLabelPositioning(), getLabelOffset());
         }
-        return false;
     }
 
     @Override

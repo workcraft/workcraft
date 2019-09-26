@@ -110,17 +110,15 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
     }
 
     @Override
-    public boolean cacheNameRenderedText(DrawRequest r) {
-        return cacheNameRenderedText(getName(), getNameFont(), getNamePositioning(), getNameOffset());
+    public void cacheNameRenderedText(DrawRequest r) {
+        cacheNameRenderedText(getName(), getNameFont(), getNamePositioning(), getNameOffset());
     }
 
     @Override
     public void notify(StateEvent e) {
-        if (cacheNameRenderedText(getName(), getNameFont(), getNamePositioning(), getNameOffset())) {
-            // Updating the name rendered text changes bounding box of the transition,
-            // therefore transform notification should be sent.
-            transformChanged();
-        }
+        cacheNameRenderedText(getName(), getNameFont(), getNamePositioning(), getNameOffset());
+        // Updating the name rendered text changes bounding box of the transition, therefore transform notification should be sent.
+        transformChanged();
     }
 
 }

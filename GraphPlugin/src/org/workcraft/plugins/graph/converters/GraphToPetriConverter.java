@@ -1,11 +1,5 @@
 package org.workcraft.plugins.graph.converters;
 
-import java.awt.geom.Point2D;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.HierarchyReferenceManager;
@@ -23,6 +17,12 @@ import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.utils.Hierarchy;
+
+import java.awt.geom.Point2D;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class GraphToPetriConverter {
     private final VisualGraph srcModel;
@@ -51,7 +51,7 @@ public class GraphToPetriConverter {
         for (Entry<VisualVertex, VisualTransition> entry: vertexToTransitionMap.entrySet()) {
             VisualVertex vertex = entry.getKey();
             VisualTransition transition = entry.getValue();
-            Symbol symbol = vertex.getReferencedVertex().getSymbol();
+            Symbol symbol = vertex.getReferencedComponent().getSymbol();
             String dstName = dstModel.getMathName(transition);
             String srcName = (symbol == null) ? "" : srcModel.getMathName(symbol);
             result.put(dstName, srcName);
@@ -78,7 +78,7 @@ public class GraphToPetriConverter {
         HierarchyReferenceManager refManager = (HierarchyReferenceManager) dstModel.getPetriNet().getReferenceManager();
         NameManager nameManagerer = refManager.getNameManager(null);
         for (VisualVertex vertex: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualVertex.class)) {
-            Symbol symbol = vertex.getReferencedVertex().getSymbol();
+            Symbol symbol = vertex.getReferencedComponent().getSymbol();
             String symbolName = (symbol == null) ? Graph.EPSILON_SERIALISATION : srcModel.getMathName(symbol);
             String name = nameManagerer.getDerivedName(null, symbolName);
             VisualTransition transition = dstModel.createTransition(name, null);
