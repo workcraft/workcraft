@@ -71,10 +71,11 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyTbufData = prefix + ".tbufData";
     private static final String keyTinvData = prefix + ".tinvData";
     private static final String keyScanSuffix = prefix + ".scanSuffix";
-    private static final String keyScanckPortPin = prefix + ".scanckPortPin";
-    private static final String keyScanenPortPin = prefix + ".scanenPortPin";
     private static final String keyScaninPortPin = prefix + ".scaninPortPin";
     private static final String keyScanoutPortPin = prefix + ".scanoutPortPin";
+    private static final String keyScanckPortPin = prefix + ".scanckPortPin";
+    private static final String keyScanenPortPin = prefix + ".scanenPortPin";
+    private static final String keyScantmPortPin = prefix + ".scantmPortPin";
     private static final String keyVerilogAssignDelay = prefix + ".verilogAssignDelay";
 
     private static final boolean defaultShowContacts = false;
@@ -106,10 +107,11 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String defaultTbufData = "TBUF (I, O)";
     private static final String defaultTinvData = "TINV (I, ON)";
     private static final String defaultScanSuffix = "_scan";
-    private static final String defaultScanckPortPin = "scanck / CK";
-    private static final String defaultScanenPortPin = "scanen / SE";
     private static final String defaultScaninPortPin = "scanin / SI";
     private static final String defaultScanoutPortPin = "scanout / SO";
+    private static final String defaultScanckPortPin = "scanck / CK";
+    private static final String defaultScanenPortPin = "scanen / SE";
+    private static final String defaultScantmPortPin = "scantm / TM";
     private static final boolean defaultVerilogAssignDelay = false;
 
     private static boolean showContacts = defaultShowContacts;
@@ -141,10 +143,11 @@ public class CircuitSettings extends AbstractModelSettings {
     private static String tbufData = defaultTbufData;
     private static String tinvData = defaultTinvData;
     private static String scanSuffix = defaultScanSuffix;
-    private static String scanckPortPin = defaultScanckPortPin;
-    private static String scanenPortPin = defaultScanenPortPin;
     private static String scaninPortPin = defaultScaninPortPin;
     private static String scanoutPortPin = defaultScanoutPortPin;
+    private static String scanckPortPin = defaultScanckPortPin;
+    private static String scanenPortPin = defaultScanenPortPin;
+    private static String scantmPortPin = defaultScantmPortPin;
     private static boolean verilogAssignDelay = defaultVerilogAssignDelay;
 
     public CircuitSettings() {
@@ -323,7 +326,7 @@ public class CircuitSettings extends AbstractModelSettings {
                 if (parseGate2Data(value) != null) {
                     setBufData(value);
                 } else {
-                    DialogUtils.showError("BUF description format is incorrect. It should be as follows:\n" + defaultBufData);
+                    errorDescriptionFormat("BUF", defaultBufData);
                 }
             }
             @Override
@@ -339,7 +342,7 @@ public class CircuitSettings extends AbstractModelSettings {
                 if (parseGate3Data(value) != null) {
                     setAndData(value);
                 } else {
-                    DialogUtils.showError("AND2 description format is incorrect. It should be as follows:\n" + defaultAndData);
+                    errorDescriptionFormat("AND2", defaultAndData);
                 }
             }
             @Override
@@ -355,7 +358,7 @@ public class CircuitSettings extends AbstractModelSettings {
                 if (parseGate3Data(value) != null) {
                     setOrData(value);
                 } else {
-                    DialogUtils.showError("OR2 description format is incorrect. It should be as follows:\n" + defaultOrData);
+                    errorDescriptionFormat("OR2", defaultOrData);
                 }
             }
             @Override
@@ -371,7 +374,7 @@ public class CircuitSettings extends AbstractModelSettings {
                 if (parseGate3Data(value) != null) {
                     setNandData(value);
                 } else {
-                    DialogUtils.showError("NAND2 description format is incorrect. It should be as follows:\n" + defaultAndData);
+                    errorDescriptionFormat("NAND2", defaultNandData);
                 }
             }
             @Override
@@ -387,7 +390,7 @@ public class CircuitSettings extends AbstractModelSettings {
                 if (parseGate3Data(value) != null) {
                     setNorData(value);
                 } else {
-                    DialogUtils.showError("NOR2 description format is incorrect. It should be as follows:\n" + defaultOrData);
+                    errorDescriptionFormat("NOR2", defaultNorData);
                 }
             }
             @Override
@@ -403,7 +406,7 @@ public class CircuitSettings extends AbstractModelSettings {
                 if (parseGate3Data(value) != null) {
                     setNandbData(value);
                 } else {
-                    DialogUtils.showError("NAND2B description format is incorrect. It should be as follows:\n" + defaultAndData);
+                    errorDescriptionFormat("NAND2B", defaultNandData);
                 }
             }
             @Override
@@ -419,7 +422,7 @@ public class CircuitSettings extends AbstractModelSettings {
                 if (parseGate3Data(value) != null) {
                     setNorbData(value);
                 } else {
-                    DialogUtils.showError("NOR2B description format is incorrect. It should be as follows:\n" + defaultOrData);
+                    errorDescriptionFormat("NOR2B", defaultNorbData);
                 }
             }
             @Override
@@ -435,7 +438,7 @@ public class CircuitSettings extends AbstractModelSettings {
                 if (parseMutexData(value) != null) {
                     setMutexData(value);
                 } else {
-                    DialogUtils.showError("Mutex description format is incorrect. It should be as follows:\n" + defaultMutexData);
+                    errorDescriptionFormat("Mutex", defaultMutexData);
                 }
             }
             @Override
@@ -511,7 +514,7 @@ public class CircuitSettings extends AbstractModelSettings {
                 if (parseGate2Data(value) != null) {
                     setTbufData(value);
                 } else {
-                    DialogUtils.showError("Testable buffer description format is incorrect. It should be as follows:\n" + defaultTbufData);
+                    errorDescriptionFormat("Testable buffer", defaultTbufData);
                 }
             }
             @Override
@@ -527,7 +530,7 @@ public class CircuitSettings extends AbstractModelSettings {
                 if (parseGate2Data(value) != null) {
                     setTinvData(value);
                 } else {
-                    DialogUtils.showError("Testable inverter description format is incorrect. It should be as follows:\n" + defaultTinvData);
+                    errorDescriptionFormat("Testable inverter", defaultTinvData);
                 }
             }
             @Override
@@ -549,45 +552,13 @@ public class CircuitSettings extends AbstractModelSettings {
         });
 
         properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Scan clock port / pin names", String.class) {
-            @Override
-            public void setter(CircuitSettings object, String value) {
-                if (parsePortPinPair(value) != null) {
-                    setScanckPortPin(value);
-                } else {
-                    DialogUtils.showError("Scan clock port and pin should be /-separated pair of valid names.");
-                }
-            }
-            @Override
-            public String getter(CircuitSettings object) {
-                return getScanckPortPin();
-            }
-        });
-
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Scan enable port / pin name", String.class) {
-            @Override
-            public void setter(CircuitSettings object, String value) {
-                if (parsePortPinPair(value) != null) {
-                    setScanenPortPin(value);
-                } else {
-                    DialogUtils.showError("Scan enable port and pin should be /-separated pair of valid names.");
-                }
-            }
-            @Override
-            public String getter(CircuitSettings object) {
-                return getScanenPortPin();
-            }
-        });
-
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
                 this, "Scan input port / pin names", String.class) {
             @Override
             public void setter(CircuitSettings object, String value) {
                 if (parsePortPinPair(value) != null) {
                     setScaninPortPin(value);
                 } else {
-                    DialogUtils.showError("Scan input port and pin should be /-separated pair of valid names.");
+                    errorPortPinFormat("Scan input");
                 }
             }
             @Override
@@ -603,12 +574,60 @@ public class CircuitSettings extends AbstractModelSettings {
                 if (parsePortPinPair(value) != null) {
                     setScanoutPortPin(value);
                 } else {
-                    DialogUtils.showError("Scan output port and pin should be /-separated pair of valid names.");
+                    errorPortPinFormat("Scan output");
                 }
             }
             @Override
             public String getter(CircuitSettings object) {
                 return getScanoutPortPin();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, String>(
+                this, "Scan clock port / pin names", String.class) {
+            @Override
+            public void setter(CircuitSettings object, String value) {
+                if (parsePortPinPair(value) != null) {
+                    setScanckPortPin(value);
+                } else {
+                    errorPortPinFormat("Scan clock");
+                }
+            }
+            @Override
+            public String getter(CircuitSettings object) {
+                return getScanckPortPin();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, String>(
+                this, "Scan enable port / pin name", String.class) {
+            @Override
+            public void setter(CircuitSettings object, String value) {
+                if (parsePortPinPair(value) != null) {
+                    setScanenPortPin(value);
+                } else {
+                    errorPortPinFormat("Scan enable");
+                }
+            }
+            @Override
+            public String getter(CircuitSettings object) {
+                return getScanenPortPin();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, String>(
+                this, "Scan test mode port / pin names", String.class) {
+            @Override
+            public void setter(CircuitSettings object, String value) {
+                if (parsePortPinPair(value) != null) {
+                    setScantmPortPin(value);
+                } else {
+                    errorPortPinFormat("Scan test mode");
+                }
+            }
+            @Override
+            public String getter(CircuitSettings object) {
+                return getScantmPortPin();
             }
         });
 
@@ -623,6 +642,14 @@ public class CircuitSettings extends AbstractModelSettings {
                 return getVerilogAssignDelay();
             }
         });
+    }
+
+    private void errorDescriptionFormat(String prefix, String suffix) {
+        DialogUtils.showError(prefix + " description format is incorrect. It should be as follows:\n" + suffix);
+    }
+
+    private void errorPortPinFormat(String prefix) {
+        DialogUtils.showError(prefix + " port and pin should be a pair of valid names separated by '/'.");
     }
 
     @Override
@@ -666,10 +693,11 @@ public class CircuitSettings extends AbstractModelSettings {
         setTbufData(config.getString(keyTbufData, defaultTbufData));
         setTinvData(config.getString(keyTinvData, defaultTinvData));
         setScanSuffix(config.getString(keyScanSuffix, defaultScanSuffix));
-        setScanckPortPin(config.getString(keyScanckPortPin, defaultScanckPortPin));
-        setScanenPortPin(config.getString(keyScanenPortPin, defaultScanenPortPin));
         setScaninPortPin(config.getString(keyScaninPortPin, defaultScaninPortPin));
         setScanoutPortPin(config.getString(keyScanoutPortPin, defaultScanoutPortPin));
+        setScanckPortPin(config.getString(keyScanckPortPin, defaultScanckPortPin));
+        setScanenPortPin(config.getString(keyScanenPortPin, defaultScanenPortPin));
+        setScantmPortPin(config.getString(keyScantmPortPin, defaultScantmPortPin));
         setVerilogAssignDelay(config.getBoolean(keyVerilogAssignDelay, defaultVerilogAssignDelay));
     }
 
@@ -704,10 +732,11 @@ public class CircuitSettings extends AbstractModelSettings {
         config.set(keyTbufData, getTbufData());
         config.set(keyTinvData, getTinvData());
         config.set(keyScanSuffix, getScanSuffix());
-        config.set(keyScanckPortPin, getScanckPortPin());
-        config.set(keyScanenPortPin, getScanenPortPin());
         config.set(keyScaninPortPin, getScaninPortPin());
         config.set(keyScanoutPortPin, getScanoutPortPin());
+        config.set(keyScanckPortPin, getScanckPortPin());
+        config.set(keyScanenPortPin, getScanenPortPin());
+        config.set(keyScantmPortPin, getScantmPortPin());
         config.setBoolean(keyVerilogAssignDelay, getVerilogAssignDelay());
     }
 
@@ -983,6 +1012,30 @@ public class CircuitSettings extends AbstractModelSettings {
         scanSuffix = value;
     }
 
+    public static String getScaninPortPin() {
+        return scaninPortPin;
+    }
+
+    public static void setScaninPortPin(String value) {
+        scaninPortPin = value;
+    }
+
+    public static Pair<String, String> parseScaninPortPin() {
+        return parsePortPinPair(getScaninPortPin());
+    }
+
+    public static String getScanoutPortPin() {
+        return scanoutPortPin;
+    }
+
+    public static void setScanoutPortPin(String value) {
+        scanoutPortPin = value;
+    }
+
+    public static Pair<String, String> parseScanoutPortPin() {
+        return parsePortPinPair(getScanoutPortPin());
+    }
+
     public static String getScanckPortPin() {
         return scanckPortPin;
     }
@@ -1007,28 +1060,16 @@ public class CircuitSettings extends AbstractModelSettings {
         return parsePortPinPair(getScanenPortPin());
     }
 
-    public static String getScaninPortPin() {
-        return scaninPortPin;
+    public static String getScantmPortPin() {
+        return scantmPortPin;
     }
 
-    public static void setScaninPortPin(String value) {
-        scaninPortPin = value;
+    public static void setScantmPortPin(String value) {
+        scantmPortPin = value;
     }
 
-    public static Pair<String, String> parseScaninPortPin() {
-        return parsePortPinPair(getScaninPortPin());
-    }
-
-    public static String getScanoutPortPin() {
-        return scanoutPortPin;
-    }
-
-    public static void setScanoutPortPin(String value) {
-        scanoutPortPin = value;
-    }
-
-    public static Pair<String, String> parseScanoutPortPin() {
-        return parsePortPinPair(getScanoutPortPin());
+    public static Pair<String, String> parseScantmPortPin() {
+        return parsePortPinPair(getScantmPortPin());
     }
 
     public static boolean getVerilogAssignDelay() {

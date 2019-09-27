@@ -79,67 +79,74 @@ public class ScanUtils {
         });
 
         if (!pathbreakerComponents.isEmpty()) {
-            String scanckName = CircuitSettings.parseScanckPortPin().getFirst();
-            VisualFunctionContact scanckPort = CircuitUtils.getOrCreatePort(
-                    circuit, scanckName, Contact.IOType.INPUT, VisualContact.Direction.WEST);
+            String ckName = CircuitSettings.parseScanckPortPin().getFirst();
+            VisualFunctionContact ckPort = CircuitUtils.getOrCreatePort(
+                    circuit, ckName, Contact.IOType.INPUT, VisualContact.Direction.WEST);
 
-            String scanenName = CircuitSettings.parseScanenPortPin().getFirst();
-            VisualFunctionContact scanenPort = CircuitUtils.getOrCreatePort(
-                    circuit, scanenName, Contact.IOType.INPUT, VisualContact.Direction.WEST);
+            String enName = CircuitSettings.parseScanenPortPin().getFirst();
+            VisualFunctionContact enPort = CircuitUtils.getOrCreatePort(
+                    circuit, enName, Contact.IOType.INPUT, VisualContact.Direction.WEST);
 
-            String scaninName = CircuitSettings.parseScaninPortPin().getFirst();
-            VisualFunctionContact scaninPort = CircuitUtils.getOrCreatePort(
-                    circuit, scaninName, Contact.IOType.INPUT, VisualContact.Direction.EAST);
+            String tmName = CircuitSettings.parseScantmPortPin().getFirst();
+            VisualFunctionContact tmPort = CircuitUtils.getOrCreatePort(
+                    circuit, tmName, Contact.IOType.INPUT, VisualContact.Direction.WEST);
 
-            insertScanChain(circuit, pathbreakerComponents, scanckPort, scanenPort, scaninPort);
+            String inName = CircuitSettings.parseScaninPortPin().getFirst();
+            VisualFunctionContact inPort = CircuitUtils.getOrCreatePort(
+                    circuit, inName, Contact.IOType.INPUT, VisualContact.Direction.EAST);
+
+            insertScanChain(circuit, pathbreakerComponents, ckPort, enPort, tmPort, inPort);
         }
     }
 
     private static void insertScanChain(VisualCircuit circuit, List<VisualFunctionComponent> pathbreakerComponents,
-            VisualFunctionContact scanckPort, VisualFunctionContact scanenPort, VisualFunctionContact scaninPort)
-            throws InvalidConnectionException {
+            VisualFunctionContact ckPort, VisualFunctionContact enPort, VisualFunctionContact tmPort,
+            VisualFunctionContact inPort) throws InvalidConnectionException {
 
         // Is scanin port is connected then prepend existing scan chain, otherwise create a new scan chain
-        Set<VisualNode> scaninPostset = new HashSet<>(circuit.getPostset(scaninPort));
-        if (!scaninPostset.isEmpty()) {
-            for (VisualNode succNode : scaninPostset) {
-                VisualConnection connection = circuit.getConnection(scaninPort, succNode);
+        Set<VisualNode> inPostset = new HashSet<>(circuit.getPostset(inPort));
+        if (!inPostset.isEmpty()) {
+            for (VisualNode succNode : inPostset) {
+                VisualConnection connection = circuit.getConnection(inPort, succNode);
                 if (connection != null) {
                     circuit.remove(connection);
                 }
             }
-            VisualFunctionContact scanoutPin = createScanChain(circuit, pathbreakerComponents, scanckPort, scanenPort, scaninPort);
-            for (VisualNode succNode : scaninPostset) {
-                circuit.connect(scanoutPin, succNode);
+            VisualFunctionContact outPin = createScanChain(circuit, pathbreakerComponents, ckPort, enPort, tmPort, inPort);
+            for (VisualNode succNode : inPostset) {
+                circuit.connect(outPin, succNode);
             }
         } else {
-            VisualFunctionContact scanoutPin = createScanChain(circuit, pathbreakerComponents, scanckPort, scanenPort, scaninPort);
-            SpaceUtils.positionPort(circuit, scanckPort, false);
-            scanckPort.setSetFunction(Zero.getInstance());
+            VisualFunctionContact outPin = createScanChain(circuit, pathbreakerComponents, ckPort, enPort, tmPort, inPort);
+            SpaceUtils.positionPort(circuit, ckPort, false);
+            ckPort.setSetFunction(Zero.getInstance());
 
-            SpaceUtils.positionPort(circuit, scanenPort, false);
-            scanenPort.setSetFunction(Zero.getInstance());
+            SpaceUtils.positionPort(circuit, enPort, false);
+            enPort.setSetFunction(Zero.getInstance());
 
-            SpaceUtils.positionPort(circuit, scaninPort, true);
-            scaninPort.setSetFunction(Zero.getInstance());
+            SpaceUtils.positionPort(circuit, tmPort, false);
+            tmPort.setSetFunction(Zero.getInstance());
+
+            SpaceUtils.positionPort(circuit, inPort, true);
+            inPort.setSetFunction(Zero.getInstance());
 
             // If the last pin of SCAN chain is connected to an output port, use that port as scanout.
             // (This is necessary because a fork to several output ports is not allowed.)
 
-            String scanoutName = CircuitSettings.parseScanoutPortPin().getFirst();
+            String outName = CircuitSettings.parseScanoutPortPin().getFirst();
 
-            Contact existingPort = CircuitUtils.getDrivenOutputPort(circuit.getMathModel(), scanoutPin.getReferencedContact());
+            Contact existingPort = CircuitUtils.getDrivenOutputPort(circuit.getMathModel(), outPin.getReferencedContact());
             if (existingPort == null) {
-                VisualFunctionContact scanoutPort = CircuitUtils.getOrCreatePort(
-                        circuit, scanoutName, Contact.IOType.OUTPUT, VisualContact.Direction.EAST);
+                VisualFunctionContact outPort = CircuitUtils.getOrCreatePort(
+                        circuit, outName, Contact.IOType.OUTPUT, VisualContact.Direction.EAST);
 
-                circuit.connect(scanoutPin, scanoutPort);
-                SpaceUtils.positionPort(circuit, scanoutPort, true);
-                scanoutPort.setSetFunction(Zero.getInstance());
+                circuit.connect(outPin, outPort);
+                SpaceUtils.positionPort(circuit, outPort, true);
+                outPort.setSetFunction(Zero.getInstance());
             } else {
                 String ref = circuit.getMathReference(existingPort);
-                if (!scanoutName.equals(ref)) {
-                    String msg = "Existing port '" + ref + "' is used as SCAN chain output instead of '" + scanoutName + "'."
+                if (!outName.equals(ref)) {
+                    String msg = "Existing port '" + ref + "' is used as SCAN chain output instead of '" + outName + "'."
                             + "\nThis is necessary because a fork on several output ports is not allowed.";
 
                     DialogUtils.showWarning(msg, "Insertion of SCAN");
@@ -149,17 +156,18 @@ public class ScanUtils {
     }
 
     private static VisualFunctionContact createScanChain(VisualCircuit circuit, List<VisualFunctionComponent> components,
-            VisualFunctionContact scanckPort, VisualFunctionContact scanenPort, VisualFunctionContact scaninPort) {
+            VisualFunctionContact ckPort, VisualFunctionContact enPort, VisualFunctionContact tmPort, VisualFunctionContact inPort) {
 
-        VisualFunctionContact scanoutPin = scaninPort;
+        VisualFunctionContact outPin = inPort;
         for (VisualFunctionComponent component : components) {
-            scanoutPin = insertScanChain(circuit, component, scanckPort, scanenPort, scanoutPin);
+            outPin = insertScanChain(circuit, component, ckPort, enPort, tmPort, outPin);
         }
-        return scanoutPin;
+        return outPin;
     }
 
     private static VisualFunctionContact insertScanChain(VisualCircuit circuit, VisualFunctionComponent component,
-            VisualFunctionContact scanckPort, VisualFunctionContact scanenPort, VisualFunctionContact dataContact) {
+            VisualFunctionContact ckPort, VisualFunctionContact enPort, VisualFunctionContact tmPort,
+            VisualFunctionContact dataContact) {
 
         component.setRenderType(ComponentRenderingResult.RenderType.BOX);
         String moduleName = component.getReferencedComponent().getModule();
@@ -168,47 +176,54 @@ public class ScanUtils {
             component.getReferencedComponent().setModule(moduleName + scanSuffix);
         }
 
-        VisualFunctionContact scanckPin = CircuitUtils.getOrCreateContact(circuit, component,
+        VisualFunctionContact ckPin = CircuitUtils.getOrCreateContact(circuit, component,
                 CircuitSettings.parseScanckPortPin().getSecond(),
                 Contact.IOType.INPUT, VisualContact.Direction.WEST);
 
-        VisualFunctionContact scanenPin = CircuitUtils.getOrCreateContact(circuit, component,
+        VisualFunctionContact enPin = CircuitUtils.getOrCreateContact(circuit, component,
                 CircuitSettings.parseScanenPortPin().getSecond(),
                 Contact.IOType.INPUT, VisualContact.Direction.WEST);
 
-        String scaninName = CircuitSettings.parseScaninPortPin().getSecond();
-        String ref = NamespaceHelper.getReference(circuit.getMathReference(component), scaninName);
+        VisualFunctionContact tmPin = CircuitUtils.getOrCreateContact(circuit, component,
+                CircuitSettings.parseScantmPortPin().getSecond(),
+                Contact.IOType.INPUT, VisualContact.Direction.WEST);
+
+        String inName = CircuitSettings.parseScaninPortPin().getSecond();
+        String ref = NamespaceHelper.getReference(circuit.getMathReference(component), inName);
         boolean noScaninPin = circuit.getVisualComponentByMathReference(ref, VisualFunctionContact.class) == null;
-        VisualFunctionContact scaninPin = CircuitUtils.getOrCreateContact(circuit, component,
-                scaninName, Contact.IOType.INPUT, VisualContact.Direction.EAST);
+        VisualFunctionContact inPin = CircuitUtils.getOrCreateContact(circuit, component,
+                inName, Contact.IOType.INPUT, VisualContact.Direction.EAST);
 
         if (noScaninPin) {
-            scaninPin.setY(scaninPin.getY() + 0.5);
+            inPin.setY(inPin.getY() + 1.5);
         }
 
-        VisualFunctionContact scanoutPin = null;
+        VisualFunctionContact outPin = null;
         if (component.getVisualOutputs().size() == 1) {
-            scanoutPin = component.getFirstVisualOutput();
+            outPin = component.getFirstVisualOutput();
         } else {
-            scanoutPin = CircuitUtils.getOrCreateContact(circuit, component,
+            outPin = CircuitUtils.getOrCreateContact(circuit, component,
                     CircuitSettings.parseScanoutPortPin().getSecond(),
                     Contact.IOType.OUTPUT, VisualContact.Direction.EAST);
         }
 
         try {
-            if (circuit.getConnections(scanckPin).isEmpty()) {
-                circuit.connect(scanckPort, scanckPin);
+            if (circuit.getConnections(ckPin).isEmpty()) {
+                circuit.connect(ckPort, ckPin);
             }
-            if (circuit.getConnections(scanenPin).isEmpty()) {
-                circuit.connect(scanenPort, scanenPin);
+            if (circuit.getConnections(enPin).isEmpty()) {
+                circuit.connect(enPort, enPin);
             }
-            if (circuit.getConnections(scaninPin).isEmpty()) {
-                circuit.connect(dataContact, scaninPin);
+            if (circuit.getConnections(tmPin).isEmpty()) {
+                circuit.connect(tmPort, tmPin);
+            }
+            if (circuit.getConnections(inPin).isEmpty()) {
+                circuit.connect(dataContact, inPin);
             }
         } catch (InvalidConnectionException e) {
             throw new RuntimeException(e);
         }
-        return scanoutPin;
+        return outPin;
     }
 
     public static boolean hasPathBreakerOutput(CircuitComponent component) {
