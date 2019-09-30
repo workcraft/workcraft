@@ -3,20 +3,21 @@ package org.workcraft.plugins.stg;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
-import org.workcraft.utils.Coloriser;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
-import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
+import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.tools.CoreDecoration;
 import org.workcraft.serialisation.NoAutoSerialisation;
+import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 public class VisualNamedTransition extends VisualTransition implements StateObserver {
+
 
     public VisualNamedTransition(NamedTransition namedTransition) {
         super(namedTransition, false, false, false);
@@ -39,7 +40,7 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 
     @Override
     public  Font getNameFont() {
-        return new Font(Font.SANS_SERIF, Font.PLAIN, 1).deriveFont(0.75f);
+        return LABEL_FONT.deriveFont((float) StgSettings.getTransitionFontSize());
     }
 
     @Override
@@ -109,17 +110,15 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
     }
 
     @Override
-    public boolean cacheNameRenderedText(DrawRequest r) {
-        return cacheNameRenderedText(getName(), getNameFont(), getNamePositioning(), getNameOffset());
+    public void cacheNameRenderedText(DrawRequest r) {
+        cacheNameRenderedText(getName(), getNameFont(), getNamePositioning(), getNameOffset());
     }
 
     @Override
     public void notify(StateEvent e) {
-        if (cacheNameRenderedText(getName(), getNameFont(), getNamePositioning(), getNameOffset())) {
-            // Updating the name rendered text changes bounding box of the transition,
-            // therefore transform notification should be sent.
-            transformChanged();
-        }
+        cacheNameRenderedText(getName(), getNameFont(), getNamePositioning(), getNameOffset());
+        // Updating the name rendered text changes bounding box of the transition, therefore transform notification should be sent.
+        transformChanged();
     }
 
 }

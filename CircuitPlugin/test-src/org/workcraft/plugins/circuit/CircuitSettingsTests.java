@@ -20,17 +20,23 @@ public class CircuitSettingsTests {
         final Framework framework = Framework.getInstance();
         String prefix = "CircuitSettings";
 
+        Assert.assertEquals(Config.toString(CircuitSettings.getShowContacts()),
+                framework.getConfigVar(prefix + ".showContacts", false));
+
+        Assert.assertEquals(Config.toString(CircuitSettings.getContactFontSize()),
+                framework.getConfigVar(prefix + ".contactFontSize", false));
+
+        Assert.assertEquals(Config.toString(CircuitSettings.getFunctionFontSize()),
+                framework.getConfigVar(prefix + ".functionFontSize", false));
+
+        Assert.assertEquals(Config.toString(CircuitSettings.getShowZeroDelayNames()),
+                framework.getConfigVar(prefix + ".showZeroDelayNames", false));
+
         Assert.assertEquals(Config.toString(CircuitSettings.getBorderWidth()),
                 framework.getConfigVar(prefix + ".borderWidth", false));
 
         Assert.assertEquals(Config.toString(CircuitSettings.getWireWidth()),
                 framework.getConfigVar(prefix + ".wireWidth", false));
-
-        Assert.assertEquals(Config.toString(CircuitSettings.getShowContacts()),
-                framework.getConfigVar(prefix + ".showContacts", false));
-
-        Assert.assertEquals(Config.toString(CircuitSettings.getShowZeroDelayNames()),
-                framework.getConfigVar(prefix + ".showZeroDelayNames", false));
 
         Assert.assertEquals(Config.toString(CircuitSettings.getActiveWireColor()),
                 framework.getConfigVar(prefix + ".activeWireColor", false));
@@ -101,17 +107,20 @@ public class CircuitSettingsTests {
         Assert.assertEquals(Config.toString(CircuitSettings.getScanSuffix()),
                 framework.getConfigVar(prefix + ".scanSuffix", false));
 
+        Assert.assertEquals(Config.toString(CircuitSettings.getScaninPortPin()),
+                framework.getConfigVar(prefix + ".scaninPortPin", false));
+
+        Assert.assertEquals(Config.toString(CircuitSettings.getScanoutPortPin()),
+                framework.getConfigVar(prefix + ".scanoutPortPin", false));
+
         Assert.assertEquals(Config.toString(CircuitSettings.getScanckPortPin()),
                 framework.getConfigVar(prefix + ".scanckPortPin", false));
 
         Assert.assertEquals(Config.toString(CircuitSettings.getScanenPortPin()),
                 framework.getConfigVar(prefix + ".scanenPortPin", false));
 
-        Assert.assertEquals(Config.toString(CircuitSettings.getScaninPortPin()),
-                framework.getConfigVar(prefix + ".scaninPortPin", false));
-
-        Assert.assertEquals(Config.toString(CircuitSettings.getScanoutPortPin()),
-                framework.getConfigVar(prefix + ".scanoutPortPin", false));
+        Assert.assertEquals(Config.toString(CircuitSettings.getScantmPortPin()),
+                framework.getConfigVar(prefix + ".scantmPortPin", false));
 
         Assert.assertEquals(Config.toString(CircuitSettings.getVerilogAssignDelay()),
                 framework.getConfigVar(prefix + ".verilogAssignDelay", false));

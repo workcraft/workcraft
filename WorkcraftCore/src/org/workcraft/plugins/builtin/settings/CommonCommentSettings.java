@@ -19,6 +19,7 @@ public class CommonCommentSettings extends AbstractCommonSettings {
     private static final String keyTextColor = prefix + ".textColor";
     private static final String keyBorderColor = prefix + ".borderColor";
     private static final String keyFillColor = prefix + ".fillColor";
+    private static final String keyFontSize = prefix + ".fontSize";
 
     private static final double defaultBaseSize = 1.0;
     private static final double defaultStrokeWidth = 0.02;
@@ -26,6 +27,7 @@ public class CommonCommentSettings extends AbstractCommonSettings {
     private static final Color defaultTextColor = Color.BLACK;
     private static final Color defaultBorderColor = Color.GRAY;
     private static final Color defaultFillColor = new Color(255, 255, 200);
+    private static final double defaultFontSize = 0.5f;
 
     private static double baseSize = defaultBaseSize;
     private static double strokeWidth = defaultStrokeWidth;
@@ -33,6 +35,7 @@ public class CommonCommentSettings extends AbstractCommonSettings {
     private static Color textColor = defaultTextColor;
     private static Color borderColor = defaultBorderColor;
     private static Color fillColor = defaultFillColor;
+    private static double fontSize = defaultFontSize;
 
     public CommonCommentSettings() {
         properties.add(new PropertyDeclaration<CommonCommentSettings, Double>(
@@ -106,6 +109,18 @@ public class CommonCommentSettings extends AbstractCommonSettings {
                 return getFillColor();
             }
         });
+
+        properties.add(new PropertyDeclaration<CommonCommentSettings, Double>(
+                this, "Font size (cm)", Double.class) {
+            @Override
+            public void setter(CommonCommentSettings object, Double value) {
+                setFontSize(value);
+            }
+            @Override
+            public Double getter(CommonCommentSettings object) {
+                return getFontSize();
+            }
+        });
     }
 
     @Override
@@ -121,6 +136,7 @@ public class CommonCommentSettings extends AbstractCommonSettings {
         setTextColor(config.getColor(keyTextColor, defaultTextColor));
         setBorderColor(config.getColor(keyBorderColor, defaultBorderColor));
         setFillColor(config.getColor(keyFillColor, defaultFillColor));
+        setFontSize(config.getDouble(keyFontSize, defaultFontSize));
     }
 
     @Override
@@ -131,6 +147,7 @@ public class CommonCommentSettings extends AbstractCommonSettings {
         config.setColor(keyTextColor, getTextColor());
         config.setColor(keyBorderColor, getBorderColor());
         config.setColor(keyFillColor, getFillColor());
+        config.setDouble(keyFontSize, getFontSize());
     }
 
     @Override
@@ -184,6 +201,14 @@ public class CommonCommentSettings extends AbstractCommonSettings {
 
     public static void setFillColor(Color value) {
         fillColor = value;
+    }
+
+    public static double getFontSize() {
+        return fontSize;
+    }
+
+    public static void setFontSize(double value) {
+        fontSize = value;
     }
 
 }

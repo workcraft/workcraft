@@ -24,9 +24,11 @@ public class CommonVisualSettings extends AbstractCommonSettings {
     private static final String keyLabelVisibility = prefix + ".labelVisibility";
     private static final String keyLabelPositioning = prefix + ".labelPositioning";
     private static final String keyLabelColor = prefix + ".labelColor";
+    private static final String keyLabelFontSize = prefix + ".labelFontSize";
     private static final String keyNameVisibility = prefix + ".nameVisibility";
     private static final String keyNamePositioning = prefix + ".namePositioning";
     private static final String keyNameColor = prefix + ".nameColor";
+    private static final String keyNameFontSize = prefix + ".nameFontSize";
     private static final String keyConnectionLineWidth = prefix + ".connectionLineWidth";
     private static final String keyConnectionArrowWidth = prefix + ".connectionArrowWidth";
     private static final String keyConnectionArrowLength = prefix + ".connectionArrowLength";
@@ -45,9 +47,11 @@ public class CommonVisualSettings extends AbstractCommonSettings {
     private static final boolean defaultLabelVisibility = true;
     private static final Positioning defaultLabelPositioning = Positioning.TOP;
     private static final Color defaultLabelColor = Color.BLACK;
+    private static final double defaultLabelFontSize = 0.5f;
     private static final boolean defaultNameVisibility = true;
     private static final Positioning defaultNamePositioning = Positioning.BOTTOM;
     private static final Color defaultNameColor = Color.GRAY.darker();
+    private static final double defaultNameFontSize = 0.5f;
     private static final double defaultConnectionLineWidth = 0.02;
     private static final double defaultConnectionArrowWidth = 0.15;
     private static final double defaultConnectionArrowLength = 0.4;
@@ -66,9 +70,11 @@ public class CommonVisualSettings extends AbstractCommonSettings {
     private static boolean labelVisibility = defaultLabelVisibility;
     private static Positioning labelPositioning = defaultLabelPositioning;
     private static Color labelColor = defaultLabelColor;
+    private static double labelFontSize = defaultLabelFontSize;
     private static boolean nameVisibility = defaultNameVisibility;
     private static Positioning namePositioning = defaultNamePositioning;
     private static Color nameColor = defaultNameColor;
+    private static double nameFontSize = defaultNameFontSize;
     private static double connectionLineWidth = defaultConnectionLineWidth;
     private static double connectionArrowWidth = defaultConnectionArrowWidth;
     private static double connectionArrowLength = defaultConnectionArrowLength;
@@ -88,9 +94,11 @@ public class CommonVisualSettings extends AbstractCommonSettings {
         addLabelVisibility();
         addLabelPositioning();
         addLabelColor();
+        addLabelFontSize();
         addNameVisibility();
         addNamePositioning();
         addNameColor();
+        addNameFontSize();
         addConnectionLineWidth();
         addConnectionArrowWidth();
         addConnectionArrowLength();
@@ -253,6 +261,21 @@ public class CommonVisualSettings extends AbstractCommonSettings {
         });
     }
 
+    private void addLabelFontSize() {
+        properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
+                this, "Label font size (cm)", Double.class) {
+            @Override
+            public void setter(CommonVisualSettings object, Double value) {
+                setLabelFontSize(value);
+            }
+
+            @Override
+            public Double getter(CommonVisualSettings object) {
+                return getLabelFontSize();
+            }
+        });
+    }
+
     private void addNameVisibility() {
         properties.add(new PropertyDeclaration<CommonVisualSettings, Boolean>(
                 this, "Show names", Boolean.class) {
@@ -291,6 +314,21 @@ public class CommonVisualSettings extends AbstractCommonSettings {
             @Override
             public Color getter(CommonVisualSettings object) {
                 return getNameColor();
+            }
+        });
+    }
+
+    private void addNameFontSize() {
+        properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
+                this, "Name font size (cm)", Double.class) {
+            @Override
+            public void setter(CommonVisualSettings object, Double value) {
+                setNameFontSize(value);
+            }
+
+            @Override
+            public Double getter(CommonVisualSettings object) {
+                return getNameFontSize();
             }
         });
     }
@@ -397,9 +435,11 @@ public class CommonVisualSettings extends AbstractCommonSettings {
         setLabelVisibility(config.getBoolean(keyLabelVisibility, defaultLabelVisibility));
         setLabelPositioning(config.getEnum(keyLabelPositioning, Positioning.class, defaultLabelPositioning));
         setLabelColor(config.getColor(keyLabelColor, defaultLabelColor));
+        setLabelFontSize(config.getDouble(keyLabelFontSize, defaultLabelFontSize));
         setNameVisibility(config.getBoolean(keyNameVisibility, defaultNameVisibility));
         setNamePositioning(config.getEnum(keyNamePositioning, Positioning.class, defaultNamePositioning));
         setNameColor(config.getColor(keyNameColor, defaultNameColor));
+        setNameFontSize(config.getDouble(keyNameFontSize, defaultNameFontSize));
         setConnectionLineWidth(config.getDouble(keyConnectionLineWidth, defaultConnectionLineWidth));
         setConnectionArrowWidth(config.getDouble(keyConnectionArrowWidth, defaultConnectionArrowWidth));
         setConnectionArrowLength(config.getDouble(keyConnectionArrowLength, defaultConnectionArrowLength));
@@ -421,9 +461,11 @@ public class CommonVisualSettings extends AbstractCommonSettings {
         config.setBoolean(keyLabelVisibility, getLabelVisibility());
         config.setEnum(keyLabelPositioning, getLabelPositioning());
         config.setColor(keyLabelColor, getLabelColor());
+        config.setDouble(keyLabelFontSize, getLabelFontSize());
         config.setBoolean(keyNameVisibility, getNameVisibility());
-        config.setColor(keyNameColor, getNameColor());
         config.setEnum(keyNamePositioning, getNamePositioning());
+        config.setColor(keyNameColor, getNameColor());
+        config.setDouble(keyNameFontSize, getNameFontSize());
         config.setDouble(keyConnectionLineWidth, getConnectionLineWidth());
         config.setDouble(keyConnectionArrowWidth, getConnectionArrowWidth());
         config.setDouble(keyConnectionArrowLength, getConnectionArrowLength());
@@ -525,6 +567,14 @@ public class CommonVisualSettings extends AbstractCommonSettings {
         labelColor = value;
     }
 
+    public static double getLabelFontSize() {
+        return labelFontSize;
+    }
+
+    public static void setLabelFontSize(double value) {
+        labelFontSize = value;
+    }
+
     public static boolean getNameVisibility() {
         return nameVisibility;
     }
@@ -547,6 +597,14 @@ public class CommonVisualSettings extends AbstractCommonSettings {
 
     public static void setNameColor(Color value) {
         nameColor = value;
+    }
+
+    public static double getNameFontSize() {
+        return nameFontSize;
+    }
+
+    public static void setNameFontSize(double value) {
+        nameFontSize = value;
     }
 
     public static double getConnectionLineWidth() {

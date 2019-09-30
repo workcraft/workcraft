@@ -98,11 +98,11 @@ public class VisualGraph extends AbstractVisualModel {
                         symbol = getMathModel().createSymbol(value);
                     }
                 }
-                object.getReferencedVertex().setSymbol(symbol);
+                object.getReferencedComponent().setSymbol(symbol);
             }
             @Override
             public String getter(VisualVertex object) {
-                Symbol symbol = object.getReferencedVertex().getSymbol();
+                Symbol symbol = object.getReferencedComponent().getSymbol();
                 String symbolName = "";
                 if (symbol != null) {
                     symbolName = getMathModel().getName(symbol);

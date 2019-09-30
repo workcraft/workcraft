@@ -38,6 +38,9 @@ public class CommonSettingsTest {
 
         Assert.assertEquals(Config.toString(CommonCommentSettings.getFillColor()),
                 framework.getConfigVar(prefix + ".fillColor", false));
+
+        Assert.assertEquals(Config.toString(CommonCommentSettings.getFontSize()),
+                framework.getConfigVar(prefix + ".fontSize", false));
     }
 
     @Test
@@ -207,6 +210,9 @@ public class CommonSettingsTest {
         Assert.assertEquals(Config.toString(CommonVisualSettings.getLabelColor()),
                 framework.getConfigVar(prefix + ".labelColor", false));
 
+        Assert.assertEquals(Config.toString(CommonVisualSettings.getLabelFontSize()),
+                framework.getConfigVar(prefix + ".labelFontSize", false));
+
         Assert.assertEquals(Config.toString(CommonVisualSettings.getNameVisibility()),
                 framework.getConfigVar(prefix + ".nameVisibility", false));
 
@@ -215,6 +221,9 @@ public class CommonSettingsTest {
 
         Assert.assertEquals(Config.toString(CommonVisualSettings.getNameColor()),
                 framework.getConfigVar(prefix + ".nameColor", false));
+
+        Assert.assertEquals(Config.toString(CommonVisualSettings.getNameFontSize()),
+                framework.getConfigVar(prefix + ".nameFontSize", false));
 
         Assert.assertEquals(Config.toString(CommonVisualSettings.getConnectionLineWidth()),
                 framework.getConfigVar(prefix + ".connectionLineWidth", false));

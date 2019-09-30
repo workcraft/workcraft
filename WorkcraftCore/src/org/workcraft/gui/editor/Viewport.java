@@ -1,7 +1,6 @@
 package org.workcraft.gui.editor;
 
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
@@ -14,17 +13,18 @@ import java.util.LinkedList;
  * (i.e. the portion of an on-screen window) and vice versa.
  */
 public class Viewport {
+
     /**
      * The default value of the scale factor is such that there are 16 user space units visible
      *  across the vertical axis of the viewport.
      */
-    private static final double DEFAULT_SCALE = 0.0625;
+    private static final double DEFAULT_SCALE = 1.0 / 16;
 
     /**
      * The scaling factor per zoom level. Increasing the zoom level by 1 will effectively magnify all
      * objects by this factor, while decreasing it by 1 will shrink all objects by the same factor.
      */
-    protected static final double SCALE_FACTOR = Math.pow(2, 0.125);
+    protected static final double SCALE_FACTOR = Math.pow(2, 1.0 / 8);
 
     /**
      * The origin point in user space.
@@ -104,11 +104,8 @@ public class Viewport {
     protected void shapeChanged() {
         userToScreenTransform.setToIdentity();
         userToScreenTransform.translate(shape.width / 2 + shape.x, shape.height / 2 + shape.y);
-
-        if ((shape.height != 0) && (shape.width != 0)) {
-            double s = Math.min(shape.height / 2, shape.width / 2);
-            userToScreenTransform.scale(s, s);
-        }
+        double s = Math.min(shape.height / 2, shape.width / 2);
+        userToScreenTransform.scale(s, s);
         updateFinalTransform();
 
         // notify listeners
@@ -351,4 +348,5 @@ public class Viewport {
     public void removeListener(ViewportListener listener) {
         listeners.remove(listener);
     }
+
 }

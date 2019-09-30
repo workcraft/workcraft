@@ -119,7 +119,7 @@ public class CommonEditorSettings extends AbstractCommonSettings {
         });
 
         properties.add(new PropertyDeclaration<CommonEditorSettings, Double>(
-                this, "Light grid size (mm)", Double.class) {
+                this, "Light grid cross size (mm)", Double.class) {
             @Override
             public void setter(CommonEditorSettings object, Double value) {
                 setLightGridSize(value);

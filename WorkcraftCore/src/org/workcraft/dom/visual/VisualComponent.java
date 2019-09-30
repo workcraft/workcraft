@@ -27,6 +27,9 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
     public static final String PROPERTY_COLOR = "Color";
     public static final String PROPERTY_FILL_COLOR = "Fill color";
 
+    public static final Font NAME_FONT = new Font(Font.SANS_SERIF, Font.ITALIC, 1);
+    public static final Font LABEL_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 1);
+
     private MathNode refNode = null;
     private Color foregroundColor = CommonVisualSettings.getBorderColor();
     private Color fillColor = CommonVisualSettings.getFillColor();
@@ -155,7 +158,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
     }
 
     public Font getLabelFont() {
-        return new Font(Font.SANS_SERIF, Font.PLAIN, 1).deriveFont(0.5f);
+        return LABEL_FONT.deriveFont((float) CommonVisualSettings.getLabelFontSize());
     }
 
     @Override
@@ -194,7 +197,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
     }
 
     public Font getNameFont() {
-        return new Font(Font.SANS_SERIF, Font.ITALIC, 1).deriveFont(0.5f);
+        return NAME_FONT.deriveFont((float) CommonVisualSettings.getNameFontSize());
     }
 
     public Positioning getNamePositioning() {
@@ -307,16 +310,14 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         }
     }
 
-    protected boolean cacheLabelRenderedText(DrawRequest r) {
-        return cacheLabelRenderedText(getLabel(), getLabelFont(), getLabelPositioning(), getLabelOffset());
+    protected void cacheLabelRenderedText(DrawRequest r) {
+        cacheLabelRenderedText(getLabel(), getLabelFont(), getLabelPositioning(), getLabelOffset());
     }
 
-    protected boolean cacheLabelRenderedText(String text, Font font, Positioning positioning, Point2D offset) {
+    protected void cacheLabelRenderedText(String text, Font font, Positioning positioning, Point2D offset) {
         if (labelRenderedText.isDifferent(text, font, positioning, offset)) {
             labelRenderedText = new RenderedText(text, font, positioning, offset);
-            return true;
         }
-        return false;
     }
 
     protected void drawLabelInLocalSpace(DrawRequest r) {
@@ -363,7 +364,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         return getOffset(getNamePositioning());
     }
 
-    protected boolean cacheNameRenderedText(DrawRequest r) {
+    protected void cacheNameRenderedText(DrawRequest r) {
         String name = null;
         MathModel mathModel = r.getModel().getMathModel();
         MathNode mathNode = getReferencedComponent();
@@ -375,15 +376,13 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         if (name == null) {
             name = "";
         }
-        return cacheNameRenderedText(name, getNameFont(), getNamePositioning(), getNameOffset());
+        cacheNameRenderedText(name, getNameFont(), getNamePositioning(), getNameOffset());
     }
 
-    protected boolean cacheNameRenderedText(String text, Font font, Positioning positioning, Point2D offset) {
+    protected void cacheNameRenderedText(String text, Font font, Positioning positioning, Point2D offset) {
         if (nameRenderedText.isDifferent(text, font, positioning, offset)) {
             nameRenderedText = new RenderedText(text, font, positioning, offset);
-            return true;
         }
-        return false;
     }
 
     protected void drawNameInLocalSpace(DrawRequest r) {

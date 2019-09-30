@@ -25,9 +25,6 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
     public static final String PROPERTY_RENDER_TYPE = "Render type";
 
-    private static final Color inputColor = VisualContact.inputColor;
-    private static final Color outputColor = VisualContact.outputColor;
-
     private static final double labelMargin = 0.2;
     private static final double contactLength = 0.5;
     private static final double contactStep = 1.0;
@@ -36,7 +33,8 @@ public class VisualCircuitComponent extends VisualComponent implements Container
     public Rectangle2D internalBB = null;
     public DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
-    private final HashMap<VisualContact, GlyphVector> contactLableGlyphs = new HashMap<>();
+    private final HashMap<VisualContact, GlyphVector> contactNameGlyphs = new HashMap<>();
+    private static double contactFontSize = CircuitSettings.getContactFontSize();
 
     public VisualCircuitComponent(CircuitComponent component) {
         super(component, true, true, true);
@@ -478,59 +476,67 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         }
     }
 
-    private GlyphVector getContactLabelGlyphs(DrawRequest r, VisualContact vc) {
+    public Font getContactFont() {
+        return NAME_FONT.deriveFont((float) CircuitSettings.getContactFontSize());
+    }
+
+    public GlyphVector getContactNameGlyphs(DrawRequest r, VisualContact vc) {
+        if (Math.abs(CircuitSettings.getContactFontSize() - contactFontSize) > 0.001) {
+            contactFontSize = CircuitSettings.getContactFontSize();
+            contactNameGlyphs.clear();
+        }
         Circuit circuit = (Circuit) r.getModel().getMathModel();
         String name = circuit.getName(vc.getReferencedContact());
-        final FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);
-        GlyphVector gv = contactLableGlyphs.get(vc);
+        GlyphVector gv = contactNameGlyphs.get(vc);
         if (gv == null) {
-            gv = getNameFont().createGlyphVector(context, name);
-            contactLableGlyphs.put(vc, gv);
+            FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);
+            gv = getContactFont().createGlyphVector(context, name);
+            contactNameGlyphs.put(vc, gv);
         }
         return gv;
     }
 
-    private void drawContactLabel(DrawRequest r, VisualContact vc) {
+    private void drawContactName(DrawRequest r, VisualContact vc) {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
         Color colorisation = d.getColorisation();
-        Color color = vc.isInput() ? inputColor : outputColor;
+        Color color = vc.isInput() ? VisualContact.inputColor : VisualContact.outputColor;
         g.setColor(Coloriser.colorise(color, colorisation));
 
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-        GlyphVector gv = getContactLabelGlyphs(r, vc);
+        GlyphVector gv = getContactNameGlyphs(r, vc);
         Rectangle2D labelBB = gv.getVisualBounds();
 
-        float labelX = 0.0f;
-        float labelY = 0.0f;
+        float x = 0.0f;
+        float y = 0.0f;
         switch (vc.getDirection()) {
         case NORTH:
-            labelX = (float) (-bb.getMinY() - labelMargin - labelBB.getWidth());
-            labelY = (float) (vc.getX() + labelBB.getHeight() / 2);
+            x = (float) (-bb.getMinY() - labelMargin - labelBB.getWidth());
+            y = (float) (vc.getX() + labelBB.getHeight() / 2);
             break;
         case EAST:
-            labelX = (float) (bb.getMaxX() - labelMargin - labelBB.getWidth());
-            labelY = (float) (vc.getY() + labelBB.getHeight() / 2);
+            x = (float) (bb.getMaxX() - labelMargin - labelBB.getWidth());
+            y = (float) (vc.getY() + labelBB.getHeight() / 2);
             break;
         case SOUTH:
-            labelX = (float) (-bb.getMaxY() + labelMargin);
-            labelY = (float) (vc.getX() + labelBB.getHeight() / 2);
+            x = (float) (-bb.getMaxY() + labelMargin);
+            y = (float) (vc.getX() + labelBB.getHeight() / 2);
             break;
         case WEST:
-            labelX = (float) (bb.getMinX() + labelMargin);
-            labelY = (float) (vc.getY() + labelBB.getHeight() / 2);
+            x = (float) (bb.getMinX() + labelMargin);
+            y = (float) (vc.getY() + labelBB.getHeight() / 2);
             break;
         }
-        g.drawGlyphVector(gv, labelX, labelY);
+        g.drawGlyphVector(gv, x, y);
     }
 
-    public void drawContactLabels(DrawRequest r) {
+    public void drawContactNames(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         AffineTransform savedTransform = g.getTransform();
 
         for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class,
                 contact -> (contact.getDirection() == Direction.WEST) || (contact.getDirection() == Direction.EAST))) {
-            drawContactLabel(r, vc);
+            drawContactName(r, vc);
         }
 
         AffineTransform rotateTransform = new AffineTransform();
@@ -540,7 +546,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class,
                 contact -> (contact.getDirection() == Direction.NORTH) || (contact.getDirection() == Direction.SOUTH))) {
 
-            drawContactLabel(r, vc);
+            drawContactName(r, vc);
         }
 
         g.setTransform(savedTransform);
@@ -573,7 +579,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         drawRefinement(r);
         drawPivot(r);
         drawContactLines(r);
-        drawContactLabels(r);
+        drawContactNames(r);
         drawLabelInLocalSpace(r);
         drawNameInLocalSpace(r);
         // External decorations
@@ -659,7 +665,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
     public void remove(Node node) {
         if (node instanceof VisualContact) {
             invalidateBoundingBox();
-            contactLableGlyphs.remove(node);
+            contactNameGlyphs.remove(node);
         }
         groupImpl.remove(node);
     }
@@ -740,7 +746,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
                     || propertyName.equals(VisualContact.PROPERTY_DIRECTION)) {
 
                 invalidateBoundingBox();
-                contactLableGlyphs.clear();
+                contactNameGlyphs.clear();
             }
         }
     }
