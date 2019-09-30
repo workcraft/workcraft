@@ -3,7 +3,9 @@ package org.workcraft.plugins.cpog.encoding.onehot;
 import org.workcraft.formula.*;
 import org.workcraft.formula.cnf.Cnf;
 import org.workcraft.formula.cnf.CnfClause;
-import org.workcraft.formula.utils.BooleanUtils;
+import org.workcraft.formula.workers.BooleanWorker;
+import org.workcraft.formula.workers.MemoryConservingBooleanWorker;
+import org.workcraft.formula.workers.PrettifyBooleanWorker;
 import org.workcraft.plugins.cpog.encoding.CnfSorter;
 import org.workcraft.plugins.cpog.encoding.NumberProvider;
 
@@ -15,6 +17,9 @@ import static org.workcraft.plugins.cpog.encoding.CnfOperations.not;
 import static org.workcraft.plugins.cpog.encoding.CnfOperations.or;
 
 class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBooleanFormula> {
+
+    private static final BooleanWorker WORKER = new PrettifyBooleanWorker(new MemoryConservingBooleanWorker());
+
     private final List<CnfClause> rho = new ArrayList<>();
 
     @Override
@@ -102,12 +107,12 @@ class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBoole
         List<CnfClause> result = select(literals, number, false);
 
         Cnf cnf = new Cnf(result);
-        return BooleanUtils.replacePretty(cnf, params, Arrays.asList(vars));
+        return FormulaUtils.replace(cnf, params, Arrays.asList(vars), WORKER);
     }
 
     @Override
     public BooleanFormula getConstraints() {
-        return BooleanOperations.and(getConstraintClauses());
+        return FormulaUtils.createAnd(getConstraintClauses(), WORKER);
     }
 
 }

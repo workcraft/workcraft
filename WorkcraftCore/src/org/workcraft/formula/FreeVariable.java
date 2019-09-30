@@ -1,5 +1,7 @@
 package org.workcraft.formula;
 
+import org.workcraft.formula.visitors.BooleanVisitor;
+
 public class FreeVariable implements BooleanVariable, Comparable<FreeVariable> {
 
     private final String label;

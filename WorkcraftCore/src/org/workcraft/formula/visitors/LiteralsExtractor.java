@@ -1,19 +1,9 @@
-package org.workcraft.formula.utils;
+package org.workcraft.formula.visitors;
+
+import org.workcraft.formula.*;
 
 import java.util.LinkedList;
 import java.util.List;
-
-import org.workcraft.formula.And;
-import org.workcraft.formula.BinaryBooleanFormula;
-import org.workcraft.formula.BooleanVariable;
-import org.workcraft.formula.BooleanVisitor;
-import org.workcraft.formula.Iff;
-import org.workcraft.formula.Imply;
-import org.workcraft.formula.Not;
-import org.workcraft.formula.One;
-import org.workcraft.formula.Or;
-import org.workcraft.formula.Xor;
-import org.workcraft.formula.Zero;
 
 public class LiteralsExtractor implements BooleanVisitor<List<BooleanVariable>> {
 

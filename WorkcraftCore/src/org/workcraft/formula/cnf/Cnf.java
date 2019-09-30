@@ -1,12 +1,15 @@
 package org.workcraft.formula.cnf;
 
-import org.workcraft.formula.BooleanOperations;
-import org.workcraft.formula.BooleanVisitor;
+import org.workcraft.formula.visitors.BooleanVisitor;
+import org.workcraft.formula.workers.DumbBooleanWorker;
 import org.workcraft.formula.Nf;
+import org.workcraft.formula.FormulaUtils;
 
 import java.util.List;
 
 public class Cnf extends Nf<CnfClause> {
+
+    private static final DumbBooleanWorker WORKER = new DumbBooleanWorker();
 
     public Cnf() {
     }
@@ -21,7 +24,7 @@ public class Cnf extends Nf<CnfClause> {
 
     @Override
     public <T> T accept(BooleanVisitor<T> visitor) {
-        return BooleanOperations.and(getClauses()).accept(visitor);
+        return FormulaUtils.createAnd(getClauses(), WORKER).accept(visitor);
     }
 
 }

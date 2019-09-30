@@ -1,4 +1,6 @@
-package org.workcraft.formula;
+package org.workcraft.plugins.cpog.sat;
+
+import org.workcraft.formula.BooleanVariable;
 
 import java.util.Collection;
 

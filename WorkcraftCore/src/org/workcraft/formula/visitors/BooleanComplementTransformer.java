@@ -1,38 +1,34 @@
-package org.workcraft.formula.utils;
+package org.workcraft.formula.visitors;
 
-import org.workcraft.formula.And;
-import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.BooleanOperations;
-import org.workcraft.formula.BooleanVariable;
-import org.workcraft.formula.BooleanVisitor;
-import org.workcraft.formula.Iff;
-import org.workcraft.formula.Imply;
-import org.workcraft.formula.Not;
-import org.workcraft.formula.One;
-import org.workcraft.formula.Or;
-import org.workcraft.formula.Xor;
-import org.workcraft.formula.Zero;
+import org.workcraft.formula.*;
+import org.workcraft.formula.workers.BooleanWorker;
 
 public class BooleanComplementTransformer implements BooleanVisitor<BooleanFormula> {
 
+    private final BooleanWorker worker;
+
+    public BooleanComplementTransformer(BooleanWorker worker) {
+        this.worker = worker;
+    }
+
     @Override
     public BooleanFormula visit(Zero node) {
-        return One.getInstance();
+        return worker.one();
     }
 
     @Override
     public BooleanFormula visit(One node) {
-        return Zero.getInstance();
+        return worker.zero();
     }
 
     @Override
     public BooleanFormula visit(BooleanVariable node) {
-        return BooleanOperations.not(node);
+        return worker.not(node);
     }
 
     @Override
     public BooleanFormula visit(Not node) {
-        return BooleanOperations.not(node.getX().accept(this));
+        return worker.not(node.getX().accept(this));
     }
 
     @Override
@@ -47,19 +43,19 @@ public class BooleanComplementTransformer implements BooleanVisitor<BooleanFormu
 
     @Override
     public BooleanFormula visit(Xor node) {
-        return BooleanOperations.not(node);
+        return worker.not(node);
     }
 
     @Override
     public BooleanFormula visit(Imply node) {
-        BooleanFormula x = BooleanOperations.not(node.getX().accept(this));
+        BooleanFormula x = worker.not(node.getX().accept(this));
         BooleanFormula y = node.getY().accept(this);
-        return BooleanOperations.and(x, y);
+        return worker.and(x, y);
     }
 
     @Override
     public BooleanFormula visit(Iff node) {
-        return BooleanOperations.not(node);
+        return worker.not(node);
     }
 
 }

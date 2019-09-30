@@ -1,11 +1,9 @@
 package org.workcraft.plugins.cpog.sat;
 
-import org.workcraft.formula.BooleanEvaluator;
 import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.BooleanSolution;
-import org.workcraft.formula.BooleanVisitor;
+import org.workcraft.formula.visitors.BooleanEvaluator;
+import org.workcraft.formula.visitors.BooleanVisitor;
 import org.workcraft.plugins.cpog.encoding.Encoding;
-import org.workcraft.formula.utils.SolutionSubstitutor;
 
 public class SolutionPrettifier {
 

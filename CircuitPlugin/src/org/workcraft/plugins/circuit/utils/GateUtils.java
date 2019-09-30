@@ -8,8 +8,10 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
-import org.workcraft.formula.utils.BooleanUtils;
-import org.workcraft.formula.utils.LiteralsExtractor;
+import org.workcraft.formula.visitors.LiteralsExtractor;
+import org.workcraft.formula.workers.BooleanWorker;
+import org.workcraft.formula.workers.CleverBooleanWorker;
+import org.workcraft.formula.workers.DumbBooleanWorker;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.Hierarchy;
@@ -19,6 +21,9 @@ import java.awt.geom.Point2D;
 import java.util.*;
 
 public class GateUtils {
+
+    private static final BooleanWorker DUMB_WORKER = new DumbBooleanWorker();
+    private static final BooleanWorker CLEVER_WORKER = new CleverBooleanWorker();
 
     public static void insertGateAfter(VisualCircuit circuit, VisualCircuitComponent component, VisualContact predContact) {
         Container container = (Container) predContact.getParent();
@@ -144,8 +149,7 @@ public class GateUtils {
 
         Contact firstVar = firstInputContact.getReferencedContact();
         Contact secondVar = secondInputContact.getReferencedContact();
-        BooleanWorker worker = new CleverBooleanWorker();
-        BooleanFormula setFunction = BooleanOperations.and(firstVar, secondVar, worker);
+        BooleanFormula setFunction = CLEVER_WORKER.and(firstVar, secondVar);
         outputContact.setSetFunction(setFunction);
 
         return component;
@@ -167,8 +171,7 @@ public class GateUtils {
 
         Contact firstVar = firstInputContact.getReferencedContact();
         Contact secondVar = secondInputContact.getReferencedContact();
-        BooleanWorker worker = new CleverBooleanWorker();
-        BooleanFormula setFunction = BooleanOperations.or(firstVar, secondVar, worker);
+        BooleanFormula setFunction = CLEVER_WORKER.or(firstVar, secondVar);
         outputContact.setSetFunction(setFunction);
 
         return component;
@@ -190,7 +193,7 @@ public class GateUtils {
 
         Contact firstVar = firstInputContact.getReferencedContact();
         Contact secondVar = secondInputContact.getReferencedContact();
-        outputContact.setSetFunction(BooleanOperations.nandb(firstVar, secondVar, new CleverBooleanWorker()));
+        outputContact.setSetFunction(CLEVER_WORKER.not(CLEVER_WORKER.and(CLEVER_WORKER.not(firstVar), secondVar)));
 
         return component;
     }
@@ -211,7 +214,7 @@ public class GateUtils {
 
         Contact firstVar = firstInputContact.getReferencedContact();
         Contact secondVar = secondInputContact.getReferencedContact();
-        outputContact.setSetFunction(BooleanOperations.norb(firstVar, secondVar, new CleverBooleanWorker()));
+        outputContact.setSetFunction(CLEVER_WORKER.not(CLEVER_WORKER.or(CLEVER_WORKER.not(firstVar), secondVar)));
 
         return component;
     }
@@ -223,8 +226,8 @@ public class GateUtils {
     public static void propagateInitialState(Circuit circuit, FunctionComponent component) {
         Pair<List<BooleanVariable>, List<BooleanFormula>> variableAsignment = getVariableAssignment(circuit, component);
         for (FunctionContact output : component.getFunctionOutputs()) {
-            BooleanFormula setFunction = BooleanUtils.replaceClever(output.getSetFunction(),
-                    variableAsignment.getFirst(), variableAsignment.getSecond());
+            BooleanFormula setFunction = FormulaUtils.replace(output.getSetFunction(),
+                    variableAsignment.getFirst(), variableAsignment.getSecond(), CLEVER_WORKER);
 
             boolean isOne = One.getInstance().equals(setFunction);
             output.setInitToOne(isOne);
@@ -234,11 +237,12 @@ public class GateUtils {
     public static boolean isExcitedComponent(Circuit circuit, FunctionComponent component) {
         Pair<List<BooleanVariable>, List<BooleanFormula>> variableAsignment = getVariableAssignment(circuit, component);
         for (FunctionContact output : component.getFunctionOutputs()) {
-            BooleanFormula setFunction = BooleanUtils.replaceClever(output.getSetFunction(),
-                    variableAsignment.getFirst(), variableAsignment.getSecond());
+            BooleanFormula setFunction = FormulaUtils.replace(output.getSetFunction(),
+                    variableAsignment.getFirst(), variableAsignment.getSecond(), CLEVER_WORKER);
+
             if ((setFunction != null) && (One.getInstance().equals(setFunction) != output.getInitToOne())) {
-                BooleanFormula resetFunction = BooleanUtils.replaceClever(output.getResetFunction(),
-                        variableAsignment.getFirst(), variableAsignment.getSecond());
+                BooleanFormula resetFunction = FormulaUtils.replace(output.getResetFunction(),
+                        variableAsignment.getFirst(), variableAsignment.getSecond(), CLEVER_WORKER);
 
                 if ((resetFunction == null) || (One.getInstance().equals(resetFunction) == output.getInitToOne())) {
                     return true;
@@ -335,7 +339,7 @@ public class GateUtils {
         outputContact.setPosition(new Point2D.Double(1.5, 0.0));
 
         List<Contact> vars = createGateInputs(circuit, component, count);
-        BooleanFormula function = BooleanOperations.and(vars, new DumbBooleanWorker());
+        BooleanFormula function = FormulaUtils.createAnd(vars, DUMB_WORKER);
         outputContact.setSetFunction(function);
         return component;
     }
@@ -347,7 +351,7 @@ public class GateUtils {
         outputContact.setPosition(new Point2D.Double(1.5, 0.0));
 
         List<Contact> vars = createGateInputs(circuit, component, count);
-        BooleanFormula function = BooleanOperations.or(vars, new DumbBooleanWorker());
+        BooleanFormula function = FormulaUtils.createOr(vars, DUMB_WORKER);
         outputContact.setSetFunction(function);
         return component;
     }

@@ -1,4 +1,4 @@
-package org.workcraft.formula.utils;
+package org.workcraft.formula.visitors;
 
 import org.workcraft.formula.*;
 

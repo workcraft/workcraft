@@ -1,34 +1,33 @@
 package org.workcraft.plugins.cpog;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.Graphics2D;
-import java.awt.Stroke;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.io.IOException;
-
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.BooleanOperations;
 import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
-import org.workcraft.formula.utils.FormulaRenderingResult;
-import org.workcraft.formula.utils.FormulaToGraphics;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.plugins.cpog.formula.PrettifyBooleanReplacer;
+import org.workcraft.formula.visitors.FormulaRenderingResult;
+import org.workcraft.formula.visitors.FormulaToGraphics;
+import org.workcraft.formula.workers.BooleanWorker;
+import org.workcraft.formula.workers.MemoryConservingBooleanWorker;
+import org.workcraft.formula.workers.PrettifyBooleanWorker;
+import org.workcraft.plugins.cpog.formula.CpogBooleanReplacer;
 import org.workcraft.serialisation.NoAutoSerialisation;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.utils.Geometry;
+
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.io.IOException;
 
 public class VisualArc extends VisualConnection {
 
     public static final String PROPERTY_CONDITION = "condition";
+
+    private static final BooleanWorker WORKER = new PrettifyBooleanWorker(new MemoryConservingBooleanWorker());
 
     private static Font labelFont;
     private Rectangle2D labelBB = null;
@@ -87,10 +86,10 @@ public class VisualArc extends VisualConnection {
     private BooleanFormula evaluate() {
         BooleanFormula condition = getCondition();
 
-        condition = BooleanOperations.and(condition, ((VisualVertex) getFirst()).evaluate());
-        condition = BooleanOperations.and(condition, ((VisualVertex) getSecond()).evaluate());
+        condition = WORKER.and(condition, ((VisualVertex) getFirst()).evaluate());
+        condition = WORKER.and(condition, ((VisualVertex) getSecond()).evaluate());
 
-        return condition.accept(new PrettifyBooleanReplacer());
+        return condition.accept(new CpogBooleanReplacer());
     }
 
     @Override

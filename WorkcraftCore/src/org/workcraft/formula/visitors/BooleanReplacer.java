@@ -1,12 +1,11 @@
-package org.workcraft.formula.utils;
+package org.workcraft.formula.visitors;
 
 import org.workcraft.formula.*;
+import org.workcraft.formula.workers.BooleanWorker;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.workcraft.formula.BooleanOperations.*;
 
 public class BooleanReplacer implements BooleanVisitor<BooleanFormula> {
 
@@ -57,7 +56,7 @@ public class BooleanReplacer implements BooleanVisitor<BooleanFormula> {
             if (node.getX() == x) {
                 result = node;
             } else {
-                result = not(x);
+                result = worker.not(x);
             }
             map.put(node, result);
         }
@@ -66,27 +65,27 @@ public class BooleanReplacer implements BooleanVisitor<BooleanFormula> {
 
     @Override
     public BooleanFormula visit(And node) {
-        return visitBinaryFunc(node, (x, y) -> and(x, y, worker));
+        return visitBinaryFunc(node, (x, y) -> worker.and(x, y));
     }
 
     @Override
     public BooleanFormula visit(Or node) {
-        return visitBinaryFunc(node, (x, y) -> or(x, y, worker));
+        return visitBinaryFunc(node, (x, y) -> worker.or(x, y));
     }
 
     @Override
     public BooleanFormula visit(Xor node) {
-        return visitBinaryFunc(node, (x, y) -> xor(x, y, worker));
+        return visitBinaryFunc(node, (x, y) -> worker.xor(x, y));
     }
 
     @Override
     public BooleanFormula visit(Imply node) {
-        return visitBinaryFunc(node, (x, y) -> imply(x, y, worker));
+        return visitBinaryFunc(node, (x, y) -> worker.imply(x, y));
     }
 
     @Override
     public BooleanFormula visit(Iff node) {
-        return visitBinaryFunc(node, (x, y) -> iff(x, y, worker));
+        return visitBinaryFunc(node, (x, y) -> worker.iff(x, y));
     }
 
     private BooleanFormula visitBinaryFunc(BinaryBooleanFormula node, BinaryOperation op) {

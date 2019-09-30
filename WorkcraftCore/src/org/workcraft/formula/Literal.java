@@ -1,5 +1,7 @@
 package org.workcraft.formula;
 
+import org.workcraft.formula.visitors.BooleanVisitor;
+
 public class Literal implements BooleanFormula {
 
     private BooleanVariable variable;
@@ -42,7 +44,7 @@ public class Literal implements BooleanFormula {
 
     @Override
     public <T> T accept(BooleanVisitor<T> visitor) {
-        return (negation ? BooleanOperations.not(variable) : variable).accept(visitor);
+        return (negation ? new Not(variable) : variable).accept(visitor);
     }
 
 }

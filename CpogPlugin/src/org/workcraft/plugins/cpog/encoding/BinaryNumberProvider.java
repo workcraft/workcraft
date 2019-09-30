@@ -1,18 +1,20 @@
 package org.workcraft.plugins.cpog.encoding;
 
-import static org.workcraft.formula.BooleanOperations.and;
-import static org.workcraft.formula.BooleanOperations.not;
-import static org.workcraft.formula.BooleanOperations.or;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.FreeVariable;
 import org.workcraft.formula.Zero;
+import org.workcraft.formula.FormulaUtils;
+import org.workcraft.formula.workers.BooleanWorker;
+import org.workcraft.formula.workers.MemoryConservingBooleanWorker;
+import org.workcraft.formula.workers.PrettifyBooleanWorker;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BinaryNumberProvider implements NumberProvider<BinaryIntBooleanFormula> {
+
+    private static final BooleanWorker WORKER = new PrettifyBooleanWorker(new MemoryConservingBooleanWorker());
 
     private final List<BooleanFormula> constraints = new ArrayList<>();
 
@@ -41,7 +43,7 @@ public class BinaryNumberProvider implements NumberProvider<BinaryIntBooleanForm
     private BooleanFormula less(List<BooleanVariable> a, int n, int b) {
         BooleanVariable an = a.get(n);
         boolean bn = ((b >> n) & 1) > 0;
-        BooleanFormula nan = not(an);
+        BooleanFormula nan = WORKER.not(an);
         if (n == 0) {
             if (bn) {
                 return nan;
@@ -51,15 +53,15 @@ public class BinaryNumberProvider implements NumberProvider<BinaryIntBooleanForm
         }
         BooleanFormula l = less(a, n - 1, b);
         if (bn) {
-            return or(nan, l);
+            return WORKER.or(nan, l);
         } else {
-            return and(nan, l);
+            return WORKER.and(nan, l);
         }
     }
 
     @Override
     public BooleanFormula getConstraints() {
-        return and(constraints);
+        return FormulaUtils.createAnd(constraints, WORKER);
     }
 
     @Override
@@ -80,9 +82,10 @@ public class BinaryNumberProvider implements NumberProvider<BinaryIntBooleanForm
             return vars[offset];
         }
         BooleanVariable x = bits.get(length - 1);
-        BooleanFormula nx = not(x);
-        return or(and(x, select(vars, bits, length - 1, offset + (1 << (length - 1)), threshold)),
-                and(nx, select(vars, bits, length - 1, offset, threshold)));
+        BooleanFormula nx = WORKER.not(x);
+        return WORKER.or(
+                WORKER.and(x, select(vars, bits, length - 1, offset + (1 << (length - 1)), threshold)),
+                WORKER.and(nx, select(vars, bits, length - 1, offset, threshold)));
     }
 
     @Override
@@ -93,12 +96,12 @@ public class BinaryNumberProvider implements NumberProvider<BinaryIntBooleanForm
     private BooleanFormula less(List<BooleanVariable> a, List<BooleanVariable> b, int n) {
         BooleanVariable an = a.get(n);
         BooleanFormula bn = b.get(n);
-        BooleanFormula nan = not(an);
+        BooleanFormula nan = WORKER.not(an);
         if (n == 0) {
-            return and(nan, bn);
+            return WORKER.and(nan, bn);
         }
         BooleanFormula l = less(a, b, n - 1);
-        return or(and(nan, bn), and(or(nan, bn), l));
+        return WORKER.or(WORKER.and(nan, bn), WORKER.and(WORKER.or(nan, bn), l));
     }
 
 }

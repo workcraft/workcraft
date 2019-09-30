@@ -1,8 +1,14 @@
 package org.workcraft.plugins.cpog.encoding.onehot;
 
-import org.workcraft.formula.*;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.BooleanVariable;
+import org.workcraft.formula.FreeVariable;
+import org.workcraft.formula.Literal;
 import org.workcraft.formula.cnf.Cnf;
 import org.workcraft.formula.cnf.CnfClause;
+import org.workcraft.formula.workers.BooleanWorker;
+import org.workcraft.formula.workers.MemoryConservingBooleanWorker;
+import org.workcraft.formula.workers.PrettifyBooleanWorker;
 import org.workcraft.plugins.cpog.encoding.twohot.TwoHotRange;
 import org.workcraft.plugins.cpog.encoding.twohot.TwoHotRangeProvider;
 import org.workcraft.plugins.cpog.sat.OptimisationTask;
@@ -14,6 +20,8 @@ import java.util.List;
 import static org.workcraft.plugins.cpog.encoding.CnfOperations.*;
 
 public class CnfGeneratingOptimiser implements SatProblemGenerator<Cnf> {
+
+    private static final BooleanWorker WORKER = new PrettifyBooleanWorker(new MemoryConservingBooleanWorker());
 
     private final List<CnfClause> rho = new ArrayList<>();
 
@@ -121,7 +129,7 @@ public class CnfGeneratingOptimiser implements SatProblemGenerator<Cnf> {
         BooleanFormula[] funcs = new BooleanFormula[totalVariables];
         for (int j = 0; j < nonDerivedVariables; j++) {
             funcs[j * 2] = variables[j];
-            funcs[j * 2 + 1] = BooleanOperations.not(variables[j]);
+            funcs[j * 2 + 1] = WORKER.not(variables[j]);
         }
         for (int j = 0; j < derivedVariables; j++) {
             int jj = j + nonDerivedVariables;
@@ -133,7 +141,7 @@ public class CnfGeneratingOptimiser implements SatProblemGenerator<Cnf> {
             }
             BooleanFormula value = TwoHotRangeProvider.selectAnd(availableFormulas.toArray(new BooleanFormula[0]), derivedFunctions[j]);
             funcs[jj * 2] = value;
-            funcs[jj * 2 + 1] = BooleanOperations.not(value);
+            funcs[jj * 2 + 1] = WORKER.not(value);
         }
 
         BooleanFormula[] functionVars = new BooleanFormula[functionCount];

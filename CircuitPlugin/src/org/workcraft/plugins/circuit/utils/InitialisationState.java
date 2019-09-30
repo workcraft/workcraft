@@ -3,11 +3,9 @@ package org.workcraft.plugins.circuit.utils;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.BooleanVariable;
-import org.workcraft.formula.One;
-import org.workcraft.formula.Zero;
-import org.workcraft.formula.utils.BooleanUtils;
+import org.workcraft.formula.*;
+import org.workcraft.formula.workers.BooleanWorker;
+import org.workcraft.formula.workers.CleverBooleanWorker;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
@@ -19,6 +17,8 @@ import java.util.Queue;
 import java.util.Set;
 
 public class InitialisationState {
+
+    private static final BooleanWorker WORKER = new CleverBooleanWorker();
 
     private final Set<MathNode> highSet = new HashSet<>();
     private final Set<MathNode> lowSet = new HashSet<>();
@@ -108,8 +108,8 @@ public class InitialisationState {
         if (contact.getForcedInit()) {
             return contact.getInitToOne() ? highSet : lowSet;
         }
-        BooleanFormula setFunction = BooleanUtils.replaceClever(contact.getSetFunction(), variables, values);
-        BooleanFormula resetFunction = BooleanUtils.replaceClever(contact.getResetFunction(), variables, values);
+        BooleanFormula setFunction = FormulaUtils.replace(contact.getSetFunction(), variables, values, WORKER);
+        BooleanFormula resetFunction = FormulaUtils.replace(contact.getResetFunction(), variables, values, WORKER);
         if (ResetUtils.isEvaluatedHigh(setFunction, resetFunction)) {
             return highSet;
         }

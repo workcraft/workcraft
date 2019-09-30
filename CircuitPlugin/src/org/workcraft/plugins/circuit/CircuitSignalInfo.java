@@ -7,8 +7,10 @@ import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
+import org.workcraft.formula.FormulaUtils;
 import org.workcraft.formula.Literal;
-import org.workcraft.formula.utils.BooleanUtils;
+import org.workcraft.formula.workers.BooleanWorker;
+import org.workcraft.formula.workers.CleverBooleanWorker;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 
 import java.util.ArrayList;
@@ -17,6 +19,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 public class CircuitSignalInfo {
+
+    private static final BooleanWorker WORKER = new CleverBooleanWorker();
 
     public final Circuit circuit;
     private final HashMap<Contact, String> contactSignalMap = new HashMap<>();
@@ -111,8 +115,8 @@ public class CircuitSignalInfo {
         }
         for (FunctionContact contact : component.getFunctionContacts()) {
             if (contact.isOutput()) {
-                BooleanFormula setFunction = BooleanUtils.replaceClever(contact.getSetFunction(), variables, values);
-                BooleanFormula resetFunction = BooleanUtils.replaceClever(contact.getResetFunction(), variables, values);
+                BooleanFormula setFunction = FormulaUtils.replace(contact.getSetFunction(), variables, values, WORKER);
+                BooleanFormula resetFunction = FormulaUtils.replace(contact.getResetFunction(), variables, values, WORKER);
                 SignalInfo signalInfo = new SignalInfo(contact, setFunction, resetFunction);
                 result.add(signalInfo);
             }

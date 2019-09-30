@@ -1,23 +1,23 @@
 package org.workcraft.plugins.cpog.formula;
 
-import java.util.HashMap;
-
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
-import org.workcraft.formula.BooleanWorker;
-import org.workcraft.formula.MemoryConservingBooleanWorker;
 import org.workcraft.formula.One;
-import org.workcraft.formula.PrettifyBooleanWorker;
 import org.workcraft.formula.Zero;
-import org.workcraft.formula.utils.BooleanReplacer;
+import org.workcraft.formula.visitors.BooleanReplacer;
+import org.workcraft.formula.workers.BooleanWorker;
+import org.workcraft.formula.workers.MemoryConservingBooleanWorker;
+import org.workcraft.formula.workers.PrettifyBooleanWorker;
 import org.workcraft.plugins.cpog.Variable;
 
-public class PrettifyBooleanReplacer extends BooleanReplacer {
+import java.util.HashMap;
+
+public class CpogBooleanReplacer extends BooleanReplacer {
 
     private static final HashMap<BooleanVariable, BooleanFormula> MAP = new HashMap<>();
     private static final BooleanWorker WORKER = new PrettifyBooleanWorker(new MemoryConservingBooleanWorker());
 
-    public PrettifyBooleanReplacer() {
+    public CpogBooleanReplacer() {
         super(MAP, WORKER);
     }
 

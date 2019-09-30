@@ -1,4 +1,6 @@
-package org.workcraft.formula;
+package org.workcraft.formula.workers;
+
+import org.workcraft.formula.*;
 
 public class DumbBooleanWorker implements BooleanWorker {
 

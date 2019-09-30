@@ -1,11 +1,15 @@
-package org.workcraft.formula;
+package org.workcraft.formula.workers;
+
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.One;
+import org.workcraft.formula.Zero;
 
 public class PrettifyBooleanWorker implements BooleanWorker {
 
-    private final ReducedBooleanWorker worker;
+    private final ReducedBooleanWorker reducedWorker;
 
-    public PrettifyBooleanWorker(ReducedBooleanWorker worker) {
-        this.worker = worker;
+    public PrettifyBooleanWorker(ReducedBooleanWorker reducedWorker) {
+        this.reducedWorker = reducedWorker;
     }
 
     @Override
@@ -26,7 +30,7 @@ public class PrettifyBooleanWorker implements BooleanWorker {
         if (x == One.getInstance()) {
             return Zero.getInstance();
         }
-        return worker.not(x);
+        return reducedWorker.not(x);
     }
 
     @Override
@@ -43,7 +47,7 @@ public class PrettifyBooleanWorker implements BooleanWorker {
         if (y == One.getInstance()) {
             return x;
         }
-        return worker.and(x, y);
+        return reducedWorker.and(x, y);
     }
 
     @Override
@@ -78,7 +82,7 @@ public class PrettifyBooleanWorker implements BooleanWorker {
         if (y == One.getInstance()) {
             return x;
         }
-        return worker.iff(x, y);
+        return reducedWorker.iff(x, y);
     }
 
 }

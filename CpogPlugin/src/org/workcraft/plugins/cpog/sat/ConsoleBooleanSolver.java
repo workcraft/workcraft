@@ -1,6 +1,5 @@
 package org.workcraft.plugins.cpog.sat;
 
-import org.workcraft.formula.BooleanSolution;
 import org.workcraft.plugins.cpog.CpogSettings;
 
 public class ConsoleBooleanSolver {

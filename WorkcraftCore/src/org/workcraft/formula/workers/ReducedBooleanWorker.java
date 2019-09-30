@@ -1,4 +1,6 @@
-package org.workcraft.formula;
+package org.workcraft.formula.workers;
+
+import org.workcraft.formula.BooleanFormula;
 
 public interface ReducedBooleanWorker {
     BooleanFormula and(BooleanFormula x, BooleanFormula y);

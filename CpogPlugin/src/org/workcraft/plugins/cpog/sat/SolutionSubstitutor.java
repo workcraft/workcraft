@@ -1,16 +1,13 @@
-package org.workcraft.formula.utils;
+package org.workcraft.plugins.cpog.sat;
+
+import org.workcraft.formula.*;
+import org.workcraft.formula.visitors.BooleanReplacer;
+import org.workcraft.formula.workers.BooleanWorker;
+import org.workcraft.formula.workers.MemoryConservingBooleanWorker;
+import org.workcraft.formula.workers.PrettifyBooleanWorker;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.BooleanSolution;
-import org.workcraft.formula.BooleanVariable;
-import org.workcraft.formula.BooleanWorker;
-import org.workcraft.formula.MemoryConservingBooleanWorker;
-import org.workcraft.formula.One;
-import org.workcraft.formula.PrettifyBooleanWorker;
-import org.workcraft.formula.Zero;
 
 public class SolutionSubstitutor extends BooleanReplacer {
 

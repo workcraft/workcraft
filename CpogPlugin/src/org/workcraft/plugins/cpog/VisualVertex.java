@@ -13,7 +13,7 @@ import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.cpog.formula.CpogFormulaVariable;
 import org.workcraft.plugins.cpog.formula.CpogVisitor;
-import org.workcraft.plugins.cpog.formula.PrettifyBooleanReplacer;
+import org.workcraft.plugins.cpog.formula.CpogBooleanReplacer;
 import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 
 import java.awt.*;
@@ -173,7 +173,7 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
     }
 
     public BooleanFormula evaluate() {
-        return getCondition().accept(new PrettifyBooleanReplacer());
+        return getCondition().accept(new CpogBooleanReplacer());
     }
 
     @Override

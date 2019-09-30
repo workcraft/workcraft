@@ -1,5 +1,7 @@
 package org.workcraft.formula;
 
+import org.workcraft.formula.visitors.BooleanVisitor;
+
 public class Not implements BooleanFormula {
 
     private final BooleanFormula x;
