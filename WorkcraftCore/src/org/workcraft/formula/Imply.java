@@ -1,5 +1,7 @@
 package org.workcraft.formula;
 
+import org.workcraft.formula.visitors.BooleanVisitor;
+
 public class Imply extends BinaryBooleanFormula {
 
     public Imply(BooleanFormula x, BooleanFormula y) {

@@ -1,5 +1,7 @@
 package org.workcraft.formula;
 
+import org.workcraft.formula.visitors.BooleanVisitor;
+
 public class Or extends BinaryBooleanFormula {
 
     public Or(BooleanFormula x, BooleanFormula y) {

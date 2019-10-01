@@ -27,7 +27,7 @@ import org.workcraft.formula.jj.ParseException;
 import org.workcraft.plugins.cpog.sat.CleverCnfGenerator;
 import org.workcraft.plugins.cpog.sat.DefaultSolver;
 import org.workcraft.plugins.cpog.sat.Optimiser;
-import org.workcraft.formula.utils.StringGenerator;
+import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
 import org.workcraft.plugins.cpog.Variable;

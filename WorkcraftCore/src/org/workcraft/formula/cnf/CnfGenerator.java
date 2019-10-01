@@ -1,7 +1,7 @@
 package org.workcraft.formula.cnf;
 
 import org.workcraft.formula.*;
-import org.workcraft.formula.utils.ClauseUtils;
+import org.workcraft.formula.visitors.BooleanVisitor;
 
 public class CnfGenerator {
 

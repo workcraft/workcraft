@@ -1,4 +1,7 @@
-package org.workcraft.formula;
+package org.workcraft.formula.workers;
+
+import org.workcraft.formula.*;
+import org.workcraft.formula.visitors.BooleanVisitor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,9 +17,6 @@ public class MemoryConservingBooleanWorker implements ReducedBooleanWorker {
     private Integer getCode(BooleanFormula f) {
         Integer code = codes.get(f);
         if (code == null) {
-            // if (!(f instanceof FreeVariable))
-            // System.out.println("Warning: Unknown code for formula f=[" +
-            // f.getClass().getSimpleName()+"] " + formulaToStr(f));
             code = newCode(f);
         }
         return code;

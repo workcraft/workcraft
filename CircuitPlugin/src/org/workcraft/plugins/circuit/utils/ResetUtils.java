@@ -4,7 +4,8 @@ import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
-import org.workcraft.formula.utils.BooleanUtils;
+import org.workcraft.formula.workers.BooleanWorker;
+import org.workcraft.formula.workers.CleverBooleanWorker;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.types.Pair;
 
@@ -14,6 +15,9 @@ import java.util.LinkedList;
 import java.util.Set;
 
 public class ResetUtils {
+
+    private static final BooleanWorker DUMB_WORKER = new CleverBooleanWorker();
+    private static final BooleanWorker CLEVER_WORKER = new CleverBooleanWorker();
 
     public static Set<Contact> tagForceInitClearAll(Circuit circuit) {
         return setForceInit(circuit.getFunctionContacts(), false);
@@ -61,8 +65,8 @@ public class ResetUtils {
         if (contact.getForcedInit()) {
             return false;
         }
-        BooleanFormula setFunction = BooleanUtils.replaceClever(contact.getSetFunction(), variables, values);
-        BooleanFormula resetFunction = BooleanUtils.replaceClever(contact.getResetFunction(), variables, values);
+        BooleanFormula setFunction = FormulaUtils.replace(contact.getSetFunction(), variables, values, CLEVER_WORKER);
+        BooleanFormula resetFunction = FormulaUtils.replace(contact.getResetFunction(), variables, values, CLEVER_WORKER);
         if (isEvaluatedHigh(setFunction, resetFunction) && contact.getInitToOne()) {
             return false;
         }
@@ -210,15 +214,15 @@ public class ResetUtils {
         BooleanFormula func;
         if (activeLow) {
             if (initToOne) {
-                func = BooleanOperations.nandb(firstVar, secondVar, new CleverBooleanWorker());
+                func = CLEVER_WORKER.not(CLEVER_WORKER.and(CLEVER_WORKER.not(firstVar), secondVar));
             } else {
-                func = BooleanOperations.and(firstVar, secondVar, new CleverBooleanWorker());
+                func = CLEVER_WORKER.and(firstVar, secondVar);
             }
         } else {
             if (initToOne) {
-                func = BooleanOperations.or(firstVar, secondVar, new CleverBooleanWorker());
+                func = CLEVER_WORKER.or(firstVar, secondVar);
             } else {
-                func = BooleanOperations.norb(firstVar, secondVar, new CleverBooleanWorker());
+                func = CLEVER_WORKER.not(CLEVER_WORKER.or(CLEVER_WORKER.not(firstVar), secondVar));
             }
         }
         outputContact.setSetFunction(func);
@@ -257,15 +261,15 @@ public class ResetUtils {
         BooleanFormula func;
         if (activeLow) {
             if (initToOne) {
-                func = BooleanOperations.nand(firstVar, secondVar, new CleverBooleanWorker());
+                func = CLEVER_WORKER.not(CLEVER_WORKER.and(firstVar, secondVar));
             } else {
-                func = BooleanOperations.norb(firstVar, secondVar, new CleverBooleanWorker());
+                func = CLEVER_WORKER.not(CLEVER_WORKER.or(CLEVER_WORKER.not(firstVar), secondVar));
             }
         } else {
             if (initToOne) {
-                func = BooleanOperations.nandb(firstVar, secondVar, new CleverBooleanWorker());
+                func = CLEVER_WORKER.not(CLEVER_WORKER.and(CLEVER_WORKER.not(firstVar), secondVar));
             } else {
-                func = BooleanOperations.nor(firstVar, secondVar, new CleverBooleanWorker());
+                func = CLEVER_WORKER.not(CLEVER_WORKER.or(firstVar, secondVar));
             }
         }
         outputContact.setSetFunction(func);
@@ -350,33 +354,33 @@ public class ResetUtils {
         if (activeLow) {
             if (contact.getInitToOne()) {
                 if (setFunction != null) {
-                    contact.setSetFunction(BooleanOperations.or(BooleanOperations.not(resetVar), setFunction));
+                    contact.setSetFunction(DUMB_WORKER.or(DUMB_WORKER.not(resetVar), setFunction));
                 }
                 if (resetFunction != null) {
-                    contact.setResetFunction(BooleanOperations.and(resetVar, resetFunction));
+                    contact.setResetFunction(DUMB_WORKER.and(resetVar, resetFunction));
                 }
             } else {
                 if (setFunction != null) {
-                    contact.setSetFunction(BooleanOperations.and(resetVar, setFunction));
+                    contact.setSetFunction(DUMB_WORKER.and(resetVar, setFunction));
                 }
                 if (resetFunction != null) {
-                    contact.setResetFunction(BooleanOperations.or(BooleanOperations.not(resetVar), resetFunction));
+                    contact.setResetFunction(DUMB_WORKER.or(DUMB_WORKER.not(resetVar), resetFunction));
                 }
             }
         } else {
             if (contact.getInitToOne()) {
                 if (setFunction != null) {
-                    contact.setSetFunction(BooleanOperations.or(resetVar, setFunction));
+                    contact.setSetFunction(DUMB_WORKER.or(resetVar, setFunction));
                 }
                 if (resetFunction != null) {
-                    contact.setResetFunction(BooleanOperations.and(BooleanOperations.not(resetVar), resetFunction));
+                    contact.setResetFunction(DUMB_WORKER.and(DUMB_WORKER.not(resetVar), resetFunction));
                 }
             } else {
                 if (setFunction != null) {
-                    contact.setSetFunction(BooleanOperations.and(BooleanOperations.not(resetVar), setFunction));
+                    contact.setSetFunction(DUMB_WORKER.and(DUMB_WORKER.not(resetVar), setFunction));
                 }
                 if (resetFunction != null) {
-                    contact.setResetFunction(BooleanOperations.or(resetVar, resetFunction));
+                    contact.setResetFunction(DUMB_WORKER.or(resetVar, resetFunction));
                 }
             }
         }

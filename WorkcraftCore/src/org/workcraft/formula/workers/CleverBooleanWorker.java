@@ -1,6 +1,7 @@
-package org.workcraft.formula;
+package org.workcraft.formula.workers;
 
-import org.workcraft.formula.utils.StringGenerator;
+import org.workcraft.formula.*;
+import org.workcraft.formula.visitors.StringGenerator;
 
 public class CleverBooleanWorker implements BooleanWorker {
 

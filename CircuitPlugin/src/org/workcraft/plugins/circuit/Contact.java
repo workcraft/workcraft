@@ -3,7 +3,7 @@ package org.workcraft.plugins.circuit;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.formula.BooleanVariable;
-import org.workcraft.formula.BooleanVisitor;
+import org.workcraft.formula.visitors.BooleanVisitor;
 import org.workcraft.observation.PropertyChangedEvent;
 
 @VisualClass(VisualContact.class)

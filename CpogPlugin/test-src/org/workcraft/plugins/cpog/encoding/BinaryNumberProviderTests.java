@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.FreeVariable;
-import org.workcraft.formula.utils.StringGenerator;
+import org.workcraft.formula.visitors.StringGenerator;
 
 public class BinaryNumberProviderTests {
 

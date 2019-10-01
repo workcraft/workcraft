@@ -1,4 +1,6 @@
-package org.workcraft.formula;
+package org.workcraft.formula.visitors;
+
+import org.workcraft.formula.*;
 
 public class BooleanEvaluator implements BooleanVisitor<Boolean> {
 

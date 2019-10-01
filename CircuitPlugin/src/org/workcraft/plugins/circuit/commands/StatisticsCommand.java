@@ -1,7 +1,7 @@
 package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.commands.AbstractStatisticsCommand;
-import org.workcraft.formula.utils.BooleanUtils;
+import org.workcraft.formula.FormulaUtils;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
@@ -115,11 +115,11 @@ public class StatisticsCommand extends AbstractStatisticsCommand {
                 } else {
                     if (contact.getResetFunction() == null) {
                         combCount++;
-                        combLiteralCount += BooleanUtils.countLiterals(contact.getSetFunction());
+                        combLiteralCount += FormulaUtils.countLiterals(contact.getSetFunction());
                     } else {
                         seqCount++;
-                        seqSetLiteralCount += BooleanUtils.countLiterals(contact.getSetFunction());
-                        seqResetLiteralCount += BooleanUtils.countLiterals(contact.getResetFunction());
+                        seqSetLiteralCount += FormulaUtils.countLiterals(contact.getSetFunction());
+                        seqResetLiteralCount += FormulaUtils.countLiterals(contact.getResetFunction());
                     }
                 }
             }

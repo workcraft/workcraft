@@ -5,7 +5,11 @@ import org.workcraft.commands.NodeTransformer;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.utils.BooleanUtils;
+import org.workcraft.formula.visitors.BooleanComplementTransformer;
+import org.workcraft.formula.visitors.StringGenerator;
+import org.workcraft.formula.workers.BooleanWorker;
+import org.workcraft.formula.workers.MemoryConservingBooleanWorker;
+import org.workcraft.formula.workers.PrettifyBooleanWorker;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.utils.Hierarchy;
@@ -25,13 +29,11 @@ public class PropagateInversionTransformationCommand extends AbstractTransformat
     @Override
     public String getDisplayName() {
         return "Propagate inversion through gates (selected or all)";
-        //return "Apply De Morgan law to gates (selected or all)";
     }
 
     @Override
     public String getPopupName() {
         return "Propagate inversion through gate";
-        //return "Apply De Morgan law to gate";
     }
 
     @Override
@@ -88,13 +90,12 @@ public class PropagateInversionTransformationCommand extends AbstractTransformat
             LogUtils.logWarning("Gate " + gateStr + " cannot be transformed as it does not have set functions defined");
             return;
         }
-        BooleanFormula newSetFunction = BooleanUtils.propagateInversion(setFunction);
+        BooleanFormula newSetFunction = propagateInversion(setFunction);
 
         BooleanFormula resetFunction = outputContact.getResetFunction();
-        BooleanFormula newResetFunction = BooleanUtils.propagateInversion(resetFunction);
+        BooleanFormula newResetFunction = propagateInversion(resetFunction);
 
-        if (!BooleanUtils.compareFunctions(setFunction, newSetFunction)
-                || !BooleanUtils.compareFunctions(resetFunction, newResetFunction)) {
+        if (!compareFunctions(setFunction, newSetFunction) || !compareFunctions(resetFunction, newResetFunction)) {
             outputContact.setSetFunction(newSetFunction);
             gate.clearMapping();
             renameContacts(circuit.getMathModel(), gate.getReferencedComponent());
@@ -102,6 +103,21 @@ public class PropagateInversionTransformationCommand extends AbstractTransformat
             LogUtils.logInfo("Transforming gate " + gateStr + " into " + newGateStr);
             circuit.addToSelection(gate);
         }
+    }
+
+    private BooleanFormula propagateInversion(BooleanFormula formula) {
+        BooleanFormula result = null;
+        if (formula != null) {
+            BooleanWorker worker = new PrettifyBooleanWorker(new MemoryConservingBooleanWorker());
+            result = worker.not(formula.accept(new BooleanComplementTransformer(worker)));
+        }
+        return result;
+    }
+
+    private boolean compareFunctions(BooleanFormula func1, BooleanFormula func2) {
+        String str1 = StringGenerator.toString(func1);
+        String str2 = StringGenerator.toString(func2);
+        return str1.equals(str2);
     }
 
     private void renameContacts(Circuit circuit, FunctionComponent gate) {

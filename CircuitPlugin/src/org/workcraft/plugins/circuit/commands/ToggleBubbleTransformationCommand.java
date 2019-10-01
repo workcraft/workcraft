@@ -6,8 +6,9 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.BooleanOperations;
-import org.workcraft.formula.utils.BooleanUtils;
+import org.workcraft.formula.FormulaUtils;
+import org.workcraft.formula.workers.BooleanWorker;
+import org.workcraft.formula.workers.CleverBooleanWorker;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.LogUtils;
@@ -20,6 +21,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 
 public class ToggleBubbleTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
+
+    private static final BooleanWorker WORKER = new CleverBooleanWorker();
 
     @Override
     public String getDisplayName() {
@@ -112,7 +115,7 @@ public class ToggleBubbleTransformationCommand extends AbstractTransformationCom
                 BooleanFormula setFunction = contact.getSetFunction();
                 BooleanFormula resetFunction = contact.getResetFunction();
                 if (resetFunction == null) {
-                    contact.setSetFunctionQuiet(BooleanOperations.not(setFunction));
+                    contact.setSetFunctionQuiet(WORKER.not(setFunction));
                 } else {
                     contact.setSetFunctionQuiet(resetFunction);
                     contact.setResetFunctionQuiet(setFunction);
@@ -120,13 +123,15 @@ public class ToggleBubbleTransformationCommand extends AbstractTransformationCom
             } else {
                 for (FunctionContact dependantContact: getDependantContacts(contact)) {
                     BooleanFormula setFunction = dependantContact.getSetFunction();
-                    BooleanFormula notContact = BooleanOperations.not(contact);
+                    BooleanFormula notContact = WORKER.not(contact);
                     if (setFunction != null) {
-                        dependantContact.setSetFunctionQuiet(BooleanUtils.replaceDumb(setFunction, contact, notContact));
+                        BooleanFormula f = FormulaUtils.replace(setFunction, contact, notContact, WORKER);
+                        dependantContact.setSetFunctionQuiet(f);
                     }
                     BooleanFormula resetFunction = dependantContact.getResetFunction();
                     if (resetFunction != null) {
-                        dependantContact.setResetFunctionQuiet(BooleanUtils.replaceDumb(resetFunction, contact, notContact));
+                        BooleanFormula f = FormulaUtils.replace(resetFunction, contact, notContact, WORKER);
+                        dependantContact.setResetFunctionQuiet(f);
                     }
                 }
             }

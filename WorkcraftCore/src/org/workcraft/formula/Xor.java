@@ -1,5 +1,7 @@
 package org.workcraft.formula;
 
+import org.workcraft.formula.visitors.BooleanVisitor;
+
 public class Xor extends BinaryBooleanFormula {
 
     public Xor(BooleanFormula x, BooleanFormula y) {

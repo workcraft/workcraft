@@ -1,4 +1,6 @@
-package org.workcraft.formula;
+package org.workcraft.formula.visitors;
+
+import org.workcraft.formula.*;
 
 public interface BooleanVisitor<T> {
     // Constant

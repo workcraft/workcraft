@@ -1,6 +1,8 @@
 package org.workcraft.formula;
 
-public class And extends BinaryBooleanFormula implements SimpleBooleanFormula {
+import org.workcraft.formula.visitors.BooleanVisitor;
+
+public class And extends BinaryBooleanFormula {
 
     public And(BooleanFormula x, BooleanFormula y) {
         super(x, y);
@@ -9,11 +11,6 @@ public class And extends BinaryBooleanFormula implements SimpleBooleanFormula {
     @Override
     public <T> T accept(BooleanVisitor<T> visitor) {
         return visitor.visit(this);
-    }
-
-    @Override
-    public void accept(ReducedBooleanVisitor visitor) {
-        visitor.visit(this);
     }
 
 }

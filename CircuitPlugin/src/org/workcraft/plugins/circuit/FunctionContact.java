@@ -2,7 +2,7 @@ package org.workcraft.plugins.circuit;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.utils.StringGenerator;
+import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.observation.PropertyChangedEvent;
 
 @VisualClass(VisualFunctionContact.class)

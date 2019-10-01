@@ -3,6 +3,7 @@ package org.workcraft.plugins.cpog.sat;
 import org.workcraft.formula.*;
 import org.workcraft.formula.cnf.Cnf;
 import org.workcraft.formula.cnf.CnfClause;
+import org.workcraft.formula.visitors.BooleanVisitor;
 
 import java.util.ArrayList;
 import java.util.HashMap;

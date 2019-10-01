@@ -1,14 +1,16 @@
 package org.workcraft.plugins.cpog.sat;
 
 import org.workcraft.formula.*;
-import org.workcraft.formula.utils.BooleanUtils;
+import org.workcraft.formula.workers.BooleanWorker;
+import org.workcraft.formula.workers.MemoryConservingBooleanWorker;
+import org.workcraft.formula.workers.PrettifyBooleanWorker;
 import org.workcraft.plugins.cpog.encoding.NumberProvider;
 
 import java.util.*;
 
-import static org.workcraft.formula.BooleanOperations.*;
-
 public class Optimiser<T> implements SatProblemGenerator<BooleanFormula> {
+
+    private static final BooleanWorker WORKER = new PrettifyBooleanWorker(new MemoryConservingBooleanWorker());
 
     private NumberProvider<T> numberProvider;
     private int[] levels;
@@ -27,16 +29,16 @@ public class Optimiser<T> implements SatProblemGenerator<BooleanFormula> {
         BooleanFormula var1 = numberProvider.select(arg1, var1Number);
         BooleanFormula var2 = numberProvider.select(arg2, var2Number);
 
-        BooleanFormula and = and(
-                iff(var1, noNegate1),
-                iff(var2, noNegate2)
+        BooleanFormula and = WORKER.and(
+                WORKER.iff(var1, noNegate1),
+                WORKER.iff(var2, noNegate2)
                 );
 
-        BooleanFormula iff = iff(var1, var2);
+        BooleanFormula iff = WORKER.iff(var1, var2);
 
-        return or(
-            and(isIff, iff),
-            and(not(isIff), and)
+        return WORKER.or(
+                WORKER.and(isIff, iff),
+                WORKER.and(WORKER.not(isIff), and)
         );
     }
 
@@ -92,7 +94,7 @@ public class Optimiser<T> implements SatProblemGenerator<BooleanFormula> {
                                     cell = var;
                                 }
                                 if (upper) {
-                                    cell = not(cell);
+                                    cell = WORKER.not(cell);
                                 }
                             } else {
                                 throw new RuntimeException("unknown character: " + c);
@@ -124,11 +126,11 @@ public class Optimiser<T> implements SatProblemGenerator<BooleanFormula> {
         BooleanFormula zero = replace(result, v, Zero.getInstance());
         //System.out.println("one: " + FormulaToString.toString(one));
         //System.out.println("zero: " + FormulaToString.toString(zero));
-        return and(one, zero);
+        return WORKER.and(one, zero);
     }
 
     private BooleanFormula replace(BooleanFormula where, BooleanVariable what, BooleanFormula with) {
-        return BooleanUtils.replacePretty(where, what, with);
+        return FormulaUtils.replace(where, what, with, WORKER);
     }
 
     /**
@@ -162,7 +164,7 @@ public class Optimiser<T> implements SatProblemGenerator<BooleanFormula> {
             T varId = generateInt("model_f" + i + "_", allVariables.size());
             BooleanFormula plain = new FreeVariable("model_f" + i + "_plain");
 
-            BooleanFormula value = iff(plain, numberProvider.select(allVariables.toArray(new BooleanFormula[0]), varId));
+            BooleanFormula value = WORKER.iff(plain, numberProvider.select(allVariables.toArray(new BooleanFormula[0]), varId));
 
             functions[i] = value;
         }
@@ -189,18 +191,19 @@ public class Optimiser<T> implements SatProblemGenerator<BooleanFormula> {
         for (int i = 0; i < functionCount; i++) {
             BooleanFormula value = functions[i];
             for (int j = 0; j < scenarios.length; j++) {
-                BooleanFormula substituted = BooleanUtils.replacePretty(value, Arrays.asList(variables), Arrays.asList(encodings[j]));
+                BooleanFormula substituted = FormulaUtils.replace(value,
+                        Arrays.asList(variables), Arrays.asList(encodings[j]), WORKER);
 
                 BooleanFormula required = scenarios[j][i];
                 if (required != null) {
-                    tableConditions.add(iff(required, substituted));
+                    tableConditions.add(WORKER.iff(required, substituted));
                 }
             }
         }
 
         tableConditions.add(numberProvider.getConstraints());
 
-        return new OptimisationTask<BooleanFormula>(functions, encodings, and(tableConditions));
+        return new OptimisationTask<BooleanFormula>(functions, encodings, FormulaUtils.createAnd(tableConditions, WORKER));
     }
 
     /**
@@ -222,12 +225,12 @@ public class Optimiser<T> implements SatProblemGenerator<BooleanFormula> {
                         BooleanFormula param2 = parameters.get(j);
                         for (int p = 0; p < 2; p++) {
                             for (int q = 0; q < 2; q++) {
-                                BooleanFormula arg1 = p != 0 ? not(param1) : param1;
-                                BooleanFormula arg2 = q != 0 ? not(param2) : param2;
-                                allVariables.add(and(arg1, arg2));
+                                BooleanFormula arg1 = p != 0 ? WORKER.not(param1) : param1;
+                                BooleanFormula arg2 = q != 0 ? WORKER.not(param2) : param2;
+                                allVariables.add(WORKER.and(arg1, arg2));
                             }
                         }
-                        allVariables.add(iff(param1, param2));
+                        allVariables.add(WORKER.iff(param1, param2));
                     }
                 }
             } else {

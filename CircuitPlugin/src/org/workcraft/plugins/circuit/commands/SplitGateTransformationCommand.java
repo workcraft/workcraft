@@ -10,7 +10,7 @@ import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.Not;
 import org.workcraft.formula.jj.ParseException;
-import org.workcraft.formula.utils.StringGenerator;
+import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.naryformula.SplitForm;
 import org.workcraft.plugins.circuit.naryformula.SplitFormGenerator;

@@ -5,7 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.utils.StringGenerator;
+import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.plugins.cpog.CpogSettings;
 import org.workcraft.plugins.cpog.encoding.Encoding;
 import org.workcraft.plugins.cpog.encoding.onehot.OneHotNumberProvider;

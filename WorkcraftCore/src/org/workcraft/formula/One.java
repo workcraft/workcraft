@@ -1,5 +1,7 @@
 package org.workcraft.formula;
 
+import org.workcraft.formula.visitors.BooleanVisitor;
+
 public final class One implements BooleanFormula {
 
     private static final One instance = new One();

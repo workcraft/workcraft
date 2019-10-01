@@ -4,9 +4,9 @@ import org.workcraft.Info;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.BooleanOperations;
-import org.workcraft.formula.utils.StringGenerator;
-import org.workcraft.formula.utils.StringGenerator.Style;
+import org.workcraft.formula.Not;
+import org.workcraft.formula.visitors.StringGenerator;
+import org.workcraft.formula.visitors.StringGenerator.Style;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.interop.VerilogFormat;
 import org.workcraft.plugins.circuit.utils.RefinementUtils;
@@ -169,7 +169,7 @@ public class VerilogSerialiser implements ModelSerialiser {
             String setExpr = StringGenerator.toString(setFormula, Style.VERILOG);
             BooleanFormula resetFormula = signalInfo.resetFormula;
             if (resetFormula != null) {
-                resetFormula = BooleanOperations.not(resetFormula);
+                resetFormula = new Not(resetFormula);
             }
             String resetExpr = StringGenerator.toString(resetFormula, Style.VERILOG);
             String expr = null;

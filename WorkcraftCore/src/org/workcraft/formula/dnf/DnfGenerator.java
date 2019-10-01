@@ -1,7 +1,7 @@
 package org.workcraft.formula.dnf;
 
 import org.workcraft.formula.*;
-import org.workcraft.formula.utils.ClauseUtils;
+import org.workcraft.formula.visitors.BooleanVisitor;
 
 public class DnfGenerator {
 

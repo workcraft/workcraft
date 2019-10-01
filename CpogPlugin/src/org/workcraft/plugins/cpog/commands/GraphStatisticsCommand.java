@@ -5,7 +5,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
-import org.workcraft.formula.utils.StringGenerator;
+import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.plugins.cpog.VisualArc;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.VisualScenario;

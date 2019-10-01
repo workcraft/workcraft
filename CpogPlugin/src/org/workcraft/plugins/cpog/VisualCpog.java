@@ -10,7 +10,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
-import org.workcraft.formula.utils.StringGenerator;
+import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.dom.generators.DefaultNodeGenerator;
 import org.workcraft.gui.tools.CommentGeneratorTool;
 import org.workcraft.gui.tools.ConnectionTool;

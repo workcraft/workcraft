@@ -1,5 +1,7 @@
 package org.workcraft.formula;
 
+import org.workcraft.formula.visitors.BooleanVisitor;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

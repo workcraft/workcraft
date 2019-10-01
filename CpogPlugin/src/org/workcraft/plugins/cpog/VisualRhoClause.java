@@ -8,10 +8,10 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
-import org.workcraft.formula.utils.FormulaRenderingResult;
-import org.workcraft.formula.utils.FormulaToGraphics;
+import org.workcraft.formula.visitors.FormulaRenderingResult;
+import org.workcraft.formula.visitors.FormulaToGraphics;
 import org.workcraft.utils.Coloriser;
-import org.workcraft.plugins.cpog.formula.PrettifyBooleanReplacer;
+import org.workcraft.plugins.cpog.formula.CpogBooleanReplacer;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -90,7 +90,7 @@ public class VisualRhoClause extends VisualComponent {
     }
 
     private BooleanFormula evaluate() {
-        return getFormula().accept(new PrettifyBooleanReplacer());
+        return getFormula().accept(new CpogBooleanReplacer());
     }
 
     @Override

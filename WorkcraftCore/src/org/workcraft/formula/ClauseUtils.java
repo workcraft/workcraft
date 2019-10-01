@@ -1,8 +1,5 @@
-package org.workcraft.formula.utils;
+package org.workcraft.formula;
 
-import org.workcraft.formula.Clause;
-import org.workcraft.formula.Literal;
-import org.workcraft.formula.Nf;
 import org.workcraft.utils.SetUtils;
 
 import java.util.*;

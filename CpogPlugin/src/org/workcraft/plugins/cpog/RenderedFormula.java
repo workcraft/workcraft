@@ -12,9 +12,9 @@ import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.Touchable;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.One;
-import org.workcraft.formula.utils.FormulaRenderingResult;
-import org.workcraft.formula.utils.FormulaToGraphics;
-import org.workcraft.formula.utils.StringGenerator;
+import org.workcraft.formula.visitors.FormulaRenderingResult;
+import org.workcraft.formula.visitors.FormulaToGraphics;
+import org.workcraft.formula.visitors.StringGenerator;
 
 public class RenderedFormula implements Touchable {
     public final String text;

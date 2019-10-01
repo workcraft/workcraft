@@ -14,7 +14,7 @@ import java.util.Map;
 import org.workcraft.formula.And;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
-import org.workcraft.formula.BooleanVisitor;
+import org.workcraft.formula.visitors.BooleanVisitor;
 import org.workcraft.formula.Iff;
 import org.workcraft.formula.Imply;
 import org.workcraft.formula.Not;

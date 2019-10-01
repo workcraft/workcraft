@@ -1,7 +1,6 @@
-package org.workcraft.formula.utils;
+package org.workcraft.formula.visitors;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;

@@ -1,20 +1,21 @@
 package org.workcraft.plugins.cpog.encoding.onehot;
 
-import static org.workcraft.formula.BooleanOperations.and;
-import static org.workcraft.formula.BooleanOperations.imply;
-import static org.workcraft.formula.BooleanOperations.not;
-import static org.workcraft.formula.BooleanOperations.or;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.FreeVariable;
 import org.workcraft.formula.One;
+import org.workcraft.formula.FormulaUtils;
+import org.workcraft.formula.workers.BooleanWorker;
+import org.workcraft.formula.workers.MemoryConservingBooleanWorker;
+import org.workcraft.formula.workers.PrettifyBooleanWorker;
 import org.workcraft.plugins.cpog.encoding.NumberProvider;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class OneHotNumberProvider implements NumberProvider<OneHotIntBooleanFormula> {
+
+    private static final BooleanWorker WORKER = new PrettifyBooleanWorker(new MemoryConservingBooleanWorker());
 
     private final List<BooleanFormula> rho = new ArrayList<>();
 
@@ -27,10 +28,10 @@ public class OneHotNumberProvider implements NumberProvider<OneHotIntBooleanForm
 
         for (int i = 0; i < range; i++) {
             for (int j = i + 1; j < range; j++) {
-                rho.add(or(not(vars.get(i)), not(vars.get(j))));
+                rho.add(WORKER.or(WORKER.not(vars.get(i)), WORKER.not(vars.get(j))));
             }
         }
-        rho.add(or(vars));
+        rho.add(FormulaUtils.createOr(vars, WORKER));
         return new OneHotIntBooleanFormula(vars);
     }
 
@@ -41,14 +42,14 @@ public class OneHotNumberProvider implements NumberProvider<OneHotIntBooleanForm
         }
         List<BooleanFormula> result = new ArrayList<>();
         for (int i = 0; i < booleanFormulas.length; i++) {
-            result.add(imply(number.get(i), booleanFormulas[i]));
+            result.add(WORKER.imply(number.get(i), booleanFormulas[i]));
         }
-        return and(result);
+        return FormulaUtils.createAnd(result, WORKER);
     }
 
     @Override
     public BooleanFormula getConstraints() {
-        return and(rho);
+        return FormulaUtils.createAnd(rho, WORKER);
     }
 
     @Override
