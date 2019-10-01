@@ -166,11 +166,7 @@ public class Config {
         if (k.length == 1) {
             rootGroup.put(k[0], value);
         } else {
-            group = groups.get(k[0]);
-            if (group == null) {
-                group = new HashMap<>();
-                groups.put(k[0], group);
-            }
+            group = groups.computeIfAbsent(k[0], s -> new HashMap<>());
             group.put(k[1], value);
         }
     }

@@ -154,4 +154,8 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
         return we;
     }
 
+    public List<VerificationParameters> getSettingsList() {
+        return settingsList;
+    }
+
 }

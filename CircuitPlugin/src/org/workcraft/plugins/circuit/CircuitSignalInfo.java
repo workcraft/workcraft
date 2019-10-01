@@ -9,8 +9,6 @@ import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.FormulaUtils;
 import org.workcraft.formula.Literal;
-import org.workcraft.formula.workers.BooleanWorker;
-import org.workcraft.formula.workers.CleverBooleanWorker;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 
 import java.util.ArrayList;
@@ -19,8 +17,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 public class CircuitSignalInfo {
-
-    private static final BooleanWorker WORKER = CleverBooleanWorker.getInstance();
 
     public final Circuit circuit;
     private final HashMap<Contact, String> contactSignalMap = new HashMap<>();
@@ -38,32 +34,22 @@ public class CircuitSignalInfo {
         }
     }
 
-    public CircuitSignalInfo(Circuit circuit) {
-        this(circuit, null, null);
-    }
 
-    public CircuitSignalInfo(Circuit circuit, String literalPrefix, String literalSuffix) {
+    public CircuitSignalInfo(Circuit circuit) {
         this.circuit = circuit;
-        this.signalLiteralMap = buildSignalLiteralMap(literalPrefix, literalSuffix);
+        this.signalLiteralMap = buildSignalLiteralMap();
     }
 
     public Circuit getCircuit() {
         return circuit;
     }
 
-    private HashMap<String, BooleanFormula> buildSignalLiteralMap(String literalPrefix, String literalSuffix) {
+    private HashMap<String, BooleanFormula> buildSignalLiteralMap() {
         HashMap<String, BooleanFormula> result = new HashMap<>();
-        if (literalPrefix == null) {
-            literalPrefix = "";
-        }
-        if (literalSuffix == null) {
-            literalSuffix = "";
-        }
         for (FunctionContact contact : circuit.getFunctionContacts()) {
             if (contact.isDriver()) {
                 String signalName = getContactSignal(contact);
-                String literalName = literalPrefix + signalName + literalSuffix;
-                BooleanFormula literal = new Literal(literalName);
+                BooleanFormula literal = new Literal(signalName);
                 result.put(signalName, literal);
             }
         }
@@ -115,8 +101,8 @@ public class CircuitSignalInfo {
         }
         for (FunctionContact contact : component.getFunctionContacts()) {
             if (contact.isOutput()) {
-                BooleanFormula setFunction = FormulaUtils.replace(contact.getSetFunction(), variables, values, WORKER);
-                BooleanFormula resetFunction = FormulaUtils.replace(contact.getResetFunction(), variables, values, WORKER);
+                BooleanFormula setFunction = FormulaUtils.replace(contact.getSetFunction(), variables, values);
+                BooleanFormula resetFunction = FormulaUtils.replace(contact.getResetFunction(), variables, values);
                 SignalInfo signalInfo = new SignalInfo(contact, setFunction, resetFunction);
                 result.add(signalInfo);
             }

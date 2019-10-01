@@ -31,9 +31,30 @@ import java.util.*;
 
 public class CircuitUtils {
 
-    public static Pair<Contact, Boolean> findDriverAndInversionSkipZeroDelay(Circuit circuit, MathNode curNode) {
+    public static BooleanFormula getDriverFormula(Circuit circuit, BooleanFormula formula) {
+        if (formula == null) {
+            return null;
+        }
+        Map<String, BooleanVariable> variableMap = new HashMap<>();
+        List<BooleanVariable> variables = new ArrayList<>();
+        List<BooleanFormula> values = new ArrayList<>();
+        for (BooleanVariable variable : FormulaUtils.extractOrderedVariables(formula)) {
+            if (variable instanceof Contact) {
+                Pair<Contact, Boolean> pair = CircuitUtils.findDriverAndInversionSkipZeroDelay(circuit, (Contact) variable);
+                if (pair != null) {
+                    variables.add(variable);
+                    String signalName = getSignalReference(circuit, pair.getFirst());
+                    BooleanVariable replacement = variableMap.computeIfAbsent(signalName, FreeVariable::new);
+                    values.add(pair.getSecond() ? new Not(replacement) : replacement);
+                }
+            }
+        }
+        return FormulaUtils.replace(formula, variables, values);
+    }
+
+    public static Pair<Contact, Boolean> findDriverAndInversionSkipZeroDelay(Circuit circuit, Contact contact) {
         Pair<Contact, Boolean> result = null;
-        Contact driver = CircuitUtils.findDriver(circuit, curNode, false);
+        Contact driver = CircuitUtils.findDriver(circuit, contact, false);
         boolean inversion = false;
         if (driver != null) {
             Node parent = driver.getParent();
@@ -419,7 +440,7 @@ public class CircuitUtils {
             if (setFunction instanceof Not) {
                 result.add(outputContact);
             }
-            Set<BooleanVariable> bubbleLiterals = FormulaUtils.extractNegatedLiterals(setFunction);
+            Set<BooleanVariable> bubbleLiterals = FormulaUtils.extractNegatedVariables(setFunction);
             for (BooleanVariable literal: bubbleLiterals) {
                 if (literal instanceof FunctionContact) {
                     FunctionContact inputContact = (FunctionContact) literal;

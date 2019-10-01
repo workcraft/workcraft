@@ -1,11 +1,13 @@
 package org.workcraft.plugins.mpsat;
 
 import org.jetbrains.annotations.NotNull;
+import org.workcraft.formula.*;
+import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.StgSettings;
+import org.workcraft.types.Pair;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.LogUtils;
-import org.workcraft.types.Pair;
 
 import java.io.File;
 import java.io.IOException;
@@ -620,6 +622,22 @@ public class VerificationParameters {
         }
         return new VerificationParameters("Strict implementation", VerificationMode.STG_REACHABILITY, 0,
                 MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount(), reachStrictImplementation, true);
+    }
+
+    public static VerificationParameters getBinateImplementationReachSettings(String signal, BooleanFormula formula, BooleanVariable variable) {
+        BooleanFormula insensitivityFormula = new Iff(FormulaUtils.replaceOne(formula, variable), FormulaUtils.replaceZero(formula, variable));
+
+        FreeVariable positiveVar = new FreeVariable("@" + variable.getLabel());
+        BooleanFormula splitVarFormula = FormulaUtils.replaceBinateVariable(formula, variable, positiveVar);
+        BooleanFormula derivativeFormula = FormulaUtils.derive(splitVarFormula, positiveVar);
+
+        String reach = "@S\"" + variable.getLabel() + "\" &\n"
+                + "(" + StringGenerator.toString(insensitivityFormula, StringGenerator.Style.REACH) + ") &\n"
+                + "(" + StringGenerator.toString(derivativeFormula, StringGenerator.Style.REACH) + ")";
+
+        String s = signal + " = " + StringGenerator.toString(formula);
+        return new VerificationParameters("Binate function implementation for " + s, VerificationMode.STG_REACHABILITY, 0,
+                MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount(), reach, true);
     }
 
     public static VerificationParameters getCscSettings() {

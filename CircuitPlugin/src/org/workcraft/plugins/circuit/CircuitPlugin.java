@@ -86,6 +86,8 @@ public class CircuitPlugin implements Plugin {
                 "check the Circuit 'work' for output persistency");
         ScriptableCommandUtils.register(StrictImplementationVerificationCommand.class, "checkCircuitStrictImplementation",
                 "check the Circuit 'work' for strict implementation of its signals according to the environment");
+        ScriptableCommandUtils.register(BinateImplementationVerificationCommand.class, "checkCircuitBinateImplementation",
+                "check the Circuit 'work' for correct implementation of its binate functions");
 
         pm.registerCommand(PropertyVerificationCommand.class);
         pm.registerCommand(AssertionVerificationCommand.class);

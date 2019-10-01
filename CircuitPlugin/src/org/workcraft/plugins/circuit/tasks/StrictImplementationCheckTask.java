@@ -6,8 +6,9 @@ import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.formula.visitors.StringGenerator.Style;
 import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.CircuitSignalInfo;
 import org.workcraft.plugins.circuit.FunctionComponent;
+import org.workcraft.plugins.circuit.FunctionContact;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.tasks.*;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
@@ -81,16 +82,17 @@ public class StrictImplementationCheckTask extends VerificationChainTask {
             monitor.progressUpdate(0.50);
 
             // Check for strict implementation
-            CircuitSignalInfo circuitInfo = new CircuitSignalInfo(circuit, "$S\"", "\"");
             Collection<VerificationParameters.SignalInfo> signalInfos = new ArrayList<>();
-            for (FunctionComponent component: circuit.getFunctionComponents()) {
-                for (CircuitSignalInfo.SignalInfo signalInfo: circuitInfo.getComponentSignalInfos(component)) {
-                    String signalName = circuitInfo.getContactSignal(signalInfo.contact);
-                    BooleanFormula setFormula = signalInfo.setFormula;
-                    String setExpr = StringGenerator.toString(setFormula, Style.REACH);
-                    BooleanFormula resetFormula = signalInfo.resetFormula;
-                    String resetExpr = StringGenerator.toString(resetFormula, Style.REACH);
-                    signalInfos.add(new VerificationParameters.SignalInfo(signalName, setExpr, resetExpr));
+            for (FunctionComponent component : circuit.getFunctionComponents()) {
+                if (!component.getIsZeroDelay()) {
+                    for (FunctionContact outputContact : component.getFunctionOutputs()) {
+                        BooleanFormula setFormula = CircuitUtils.getDriverFormula(circuit, outputContact.getSetFunction());
+                        String setExpr = StringGenerator.toString(setFormula, Style.REACH);
+                        BooleanFormula resetFormula = CircuitUtils.getDriverFormula(circuit, outputContact.getResetFunction());
+                        String resetExpr = StringGenerator.toString(resetFormula, Style.REACH);
+                        String signalName = CircuitUtils.getSignalReference(circuit, outputContact);
+                        signalInfos.add(new VerificationParameters.SignalInfo(signalName, setExpr, resetExpr));
+                    }
                 }
             }
             VerificationParameters mpsatSettings = VerificationParameters.getStrictImplementationReachSettings(signalInfos);

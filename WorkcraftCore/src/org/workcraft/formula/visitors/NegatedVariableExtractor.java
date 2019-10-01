@@ -5,7 +5,7 @@ import org.workcraft.formula.*;
 import java.util.HashSet;
 import java.util.Set;
 
-public class NegatedLiteralsExtractor implements BooleanVisitor<Set<BooleanVariable>> {
+public class NegatedVariableExtractor implements BooleanVisitor<Set<BooleanVariable>> {
 
     private boolean negation = false;
 

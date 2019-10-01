@@ -130,10 +130,12 @@ public class StrictImplementationVerificationCommand extends AbstractVerificatio
         stgLocalSignals.addAll(envStg.getSignalNames(Signal.Type.OUTPUT, null));
         Set<String> circuitLocalSignals = new HashSet<>();
         for (FunctionComponent component: circuit.getFunctionComponents()) {
-            Collection<Contact> componentOutputs = component.getOutputs();
-            for (Contact contact: componentOutputs) {
-                String signalName = CircuitUtils.getSignalReference(circuit, contact);
-                circuitLocalSignals.add(signalName);
+            if (!component.getIsZeroDelay()) {
+                Collection<Contact> componentOutputs = component.getOutputs();
+                for (Contact contact : componentOutputs) {
+                    String signalName = CircuitUtils.getSignalReference(circuit, contact);
+                    circuitLocalSignals.add(signalName);
+                }
             }
         }
         if (!stgLocalSignals.equals(circuitLocalSignals)) {

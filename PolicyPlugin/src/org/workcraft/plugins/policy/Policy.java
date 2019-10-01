@@ -97,11 +97,7 @@ public class Policy extends Petri implements PolicyModel {
             if (node instanceof BundledTransition) {
                 BundledTransition t = (BundledTransition) node;
                 for (Bundle b: getBundlesOfTransition(t)) {
-                    HashSet<BundledTransition> transitions = subBundles.get(b);
-                    if (transitions == null) {
-                        transitions = new HashSet<>();
-                        subBundles.put(b, transitions);
-                    }
+                    HashSet<BundledTransition> transitions = subBundles.computeIfAbsent(b, s -> new HashSet<>());
                     transitions.add(t);
                 }
             }

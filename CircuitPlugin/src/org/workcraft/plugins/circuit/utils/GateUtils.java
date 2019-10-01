@@ -284,11 +284,11 @@ public class GateUtils {
         HashSet<BooleanVariable> literals = new HashSet<>();
         BooleanFormula setFunction = contact.getSetFunction();
         if (setFunction != null) {
-            literals.addAll(FormulaUtils.extractLiterals(setFunction));
+            literals.addAll(FormulaUtils.extractOrderedVariables(setFunction));
         }
         BooleanFormula resetFunction = contact.getResetFunction();
         if (resetFunction != null) {
-            literals.addAll(FormulaUtils.extractLiterals(resetFunction));
+            literals.addAll(FormulaUtils.extractOrderedVariables(resetFunction));
         }
         return literals;
     }
@@ -311,10 +311,10 @@ public class GateUtils {
         FunctionContact outputContact = component.getGateOutput();
         if (outputContact != null) {
             BooleanFormula setFunction = outputContact.getSetFunction();
-            List<BooleanVariable> orderedLiterals = FormulaUtils.extractLiterals(setFunction);
-            for (BooleanVariable literal : orderedLiterals) {
-                if (literal instanceof FunctionContact) {
-                    FunctionContact contact = (FunctionContact) literal;
+            List<BooleanVariable> orderedVariables = FormulaUtils.extractOrderedVariables(setFunction);
+            for (BooleanVariable variable : orderedVariables) {
+                if (variable instanceof FunctionContact) {
+                    FunctionContact contact = (FunctionContact) variable;
                     result.add(contact);
                 }
             }

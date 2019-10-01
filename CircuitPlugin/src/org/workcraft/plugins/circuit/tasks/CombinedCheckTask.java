@@ -5,7 +5,10 @@ import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.tasks.*;
+import org.workcraft.plugins.mpsat.tasks.CombinedChainOutput;
+import org.workcraft.plugins.mpsat.tasks.CombinedChainTask;
+import org.workcraft.plugins.mpsat.tasks.VerificationOutput;
+import org.workcraft.plugins.mpsat.tasks.VerificationTask;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
@@ -20,23 +23,23 @@ import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
-public class CustomCheckTask extends VerificationChainTask {
+public class CombinedCheckTask extends CombinedChainTask {
 
-    public CustomCheckTask(WorkspaceEntry we, VerificationParameters settings) {
-        super(we, settings);
+    public CombinedCheckTask(WorkspaceEntry we, List<VerificationParameters> settingsList) {
+        super(we, settingsList, null);
     }
 
     @Override
-    public Result<? extends VerificationChainOutput> run(ProgressMonitor<? super VerificationChainOutput> monitor) {
-        Framework framework = Framework.getInstance();
-        TaskManager manager = framework.getTaskManager();
+    public Result<? extends CombinedChainOutput> run(ProgressMonitor<? super CombinedChainOutput> monitor) {
+        TaskManager manager = Framework.getInstance().getTaskManager();
         WorkspaceEntry we = getWorkspaceEntry();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         String stgFileExtension = StgFormat.getInstance().getExtension();
-        VerificationParameters preparationSettings = VerificationParameters.getToolchainPreparationSettings();
         try {
             // Common variables
             VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
@@ -64,7 +67,7 @@ public class CustomCheckTask extends VerificationChainTask {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(devExportResult, null, null, null, preparationSettings));
+                        new CombinedChainOutput(devExportResult, null, null, null, getSettingsList()));
             }
             monitor.progressUpdate(0.10);
 
@@ -82,7 +85,7 @@ public class CustomCheckTask extends VerificationChainTask {
                         return new Result<>(Outcome.CANCEL);
                     }
                     return new Result<>(Outcome.FAILURE,
-                            new VerificationChainOutput(envExportResult, null, null, null, preparationSettings));
+                            new CombinedChainOutput(envExportResult, null, null, null, getSettingsList()));
                 }
 
                 // Generating .g for the whole system (circuit and environment)
@@ -94,7 +97,7 @@ public class CustomCheckTask extends VerificationChainTask {
                         return new Result<>(Outcome.CANCEL);
                     }
                     return new Result<>(Outcome.FAILURE,
-                            new VerificationChainOutput(devExportResult, pcompResult, null, null, preparationSettings));
+                            new CombinedChainOutput(devExportResult, pcompResult, null, null, getSettingsList()));
                 }
             }
             monitor.progressUpdate(0.20);
@@ -110,40 +113,30 @@ public class CustomCheckTask extends VerificationChainTask {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(devExportResult, pcompResult, punfResult, null, preparationSettings));
+                        new CombinedChainOutput(devExportResult, pcompResult, punfResult, null, getSettingsList()));
             }
             monitor.progressUpdate(0.40);
 
-            // Check custom property (if requested)
-            VerificationParameters settings = getSettings();
-            VerificationTask verificationTask = new VerificationTask(settings.getMpsatArguments(directory),
-                    unfoldingFile, directory, sysStgFile);
+            // Run MPSat on the generated unfolding
             SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
-            Result<? extends VerificationOutput> mpsatResult = manager.execute(
-                    verificationTask, "Running custom property check [MPSat]", mpsatMonitor);
-
-            if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
-                if (mpsatResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            ArrayList<Result<? extends VerificationOutput>> mpsatResultList = new ArrayList<>(getSettingsList().size());
+            for (VerificationParameters settings : getSettingsList()) {
+                VerificationTask verificationTask = new VerificationTask(settings.getMpsatArguments(directory), unfoldingFile, directory, sysStgFile);
+                Result<? extends VerificationOutput> mpsatResult = manager.execute(
+                        verificationTask, "Running verification [MPSat]", mpsatMonitor);
+                mpsatResultList.add(mpsatResult);
+                if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
+                    if (mpsatResult.getOutcome() == Outcome.CANCEL) {
+                        return new Result<>(Outcome.CANCEL);
+                    }
+                    return new Result<>(Outcome.FAILURE,
+                            new CombinedChainOutput(devExportResult, pcompResult, punfResult, mpsatResultList, getSettingsList()));
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, settings));
             }
-            monitor.progressUpdate(0.50);
+            monitor.progressUpdate(1.0);
 
-            VerificationOutputParser mpsatParser = new VerificationOutputParser(mpsatResult.getPayload());
-            if (!mpsatParser.getSolutions().isEmpty()) {
-                return new Result<>(Outcome.SUCCESS,
-                        new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, settings,
-                                "Custom property is violated after the following trace(s):"));
-            }
-            monitor.progressUpdate(1.00);
-
-            // Success
             return new Result<>(Outcome.SUCCESS,
-                    new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, settings,
-                            "Custom property holds"));
-
+                    new CombinedChainOutput(devExportResult, pcompResult, punfResult, mpsatResultList, getSettingsList()));
         } catch (Throwable e) {
             return new Result<>(e);
         } finally {
