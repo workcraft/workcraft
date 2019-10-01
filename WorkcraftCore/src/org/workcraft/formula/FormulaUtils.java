@@ -2,10 +2,13 @@ package org.workcraft.formula;
 
 import org.workcraft.formula.visitors.BooleanReplacer;
 import org.workcraft.formula.visitors.LiteralCounter;
+import org.workcraft.formula.visitors.LiteralsExtractor;
+import org.workcraft.formula.visitors.NegatedLiteralsExtractor;
 import org.workcraft.formula.workers.BooleanWorker;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 public class FormulaUtils {
 
@@ -37,6 +40,22 @@ public class FormulaUtils {
         Integer result = null;
         if (formula != null) {
             result = formula.accept(new LiteralCounter());
+        }
+        return result;
+    }
+
+    public static List<BooleanVariable> extractLiterals(BooleanFormula formula) {
+        List<BooleanVariable> result = null;
+        if (formula != null) {
+            result = formula.accept(new LiteralsExtractor());
+        }
+        return result;
+    }
+
+    public static Set<BooleanVariable> extractNegatedLiterals(BooleanFormula formula) {
+        Set<BooleanVariable> result = null;
+        if (formula != null) {
+            result = formula.accept(new NegatedLiteralsExtractor());
         }
         return result;
     }
