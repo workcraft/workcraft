@@ -8,7 +8,6 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
-import org.workcraft.formula.visitors.LiteralsExtractor;
 import org.workcraft.formula.workers.BooleanWorker;
 import org.workcraft.formula.workers.CleverBooleanWorker;
 import org.workcraft.formula.workers.DumbBooleanWorker;
@@ -294,11 +293,11 @@ public class GateUtils {
         HashSet<BooleanVariable> literals = new HashSet<>();
         BooleanFormula setFunction = contact.getSetFunction();
         if (setFunction != null) {
-            literals.addAll(setFunction.accept(new LiteralsExtractor()));
+            literals.addAll(FormulaUtils.extractLiterals(setFunction));
         }
         BooleanFormula resetFunction = contact.getResetFunction();
         if (resetFunction != null) {
-            literals.addAll(resetFunction.accept(new LiteralsExtractor()));
+            literals.addAll(FormulaUtils.extractLiterals(resetFunction));
         }
         return literals;
     }
@@ -321,7 +320,7 @@ public class GateUtils {
         FunctionContact outputContact = component.getGateOutput();
         if (outputContact != null) {
             BooleanFormula setFunction = outputContact.getSetFunction();
-            List<BooleanVariable> orderedLiterals = setFunction.accept(new LiteralsExtractor());
+            List<BooleanVariable> orderedLiterals = FormulaUtils.extractLiterals(setFunction);
             for (BooleanVariable literal : orderedLiterals) {
                 if (literal instanceof FunctionContact) {
                     FunctionContact contact = (FunctionContact) literal;

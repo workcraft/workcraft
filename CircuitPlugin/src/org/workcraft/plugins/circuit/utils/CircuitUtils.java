@@ -12,10 +12,10 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
+import org.workcraft.formula.FormulaUtils;
 import org.workcraft.formula.Not;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
-import org.workcraft.formula.visitors.BubbledLiteralsExtractor;
 import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
@@ -419,7 +419,7 @@ public class CircuitUtils {
             if (setFunction instanceof Not) {
                 result.add(outputContact);
             }
-            Set<BooleanVariable> bubbleLiterals = setFunction.accept(new BubbledLiteralsExtractor());
+            Set<BooleanVariable> bubbleLiterals = FormulaUtils.extractNegatedLiterals(setFunction);
             for (BooleanVariable literal: bubbleLiterals) {
                 if (literal instanceof FunctionContact) {
                     FunctionContact inputContact = (FunctionContact) literal;
