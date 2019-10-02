@@ -17,13 +17,14 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Set;
 
+//TODO Update label rendering
 public class VisualBurstEvent extends VisualEvent {
 
-    private RenderedText labelRenderedText = new RenderedText("", labelFont, Positioning.CENTER, new Point2D.Double());
+    private RenderedText labelRenderedText = new RenderedText("", getLabelFont(), Positioning.CENTER, new Point2D.Double());
     private Color labelColor = CommonVisualSettings.getLabelColor();
 
     private static final String BURST_SPLIT_SYMBOL = "/";
-    private static final double LABEL_X_POSITION_THRESHOLD = 0;
+    private static final double LABEL_X_POSITION_THRESHOLD = 0.25;
     private static final double LABEL_Y_POSITION_THRESHOLD = 0.25;
 
     public VisualBurstEvent() {
@@ -68,9 +69,9 @@ public class VisualBurstEvent extends VisualEvent {
             AffineTransform oldTransform = g.getTransform();
             AffineTransform transform = getLabelTransform();
             g.transform(transform);
-            RenderedText inputText = new RenderedText(input, labelFont, Positioning.CENTER, new Point2D.Double());
-            RenderedText outputText = new RenderedText(output, labelFont, Positioning.CENTER, new Point2D.Double());
-            RenderedText burstSplitText = new RenderedText(BURST_SPLIT_SYMBOL, labelFont, Positioning.CENTER, new Point2D.Double());
+            RenderedText inputText = new RenderedText(input, getLabelFont(), Positioning.CENTER, new Point2D.Double());
+            RenderedText outputText = new RenderedText(output, getLabelFont(), Positioning.CENTER, new Point2D.Double());
+            RenderedText burstSplitText = new RenderedText(BURST_SPLIT_SYMBOL, getLabelFont(), Positioning.CENTER, new Point2D.Double());
             Color background = d.getBackground();
             if (background != null) {
                 g.setColor(Coloriser.colorise(CommonEditorSettings.getBackgroundColor(), background));
