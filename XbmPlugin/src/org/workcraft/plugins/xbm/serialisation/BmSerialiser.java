@@ -24,7 +24,7 @@ public class BmSerialiser implements ModelSerialiser {
         String title = ExportUtils.asIdentifier(model.getTitle());
         writer.write("Name " + title + "\n\n");
         if (model instanceof Xbm) {
-            writeXbm(writer, (Xbm) model);
+            writeXbm();
         } else {
             throw new ArgumentException("Model class not supported: " + model.getClass().getName());
         }
@@ -42,7 +42,6 @@ public class BmSerialiser implements ModelSerialiser {
         return BmFormat.getInstance().getUuid();
     }
 
-    private void writeXbm(PrintWriter writer, Xbm xbm) {
-
+    private void writeXbm() {
     }
 }

@@ -5,7 +5,6 @@ import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.tools.SelectionTool;
 import org.workcraft.plugins.xbm.*;
-import org.workcraft.plugins.xbm.XbmSignal;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.WorkspaceUtils;

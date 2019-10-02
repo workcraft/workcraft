@@ -61,7 +61,8 @@ public class Burst extends Symbol {
     public static final String PROPERTY_DIRECTION = "Direction";
 
     private final Map<XbmSignal, Direction> direction = new LinkedHashMap<>();
-    private XbmState from, to;
+    private XbmState from;
+    private XbmState to;
 
     public Burst() {
     }

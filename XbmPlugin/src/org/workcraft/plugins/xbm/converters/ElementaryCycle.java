@@ -17,8 +17,10 @@ public class ElementaryCycle {
     public static final String PLACE_NAME_LOW = "_LOW";
     public static final String PLACE_NAME_HIGH = "_HIGH";
 
-    private final VisualPlace low, high;
-    private final VisualTransition falling, rising;
+    private final VisualPlace low;
+    private final VisualPlace high;
+    private final VisualTransition falling;
+    private final VisualTransition rising;
 
     private static double startXDiff = 0;
     private static double startYDiff = 5;

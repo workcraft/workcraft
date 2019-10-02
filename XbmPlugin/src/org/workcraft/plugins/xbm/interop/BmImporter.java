@@ -6,7 +6,6 @@ import org.workcraft.interop.Format;
 import org.workcraft.interop.Importer;
 import org.workcraft.workspace.ModelEntry;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 public class BmImporter implements Importer {
@@ -17,7 +16,7 @@ public class BmImporter implements Importer {
     }
 
     @Override
-    public ModelEntry importFrom(InputStream in) throws IOException, DeserialisationException, OperationCancelledException {
+    public ModelEntry importFrom(InputStream in) throws java.io.IOException, DeserialisationException, OperationCancelledException {
         return null;
     }
 }

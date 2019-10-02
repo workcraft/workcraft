@@ -46,7 +46,7 @@ public class XbmSimulationTool extends PetriSimulationTool {
         String label = null;
         if (ref != null) {
             label = converter.getSymbol(ref);
-            if (label == "") {
+            if ("".equals(label)) {
                 label = Character.toString(VisualEvent.EPSILON_SYMBOL);
             }
         }

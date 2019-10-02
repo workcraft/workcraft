@@ -14,8 +14,10 @@ public class StgElementaryCycle {
     public static final String PLACE_NAME_LOW = "_LOW";
     public static final String PLACE_NAME_HIGH = "_HIGH";
 
-    private final VisualStgPlace low, high;
-    private final VisualSignalTransition falling, rising;
+    private final VisualStgPlace low;
+    private final VisualStgPlace high;
+    private final VisualSignalTransition falling;
+    private final VisualSignalTransition rising;
 
     private static double startXDiff = 0;
     private static double startYDiff = 5;
@@ -108,7 +110,6 @@ public class StgElementaryCycle {
     }
 
     private static VisualSignalTransition createTransition(VisualStg visualStg, XbmSignal xbmSignal, SignalTransition.Direction determineDirection) {
-        final VisualSignalTransition result = visualStg.createVisualSignalTransition(xbmSignal.getName(), XbmToStgConversionUtil.getReferredType(xbmSignal.getType()), determineDirection);
-        return result;
+        return visualStg.createVisualSignalTransition(xbmSignal.getName(), XbmToStgConversionUtil.getReferredType(xbmSignal.getType()), determineDirection);
     }
 }

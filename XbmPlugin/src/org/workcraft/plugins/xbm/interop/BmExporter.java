@@ -6,7 +6,7 @@ import org.workcraft.plugins.xbm.serialisation.BmSerialiser;
 
 public class BmExporter extends AbstractSerialiseExporter {
 
-    final BmSerialiser serialiser = new BmSerialiser();
+    private final BmSerialiser serialiser = new BmSerialiser();
 
     @Override
     public Format getFormat() {

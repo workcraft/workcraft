@@ -28,66 +28,13 @@ public class SignalSupervisor extends StateSupervisor {
             switch (propertyName) {
             case XbmState.PROPERTY_ENCODING:
                 if (node instanceof XbmState) {
-                    XbmState state = (XbmState) node;
-                    Collection<BurstEvent> burstEvents = xbm.getBurstEvents();
-                    for (BurstEvent event: burstEvents) {
-                        Burst b = event.getBurst();
-                        XbmState from = b.getFrom();
-                        XbmState to = b.getTo();
-                        if (from == state || to == state) {
-                            for (XbmSignal s: from.getSignals()) {
-                                b.addOrChangeSignalDirection(s, from.getEncoding().get(s), to.getEncoding().get(s));
-                            }
-                        }
-                    }
+                    handleEncodingChanges((XbmState) node);
                 }
                 break;
 
             case Burst.PROPERTY_DIRECTION:
                 if (node instanceof BurstEvent) {
-                    BurstEvent burstEvent = (BurstEvent) node;
-                    Burst burst = burstEvent.getBurst();
-                    XbmState from = burst.getFrom();
-                    XbmState to = burst.getTo();
-                    Map<XbmSignal, Burst.Direction> direction = burstEvent.getBurst().getDirection();
-                    for (Map.Entry<XbmSignal, Burst.Direction> entry: direction.entrySet()) {
-                        XbmSignal s = entry.getKey();
-                        Burst.Direction d = entry.getValue();
-                        if (d != null) {
-                            switch (d) {
-                            case PLUS:
-                                if (from.getEncoding().get(s) != SignalState.LOW) {
-                                    from.addOrChangeSignalValue(s, SignalState.LOW);
-                                }
-                                if (to.getEncoding().get(s) != SignalState.HIGH) {
-                                    to.addOrChangeSignalValue(s, SignalState.HIGH);
-                                }
-                                break;
-                            case MINUS:
-                                if (from.getEncoding().get(s) != SignalState.HIGH) {
-                                    from.addOrChangeSignalValue(s, SignalState.HIGH);
-                                }
-                                if (to.getEncoding().get(s) != SignalState.LOW) {
-                                    to.addOrChangeSignalValue(s, SignalState.LOW);
-                                }
-                                break;
-                            case UNSTABLE:
-                                if (to.getEncoding().get(s) != SignalState.DDC) {
-                                    to.addOrChangeSignalValue(s, SignalState.DDC);
-                                }
-                                break;
-                            case STABLE: //This essentially pushes the signal(direction) to the next arc
-                                if (to.getEncoding().get(s) != from.getEncoding().get(s)) {
-                                    to.addOrChangeSignalValue(s, from.getEncoding().get(s));
-                                }
-                                break;
-                            case TOGGLE:
-                                if (to.getEncoding().get(s) != SignalState.DDC && to.getEncoding().get(s) == from.getEncoding().get(s)) {
-                                    to.addOrChangeSignalValue(s, from.getEncoding().get(s).toggle());
-                                }
-                            }
-                        }
-                    }
+                    handleDirectionChanges((BurstEvent) node);
                 }
                 break;
 
@@ -167,6 +114,66 @@ public class SignalSupervisor extends StateSupervisor {
             for (XbmSignal stateXbmSignal : stateSignalsRef) {
                 if (!state.getSignals().contains(xbmSignal) && xbmSignal.getName().equals(stateXbmSignal.getName())) {
                     state.addOrChangeSignalValue(xbmSignal, state.getEncoding().get(stateXbmSignal));
+                }
+            }
+        }
+    }
+
+    private void handleEncodingChanges(XbmState target) {
+        Collection<BurstEvent> burstEvents = xbm.getBurstEvents();
+        for (BurstEvent event: burstEvents) {
+            Burst b = event.getBurst();
+            XbmState from = b.getFrom();
+            XbmState to = b.getTo();
+            if (from == target || to == target) {
+                for (XbmSignal s : from.getSignals()) {
+                    b.addOrChangeSignalDirection(s, from.getEncoding().get(s), to.getEncoding().get(s));
+                }
+            }
+        }
+    }
+
+    private void handleDirectionChanges(BurstEvent target) {
+        Burst burst = target.getBurst();
+        XbmState from = burst.getFrom();
+        XbmState to = burst.getTo();
+        Map<XbmSignal, Burst.Direction> direction = burst.getDirection();
+        for (Map.Entry<XbmSignal, Burst.Direction> entry: direction.entrySet()) {
+            XbmSignal s = entry.getKey();
+            Burst.Direction d = entry.getValue();
+            if (d != null) {
+                switch (d) {
+                case PLUS:
+                    if (from.getEncoding().get(s) != SignalState.LOW) {
+                        from.addOrChangeSignalValue(s, SignalState.LOW);
+                    }
+                    if (to.getEncoding().get(s) != SignalState.HIGH) {
+                        to.addOrChangeSignalValue(s, SignalState.HIGH);
+                    }
+                    break;
+                case MINUS:
+                    if (from.getEncoding().get(s) != SignalState.HIGH) {
+                        from.addOrChangeSignalValue(s, SignalState.HIGH);
+                    }
+                    if (to.getEncoding().get(s) != SignalState.LOW) {
+                        to.addOrChangeSignalValue(s, SignalState.LOW);
+                    }
+                    break;
+                case UNSTABLE:
+                    if (to.getEncoding().get(s) != SignalState.DDC) {
+                        to.addOrChangeSignalValue(s, SignalState.DDC);
+                    }
+                    break;
+                case STABLE: //This essentially pushes the signal(direction) to the next arc
+                    if (to.getEncoding().get(s) != from.getEncoding().get(s)) {
+                        to.addOrChangeSignalValue(s, from.getEncoding().get(s));
+                    }
+                    break;
+                case TOGGLE:
+                    if (to.getEncoding().get(s) != SignalState.DDC && to.getEncoding().get(s) == from.getEncoding().get(s)) {
+                        to.addOrChangeSignalValue(s, from.getEncoding().get(s).toggle());
+                    }
+                    break;
                 }
             }
         }

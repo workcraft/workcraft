@@ -14,8 +14,11 @@ import java.util.Set;
 public class VisualBurstTransition {
 
     private final VisualStg visualStg;
-    private final Set<VisualSignalTransition> inputTransitions, outputTransitions;
-    private final VisualDummyTransition start, split, end;
+    private final Set<VisualSignalTransition> inputTransitions;
+    private final Set<VisualSignalTransition> outputTransitions;
+    private final VisualDummyTransition start;
+    private final VisualDummyTransition split;
+    private final VisualDummyTransition end;
 
     private static final String JOIN_PREFIX = "JOIN";
     private static final String FORK_PREFIX = "FORK";
