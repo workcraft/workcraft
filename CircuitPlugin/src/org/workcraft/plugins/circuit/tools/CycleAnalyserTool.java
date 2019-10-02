@@ -117,7 +117,6 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         } else {
             we.saveMemento();
         }
-        updateState(editor);
         editor.requestFocus();
     }
 
@@ -145,7 +144,6 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         VisualCircuit circuit = (VisualCircuit) editor.getModel();
         editor.getWorkspaceEntry().saveMemento();
         ScanUtils.insertTestableGates(circuit);
-        updateState(editor);
         editor.requestFocus();
     }
 
@@ -157,7 +155,6 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         } catch (InvalidConnectionException e) {
             throw new RuntimeException(e);
         }
-        updateState(editor);
         editor.requestFocus();
     }
 
@@ -208,6 +205,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         Circuit circuit = (Circuit) editor.getModel().getMathModel();
         CircuitUtils.correctZeroDelayInitialState(circuit);
         updateState(editor);
+        editor.getWorkspaceEntry().addObserver(e -> updateState(editor));
     }
 
     @Override
@@ -221,7 +219,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     @Override
     public void setPermissions(final GraphEditor editor) {
         WorkspaceEntry we = editor.getWorkspaceEntry();
-        we.setCanModify(false);
+        we.setCanModify(true);
         we.setCanSelect(false);
         we.setCanCopy(false);
     }
@@ -309,9 +307,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
                 processed = true;
             }
         }
-        if (processed) {
-            updateState(editor);
-        } else {
+        if (!processed) {
             super.mousePressed(e);
         }
     }
