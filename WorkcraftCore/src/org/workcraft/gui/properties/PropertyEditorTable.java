@@ -9,6 +9,7 @@ import org.workcraft.utils.DialogUtils;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
+import javax.swing.plaf.TableUI;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -34,6 +35,7 @@ public class PropertyEditorTable extends JTable {
 
         model = new PropertyEditorTableModel(propertyHeader, valueHeader);
         setModel(model);
+        super.setUI(new PropertyEditorTableUI(model));
 
         getTableHeader().setDefaultRenderer(new FlatHeaderRenderer());
         setFocusable(false);
@@ -59,6 +61,11 @@ public class PropertyEditorTable extends JTable {
         }
     }
 
+    @Override
+    public void setUI(TableUI ui) {
+        // Forbid changing UI
+    }
+
     public void assign(Properties properties) {
         model.assign(properties);
         update();
@@ -74,22 +81,22 @@ public class PropertyEditorTable extends JTable {
         cellEditors = new TableCellEditor[model.getRowCount()];
         for (int i = 0; i < model.getRowCount(); i++) {
             PropertyDescriptor decl = model.getRowDeclaration(i);
-
-            // If object declares a predefined set of values, use a ComboBox to edit the property regardless of class
             if (decl.getChoice() != null) {
+                // If object declares a predefined set of values, use a ComboBox to edit the property regardless of class
                 model.setRowClass(i, null);
                 cellRenderers[i] = new ChoiceCellRenderer();
                 cellEditors[i] = new ChoiceCellEditor(decl);
             } else {
                 // otherwise, try to get a corresponding PropertyClass object, that knows how to edit a property of this class
-                PropertyClass cls = propertyClasses.get(decl.getType());
+                Class type = decl.getType();
+                PropertyClass cls = propertyClasses.get(type);
                 model.setRowClass(i, cls);
                 if (cls != null) {
                     cellRenderers[i] = cls.getCellRenderer();
                     cellEditors[i] = cls.getCellEditor();
                 } else {
                     // no PropertyClass exists for this class, fall back to read-only mode using Object.toString()
-                    System.err.println("Data class '" + decl.getType().getName() + "' is not supported by the Property editor.");
+                    System.err.println("Data class '" + type.getName() + "' is not supported by the Property editor.");
                     cellRenderers[i] = new DefaultTableCellRenderer();
                     cellEditors[i] = null;
                 }
@@ -126,7 +133,7 @@ public class PropertyEditorTable extends JTable {
                 public Component getTableCellRendererComponent(JTable table, Object value,
                         boolean isSelected, boolean hasFocus, int row, int column) {
 
-                    String text = value.toString();
+                    String text = (value == null) ? "" : value.toString();
                     label.setText(text);
                     label.setBorder(SizeHelper.getTableCellBorder());
 
@@ -144,7 +151,6 @@ public class PropertyEditorTable extends JTable {
                     if (fontMetrics.stringWidth(text) > availableWidth) {
                         label.setToolTipText(text);
                     }
-
                     return label;
                 }
             };
@@ -168,6 +174,22 @@ public class PropertyEditorTable extends JTable {
                 update();
             }
         }
+    }
+
+    @Override
+    public Rectangle getCellRect(int row, int column, boolean includeSpacing) {
+        Rectangle result = super.getCellRect(row, column, includeSpacing);
+        PropertyDescriptor declaration = model.getRowDeclaration(row);
+        if ((declaration != null) && declaration.isSpan()) {
+            int width = getColumnModel().getColumn(0).getWidth();
+            if (column == 0) {
+                result.width -= width;
+            } else {
+                result.x -= width;
+                result.width += width;
+            }
+        }
+        return result;
     }
 
 }
