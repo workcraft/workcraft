@@ -23,47 +23,47 @@ public class PropertyEditorTableUI extends BasicTableUI {
         if ((table.getRowCount() > 0) && (table.getColumnCount() > 0) && bounds.intersects(clip)) {
             Point upperLeft = clip.getLocation();
             Point lowerRight = new Point(clip.x + clip.width - 1, clip.y + clip.height - 1);
-            int rMin = table.rowAtPoint(upperLeft);
-            if (rMin == -1) {
-                rMin = 0;
+            int minRow = table.rowAtPoint(upperLeft);
+            if (minRow == -1) {
+                minRow = 0;
             }
-            int rMax = table.rowAtPoint(lowerRight);
-            if (rMax == -1) {
-                rMax = table.getRowCount() - 1;
+            int maxRow = table.rowAtPoint(lowerRight);
+            if (maxRow == -1) {
+                maxRow = table.getRowCount() - 1;
             }
-            int cMin = table.columnAtPoint(upperLeft);
-            if (cMin == -1) {
-                cMin = 0;
+            int minColumn = table.columnAtPoint(upperLeft);
+            if (minColumn == -1) {
+                minColumn = 0;
             }
-            int cMax = table.columnAtPoint(lowerRight);
-            if (cMax == -1) {
-                cMax = table.getColumnCount() - 1;
+            int maxColumn = table.columnAtPoint(lowerRight);
+            if (maxColumn == -1) {
+                maxColumn = table.getColumnCount() - 1;
             }
-            paintGrid(g, rMin, rMax, cMin, cMax);
-            paintCells(g, rMin, rMax, cMin, cMax);
+            paintGrid(g, minRow, maxRow, minColumn, maxColumn);
+            paintCells(g, minRow, maxRow, minColumn, maxColumn);
         }
     }
 
-    private void paintGrid(Graphics g, int rMin, int rMax, int cMin, int cMax) {
+    private void paintGrid(Graphics g, int minRow, int maxRow, int minColumn, int maxColumn) {
         g.setColor(table.getGridColor());
 
-        Rectangle minCell = table.getCellRect(rMin, cMin, true);
-        Rectangle maxCell = table.getCellRect(rMax, cMax, true);
+        Rectangle minCell = table.getCellRect(minRow, minColumn, true);
+        Rectangle maxCell = table.getCellRect(maxRow, maxColumn, true);
         Rectangle rect = minCell.union(maxCell);
 
         int w = rect.x + rect.width;
         int y = rect.y;
-        for (int row = rMin; row <= rMax; row++) {
+        for (int row = minRow; row <= maxRow; row++) {
             int rowHeight = table.getRowHeight(row);
             y += rowHeight;
             if (table.getShowHorizontalLines()) {
                 g.drawLine(rect.x, y - 1, w - 1, y - 1);
             }
             if (table.getShowVerticalLines() && !model.getRowDeclaration(row).isSpan()) {
-                TableColumnModel cm = table.getColumnModel();
+                TableColumnModel columnModel = table.getColumnModel();
                 int x = rect.x;
-                for (int column = cMin; column <= cMax; column++) {
-                    int columnWidth = cm.getColumn(column).getWidth();
+                for (int column = minColumn; column <= maxColumn; column++) {
+                    int columnWidth = columnModel.getColumn(column).getWidth();
                     x += columnWidth;
                     g.drawLine(x - 1, y - rowHeight, x - 1, y - 1);
                 }
@@ -71,9 +71,9 @@ public class PropertyEditorTableUI extends BasicTableUI {
         }
     }
 
-    private void paintCells(Graphics g, int rMin, int rMax, int cMin, int cMax) {
-        for (int row = rMin; row <= rMax; row++) {
-            for (int column = cMin; column <= cMax; column++) {
+    private void paintCells(Graphics g, int minRow, int maxRow, int minColumn, int maxColumn) {
+        for (int row = minRow; row <= maxRow; row++) {
+            for (int column = minColumn; column <= maxColumn; column++) {
                 int verticalMargin = table.getRowMargin();
                 int horizontalMargin = table.getColumnModel().getColumnMargin();
                 Rectangle rect = table.getCellRect(row, column, true);

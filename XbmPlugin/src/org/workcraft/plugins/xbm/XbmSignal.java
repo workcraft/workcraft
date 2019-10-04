@@ -1,15 +1,12 @@
 package org.workcraft.plugins.xbm;
 
-import org.workcraft.annotations.DisplayName;
-import org.workcraft.annotations.Hotkey;
+import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 
-import java.awt.event.KeyEvent;
 import java.util.regex.Pattern;
 
-@Hotkey(KeyEvent.VK_S)
-@DisplayName("XbmSignal")
+@IdentifierPrefix("x")
 public class XbmSignal extends MathNode {
 
     public static final String PROPERTY_NAME = "Name";

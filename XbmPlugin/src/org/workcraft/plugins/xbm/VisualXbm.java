@@ -13,13 +13,13 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertySeparator;
 import org.workcraft.gui.tools.*;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.xbm.properties.DeclaredSignalPropertyDescriptor;
 import org.workcraft.plugins.xbm.properties.SignalModifierDescriptors;
 import org.workcraft.plugins.xbm.properties.SignalPropertyDescriptors;
-import org.workcraft.plugins.xbm.properties.UneditablePropertyDescriptor;
 import org.workcraft.plugins.xbm.tool.XbmSignalSimulationTool;
 import org.workcraft.plugins.xbm.utils.ConversionUtils;
 import org.workcraft.utils.Hierarchy;
@@ -30,8 +30,8 @@ import java.util.*;
 @ShortName("XBM")
 public class VisualXbm extends VisualFsm {
 
-    private static final PropertyDescriptor PROPERTY_INPUT_BURST_PLACEHOLDER = new UneditablePropertyDescriptor("Input Burst", "");
-    private static final PropertyDescriptor PROPERTY_OUTPUT_BURST_PLACEHOLDER = new UneditablePropertyDescriptor("Output Burst", "");
+    private static final PropertyDescriptor PROPERTY_INPUT_BURST_PLACEHOLDER = new PropertySeparator("<html><i>Input Burst</i></html>");
+    private static final PropertyDescriptor PROPERTY_OUTPUT_BURST_PLACEHOLDER = new PropertySeparator("<html><i>Output Burst</i></html>");
 
     public VisualXbm() {
         this(null, null);

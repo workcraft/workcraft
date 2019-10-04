@@ -2,9 +2,9 @@ package org.workcraft.plugins.xbm.properties;
 
 import org.workcraft.dom.Node;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.plugins.xbm.XbmSignal;
 import org.workcraft.plugins.xbm.VisualXbm;
 import org.workcraft.plugins.xbm.Xbm;
+import org.workcraft.plugins.xbm.XbmSignal;
 
 import java.util.Map;
 
@@ -41,19 +41,23 @@ public class DeclaredSignalPropertyDescriptor implements PropertyDescriptor<Bool
 
     @Override
     public Boolean getValue() {
-        if (signalName.equals(PROPERTY_NEW_SIGNAL)) return false;
-        Xbm xbm = visualXbm.getMathModel();
-        for (XbmSignal xbmSignal : xbm.getSignals()) {
-            if (xbm.getName(xbmSignal).equals(signalName)) return true;
+        if ((signalName != null) && !signalName.equals(PROPERTY_NEW_SIGNAL)) {
+            Xbm xbm = visualXbm.getMathModel();
+            for (XbmSignal xbmSignal : xbm.getSignals()) {
+                if (signalName.equals(xbm.getName(xbmSignal))) {
+                    return true;
+                }
+            }
         }
         return false;
     }
 
     @Override
     public void setValue(Boolean value) {
-        if (signalName != null) {
-            if (value) insertNewSignal();
-            else removeSignal();
+        if (value) {
+            insertNewSignal();
+        } else {
+            removeSignal();
         }
     }
 
@@ -64,13 +68,14 @@ public class DeclaredSignalPropertyDescriptor implements PropertyDescriptor<Bool
     }
 
     private void removeSignal() {
-        final Xbm xbm = visualXbm.getMathModel();
-        final Node node = xbm.getNodeByReference(signalName);
-        if (node instanceof XbmSignal) {
-            XbmSignal xbmSignal = (XbmSignal) node;
-            xbm.removeSignal(xbmSignal);
-        } else {
-            throw new RuntimeException("Unknown error: Node " + signalName + " is not a signal.");
+        if ((signalName != null) && !signalName.equals(PROPERTY_NEW_SIGNAL)) {
+            final Xbm xbm = visualXbm.getMathModel();
+            final Node node = xbm.getNodeByReference(signalName);
+            if (node instanceof XbmSignal) {
+                XbmSignal xbmSignal = (XbmSignal) node;
+                xbm.removeSignal(xbmSignal);
+            }
         }
     }
+
 }

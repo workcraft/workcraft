@@ -14,7 +14,6 @@ public class FlatCellRenderer extends JLabel implements TableCellRenderer {
             boolean isSelected, boolean hasFocus, int row, int column) {
 
         if (value == null) {
-            JButton b= new JButton();
             setText("");
             setOpaque(true);
         } else {
