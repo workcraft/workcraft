@@ -78,9 +78,10 @@ public class Xbm extends Fsm {
         return state;
     }
 
-    public XbmSignal createSignal(String name) {
+    public XbmSignal createSignal(String name, XbmSignal.Type type) {
         XbmSignal xbmSignal = createNode(name, getRoot(), XbmSignal.class);
         xbmSignal.setName(getNodeReference(xbmSignal));
+        xbmSignal.setType(type);
         for (XbmState state: Hierarchy.getDescendantsOfType(getRoot(), XbmState.class)) {
             state.addOrChangeSignalValue(xbmSignal, XbmState.DEFAULT_SIGNAL_STATE);
         }
@@ -91,7 +92,7 @@ public class Xbm extends Fsm {
         XbmSignal xbmSignal = null;
         Node node = getNodeByReference(name);
         if (node == null) {
-            xbmSignal = createSignal(name);
+            xbmSignal = createSignal(name, type);
         } else if (node instanceof XbmSignal) {
             xbmSignal = (XbmSignal) node;
             if (xbmSignal.getType() != type) {

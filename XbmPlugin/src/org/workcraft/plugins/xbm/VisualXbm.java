@@ -17,7 +17,8 @@ import org.workcraft.gui.properties.PropertySeparator;
 import org.workcraft.gui.tools.*;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.VisualFsm;
-import org.workcraft.plugins.xbm.properties.DeclaredSignalPropertyDescriptor;
+import org.workcraft.plugins.xbm.properties.CreateSignalPropertyDescriptor;
+import org.workcraft.plugins.xbm.properties.DeleteSignalPropertyDescriptor;
 import org.workcraft.plugins.xbm.properties.SignalModifierDescriptors;
 import org.workcraft.plugins.xbm.properties.SignalPropertyDescriptors;
 import org.workcraft.plugins.xbm.tool.XbmSignalSimulationTool;
@@ -100,9 +101,10 @@ public class VisualXbm extends VisualFsm {
             properties.addAll(getSignalNameAndTypeProperties());
             for (XbmSignal s: xbm.getSignals()) {
                 final String signalName = xbm.getName(s);
-                properties.add(new DeclaredSignalPropertyDescriptor(this, signalName, s.getType()));
+                properties.add(new DeleteSignalPropertyDescriptor(this, signalName));
             }
-            properties.add(new DeclaredSignalPropertyDescriptor(this, DeclaredSignalPropertyDescriptor.PROPERTY_NEW_SIGNAL, XbmSignal.DEFAULT_SIGNAL_TYPE));
+            properties.add(new CreateSignalPropertyDescriptor("Create signal",
+                    () -> getMathModel().createSignal(null, XbmSignal.DEFAULT_SIGNAL_TYPE)));
         } else if (node instanceof VisualBurstEvent) {
             final VisualBurstEvent visualBurstevent = (VisualBurstEvent) node;
             final BurstEvent burstEvent = visualBurstevent.getReferencedBurstEvent();
@@ -159,24 +161,27 @@ public class VisualXbm extends VisualFsm {
 
     private List<PropertyDescriptor> getSignalDirectionProperties(final BurstEvent burstEvent) {
         final Xbm xbm = getMathModel();
-        final List<PropertyDescriptor> list = new LinkedList<>();
+        final List<PropertyDescriptor> result = new LinkedList<>();
         final Set<XbmSignal> inputs = new LinkedHashSet<>(xbm.getSignals(XbmSignal.Type.INPUT));
         final Set<XbmSignal> outputs = new LinkedHashSet<>(xbm.getSignals(XbmSignal.Type.OUTPUT));
-        list.add(PROPERTY_INPUT_BURST_PLACEHOLDER);
+        result.add(PROPERTY_INPUT_BURST_PLACEHOLDER);
         if (!inputs.isEmpty()) {
             for (XbmSignal i: inputs) {
-                list.add(SignalPropertyDescriptors.directionProperty(this, burstEvent, i));
+                result.add(SignalPropertyDescriptors.directionProperty(this, burstEvent, i));
             }
         }
-        list.add(new DeclaredSignalPropertyDescriptor(this, DeclaredSignalPropertyDescriptor.PROPERTY_NEW_INPUT, XbmSignal.Type.INPUT));
-        list.add(PROPERTY_OUTPUT_BURST_PLACEHOLDER);
+        result.add(new CreateSignalPropertyDescriptor("Create input signal",
+                () -> getMathModel().createSignal(null, XbmSignal.Type.INPUT)));
+
+        result.add(PROPERTY_OUTPUT_BURST_PLACEHOLDER);
         if (!outputs.isEmpty()) {
             for (XbmSignal o: outputs) {
-                list.add(SignalPropertyDescriptors.directionProperty(this, burstEvent, o));
+                result.add(SignalPropertyDescriptors.directionProperty(this, burstEvent, o));
             }
         }
-        list.add(new DeclaredSignalPropertyDescriptor(this, DeclaredSignalPropertyDescriptor.PROPERTY_NEW_OUTPUT, XbmSignal.Type.OUTPUT));
-        return list;
+        result.add(new CreateSignalPropertyDescriptor("Create output signal",
+                () -> getMathModel().createSignal(null, XbmSignal.Type.OUTPUT)));
+        return result;
     }
 
     private PropertyDescriptor getConditionalProperty(final BurstEvent event) {

@@ -43,4 +43,3 @@ public class GenericCellEditor extends AbstractCellEditor implements TableCellEd
     }
 
 }
-

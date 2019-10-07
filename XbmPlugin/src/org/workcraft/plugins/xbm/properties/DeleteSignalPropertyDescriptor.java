@@ -8,20 +8,14 @@ import org.workcraft.plugins.xbm.XbmSignal;
 
 import java.util.Map;
 
-public class DeclaredSignalPropertyDescriptor implements PropertyDescriptor<Boolean> {
-
-    public static final String PROPERTY_NEW_SIGNAL = "Create a new signal";
-    public static final String PROPERTY_NEW_INPUT = "Create a new input signal";
-    public static final String PROPERTY_NEW_OUTPUT = "Create a new output signal";
+public class DeleteSignalPropertyDescriptor implements PropertyDescriptor<Boolean> {
 
     private final VisualXbm visualXbm;
     private final String signalName;
-    private final XbmSignal.Type targetType;
 
-    public DeclaredSignalPropertyDescriptor(VisualXbm visualXbm, String signalName, XbmSignal.Type targetType) {
+    public DeleteSignalPropertyDescriptor(VisualXbm visualXbm, String signalName) {
         this.visualXbm = visualXbm;
         this.signalName = signalName;
-        this.targetType = targetType;
     }
 
     @Override
@@ -41,7 +35,7 @@ public class DeclaredSignalPropertyDescriptor implements PropertyDescriptor<Bool
 
     @Override
     public Boolean getValue() {
-        if ((signalName != null) && !signalName.equals(PROPERTY_NEW_SIGNAL)) {
+        if (signalName != null) {
             Xbm xbm = visualXbm.getMathModel();
             for (XbmSignal xbmSignal : xbm.getSignals()) {
                 if (signalName.equals(xbm.getName(xbmSignal))) {
@@ -54,21 +48,7 @@ public class DeclaredSignalPropertyDescriptor implements PropertyDescriptor<Bool
 
     @Override
     public void setValue(Boolean value) {
-        if (value) {
-            insertNewSignal();
-        } else {
-            removeSignal();
-        }
-    }
-
-    private void insertNewSignal() {
-        final Xbm xbm = visualXbm.getMathModel();
-        XbmSignal xbmSignal = xbm.createSignal(null);
-        xbmSignal.setType(targetType);
-    }
-
-    private void removeSignal() {
-        if ((signalName != null) && !signalName.equals(PROPERTY_NEW_SIGNAL)) {
+        if (!value && (signalName != null)) {
             final Xbm xbm = visualXbm.getMathModel();
             final Node node = xbm.getNodeByReference(signalName);
             if (node instanceof XbmSignal) {

@@ -1,16 +1,14 @@
 package org.workcraft.gui.actions;
 
+import javax.swing.*;
 import java.util.LinkedList;
 
-import javax.swing.KeyStroke;
+public abstract class Action implements Runnable {
 
-public abstract class Action/* extends AbstractAction */ {
-    private static final long serialVersionUID = -2235480226869966860L;
     private final LinkedList<Actor> actors = new LinkedList<>();
     private boolean enabled = true;
 
     public abstract String getText();
-    public abstract void run();
 
     public void addActor(Actor actor) {
         actors.add(actor);

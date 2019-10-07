@@ -3,6 +3,7 @@ package org.workcraft.gui.properties;
 import org.workcraft.Framework;
 import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.gui.actions.Action;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.utils.DialogUtils;
@@ -52,6 +53,7 @@ public class PropertyEditorTable extends JTable {
         propertyClasses.put(Color.class, new ColorProperty());
         propertyClasses.put(File.class, new FileProperty());
         propertyClasses.put(FileReference.class, new FileReferenceProperty());
+        propertyClasses.put(Action.class, new ActionProperty());
 
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
@@ -80,7 +82,7 @@ public class PropertyEditorTable extends JTable {
         cellRenderers = new TableCellRenderer[model.getRowCount()];
         cellEditors = new TableCellEditor[model.getRowCount()];
         for (int i = 0; i < model.getRowCount(); i++) {
-            PropertyDescriptor decl = model.getRowDeclaration(i);
+            PropertyDescriptor decl = model.getDeclaration(i);
             if (decl.getChoice() != null) {
                 // If object declares a predefined set of values, use a ComboBox to edit the property regardless of class
                 model.setRowClass(i, null);
@@ -106,55 +108,54 @@ public class PropertyEditorTable extends JTable {
 
     @Override
     public TableCellEditor getCellEditor(int row, int col) {
-        if (col == 0) {
-            return super.getCellEditor(row, col);
-        } else {
+        if (col > 0) {
             return cellEditors[row];
         }
+        return super.getCellEditor(row, col);
     }
 
     @Override
     public TableCellRenderer getCellRenderer(int row, int col) {
         if (col > 0) {
             return cellRenderers[row];
-        } else {
-            return new TableCellRenderer() {
+        }
 
-                private final JLabel label = new JLabel() {
-                    @Override
-                    public void paint(Graphics g) {
-                        g.setColor(getBackground());
-                        g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
-                        super.paint(g);
-                    }
-                };
+        return new TableCellRenderer() {
 
+            private final JLabel label = new JLabel() {
                 @Override
-                public Component getTableCellRendererComponent(JTable table, Object value,
-                        boolean isSelected, boolean hasFocus, int row, int column) {
-
-                    String text = (value == null) ? "" : value.toString();
-                    label.setText(text);
-                    label.setBorder(SizeHelper.getTableCellBorder());
-
-                    Font font = label.getFont();
-                    PropertyDescriptor descriptor = model.getRowDeclaration(row);
-                    if ((descriptor.getValue() == null) && descriptor.isCombinable()) {
-                        label.setFont(font.deriveFont(Font.BOLD));
-                    }
-
-                    int availableWidth = table.getColumnModel().getColumn(column).getWidth();
-                    availableWidth -= table.getIntercellSpacing().getWidth();
-                    Insets borderInsets = label.getBorder().getBorderInsets(label);
-                    availableWidth -= borderInsets.left + borderInsets.right;
-                    FontMetrics fontMetrics = getFontMetrics(font);
-                    if (fontMetrics.stringWidth(text) > availableWidth) {
-                        label.setToolTipText(text);
-                    }
-                    return label;
+                public void paint(Graphics g) {
+                    g.setColor(getBackground());
+                    g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+                    super.paint(g);
                 }
             };
-        }
+
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+
+                String text = (value == null) ? "" : value.toString();
+                label.setText(text);
+                label.setBorder(SizeHelper.getTableCellBorder());
+
+                Font font = label.getFont();
+                PropertyDescriptor descriptor = model.getDeclaration(row);
+                if ((descriptor.getValue() == null) && descriptor.isCombinable()) {
+                    label.setFont(font.deriveFont(Font.BOLD));
+                }
+
+                int availableWidth = table.getColumnModel().getColumn(column).getWidth();
+                availableWidth -= table.getIntercellSpacing().getWidth();
+                Insets borderInsets = label.getBorder().getBorderInsets(label);
+                availableWidth -= borderInsets.left + borderInsets.right;
+                FontMetrics fontMetrics = getFontMetrics(font);
+                if (fontMetrics.stringWidth(text) > availableWidth) {
+                    label.setToolTipText(text);
+                }
+                return label;
+            }
+        };
     }
 
     @Override
@@ -179,17 +180,30 @@ public class PropertyEditorTable extends JTable {
     @Override
     public Rectangle getCellRect(int row, int column, boolean includeSpacing) {
         Rectangle result = super.getCellRect(row, column, includeSpacing);
-        PropertyDescriptor declaration = model.getRowDeclaration(row);
+        PropertyDescriptor declaration = model.getDeclaration(row);
         if ((declaration != null) && declaration.isSpan()) {
-            int width = getColumnModel().getColumn(0).getWidth();
             if (column == 0) {
-                result.width -= width;
+                result.width = 0;
             } else {
-                result.x -= width;
-                result.width += width;
+                Rectangle rect = super.getCellRect(row, 0, includeSpacing);
+                result.width += result.x - rect.x;
+                result.x = rect.x;
             }
         }
         return result;
+    }
+
+    @Override
+    public int columnAtPoint(Point point) {
+        int column = super.columnAtPoint(point);
+        if (column == 0) {
+            int row = super.rowAtPoint(point);
+            PropertyDescriptor declaration = model.getDeclaration(row);
+            if ((declaration != null) && declaration.isSpan()) {
+                column = 1;
+            }
+        }
+        return column;
     }
 
 }

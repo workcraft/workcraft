@@ -13,6 +13,7 @@ public class SignalPropertyDescriptors {
     public static PropertyDescriptor nameProperty(final VisualXbm visualXbm, final XbmSignal xbmSignal) {
         final Xbm xbm = visualXbm.getMathModel();
         final String propertyName = xbm.getName(xbmSignal) + " name";
+
         return new PropertyDeclaration<XbmSignal, String>(xbmSignal, propertyName, String.class, true, true) {
             @Override
             public void setter(XbmSignal object, String value) {
@@ -49,6 +50,7 @@ public class SignalPropertyDescriptors {
     public static PropertyDescriptor typeProperty(final VisualXbm visualXbm, final XbmSignal xbmSignal) {
         final Xbm xbm = visualXbm.getMathModel();
         final String propertyName = xbm.getName(xbmSignal) + " type";
+
         return new PropertyDeclaration<XbmSignal, XbmSignal.Type>(xbmSignal, propertyName, XbmSignal.Type.class, true, true) {
             @Override
             public void setter(XbmSignal object, XbmSignal.Type value) {
@@ -65,6 +67,7 @@ public class SignalPropertyDescriptors {
     public static PropertyDescriptor valueProperty(final VisualXbm visualXbm, final XbmState targetState, final XbmSignal targetXbmSignal) {
         final Xbm xbm = visualXbm.getMathModel();
         final String propertyName = xbm.getName(targetXbmSignal) + " value";
+
         return new PropertyDeclaration<XbmState, SignalState>(targetState, propertyName, SignalState.class, true, true) {
             @Override
             public void setter(XbmState object, SignalState value) {
@@ -81,6 +84,7 @@ public class SignalPropertyDescriptors {
     public static PropertyDescriptor directionProperty(final VisualXbm visualXbm, final BurstEvent targetBurstEvent, final XbmSignal targetXbmSignal) {
         final Xbm xbm = visualXbm.getMathModel();
         final String propertyName = xbm.getName(targetXbmSignal) + " direction";
+
         return new PropertyDeclaration<BurstEvent, Burst.Direction>(targetBurstEvent, propertyName, Burst.Direction.class, true, true) {
             @Override
             public void setter(BurstEvent object, Burst.Direction value) {
@@ -94,4 +98,5 @@ public class SignalPropertyDescriptors {
             }
         };
     }
+
 }

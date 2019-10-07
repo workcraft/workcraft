@@ -1,0 +1,28 @@
+package org.workcraft.gui.properties;
+
+import org.workcraft.gui.actions.Action;
+
+import javax.swing.*;
+import javax.swing.table.TableCellEditor;
+import java.awt.*;
+
+@SuppressWarnings("serial")
+public class ActionCellEditor extends AbstractCellEditor implements TableCellEditor {
+
+    @Override
+    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+        JButton actionButton = new JButton();
+        if (value instanceof Action) {
+            Action action = (Action) value;
+            actionButton.setText(action.getText());
+            actionButton.addActionListener(e -> action.run());
+        }
+        return actionButton;
+    }
+
+    @Override
+    public Object getCellEditorValue() {
+        return null;
+    }
+
+}
