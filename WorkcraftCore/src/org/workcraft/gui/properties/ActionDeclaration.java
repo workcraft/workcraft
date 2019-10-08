@@ -1,15 +1,14 @@
-package org.workcraft.plugins.xbm.properties;
+package org.workcraft.gui.properties;
 
 import org.workcraft.gui.actions.Action;
-import org.workcraft.gui.properties.PropertyDescriptor;
 
 import java.util.Map;
 
-public class CreateSignalPropertyDescriptor implements PropertyDescriptor<Action> {
+public class ActionDeclaration implements PropertyDescriptor<Action> {
 
     private final Action action;
 
-    public CreateSignalPropertyDescriptor(String text, Runnable runnable) {
+    public ActionDeclaration(String text, Runnable runnable) {
         this.action = new Action(text, runnable);
     }
 
@@ -20,7 +19,7 @@ public class CreateSignalPropertyDescriptor implements PropertyDescriptor<Action
 
     @Override
     public String getName() {
-        return action.getText();
+        return null;
     }
 
     @Override
@@ -29,7 +28,7 @@ public class CreateSignalPropertyDescriptor implements PropertyDescriptor<Action
     }
 
     @Override
-    public Action getValue() {
+    public final Action getValue() {
         return action;
     }
 

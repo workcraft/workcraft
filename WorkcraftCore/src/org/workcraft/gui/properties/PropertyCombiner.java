@@ -79,7 +79,7 @@ public final class PropertyCombiner implements PropertyDescriptor {
 
     @Override
     public boolean isSpan() {
-        return values.stream().map(PropertyDescriptor::isTemplatable).reduce(true, Boolean::logicalAnd);
+        return values.stream().map(PropertyDescriptor::isSpan).reduce(true, Boolean::logicalAnd);
     }
 
 }
