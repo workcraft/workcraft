@@ -7,8 +7,8 @@ import org.workcraft.plugins.fsm.VisualState;
 
 import java.awt.event.KeyEvent;
 
-@Hotkey(KeyEvent.VK_T)
 @DisplayName("State")
+@Hotkey(KeyEvent.VK_T)
 @SVGIcon("images/fsm-node-vertex.svg")
 public class VisualXbmState extends VisualState {
 

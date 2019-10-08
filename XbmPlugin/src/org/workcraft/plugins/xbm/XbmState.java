@@ -1,6 +1,5 @@
 package org.workcraft.plugins.xbm;
 
-import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
@@ -10,7 +9,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-@DisplayName("State")
 @IdentifierPrefix("s")
 @VisualClass(VisualXbmState.class)
 public class XbmState extends State {

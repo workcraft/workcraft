@@ -28,11 +28,11 @@ public class FileReferenceCellEditor extends AbstractCellEditor implements Table
     private FileReference fileReference;
 
     public FileReferenceCellEditor() {
-        enterButton = new JButton(Character.toString(FileReferenceCell.ENTER_SYMBOL));
+        enterButton = new JButton(PropertyUtils.ENTER_TEXT);
         enterButton.setActionCommand(ENTER_TAG);
         enterButton.addActionListener(this);
         enterButton.setFocusable(false);
-        enterButton.setMargin(FileCell.INSETS);
+        enterButton.setMargin(PropertyUtils.BUTTON_INSETS);
 
         chooseButton = new JButton();
         chooseButton.setActionCommand(CHOOSE_TAG);
@@ -40,14 +40,14 @@ public class FileReferenceCellEditor extends AbstractCellEditor implements Table
         chooseButton.setOpaque(true);
         chooseButton.setBorderPainted(false);
         chooseButton.setFocusable(false);
-        chooseButton.setMargin(FileReferenceCell.INSETS);
+        chooseButton.setMargin(PropertyUtils.BUTTON_INSETS);
         chooseButton.setHorizontalAlignment(SwingConstants.LEFT);
 
-        clearButton = new JButton(Character.toString(FileReferenceCell.CLEAR_SYMBOL));
+        clearButton = new JButton(PropertyUtils.CLEAR_TEXT);
         clearButton.setActionCommand(CLEAR_TAG);
         clearButton.addActionListener(this);
         clearButton.setFocusable(false);
-        clearButton.setMargin(FileCell.INSETS);
+        clearButton.setMargin(PropertyUtils.BUTTON_INSETS);
 
         panel = new JPanel(new BorderLayout());
         panel.add(enterButton, BorderLayout.WEST);

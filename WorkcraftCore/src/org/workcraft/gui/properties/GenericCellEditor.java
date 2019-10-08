@@ -2,14 +2,11 @@ package org.workcraft.gui.properties;
 
 import org.workcraft.dom.visual.SizeHelper;
 
-import java.awt.Component;
+import javax.swing.*;
+import javax.swing.table.TableCellEditor;
+import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-
-import javax.swing.AbstractCellEditor;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.table.TableCellEditor;
 
 @SuppressWarnings("serial")
 public class GenericCellEditor extends AbstractCellEditor implements TableCellEditor {
@@ -37,10 +34,9 @@ public class GenericCellEditor extends AbstractCellEditor implements TableCellEd
 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-        textField.setText(value.toString());
         textField.setFont(table.getFont());
+        textField.setText(value.toString());
         return textField;
     }
 
 }
-

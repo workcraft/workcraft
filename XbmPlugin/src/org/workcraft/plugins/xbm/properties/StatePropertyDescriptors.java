@@ -1,14 +1,14 @@
 package org.workcraft.plugins.xbm.properties;
 
-import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.ActionDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.plugins.xbm.XbmSignal;
 import org.workcraft.plugins.xbm.SignalState;
+import org.workcraft.plugins.xbm.XbmSignal;
 import org.workcraft.plugins.xbm.XbmState;
 
 import java.util.Map;
 
-public class SignalModifierDescriptors {
+public class StatePropertyDescriptors {
 
     private static final String PROPERTY_TOGGLE = "Toggle values";
     private static final String PROPERTY_ALL_ONE = "Set all to 1";
@@ -19,21 +19,12 @@ public class SignalModifierDescriptors {
     private static final String PROPERTY_OUTPUTS_TO_ZERO = "Set all outputs to 0";
 
     public static PropertyDescriptor toggleProperty(XbmState state) {
-        return new PropertyDeclaration<XbmState, Boolean>(state, PROPERTY_TOGGLE, Boolean.class, true, true) {
-            @Override
-            public void setter(XbmState object, Boolean value) {
-                if (value) {
-                    for (Map.Entry<XbmSignal, SignalState> entry: object.getEncoding().entrySet()) {
-                        object.addOrChangeSignalValue(entry.getKey(), entry.getValue().toggle());
+        return new ActionDeclaration(PROPERTY_TOGGLE,
+                () -> {
+                    for (Map.Entry<XbmSignal, SignalState> entry : state.getEncoding().entrySet()) {
+                        state.addOrChangeSignalValue(entry.getKey(), entry.getValue().toggle());
                     }
-                }
-            }
-
-            @Override
-            public Boolean getter(XbmState object) {
-                return false;
-            }
-        };
+                });
     }
 
     public static PropertyDescriptor allOneProperty(XbmState state) {
@@ -61,35 +52,11 @@ public class SignalModifierDescriptors {
     }
 
     private static PropertyDescriptor setToValueProperty(XbmState state, String propertyName, SignalState targetValue) {
-        return new PropertyDeclaration<XbmState, Boolean>(state, propertyName, Boolean.class, true, true) {
-            @Override
-            public void setter(XbmState object, Boolean value) {
-                if (value) {
-                    setSignalsToValue(object, targetValue);
-                }
-            }
-
-            @Override
-            public Boolean getter(XbmState object) {
-                return false;
-            }
-        };
+        return new ActionDeclaration(propertyName, () -> setSignalsToValue(state, targetValue));
     }
 
     private static PropertyDescriptor setToValueByTypeProperty(XbmState state, XbmSignal.Type type, String propertyName, SignalState targetValue) {
-        return new PropertyDeclaration<XbmState, Boolean>(state, propertyName, Boolean.class, true, true) {
-            @Override
-            public void setter(XbmState object, Boolean value) {
-                if (value) {
-                    setSignalsToValueByType(object, type, targetValue);
-                }
-            }
-
-            @Override
-            public Boolean getter(XbmState object) {
-                return false;
-            }
-        };
+        return new ActionDeclaration(propertyName, () -> setSignalsToValueByType(state, type, targetValue));
     }
 
     private static void setSignalsToValue(XbmState state, SignalState value) {
@@ -107,4 +74,5 @@ public class SignalModifierDescriptors {
             }
         }
     }
+
 }

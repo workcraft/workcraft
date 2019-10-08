@@ -1,13 +1,15 @@
 package org.workcraft.utils;
 
 import org.workcraft.Framework;
+import org.workcraft.commands.Command;
 import org.workcraft.commands.MenuOrdering;
 import org.workcraft.commands.MenuOrdering.Position;
-import org.workcraft.plugins.PluginManager;
-import org.workcraft.commands.Command;
 import org.workcraft.commands.ScriptableCommand;
+import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.PluginInfo;
+import org.workcraft.plugins.PluginManager;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.*;
@@ -96,6 +98,16 @@ public class CommandUtils {
             }
         }
         return result;
+    }
+
+    public static void run(Command command) {
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        if (mainWindow != null) {
+            GraphEditorPanel currentEditor = mainWindow.getCurrentEditor();
+            if (currentEditor != null) {
+                run(currentEditor.getWorkspaceEntry(), command);
+            }
+        }
     }
 
     public static void run(WorkspaceEntry we, Command command) {

@@ -1,16 +1,44 @@
 package org.workcraft.gui.actions;
 
+import javax.swing.*;
 import java.util.LinkedList;
 
-import javax.swing.KeyStroke;
+public class Action implements Runnable {
 
-public abstract class Action/* extends AbstractAction */ {
-    private static final long serialVersionUID = -2235480226869966860L;
+    private final Runnable runnable;
+    private final String text;
+    private final KeyStroke keyStroke;
     private final LinkedList<Actor> actors = new LinkedList<>();
     private boolean enabled = true;
 
-    public abstract String getText();
-    public abstract void run();
+    public Action(Runnable runnable) {
+        this(null, null, runnable);
+    }
+
+    public Action(String text, Runnable runnable) {
+        this(text, null, runnable);
+    }
+
+    public Action(String text, KeyStroke keyStroke, Runnable runnable) {
+        this.text = text;
+        this.keyStroke = keyStroke;
+        this.runnable = runnable;
+    }
+
+    @Override
+    public void run() {
+        if (runnable != null) {
+            runnable.run();
+        }
+    }
+
+    public final String getText() {
+        return text;
+    }
+
+    public KeyStroke getKeyStroke() {
+        return keyStroke;
+    }
 
     public void addActor(Actor actor) {
         actors.add(actor);
@@ -30,10 +58,6 @@ public abstract class Action/* extends AbstractAction */ {
     }
     public boolean isEnabled() {
         return enabled;
-    }
-
-    public KeyStroke getKeyStroke() {
-        return null;
     }
 
 }

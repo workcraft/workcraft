@@ -67,31 +67,29 @@ public class PropertyEditorTableModel extends AbstractTableModel {
         return (col > 0) && declarations[row].isEditable();
     }
 
-    public PropertyDescriptor getRowDeclaration(int i) {
-        return declarations[i];
+    public PropertyDescriptor getDeclaration(int row) {
+        return (declarations == null) ? null : declarations[row];
     }
 
     @Override
     public Object getValueAt(int row, int col) {
-
         if (col == 0) {
             return declarations[row].getName();
-        } else {
-            try {
-                Object value = declarations[row].getValue();
-                if (rowClasses[row] != null) {
-                    return rowClasses[row].toCellRendererValue(value);
+        }
+        try {
+            Object value = declarations[row].getValue();
+            if (rowClasses[row] != null) {
+                return rowClasses[row].toCellRendererValue(value);
+            } else {
+                Map<? extends Object, String> choice = declarations[row].getChoice();
+                if (choice != null) {
+                    return choice.get(value);
                 } else {
-                    Map<? extends Object, String> choice = declarations[row].getChoice();
-                    if (choice != null) {
-                        return choice.get(value);
-                    } else {
-                        return value.toString();
-                    }
+                    return value.toString();
                 }
-            } catch (Throwable e) {
-                return "#EXCEPTION";
             }
+        } catch (Throwable e) {
+            return "#EXCEPTION";
         }
     }
 

@@ -16,20 +16,20 @@ public class FileReferenceCellRenderer extends JPanel implements TableCellRender
     private final JButton clearButton;
 
     public FileReferenceCellRenderer() {
-        enterButton = new JButton(Character.toString(FileReferenceCell.ENTER_SYMBOL));
+        enterButton = new JButton(PropertyUtils.ENTER_TEXT);
         enterButton.setFocusable(false);
-        enterButton.setMargin(FileReferenceCell.INSETS);
+        enterButton.setMargin(PropertyUtils.BUTTON_INSETS);
 
         chooseButton = new JButton();
         chooseButton.setBorderPainted(false);
         chooseButton.setFocusable(false);
         chooseButton.setOpaque(true);
-        chooseButton.setMargin(FileReferenceCell.INSETS);
+        chooseButton.setMargin(PropertyUtils.BUTTON_INSETS);
         chooseButton.setHorizontalAlignment(SwingConstants.LEFT);
 
-        clearButton = new JButton(Character.toString(FileReferenceCell.CLEAR_SYMBOL));
+        clearButton = new JButton(PropertyUtils.CLEAR_TEXT);
         clearButton.setFocusable(false);
-        clearButton.setMargin(FileReferenceCell.INSETS);
+        clearButton.setMargin(PropertyUtils.BUTTON_INSETS);
 
         setLayout(new BorderLayout());
         add(enterButton, BorderLayout.WEST);

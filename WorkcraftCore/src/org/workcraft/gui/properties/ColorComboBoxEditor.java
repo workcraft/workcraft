@@ -1,25 +1,16 @@
 package org.workcraft.gui.properties;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.ComboBoxEditor;
-import javax.swing.JButton;
-import javax.swing.JColorChooser;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.event.EventListenerList;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
 import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+
+import javax.swing.*;
+import javax.swing.event.EventListenerList;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 class ColorComboBoxEditor implements ComboBoxEditor, ActionListener {
 
@@ -38,7 +29,7 @@ class ColorComboBoxEditor implements ComboBoxEditor, ActionListener {
         private final JLabel fgLabel;
         private final JLabel bgLabel;
 
-        PreviewPanel(String fgText, String bgText, Color fgColor, Color bgColor) {
+        PreviewPanel(String fgText, Color fgColor, String bgText, Color bgColor) {
             super(new GridLayout(1, 0, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
             Font font = new Font(Font.SANS_SERIF, Font.PLAIN, SizeHelper.getPreviewFontSize());
 
@@ -73,7 +64,10 @@ class ColorComboBoxEditor implements ComboBoxEditor, ActionListener {
     static {
         Color fgColor = CommonEditorSettings.getBackgroundColor();
         Color bgColor = CommonVisualSettings.getBorderColor();
-        PreviewPanel preview = new PreviewPanel("Foreground color", "Background color", fgColor, bgColor);
+        PreviewPanel preview = new PreviewPanel(
+                "Foreground color", fgColor,
+                "Background color", bgColor);
+
         chooser.setPreviewPanel(preview);
         MainWindow mainWindow = Framework.getInstance().getMainWindow();
         dialog = JColorChooser.createDialog(mainWindow, "Pick a Color",

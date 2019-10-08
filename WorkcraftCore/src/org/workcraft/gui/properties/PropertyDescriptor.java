@@ -24,4 +24,9 @@ public interface PropertyDescriptor<V> {
     default boolean isTemplatable() {
         return false;
     }
+
+    default boolean isSpan() {
+        return false;
+    }
+
 }

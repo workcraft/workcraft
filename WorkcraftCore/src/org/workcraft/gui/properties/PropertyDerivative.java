@@ -55,4 +55,9 @@ public class PropertyDerivative implements PropertyDescriptor {
         return descriptor.isTemplatable();
     }
 
+    @Override
+    public boolean isSpan() {
+        return descriptor.isSpan();
+    }
+
 }

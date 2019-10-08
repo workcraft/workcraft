@@ -16,25 +16,25 @@ public class ActionMenuItem extends JMenuItem implements Actor {
     }
 
     private final LinkedList<ScriptedActionListener> listeners = new LinkedList<>();
-    private Action scriptedAction = null;
+    private Action action = null;
 
     public ActionMenuItem(Action action) {
-        this(action, action.getText());
+        this(action.getText(), action);
     }
 
-    public ActionMenuItem(Action action, String text) {
+    public ActionMenuItem(String text, Action action) {
         super(text);
-        scriptedAction = action;
-        scriptedAction.addActor(this);
-        setEnabled(scriptedAction.isEnabled());
+        this.action = action;
+        this.action.addActor(this);
+        setEnabled(this.action.isEnabled());
         setAccelerator(action.getKeyStroke());
         addActionListener(new ActionForwarder());
     }
 
     private void fireActionPerformed() {
-        if (scriptedAction != null) {
+        if (action != null) {
             for (ScriptedActionListener l : listeners) {
-                l.actionPerformed(scriptedAction);
+                l.actionPerformed(action);
             }
         }
     }
