@@ -68,7 +68,7 @@ public class PropertyEditorTableModel extends AbstractTableModel {
     }
 
     public PropertyDescriptor getDeclaration(int row) {
-        return declarations[row];
+        return (declarations == null) ? null : declarations[row];
     }
 
     @Override
