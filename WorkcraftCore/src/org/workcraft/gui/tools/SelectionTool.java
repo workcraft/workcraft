@@ -8,8 +8,8 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ActionMenuItem;
-import org.workcraft.gui.actions.PopupToolAction;
 import org.workcraft.gui.editor.Viewport;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -327,11 +327,11 @@ public class SelectionTool extends AbstractGraphEditorTool {
         }
         if (!applicableTools.isEmpty()) {
             popup = new JPopupMenu();
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
+            final MainWindow mainWindow = Framework.getInstance().getMainWindow();
             for (Command tool: applicableTools) {
-                PopupToolAction toolAction = new PopupToolAction(tool);
-                ActionMenuItem miTool = new ActionMenuItem(toolAction);
+                String text = (tool instanceof NodeTransformer) ? ((NodeTransformer) tool).getPopupName() : tool.getDisplayName();
+                Action action = new Action(text.trim(), () -> CommandUtils.run(tool));
+                ActionMenuItem miTool = new ActionMenuItem(action);
                 miTool.addScriptedActionListener(mainWindow.getDefaultActionListener());
                 miTool.setEnabled(enabledTools.contains(tool));
                 popup.add(miTool);

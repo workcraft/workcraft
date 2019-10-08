@@ -16,25 +16,24 @@ public class ActionCheckBoxMenuItem extends JCheckBoxMenuItem implements Actor {
     }
 
     private final LinkedList<ScriptedActionListener> listeners = new LinkedList<>();
-    private Action scriptedAction = null;
+    private Action action = null;
 
     public ActionCheckBoxMenuItem(Action action) {
-        this(action, action.getText());
+        this(action.getText(), action);
     }
 
-    public ActionCheckBoxMenuItem(Action action, String text) {
+    public ActionCheckBoxMenuItem(String text, Action action) {
         super(text);
-        scriptedAction = action;
-        scriptedAction.addActor(this);
-        setEnabled(scriptedAction.isEnabled());
-
+        this.action = action;
+        this.action.addActor(this);
+        setEnabled(this.action.isEnabled());
         addActionListener(new ActionForwarder());
     }
 
     private void fireActionPerformed() {
-        if (scriptedAction != null) {
+        if (action != null) {
             for (ScriptedActionListener l : listeners) {
-                l.actionPerformed(scriptedAction);
+                l.actionPerformed(action);
             }
         }
     }

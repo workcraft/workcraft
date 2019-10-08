@@ -10,17 +10,7 @@ public class CreateSignalPropertyDescriptor implements PropertyDescriptor<Action
     private final Action action;
 
     public CreateSignalPropertyDescriptor(String text, Runnable runnable) {
-        this.action = new Action() {
-            @Override
-            public String getText() {
-                return text;
-            }
-
-            @Override
-            public void run() {
-                runnable.run();
-            }
-        };
+        this.action = new Action(text, runnable);
     }
 
     @Override

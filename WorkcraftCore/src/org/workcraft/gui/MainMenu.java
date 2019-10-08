@@ -1,15 +1,18 @@
 package org.workcraft.gui;
 
 import org.workcraft.Framework;
-import org.workcraft.commands.MenuOrdering.Position;
-import org.workcraft.gui.tabs.DockableWindow;
-import org.workcraft.plugins.PluginManager;
 import org.workcraft.commands.Command;
+import org.workcraft.commands.MenuOrdering.Position;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.gui.actions.*;
+import org.workcraft.exceptions.OperationCancelledException;
+import org.workcraft.gui.actions.Action;
+import org.workcraft.gui.actions.ActionCheckBoxMenuItem;
+import org.workcraft.gui.actions.ActionMenuItem;
+import org.workcraft.gui.tabs.DockableWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Format;
 import org.workcraft.plugins.PluginInfo;
+import org.workcraft.plugins.PluginManager;
 import org.workcraft.utils.CommandUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -133,8 +136,13 @@ public class MainMenu extends JMenuBar {
     private void addExporter(Exporter exporter) {
         Format format = exporter.getFormat();
         String text = format.getDescription() + " (*" + format.getExtension() + ")";
-        ActionMenuItem miExport = new ActionMenuItem(new ExportAction(exporter), text);
-
+        Action action = new Action(text, () -> {
+            try {
+                Framework.getInstance().getMainWindow().export(exporter);
+            } catch (OperationCancelledException e) {
+            }
+        });
+        ActionMenuItem miExport = new ActionMenuItem(action);
         miExport.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnExport.add(miExport);
         mnExport.setEnabled(true);
@@ -338,7 +346,8 @@ public class MainMenu extends JMenuBar {
     }
 
     public final void registerToolbar(JToolBar toolbar) {
-        ActionCheckBoxMenuItem miToolbarItem = new ActionCheckBoxMenuItem(new ToggleToolbarAction(toolbar));
+        Action action = new Action(toolbar.getName(), () -> toolbar.setVisible(!toolbar.isVisible()));
+        ActionCheckBoxMenuItem miToolbarItem = new ActionCheckBoxMenuItem(action);
         miToolbarItem.addScriptedActionListener(mainWindow.getDefaultActionListener());
         miToolbarItem.setSelected(toolbar.isVisible());
         toolbarItems.put(toolbar, miToolbarItem);
@@ -346,7 +355,8 @@ public class MainMenu extends JMenuBar {
     }
 
     public final void registerUtilityWindow(DockableWindow window) {
-        ActionCheckBoxMenuItem miWindowItem = new ActionCheckBoxMenuItem(new ToggleWindowAction(window));
+        Action action = new Action(window.getTitle(), () -> Framework.getInstance().getMainWindow().toggleDockableWindow(window));
+        ActionCheckBoxMenuItem miWindowItem = new ActionCheckBoxMenuItem(action);
         miWindowItem.addScriptedActionListener(mainWindow.getDefaultActionListener());
         miWindowItem.setSelected(!window.isClosed());
         windowItems.put(window.getID(), miWindowItem);
@@ -434,8 +444,8 @@ public class MainMenu extends JMenuBar {
                     }
                     needSeparator = true;
                     isFirstItem = false;
-                    CommandAction commandAction = new CommandAction(command);
-                    ActionMenuItem miCommand = new ActionMenuItem(commandAction);
+                    Action action = new Action(command.getDisplayName().trim(), () -> CommandUtils.run(command));
+                    ActionMenuItem miCommand = new ActionMenuItem(action);
                     miCommand.addScriptedActionListener(mainWindow.getDefaultActionListener());
                     mnSection.add(miCommand);
                 }

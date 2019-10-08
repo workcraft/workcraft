@@ -1,18 +1,5 @@
 package org.workcraft.gui.tabs;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.UIManager;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.exceptions.NotSupportedException;
@@ -22,6 +9,9 @@ import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ActionButton;
 import org.workcraft.gui.actions.ScriptedActionListener;
 
+import javax.swing.*;
+import java.awt.*;
+
 @SuppressWarnings("serial")
 public class DockableWindowContentPanel extends JPanel {
 
@@ -30,36 +20,23 @@ public class DockableWindowContentPanel extends JPanel {
         public static final int MINIMIZE_ACTION = 2;
         public static final int MAXIMIZE_ACTION = 3;
 
-        private final int windowID;
-        private final int actionType;
-
         public ViewAction(int windowID, int actionType) {
-            this.actionType = actionType;
-            this.windowID = windowID;
-        }
-
-        @Override
-        public String getText() {
-            return null;
-        }
-
-        @Override
-        public void run() {
-            final Framework framework = Framework.getInstance();
-            MainWindow mainWindow = framework.getMainWindow();
-            switch (actionType) {
-            case CLOSE_ACTION:
-                try {
-                    mainWindow.closeDockableWindow(windowID);
-                } catch (OperationCancelledException e) {
+            super(() -> {
+                MainWindow mainWindow = Framework.getInstance().getMainWindow();
+                switch (actionType) {
+                case CLOSE_ACTION:
+                    try {
+                        mainWindow.closeDockableWindow(windowID);
+                    } catch (OperationCancelledException e) {
+                    }
+                    break;
+                case MAXIMIZE_ACTION:
+                    mainWindow.toggleDockableWindowMaximized(windowID);
+                    break;
+                case MINIMIZE_ACTION:
+                    throw new NotSupportedException();
                 }
-                break;
-            case MAXIMIZE_ACTION:
-                mainWindow.toggleDockableWindowMaximized(windowID);
-                break;
-            case MINIMIZE_ACTION:
-                throw new NotSupportedException();
-            }
+            });
         }
     }
 

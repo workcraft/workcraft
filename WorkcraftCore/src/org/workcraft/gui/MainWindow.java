@@ -16,7 +16,6 @@ import org.flexdock.perspective.persist.PersistenceHandler;
 import org.flexdock.perspective.persist.xml.XMLPersister;
 import org.flexdock.plaf.common.border.ShadowBorder;
 import org.workcraft.Framework;
-import org.workcraft.commands.Command;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
@@ -776,11 +775,6 @@ public class MainWindow extends JFrame {
         return fc;
     }
 
-    public void runCommand(Command command) {
-        WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
-        CommandUtils.run(we, command);
-    }
-
     public void openWork() throws OperationCancelledException {
         JFileChooser fc = createOpenDialog("Open work file(s)", true, true, null);
         if (fc.showDialog(this, "Open") == JFileChooser.APPROVE_OPTION) {
@@ -1034,12 +1028,6 @@ public class MainWindow extends JFrame {
     public Toolbox getCurrentToolbox() {
         GraphEditorPanel editor = getCurrentEditor();
         return (editor == null) ? null : editor.getToolBox();
-    }
-
-    public void repaintCurrentEditor() {
-        if (editorInFocus != null) {
-            editorInFocus.repaint();
-        }
     }
 
     public void closeActiveEditor() throws OperationCancelledException {
