@@ -1,6 +1,7 @@
 package org.workcraft.plugins.xbm;
 
 import org.workcraft.exceptions.ArgumentException;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.fsm.Symbol;
 import org.workcraft.plugins.fsm.VisualEvent;
 
@@ -9,13 +10,13 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.HashSet;
 
+//FIXME PropertyChangedEvents are now updating slowly
 public class Burst extends Symbol {
 
     public enum Direction {
 
         PLUS("+"),
         MINUS("-"),
-        TOGGLE("~"),
         UNSTABLE("*"),
         STABLE("!");
 
@@ -50,8 +51,6 @@ public class Burst extends Symbol {
                 return STABLE;
             } else if (value.equals(UNSTABLE.toString())) {
                 return UNSTABLE;
-            } else if (value.equals(TOGGLE.toString())) {
-                return TOGGLE;
             } else {
                 throw new ArgumentException("An unknown direction was set for the signal.");
             }
@@ -148,6 +147,7 @@ public class Burst extends Symbol {
     public void removeSignal(XbmSignal s) {
         if (direction.containsKey(s)) {
             direction.remove(s);
+            sendNotification(new PropertyChangedEvent(this, Burst.PROPERTY_DIRECTION));
         }
     }
 
@@ -172,13 +172,11 @@ public class Burst extends Symbol {
     private String getBurst(XbmSignal.Type type) {
         String burst = "";
         for (XbmSignal s: getSignals(type)) {
-            if (direction.containsKey(s)) {
+            if (direction.containsKey(s) && direction.get(s) != Direction.STABLE) {
                 if (!burst.isEmpty()) {
                     burst += ", ";
                 }
-                if (direction.get(s) != Direction.STABLE) {
-                    burst += s.getName() + direction.get(s);
-                }
+                burst += s.getName() + direction.get(s);
             }
         }
         return burst;

@@ -6,7 +6,6 @@ import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
-import org.workcraft.plugins.stg.VisualStgPlace;
 import org.workcraft.plugins.xbm.*;
 import org.workcraft.utils.Hierarchy;
 
@@ -18,9 +17,9 @@ public class XbmToStgConverter {
     private final VisualXbm srcModel;
     private final VisualStg dstModel;
 
-    private final Map<VisualXbmState, VisualStgPlace> stateToPlaceMap;
+    private final Map<VisualXbmState, VisualPlace> stateToPlaceMap;
     private final Map<VisualBurstEvent, VisualBurstTransition> burstEventToTransitionsMap;
-    private final Map<XbmSignal, StgElementaryCycle> signalToElementaryCycleMap;
+    private final Map<XbmSignal, ElementaryCycle> signalToElementaryCycleMap;
 
     public XbmToStgConverter(VisualXbm srcModel, VisualStg dstModel) {
         this.srcModel = srcModel;
@@ -37,11 +36,11 @@ public class XbmToStgConverter {
         }
     }
 
-    private Map<VisualXbmState, VisualStgPlace> convertStates() {
-        Map<VisualXbmState, VisualStgPlace> result = new HashMap<>();
+    private Map<VisualXbmState, VisualPlace> convertStates() {
+        Map<VisualXbmState, VisualPlace> result = new HashMap<>();
         for (VisualXbmState state: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualXbmState.class)) {
-            String name = srcModel.getMathModel().getNodeReference(state.getReferencedComponent());
-            VisualStgPlace place = dstModel.createVisualPlace(name, null);
+            String name = srcModel.getMathModel().getNodeReference(state.getReferencedState());
+            VisualPlace place = dstModel.createVisualPlace(name, null);
             place.copyPosition(state);
             place.copyStyle(state);
             place.getReferencedComponent().setTokens(state.getReferencedComponent().isInitial() ? 1 : 0);
@@ -60,10 +59,10 @@ public class XbmToStgConverter {
         return result;
     }
 
-    private Map<XbmSignal, StgElementaryCycle> convertSignalsToElementaryCycles() {
-        Map<XbmSignal, StgElementaryCycle> result = new HashMap<>();
+    private Map<XbmSignal, ElementaryCycle> convertSignalsToElementaryCycles() {
+        Map<XbmSignal, ElementaryCycle> result = new HashMap<>();
         for (XbmSignal xbmSignal : srcModel.getMathModel().getSignals(XbmSignal.Type.CONDITIONAL)) {
-            result.put(xbmSignal, new StgElementaryCycle(dstModel, xbmSignal));
+            result.put(xbmSignal, new ElementaryCycle(dstModel, xbmSignal));
         }
         return result;
     }
@@ -74,7 +73,7 @@ public class XbmToStgConverter {
             if (burstTransition != null) {
                 Node first = event.getFirst();
                 if (first instanceof VisualXbmState) {
-                    VisualStgPlace inPlace = stateToPlaceMap.get(first);
+                    VisualPlace inPlace = stateToPlaceMap.get(first);
                     if (inPlace != null) {
                         if (burstTransition.getStart() != null) {
                             dstModel.connect(inPlace, burstTransition.getStart());
@@ -83,10 +82,10 @@ public class XbmToStgConverter {
                                 dstModel.connect(inPlace, inputTransition);
                             }
                         }
-                        if (event.getReferencedConnection().hasConditional()) { //Connects the elementary cycle appropriate to the burst transition
-                            for (Map.Entry<String, Boolean> condition: event.getReferencedConnection().getConditionalMapping().entrySet()) {
-                                VisualStgPlace readPlace;
-                                StgElementaryCycle elemCycle = getRelatedStgElementaryCycle((XbmSignal) srcModel.getMathModel().getNodeByReference(condition.getKey()));
+                        if (event.getReferencedBurstEvent().hasConditional()) { //Connects the elementary cycle appropriate to the burst transition
+                            for (Map.Entry<String, Boolean> condition: event.getReferencedBurstEvent().getConditionalMapping().entrySet()) {
+                                VisualPlace readPlace;
+                                ElementaryCycle elemCycle = getRelatedElementaryCycle((XbmSignal) srcModel.getMathModel().getNodeByReference(condition.getKey()));
                                 if (condition.getValue()) {
                                     readPlace = elemCycle.getHigh();
                                 } else {
@@ -128,7 +127,7 @@ public class XbmToStgConverter {
         return dstModel;
     }
 
-    public VisualStgPlace getRelatedPlace(VisualXbmState state) {
+    public VisualPlace getRelatedPlace(VisualXbmState state) {
         return stateToPlaceMap.get(state);
     }
 
@@ -137,7 +136,7 @@ public class XbmToStgConverter {
     }
 
     public VisualXbmState getRelatedState(VisualPlace place) {
-        for (Map.Entry<VisualXbmState, VisualStgPlace> entry: stateToPlaceMap.entrySet()) {
+        for (Map.Entry<VisualXbmState, VisualPlace> entry: stateToPlaceMap.entrySet()) {
             if (entry.getValue() == place) {
                 return entry.getKey();
             }
@@ -154,7 +153,7 @@ public class XbmToStgConverter {
         return null;
     }
 
-    public StgElementaryCycle getRelatedStgElementaryCycle(XbmSignal conditional) {
+    public ElementaryCycle getRelatedElementaryCycle(XbmSignal conditional) {
         return signalToElementaryCycleMap.get(conditional);
     }
 

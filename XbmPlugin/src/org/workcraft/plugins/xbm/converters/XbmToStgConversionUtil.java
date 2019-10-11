@@ -8,12 +8,10 @@ import org.workcraft.plugins.xbm.XbmSignal;
 public class XbmToStgConversionUtil {
     public static Signal.Type getReferredType(XbmSignal.Type burstType) {
         switch (burstType) {
-        case INPUT:
+        case INPUT: case CONDITIONAL:
             return Signal.Type.INPUT;
         case OUTPUT:
             return Signal.Type.OUTPUT;
-        case CONDITIONAL:
-            return Signal.Type.INTERNAL;
         default:
             return null;
         }

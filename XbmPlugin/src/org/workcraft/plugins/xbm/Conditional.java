@@ -16,16 +16,18 @@ public class Conditional extends LinkedHashMap<String, Boolean> {
             for (String literal: str.replaceAll("\\s", "").split(",")) {
                 Matcher matcher  = LITERAL_PATTERN.matcher(literal);
                 if (matcher.find()) {
-
                     String name = literal.split("=")[0];
+                    String value = literal.split("=")[1];
                     if (!result.containsKey(name)) {
-
-                        if (literal.endsWith("0")) {
+                        switch (value) {
+                        case "0":
                             result.put(name, false);
-                        } else if (literal.endsWith("1")) {
+                            break;
+                        case "1":
                             result.put(name, true);
-                        } else {
-                            throw new RuntimeException("An unknown error was detected.");
+                            break;
+                        default:
+                            throw new RuntimeException("The literal \'" + str + "\' unknowningly passed.");
                         }
                     }
                 } else {

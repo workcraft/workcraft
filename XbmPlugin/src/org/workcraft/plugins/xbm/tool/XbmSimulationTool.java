@@ -12,12 +12,17 @@ import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
-import org.workcraft.plugins.fsm.VisualEvent;
-import org.workcraft.plugins.petri.*;
-import org.workcraft.plugins.petri.tools.PetriSimulationTool;
+import org.workcraft.plugins.petri.Place;
+import org.workcraft.plugins.petri.Transition;
+import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.petri.VisualTransition;
+import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.plugins.xbm.*;
 import org.workcraft.plugins.xbm.converters.ElementaryCycle;
-import org.workcraft.plugins.xbm.converters.XbmToPetriConverter;
+import org.workcraft.plugins.xbm.converters.VisualBurstTransition;
+import org.workcraft.plugins.xbm.converters.XbmToStgConverter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,40 +32,19 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class XbmSimulationTool extends PetriSimulationTool {
+public class XbmSimulationTool extends StgSimulationTool {
 
-    private XbmToPetriConverter converter;
+    private XbmToStgConverter converter;
     private final Map<XbmSignal, Boolean> conditionalValue = new HashMap<>();
     private final Set<JCheckBox> conditionalCheckBoxes = new LinkedHashSet<>();
 
     private static final String CHECKBOX_NAME_PREFIX = "checkBox";
 
     @Override
-    public void activated(final GraphEditor editor) {
-        super.activated(editor);
-        setStatePaneVisibility(false);
-    }
-
-    @Override
-    public String getTraceLabelByReference(String ref) {
-        String label = null;
-        if (ref != null) {
-            label = converter.getSymbol(ref);
-            if ("".equals(label)) {
-                label = VisualEvent.EPSILON_SYMBOL;
-            }
-        }
-        if (label == null) {
-            label = super.getTraceLabelByReference(ref);
-        }
-        return label;
-    }
-
-    @Override
     public void generateUnderlyingModel(VisualModel model) {
-        final VisualXbm xbm = (VisualXbm) model;
-        final VisualPetri petri = new VisualPetri(new Petri());
-        converter = new XbmToPetriConverter(xbm, petri);
+        final VisualXbm xbm  = (VisualXbm) model;
+        final VisualStg stg = new VisualStg(new Stg());
+        converter = new XbmToStgConverter(xbm, stg);
         if (!conditionalValue.isEmpty()) conditionalValue.clear();
         for (XbmSignal xbmSignal : xbm.getMathModel().getSignals(XbmSignal.Type.CONDITIONAL)) {
             conditionalValue.put(xbmSignal, false);
@@ -89,25 +73,6 @@ public class XbmSimulationTool extends PetriSimulationTool {
     }
 
     @Override
-    public void mousePressed(GraphEditorMouseEvent e) {
-        if (e.getButton() == MouseEvent.BUTTON1) {
-            VisualModel model = e.getModel();
-            Node deepestNode = HitMan.hitDeepest(e.getPosition(), model.getRoot(),
-                    node -> getExcitedTransitionOfNode(node) != null);
-
-            Transition transition = getExcitedTransitionOfNode(deepestNode);
-            if (transition != null) {
-                executeTransition(e.getEditor(), transition);
-            }
-        }
-    }
-
-    @Override
-    public String getHintText(final GraphEditor editor) {
-        return "Click on a highlighted arc to trigger its event.";
-    }
-
-    @Override
     public void updateState(GraphEditor editor) {
         super.updateState(editor);
         for (XbmSignal xbmSignal : conditionalValue.keySet()) {
@@ -127,6 +92,11 @@ public class XbmSimulationTool extends PetriSimulationTool {
     }
 
     @Override
+    public String getHintText(final GraphEditor editor) {
+        return "Click on a highlighted arc to trigger its event.";
+    }
+
+    @Override
     public Decorator getDecorator(final GraphEditor editor) {
         return node -> {
             if (converter == null) return null;
@@ -141,9 +111,59 @@ public class XbmSimulationTool extends PetriSimulationTool {
         };
     }
 
+    @Override
+    public JPanel getControlsPanel(GraphEditor editor) {
+        JPanel fullPanel = new JPanel();
+        fullPanel.setLayout(new BorderLayout());
+        fullPanel.add(super.getControlsPanel(editor), BorderLayout.CENTER);
+        if (!conditionalValue.isEmpty()) {
+            fullPanel.add(createConditionalSignalSetters(editor), BorderLayout.SOUTH);
+        }
+        return fullPanel;
+    }
+
+    @Override
+    public void mousePressed(GraphEditorMouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            VisualModel model = e.getModel();
+            Node deepestNode = HitMan.hitDeepest(e.getPosition(), model.getRoot(),
+                    node -> getExcitedTransitionOfNode(node) != null);
+
+            //TODO Add VisualBurstTransition here
+            if (deepestNode instanceof VisualBurstEvent) {
+                Set<Transition> transitions = getExcitedTransitionPathOfNode(deepestNode);
+                for (Transition transition: transitions) {
+                    if (transition != null) {
+                        executeTransition(e.getEditor(), transition);
+                    }
+                }
+            }
+        }
+    }
+
+    public Decoration getStateDecoration(VisualXbmState state) {
+        VisualPlace p = converter.getRelatedPlace(state);
+        if (p == null) {
+            return null;
+        }
+        final boolean isMarkedPlace = p.getReferencedComponent().getTokens() > 0;
+	
+	return new Decoration() {
+            @Override
+            public Color getColorisation() {
+                return isMarkedPlace ? SimulationDecorationSettings.getExcitedComponentColor() : null;
+            }
+            @Override
+            public Color getBackground() {
+                return null;
+            }
+        };
+    }
+
     private Decoration getEventDecoration(VisualBurstEvent event) {
         Node transition = getTraceCurrentNode();
-        final boolean isExcited = getExcitedTransitionOfNode(event) != null;
+        Set<Transition> transitions = getExcitedTransitionPathOfNode(event);
+        final boolean isExcited = !transitions.isEmpty();
         final boolean isSuggested = isExcited && converter.isRelated(event, transition);
         return new Decoration() {
             @Override
@@ -158,46 +178,39 @@ public class XbmSimulationTool extends PetriSimulationTool {
         };
     }
 
-    public Decoration getStateDecoration(VisualXbmState state) {
-        VisualPlace p = converter.getRelatedPlace(state);
-        if (p == null) {
-            return null;
+    private Set<Transition> getExcitedTransitionPathOfNode(Node node) {
+        Set<Transition> result = new LinkedHashSet<>();
+        if ((node != null) && (node instanceof VisualBurstEvent)) {
+            VisualBurstTransition vBurstTransition = converter.getRelatedSignalBurstTransition((VisualBurstEvent) node);
+            if (vBurstTransition != null) {
+                if (isEnabledNode(vBurstTransition.getStart().getReferencedTransition())) {
+                    result.add(vBurstTransition.getStart().getReferencedTransition()); //FORK
+                    for (VisualTransition visualTransition: vBurstTransition.getInputTransitions()) {
+                        result.add(visualTransition.getReferencedTransition());
+                    }
+                    result.add(vBurstTransition.getSplit().getReferencedTransition()); //JOIN_FORK
+                    for (VisualTransition visualTransition: vBurstTransition.getOutputTransitions()) {
+                        result.add(visualTransition.getReferencedTransition());
+                    }
+                    result.add(vBurstTransition.getEnd().getReferencedTransition()); //JOIN
+                }
+            }
         }
-        final boolean isMarkedPlace = p.getReferencedComponent().getTokens() > 0;
-
-        return new Decoration() {
-            @Override
-            public Color getColorisation() {
-                return isMarkedPlace ? SimulationDecorationSettings.getExcitedComponentColor() : null;
-            }
-            @Override
-            public Color getBackground() {
-                return null;
-            }
-        };
+        return result;
     }
 
     private Transition getExcitedTransitionOfNode(Node node) {
         if ((node != null) && (node instanceof VisualBurstEvent)) {
-            VisualTransition vTransition = converter.getRelatedTransition((VisualBurstEvent) node);
-            if (vTransition != null) {
-                if (isEnabledNode(vTransition.getReferencedComponent())) {
-                    return vTransition.getReferencedComponent();
+            VisualBurstTransition vBurstTransition = converter.getRelatedSignalBurstTransition((VisualBurstEvent) node);
+            if (vBurstTransition != null && vBurstTransition.getStart() != null) {
+                if (isEnabledNode(vBurstTransition.getStart().getReferencedTransition())) {
+                    return vBurstTransition.getStart().getReferencedTransition();
+                } else {
+                    return null;
                 }
             }
         }
         return null;
-    }
-
-    @Override
-    public JPanel getControlsPanel(GraphEditor editor) {
-        JPanel fullPanel = new JPanel();
-        fullPanel.setLayout(new BorderLayout());
-        fullPanel.add(super.getControlsPanel(editor), BorderLayout.CENTER);
-        if (!conditionalValue.isEmpty()) {
-            fullPanel.add(createConditionalSignalSetters(editor), BorderLayout.SOUTH);
-        }
-        return fullPanel;
     }
 
     private JPanel createConditionalSignalSetters(GraphEditor editor) {
