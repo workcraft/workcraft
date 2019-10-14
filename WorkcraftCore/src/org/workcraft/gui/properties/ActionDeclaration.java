@@ -6,10 +6,20 @@ import java.util.Map;
 
 public class ActionDeclaration implements PropertyDescriptor<Action> {
 
+    private final String name;
     private final Action action;
 
     public ActionDeclaration(String text, Runnable runnable) {
-        this.action = new Action(text, runnable);
+        this(null, text, runnable);
+    }
+
+    public ActionDeclaration(String name, String text, Runnable runnable) {
+        this(name, new Action(text, runnable));
+    }
+
+    public ActionDeclaration(String name, Action action) {
+        this.name = name;
+        this.action = action;
     }
 
     @Override
@@ -19,7 +29,7 @@ public class ActionDeclaration implements PropertyDescriptor<Action> {
 
     @Override
     public String getName() {
-        return null;
+        return name;
     }
 
     @Override
@@ -38,7 +48,7 @@ public class ActionDeclaration implements PropertyDescriptor<Action> {
 
     @Override
     public boolean isSpan() {
-        return true;
+        return name == null;
     }
 
 }

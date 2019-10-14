@@ -7,12 +7,13 @@ import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.Serializable;
 
 import org.workcraft.exceptions.NotSupportedException;
 
 import net.sf.jga.fn.UnaryFunctor;
 
-public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
+public class SmartFlowLayout implements LayoutManager, Serializable {
     public static final int LEFT     = 0;
     public static final int CENTER   = 1;
     public static final int RIGHT    = 2;

@@ -1,6 +1,6 @@
 package org.workcraft.plugins.xbm.properties;
 
-import org.workcraft.gui.properties.ActionDeclaration;
+import org.workcraft.gui.properties.ActionListDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.xbm.SignalState;
 import org.workcraft.plugins.xbm.XbmSignal;
@@ -10,66 +10,31 @@ import java.util.Map;
 
 public class StatePropertyDescriptors {
 
-    private static final String PROPERTY_TOGGLE = "Toggle values";
-    private static final String PROPERTY_ALL_ONE = "Set all to 1";
-    private static final String PROPERTY_ALL_ZERO = "Set all to 0";
-    private static final String PROPERTY_INPUTS_TO_ONE = "Set all inputs to 1";
-    private static final String PROPERTY_INPUTS_TO_ZERO = "Set all inputs to 0";
-    private static final String PROPERTY_OUTPUTS_TO_ONE = "Set all outputs to 1";
-    private static final String PROPERTY_OUTPUTS_TO_ZERO = "Set all outputs to 0";
+    private static final char TOGGLE_SYMBOL = 0x21C5;
+    private static final String TOGGLE_TEXT = Character.toString(TOGGLE_SYMBOL);
+    private static final char HIGH_SYMBOL = 0x21C8;
+    private static final String HIGH_TEXT = Character.toString(HIGH_SYMBOL);
+    private static final char LOW_SYMBOL = 0x21CA;
+    private static final String LOW_TEXT = Character.toString(LOW_SYMBOL);
 
-    public static PropertyDescriptor toggleProperty(XbmState state) {
-        return new ActionDeclaration(PROPERTY_TOGGLE,
-                () -> {
-                    for (Map.Entry<XbmSignal, SignalState> entry : state.getEncoding().entrySet()) {
-                        state.addOrChangeSignalValue(entry.getKey(), entry.getValue().toggle());
-                    }
-                });
+    public static PropertyDescriptor burstProperty(XbmState state, String name, XbmSignal.Type type) {
+        return new ActionListDeclaration(name)
+                .addAction(TOGGLE_TEXT, () -> toggleSignalsByType(state, type))
+                .addAction(HIGH_TEXT, () -> setSignalsToValueByType(state, type, SignalState.HIGH))
+                .addAction(LOW_TEXT, () -> setSignalsToValueByType(state, type, SignalState.LOW));
     }
 
-    public static PropertyDescriptor allOneProperty(XbmState state) {
-        return setToValueProperty(state, PROPERTY_ALL_ONE, SignalState.HIGH);
-    }
-
-    public static PropertyDescriptor allZeroProperty(XbmState state) {
-        return setToValueProperty(state, PROPERTY_ALL_ZERO, SignalState.LOW);
-    }
-
-    public static PropertyDescriptor allInputsOneProperty(XbmState state) {
-        return setToValueByTypeProperty(state, XbmSignal.Type.INPUT, PROPERTY_INPUTS_TO_ONE, SignalState.HIGH);
-    }
-
-    public static final PropertyDescriptor allInputsZeroProperty(XbmState state) {
-        return setToValueByTypeProperty(state, XbmSignal.Type.INPUT, PROPERTY_INPUTS_TO_ZERO, SignalState.LOW);
-    }
-
-    public static PropertyDescriptor allOutputsOneProperty(XbmState state) {
-        return setToValueByTypeProperty(state, XbmSignal.Type.OUTPUT, PROPERTY_OUTPUTS_TO_ONE, SignalState.HIGH);
-    }
-
-    public static PropertyDescriptor allOutputsZeroProperty(XbmState state) {
-        return setToValueByTypeProperty(state, XbmSignal.Type.OUTPUT, PROPERTY_OUTPUTS_TO_ZERO, SignalState.LOW);
-    }
-
-    private static PropertyDescriptor setToValueProperty(XbmState state, String propertyName, SignalState targetValue) {
-        return new ActionDeclaration(propertyName, () -> setSignalsToValue(state, targetValue));
-    }
-
-    private static PropertyDescriptor setToValueByTypeProperty(XbmState state, XbmSignal.Type type, String propertyName, SignalState targetValue) {
-        return new ActionDeclaration(propertyName, () -> setSignalsToValueByType(state, type, targetValue));
-    }
-
-    private static void setSignalsToValue(XbmState state, SignalState value) {
+    private static void toggleSignalsByType(XbmState state, XbmSignal.Type type) {
         for (Map.Entry<XbmSignal, SignalState> entry: state.getEncoding().entrySet()) {
-            if (entry.getValue() != value) {
-                state.addOrChangeSignalValue(entry.getKey(), value);
+            if (entry.getKey().getType() == type) {
+                state.addOrChangeSignalValue(entry.getKey(), entry.getValue().toggle());
             }
         }
     }
 
     private static void setSignalsToValueByType(XbmState state, XbmSignal.Type type, SignalState value) {
         for (Map.Entry<XbmSignal, SignalState> entry: state.getEncoding().entrySet()) {
-            if (entry.getKey().getType() == type && entry.getValue() != value) {
+            if ((entry.getKey().getType() == type) && (entry.getValue() != value)) {
                 state.addOrChangeSignalValue(entry.getKey(), value);
             }
         }
