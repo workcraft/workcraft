@@ -18,7 +18,7 @@ import java.util.Set;
 
 public class InitialisationState {
 
-    private static final BooleanWorker WORKER = new CleverBooleanWorker();
+    private static final BooleanWorker WORKER = CleverBooleanWorker.getInstance();
 
     private final Set<MathNode> highSet = new HashSet<>();
     private final Set<MathNode> lowSet = new HashSet<>();

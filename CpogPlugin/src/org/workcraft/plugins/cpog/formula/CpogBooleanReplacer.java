@@ -6,8 +6,6 @@ import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
 import org.workcraft.formula.visitors.BooleanReplacer;
 import org.workcraft.formula.workers.BooleanWorker;
-import org.workcraft.formula.workers.MemoryConservingBooleanWorker;
-import org.workcraft.formula.workers.PrettifyBooleanWorker;
 import org.workcraft.plugins.cpog.Variable;
 
 import java.util.HashMap;

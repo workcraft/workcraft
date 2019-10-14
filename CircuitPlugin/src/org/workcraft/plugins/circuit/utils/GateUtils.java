@@ -21,8 +21,8 @@ import java.util.*;
 
 public class GateUtils {
 
-    private static final BooleanWorker DUMB_WORKER = new DumbBooleanWorker();
-    private static final BooleanWorker CLEVER_WORKER = new CleverBooleanWorker();
+    private static final BooleanWorker DUMB_WORKER = DumbBooleanWorker.getInstance();
+    private static final BooleanWorker CLEVER_WORKER = CleverBooleanWorker.getInstance();
 
     public static void insertGateAfter(VisualCircuit circuit, VisualCircuitComponent component, VisualContact predContact) {
         Container container = (Container) predContact.getParent();

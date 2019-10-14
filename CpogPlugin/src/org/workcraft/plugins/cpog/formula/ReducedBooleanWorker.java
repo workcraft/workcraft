@@ -1,4 +1,4 @@
-package org.workcraft.formula.workers;
+package org.workcraft.plugins.cpog.formula;
 
 import org.workcraft.formula.BooleanFormula;
 

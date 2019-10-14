@@ -6,8 +6,8 @@ import org.workcraft.formula.FreeVariable;
 import org.workcraft.formula.One;
 import org.workcraft.formula.FormulaUtils;
 import org.workcraft.formula.workers.BooleanWorker;
-import org.workcraft.formula.workers.MemoryConservingBooleanWorker;
-import org.workcraft.formula.workers.PrettifyBooleanWorker;
+import org.workcraft.plugins.cpog.formula.MemoryConservingBooleanWorker;
+import org.workcraft.plugins.cpog.formula.PrettifyBooleanWorker;
 import org.workcraft.plugins.cpog.encoding.NumberProvider;
 
 import java.util.ArrayList;

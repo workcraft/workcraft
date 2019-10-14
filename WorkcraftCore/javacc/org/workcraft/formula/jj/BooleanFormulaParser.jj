@@ -25,7 +25,8 @@ import org.workcraft.types.Func;
 
 public class BooleanFormulaParser {
 
-    private BooleanWorker worker = new CleverBooleanWorker();
+    private static final BooleanWorker WORKER = CleverBooleanWorker.getInstance();
+
     private Func<String, ? extends BooleanFormula> vars;
 
     public BooleanFormulaParser(Reader reader, Func<String, ? extends BooleanFormula> vars) {
@@ -42,31 +43,31 @@ public class BooleanFormulaParser {
     }
 
     private BooleanFormula constant(String value) {
-        return "0".equals(value) ? worker.zero() : worker.one();
+        return "0".equals(value) ? WORKER.zero() : WORKER.one();
     }
 
     private BooleanFormula and(BooleanFormula a, BooleanFormula b) {
-        return worker.and(a, b);
+        return WORKER.and(a, b);
     }
 
     private BooleanFormula or(BooleanFormula a, BooleanFormula b) {
-        return worker.or(a, b);
+        return WORKER.or(a, b);
     }
 
     private BooleanFormula eq(BooleanFormula a, BooleanFormula b) {
-        return worker.iff(a, b);
+        return WORKER.iff(a, b);
     }
 
     private BooleanFormula imply(BooleanFormula a, BooleanFormula b) {
-        return worker.imply(a, b);
+        return WORKER.imply(a, b);
     }
 
     private BooleanFormula xor(BooleanFormula a, BooleanFormula b) {
-        return worker.xor(a, b);
+        return WORKER.xor(a, b);
     }
 
     private BooleanFormula not(BooleanFormula a) {
-        return worker.not(a);
+        return WORKER.not(a);
     }
 
     public static BooleanFormula parse(String text, Func<String, ? extends BooleanFormula> vars) throws ParseException {

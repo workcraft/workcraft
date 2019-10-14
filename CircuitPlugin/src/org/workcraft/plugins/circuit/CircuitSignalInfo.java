@@ -20,7 +20,7 @@ import java.util.LinkedList;
 
 public class CircuitSignalInfo {
 
-    private static final BooleanWorker WORKER = new CleverBooleanWorker();
+    private static final BooleanWorker WORKER = CleverBooleanWorker.getInstance();
 
     public final Circuit circuit;
     private final HashMap<Contact, String> contactSignalMap = new HashMap<>();

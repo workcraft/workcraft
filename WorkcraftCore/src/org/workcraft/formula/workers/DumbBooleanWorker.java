@@ -2,7 +2,19 @@ package org.workcraft.formula.workers;
 
 import org.workcraft.formula.*;
 
-public class DumbBooleanWorker implements BooleanWorker {
+public final class DumbBooleanWorker implements BooleanWorker {
+
+    private static DumbBooleanWorker instance;
+
+    private DumbBooleanWorker() {
+    }
+
+    public static DumbBooleanWorker getInstance() {
+        if (instance == null) {
+            instance = new DumbBooleanWorker();
+        }
+        return instance;
+    }
 
     @Override
     public BooleanFormula zero() {

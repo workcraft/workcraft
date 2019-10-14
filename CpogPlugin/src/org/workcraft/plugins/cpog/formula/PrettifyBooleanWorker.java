@@ -1,8 +1,9 @@
-package org.workcraft.formula.workers;
+package org.workcraft.plugins.cpog.formula;
 
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
+import org.workcraft.formula.workers.BooleanWorker;
 
 public class PrettifyBooleanWorker implements BooleanWorker {
 

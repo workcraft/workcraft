@@ -3,7 +3,19 @@ package org.workcraft.formula.workers;
 import org.workcraft.formula.*;
 import org.workcraft.formula.visitors.StringGenerator;
 
-public class CleverBooleanWorker implements BooleanWorker {
+public final class CleverBooleanWorker implements BooleanWorker {
+
+    private static CleverBooleanWorker instance;
+
+    private CleverBooleanWorker() {
+    }
+
+    public static CleverBooleanWorker getInstance() {
+        if (instance == null) {
+            instance = new CleverBooleanWorker();
+        }
+        return instance;
+    }
 
     @Override
     public BooleanFormula zero() {
@@ -17,13 +29,7 @@ public class CleverBooleanWorker implements BooleanWorker {
 
     @Override
     public BooleanFormula not(BooleanFormula x) {
-        if (x == One.getInstance()) {
-            return Zero.getInstance();
-        }
-        if (x == Zero.getInstance()) {
-            return One.getInstance();
-        }
-        return new Not(x);
+        return FormulaUtils.invert(x);
     }
 
     @Override
