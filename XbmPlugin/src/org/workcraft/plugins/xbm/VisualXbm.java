@@ -10,7 +10,10 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.gui.properties.*;
+import org.workcraft.gui.properties.ActionDeclaration;
+import org.workcraft.gui.properties.ModelProperties;
+import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.tools.*;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.VisualFsm;
@@ -26,9 +29,6 @@ import java.util.*;
 @DisplayName("eXtended Burst-Mode Machine")
 @ShortName("XBM")
 public class VisualXbm extends VisualFsm {
-
-    private static final PropertyDescriptor PROPERTY_INPUT_BURST_PLACEHOLDER = new PropertySeparator("<html><i>Input Burst</i></html>");
-    private static final PropertyDescriptor PROPERTY_OUTPUT_BURST_PLACEHOLDER = new PropertySeparator("<html><i>Output Burst</i></html>");
 
     public VisualXbm() {
         this(null, null);
@@ -106,9 +106,6 @@ public class VisualXbm extends VisualFsm {
         } else if (node instanceof VisualXbmState) {
             final VisualXbmState vXbmState = (VisualXbmState) node;
             final XbmState xbmState = vXbmState.getReferencedState();
-            properties.add(StatePropertyDescriptors.toggleProperty(xbmState));
-            properties.add(StatePropertyDescriptors.allOneProperty(xbmState));
-            properties.add(StatePropertyDescriptors.allZeroProperty(xbmState));
             properties.addAll(getSignalValueProperties(xbmState));
             properties.removeByName(VisualComponent.PROPERTY_LABEL);
         }
@@ -137,13 +134,13 @@ public class VisualXbm extends VisualFsm {
         final Set<XbmSignal> inputs = new LinkedHashSet<>(xbm.getSignals(XbmSignal.Type.INPUT));
         final Set<XbmSignal> outputs = new LinkedHashSet<>(xbm.getSignals(XbmSignal.Type.OUTPUT));
         if (!inputs.isEmpty()) {
-            list.add(PROPERTY_INPUT_BURST_PLACEHOLDER);
+            list.add(StatePropertyDescriptors.burstProperty(state, "Input burst", XbmSignal.Type.INPUT));
             for (XbmSignal i: inputs) {
                 list.add(SignalPropertyDescriptors.valueProperty(this, state, i));
             }
         }
         if (!outputs.isEmpty()) {
-            list.add(PROPERTY_OUTPUT_BURST_PLACEHOLDER);
+            list.add(StatePropertyDescriptors.burstProperty(state, "Output burst", XbmSignal.Type.OUTPUT));
             for (XbmSignal o: outputs) {
                 list.add(SignalPropertyDescriptors.valueProperty(this, state, o));
             }
@@ -156,23 +153,24 @@ public class VisualXbm extends VisualFsm {
         final List<PropertyDescriptor> result = new LinkedList<>();
         final Set<XbmSignal> inputs = new LinkedHashSet<>(xbm.getSignals(XbmSignal.Type.INPUT));
         final Set<XbmSignal> outputs = new LinkedHashSet<>(xbm.getSignals(XbmSignal.Type.OUTPUT));
-        result.add(PROPERTY_INPUT_BURST_PLACEHOLDER);
+
+        result.add(new ActionDeclaration("Input burst", "Create input",
+                () -> getMathModel().createSignal(null, XbmSignal.Type.INPUT)));
+
         if (!inputs.isEmpty()) {
             for (XbmSignal i: inputs) {
                 result.add(SignalPropertyDescriptors.directionProperty(this, burstEvent, i));
             }
         }
-        result.add(new ActionDeclaration("Create input signal",
-                () -> getMathModel().createSignal(null, XbmSignal.Type.INPUT)));
 
-        result.add(PROPERTY_OUTPUT_BURST_PLACEHOLDER);
+        result.add(new ActionDeclaration("Output burst", "Create output",
+                () -> getMathModel().createSignal(null, XbmSignal.Type.OUTPUT)));
+
         if (!outputs.isEmpty()) {
             for (XbmSignal o: outputs) {
                 result.add(SignalPropertyDescriptors.directionProperty(this, burstEvent, o));
             }
         }
-        result.add(new ActionDeclaration("Create output signal",
-                () -> getMathModel().createSignal(null, XbmSignal.Type.OUTPUT)));
         return result;
     }
 
@@ -189,4 +187,5 @@ public class VisualXbm extends VisualFsm {
             }
         };
     }
+
 }

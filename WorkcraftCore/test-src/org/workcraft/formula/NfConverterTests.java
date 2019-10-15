@@ -9,7 +9,7 @@ import org.workcraft.utils.SetUtils;
 
 public class NfConverterTests {
 
-    private static final DumbBooleanWorker WORKER = new DumbBooleanWorker();
+    private static final DumbBooleanWorker WORKER = DumbBooleanWorker.getInstance();
 
     private static BooleanVariable a = new FreeVariable("a");
     private static BooleanVariable b = new FreeVariable("b");

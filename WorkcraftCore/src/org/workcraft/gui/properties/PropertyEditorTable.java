@@ -55,6 +55,7 @@ public class PropertyEditorTable extends JTable {
         propertyClasses.put(FileReference.class, new FileReferenceProperty());
         propertyClasses.put(Action.class, new ActionProperty());
         propertyClasses.put(TextAction.class, new TextActionProperty());
+        propertyClasses.put(ActionList.class, new ActionListProperty());
 
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();

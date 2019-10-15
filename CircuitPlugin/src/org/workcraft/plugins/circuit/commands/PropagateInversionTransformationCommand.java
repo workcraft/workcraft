@@ -5,11 +5,10 @@ import org.workcraft.commands.NodeTransformer;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.FormulaUtils;
 import org.workcraft.formula.visitors.BooleanComplementTransformer;
 import org.workcraft.formula.visitors.StringGenerator;
-import org.workcraft.formula.workers.BooleanWorker;
-import org.workcraft.formula.workers.MemoryConservingBooleanWorker;
-import org.workcraft.formula.workers.PrettifyBooleanWorker;
+import org.workcraft.formula.workers.CleverBooleanWorker;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.utils.Hierarchy;
@@ -108,8 +107,9 @@ public class PropagateInversionTransformationCommand extends AbstractTransformat
     private BooleanFormula propagateInversion(BooleanFormula formula) {
         BooleanFormula result = null;
         if (formula != null) {
-            BooleanWorker worker = new PrettifyBooleanWorker(new MemoryConservingBooleanWorker());
-            result = worker.not(formula.accept(new BooleanComplementTransformer(worker)));
+//            BooleanWorker worker = new PrettifyBooleanWorker(new MemoryConservingBooleanWorker());
+//            result = worker.not(formula.accept(new BooleanComplementTransformer(worker)));
+            result = FormulaUtils.invert(formula.accept(new BooleanComplementTransformer(CleverBooleanWorker.getInstance())));
         }
         return result;
     }

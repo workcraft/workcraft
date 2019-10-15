@@ -3,8 +3,8 @@ package org.workcraft.plugins.cpog.sat;
 import org.workcraft.formula.*;
 import org.workcraft.formula.visitors.BooleanReplacer;
 import org.workcraft.formula.workers.BooleanWorker;
-import org.workcraft.formula.workers.MemoryConservingBooleanWorker;
-import org.workcraft.formula.workers.PrettifyBooleanWorker;
+import org.workcraft.plugins.cpog.formula.MemoryConservingBooleanWorker;
+import org.workcraft.plugins.cpog.formula.PrettifyBooleanWorker;
 
 import java.util.HashMap;
 import java.util.Map;

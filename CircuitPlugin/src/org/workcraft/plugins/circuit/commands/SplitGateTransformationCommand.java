@@ -41,6 +41,11 @@ public class SplitGateTransformationCommand extends AbstractGateTransformationCo
     }
 
     @Override
+    public Position getPosition() {
+        return Position.TOP_MIDDLE;
+    }
+
+    @Override
     public void transformGate(VisualCircuit circuit, VisualFunctionComponent gate) {
         VisualFunctionContact outputContact = gate.getGateOutput();
 

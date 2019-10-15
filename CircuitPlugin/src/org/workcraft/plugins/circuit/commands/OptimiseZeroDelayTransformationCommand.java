@@ -36,7 +36,7 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
 
     @Override
     public Position getPosition() {
-        return Position.TOP_MIDDLE;
+        return Position.MIDDLE;
     }
 
     @Override
@@ -46,8 +46,13 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
         }
         VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
         Collection<VisualFunctionComponent> components = collect(circuit);
+        boolean noSelection = circuit.getSelection().isEmpty();
         if (components.isEmpty()) {
-            DialogUtils.showError("No zero delay components to optimise.");
+            if (noSelection) {
+                DialogUtils.showError("No zero delay components in the circuit.");
+            } else {
+                DialogUtils.showError("No zero delay components were selected.");
+            }
             return null;
         }
         if (!checkSpeedIndependence(we, MpsatUtils.getToolchainDescription(we.getTitle()))) {
@@ -70,9 +75,13 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
             }
         }
         if (refs.isEmpty()) {
-            DialogUtils.showInfo("No zero delay component could be discarded.");
+            if (noSelection) {
+                DialogUtils.showInfo("All zero delay assumptions in the circuit are necessary.");
+            } else {
+                DialogUtils.showInfo("All zero delay assumptions for the selected components are necessary.");
+            }
         } else {
-            DialogUtils.showInfo(LogUtils.getTextWithRefs("Discarded zero delay component", refs));
+            DialogUtils.showInfo(LogUtils.getTextWithRefs("Zero delay assumption is removed for component", refs));
         }
         return null;
     }

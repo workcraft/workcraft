@@ -2,8 +2,6 @@ package org.workcraft.plugins.circuit.observers;
 
 import org.workcraft.dom.Node;
 import org.workcraft.formula.FormulaUtils;
-import org.workcraft.formula.workers.BooleanWorker;
-import org.workcraft.formula.workers.CleverBooleanWorker;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletingEvent;
@@ -14,8 +12,6 @@ import org.workcraft.utils.Hierarchy;
 import java.util.ArrayList;
 
 public class FunctionConsistencySupervisor extends HierarchySupervisor {
-
-    private static final BooleanWorker WORKER = new CleverBooleanWorker();
 
     @Override
     public void handleEvent(HierarchyEvent e) {
@@ -37,10 +33,10 @@ public class FunctionConsistencySupervisor extends HierarchySupervisor {
         for (final FunctionContact functionContact : functionContacts) {
 
             functionContact.setSetFunction(FormulaUtils.replaceZero(
-                    functionContact.getSetFunction(), contact, WORKER));
+                    functionContact.getSetFunction(), contact));
 
             functionContact.setResetFunction(FormulaUtils.replaceZero(
-                    functionContact.getResetFunction(), contact, WORKER));
+                    functionContact.getResetFunction(), contact));
         }
     }
 

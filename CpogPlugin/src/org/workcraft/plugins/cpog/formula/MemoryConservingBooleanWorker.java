@@ -1,7 +1,9 @@
-package org.workcraft.formula.workers;
+package org.workcraft.plugins.cpog.formula;
 
-import org.workcraft.formula.*;
-import org.workcraft.formula.visitors.BooleanVisitor;
+import org.workcraft.formula.And;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.FormulaUtils;
+import org.workcraft.formula.Iff;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -74,7 +76,7 @@ public class MemoryConservingBooleanWorker implements ReducedBooleanWorker {
         Integer code = getCode(f);
         BooleanFormula res = nots.get(code);
         if (res == null) {
-            res = f.accept(Inverter.instance);
+            res = FormulaUtils.invert(f);
             ensureHaveCode(res);
             nots.put(code, res);
         }
@@ -120,59 +122,6 @@ public class MemoryConservingBooleanWorker implements ReducedBooleanWorker {
     private void ensureHaveCode(BooleanFormula inverted) {
         if (!codes.containsKey(inverted)) {
             newCode(inverted);
-        }
-    }
-
-    private static class Inverter implements BooleanVisitor<BooleanFormula> {
-        public static final Inverter instance = new Inverter();
-
-        @Override
-        public BooleanFormula visit(Not node) {
-            return node.getX();
-        }
-
-        protected BooleanFormula visitDefault(BooleanFormula node) {
-            return new Not(node);
-        }
-
-        @Override
-        public BooleanFormula visit(And node) {
-            return visitDefault(node);
-        }
-
-        @Override
-        public BooleanFormula visit(Iff node) {
-            return visitDefault(node);
-        }
-
-        @Override
-        public BooleanFormula visit(Xor node) {
-            return visitDefault(node);
-        }
-
-        @Override
-        public BooleanFormula visit(Zero node) {
-            throw new RuntimeException("no constants expected here");
-        }
-
-        @Override
-        public BooleanFormula visit(One node) {
-            throw new RuntimeException("no constants expected here");
-        }
-
-        @Override
-        public BooleanFormula visit(Imply node) {
-            return visitDefault(node);
-        }
-
-        @Override
-        public BooleanFormula visit(BooleanVariable node) {
-            return visitDefault(node);
-        }
-
-        @Override
-        public BooleanFormula visit(Or node) {
-            return visitDefault(node);
         }
     }
 

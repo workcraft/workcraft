@@ -8,8 +8,8 @@ import org.workcraft.formula.FreeVariable;
 import org.workcraft.formula.cnf.Cnf;
 import org.workcraft.formula.ClauseUtils;
 import org.workcraft.formula.workers.BooleanWorker;
-import org.workcraft.formula.workers.MemoryConservingBooleanWorker;
-import org.workcraft.formula.workers.PrettifyBooleanWorker;
+import org.workcraft.plugins.cpog.formula.MemoryConservingBooleanWorker;
+import org.workcraft.plugins.cpog.formula.PrettifyBooleanWorker;
 import org.workcraft.utils.SetUtils;
 
 import java.util.Set;

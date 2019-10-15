@@ -25,6 +25,7 @@ import org.workcraft.plugins.cpog.formula.GraphFunc;
 
 
 public class CpogFormulaParser {
+
     public CpogFormulaParser(Reader reader, GraphFunc<String, ? extends CpogFormula> vars) {
         this (reader);
         this.vars = vars;
@@ -45,11 +46,12 @@ public class CpogFormulaParser {
         this.globalBool = bool;
     }
 
-    CpogWorker worker = new CleverCpogWorker();
-    GraphFunc<String, ? extends CpogFormula> vars;
-    String graphName, globalBool = "";
-    boolean nameSet = false;
-    final HashMap<String, FreeVariable> map = new HashMap<String, FreeVariable>();
+    private final CpogWorker worker = new CleverCpogWorker();
+    private final HashMap<String, FreeVariable> map = new HashMap<String, FreeVariable>();
+
+    private GraphFunc<String, ? extends CpogFormula> vars;
+    private String graphName, globalBool = "";
+    private boolean nameSet = false;
 
 
     CpogFormula var(String name) throws ParseException {

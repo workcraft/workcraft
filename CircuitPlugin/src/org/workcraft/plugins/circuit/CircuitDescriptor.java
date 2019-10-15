@@ -5,13 +5,13 @@ import org.workcraft.dom.ModelDescriptor;
 public class CircuitDescriptor implements ModelDescriptor {
 
     @Override
-    public Circuit createMathModel() {
-        return new Circuit();
+    public String getDisplayName() {
+        return "Digital Circuit";
     }
 
     @Override
-    public String getDisplayName() {
-        return "Digital Circuit";
+    public Circuit createMathModel() {
+        return new Circuit();
     }
 
     @Override

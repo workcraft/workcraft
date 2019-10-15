@@ -10,7 +10,7 @@ import java.util.List;
 
 public class CnfClause extends Clause {
 
-    private static final DumbBooleanWorker WORKER = new DumbBooleanWorker();
+    private static final DumbBooleanWorker WORKER = DumbBooleanWorker.getInstance();
 
     public CnfClause() {
     }

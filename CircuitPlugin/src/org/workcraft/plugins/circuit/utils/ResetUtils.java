@@ -6,6 +6,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
 import org.workcraft.formula.workers.BooleanWorker;
 import org.workcraft.formula.workers.CleverBooleanWorker;
+import org.workcraft.formula.workers.DumbBooleanWorker;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.types.Pair;
 
@@ -16,8 +17,8 @@ import java.util.Set;
 
 public class ResetUtils {
 
-    private static final BooleanWorker DUMB_WORKER = new CleverBooleanWorker();
-    private static final BooleanWorker CLEVER_WORKER = new CleverBooleanWorker();
+    private static final BooleanWorker DUMB_WORKER = DumbBooleanWorker.getInstance();
+    private static final BooleanWorker CLEVER_WORKER = CleverBooleanWorker.getInstance();
 
     public static Set<Contact> tagForceInitClearAll(Circuit circuit) {
         return setForceInit(circuit.getFunctionContacts(), false);

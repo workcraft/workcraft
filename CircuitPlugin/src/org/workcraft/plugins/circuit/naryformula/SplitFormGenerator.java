@@ -1,7 +1,6 @@
 package org.workcraft.plugins.circuit.naryformula;
 
 import org.workcraft.formula.*;
-import org.workcraft.formula.workers.DumbBooleanWorker;
 import org.workcraft.types.Func2;
 
 import java.util.HashMap;
@@ -10,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 public class SplitFormGenerator {
-
-    private static final DumbBooleanWorker WORKER = new DumbBooleanWorker();
 
     private static class DelegatingPrinter implements NaryBooleanFormulaVisitor<SplitForm> {
 
@@ -68,8 +65,8 @@ public class SplitFormGenerator {
                 SplitForm operand = arg.accept(this);
                 if (negated) {
                     BooleanVariable variable = argToVarMap.get(arg);
-                    BooleanVariable notVariable = new FreeVariable(variable.getLabel() + "N");
-                    formula = FormulaUtils.replace(formula, variable, WORKER.not(notVariable), WORKER);
+                    BooleanFormula value = FormulaUtils.invert(new FreeVariable(variable.getLabel() + "N"));
+                    formula = FormulaUtils.replace(formula, variable, value);
                     negated = !negated;
                 }
                 operands.add(operand);
