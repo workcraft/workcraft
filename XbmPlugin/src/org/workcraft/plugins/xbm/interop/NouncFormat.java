@@ -4,42 +4,39 @@ import org.workcraft.interop.Format;
 
 import java.util.UUID;
 
-public final class BmFormat implements Format {
+public class NouncFormat implements Format {
 
-    private static BmFormat instance = null;
+    private static NouncFormat instance = null;
 
-    private BmFormat() {
-    }
-
-    public static BmFormat getInstance() {
+    public static NouncFormat getInstance() {
         if (instance == null) {
-            instance = new BmFormat();
+            instance = new NouncFormat();
         }
         return instance;
     }
 
     @Override
     public UUID getUuid() {
-        return UUID.fromString("c758294e-da89-1345-be56-8e8c184f1833");
+        return UUID.fromString("4d7r748e-ae71-a12a-bb28-982ca2ed212");
     }
 
     @Override
     public String getName() {
-        return "BM (Minimalist)";
+        return "NOUNC (3D)";
     }
 
     @Override
     public String getExtension() {
-        return ".bms";
+        return ".nounc";
     }
 
     @Override
     public String getDescription() {
-        return "Burst Mode (Minimalist)";
+        return "eXtended Burst Mode (3D)";
     }
 
     @Override
     public String getKeyword() {
-        return ".burst mode";
+        return ".extended burst mode";
     }
 }
