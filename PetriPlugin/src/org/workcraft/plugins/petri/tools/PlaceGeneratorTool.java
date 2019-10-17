@@ -25,7 +25,7 @@ public class PlaceGeneratorTool extends NodeGeneratorTool {
         VisualNode node = we.getTemplateNode();
         if (node instanceof VisualPlace) {
             VisualPlace place = (VisualPlace) node;
-            place.getReferencedPlace().setTokens(event.isMenuKeyDown() ? 1 : 0);
+            place.getReferencedComponent().setTokens(event.isMenuKeyDown() ? 1 : 0);
         }
         super.mousePressed(event);
     }

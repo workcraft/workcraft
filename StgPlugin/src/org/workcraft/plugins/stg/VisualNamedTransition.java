@@ -6,7 +6,7 @@ import org.workcraft.dom.visual.Positioning;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
-import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
+import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.tools.CoreDecoration;
 import org.workcraft.serialisation.NoAutoSerialisation;
@@ -86,7 +86,7 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
         } else {
             Color background = d.getBackground();
             if (background != null) {
-                g.setColor(Coloriser.colorise(CommonEditorSettings.getBackgroundColor(), background));
+                g.setColor(Coloriser.colorise(EditorCommonSettings.getBackgroundColor(), background));
                 Rectangle2D expandedShape = BoundingBoxHelper.expand(getBoundingBoxInLocalSpace(), 0.5, 0.5);
                 g.fill(expandedShape);
             }
@@ -100,13 +100,13 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
     }
 
     @Override
-    public NamedTransition getReferencedTransition() {
-        return (NamedTransition) getReferencedComponent();
+    public NamedTransition getReferencedComponent() {
+        return (NamedTransition) super.getReferencedComponent();
     }
 
     @NoAutoSerialisation
     public String getName() {
-        return getReferencedTransition().getName();
+        return getReferencedComponent().getName();
     }
 
     @Override

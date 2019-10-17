@@ -21,8 +21,9 @@ public abstract class VisualEvent extends VisualComponent implements CustomTouch
         removePropertyDeclarationByName(PROPERTY_LABEL_COLOR);
     }
 
-    public Event getReferencedSignalEvent() {
-        return (Event) getReferencedComponent();
+    @Override
+    public Event getReferencedComponent() {
+        return (Event) super.getReferencedComponent();
     }
 
     @Override

@@ -7,7 +7,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.observation.StateObserver;
-import org.workcraft.plugins.builtin.settings.CommonSignalSettings;
+import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.serialisation.NoAutoSerialisation;
 
 @Hotkey(KeyEvent.VK_D)
@@ -21,13 +21,13 @@ public class VisualDummyTransition extends VisualNamedTransition implements Stat
 
     @NoAutoSerialisation
     @Override
-    public DummyTransition getReferencedTransition() {
-        return (DummyTransition) getReferencedComponent();
+    public DummyTransition getReferencedComponent() {
+        return (DummyTransition) super.getReferencedComponent();
     }
 
     @Override
     public Color getNameColor() {
-        return CommonSignalSettings.getDummyColor();
+        return SignalCommonSettings.getDummyColor();
     }
 
 }

@@ -5,7 +5,7 @@ import org.workcraft.Info;
 import org.workcraft.Version;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
-import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
+import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
 
@@ -114,7 +114,7 @@ public class CompatibilityManager {
 
     private String replace(String line, Map.Entry<String, String> replacement, String message) {
         String newline = line.replaceAll(replacement.getKey(), replacement.getValue());
-        if (CommonDebugSettings.getVerboseCompatibilityManager()
+        if (DebugCommonSettings.getVerboseCompatibilityManager()
                 && (message != null) && !line.equals(newline)) {
             LogUtils.logInfo("Compatibility management: " + message);
             LogUtils.logInfo("  old: " + line);

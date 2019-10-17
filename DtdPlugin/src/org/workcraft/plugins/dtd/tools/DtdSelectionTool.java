@@ -89,7 +89,7 @@ public class DtdSelectionTool extends SelectionTool {
     private Signal.State getLastState(VisualDtd dtd, VisualSignal signal) {
         VisualExitEvent exit = signal.getVisualSignalExit();
         VisualEvent event = DtdUtils.getPrevVisualEvent(dtd, exit);
-        return DtdUtils.getNextState(event.getReferencedSignalEvent());
+        return DtdUtils.getNextState(event.getReferencedComponent());
     }
 
     private TransitionEvent.Direction getDesiredDirection(Signal.State state, int mask) {

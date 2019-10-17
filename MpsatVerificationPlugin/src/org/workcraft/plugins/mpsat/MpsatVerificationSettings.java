@@ -46,114 +46,51 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     private static Boolean debugCores = defaultDebugCores;
     private static ConformationReportStyle conformationReportStyle = defaultConformationReportStyle;
 
-    public MpsatVerificationSettings() {
-        properties.add(new PropertyDeclaration<MpsatVerificationSettings, String>(
-                this, "MPSat command for verification", String.class) {
-            @Override
-            public void setter(MpsatVerificationSettings object, String value) {
-                setCommand(value);
-            }
-            @Override
-            public String getter(MpsatVerificationSettings object) {
-                return getCommand();
-            }
-        });
+    static {
+        properties.add(new PropertyDeclaration<>(String.class,
+                "MPSat command for verification",
+                MpsatVerificationSettings::setCommand,
+                MpsatVerificationSettings::getCommand));
 
-        properties.add(new PropertyDeclaration<MpsatVerificationSettings, SolutionMode>(
-                this, "Solution mode", SolutionMode.class) {
-            @Override
-            public void setter(MpsatVerificationSettings object, SolutionMode value) {
-                setSolutionMode(value);
-            }
-            @Override
-            public SolutionMode getter(MpsatVerificationSettings object) {
-                return getSolutionMode();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(SolutionMode.class,
+                "Solution mode",
+                MpsatVerificationSettings::setSolutionMode,
+                MpsatVerificationSettings::getSolutionMode));
 
-        properties.add(new PropertyDeclaration<MpsatVerificationSettings, String>(
-                this, "Additional parameters", String.class) {
-            @Override
-            public void setter(MpsatVerificationSettings object, String value) {
-                setArgs(value);
-            }
-            @Override
-            public String getter(MpsatVerificationSettings object) {
-                return getArgs();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Additional parameters",
+                MpsatVerificationSettings::setArgs,
+                MpsatVerificationSettings::getArgs));
 
-        properties.add(new PropertyDeclaration<MpsatVerificationSettings, Boolean>(
-                this, "Edit additional parameters before every call", Boolean.class) {
-            @Override
-            public void setter(MpsatVerificationSettings object, Boolean value) {
-                setAdvancedMode(value);
-            }
-            @Override
-            public Boolean getter(MpsatVerificationSettings object) {
-                return getAdvancedMode();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Edit additional parameters before every call",
+                MpsatVerificationSettings::setAdvancedMode,
+                MpsatVerificationSettings::getAdvancedMode));
 
-        properties.add(new PropertyDeclaration<MpsatVerificationSettings, Boolean>(
-                this, "Output stdout", Boolean.class) {
-            @Override
-            public void setter(MpsatVerificationSettings object, Boolean value) {
-                setPrintStdout(value);
-            }
-            @Override
-            public Boolean getter(MpsatVerificationSettings object) {
-                return getPrintStdout();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Output stdout",
+                MpsatVerificationSettings::setPrintStdout,
+                MpsatVerificationSettings::getPrintStdout));
 
-        properties.add(new PropertyDeclaration<MpsatVerificationSettings, Boolean>(
-                this, "Output stderr", Boolean.class) {
-            @Override
-            public void setter(MpsatVerificationSettings object, Boolean value) {
-                setPrintStderr(value);
-            }
-            @Override
-            public Boolean getter(MpsatVerificationSettings object) {
-                return getPrintStderr();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Output stderr",
+                MpsatVerificationSettings::setPrintStderr,
+                MpsatVerificationSettings::getPrintStderr));
 
-        properties.add(new PropertyDeclaration<MpsatVerificationSettings, Boolean>(
-                this, "Output Reach expressions", Boolean.class) {
-            @Override
-            public void setter(MpsatVerificationSettings object, Boolean value) {
-                setDebugReach(value);
-            }
-            @Override
-            public Boolean getter(MpsatVerificationSettings object) {
-                return getDebugReach();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Output Reach expressions",
+                MpsatVerificationSettings::setDebugReach,
+                MpsatVerificationSettings::getDebugReach));
 
-        properties.add(new PropertyDeclaration<MpsatVerificationSettings, Boolean>(
-                this, "Output conflict cores", Boolean.class) {
-            @Override
-            public void setter(MpsatVerificationSettings object, Boolean value) {
-                setDebugCores(value);
-            }
-            @Override
-            public Boolean getter(MpsatVerificationSettings object) {
-                return getDebugCores();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Output conflict cores",
+                MpsatVerificationSettings::setDebugCores,
+                MpsatVerificationSettings::getDebugCores));
 
-        properties.add(new PropertyDeclaration<MpsatVerificationSettings, ConformationReportStyle>(
-                this, "Report style for conformation violation", ConformationReportStyle.class) {
-            @Override
-            public void setter(MpsatVerificationSettings object, ConformationReportStyle value) {
-                setConformationReportStyle(value);
-            }
-            @Override
-            public ConformationReportStyle getter(MpsatVerificationSettings object) {
-                return getConformationReportStyle();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(ConformationReportStyle.class,
+                "Report style for conformation violation",
+                MpsatVerificationSettings::setConformationReportStyle,
+                MpsatVerificationSettings::getConformationReportStyle));
     }
 
     @Override

@@ -6,12 +6,10 @@ import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.Stylable;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.xmas.XmasSettings;
-import org.workcraft.plugins.xmas.components.SourceComponent.Mode;
-import org.workcraft.plugins.xmas.components.SourceComponent.Type;
+import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -34,33 +32,22 @@ public class VisualSourceComponent extends VisualXmasComponent {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualSourceComponent, Type>(
-                this, SourceComponent.PROPERTY_TYPE, Type.class, true, true) {
-            @Override
-            public void setter(VisualSourceComponent object, Type value) {
-                object.getReferencedSourceComponent().setType(value);
-            }
-            @Override
-            public Type getter(VisualSourceComponent object) {
-                return object.getReferencedSourceComponent().getType();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(SourceComponent.Type.class,
+                SourceComponent.PROPERTY_TYPE,
+                (value) -> getReferencedComponent().setType(value),
+                () -> getReferencedComponent().getType())
+                .setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualSourceComponent, Mode>(
-                this, SourceComponent.PROPERTY_MODE, Mode.class, true, true) {
-            @Override
-            public void setter(VisualSourceComponent object, Mode value) {
-                object.getReferencedSourceComponent().setMode(value);
-            }
-            @Override
-            public Mode getter(VisualSourceComponent object) {
-                return object.getReferencedSourceComponent().getMode();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(SourceComponent.Mode.class,
+                SourceComponent.PROPERTY_MODE,
+                (value) -> getReferencedComponent().setMode(value),
+                () -> getReferencedComponent().getMode())
+                .setCombinable().setTemplatable());
     }
 
-    public SourceComponent getReferencedSourceComponent() {
-        return (SourceComponent) getReferencedComponent();
+    @Override
+    public SourceComponent getReferencedComponent() {
+        return (SourceComponent) super.getReferencedComponent();
     }
 
     public VisualXmasContact getOContact() {
@@ -104,9 +91,9 @@ public class VisualSourceComponent extends VisualXmasComponent {
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualSourceComponent) {
-            SourceComponent srcComponent = ((VisualSourceComponent) src).getReferencedSourceComponent();
-            getReferencedSourceComponent().setType(srcComponent.getType());
-            getReferencedSourceComponent().setMode(srcComponent.getMode());
+            SourceComponent srcComponent = ((VisualSourceComponent) src).getReferencedComponent();
+            getReferencedComponent().setType(srcComponent.getType());
+            getReferencedComponent().setMode(srcComponent.getMode());
         }
     }
 

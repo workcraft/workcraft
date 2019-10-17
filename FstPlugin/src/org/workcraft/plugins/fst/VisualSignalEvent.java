@@ -7,7 +7,7 @@ import org.workcraft.dom.visual.Stylable;
 import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.plugins.fst.SignalEvent.Direction;
-import org.workcraft.plugins.builtin.settings.CommonSignalSettings;
+import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 
 public class VisualSignalEvent extends VisualEvent {
 
@@ -29,29 +29,30 @@ public class VisualSignalEvent extends VisualEvent {
         Signal signal = getReferencedSignal();
         if (signal != null) {
             switch (signal.getType()) {
-            case INPUT:    return CommonSignalSettings.getInputColor();
-            case OUTPUT:   return CommonSignalSettings.getOutputColor();
-            case INTERNAL: return CommonSignalSettings.getInternalColor();
-            default:       return CommonSignalSettings.getDummyColor();
+            case INPUT:    return SignalCommonSettings.getInputColor();
+            case OUTPUT:   return SignalCommonSettings.getOutputColor();
+            case INTERNAL: return SignalCommonSettings.getInternalColor();
+            default:       return SignalCommonSettings.getDummyColor();
             }
         }
         return Color.BLACK;
     }
 
-    public SignalEvent getReferencedSignalEvent() {
-        return (SignalEvent) getReferencedEvent();
+    @Override
+    public SignalEvent getReferencedConnection() {
+        return (SignalEvent) super.getReferencedConnection();
     }
 
     private Signal getReferencedSignal() {
-        return getReferencedSignalEvent().getSignal();
+        return getReferencedConnection().getSignal();
     }
 
     @Override
     public String getLabel(DrawRequest r) {
         String result = super.getLabel(r);
         if (getReferencedSignal().hasDirection()) {
-            if (CommonSignalSettings.getShowToggle() || (getReferencedSignalEvent().getDirection() != Direction.TOGGLE)) {
-                result += getReferencedSignalEvent().getDirection();
+            if (SignalCommonSettings.getShowToggle() || (getReferencedConnection().getDirection() != Direction.TOGGLE)) {
+                result += getReferencedConnection().getDirection();
             }
         }
         return result;
@@ -62,7 +63,7 @@ public class VisualSignalEvent extends VisualEvent {
         super.copyStyle(src);
         if (src instanceof VisualSignalEvent) {
             VisualSignalEvent srcSignalEvent = (VisualSignalEvent) src;
-            getReferencedSignalEvent().setDirection(srcSignalEvent.getReferencedSignalEvent().getDirection());
+            getReferencedConnection().setDirection(srcSignalEvent.getReferencedConnection().getDirection());
         }
     }
 

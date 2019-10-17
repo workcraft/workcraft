@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
-import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
+import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.plugins.circuit.interop.VerilogFormat;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.PackageUtils;
@@ -22,7 +22,7 @@ public class SubstitutionRulesTests {
         final Framework framework = Framework.getInstance();
         framework.init();
         CircuitSettings.setGateLibrary(TestUtils.getLibraryPath("workcraft.lib"));
-        CommonDebugSettings.setShortExportHeader(true);
+        DebugCommonSettings.setShortExportHeader(true);
     }
 
     @Test

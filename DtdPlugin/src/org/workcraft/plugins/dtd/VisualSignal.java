@@ -7,13 +7,13 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
-import org.workcraft.utils.Coloriser;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
-import org.workcraft.plugins.builtin.settings.CommonSignalSettings;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.serialisation.NoAutoSerialisation;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
@@ -43,53 +43,36 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
         removePropertyDeclarationByName(PROPERTY_LABEL_POSITIONING);
         removePropertyDeclarationByName(PROPERTY_LABEL_COLOR);
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualSignal, Signal.Type>(
-                this, Signal.PROPERTY_TYPE, Signal.Type.class, true, true) {
-            @Override
-            public void setter(VisualSignal object, Signal.Type value) {
-                object.setType(value);
-            }
-            @Override
-            public Signal.Type getter(VisualSignal object) {
-                return object.getType();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Signal.Type.class, Signal.PROPERTY_TYPE,
+                this::setType, this::getType).setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualSignal, Signal.State>(
-                this, Signal.PROPERTY_INITIAL_STATE, Signal.State.class, true, true) {
-            @Override
-            public void setter(VisualSignal object, Signal.State value) {
-                object.setInitialState(value);
-            }
-            @Override
-            public Signal.State getter(VisualSignal object) {
-                return object.getInitialState();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Signal.State.class, Signal.PROPERTY_INITIAL_STATE,
+                this::setInitialState, this::getInitialState).setCombinable().setTemplatable());
     }
 
-    public Signal getReferencedSignal() {
-        return (Signal) getReferencedComponent();
+    @Override
+    public Signal getReferencedComponent() {
+        return (Signal) super.getReferencedComponent();
     }
 
     @NoAutoSerialisation
     public Signal.Type getType() {
-        return getReferencedSignal().getType();
+        return getReferencedComponent().getType();
     }
 
     @NoAutoSerialisation
     public void setType(Signal.Type value) {
-        getReferencedSignal().setType(value);
+        getReferencedComponent().setType(value);
     }
 
     @NoAutoSerialisation
     public Signal.State getInitialState() {
-        return getReferencedSignal().getInitialState();
+        return getReferencedComponent().getInitialState();
     }
 
     @NoAutoSerialisation
     public void setInitialState(Signal.State value) {
-        getReferencedSignal().setInitialState(value);
+        getReferencedComponent().setInitialState(value);
     }
 
     @Override
@@ -102,7 +85,7 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
 
     @Override
     public Rectangle2D getInternalBoundingBoxInLocalSpace() {
-        double size = CommonVisualSettings.getNodeSize();
+        double size = VisualCommonSettings.getNodeSize();
         return new Rectangle2D.Double(-0.25 * size, -0.25 * size, 0.5 * size, 0.5 * size);
     }
 
@@ -147,10 +130,10 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
     @Override
     public Color getNameColor() {
         switch (getType()) {
-        case INPUT:    return CommonSignalSettings.getInputColor();
-        case OUTPUT:   return CommonSignalSettings.getOutputColor();
-        case INTERNAL: return CommonSignalSettings.getInternalColor();
-        default:       return CommonSignalSettings.getDummyColor();
+        case INPUT:    return SignalCommonSettings.getInputColor();
+        case OUTPUT:   return SignalCommonSettings.getOutputColor();
+        case INTERNAL: return SignalCommonSettings.getInternalColor();
+        default:       return SignalCommonSettings.getDummyColor();
         }
     }
 

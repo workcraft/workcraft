@@ -12,7 +12,6 @@ import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.gui.properties.ModelProperties;
@@ -345,63 +344,42 @@ public class VisualCircuit extends AbstractVisualModel {
     }
 
     private PropertyDescriptor getEnvironmentProperty() {
-        return new PropertyDeclaration<Circuit, FileReference>(
-                getMathModel(), PROPERTY_ENVIRONMENT, FileReference.class) {
-            @Override
-            public void setter(Circuit object, FileReference value) {
-                object.setEnvironment(value);
-            }
-            @Override
-            public FileReference getter(Circuit object) {
-                return object.getEnvironment();
-            }
-        };
+        return new PropertyDeclaration<>(FileReference.class, PROPERTY_ENVIRONMENT,
+            getMathModel()::setEnvironment, getMathModel()::getEnvironment);
     }
 
     private PropertyDescriptor getSetFunctionProperty(VisualFunctionContact contact) {
-        return new PropertyDeclaration<VisualFunctionContact, String>(
-                contact, FunctionContact.PROPERTY_SET_FUNCTION, String.class, true, false) {
-            @Override
-            public void setter(VisualFunctionContact object, String value) {
-                try {
-                    BooleanFormula formula = CircuitUtils.parseContactFunction(VisualCircuit.this, object, value);
-                    object.setSetFunction(formula);
-                } catch (ParseException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            @Override
-            public String getter(VisualFunctionContact object) {
-                return StringGenerator.toString(object.getSetFunction());
-            }
+        return new PropertyDeclaration<String>(String.class, FunctionContact.PROPERTY_SET_FUNCTION,
+                (value) -> {
+                    try {
+                        contact.setSetFunction(CircuitUtils.parseContactFunction(this, contact, value));
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                },
+                () -> StringGenerator.toString(contact.getSetFunction())) {
             @Override
             public boolean isVisible() {
                 return contact.isDriver();
             }
-        };
+        }.setCombinable();
     }
 
     private PropertyDescriptor getResetFunctionProperty(VisualFunctionContact contact) {
-        return new PropertyDeclaration<VisualFunctionContact, String>(
-                contact, FunctionContact.PROPERTY_RESET_FUNCTION, String.class, true, false) {
-            @Override
-            public void setter(VisualFunctionContact object, String value) {
-                try {
-                    BooleanFormula formula = CircuitUtils.parseContactFunction(VisualCircuit.this, object, value);
-                    object.setResetFunction(formula);
-                } catch (ParseException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            @Override
-            public String getter(VisualFunctionContact object) {
-                return StringGenerator.toString(object.getResetFunction());
-            }
+        return new PropertyDeclaration<String>(String.class, FunctionContact.PROPERTY_RESET_FUNCTION,
+                (value) -> {
+                    try {
+                        contact.setResetFunction(CircuitUtils.parseContactFunction(this, contact, value));
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                },
+                () -> StringGenerator.toString(contact.getResetFunction())) {
             @Override
             public boolean isVisible() {
                 return contact.isDriver();
             }
-        };
+        }.setCombinable();
     }
 
 }

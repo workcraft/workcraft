@@ -1,14 +1,14 @@
 package org.workcraft.plugins.son.elements;
 
 import org.workcraft.dom.visual.*;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.tools.PlaceNodeDecoration;
 import org.workcraft.plugins.son.util.Interval;
+import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
@@ -29,9 +29,9 @@ public class VisualPlaceNode extends VisualComponent {
 
     private String value = "";
 
-    private static double size = CommonVisualSettings.getNodeSize();
-    private static double strokeWidth = CommonVisualSettings.getStrokeWidth();
-    private static double singleTokenSize = CommonVisualSettings.getNodeSize() / 1.9;
+    private static double size = VisualCommonSettings.getNodeSize();
+    private static double strokeWidth = VisualCommonSettings.getStrokeWidth();
+    private static double singleTokenSize = VisualCommonSettings.getNodeSize() / 1.9;
     protected static double labelOffset = 0.5;
 
     public VisualPlaceNode(PlaceNode refNode) {
@@ -41,45 +41,19 @@ public class VisualPlaceNode extends VisualComponent {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualPlaceNode, Boolean>(
-                this, "Marking", Boolean.class, true, true) {
-            @Override
-            public void setter(VisualPlaceNode object, Boolean value) {
-                setIsMarked(value);
-            }
-            @Override
-            public Boolean getter(VisualPlaceNode object) {
-                return isMarked();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, "Marking",
+                this::setMarked, this::isMarked).setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualPlaceNode, Color>(
-                this, "Error color", Color.class, true, true) {
-            @Override
-            public void setter(VisualPlaceNode object, Color value) {
-                object.setErrLabelColor(value);
-            }
-            @Override
-            public Color getter(VisualPlaceNode object) {
-                return object.getErrLabelColor();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Color.class, "Error color",
+                this::setErrLabelColor, this::getErrLabelColor).setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualPlaceNode, String>(
-                this, "Block interface", String.class, true, false) {
-            @Override
-            public void setter(VisualPlaceNode object, String value) {
-                object.setInterface(value);
-            }
-            @Override
-            public String getter(VisualPlaceNode object) {
-                return object.getInterface();
-            }
-            @Override
-            public boolean isEditable() {
-                return false;
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(String.class, "Block interface",
+                this::setInterface, this::getInterface).setCombinable().setReadonly());
+    }
+
+    @Override
+    public PlaceNode getReferencedComponent() {
+        return (PlaceNode) super.getReferencedComponent();
     }
 
     @Override
@@ -106,8 +80,7 @@ public class VisualPlaceNode extends VisualComponent {
     }
 
     public void drawToken(DrawRequest r) {
-
-        PlaceNode p = (PlaceNode) getReferencedComponent();
+        PlaceNode p = getReferencedComponent();
         Decoration d = r.getDecoration();
         boolean token = p.isMarked();
         if (d instanceof PlaceNodeDecoration) {
@@ -217,7 +190,7 @@ public class VisualPlaceNode extends VisualComponent {
         return ((PlaceNode) getReferencedComponent()).isMarked();
     }
 
-    public void setIsMarked(boolean b) {
+    public void setMarked(boolean b) {
         ((PlaceNode) getReferencedComponent()).setMarked(b);
     }
 
@@ -326,7 +299,7 @@ public class VisualPlaceNode extends VisualComponent {
         super.copyStyle(src);
         if (src instanceof VisualPlaceNode) {
             VisualPlaceNode srcComponent = (VisualPlaceNode) src;
-            setIsMarked(srcComponent.isMarked());
+            setMarked(srcComponent.isMarked());
         }
     }
 

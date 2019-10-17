@@ -13,8 +13,8 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.dfs.BinaryRegister.Marking;
 import org.workcraft.plugins.dfs.*;
 import org.workcraft.plugins.dfs.ControlRegister.SynchronisationType;
-import org.workcraft.utils.Hierarchy;
 import org.workcraft.types.Pair;
+import org.workcraft.utils.Hierarchy;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -130,7 +130,7 @@ public class WaggingGenerator {
         VisualComponent second = c2c.get(connection.getSecond());
         if ((first != null) && (second != null)) {
             if (connection instanceof VisualControlConnection) {
-                ControlConnection connectionRef = ((VisualControlConnection) connection).getReferencedControlConnection();
+                ControlConnection connectionRef = ((VisualControlConnection) connection).getReferencedConnection();
                 replica = createControlConnection(first, second, connectionRef.isInverting());
             } else {
                 replica = createConnection(first, second);
@@ -188,15 +188,15 @@ public class WaggingGenerator {
             VisualControlRegister reg0 = createControlRegister(container,
                     new Point2D.Double(xPos - 2.0, yPos + iPos * 2.0),
                     predReg1 == null ? Marking.TRUE_TOKEN : Marking.FALSE_TOKEN, SynchronisationType.AND);
-            reg0.getReferencedControlRegister().setProbability(1.0 / count);
+            reg0.getReferencedComponent().setProbability(1.0 / count);
             VisualControlRegister reg1 = createControlRegister(container,
                     new Point2D.Double(xPos - 4.0, yPos + iPos * 2.0),
                     Marking.EMPTY, SynchronisationType.PLAIN);
-            reg1.getReferencedControlRegister().setProbability(1.0 / count);
+            reg1.getReferencedComponent().setProbability(1.0 / count);
             VisualControlRegister reg2 = createControlRegister(container,
                     new Point2D.Double(xPos - 6.0, yPos + iPos * 2.0),
                     Marking.EMPTY, SynchronisationType.PLAIN);
-            reg2.getReferencedControlRegister().setProbability(1.0 / count);
+            reg2.getReferencedComponent().setProbability(1.0 / count);
             waggingData.pushControls.add(reg0);
             waggingData.pushControls.add(reg1);
             waggingData.pushControls.add(reg2);
@@ -236,15 +236,15 @@ public class WaggingGenerator {
             VisualControlRegister reg0 = createControlRegister(container,
                     new Point2D.Double(xPos + 2.0, yPos + iPos * 2.0),
                     predReg1 == null ? Marking.TRUE_TOKEN : Marking.FALSE_TOKEN, SynchronisationType.AND);
-            reg0.getReferencedControlRegister().setProbability(1.0 / count);
+            reg0.getReferencedComponent().setProbability(1.0 / count);
             VisualControlRegister reg1 = createControlRegister(container,
                     new Point2D.Double(xPos + 4.0, yPos + iPos * 2.0),
                     Marking.EMPTY, SynchronisationType.PLAIN);
-            reg1.getReferencedControlRegister().setProbability(1.0 / count);
+            reg1.getReferencedComponent().setProbability(1.0 / count);
             VisualControlRegister reg2 = createControlRegister(container,
                     new Point2D.Double(xPos + 6.0, yPos + iPos * 2.0),
                     Marking.EMPTY, SynchronisationType.PLAIN);
-            reg2.getReferencedControlRegister().setProbability(1.0 / count);
+            reg2.getReferencedComponent().setProbability(1.0 / count);
             waggingData.popControls.add(reg0);
             waggingData.popControls.add(reg1);
             waggingData.popControls.add(reg2);
@@ -355,8 +355,8 @@ public class WaggingGenerator {
     private VisualControlRegister createControlRegister(Container container, Point2D position,
             Marking marking, SynchronisationType syncType) {
         VisualControlRegister component = new VisualControlRegister(new ControlRegister());
-        component.getReferencedControlRegister().setSynchronisationType(syncType);
-        component.getReferencedControlRegister().setMarking(marking);
+        component.getReferencedComponent().setSynchronisationType(syncType);
+        component.getReferencedComponent().setMarking(marking);
         addComponent(component, container, position);
         return component;
     }

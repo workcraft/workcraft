@@ -27,6 +27,11 @@ public class VisualPushRegister extends VisualBinaryRegister {
     }
 
     @Override
+    public PushRegister getReferencedComponent() {
+        return (PushRegister) super.getReferencedComponent();
+    }
+
+    @Override
     public void draw(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
@@ -60,9 +65,9 @@ public class VisualPushRegister extends VisualBinaryRegister {
 
         Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
         Color tokenColor = Coloriser.colorise(getTokenColor(), d.getColorisation());
-        boolean trueMarked = getReferencedPushRegister().isTrueMarked();
+        boolean trueMarked = getReferencedComponent().isTrueMarked();
         boolean trueExcited = false;
-        boolean falseMarked = getReferencedPushRegister().isFalseMarked();
+        boolean falseMarked = getReferencedComponent().isFalseMarked();
         boolean falseExcited = false;
         if (d instanceof BinaryRegisterDecoration) {
             defaultColor = getForegroundColor();
@@ -109,10 +114,6 @@ public class VisualPushRegister extends VisualBinaryRegister {
 
         drawLabelInLocalSpace(r);
         drawNameInLocalSpace(r);
-    }
-
-    public PushRegister getReferencedPushRegister() {
-        return (PushRegister) getReferencedComponent();
     }
 
 }

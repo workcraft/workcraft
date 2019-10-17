@@ -16,8 +16,6 @@ import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.plugins.petri.*;
 import org.workcraft.plugins.petri.tools.ReadArcConnectionTool;
 import org.workcraft.plugins.petri.utils.ConversionUtils;
-import org.workcraft.plugins.stg.properties.PropertyDescriptors;
-import org.workcraft.plugins.stg.properties.SignalPropertyDescriptor;
 import org.workcraft.plugins.stg.tools.*;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.Hierarchy;
@@ -47,7 +45,7 @@ public class VisualStg extends AbstractVisualModel {
         // Hide implicit places
         // FIXME: Implicit places should not appear in the first place.
         for (VisualStgPlace vp: getVisualPlaces()) {
-            Place place = vp.getReferencedPlace();
+            Place place = vp.getReferencedComponent();
             if ((place instanceof StgPlace) && ((StgPlace) place).isImplicit()) {
                 maybeMakeImplicit(vp, false);
             }
@@ -128,7 +126,7 @@ public class VisualStg extends AbstractVisualModel {
     private VisualImplicitPlaceArc createImplicitPlaceConnection(VisualNamedTransition t1, VisualNamedTransition t2)
             throws InvalidConnectionException  {
 
-        ImplicitPlaceConnection c = getMathModel().connect(t1.getReferencedTransition(), t2.getReferencedTransition());
+        ImplicitPlaceConnection c = getMathModel().connect(t1.getReferencedComponent(), t2.getReferencedComponent());
 
         StgPlace implicitPlace = c.getImplicitPlace();
         MathConnection con1 = c.getFirst();
@@ -200,13 +198,13 @@ public class VisualStg extends AbstractVisualModel {
 
         Place mPlace = null;
         if (place instanceof VisualStgPlace) {
-            mPlace = ((VisualStgPlace) place).getReferencedPlace();
+            mPlace = ((VisualStgPlace) place).getReferencedComponent();
         } else if (place instanceof VisualReplicaPlace) {
             mPlace = ((VisualReplicaPlace) place).getReferencedPlace();
         }
         Transition mTransition = null;
         if (transition instanceof VisualTransition) {
-            mTransition = ((VisualTransition) transition).getReferencedTransition();
+            mTransition = ((VisualTransition) transition).getReferencedComponent();
         }
 
         VisualReadArc connection = null;
@@ -257,7 +255,7 @@ public class VisualStg extends AbstractVisualModel {
             VisualComponent first = (VisualComponent) preset.iterator().next();
             VisualComponent second = (VisualComponent) postset.iterator().next();
             if (!ConversionUtils.hasImplicitPlaceArcConnection(this, first, second)) {
-                final StgPlace stgPlace = (StgPlace) place.getReferencedPlace();
+                final StgPlace stgPlace = (StgPlace) place.getReferencedComponent();
                 stgPlace.setImplicit(true);
 
                 VisualConnection con1 = null;
@@ -272,7 +270,7 @@ public class VisualStg extends AbstractVisualModel {
                 }
                 MathConnection refCon1 = con1.getReferencedConnection();
                 MathConnection refCon2 = con2.getReferencedConnection();
-                connection = new VisualImplicitPlaceArc(first, second, refCon1, refCon2, (StgPlace) place.getReferencedPlace());
+                connection = new VisualImplicitPlaceArc(first, second, refCon1, refCon2, (StgPlace) place.getReferencedComponent());
                 Container parent = Hierarchy.getNearestAncestor(Hierarchy.getCommonParent(first, second), Container.class);
                 parent.add(connection);
                 if (preserveConnectionShape) {
@@ -387,7 +385,7 @@ public class VisualStg extends AbstractVisualModel {
 
     public VisualStgPlace getVisualPlace(StgPlace place) {
         for (VisualStgPlace vp: getVisualPlaces()) {
-            if (vp.getReferencedPlace() == place) {
+            if (vp.getReferencedComponent() == place) {
                 return vp;
             }
         }
@@ -396,7 +394,7 @@ public class VisualStg extends AbstractVisualModel {
 
     public VisualTransition getVisualTransition(Transition transition) {
         for (VisualTransition vt: getVisualTransitions()) {
-            if (vt.getReferencedTransition() == transition) {
+            if (vt.getReferencedComponent() == transition) {
                 return vt;
             }
         }
@@ -424,28 +422,28 @@ public class VisualStg extends AbstractVisualModel {
         ModelProperties properties = super.getProperties(node);
         Stg stg = getMathModel();
         if (node == null) {
-            properties.add(PropertyDescriptors.getRefinementProperty(stg));
+            properties.add(PropertyHelper.getRefinementProperty(stg));
             for (Signal.Type type : Signal.Type.values()) {
                 Container container = NamespaceHelper.getMathContainer(this, getCurrentLevel());
                 for (final String signalName : stg.getSignalNames(type, container)) {
                     if (stg.getSignalTransitions(signalName, container).isEmpty()) continue;
-                    properties.insertOrderedByFirstWord(new SignalPropertyDescriptor(this, signalName, container));
-                    properties.insertOrderedByFirstWord(PropertyDescriptors.getSignalTypeProperty(stg, signalName, container));
+                    properties.insertOrderedByFirstWord(PropertyHelper.getSignalNameModelProperty(this, signalName, container));
+                    properties.insertOrderedByFirstWord(PropertyHelper.getSignalTypeProperty(stg, signalName, container));
                 }
             }
         } else if (node instanceof VisualSignalTransition) {
-            SignalTransition transition = ((VisualSignalTransition) node).getReferencedTransition();
+            SignalTransition transition = ((VisualSignalTransition) node).getReferencedComponent();
             properties.removeByName(AbstractVisualModel.PROPERTY_NAME);
-            properties.add(PropertyDescriptors.getSignalNameProperty(stg, transition));
-            properties.add(PropertyDescriptors.getSignalTypeProperty(stg, transition));
-            properties.add(PropertyDescriptors.getDirectionProperty(stg, transition));
+            properties.add(PropertyHelper.getSignalNameProperty(stg, transition));
+            properties.add(PropertyHelper.getSignalTypeProperty(stg, transition));
+            properties.add(PropertyHelper.getDirectionProperty(stg, transition));
             if (StgSettings.getShowTransitionInstance()) {
-                properties.add(PropertyDescriptors.getInstanceProperty(stg, transition));
+                properties.add(PropertyHelper.getInstanceProperty(stg, transition));
             }
         } else if (node instanceof VisualDummyTransition) {
-            DummyTransition dummy = ((VisualDummyTransition) node).getReferencedTransition();
+            DummyTransition dummy = ((VisualDummyTransition) node).getReferencedComponent();
             if (StgSettings.getShowTransitionInstance()) {
-                properties.add(PropertyDescriptors.getInstanceProperty(stg, dummy));
+                properties.add(PropertyHelper.getInstanceProperty(stg, dummy));
             }
         }
         return properties;

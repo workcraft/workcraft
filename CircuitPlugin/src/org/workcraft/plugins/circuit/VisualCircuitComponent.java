@@ -8,7 +8,7 @@ import org.workcraft.dom.visual.*;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.*;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
 import org.workcraft.serialisation.NoAutoSerialisation;
 import org.workcraft.utils.Coloriser;
@@ -43,29 +43,11 @@ public class VisualCircuitComponent extends VisualComponent implements Container
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, Boolean>(
-                this, CircuitComponent.PROPERTY_IS_ENVIRONMENT, Boolean.class, true, true) {
-            @Override
-            public void setter(VisualCircuitComponent object, Boolean value) {
-                object.setIsEnvironment(value);
-            }
-            @Override
-            public Boolean getter(VisualCircuitComponent object) {
-                return object.getIsEnvironment();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, CircuitComponent.PROPERTY_IS_ENVIRONMENT,
+                        this::setIsEnvironment, this::getIsEnvironment).setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, FileReference>(
-                this, CircuitComponent.PROPERTY_REFINEMENT, FileReference.class, false, false) {
-            @Override
-            public void setter(VisualCircuitComponent object, FileReference value) {
-                object.setRefinement(value);
-            }
-            @Override
-            public FileReference getter(VisualCircuitComponent object) {
-                return object.getRefinement();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(FileReference.class, CircuitComponent.PROPERTY_REFINEMENT,
+                this::setRefinement, this::getRefinement));
 
         // TODO: Rename label to module name (?)
         //  renamePropertyDeclarationByName(PROPERTY_LABEL, CircuitComponent.PROPERTY_MODULE);
@@ -304,7 +286,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
     }
 
     private Rectangle2D getContactMinimalBox() {
-        double size = CommonVisualSettings.getNodeSize();
+        double size = VisualCommonSettings.getNodeSize();
         double xMin = -size / 2;
         double yMin = -size / 2;
         double xMax = size / 2;
@@ -606,11 +588,11 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         Graphics2D g = r.getGraphics();
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
         if ((bb != null) && hasRefinement()) {
-            double dx = CommonVisualSettings.getNodeSize() / 5;
-            double dy = CommonVisualSettings.getNodeSize() / 5;
+            double dx = VisualCommonSettings.getNodeSize() / 5;
+            double dy = VisualCommonSettings.getNodeSize() / 5;
             double x = bb.getCenterX();
-            double y = bb.getCenterY() + CommonVisualSettings.getNodeSize() / 10;
-            double w = CommonVisualSettings.getNodeSize() / 10;
+            double y = bb.getCenterY() + VisualCommonSettings.getNodeSize() / 10;
+            double w = VisualCommonSettings.getNodeSize() / 10;
             double w2 = w / 2;
             Path2D p = new Path2D.Double();
             p.moveTo(x - dx - w2, y + dy);
@@ -623,7 +605,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
             p.lineTo(x - dx + w2, y + dy - w2);
             p.lineTo(x - dx + w2, y + dy - w);
             p.closePath();
-            g.setStroke(new BasicStroke((float) CommonVisualSettings.getConnectionLineWidth()));
+            g.setStroke(new BasicStroke((float) VisualCommonSettings.getConnectionLineWidth()));
             g.draw(p);
         }
     }

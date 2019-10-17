@@ -7,7 +7,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.observation.StateObserver;
-import org.workcraft.plugins.builtin.settings.CommonSignalSettings;
+import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.serialisation.NoAutoSerialisation;
 
 @Hotkey(KeyEvent.VK_T)
@@ -21,12 +21,12 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
 
     @Override
     public String getName() {
-        String signalName = getReferencedTransition().getSignalName();
+        String signalName = getReferencedComponent().getSignalName();
         if (signalName == null) {
             signalName = "";
         }
         final StringBuffer result = new StringBuffer(signalName);
-        switch (getReferencedTransition().getDirection()) {
+        switch (getReferencedComponent().getDirection()) {
         case PLUS:
             result.append("+");
             break;
@@ -34,7 +34,7 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
             result.append("-");
             break;
         case TOGGLE:
-            if (CommonSignalSettings.getShowToggle()) {
+            if (SignalCommonSettings.getShowToggle()) {
                 result.append("~");
             }
             break;
@@ -45,32 +45,32 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
     @Override
     public Color getNameColor() {
         switch (getSignalType()) {
-        case INPUT:    return CommonSignalSettings.getInputColor();
-        case OUTPUT:   return CommonSignalSettings.getOutputColor();
-        case INTERNAL: return CommonSignalSettings.getInternalColor();
-        default:       return CommonSignalSettings.getDummyColor();
+        case INPUT:    return SignalCommonSettings.getInputColor();
+        case OUTPUT:   return SignalCommonSettings.getOutputColor();
+        case INTERNAL: return SignalCommonSettings.getInternalColor();
+        default:       return SignalCommonSettings.getDummyColor();
         }
     }
 
     @NoAutoSerialisation
     @Override
-    public SignalTransition getReferencedTransition() {
-        return (SignalTransition) getReferencedComponent();
+    public SignalTransition getReferencedComponent() {
+        return (SignalTransition) super.getReferencedComponent();
     }
 
     @NoAutoSerialisation
     public Signal.Type getSignalType() {
-        return getReferencedTransition().getSignalType();
+        return getReferencedComponent().getSignalType();
     }
 
     @NoAutoSerialisation
     public String getSignalName() {
-        return getReferencedTransition().getSignalName();
+        return getReferencedComponent().getSignalName();
     }
 
     @NoAutoSerialisation
     public SignalTransition.Direction getDirection() {
-        return getReferencedTransition().getDirection();
+        return getReferencedComponent().getDirection();
     }
 
 // FIXME: type, direction and name of the signal cannot be copied as it breaks template functionality

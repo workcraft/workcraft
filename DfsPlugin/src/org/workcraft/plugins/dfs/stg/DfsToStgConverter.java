@@ -165,8 +165,8 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         VisualPlace c0 = getStgModel().createVisualPlace(nameC + name + name0);
         c0.setLabel(labelC + name + label0);
         c0.setLabelPositioning(Positioning.BOTTOM);
-        if (!l.getReferencedLogic().isComputed()) {
-            c0.getReferencedPlace().setTokens(1);
+        if (!l.getReferencedComponent().isComputed()) {
+            c0.getReferencedComponent().setTokens(1);
         }
         c0.setForegroundColor(l.getForegroundColor());
         c0.setFillColor(l.getFillColor());
@@ -176,8 +176,8 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         VisualPlace c1 = getStgModel().createVisualPlace(nameC + name + name1);
         c1.setLabel(labelC + name + label1);
         c1.setLabelPositioning(Positioning.TOP);
-        if (l.getReferencedLogic().isComputed()) {
-            c1.getReferencedPlace().setTokens(1);
+        if (l.getReferencedComponent().isComputed()) {
+            c1.getReferencedComponent().setTokens(1);
         }
         c1.setForegroundColor(l.getForegroundColor());
         c1.setFillColor(l.getFillColor());
@@ -199,7 +199,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         VisualSignalTransition cF = null;
         double dy = 0.0;
         for (Node n: preset) {
-            if (cR == null || l.getReferencedLogic().isEarlyEvaluation()) {
+            if (cR == null || l.getReferencedComponent().isEarlyEvaluation()) {
                 cR = getStgModel().createVisualSignalTransition(nameC + name, type, SignalTransition.Direction.PLUS);
                 cR.setTokenColorGenerator(tokenColorGenerator);
                 createConsumingArc(c0, cR, false);
@@ -279,8 +279,8 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         VisualPlace m0 = getStgModel().createVisualPlace(nameM + name + name0);
         m0.setLabel(labelM + name + label0);
         m0.setLabelPositioning(Positioning.BOTTOM);
-        if (!r.getReferencedRegister().isMarked()) {
-            m0.getReferencedPlace().setTokens(1);
+        if (!r.getReferencedComponent().isMarked()) {
+            m0.getReferencedComponent().setTokens(1);
         }
         m0.setForegroundColor(r.getForegroundColor());
         m0.setFillColor(r.getFillColor());
@@ -290,8 +290,8 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         VisualPlace m1 = getStgModel().createVisualPlace(nameM + name + name1);
         m1.setLabel(labelM + name + label1);
         m1.setLabelPositioning(Positioning.TOP);
-        if (r.getReferencedRegister().isMarked()) {
-            m1.getReferencedPlace().setTokens(1);
+        if (r.getReferencedComponent().isMarked()) {
+            m1.getReferencedComponent().setTokens(1);
         }
         m1.setTokenColor(r.getTokenColor());
         setPosition(m1, x + 2.0, y - 1.0);
@@ -403,8 +403,8 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         VisualPlace fwC0 = getStgModel().createVisualPlace(nameFwC + name + name0);
         fwC0.setLabel(labelFwC + name + label0);
         fwC0.setLabelPositioning(Positioning.BOTTOM);
-        if (!l.getReferencedCounterflowLogic().isForwardComputed()) {
-            fwC0.getReferencedPlace().setTokens(1);
+        if (!l.getReferencedComponent().isForwardComputed()) {
+            fwC0.getReferencedComponent().setTokens(1);
         }
         fwC0.setForegroundColor(l.getForegroundColor());
         fwC0.setFillColor(l.getFillColor());
@@ -414,8 +414,8 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         VisualPlace fwC1 = getStgModel().createVisualPlace(nameFwC + name + name1);
         fwC1.setLabel(labelFwC + name + label1);
         fwC1.setLabelPositioning(Positioning.TOP);
-        if (l.getReferencedCounterflowLogic().isForwardComputed()) {
-            fwC1.getReferencedPlace().setTokens(1);
+        if (l.getReferencedComponent().isForwardComputed()) {
+            fwC1.getReferencedComponent().setTokens(1);
         }
         fwC1.setForegroundColor(l.getForegroundColor());
         fwC1.setFillColor(l.getFillColor());
@@ -434,7 +434,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         VisualSignalTransition fwCF = null;
         double dy = 0.0;
         for (Node n: preset) {
-            if (fwCR == null || l.getReferencedCounterflowLogic().isForwardEarlyEvaluation()) {
+            if (fwCR == null || l.getReferencedComponent().isForwardEarlyEvaluation()) {
                 fwCR = getStgModel().createVisualSignalTransition(nameFwC + name, type,
                         SignalTransition.Direction.PLUS);
                 fwCR.setTokenColorGenerator(presetTokenColorGenerator);
@@ -459,8 +459,8 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         VisualPlace bwC0 = getStgModel().createVisualPlace(nameBwC + name + name0);
         bwC0.setLabel(labelBwC + name + label0);
         bwC0.setLabelPositioning(Positioning.BOTTOM);
-        if (!l.getReferencedCounterflowLogic().isBackwardComputed()) {
-            bwC0.getReferencedPlace().setTokens(1);
+        if (!l.getReferencedComponent().isBackwardComputed()) {
+            bwC0.getReferencedComponent().setTokens(1);
         }
         bwC0.setForegroundColor(l.getForegroundColor());
         bwC0.setFillColor(l.getFillColor());
@@ -470,8 +470,8 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         VisualPlace bwC1 = getStgModel().createVisualPlace(nameBwC + name + name1);
         bwC1.setLabel(labelBwC + name + label1);
         bwC1.setLabelPositioning(Positioning.TOP);
-        if (l.getReferencedCounterflowLogic().isBackwardComputed()) {
-            bwC1.getReferencedPlace().setTokens(1);
+        if (l.getReferencedComponent().isBackwardComputed()) {
+            bwC1.getReferencedComponent().setTokens(1);
         }
         bwC1.setForegroundColor(l.getForegroundColor());
         bwC1.setFillColor(l.getFillColor());
@@ -490,7 +490,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         VisualSignalTransition bwCF = null;
         dy = 0.0;
         for (Node n: postset) {
-            if (bwCR == null || l.getReferencedCounterflowLogic().isBackwardEarlyEvaluation()) {
+            if (bwCR == null || l.getReferencedComponent().isBackwardEarlyEvaluation()) {
                 bwCR = getStgModel().createVisualSignalTransition(nameBwC + name, type,
                         SignalTransition.Direction.PLUS);
                 bwCR.setTokenColorGenerator(postsetTokenColorGenerator);
@@ -568,8 +568,8 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         VisualPlace orM0 = getStgModel().createVisualPlace(nameOrM + name + name0);
         orM0.setLabel(labelOrM + name + label0);
         orM0.setLabelPositioning(Positioning.BOTTOM);
-        if (!r.getReferencedCounterflowRegister().isOrMarked()) {
-            orM0.getReferencedPlace().setTokens(1);
+        if (!r.getReferencedComponent().isOrMarked()) {
+            orM0.getReferencedComponent().setTokens(1);
         }
         orM0.setForegroundColor(r.getForegroundColor());
         orM0.setFillColor(r.getFillColor());
@@ -579,8 +579,8 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         VisualPlace orM1 = getStgModel().createVisualPlace(nameOrM + name + name1);
         orM1.setLabel(labelOrM + name + label1);
         orM1.setLabelPositioning(Positioning.TOP);
-        if (r.getReferencedCounterflowRegister().isOrMarked()) {
-            orM1.getReferencedPlace().setTokens(1);
+        if (r.getReferencedComponent().isOrMarked()) {
+            orM1.getReferencedComponent().setTokens(1);
         }
         orM1.setForegroundColor(r.getForegroundColor());
         orM1.setFillColor(r.getFillColor());
@@ -620,8 +620,8 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         VisualPlace andM0 = getStgModel().createVisualPlace(nameAndM + name + name0);
         andM0.setLabel(labelAndM + name + label0);
         andM0.setLabelPositioning(Positioning.BOTTOM);
-        if (!r.getReferencedCounterflowRegister().isAndMarked()) {
-            andM0.getReferencedPlace().setTokens(1);
+        if (!r.getReferencedComponent().isAndMarked()) {
+            andM0.getReferencedComponent().setTokens(1);
         }
         andM0.setForegroundColor(r.getForegroundColor());
         andM0.setFillColor(r.getFillColor());
@@ -631,8 +631,8 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         VisualPlace andM1 = getStgModel().createVisualPlace(nameAndM + name + name1);
         andM1.setLabel(labelAndM + name + label1);
         andM1.setLabelPositioning(Positioning.TOP);
-        if (r.getReferencedCounterflowRegister().isAndMarked()) {
-            andM1.getReferencedPlace().setTokens(1);
+        if (r.getReferencedComponent().isAndMarked()) {
+            andM1.getReferencedComponent().setTokens(1);
         }
         andM1.setForegroundColor(r.getForegroundColor());
         andM1.setFillColor(r.getFillColor());
@@ -744,8 +744,8 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         VisualPlace m0 = getStgModel().createVisualPlace(nameM + name + name0);
         m0.setLabel(labelM + name + label0);
         m0.setLabelPositioning(Positioning.BOTTOM);
-        if (!r.getReferencedBinaryRegister().isTrueMarked() && !r.getReferencedBinaryRegister().isFalseMarked()) {
-            m0.getReferencedPlace().setTokens(1);
+        if (!r.getReferencedComponent().isTrueMarked() && !r.getReferencedComponent().isFalseMarked()) {
+            m0.getReferencedComponent().setTokens(1);
         }
         m0.setForegroundColor(r.getForegroundColor());
         m0.setFillColor(r.getFillColor());
@@ -755,8 +755,8 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         VisualPlace m1 = getStgModel().createVisualPlace(nameM + name + name1);
         m1.setLabel(labelM + name + label1);
         m1.setLabelPositioning(Positioning.TOP);
-        if (r.getReferencedBinaryRegister().isTrueMarked() || r.getReferencedBinaryRegister().isFalseMarked()) {
-            m1.getReferencedPlace().setTokens(1);
+        if (r.getReferencedComponent().isTrueMarked() || r.getReferencedComponent().isFalseMarked()) {
+            m1.getReferencedComponent().setTokens(1);
         }
         m1.setForegroundColor(r.getForegroundColor());
         m1.setFillColor(r.getFillColor());
@@ -766,8 +766,8 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         VisualPlace tM0 = getStgModel().createVisualPlace(nameTrueM + name + name0);
         tM0.setLabel(labelTrueM + name + label0);
         tM0.setLabelPositioning(Positioning.BOTTOM);
-        if (!r.getReferencedBinaryRegister().isTrueMarked()) {
-            tM0.getReferencedPlace().setTokens(1);
+        if (!r.getReferencedComponent().isTrueMarked()) {
+            tM0.getReferencedComponent().setTokens(1);
         }
         tM0.setForegroundColor(r.getForegroundColor());
         tM0.setFillColor(r.getFillColor());
@@ -777,8 +777,8 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         VisualPlace tM1 = getStgModel().createVisualPlace(nameTrueM + name + name1);
         tM1.setLabel(labelTrueM + name + label1);
         tM1.setLabelPositioning(Positioning.TOP);
-        if (r.getReferencedBinaryRegister().isTrueMarked()) {
-            tM1.getReferencedPlace().setTokens(1);
+        if (r.getReferencedComponent().isTrueMarked()) {
+            tM1.getReferencedComponent().setTokens(1);
         }
         tM1.setForegroundColor(r.getForegroundColor());
         tM1.setFillColor(r.getFillColor());
@@ -821,8 +821,8 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         VisualPlace fM0 = getStgModel().createVisualPlace(nameFalseM + name + name0);
         fM0.setLabel(labelFalseM + name + label0);
         fM0.setLabelPositioning(Positioning.BOTTOM);
-        if (!r.getReferencedBinaryRegister().isFalseMarked()) {
-            fM0.getReferencedPlace().setTokens(1);
+        if (!r.getReferencedComponent().isFalseMarked()) {
+            fM0.getReferencedComponent().setTokens(1);
         }
         fM0.setForegroundColor(r.getForegroundColor());
         fM0.setFillColor(r.getFillColor());
@@ -832,8 +832,8 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         VisualPlace fM1 = getStgModel().createVisualPlace(nameFalseM + name + name1);
         fM1.setLabel(labelFalseM + name + label1);
         fM1.setLabelPositioning(Positioning.TOP);
-        if (r.getReferencedBinaryRegister().isFalseMarked()) {
-            fM1.getReferencedPlace().setTokens(1);
+        if (r.getReferencedComponent().isFalseMarked()) {
+            fM1.getReferencedComponent().setTokens(1);
         }
         fM1.setForegroundColor(r.getForegroundColor());
         fM1.setFillColor(r.getFillColor());
@@ -875,8 +875,8 @@ public class DfsToStgConverter extends AbstractToStgConverter {
     }
 
     private BinaryRegisterStg generateControlRegisterStg(VisualControlRegister r) throws InvalidConnectionException {
-        boolean andSync = r.getReferencedControlRegister().getSynchronisationType() == SynchronisationType.AND;
-        boolean orSync = r.getReferencedControlRegister().getSynchronisationType() == SynchronisationType.OR;
+        boolean andSync = r.getReferencedComponent().getSynchronisationType() == SynchronisationType.AND;
+        boolean orSync = r.getReferencedComponent().getSynchronisationType() == SynchronisationType.OR;
         return generateBinaryRegisterSTG(r, andSync, orSync);
     }
 
@@ -903,21 +903,21 @@ public class DfsToStgConverter extends AbstractToStgConverter {
             BinaryRegisterStg nstg = getControlRegisterStg(n);
             Connection connection = getDfsModel().getConnection(n, r);
             if (connection instanceof VisualControlConnection
-                    && ((VisualControlConnection) connection).getReferencedControlConnection().isInverting()) {
+                    && ((VisualControlConnection) connection).getReferencedConnection().isInverting()) {
                 createReadArc(nstg.tM1, rstg.fMRs.get(n), true);
                 createReadArc(nstg.fM1, rstg.tMRs.get(n), true);
             } else {
                 createReadArc(nstg.tM1, rstg.tMRs.get(n), true);
                 createReadArc(nstg.fM1, rstg.fMRs.get(n), true);
             }
-            if (r.getReferencedControlRegister().getSynchronisationType() != SynchronisationType.PLAIN) {
+            if (r.getReferencedComponent().getSynchronisationType() != SynchronisationType.PLAIN) {
                 for (VisualControlRegister m: crPreset) {
                     if (m == n) continue;
                     BinaryRegisterStg mstg = getControlRegisterStg(m);
-                    if (r.getReferencedControlRegister().getSynchronisationType() == SynchronisationType.OR) {
+                    if (r.getReferencedComponent().getSynchronisationType() == SynchronisationType.OR) {
                         createReadArc(mstg.m1, rstg.tMRs.get(n), true);
                     }
-                    if (r.getReferencedControlRegister().getSynchronisationType() == SynchronisationType.AND) {
+                    if (r.getReferencedComponent().getSynchronisationType() == SynchronisationType.AND) {
                         createReadArc(mstg.m1, rstg.fMRs.get(n), true);
                     }
                 }
@@ -958,7 +958,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
             BinaryRegisterStg nstg = getPushRegisterStg(n);
             Connection connection = getDfsModel().getConnection(r, n);
             if (connection instanceof VisualControlConnection
-                    && ((VisualControlConnection) connection).getReferencedControlConnection().isInverting()) {
+                    && ((VisualControlConnection) connection).getReferencedConnection().isInverting()) {
                 createReadArc(nstg.tM1, rstg.fMF, false);
                 createReadArc(nstg.fM1, rstg.tMF, false);
             } else {
@@ -972,7 +972,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
             BinaryRegisterStg nstg = getPopRegisterStg(n);
             Connection connection = getDfsModel().getConnection(r, n);
             if (connection instanceof VisualControlConnection
-                    && ((VisualControlConnection) connection).getReferencedControlConnection().isInverting()) {
+                    && ((VisualControlConnection) connection).getReferencedConnection().isInverting()) {
                 createReadArc(nstg.tM1, rstg.fMF, false);
                 createReadArc(nstg.fM1, rstg.tMF, false);
             } else {
@@ -1021,7 +1021,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
             BinaryRegisterStg nstg = getControlRegisterStg(n);
             Connection connection = getDfsModel().getConnection(n, r);
             if (connection instanceof VisualControlConnection
-                    && ((VisualControlConnection) connection).getReferencedControlConnection().isInverting()) {
+                    && ((VisualControlConnection) connection).getReferencedConnection().isInverting()) {
                 createReadArc(nstg.tM1, rstg.fMRs.get(n), true);
                 createReadArc(nstg.fM1, rstg.tMRs.get(n), true);
                 createReadArc(nstg.tM0, rstg.fMF, false);
@@ -1103,7 +1103,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
             BinaryRegisterStg nstg = getControlRegisterStg(n);
             Connection connection = getDfsModel().getConnection(n, r);
             if (connection instanceof VisualControlConnection
-                    && ((VisualControlConnection) connection).getReferencedControlConnection().isInverting()) {
+                    && ((VisualControlConnection) connection).getReferencedConnection().isInverting()) {
                 createReadArc(nstg.tM1, rstg.fMRs.get(n), true);
                 createReadArc(nstg.fM1, rstg.tMRs.get(n), true);
                 createReadArc(nstg.tM0, rstg.fMF, false);

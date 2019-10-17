@@ -1,36 +1,22 @@
 package org.workcraft.plugins.xmas.stg;
 
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.Signal;
+import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.converters.AbstractToStgConverter;
 import org.workcraft.plugins.stg.converters.NodeStg;
 import org.workcraft.plugins.stg.converters.SignalStg;
-import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.xmas.VisualXmas;
+import org.workcraft.plugins.xmas.components.*;
 import org.workcraft.plugins.xmas.utils.XmasUtils;
-import org.workcraft.plugins.xmas.components.VisualForkComponent;
-import org.workcraft.plugins.xmas.components.VisualFunctionComponent;
-import org.workcraft.plugins.xmas.components.VisualJoinComponent;
-import org.workcraft.plugins.xmas.components.VisualMergeComponent;
-import org.workcraft.plugins.xmas.components.VisualQueueComponent;
-import org.workcraft.plugins.xmas.components.VisualSinkComponent;
-import org.workcraft.plugins.xmas.components.VisualSourceComponent;
-import org.workcraft.plugins.xmas.components.VisualSwitchComponent;
-import org.workcraft.plugins.xmas.components.VisualXmasComponent;
-import org.workcraft.plugins.xmas.components.VisualXmasContact;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.LogUtils;
+
+import java.awt.geom.Point2D;
+import java.util.*;
 
 public class XmasToStgConverter extends AbstractToStgConverter {
 
@@ -1064,7 +1050,7 @@ public class XmasToStgConverter extends AbstractToStgConverter {
     private QueueStg generateQueueStg(VisualQueueComponent component) throws InvalidConnectionException {
         String name = getXmasModel().getMathName(component);
         Point2D pos = getComponentPosition(component);
-        int capacity = component.getReferencedQueueComponent().getCapacity();
+        int capacity = component.getReferencedComponent().getCapacity();
         ContactStg i = null;
         ContactStg o = null;
         ArrayList<SlotStg> slotList = new ArrayList<>(capacity);

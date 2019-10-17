@@ -2,15 +2,15 @@ package org.workcraft.plugins.son.elements;
 
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.son.util.Interval;
 
 import java.awt.*;
 
 public class PlaceNode extends MathNode implements Time {
 
-    private Color foregroundColor = CommonVisualSettings.getBorderColor();
-    private Color fillColor = CommonVisualSettings.getFillColor();
+    private Color foregroundColor = VisualCommonSettings.getBorderColor();
+    private Color fillColor = VisualCommonSettings.getFillColor();
     private String label = "";
     private int errors = 0;
 
@@ -21,7 +21,7 @@ public class PlaceNode extends MathNode implements Time {
     protected Color durationColor = Color.BLACK;
 
     private boolean marked = false;
-    private Color tokenColor = CommonVisualSettings.getBorderColor();
+    private Color tokenColor = VisualCommonSettings.getBorderColor();
 
     public void setMarked(boolean value) {
         if (marked != value) {

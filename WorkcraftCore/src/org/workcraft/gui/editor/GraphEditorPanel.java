@@ -15,8 +15,8 @@ import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.gui.properties.*;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
-import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -171,9 +171,9 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         add(overlay, BorderLayout.CENTER);
 
         // FIXME: timers need to be stopped at some point
-        Timer updateEditorPanelTimer = new Timer(CommonEditorSettings.getRedrawInterval(), new UpdateEditorActionListener());
+        Timer updateEditorPanelTimer = new Timer(EditorCommonSettings.getRedrawInterval(), new UpdateEditorActionListener());
         updateEditorPanelTimer.start();
-        Timer updatePropertyTimer = new Timer(CommonEditorSettings.getRedrawInterval(), new UpdatePropertyActionListener());
+        Timer updatePropertyTimer = new Timer(EditorCommonSettings.getRedrawInterval(), new UpdatePropertyActionListener());
         updatePropertyTimer.start();
 
         // This is a hack to prevent editor panel from loosing focus on Ctrl-UP key combination
@@ -200,10 +200,10 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
         AffineTransform screenTransform = (AffineTransform) g2d.getTransform().clone();
 
-        g2d.setBackground(CommonEditorSettings.getBackgroundColor());
+        g2d.setBackground(EditorCommonSettings.getBackgroundColor());
         g2d.clearRect(0, 0, getWidth(), getHeight());
 
-        if (CommonEditorSettings.getGridVisibility()) {
+        if (EditorCommonSettings.getGridVisibility()) {
             grid.draw(g2d);
         }
         g2d.setTransform(screenTransform);
@@ -233,7 +233,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         }
         g2d.setTransform(screenTransform);
 
-        Boolean rulerVisibility = CommonEditorSettings.getRulerVisibility();
+        Boolean rulerVisibility = EditorCommonSettings.getRulerVisibility();
         if (rulerVisibility) {
             ruler.draw(g2d);
         }
@@ -245,7 +245,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             }
             g2d.setTransform(screenTransform);
             g2d.setStroke(borderStroke);
-            g2d.setColor(CommonVisualSettings.getBorderColor());
+            g2d.setColor(VisualCommonSettings.getBorderColor());
             g2d.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
         }
         paintChildren(g2d);

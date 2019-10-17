@@ -4,7 +4,7 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
+import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -92,11 +92,11 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
 
     @Override
     public void drawInScreenSpace(final GraphEditor editor, Graphics2D g) {
-        if ((issueText != null) && CommonEditorSettings.getIssueVisibility()) {
-            GuiUtils.drawEditorMessage(editor, g, CommonEditorSettings.getIssueColor(), issueText);
-        } else if (CommonEditorSettings.getHintVisibility()) {
+        if ((issueText != null) && EditorCommonSettings.getIssueVisibility()) {
+            GuiUtils.drawEditorMessage(editor, g, EditorCommonSettings.getIssueColor(), issueText);
+        } else if (EditorCommonSettings.getHintVisibility()) {
             String hintText = getHintText(editor);
-            GuiUtils.drawEditorMessage(editor, g, CommonEditorSettings.getHintColor(), hintText);
+            GuiUtils.drawEditorMessage(editor, g, EditorCommonSettings.getHintColor(), hintText);
         }
     }
 
@@ -113,7 +113,7 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
         issueText = message;
         editor.repaint();
         if (issueTimer == null) {
-            issueTimer = new Timer(CommonEditorSettings.getFlashInterval(), event -> {
+            issueTimer = new Timer(EditorCommonSettings.getFlashInterval(), event -> {
                 issueText = null;
                 if (editor != null) {
                     editor.repaint();
@@ -121,7 +121,7 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
             });
         }
         issueTimer.setRepeats(false);
-        issueTimer.setInitialDelay(CommonEditorSettings.getFlashInterval());
+        issueTimer.setInitialDelay(EditorCommonSettings.getFlashInterval());
         issueTimer.start();
     }
 

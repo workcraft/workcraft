@@ -46,7 +46,7 @@ public class PetriSimulationTool extends SimulationTool {
         VisualNode first = connection.getFirst();
         Place place = null;
         if (first instanceof VisualPlace) {
-            place = ((VisualPlace) first).getReferencedPlace();
+            place = ((VisualPlace) first).getReferencedComponent();
         } else if (first instanceof VisualReplicaPlace) {
             place = ((VisualReplicaPlace) first).getReferencedPlace();
         }

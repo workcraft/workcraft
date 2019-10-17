@@ -312,7 +312,7 @@ public class VisualDtd extends AbstractVisualModel {
     }
 
     public void createSignalEntryAndExit(VisualSignal signal) {
-        Signal mathSignal = signal.getReferencedSignal();
+        Signal mathSignal = signal.getReferencedComponent();
         Color color = signal.getForegroundColor();
 
         EntryEvent mathEntry = new EntryEvent();
@@ -334,7 +334,7 @@ public class VisualDtd extends AbstractVisualModel {
     }
 
     public VisualTransitionEvent createVisualTransition(VisualSignal signal, TransitionEvent.Direction direction) {
-        Signal mathSignal = signal.getReferencedSignal();
+        Signal mathSignal = signal.getReferencedComponent();
         TransitionEvent mathTransition = new TransitionEvent();
         if (direction != null) {
             mathTransition.setDirection(direction);
@@ -369,7 +369,7 @@ public class VisualDtd extends AbstractVisualModel {
             remove(connection);
         }
         if (direction == null) {
-            Signal.State state = DtdUtils.getNextState(event.getReferencedSignalEvent());
+            Signal.State state = DtdUtils.getNextState(event.getReferencedComponent());
             direction = DtdUtils.getNextDirection(state);
         }
         VisualTransitionEvent edge = createVisualTransition(signal, direction);

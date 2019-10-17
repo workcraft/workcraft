@@ -20,8 +20,9 @@ public class VisualJoinComponent extends VisualXmasComponent {
         }
     }
 
-    public JoinComponent getReferencedJoinComponent() {
-        return (JoinComponent) getReferencedComponent();
+    @Override
+    public JoinComponent getReferencedComponent() {
+        return (JoinComponent) super.getReferencedComponent();
     }
 
     @Override

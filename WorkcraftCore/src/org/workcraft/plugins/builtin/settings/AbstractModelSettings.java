@@ -8,4 +8,5 @@ public abstract class AbstractModelSettings implements Settings {
     public String getSection() {
         return "Models";
     }
+
 }

@@ -40,11 +40,11 @@ public class XbmToStgConverter {
     private Map<VisualXbmState, VisualStgPlace> convertStates() {
         Map<VisualXbmState, VisualStgPlace> result = new HashMap<>();
         for (VisualXbmState state: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualXbmState.class)) {
-            String name = srcModel.getMathModel().getNodeReference(state.getReferencedState());
+            String name = srcModel.getMathModel().getNodeReference(state.getReferencedComponent());
             VisualStgPlace place = dstModel.createVisualPlace(name, null);
             place.copyPosition(state);
             place.copyStyle(state);
-            place.getReferencedPlace().setTokens(state.getReferencedState().isInitial() ? 1 : 0);
+            place.getReferencedComponent().setTokens(state.getReferencedComponent().isInitial() ? 1 : 0);
             place.setTokenColor(state.getForegroundColor());
             result.put(state, place);
         }
@@ -83,8 +83,8 @@ public class XbmToStgConverter {
                                 dstModel.connect(inPlace, inputTransition);
                             }
                         }
-                        if (event.getReferencedBurstEvent().hasConditional()) { //Connects the elementary cycle appropriate to the burst transition
-                            for (Map.Entry<String, Boolean> condition: event.getReferencedBurstEvent().getConditionalMapping().entrySet()) {
+                        if (event.getReferencedConnection().hasConditional()) { //Connects the elementary cycle appropriate to the burst transition
+                            for (Map.Entry<String, Boolean> condition: event.getReferencedConnection().getConditionalMapping().entrySet()) {
                                 VisualStgPlace readPlace;
                                 StgElementaryCycle elemCycle = getRelatedStgElementaryCycle((XbmSignal) srcModel.getMathModel().getNodeByReference(condition.getKey()));
                                 if (condition.getValue()) {
@@ -166,7 +166,7 @@ public class XbmToStgConverter {
                 boolean allSignalsFound = true;
                 if (node instanceof VisualBurstEvent) {
                     VisualBurstEvent vbe = (VisualBurstEvent) node;
-                    for (XbmSignal s: vbe.getReferencedBurstEvent().getBurst().getSignals()) {
+                    for (XbmSignal s: vbe.getReferencedConnection().getBurst().getSignals()) {
                         boolean isInput = false;
                         for (VisualSignalTransition i: relatedTransition.getInputTransitions()) {
                             isInput = isInput || i.getName().equals(s.getName());

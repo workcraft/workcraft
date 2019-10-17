@@ -57,29 +57,11 @@ public class VisualScenario extends VisualGroup {
     }
 
     public VisualScenario() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualScenario, String>(
-                this, PROPERTY_LABEL, String.class, true, true) {
-            @Override
-            public void setter(VisualScenario object, String value) {
-                object.setLabel(value);
-            }
-            @Override
-            public String getter(VisualScenario object) {
-                return object.getLabel();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(String.class, PROPERTY_LABEL,
+                this::setLabel, this::getLabel).setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualScenario, Encoding>(
-                this, PROPERTY_ENCODING, Encoding.class, true, true) {
-            @Override
-            public void setter(VisualScenario object, Encoding value) {
-                object.setEncoding(value);
-            }
-            @Override
-            public Encoding getter(VisualScenario object) {
-                return object.getEncoding();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Encoding.class, PROPERTY_ENCODING,
+                this::setEncoding, this::getEncoding).setCombinable().setTemplatable());
     }
 
     @Override

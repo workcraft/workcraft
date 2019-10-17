@@ -86,35 +86,35 @@ public class JsonExportCommand implements Command {
             for (VisualComponent vp: vg.getComponents()) {
                 if (vp instanceof VisualSourceComponent) {
                     VisualSourceComponent vsc = (VisualSourceComponent) vp;
-                    SourceComponent sc = vsc.getReferencedSourceComponent();
+                    SourceComponent sc = vsc.getReferencedComponent();
                     sc.setGr(no);
                 } else if (vp instanceof VisualSinkComponent) {
                     VisualSinkComponent vsc = (VisualSinkComponent) vp;
-                    SinkComponent sc = vsc.getReferencedSinkComponent();
+                    SinkComponent sc = vsc.getReferencedComponent();
                     sc.setGr(no);
                 } else if (vp instanceof VisualFunctionComponent) {
                     VisualFunctionComponent vsc = (VisualFunctionComponent) vp;
-                    FunctionComponent sc = vsc.getReferencedFunctionComponent();
+                    FunctionComponent sc = vsc.getReferencedComponent();
                     sc.setGr(no);
                 } else if (vp instanceof VisualQueueComponent) {
                     VisualQueueComponent vsc = (VisualQueueComponent) vp;
-                    QueueComponent sc = vsc.getReferencedQueueComponent();
+                    QueueComponent sc = vsc.getReferencedComponent();
                     sc.setGr(no);
                 } else if (vp instanceof VisualForkComponent) {
                     VisualForkComponent vsc = (VisualForkComponent) vp;
-                    ForkComponent sc = vsc.getReferencedForkComponent();
+                    ForkComponent sc = vsc.getReferencedComponent();
                     sc.setGr(no);
                 } else if (vp instanceof VisualJoinComponent) {
                     VisualJoinComponent vsc = (VisualJoinComponent) vp;
-                    JoinComponent sc = vsc.getReferencedJoinComponent();
+                    JoinComponent sc = vsc.getReferencedComponent();
                     sc.setGr(no);
                 } else if (vp instanceof VisualSwitchComponent) {
                     VisualSwitchComponent vsc = (VisualSwitchComponent) vp;
-                    SwitchComponent sc = vsc.getReferencedSwitchComponent();
+                    SwitchComponent sc = vsc.getReferencedComponent();
                     sc.setGr(no);
                 } else if (vp instanceof VisualMergeComponent) {
                     VisualMergeComponent vsc = (VisualMergeComponent) vp;
-                    MergeComponent sc = vsc.getReferencedMergeComponent();
+                    MergeComponent sc = vsc.getReferencedComponent();
                     sc.setGr(no);
                 }
             }

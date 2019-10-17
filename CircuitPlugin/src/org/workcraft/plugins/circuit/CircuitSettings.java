@@ -18,6 +18,7 @@ import java.awt.*;
 import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -150,505 +151,199 @@ public class CircuitSettings extends AbstractModelSettings {
     private static String scantmPortPin = defaultScantmPortPin;
     private static boolean verilogAssignDelay = defaultVerilogAssignDelay;
 
-    public CircuitSettings() {
-        properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
-                this, "Show contacts", Boolean.class) {
-            @Override
-            public void setter(CircuitSettings object, Boolean value) {
-                setShowContacts(value);
-            }
-            @Override
-            public Boolean getter(CircuitSettings object) {
-                return getShowContacts();
-            }
-        });
+    static {
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Show contacts",
+                CircuitSettings::setShowContacts,
+                CircuitSettings::getShowContacts));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, Double>(
-                this, "Contact font size (cm)", Double.class) {
-            @Override
-            public void setter(CircuitSettings object, Double value) {
-                setContactFontSize(value);
-            }
-            @Override
-            public Double getter(CircuitSettings object) {
-                return getContactFontSize();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Contact font size (cm)",
+                CircuitSettings::setContactFontSize,
+                CircuitSettings::getContactFontSize));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, Double>(
-                this, "Function font size (cm)", Double.class) {
-            @Override
-            public void setter(CircuitSettings object, Double value) {
-                setFunctionFontSize(value);
-            }
-            @Override
-            public Double getter(CircuitSettings object) {
-                return getFunctionFontSize();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Function font size (cm)",
+                CircuitSettings::setFunctionFontSize,
+                CircuitSettings::getFunctionFontSize));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
-                this, "Show names of zero-dealy components", Boolean.class) {
-            @Override
-            public void setter(CircuitSettings object, Boolean value) {
-                setShowZeroDelayNames(value);
-            }
-            @Override
-            public Boolean getter(CircuitSettings object) {
-                return getShowZeroDelayNames();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Show names of zero-dealy components",
+                CircuitSettings::setShowZeroDelayNames,
+                CircuitSettings::getShowZeroDelayNames));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, Double>(
-                this, "Border width", Double.class) {
-            @Override
-            public void setter(CircuitSettings object, Double value) {
-                setBorderWidth(value);
-            }
-            @Override
-            public Double getter(CircuitSettings object) {
-                return getBorderWidth();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Border width",
+                CircuitSettings::setBorderWidth,
+                CircuitSettings::getBorderWidth));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, Double>(
-                this, "Wire width", Double.class) {
-            @Override
-            public void setter(CircuitSettings object, Double value) {
-                setWireWidth(value);
-            }
-            @Override
-            public Double getter(CircuitSettings object) {
-                return getWireWidth();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Wire width",
+                CircuitSettings::setWireWidth,
+                CircuitSettings::getWireWidth));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, Color>(
-                this, "Active wire", Color.class) {
-            @Override
-            public void setter(CircuitSettings object, Color value) {
-                setActiveWireColor(value);
-            }
-            @Override
-            public Color getter(CircuitSettings object) {
-                return getActiveWireColor();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Active wire",
+                CircuitSettings::setActiveWireColor,
+                CircuitSettings::getActiveWireColor));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, Color>(
-                this, "Inactive wire", Color.class) {
-            @Override
-            public void setter(CircuitSettings object, Color value) {
-                setInactiveWireColor(value);
-            }
-            @Override
-            public Color getter(CircuitSettings object) {
-                return getInactiveWireColor();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Inactive wire",
+                CircuitSettings::setInactiveWireColor,
+                CircuitSettings::getInactiveWireColor));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
-                this, "Simplify generated circuit STG", Boolean.class) {
-            @Override
-            public void setter(CircuitSettings object, Boolean value) {
-                setSimplifyStg(value);
-            }
-            @Override
-            public Boolean getter(CircuitSettings object) {
-                return getSimplifyStg();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Simplify generated circuit STG",
+                CircuitSettings::setSimplifyStg,
+                CircuitSettings::getSimplifyStg));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, File>(
-                this, "Gate library for technology mapping", File.class) {
-            @Override
-            public void setter(CircuitSettings object, File value) {
-                setGateLibrary(ExecutableUtils.getBaseRelativePath(value));
-            }
-            @Override
-            public File getter(CircuitSettings object) {
-                return ExecutableUtils.getBaseRelativeFile(getGateLibrary());
-            }
-        });
+        properties.add(new PropertyDeclaration<>(File.class,
+                "Gate library for technology mapping",
+                (value) -> setGateLibrary(ExecutableUtils.getBaseRelativePath(value)),
+                () -> ExecutableUtils.getBaseRelativeFile(getGateLibrary())));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, File>(
-                this, "Substitution rules for export", File.class) {
-            @Override
-            public void setter(CircuitSettings object, File value) {
-                setExportSubstitutionLibrary(ExecutableUtils.getBaseRelativePath(value));
-            }
-            @Override
-            public File getter(CircuitSettings object) {
-                return ExecutableUtils.getBaseRelativeFile(getExportSubstitutionLibrary());
-            }
-        });
+        properties.add(new PropertyDeclaration<>(File.class,
+                "Substitution rules for export",
+                (value) -> setExportSubstitutionLibrary(ExecutableUtils.getBaseRelativePath(value)),
+                () -> ExecutableUtils.getBaseRelativeFile(getExportSubstitutionLibrary())));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
-                this, "Invert substitution rules for export", Boolean.class) {
-            @Override
-            public void setter(CircuitSettings object, Boolean value) {
-                setInvertExportSubstitutionRules(value);
-            }
-            @Override
-            public Boolean getter(CircuitSettings object) {
-                return getInvertExportSubstitutionRules();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Invert substitution rules for export",
+                CircuitSettings::setInvertExportSubstitutionRules,
+                CircuitSettings::getInvertExportSubstitutionRules));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, File>(
-                this, "Substitution rules for import", File.class) {
-            @Override
-            public void setter(CircuitSettings object, File value) {
-                setImportSubstitutionLibrary(ExecutableUtils.getBaseRelativePath(value));
-            }
-            @Override
-            public File getter(CircuitSettings object) {
-                return ExecutableUtils.getBaseRelativeFile(getImportSubstitutionLibrary());
-            }
-        });
+        properties.add(new PropertyDeclaration<>(File.class,
+                "Substitution rules for import",
+                (value) -> setImportSubstitutionLibrary(ExecutableUtils.getBaseRelativePath(value)),
+                () -> ExecutableUtils.getBaseRelativeFile(getImportSubstitutionLibrary())));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
-                this, "Invert substitution rules for import", Boolean.class) {
-            @Override
-            public void setter(CircuitSettings object, Boolean value) {
-                setInvertImportSubstitutionRules(value);
-            }
-            @Override
-            public Boolean getter(CircuitSettings object) {
-                return getInvertImportSubstitutionRules();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Invert substitution rules for import",
+                CircuitSettings::setInvertImportSubstitutionRules,
+                CircuitSettings::getInvertImportSubstitutionRules));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "BUF name and input-output pins", String.class) {
-            @Override
-            public void setter(CircuitSettings object, String value) {
-                if (parseGate2Data(value) != null) {
-                    setBufData(value);
-                } else {
-                    errorDescriptionFormat("BUF", defaultBufData);
-                }
-            }
-            @Override
-            public String getter(CircuitSettings object) {
-                return getBufData();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "BUF name and input-output pins",
+                (value) -> setGate2Data(value, CircuitSettings::setBufData, "BUF", defaultBufData),
+                CircuitSettings::getBufData));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "AND2 name and input-output pins", String.class) {
-            @Override
-            public void setter(CircuitSettings object, String value) {
-                if (parseGate3Data(value) != null) {
-                    setAndData(value);
-                } else {
-                    errorDescriptionFormat("AND2", defaultAndData);
-                }
-            }
-            @Override
-            public String getter(CircuitSettings object) {
-                return getAndData();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "AND2 name and input-output pins",
+                (value) -> setGate3Data(value, CircuitSettings::setAndData, "AND2", defaultAndData),
+                CircuitSettings::getAndData));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "OR2 name and input-output pins", String.class) {
-            @Override
-            public void setter(CircuitSettings object, String value) {
-                if (parseGate3Data(value) != null) {
-                    setOrData(value);
-                } else {
-                    errorDescriptionFormat("OR2", defaultOrData);
-                }
-            }
-            @Override
-            public String getter(CircuitSettings object) {
-                return getOrData();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "OR2 name and input-output pins",
+                (value) -> setGate3Data(value, CircuitSettings::setOrData, "OR2", defaultOrData),
+                CircuitSettings::getOrData));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "NAND2 name and input-output pins", String.class) {
-            @Override
-            public void setter(CircuitSettings object, String value) {
-                if (parseGate3Data(value) != null) {
-                    setNandData(value);
-                } else {
-                    errorDescriptionFormat("NAND2", defaultNandData);
-                }
-            }
-            @Override
-            public String getter(CircuitSettings object) {
-                return getNandData();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "NAND2 name and input-output pins",
+                (value) -> setGate3Data(value, CircuitSettings::setNandData, "NAND2", defaultNandData),
+                CircuitSettings::getNandData));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "NOR2-gate name and input-output pins", String.class) {
-            @Override
-            public void setter(CircuitSettings object, String value) {
-                if (parseGate3Data(value) != null) {
-                    setNorData(value);
-                } else {
-                    errorDescriptionFormat("NOR2", defaultNorData);
-                }
-            }
-            @Override
-            public String getter(CircuitSettings object) {
-                return getNorData();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "NOR2 name and input-output pins",
+                (value) -> setGate3Data(value, CircuitSettings::setNorData, "NOR2", defaultNorData),
+                CircuitSettings::getNorData));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "NAND2B name and input-output pins", String.class) {
-            @Override
-            public void setter(CircuitSettings object, String value) {
-                if (parseGate3Data(value) != null) {
-                    setNandbData(value);
-                } else {
-                    errorDescriptionFormat("NAND2B", defaultNandData);
-                }
-            }
-            @Override
-            public String getter(CircuitSettings object) {
-                return getNandbData();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "NAND2B name and input-output pins",
+                (value) -> setGate3Data(value, CircuitSettings::setNandbData, "NAND2B", defaultNandbData),
+                CircuitSettings::getNandbData));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "NOR2B-gate name and input-output pins", String.class) {
-            @Override
-            public void setter(CircuitSettings object, String value) {
-                if (parseGate3Data(value) != null) {
-                    setNorbData(value);
-                } else {
-                    errorDescriptionFormat("NOR2B", defaultNorbData);
-                }
-            }
-            @Override
-            public String getter(CircuitSettings object) {
-                return getNorbData();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "NOR2B name and input-output pins",
+                (value) -> setGate3Data(value, CircuitSettings::setNorbData, "NOR2B", defaultNorbData),
+                CircuitSettings::getNorbData));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Mutex name and request-grant pairs", String.class) {
-            @Override
-            public void setter(CircuitSettings object, String value) {
-                if (parseMutexData(value) != null) {
-                    setMutexData(value);
-                } else {
-                    errorDescriptionFormat("Mutex", defaultMutexData);
-                }
-            }
-            @Override
-            public String getter(CircuitSettings object) {
-                return getMutexData();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Mutex name and request-grant pairs",
+                (value) -> {
+                    if (parseMutexData(value) != null) {
+                        setMutexData(value);
+                    } else {
+                        errorDescriptionFormat("Mutex", defaultMutexData);
+                    }
+                },
+                CircuitSettings::getMutexData));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, Mutex.Protocol>(
-                this, "Mutex protocol", Mutex.Protocol.class) {
-            @Override
-            public void setter(CircuitSettings object, Mutex.Protocol value) {
-                StgSettings.setMutexProtocol(value);
-            }
-            @Override
-            public Mutex.Protocol getter(CircuitSettings object) {
-                return StgSettings.getMutexProtocol();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Mutex.Protocol.class,
+                "Mutex protocol",
+                StgSettings::setMutexProtocol,
+                StgSettings::getMutexProtocol));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Bus split suffix ($ is replaced by index)", String.class) {
-            @Override
-            public void setter(CircuitSettings object, String value) {
-                setBusSuffix(value);
-            }
-            @Override
-            public String getter(CircuitSettings object) {
-                return getBusSuffix();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Bus split suffix ($ is replaced by index)",
+                CircuitSettings::setBusSuffix,
+                CircuitSettings::getBusSuffix));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Reset port name", String.class) {
-            @Override
-            public void setter(CircuitSettings object, String value) {
-                setResetPort(value);
-            }
-            @Override
-            public String getter(CircuitSettings object) {
-                return getResetPort();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Reset port name",
+                CircuitSettings::setResetPort,
+                CircuitSettings::getResetPort));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Initialisation SET pin name", String.class) {
-            @Override
-            public void setter(CircuitSettings object, String value) {
-                setSetPin(value);
-            }
-            @Override
-            public String getter(CircuitSettings object) {
-                return getSetPin();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Initialisation SET pin name",
+                CircuitSettings::setSetPin,
+                CircuitSettings::getSetPin));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Initialisation CLEAR pin name", String.class) {
-            @Override
-            public void setter(CircuitSettings object, String value) {
-                setClearPin(value);
-            }
-            @Override
-            public String getter(CircuitSettings object) {
-                return getClearPin();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Initialisation CLEAR pin name",
+                CircuitSettings::setClearPin,
+                CircuitSettings::getClearPin));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Testable buffer name and input-output pins", String.class) {
-            @Override
-            public void setter(CircuitSettings object, String value) {
-                if (parseGate2Data(value) != null) {
-                    setTbufData(value);
-                } else {
-                    errorDescriptionFormat("Testable buffer", defaultTbufData);
-                }
-            }
-            @Override
-            public String getter(CircuitSettings object) {
-                return getTbufData();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Testable buffer name and input-output pins",
+                (value) -> setGate2Data(value, CircuitSettings::setTbufData, "Testable buffer", defaultTbufData),
+                CircuitSettings::getTbufData));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Testable inverter name and input-output pins", String.class) {
-            @Override
-            public void setter(CircuitSettings object, String value) {
-                if (parseGate2Data(value) != null) {
-                    setTinvData(value);
-                } else {
-                    errorDescriptionFormat("Testable inverter", defaultTinvData);
-                }
-            }
-            @Override
-            public String getter(CircuitSettings object) {
-                return getTinvData();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Testable inverter name and input-output pins",
+                (value) -> setGate2Data(value, CircuitSettings::setTinvData, "Testable inverter", defaultTinvData),
+                CircuitSettings::getTinvData));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Scan module suffix", String.class) {
-            @Override
-            public void setter(CircuitSettings object, String value) {
-                setScanSuffix(value);
-            }
-            @Override
-            public String getter(CircuitSettings object) {
-                return getScanSuffix();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Scan module suffix",
+                CircuitSettings::setScanSuffix,
+                CircuitSettings::getScanSuffix));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Scan input port / pin names", String.class) {
-            @Override
-            public void setter(CircuitSettings object, String value) {
-                if (parsePortPinPair(value) != null) {
-                    setScaninPortPin(value);
-                } else {
-                    errorPortPinFormat("Scan input");
-                }
-            }
-            @Override
-            public String getter(CircuitSettings object) {
-                return getScaninPortPin();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Scan input port / pin names",
+                (value) -> setPortPinPair(value, CircuitSettings::setScaninPortPin, "Scan input"),
+                                CircuitSettings::getScaninPortPin));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Scan output port / pin (for multi-output component) names", String.class) {
-            @Override
-            public void setter(CircuitSettings object, String value) {
-                if (parsePortPinPair(value) != null) {
-                    setScanoutPortPin(value);
-                } else {
-                    errorPortPinFormat("Scan output");
-                }
-            }
-            @Override
-            public String getter(CircuitSettings object) {
-                return getScanoutPortPin();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Scan output port / pin (for multi-output component) names",
+                (value) -> setPortPinPair(value, CircuitSettings::setScanoutPortPin, "Scan output"),
+                CircuitSettings::getScanoutPortPin));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Scan clock port / pin names", String.class) {
-            @Override
-            public void setter(CircuitSettings object, String value) {
-                if (parsePortPinPair(value) != null) {
-                    setScanckPortPin(value);
-                } else {
-                    errorPortPinFormat("Scan clock");
-                }
-            }
-            @Override
-            public String getter(CircuitSettings object) {
-                return getScanckPortPin();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Scan clock port / pin names",
+                (value) -> setPortPinPair(value, CircuitSettings::setScanckPortPin, "Scan clock"),
+                CircuitSettings::getScanckPortPin));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Scan enable port / pin name", String.class) {
-            @Override
-            public void setter(CircuitSettings object, String value) {
-                if (parsePortPinPair(value) != null) {
-                    setScanenPortPin(value);
-                } else {
-                    errorPortPinFormat("Scan enable");
-                }
-            }
-            @Override
-            public String getter(CircuitSettings object) {
-                return getScanenPortPin();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Scan enable port / pin name",
+                (value) -> setPortPinPair(value, CircuitSettings::setScanenPortPin, "Scan enable"),
+                CircuitSettings::getScanenPortPin));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, String>(
-                this, "Scan test mode port / pin names", String.class) {
-            @Override
-            public void setter(CircuitSettings object, String value) {
-                if (parsePortPinPair(value) != null) {
-                    setScantmPortPin(value);
-                } else {
-                    errorPortPinFormat("Scan test mode");
-                }
-            }
-            @Override
-            public String getter(CircuitSettings object) {
-                return getScantmPortPin();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Scan test mode port / pin names",
+                (value) -> setPortPinPair(value, CircuitSettings::setScantmPortPin, "Scan test mode"),
+                CircuitSettings::getScantmPortPin));
 
-        properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
-                this, "Delay assign statements in Verilog export", Boolean.class) {
-            @Override
-            public void setter(CircuitSettings object, Boolean value) {
-                setVerilogAssignDelay(value);
-            }
-            @Override
-            public Boolean getter(CircuitSettings object) {
-                return getVerilogAssignDelay();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Delay assign statements in Verilog export",
+                CircuitSettings::setVerilogAssignDelay,
+                CircuitSettings::getVerilogAssignDelay));
     }
 
-    private void errorDescriptionFormat(String prefix, String suffix) {
+    private static void errorDescriptionFormat(String prefix, String suffix) {
         DialogUtils.showError(prefix + " description format is incorrect. It should be as follows:\n" + suffix);
     }
 
-    private void errorPortPinFormat(String prefix) {
+    private static void errorPortPinFormat(String prefix) {
         DialogUtils.showError(prefix + " port and pin should be a pair of valid names separated by '/'.");
     }
 
@@ -1080,9 +775,17 @@ public class CircuitSettings extends AbstractModelSettings {
         verilogAssignDelay = value;
     }
 
-    private static Gate2 parseGate2Data(String str) {
+    private static void setGate2Data(String value, Consumer<String> setter, String msg, String defaultValue) {
+        if (parseGate2Data(value) != null) {
+            setter.accept(value);
+        } else {
+            errorDescriptionFormat(msg, defaultValue);
+        }
+    }
+
+    private static Gate2 parseGate2Data(String value) {
         Gate2 result = null;
-        Matcher matcher = GATE2_DATA_PATTERN.matcher(str.replaceAll("\\s", ""));
+        Matcher matcher = GATE2_DATA_PATTERN.matcher(value.replaceAll("\\s", ""));
         if (matcher.find()) {
             String name = matcher.group(GATE_NAME_GROUP);
             String in = matcher.group(GATE_PIN1_GROUP);
@@ -1092,9 +795,17 @@ public class CircuitSettings extends AbstractModelSettings {
         return result;
     }
 
-    private static Gate3 parseGate3Data(String str) {
+    private static void setGate3Data(String value, Consumer<String> setter, String msg, String defaultValue) {
+        if (parseGate3Data(value) != null) {
+            setter.accept(value);
+        } else {
+            errorDescriptionFormat(msg, defaultValue);
+        }
+    }
+
+    private static Gate3 parseGate3Data(String value) {
         Gate3 result = null;
-        Matcher matcher = GATE3_DATA_PATTERN.matcher(str.replaceAll("\\s", ""));
+        Matcher matcher = GATE3_DATA_PATTERN.matcher(value.replaceAll("\\s", ""));
         if (matcher.find()) {
             String name = matcher.group(GATE_NAME_GROUP);
             String in1 = matcher.group(GATE_PIN1_GROUP);
@@ -1119,11 +830,19 @@ public class CircuitSettings extends AbstractModelSettings {
         return result;
     }
 
-    public static Pair<String, String> parsePortPinPair(String str) {
+    private static void setPortPinPair(String value, Consumer<String> setter, String msg) {
+        if (parsePortPinPair(value) != null) {
+            setter.accept(value);
+        } else {
+            errorPortPinFormat(msg);
+        }
+    }
+
+    public static Pair<String, String> parsePortPinPair(String value) {
         String portName = null;
         String pinName = null;
-        if ((str != null) && !str.isEmpty()) {
-            String[] split = str.replaceAll("\\s", "").split("/");
+        if ((value != null) && !value.isEmpty()) {
+            String[] split = value.replaceAll("\\s", "").split("/");
             if (split.length > 0) {
                 portName = split[0];
             }

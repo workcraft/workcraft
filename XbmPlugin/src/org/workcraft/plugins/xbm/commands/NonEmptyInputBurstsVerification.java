@@ -54,7 +54,7 @@ public class NonEmptyInputBurstsVerification extends AbstractVerificationCommand
 
                     visualXbm.selectNone();
                     for (VisualBurstEvent vBurstEvent: Hierarchy.getDescendantsOfType(visualXbm.getRoot(), VisualBurstEvent.class)) {
-                        BurstEvent burstEvent = vBurstEvent.getReferencedBurstEvent();
+                        BurstEvent burstEvent = vBurstEvent.getReferencedConnection();
                         if (emptyBursts.contains(burstEvent)) {
                             visualXbm.addToSelection(vBurstEvent);
                         }

@@ -72,7 +72,7 @@ public class MirrorTransitionTransformationCommand extends AbstractTransformatio
             VisualStg visualStg = (VisualStg) model;
             Stg stg = visualStg.getMathModel();
             VisualSignalTransition visualTransition = (VisualSignalTransition) node;
-            SignalTransition transition = visualTransition.getReferencedTransition();
+            SignalTransition transition = visualTransition.getReferencedComponent();
             SignalTransition.Direction direction = visualTransition.getDirection();
             stg.setDirection(transition, direction.mirror());
             model.addToSelection(node);

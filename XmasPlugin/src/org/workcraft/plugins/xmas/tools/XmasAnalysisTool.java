@@ -218,7 +218,7 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
                 for (Node node : vnet.getNodes()) {
                     if (node instanceof VisualQueueComponent) {
                         vqc = (VisualQueueComponent) node;
-                        qc = vqc.getReferencedQueueComponent();
+                        qc = vqc.getReferencedComponent();
                         //if (xnet.getName(qc).contains(st)) {
                         String rstr;
                         rstr = xnet.getName(qc);
@@ -228,7 +228,7 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
                         }
                     } else if (node instanceof VisualSyncComponent) {
                         vsc = (VisualSyncComponent) node;
-                        sc = vsc.getReferencedSyncComponent();
+                        sc = vsc.getReferencedComponent();
                         //if (xnet.getName(qc).contains(st)) {
                         String rstr;
                         rstr = xnet.getName(sc);
@@ -260,7 +260,7 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
                     for (Node node : vnet.getNodes()) {
                         if (node instanceof VisualQueueComponent) {
                             vqc = (VisualQueueComponent) node;
-                            qc = vqc.getReferencedQueueComponent();
+                            qc = vqc.getReferencedComponent();
                             //System.out.println("x===" + xnet.getName(qc));
                             String rstr;
                             rstr = xnet.getName(qc);
@@ -270,7 +270,7 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
                             }
                         } else if (node instanceof VisualSyncComponent) {
                             vsc = (VisualSyncComponent) node;
-                            sc = vsc.getReferencedSyncComponent();
+                            sc = vsc.getReferencedComponent();
                             //System.out.println("strrr===" + str + ' ' + xnet.getName(sc));
                             String rstr;
                             rstr = xnet.getName(sc);
@@ -290,7 +290,7 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
                     for (Node node : vnet.getNodes()) {
                         if (node instanceof VisualQueueComponent) {
                             vqc = (VisualQueueComponent) node;
-                            qc = vqc.getReferencedQueueComponent();
+                            qc = vqc.getReferencedComponent();
                             String rstr;
                             rstr = xnet.getName(qc);
                             rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
@@ -299,7 +299,7 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
                             }
                         } else if (node instanceof VisualSyncComponent) {
                             vsc = (VisualSyncComponent) node;
-                            sc = vsc.getReferencedSyncComponent();
+                            sc = vsc.getReferencedComponent();
                             String rstr;
                             rstr = xnet.getName(sc);
                             rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
@@ -324,7 +324,7 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
                 for (Node node : vnet.getNodes()) {
                     if (node instanceof VisualQueueComponent) {
                         vqc = (VisualQueueComponent) node;
-                        qc = vqc.getReferencedQueueComponent();
+                        qc = vqc.getReferencedComponent();
                         String rstr;
                         rstr = xnet.getName(qc);
                         rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
@@ -333,7 +333,7 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
                         }
                     } else if (node instanceof VisualSyncComponent) {
                         vsc = (VisualSyncComponent) node;
-                        sc = vsc.getReferencedSyncComponent();
+                        sc = vsc.getReferencedComponent();
                         String rstr;
                         rstr = xnet.getName(sc);
                         rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));

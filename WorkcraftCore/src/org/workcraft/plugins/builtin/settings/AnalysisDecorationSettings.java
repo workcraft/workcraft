@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class AnalysisDecorationSettings extends AbstractDecorationSettings {
+
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "AnalysisDecorationSettings";
 
@@ -27,54 +28,26 @@ public class AnalysisDecorationSettings extends AbstractDecorationSettings {
     private static Color fixerColor = defaultFixerColor;
     private static Color clearColor = defaultClearColor;
 
-    public AnalysisDecorationSettings() {
-        properties.add(new PropertyDeclaration<AnalysisDecorationSettings, Color>(
-                this, "Don't touch component", Color.class) {
-            @Override
-            public void setter(AnalysisDecorationSettings object, Color value) {
-                setDontTouchColor(value);
-            }
-            @Override
-            public Color getter(AnalysisDecorationSettings object) {
-                return getDontTouchColor();
-            }
-        });
+    static {
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Don't touch component",
+                AnalysisDecorationSettings::setDontTouchColor,
+                AnalysisDecorationSettings::getDontTouchColor));
 
-        properties.add(new PropertyDeclaration<AnalysisDecorationSettings, Color>(
-                this, "Problematic component", Color.class) {
-            @Override
-            public void setter(AnalysisDecorationSettings object, Color value) {
-                setProblemColor(value);
-            }
-            @Override
-            public Color getter(AnalysisDecorationSettings object) {
-                return getProblemColor();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Problematic component",
+                AnalysisDecorationSettings::setProblemColor,
+                AnalysisDecorationSettings::getProblemColor));
 
-        properties.add(new PropertyDeclaration<AnalysisDecorationSettings, Color>(
-                this, "Problem fixer component", Color.class) {
-            @Override
-            public void setter(AnalysisDecorationSettings object, Color value) {
-                setFixerColor(value);
-            }
-            @Override
-            public Color getter(AnalysisDecorationSettings object) {
-                return getFixerColor();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Problem fixer component",
+                AnalysisDecorationSettings::setFixerColor,
+                AnalysisDecorationSettings::getFixerColor));
 
-        properties.add(new PropertyDeclaration<AnalysisDecorationSettings, Color>(
-                this, "Problem-free component", Color.class) {
-            @Override
-            public void setter(AnalysisDecorationSettings object, Color value) {
-                setClearColor(value);
-            }
-            @Override
-            public Color getter(AnalysisDecorationSettings object) {
-                return getClearColor();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Problem-free component",
+                AnalysisDecorationSettings::setClearColor,
+                AnalysisDecorationSettings::getClearColor));
     }
 
     @Override

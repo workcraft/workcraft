@@ -41,6 +41,21 @@ public class PropertySeparator implements PropertyDescriptor<String> {
     }
 
     @Override
+    public boolean isVisible() {
+        return true;
+    }
+
+    @Override
+    public boolean isCombinable() {
+        return false;
+    }
+
+    @Override
+    public boolean isTemplatable() {
+        return false;
+    }
+
+    @Override
     public boolean isSpan() {
         return true;
     }

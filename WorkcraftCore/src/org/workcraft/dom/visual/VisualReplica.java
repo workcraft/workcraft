@@ -5,7 +5,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
@@ -20,14 +20,14 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
 
     public static final Font NAME_FONT = new Font(Font.SANS_SERIF, Font.ITALIC, 1);
 
-    protected double size = CommonVisualSettings.getNodeSize();
-    protected double strokeWidth = CommonVisualSettings.getStrokeWidth();
-    private Color foregroundColor = CommonVisualSettings.getBorderColor();
-    private Color fillColor = CommonVisualSettings.getFillColor();
+    protected double size = VisualCommonSettings.getNodeSize();
+    protected double strokeWidth = VisualCommonSettings.getStrokeWidth();
+    private Color foregroundColor = VisualCommonSettings.getBorderColor();
+    private Color fillColor = VisualCommonSettings.getFillColor();
 
-    private Positioning namePositioning = CommonVisualSettings.getNamePositioning();
+    private Positioning namePositioning = VisualCommonSettings.getNamePositioning();
     private RenderedText nameRenderedText = new RenderedText("", getNameFont(), getNamePositioning(), getNameOffset());
-    private Color nameColor = CommonVisualSettings.getNameColor();
+    private Color nameColor = VisualCommonSettings.getNameColor();
 
     private VisualComponent master = null;
 
@@ -46,55 +46,19 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
     }
 
     private void addColorPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualReplica, Color>(
-                this, PROPERTY_COLOR, Color.class, true, true) {
-            @Override
-            public void setter(VisualReplica object, Color value) {
-                object.setForegroundColor(value);
-            }
-            @Override
-            public Color getter(VisualReplica object) {
-                return object.getForegroundColor();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Color.class, PROPERTY_COLOR,
+                this::setForegroundColor, this::getForegroundColor).setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualReplica, Color>(
-                this, PROPERTY_FILL_COLOR, Color.class, true, true) {
-            @Override
-            public void setter(VisualReplica object, Color value) {
-                object.setFillColor(value);
-            }
-            @Override
-            public Color getter(VisualReplica object) {
-                return object.getFillColor();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Color.class, PROPERTY_FILL_COLOR,
+                this::setFillColor, this::getFillColor).setCombinable().setTemplatable());
     }
 
     private void addNamePropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualReplica, Positioning>(
-                this, PROPERTY_NAME_POSITIONING, Positioning.class, true, true) {
-            @Override
-            public void setter(VisualReplica object, Positioning value) {
-                object.setNamePositioning(value);
-            }
-            @Override
-            public Positioning getter(VisualReplica object) {
-                return object.getNamePositioning();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Positioning.class, PROPERTY_NAME_POSITIONING,
+                this::setNamePositioning, this::getNamePositioning).setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualReplica, Color>(
-                this, PROPERTY_NAME_COLOR, Color.class, true, true) {
-            @Override
-            public void setter(VisualReplica object, Color value) {
-                object.setNameColor(value);
-            }
-            @Override
-            public Color getter(VisualReplica object) {
-                return object.getNameColor();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Color.class, PROPERTY_NAME_COLOR,
+                this::setNameColor, this::getNameColor).setCombinable().setTemplatable());
     }
 
     public Color getNameColor() {
@@ -120,7 +84,7 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
     }
 
     public Font getNameFont() {
-        return NAME_FONT.deriveFont((float) CommonVisualSettings.getNameFontSize());
+        return NAME_FONT.deriveFont((float) VisualCommonSettings.getNameFontSize());
     }
 
     public Color getForegroundColor() {
@@ -153,7 +117,7 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
     }
 
     public boolean getNameVisibility() {
-        return CommonVisualSettings.getNameVisibility();
+        return VisualCommonSettings.getNameVisibility();
     }
 
     public Point2D getNameOffset() {

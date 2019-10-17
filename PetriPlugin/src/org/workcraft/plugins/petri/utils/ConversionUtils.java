@@ -520,7 +520,7 @@ public class ConversionUtils {
     public static void removeIsolatedMarkedPlaces(VisualModel visualModel) {
         MathModel model = visualModel.getMathModel();
         for (VisualPlace visualPlace: getVisualPlaces(visualModel)) {
-            Place place = visualPlace.getReferencedPlace();
+            Place place = visualPlace.getReferencedComponent();
             if ((place.getTokens() > 0) && model.getConnections(place).isEmpty()) {
                 visualModel.remove(visualPlace);
             }

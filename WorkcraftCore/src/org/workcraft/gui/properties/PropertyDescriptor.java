@@ -8,25 +8,9 @@ public interface PropertyDescriptor<V> {
     V getValue();
     void setValue(V value);
     Map<V, String> getChoice();
-
-    default boolean isEditable() {
-        return true;
-    }
-
-    default boolean isVisible() {
-        return true;
-    }
-
-    default boolean isCombinable() {
-        return false;
-    }
-
-    default boolean isTemplatable() {
-        return false;
-    }
-
-    default boolean isSpan() {
-        return false;
-    }
-
+    boolean isEditable();
+    boolean isVisible();
+    boolean isCombinable();
+    boolean isTemplatable();
+    boolean isSpan();
 }

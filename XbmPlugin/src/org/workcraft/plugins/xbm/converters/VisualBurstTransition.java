@@ -76,7 +76,7 @@ public class VisualBurstTransition {
 
     private static Set<VisualSignalTransition> getBurstAsTransitions(VisualBurstEvent ref, VisualStg visualStg, XbmSignal.Type targetType) {
         Set<VisualSignalTransition> result = new HashSet<>();
-        Burst burst = ref.getReferencedBurstEvent().getBurst();
+        Burst burst = ref.getReferencedConnection().getBurst();
         for (XbmSignal signal: burst.getSignals(targetType)) {
             String name = signal.getName();
             XbmSignal.Type type = signal.getType();

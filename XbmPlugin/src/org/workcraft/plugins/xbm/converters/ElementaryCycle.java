@@ -91,14 +91,14 @@ public class ElementaryCycle {
 
     private static VisualPlace generateLowState(VisualPetri vPetri, XbmSignal xbmSignal) {
         VisualPlace result = vPetri.createPlace(xbmSignal.getName()  + PLACE_NAME_LOW, null);
-        result.getReferencedPlace().setTokens(1);
+        result.getReferencedComponent().setTokens(1);
         result.setLabel(xbmSignal.getName() + "=0");
         return result;
     }
 
     private static VisualPlace generateHighState(VisualPetri vPetri, XbmSignal xbmSignal) {
         VisualPlace result = vPetri.createPlace(xbmSignal.getName()  + PLACE_NAME_HIGH, null);
-        result.getReferencedPlace().setTokens(0);
+        result.getReferencedComponent().setTokens(0);
         result.setLabel(xbmSignal.getName() + "=1");
         return result;
     }

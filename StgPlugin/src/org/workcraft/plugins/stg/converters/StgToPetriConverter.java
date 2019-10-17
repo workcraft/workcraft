@@ -53,7 +53,7 @@ public class StgToPetriConverter extends DefaultModelConverter<VisualStg, Visual
                 .replace("-", "_MINUS")
                 .replace("~", "_TOGGLE");
 
-        HierarchyReferenceManager refManager = getDstModel().getPetriNet().getReferenceManager();
+        HierarchyReferenceManager refManager = getDstModel().getMathModel().getReferenceManager();
         NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(container);
         NameManager nameManagerer = refManager.getNameManager(namespaceProvider);
         return nameManagerer.getDerivedName(null, dstCandidate);

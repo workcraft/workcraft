@@ -59,7 +59,7 @@ public class TransformationResultHandler extends AbstractExtendedResultHandler<T
         VisualStg stg = new VisualStg((Stg) srcModel);
         VisualPetri petri = new VisualPetri(new Petri());
         StgToPetriConverter converter = new StgToPetriConverter(stg, petri);
-        return converter.getDstModel().getPetriNet();
+        return converter.getDstModel().getMathModel();
     }
 
 }

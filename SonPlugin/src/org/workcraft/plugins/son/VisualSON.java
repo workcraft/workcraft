@@ -633,71 +633,31 @@ public class VisualSON extends AbstractVisualModel {
     }
 
     private PropertyDescriptor getConnectionTimeProperty(VisualSONConnection connection) {
-        return new PropertyDeclaration<VisualSONConnection, String>(connection, Time.PROPERTY_CONNECTION_TIME, String.class) {
-            @Override
-            public String getter(VisualSONConnection object) {
-                return object.getReferencedSONConnection().getTime().toString();
-            }
-            @Override
-            public void setter(VisualSONConnection object, String value) {
-                object.getReferencedSONConnection().setTime(new Interval(Interval.getMin(value), Interval.getMax(value)));
-            }
-            @Override
-            public boolean isEditable() {
-                return false;
-            }
-        };
+        return new PropertyDeclaration<>(String.class, Time.PROPERTY_CONNECTION_TIME,
+                (value) -> connection.getReferencedSONConnection().setTime(new Interval(Interval.getMin(value), Interval.getMax(value))),
+                () -> connection.getReferencedSONConnection().getTime().toString())
+                .setReadonly();
     }
 
     private PropertyDescriptor getStartTimeProperty(Time time) {
-        return new PropertyDeclaration<Time, String>(time, Time.PROPERTY_START_TIME, String.class) {
-            @Override
-            public String getter(Time object) {
-                return object.getStartTime().toString();
-            }
-            @Override
-            public void setter(Time object, String value) {
-                object.setStartTime(new Interval(value));
-            }
-            @Override
-            public boolean isEditable() {
-                return false;
-            }
-        };
+        return new PropertyDeclaration<>(String.class, Time.PROPERTY_START_TIME,
+                (value) -> time.setStartTime(new Interval(value)),
+                () -> time.getStartTime().toString())
+                .setReadonly();
     }
 
     private PropertyDescriptor getEndTimeProperty(Time time) {
-        return new PropertyDeclaration<Time, String>(time, Time.PROPERTY_END_TIME, String.class) {
-            @Override
-            public String getter(Time object) {
-                return object.getEndTime().toString();
-            }
-            @Override
-            public void setter(Time object, String value) {
-                object.setEndTime(new Interval(value));
-            }
-            @Override
-            public boolean isEditable() {
-                return false;
-            }
-        };
+        return new PropertyDeclaration<>(String.class, Time.PROPERTY_END_TIME,
+                (value) -> time.setEndTime(new Interval(value)),
+                () -> time.getEndTime().toString())
+                .setReadonly();
     }
 
     private PropertyDescriptor getDurationProperty(Time time) {
-        return new PropertyDeclaration<Time, String>(time, Time.PROPERTY_DURATION, String.class) {
-            @Override
-            public String getter(Time object) {
-                return object.getDuration().toString();
-            }
-            @Override
-            public void setter(Time object, String value) {
-                object.setDuration(new Interval(value));
-            }
-            @Override
-            public boolean isEditable() {
-                return false;
-            }
-        };
+        return new PropertyDeclaration<>(String.class, Time.PROPERTY_DURATION,
+                (value) -> time.setDuration(new Interval(value)),
+                () -> time.getDuration().toString())
+                .setReadonly();
     }
 
 }

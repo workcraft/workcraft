@@ -17,13 +17,13 @@ public class VisualXbmState extends VisualState {
     }
 
     @Override
-    public XbmState getReferencedState() {
-        return (XbmState) super.getReferencedState();
+    public XbmState getReferencedComponent() {
+        return (XbmState) super.getReferencedComponent();
     }
 
     @Override
     public String getLabel() {
-        return getReferencedState().getStateEncoding();
+        return getReferencedComponent().getStateEncoding();
     }
 
     @Override

@@ -21,7 +21,7 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.utils.Coloriser;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.utils.ColorUtils;
 import org.workcraft.types.Pair;
 
@@ -30,7 +30,7 @@ public class VisualBundle extends VisualNode implements Drawable, Dependent {
     public static final String PROPERTY_COLOR = "color";
 
     private final Bundle bundle;
-    protected double strokeWidth = CommonVisualSettings.getStrokeWidth();
+    protected double strokeWidth = VisualCommonSettings.getStrokeWidth();
     private Color color = ColorUtils.getLabColor(0.7f, (float) Math.random(), (float) Math.random());
     private Collection<Line2D> spanningTree = null;
 

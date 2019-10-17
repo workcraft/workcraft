@@ -40,18 +40,8 @@ public class VisualPage extends VisualComponent implements Collapsible, Containe
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualPage, Boolean>(
-                this, PROPERTY_IS_COLLAPSED, Boolean.class, true, true) {
-            @Override
-            public void setter(VisualPage object, Boolean value) {
-                object.setIsCollapsed(value);
-            }
-
-            @Override
-            public Boolean getter(VisualPage object) {
-                return object.getIsCollapsed();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, PROPERTY_IS_COLLAPSED,
+                this::setIsCollapsed, this::getIsCollapsed).setCombinable().setTemplatable());
     }
 
     @Override

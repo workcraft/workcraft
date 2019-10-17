@@ -8,4 +8,5 @@ public abstract class AbstractCommonSettings implements Settings {
     public String getSection() {
         return "Common";
     }
+
 }

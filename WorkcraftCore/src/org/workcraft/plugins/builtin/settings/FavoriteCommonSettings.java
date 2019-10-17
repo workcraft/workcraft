@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CommonFavoriteSettings extends AbstractCommonSettings {
+public class FavoriteCommonSettings extends AbstractCommonSettings {
 
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CommonFavoriteSettings";
@@ -23,31 +23,21 @@ public class CommonFavoriteSettings extends AbstractCommonSettings {
 
     private static final HashMap<String, Boolean> favoriteMap = new HashMap<>();
 
-    public CommonFavoriteSettings() {
-        properties.add(new PropertyDeclaration<CommonFavoriteSettings, Boolean>(
-                this, "Filter favorite model types in New work dialog", Boolean.class) {
-            @Override
-            public void setter(CommonFavoriteSettings object, Boolean value) {
-                setFilterFavorites(value);
-            }
-            @Override
-            public Boolean getter(CommonFavoriteSettings object) {
-                return getFilterFavorites();
-            }
-        });
+    public FavoriteCommonSettings() {
+        // Property initialisation must be in constructor, and only once.
+        // This is because plugins need to be loaded first, therefor static block cannot be used.
+        if (properties.isEmpty()) {
+            properties.add(new PropertyDeclaration<>(Boolean.class,
+                    "Filter favorite model types in New work dialog",
+                    FavoriteCommonSettings::setFilterFavorites,
+                    FavoriteCommonSettings::getFilterFavorites));
 
-        for (String name: PluginUtils.getSortedModelDisplayNames()) {
-            properties.add(new PropertyDeclaration<CommonFavoriteSettings, Boolean>(
-                    this, "  - " + name, Boolean.class) {
-                @Override
-                public void setter(CommonFavoriteSettings object, Boolean value) {
-                    setIsFavorite(name, value);
-                }
-                @Override
-                public Boolean getter(CommonFavoriteSettings object) {
-                    return getIsFavorite(name);
-                }
-            });
+            for (String name : PluginUtils.getSortedModelDisplayNames()) {
+                properties.add(new PropertyDeclaration<>(Boolean.class,
+                        "  - " + name,
+                        (value) -> setIsFavorite(name, value),
+                        () -> getIsFavorite(name)));
+            }
         }
     }
 

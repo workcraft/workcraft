@@ -5,9 +5,9 @@ import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.utils.Coloriser;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
@@ -30,17 +30,8 @@ public class VisualSuperGroup extends VisualGroup {
     private static final Font labelFont = new Font(Font.SANS_SERIF, Font.PLAIN, 1).deriveFont(0.5f);
 
     public VisualSuperGroup() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualSuperGroup, String>(
-                this, "Label", String.class, true, true) {
-            @Override
-            public void setter(VisualSuperGroup object, String value) {
-                object.setLabel(value);
-            }
-            @Override
-            public String getter(VisualSuperGroup object) {
-                return object.getLabel();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(String.class, "Label",
+                this::setLabel, this::getLabel).setCombinable().setTemplatable());
 
         removePropertyDeclarationByName(PROPERTY_IS_COLLAPSED);
     }

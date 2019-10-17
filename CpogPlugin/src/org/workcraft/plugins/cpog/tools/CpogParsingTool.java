@@ -57,7 +57,7 @@ public class CpogParsingTool {
         visVar.setLabel(label);
         visVar.setPosition(new Point2D.Double(xpos, -2));
         xpos++;
-        variableMap.put(label, visVar.getMathVariable());
+        variableMap.put(label, visVar.getReferencedComponent());
 
         return variableMap.get(label);
     }

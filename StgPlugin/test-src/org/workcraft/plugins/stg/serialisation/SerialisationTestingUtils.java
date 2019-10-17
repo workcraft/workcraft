@@ -92,14 +92,14 @@ public class SerialisationTestingUtils {
         //Assert.assertEquals(p1.getID(), p2.getID());
         Assert.assertEquals(p1.getTransform(), p2.getTransform());
 
-        comparePlaces(p1.getReferencedPlace(), p2.getReferencedPlace());
+        comparePlaces(p1.getReferencedComponent(), p2.getReferencedComponent());
     }
 
     public static void compareVisualSignalTransitions(VisualSignalTransition t1, VisualSignalTransition t2) {
         //Assert.assertEquals(t1.getID(), t2.getID());
         Assert.assertEquals(t1.getTransform(), t2.getTransform());
 
-        compareTransitions(t1.getReferencedTransition(), t2.getReferencedTransition());
+        compareTransitions(t1.getReferencedComponent(), t2.getReferencedComponent());
     }
 
     public static void compareVisualDummyTransitions(VisualDummyTransition t1, VisualDummyTransition t2) {

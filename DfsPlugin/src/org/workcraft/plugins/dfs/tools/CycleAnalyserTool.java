@@ -200,7 +200,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
             public Decoration getDecoration(Node node) {
                 if (node instanceof VisualDelayComponent) {
                     if (selectedCycle == null) {
-                        double delay = ((VisualDelayComponent) node).getReferencedDelayComponent().getDelay();
+                        double delay = ((VisualDelayComponent) node).getReferencedComponent().getDelay();
                         double range = maxDelay - minDelay;
                         double offset = delay - minDelay;
                         final Color fgColor = (range > 0 &&  offset > 0.8 * range) ? Color.RED : null;
@@ -249,7 +249,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         boolean first = true;
         for (VisualDelayComponent c: allComponents) {
             graph.put(c, dfs.getPostset(c, VisualDelayComponent.class));
-            double delay = c.getReferencedDelayComponent().getDelay();
+            double delay = c.getReferencedComponent().getDelay();
             if (first || minDelay > delay) {
                 minDelay = delay;
             }

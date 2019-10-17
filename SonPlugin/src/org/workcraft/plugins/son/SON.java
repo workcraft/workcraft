@@ -9,7 +9,7 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.*;
@@ -188,8 +188,8 @@ public class SON extends AbstractMathModel {
 
     public void refreshAllColor() {
         for (MathNode n:  getComponents()) {
-            setFillColor(n, CommonVisualSettings.getFillColor());
-            setForegroundColor(n, CommonVisualSettings.getBorderColor());
+            setFillColor(n, VisualCommonSettings.getFillColor());
+            setForegroundColor(n, VisualCommonSettings.getBorderColor());
             setTimeColor(n, Color.BLACK);
             setTokenColor(n, Color.BLACK);
         }
@@ -198,19 +198,19 @@ public class SON extends AbstractMathModel {
         }
 
         for (SONConnection con : this.getSONConnections()) {
-            setForegroundColor(con, CommonVisualSettings.getBorderColor());
+            setForegroundColor(con, VisualCommonSettings.getBorderColor());
             setTimeColor(con, Color.BLACK);
         }
         for (Block block : this.getBlocks()) {
-            setFillColor(block, CommonVisualSettings.getFillColor());
-            setForegroundColor(block, CommonVisualSettings.getBorderColor());
+            setFillColor(block, VisualCommonSettings.getFillColor());
+            setForegroundColor(block, VisualCommonSettings.getBorderColor());
         }
     }
 
     public void refreshNodeColor() {
         for (MathNode n:  getComponents()) {
-            setFillColor(n, CommonVisualSettings.getFillColor());
-            setForegroundColor(n, CommonVisualSettings.getBorderColor());
+            setFillColor(n, VisualCommonSettings.getFillColor());
+            setForegroundColor(n, VisualCommonSettings.getBorderColor());
             setTokenColor(n, Color.BLACK);
         }
         for (ONGroup group : this.getGroups()) {
@@ -218,11 +218,11 @@ public class SON extends AbstractMathModel {
         }
 
         for (SONConnection con : this.getSONConnections()) {
-            setForegroundColor(con, CommonVisualSettings.getBorderColor());
+            setForegroundColor(con, VisualCommonSettings.getBorderColor());
         }
         for (Block block : this.getBlocks()) {
-            setFillColor(block, CommonVisualSettings.getFillColor());
-            setForegroundColor(block, CommonVisualSettings.getBorderColor());
+            setFillColor(block, VisualCommonSettings.getFillColor());
+            setForegroundColor(block, VisualCommonSettings.getBorderColor());
         }
     }
 

@@ -11,7 +11,7 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.gui.tools.*;
 import org.workcraft.plugins.builtin.settings.AnalysisDecorationSettings;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.InitialisationState;
@@ -45,7 +45,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
     private JPanel getLegendControlsPanel() {
         ColorLegendTable colorLegendTable = new ColorLegendTable(Arrays.asList(
-                Pair.of(CommonVisualSettings.getFillColor(), "Unknown initial state"),
+                Pair.of(VisualCommonSettings.getFillColor(), "Unknown initial state"),
                 Pair.of(AnalysisDecorationSettings.getDontTouchColor(), "Don't touch zero delay"),
                 Pair.of(AnalysisDecorationSettings.getProblemColor(), "Problem of initialisation"),
                 Pair.of(AnalysisDecorationSettings.getFixerColor(), "Forced initial state"),

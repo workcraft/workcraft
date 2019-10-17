@@ -9,10 +9,10 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 
 public class RenderedText {
-    private final double spacingRatio = CommonVisualSettings.getLineSpacing();
+    private final double spacingRatio = VisualCommonSettings.getLineSpacing();
     private final String text;
     private final Font font;
     private final Positioning positioning;

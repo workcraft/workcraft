@@ -32,66 +32,31 @@ public class PunfSettings extends AbstractToolSettings {
     private static Boolean printStderr = defaultPrintStderr;
     private static Boolean useMciCsc = defaultUseMciCsc;
 
-    public PunfSettings() {
-        properties.add(new PropertyDeclaration<PunfSettings, String>(
-                this, "Punf command", String.class) {
-            @Override
-            public void setter(PunfSettings object, String value) {
-                setCommand(value);
-            }
-            @Override
-            public String getter(PunfSettings object) {
-                return getCommand();
-            }
-        });
+    static {
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Punf command",
+                PunfSettings::setCommand,
+                PunfSettings::getCommand));
 
-        properties.add(new PropertyDeclaration<PunfSettings, String>(
-                this, "Additional parameters", String.class) {
-            @Override
-            public void setter(PunfSettings object, String value) {
-                setArgs(value);
-            }
-            @Override
-            public String getter(PunfSettings object) {
-                return getArgs();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Additional parameters",
+                PunfSettings::setArgs,
+                PunfSettings::getArgs));
 
-        properties.add(new PropertyDeclaration<PunfSettings, Boolean>(
-                this, "Output stdout", Boolean.class) {
-            @Override
-            public void setter(PunfSettings object, Boolean value) {
-                setPrintStdout(value);
-            }
-            @Override
-            public Boolean getter(PunfSettings object) {
-                return getPrintStdout();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Output stdout",
+                PunfSettings::setPrintStdout,
+                PunfSettings::getPrintStdout));
 
-        properties.add(new PropertyDeclaration<PunfSettings, Boolean>(
-                this, "Output stderr", Boolean.class) {
-            @Override
-            public void setter(PunfSettings object, Boolean value) {
-                setPrintStderr(value);
-            }
-            @Override
-            public Boolean getter(PunfSettings object) {
-                return getPrintStderr();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Output stderr",
+                PunfSettings::setPrintStderr,
+                PunfSettings::getPrintStderr));
 
-        properties.add(new PropertyDeclaration<PunfSettings, Boolean>(
-                this, "Use legacy MCI unfolding for CSC conflict resolution", Boolean.class) {
-            @Override
-            public void setter(PunfSettings object, Boolean value) {
-                setUseMciCsc(value);
-            }
-            @Override
-            public Boolean getter(PunfSettings object) {
-                return getUseMciCsc();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Use legacy MCI unfolding for CSC conflict resolution",
+                PunfSettings::setUseMciCsc,
+                PunfSettings::getUseMciCsc));
     }
 
     @Override

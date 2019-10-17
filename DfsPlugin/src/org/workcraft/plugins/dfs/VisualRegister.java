@@ -5,10 +5,10 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Stylable;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.dfs.decorations.RegisterDecoration;
+import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -25,22 +25,16 @@ public class VisualRegister extends VisualAbstractRegister {
         addPropertyDeclarations();
     }
 
-    public Register getReferencedRegister() {
-        return (Register) getReferencedComponent();
+    private void addPropertyDeclarations() {
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, Register.PROPERTY_MARKED,
+                (value) -> getReferencedComponent().setMarked(value),
+                () -> getReferencedComponent().isMarked())
+                .setCombinable().setTemplatable());
     }
 
-    private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualRegister, Boolean>(
-                this, Register.PROPERTY_MARKED, Boolean.class, true, true) {
-            @Override
-            public void setter(VisualRegister object, Boolean value) {
-                object.getReferencedRegister().setMarked(value);
-            }
-            @Override
-            public Boolean getter(VisualRegister object) {
-                return object.getReferencedRegister().isMarked();
-            }
-        });
+    @Override
+    public Register getReferencedComponent() {
+        return (Register) super.getReferencedComponent();
     }
 
     @Override
@@ -63,7 +57,7 @@ public class VisualRegister extends VisualAbstractRegister {
 
         Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
         Color tokenColor = Coloriser.colorise(getTokenColor(), d.getColorisation());
-        boolean marked = getReferencedRegister().isMarked();
+        boolean marked = getReferencedComponent().isMarked();
         boolean excited = false;
         if (d instanceof RegisterDecoration) {
             defaultColor = getForegroundColor();
@@ -96,8 +90,8 @@ public class VisualRegister extends VisualAbstractRegister {
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualRegister) {
-            Register srcRegister = ((VisualRegister) src).getReferencedRegister();
-            getReferencedRegister().setMarked(srcRegister.isMarked());
+            Register srcRegister = ((VisualRegister) src).getReferencedComponent();
+            getReferencedComponent().setMarked(srcRegister.isMarked());
         }
     }
 

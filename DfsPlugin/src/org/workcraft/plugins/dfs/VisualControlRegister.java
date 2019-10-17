@@ -4,11 +4,11 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.dfs.ControlRegister.SynchronisationType;
 import org.workcraft.plugins.dfs.decorations.BinaryRegisterDecoration;
+import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -28,29 +28,15 @@ public class VisualControlRegister extends VisualBinaryRegister {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualControlRegister, Double>(
-                this, ControlRegister.PROPERTY_PROBABILITY, Double.class, true, true) {
-            @Override
-            public void setter(VisualControlRegister object, Double value) {
-                object.getReferencedControlRegister().setProbability(value);
-            }
-            @Override
-            public Double getter(VisualControlRegister object) {
-                return object.getReferencedControlRegister().getProbability();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Double.class, ControlRegister.PROPERTY_PROBABILITY,
+                (value) -> getReferencedComponent().setProbability(value),
+                () -> getReferencedComponent().getProbability())
+                .setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualControlRegister, SynchronisationType>(
-                this, ControlRegister.PROPERTY_SYNCHRONISATION_TYPE, SynchronisationType.class, true, true) {
-            @Override
-            public void setter(VisualControlRegister object, SynchronisationType value) {
-                object.getReferencedControlRegister().setSynchronisationType(value);
-            }
-            @Override
-            public SynchronisationType getter(VisualControlRegister object) {
-                return object.getReferencedControlRegister().getSynchronisationType();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(SynchronisationType.class, ControlRegister.PROPERTY_SYNCHRONISATION_TYPE,
+                (value) -> getReferencedComponent().setSynchronisationType(value),
+                () -> getReferencedComponent().getSynchronisationType())
+                .setCombinable().setTemplatable());
     }
 
     @Override
@@ -111,9 +97,9 @@ public class VisualControlRegister extends VisualBinaryRegister {
 
         Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
         Color tokenColor = Coloriser.colorise(getTokenColor(), d.getColorisation());
-        boolean trueMarked = getReferencedControlRegister().isTrueMarked();
+        boolean trueMarked = getReferencedComponent().isTrueMarked();
         boolean trueExcited = false;
-        boolean falseMarked = getReferencedControlRegister().isFalseMarked();
+        boolean falseMarked = getReferencedComponent().isFalseMarked();
         boolean falseExcited = false;
         if (d instanceof BinaryRegisterDecoration) {
             defaultColor = getForegroundColor();
@@ -128,10 +114,10 @@ public class VisualControlRegister extends VisualBinaryRegister {
         g.fill(shape);
 
         g.setColor(Coloriser.colorise(DfsSettings.getSynchronisationRegisterColor(), d.getBackground()));
-        if (getReferencedControlRegister().getSynchronisationType() == SynchronisationType.AND) {
+        if (getReferencedComponent().getSynchronisationType() == SynchronisationType.AND) {
             g.fill(falseInnerShape);
         }
-        if (getReferencedControlRegister().getSynchronisationType() == SynchronisationType.OR) {
+        if (getReferencedComponent().getSynchronisationType() == SynchronisationType.OR) {
             g.fill(trueInnerShape);
         }
 
@@ -205,8 +191,9 @@ public class VisualControlRegister extends VisualBinaryRegister {
         return shape.contains(pointInLocalSpace);
     }
 
-    public ControlRegister getReferencedControlRegister() {
-        return (ControlRegister) getReferencedComponent();
+    @Override
+    public ControlRegister getReferencedComponent() {
+        return (ControlRegister) super.getReferencedComponent();
     }
 
 }

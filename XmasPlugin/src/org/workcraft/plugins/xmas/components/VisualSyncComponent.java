@@ -29,8 +29,9 @@ public class VisualSyncComponent extends VisualXmasComponent {
         }
     }
 
-    public SyncComponent getReferencedSyncComponent() {
-        return (SyncComponent) getReferencedComponent();
+    @Override
+    public SyncComponent getReferencedComponent() {
+        return (SyncComponent) super.getReferencedComponent();
     }
 
     @Override

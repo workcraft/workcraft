@@ -51,66 +51,31 @@ public class DotLayoutSettings extends AbstractLayoutSettings {
     private static double ranksep = defaultRanksep;
     private static boolean importConnectionsShape = defaultImportConnectionsShape;
 
-    public DotLayoutSettings() {
-        properties.add(new PropertyDeclaration<DotLayoutSettings, String>(
-                this, "Dot command", String.class) {
-            @Override
-            public void setter(DotLayoutSettings object, String value) {
-                setCommand(value);
-            }
-            @Override
-            public String getter(DotLayoutSettings object) {
-                return getCommand();
-            }
-        });
+    static {
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Dot command",
+                DotLayoutSettings::setCommand,
+                DotLayoutSettings::getCommand));
 
-        properties.add(new PropertyDeclaration<DotLayoutSettings, Rankdir>(
-                this, "Direction of layout", Rankdir.class) {
-            @Override
-            public void setter(DotLayoutSettings object, Rankdir value) {
-                setRankdir(value);
-            }
-            @Override
-            public Rankdir getter(DotLayoutSettings object) {
-                return getRankdir();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Rankdir.class,
+                "Direction of layout",
+                DotLayoutSettings::setRankdir,
+                DotLayoutSettings::getRankdir));
 
-        properties.add(new PropertyDeclaration<DotLayoutSettings, Double>(
-                this, "Node separation", Double.class) {
-            @Override
-            public void setter(DotLayoutSettings object, Double value) {
-                setNodesep(value);
-            }
-            @Override
-            public Double getter(DotLayoutSettings object) {
-                return getNodesep();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Node separation",
+                DotLayoutSettings::setNodesep,
+                DotLayoutSettings::getNodesep));
 
-        properties.add(new PropertyDeclaration<DotLayoutSettings, Double>(
-                this, "Rank separation", Double.class) {
-            @Override
-            public void setter(DotLayoutSettings object, Double value) {
-                setRanksep(value);
-            }
-            @Override
-            public Double getter(DotLayoutSettings object) {
-                return getRanksep();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Rank separation",
+                DotLayoutSettings::setRanksep,
+                DotLayoutSettings::getRanksep));
 
-        properties.add(new PropertyDeclaration<DotLayoutSettings, Boolean>(
-                this, "Import connections shape", Boolean.class) {
-            @Override
-            public void setter(DotLayoutSettings object, Boolean value) {
-                setImportConnectionsShape(value);
-            }
-            @Override
-            public Boolean getter(DotLayoutSettings object) {
-                return getImportConnectionsShape();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Import connections shape",
+                DotLayoutSettings::setImportConnectionsShape,
+                DotLayoutSettings::getImportConnectionsShape));
     }
 
     @Override

@@ -14,17 +14,8 @@ public class VisualScenarioPage extends VisualPage {
     public VisualScenarioPage(MathNode refNode) {
         super(refNode);
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualScenarioPage, Encoding>(
-                this, PROPERTY_ENCODING, Encoding.class, true, true) {
-            @Override
-            public void setter(VisualScenarioPage object, Encoding value) {
-                object.setEncoding(value);
-            }
-            @Override
-            public Encoding getter(VisualScenarioPage object) {
-                return object.getEncoding();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Encoding.class, PROPERTY_ENCODING,
+                this::setEncoding, this::getEncoding).setCombinable().setTemplatable());
     }
 
     public void setEncoding(Encoding value) {

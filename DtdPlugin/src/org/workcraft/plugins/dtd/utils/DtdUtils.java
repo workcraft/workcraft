@@ -12,7 +12,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.dtd.*;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 
 import java.awt.geom.Point2D;
 
@@ -115,12 +115,12 @@ public class DtdUtils {
             state = s1.getInitialState();
             if (v1 instanceof VisualTransitionEvent) {
                 VisualTransitionEvent t1 = (VisualTransitionEvent) v1;
-                TransitionEvent.Direction direction = t1.getReferencedTransition().getDirection();
+                TransitionEvent.Direction direction = t1.getReferencedComponent().getDirection();
                 state = getNextState(direction);
             }
         }
         if ((state == Signal.State.HIGH) || (state == Signal.State.LOW)) {
-            double offset = CommonVisualSettings.getNodeSize() * (state == Signal.State.LOW ? 0.25 : -0.25);
+            double offset = VisualCommonSettings.getNodeSize() * (state == Signal.State.LOW ? 0.25 : -0.25);
             polyline.addControlPoint(new Point2D.Double(v1.getX(), v1.getY() + offset));
             polyline.addControlPoint(new Point2D.Double(v2.getX(), v2.getY() + offset));
         }

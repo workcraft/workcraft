@@ -5,10 +5,10 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Stylable;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.dfs.decorations.CounterflowLogicDecoration;
+import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -26,53 +26,29 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualCounterflowLogic, Boolean>(
-                this, CounterflowLogic.PROPERTY_FORWARD_COMPUTED, Boolean.class, true, true) {
-            @Override
-            public void setter(VisualCounterflowLogic object, Boolean value) {
-                object.getReferencedCounterflowLogic().setForwardComputed(value);
-            }
-            @Override
-            public Boolean getter(VisualCounterflowLogic object) {
-                return object.getReferencedCounterflowLogic().isForwardComputed();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class,
+                CounterflowLogic.PROPERTY_FORWARD_COMPUTED,
+                (value) -> getReferencedComponent().setForwardComputed(value),
+                () -> getReferencedComponent().isForwardComputed())
+                .setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualCounterflowLogic, Boolean>(
-                this, CounterflowLogic.PROPERTY_BACKWARD_COMPUTED, Boolean.class, true, true) {
-            @Override
-            public void setter(VisualCounterflowLogic object, Boolean value) {
-                object.getReferencedCounterflowLogic().setBackwardComputed(value);
-            }
-            @Override
-            public Boolean getter(VisualCounterflowLogic object) {
-                return object.getReferencedCounterflowLogic().isBackwardComputed();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class,
+                CounterflowLogic.PROPERTY_BACKWARD_COMPUTED,
+                (value) -> getReferencedComponent().setBackwardComputed(value),
+                () -> getReferencedComponent().isBackwardComputed())
+                .setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualCounterflowLogic, Boolean>(
-                this, CounterflowLogic.PROPERTY_FORWARD_EARLY_EVALUATION, Boolean.class, true, true) {
-            @Override
-            public void setter(VisualCounterflowLogic object, Boolean value) {
-                object.getReferencedCounterflowLogic().setForwardEarlyEvaluation(value);
-            }
-            @Override
-            public Boolean getter(VisualCounterflowLogic object) {
-                return object.getReferencedCounterflowLogic().isForwardEarlyEvaluation();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class,
+                CounterflowLogic.PROPERTY_FORWARD_EARLY_EVALUATION,
+                (value) -> getReferencedComponent().setForwardEarlyEvaluation(value),
+                () -> getReferencedComponent().isForwardEarlyEvaluation())
+                .setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualCounterflowLogic, Boolean>(
-                this, CounterflowLogic.PROPERTY_BACKWARD_EARLY_EVALUATION, Boolean.class, true, true) {
-            @Override
-            public void setter(VisualCounterflowLogic object, Boolean value) {
-                object.getReferencedCounterflowLogic().setBackwardEarlyEvaluation(value);
-            }
-            @Override
-            public Boolean getter(VisualCounterflowLogic object) {
-                return object.getReferencedCounterflowLogic().isBackwardEarlyEvaluation();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class,
+                CounterflowLogic.PROPERTY_BACKWARD_EARLY_EVALUATION,
+                (value) -> getReferencedComponent().setBackwardEarlyEvaluation(value),
+                () -> getReferencedComponent().isBackwardEarlyEvaluation())
+                .setCombinable().setTemplatable());
     }
 
     @Override
@@ -132,9 +108,9 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
         Shape separatorShape = new Line2D.Double(-w2, 0, w2, 0);
 
         Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
-        boolean forwardComputed = getReferencedCounterflowLogic().isForwardComputed();
+        boolean forwardComputed = getReferencedComponent().isForwardComputed();
         boolean forwardComputedExcited = false;
-        boolean backwardComputed = getReferencedCounterflowLogic().isBackwardComputed();
+        boolean backwardComputed = getReferencedComponent().isBackwardComputed();
         boolean backwardComputedExcited = false;
         if (d instanceof CounterflowLogicDecoration) {
             defaultColor = getForegroundColor();
@@ -162,7 +138,7 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
         if (!forwardComputedExcited) {
             g.setStroke(new BasicStroke(strokeWidth1));
             g.draw(forwardShape);
-            if (getReferencedCounterflowLogic().isForwardEarlyEvaluation()) {
+            if (getReferencedComponent().isForwardEarlyEvaluation()) {
                 g.setStroke(new BasicStroke(strokeWidth4));
                 g.draw(forwardEarlyShape);
             }
@@ -170,7 +146,7 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
         if (!backwardComputedExcited) {
             g.setStroke(new BasicStroke(strokeWidth1));
             g.draw(backwardShape);
-            if (getReferencedCounterflowLogic().isBackwardEarlyEvaluation()) {
+            if (getReferencedComponent().isBackwardEarlyEvaluation()) {
                 g.setStroke(new BasicStroke(strokeWidth4));
                 g.draw(backwardEarlyShape);
             }
@@ -180,7 +156,7 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
         if (forwardComputedExcited) {
             g.setStroke(new BasicStroke(strokeWidth1));
             g.draw(forwardShape);
-            if (getReferencedCounterflowLogic().isForwardEarlyEvaluation()) {
+            if (getReferencedComponent().isForwardEarlyEvaluation()) {
                 g.setStroke(new BasicStroke(strokeWidth4));
                 g.draw(forwardEarlyShape);
             }
@@ -188,7 +164,7 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
         if (backwardComputedExcited) {
             g.setStroke(new BasicStroke(strokeWidth1));
             g.draw(backwardShape);
-            if (getReferencedCounterflowLogic().isBackwardEarlyEvaluation()) {
+            if (getReferencedComponent().isBackwardEarlyEvaluation()) {
                 g.setStroke(new BasicStroke(strokeWidth4));
                 g.draw(backwardEarlyShape);
             }
@@ -206,19 +182,20 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
         drawNameInLocalSpace(r);
     }
 
-    public CounterflowLogic getReferencedCounterflowLogic() {
-        return (CounterflowLogic) getReferencedComponent();
+    @Override
+    public CounterflowLogic getReferencedComponent() {
+        return (CounterflowLogic) super.getReferencedComponent();
     }
 
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualCounterflowLogic) {
-            CounterflowLogic srcLogic = ((VisualCounterflowLogic) src).getReferencedCounterflowLogic();
-            getReferencedCounterflowLogic().setForwardComputed(srcLogic.isForwardComputed());
-            getReferencedCounterflowLogic().setBackwardComputed(srcLogic.isBackwardComputed());
-            getReferencedCounterflowLogic().setForwardEarlyEvaluation(srcLogic.isForwardEarlyEvaluation());
-            getReferencedCounterflowLogic().setBackwardEarlyEvaluation(srcLogic.isBackwardEarlyEvaluation());
+            CounterflowLogic srcLogic = ((VisualCounterflowLogic) src).getReferencedComponent();
+            getReferencedComponent().setForwardComputed(srcLogic.isForwardComputed());
+            getReferencedComponent().setBackwardComputed(srcLogic.isBackwardComputed());
+            getReferencedComponent().setForwardEarlyEvaluation(srcLogic.isForwardEarlyEvaluation());
+            getReferencedComponent().setBackwardEarlyEvaluation(srcLogic.isBackwardEarlyEvaluation());
         }
     }
 

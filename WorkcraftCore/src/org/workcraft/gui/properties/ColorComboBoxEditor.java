@@ -3,8 +3,8 @@ package org.workcraft.gui.properties;
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
@@ -62,8 +62,8 @@ class ColorComboBoxEditor implements ComboBoxEditor, ActionListener {
     private static final JDialog dialog;
 
     static {
-        Color fgColor = CommonEditorSettings.getBackgroundColor();
-        Color bgColor = CommonVisualSettings.getBorderColor();
+        Color fgColor = EditorCommonSettings.getBackgroundColor();
+        Color bgColor = VisualCommonSettings.getBorderColor();
         PreviewPanel preview = new PreviewPanel(
                 "Foreground color", fgColor,
                 "Background color", bgColor);

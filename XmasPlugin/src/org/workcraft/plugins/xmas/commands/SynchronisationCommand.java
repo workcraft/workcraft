@@ -368,7 +368,7 @@ public class SynchronisationCommand implements Command {
             for (Node node : vnet.getNodes()) {
                 if (node instanceof VisualSyncComponent) {   //won't work for sync
                     VisualSyncComponent vsc1 = (VisualSyncComponent) node;
-                    SyncComponent sc1 = vsc1.getReferencedSyncComponent();
+                    SyncComponent sc1 = vsc1.getReferencedComponent();
                     System.out.println("Sync component " + "Sync" + no + " = " + slist.get(no));
                     System.out.println("group1 = " + grnums1.get(no) + " " + "group2 = " + grnums2.get(no));
                     System.out.println("Clk1 = " + slist1.get(no) + " " + "Clk2 = " + slist2.get(no));
@@ -381,7 +381,7 @@ public class SynchronisationCommand implements Command {
                     no++;  //shifted
                 } else if (node instanceof VisualSourceComponent) {
                     VisualSourceComponent vsc2 = (VisualSourceComponent) node;
-                    SourceComponent sc2 = vsc2.getReferencedSourceComponent();
+                    SourceComponent sc2 = vsc2.getReferencedComponent();
                     int sno = sc2.getGr();
                     for (int i1 = 0; i1 < grnums1.size(); i1++) {
                         if (grnums1.get(i1) == sno) gp = slist1.get(i1);
@@ -390,7 +390,7 @@ public class SynchronisationCommand implements Command {
                     sc2.setGp(gp);
                 } else if (node instanceof VisualQueueComponent) {
                     VisualQueueComponent vsc3 = (VisualQueueComponent) node;
-                    QueueComponent sc3 = vsc3.getReferencedQueueComponent();
+                    QueueComponent sc3 = vsc3.getReferencedComponent();
                     int qno = sc3.getGr();
                     for (int i2 = 0; i2 < grnums1.size(); i2++) {
                         if (grnums1.get(i2) == qno) gp = slist1.get(i2);
@@ -410,37 +410,37 @@ public class SynchronisationCommand implements Command {
             for (VisualComponent vp: vg.getComponents()) {
                 if (vp instanceof VisualSourceComponent) {
                     VisualSourceComponent vsc = (VisualSourceComponent) vp;
-                    SourceComponent sc = vsc.getReferencedSourceComponent();
+                    SourceComponent sc = vsc.getReferencedComponent();
                     sc.setGr(gno);
                 } else if (vp instanceof VisualSinkComponent) {
                     VisualSinkComponent vsc = (VisualSinkComponent) vp;
-                    SinkComponent sc = vsc.getReferencedSinkComponent();
+                    SinkComponent sc = vsc.getReferencedComponent();
                     sc.setGr(gno);
                 } else if (vp instanceof VisualFunctionComponent) {
                     VisualFunctionComponent vsc = (VisualFunctionComponent) vp;
-                    FunctionComponent sc = vsc.getReferencedFunctionComponent();
+                    FunctionComponent sc = vsc.getReferencedComponent();
                     sc.setGr(gno);
                 } else if (vp instanceof VisualQueueComponent) {
                     VisualQueueComponent vsc = (VisualQueueComponent) vp;
-                    QueueComponent sc = vsc.getReferencedQueueComponent();
+                    QueueComponent sc = vsc.getReferencedComponent();
                     sc.setGr(gno);
                 } else if (vp instanceof VisualForkComponent) {
                     VisualForkComponent vsc = (VisualForkComponent) vp;
-                    ForkComponent sc = vsc.getReferencedForkComponent();
+                    ForkComponent sc = vsc.getReferencedComponent();
                     sc.setGr(gno);
                     //System.out.println("Fork no = " + gno + " " + sc.getGr());
                 } else if (vp instanceof VisualJoinComponent) {
                     VisualJoinComponent vsc = (VisualJoinComponent) vp;
-                    JoinComponent sc = vsc.getReferencedJoinComponent();
+                    JoinComponent sc = vsc.getReferencedComponent();
                     sc.setGr(gno);
                     //System.out.println("Join no = " + gno + " " + sc.getGr());
                 } else if (vp instanceof VisualSwitchComponent) {
                     VisualSwitchComponent vsc = (VisualSwitchComponent) vp;
-                    SwitchComponent sc = vsc.getReferencedSwitchComponent();
+                    SwitchComponent sc = vsc.getReferencedComponent();
                     sc.setGr(gno);
                 } else if (vp instanceof VisualMergeComponent) {
                     VisualMergeComponent vsc = (VisualMergeComponent) vp;
-                    MergeComponent sc = vsc.getReferencedMergeComponent();
+                    MergeComponent sc = vsc.getReferencedComponent();
                     sc.setGr(gno);
                 }
             }
@@ -526,7 +526,7 @@ public class SynchronisationCommand implements Command {
 
     private void writeJsonInFunction(final VisualXmas vnet, final VisualFunctionComponent vsc) {
         final Xmas cnet = vnet.getMathModel();
-        final FunctionComponent sc = vsc.getReferencedFunctionComponent();
+        final FunctionComponent sc = vsc.getReferencedComponent();
         for (XmasContact contactNode2 : sc.getOutputs()) {
             for (Connection c : cnet.getConnections(contactNode2)) {
                 if (c.getSecond() instanceof XmasContact) {
@@ -543,7 +543,7 @@ public class SynchronisationCommand implements Command {
 
     private void writeJsonInQueue(final VisualXmas vnet, final VisualQueueComponent vsc) {
         final Xmas cnet = vnet.getMathModel();
-        final QueueComponent sc = vsc.getReferencedQueueComponent();
+        final QueueComponent sc = vsc.getReferencedComponent();
         for (XmasContact contactNode2 : sc.getOutputs()) {
             for (Connection c : cnet.getConnections(contactNode2)) {
                 if (c.getSecond() instanceof XmasContact) {
@@ -560,7 +560,7 @@ public class SynchronisationCommand implements Command {
 
     private void writeJsonInSwitch(final VisualXmas vnet, final VisualSwitchComponent vsc) {
         final Xmas cnet = vnet.getMathModel();
-        final SwitchComponent sc = vsc.getReferencedSwitchComponent();
+        final SwitchComponent sc = vsc.getReferencedComponent();
         for (XmasContact contactNode2 : sc.getOutputs()) {
             int cno = 0;
             for (Connection c : cnet.getConnections(contactNode2)) {
@@ -581,7 +581,7 @@ public class SynchronisationCommand implements Command {
 
     private void writeJsonInMerge(final VisualXmas vnet, final VisualMergeComponent vsc) {
         final Xmas cnet = vnet.getMathModel();
-        final MergeComponent sc = vsc.getReferencedMergeComponent();
+        final MergeComponent sc = vsc.getReferencedComponent();
         for (XmasContact contactNode2 : sc.getOutputs()) {
             int cno = 0;
             for (Connection c : cnet.getConnections(contactNode2)) {
@@ -602,7 +602,7 @@ public class SynchronisationCommand implements Command {
 
     private void writeJsonInFork(final VisualXmas vnet, final VisualForkComponent vsc) {
         final Xmas cnet = vnet.getMathModel();
-        final ForkComponent sc = vsc.getReferencedForkComponent();
+        final ForkComponent sc = vsc.getReferencedComponent();
         for (XmasContact contactNode2: sc.getOutputs()) {
             int cno = 0;
             for (Connection c: cnet.getConnections(contactNode2)) {
@@ -623,7 +623,7 @@ public class SynchronisationCommand implements Command {
 
     private void writeJsonInJoin(final VisualXmas vnet, final VisualJoinComponent vsc) {
         final Xmas cnet = vnet.getMathModel();
-        final JoinComponent sc = vsc.getReferencedJoinComponent();
+        final JoinComponent sc = vsc.getReferencedComponent();
         for (XmasContact contactNode2 : sc.getOutputs()) {
             int cno = 0;
             for (Connection c : cnet.getConnections(contactNode2)) {
@@ -642,7 +642,7 @@ public class SynchronisationCommand implements Command {
 
     private void writeJsonOutFunction(final VisualXmas vnet, final VisualFunctionComponent vsc) {
         final Xmas cnet = vnet.getMathModel();
-        final FunctionComponent sc = vsc.getReferencedFunctionComponent();
+        final FunctionComponent sc = vsc.getReferencedComponent();
         for (XmasContact contactNode2 : sc.getInputs()) {
             for (Connection c : cnet.getConnections(contactNode2)) {
                 if (c.getSecond() instanceof XmasContact) {
@@ -661,7 +661,7 @@ public class SynchronisationCommand implements Command {
 
     private void writeJsonOutQueue(final VisualXmas vnet, final VisualQueueComponent vsc) {
         final Xmas cnet = vnet.getMathModel();
-        final QueueComponent sc = vsc.getReferencedQueueComponent();
+        final QueueComponent sc = vsc.getReferencedComponent();
         for (XmasContact contactNode2 : sc.getInputs()) {
             for (Connection c : cnet.getConnections(contactNode2)) {
                 if (c.getSecond() instanceof XmasContact) {
@@ -680,7 +680,7 @@ public class SynchronisationCommand implements Command {
 
     private void writeJsonOutSwitch(final VisualXmas vnet, final VisualSwitchComponent vsc) {
         final Xmas cnet = vnet.getMathModel();
-        final SwitchComponent sc = vsc.getReferencedSwitchComponent();
+        final SwitchComponent sc = vsc.getReferencedComponent();
         for (XmasContact contactNode2 : sc.getInputs()) {
             for (Connection c : cnet.getConnections(contactNode2)) {
                 if (c.getSecond() instanceof XmasContact) {
@@ -699,7 +699,7 @@ public class SynchronisationCommand implements Command {
 
     private void writeJsonOutMerge(final VisualXmas vnet, final VisualMergeComponent vsc) {
         final Xmas cnet = vnet.getMathModel();
-        final MergeComponent sc = vsc.getReferencedMergeComponent();
+        final MergeComponent sc = vsc.getReferencedComponent();
         int cno = 0;
         int cno2 = 0;
         for (XmasContact contactNode2 : sc.getInputs()) {
@@ -731,7 +731,7 @@ public class SynchronisationCommand implements Command {
 
     private void writeJsonOutFork(final VisualXmas vnet, final VisualForkComponent vn) {
         final Xmas cnet = vnet.getMathModel();
-        final ForkComponent sc = vn.getReferencedForkComponent();
+        final ForkComponent sc = vn.getReferencedComponent();
         for (XmasContact contactNode2 : sc.getInputs()) {
             for (Connection c : cnet.getConnections(contactNode2)) {
                 if (c.getSecond() instanceof XmasContact) {
@@ -750,7 +750,7 @@ public class SynchronisationCommand implements Command {
 
     private void writeJsonOutJoin(final VisualXmas vnet, final VisualJoinComponent vsc) {
         final Xmas cnet = vnet.getMathModel();
-        final JoinComponent sc = vsc.getReferencedJoinComponent();
+        final JoinComponent sc = vsc.getReferencedComponent();
         int cno = 0;
         int cno2 = 0;
         for (XmasContact contactNode2: sc.getInputs()) {

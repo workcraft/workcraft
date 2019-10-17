@@ -2,14 +2,14 @@ package org.workcraft.plugins.xmas.components;
 
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.XmasContact.IOType;
+import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
@@ -17,7 +17,7 @@ import java.awt.geom.Rectangle2D;
 
 public class VisualXmasContact extends VisualComponent implements StateObserver {
 
-    private static final double SIZE = 0.3 * CommonVisualSettings.getNodeSize();
+    private static final double SIZE = 0.3 * VisualCommonSettings.getNodeSize();
 
     public VisualXmasContact(XmasContact contact) {
         super(contact);
@@ -26,31 +26,21 @@ public class VisualXmasContact extends VisualComponent implements StateObserver 
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualXmasContact, IOType>(
-                this, XmasContact.PROPERTY_IO_TYPE, IOType.class, false, false) {
-            @Override
-            public void setter(VisualXmasContact object, IOType value) {
-                object.getReferencedContact().setIOType(value);
-            }
-            @Override
-            public IOType getter(VisualXmasContact object) {
-                return object.getReferencedContact().getIOType();
-            }
-            @Override
-            public boolean isEditable() {
-                return false;
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(IOType.class, XmasContact.PROPERTY_IO_TYPE,
+                (value) -> getReferencedComponent().setIOType(value),
+                () -> getReferencedComponent().getIOType())
+                .setReadonly());
     }
 
-    public XmasContact getReferencedContact() {
-        return (XmasContact) getReferencedComponent();
+    @Override
+    public XmasContact getReferencedComponent() {
+        return (XmasContact) super.getReferencedComponent();
     }
 
     @Override
     public Shape getShape() {
         double pos = -0.5 * SIZE;
-        if ((getReferencedContact() == null) || (getReferencedContact().getIOType() == IOType.INPUT)) {
+        if ((getReferencedComponent() == null) || (getReferencedComponent().getIOType() == IOType.INPUT)) {
             return new Ellipse2D.Double(pos, pos, SIZE, SIZE);
         }
         return new Rectangle2D.Double(pos, pos, SIZE, SIZE);
@@ -80,11 +70,11 @@ public class VisualXmasContact extends VisualComponent implements StateObserver 
     }
 
     public boolean isInput() {
-        return getReferencedContact().isInput();
+        return getReferencedComponent().isInput();
     }
 
     public boolean isOutput() {
-        return getReferencedContact().isOutput();
+        return getReferencedComponent().isOutput();
     }
 
     @Override

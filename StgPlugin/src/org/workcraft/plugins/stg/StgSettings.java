@@ -8,8 +8,10 @@ import org.workcraft.utils.DialogUtils;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class StgSettings extends AbstractModelSettings {
+
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "StgSettings";
 
@@ -37,113 +39,51 @@ public class StgSettings extends AbstractModelSettings {
     private static Mutex.Protocol mutexProtocol = defaultMutexProtocol;
     private static double transitionFontSize = defaultTransitionFontSize;
 
-    public StgSettings() {
-        properties.add(new PropertyDeclaration<StgSettings, Integer>(
-                this, "Maximum number of encoding core density map levels", Integer.class) {
-            @Override
-            public void setter(StgSettings object, Integer value) {
-                setDensityMapLevelLimit(value);
-            }
-            @Override
-            public Integer getter(StgSettings object) {
-                return getDensityMapLevelLimit();
-            }
-        });
+    static {
+        properties.add(new PropertyDeclaration<>(Integer.class,
+                "Maximum number of encoding core density map levels",
+                StgSettings::setDensityMapLevelLimit,
+                StgSettings::getDensityMapLevelLimit));
 
-        properties.add(new PropertyDeclaration<StgSettings, String>(
-                this, "Signal low level suffix for conversion to STG", String.class) {
-            @Override
-            public void setter(StgSettings object, String value) {
-                if (value.length() < 2) {
-                    signalLevelWarning();
-                }
-                if (checkSignalLevelSuffix(value)) {
-                    signalLevelError();
-                } else {
-                    setLowLevelSuffix(value);
-                }
-            }
-            @Override
-            public String getter(StgSettings object) {
-                return getLowLevelSuffix();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Signal low level suffix for conversion to STG",
+                (value) -> setLevelSuffix(value, StgSettings::setLowLevelSuffix),
+                StgSettings::getLowLevelSuffix));
 
-        properties.add(new PropertyDeclaration<StgSettings, String>(
-                this, "Signal high level suffix for conversion to STG", String.class) {
-            @Override
-            public void setter(StgSettings object, String value) {
-                if (value.length() < 2) {
-                    signalLevelWarning();
-                }
-                if (checkSignalLevelSuffix(value)) {
-                    signalLevelError();
-                } else {
-                    setHighLevelSuffix(value);
-                }
-            }
-            @Override
-            public String getter(StgSettings object) {
-                return getHighLevelSuffix();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Signal high level suffix for conversion to STG",
+                (value) -> setLevelSuffix(value, StgSettings::setHighLevelSuffix),
+                StgSettings::getHighLevelSuffix));
 
-        properties.add(new PropertyDeclaration<StgSettings, Boolean>(
-                this, "Group signal places and transitions on conversion to STG", Boolean.class) {
-            @Override
-            public void setter(StgSettings object, Boolean value) {
-                setGroupSignalConversion(value);
-            }
-            @Override
-            public Boolean getter(StgSettings object) {
-                return getGroupSignalConversion();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Group signal places and transitions on conversion to STG",
+                StgSettings::setGroupSignalConversion,
+                StgSettings::getGroupSignalConversion));
 
-        properties.add(new PropertyDeclaration<StgSettings, Boolean>(
-                this, "Show transition instance property", Boolean.class) {
-            @Override
-            public void setter(StgSettings object, Boolean value) {
-                setShowTransitionInstance(value);
-            }
-            @Override
-            public Boolean getter(StgSettings object) {
-                return getShowTransitionInstance();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Show transition instance property",
+                StgSettings::setShowTransitionInstance,
+                StgSettings::getShowTransitionInstance));
 
-        properties.add(new PropertyDeclaration<StgSettings, Double>(
-                this, "Transition font size (cm)", Double.class) {
-            @Override
-            public void setter(StgSettings object, Double value) {
-                setTransitionFontSize(value);
-            }
-            @Override
-            public Double getter(StgSettings object) {
-                return getTransitionFontSize();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Transition font size (cm)",
+                StgSettings::setTransitionFontSize,
+                StgSettings::getTransitionFontSize));
     }
 
-    private boolean checkSignalLevelSuffix(String value) {
-        boolean badValue = false;
+    private static void setLevelSuffix(String value, Consumer<String> setter) {
         for (int i = 0; i < value.length(); ++i) {
             char c = value.charAt(i);
             if (!Character.isDigit(c) && !Character.isLetter(c) && (c != '_')) {
-                badValue = true;
-                break;
+                DialogUtils.showError("Signal level suffix must only consist of letters, numbers and underscores.");
+                return;
             }
         }
-        return badValue;
-    }
-
-    private void signalLevelError() {
-        DialogUtils.showError("Signal level suffix must only consist of letters, numbers and underscores.");
-    }
-
-    private void signalLevelWarning() {
-        DialogUtils.showWarning("Short signal level suffix increases the risk of name clashing.\n"
-                        + "Consider making it at least two characters long.");
+        if (value.length() < 2) {
+            DialogUtils.showWarning("Short signal level suffix increases the risk of name clashing.\n"
+                    + "Consider making it at least two characters long.");
+        }
+        setter.accept(value);
     }
 
     @Override

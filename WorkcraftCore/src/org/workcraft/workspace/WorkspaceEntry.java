@@ -12,8 +12,8 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.MainWindowActions;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.observation.*;
-import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
-import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
+import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
+import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.Hierarchy;
 
@@ -139,7 +139,7 @@ public class WorkspaceEntry implements ObservableState {
         String suffix = "";
         VisualModel model = getModelEntry().getVisualModel();
         if (model != null) {
-            switch (CommonEditorSettings.getTitleStyle()) {
+            switch (EditorCommonSettings.getTitleStyle()) {
             case LONG:
                 suffix = " - " + model.getDisplayName();
                 break;
@@ -234,7 +234,7 @@ public class WorkspaceEntry implements ObservableState {
             savedMemento = capturedMemento;
         }
 
-        if (CommonDebugSettings.getCopyModelOnChange()) {
+        if (DebugCommonSettings.getCopyModelOnChange()) {
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             String str = unzipInputStream(new ZipInputStream(capturedMemento.getStream(), StandardCharsets.UTF_8));
             clipboard.setContents(new StringSelection(str), null);
@@ -369,7 +369,7 @@ public class WorkspaceEntry implements ObservableState {
             // Save the remaining nodes to clipboard.
             final Framework framework = Framework.getInstance();
             framework.clipboard = framework.saveModel(modelEntry);
-            if (CommonDebugSettings.getCopyModelOnChange()) {
+            if (DebugCommonSettings.getCopyModelOnChange()) {
                 // Copy the memento clipboard into the system-wide clipboard as a string.
                 Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
                 clipboard.setContents(new StringSelection(getClipboardAsString()), null);

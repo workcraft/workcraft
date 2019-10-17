@@ -8,7 +8,7 @@ import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CommonEditorSettings extends AbstractCommonSettings {
+public class EditorCommonSettings extends AbstractCommonSettings {
 
     public enum TitleStyle {
         MINIMAL("minimal: Title"),
@@ -81,198 +81,86 @@ public class CommonEditorSettings extends AbstractCommonSettings {
     private static boolean openNonvisual = defaultOpenNonvisual;
     private static int redrawInterval = defaultRedrawInterval;
 
-    public CommonEditorSettings() {
-        properties.add(new PropertyDeclaration<CommonEditorSettings, Color>(
-                this, "Background color", Color.class) {
-            @Override
-            public void setter(CommonEditorSettings object, Color value) {
-                setBackgroundColor(value);
-            }
-            @Override
-            public Color getter(CommonEditorSettings object) {
-                return getBackgroundColor();
-            }
-        });
+    static {
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Background color",
+                EditorCommonSettings::setBackgroundColor,
+                EditorCommonSettings::getBackgroundColor));
 
-        properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
-                this, "Show grid", Boolean.class) {
-            @Override
-            public void setter(CommonEditorSettings object, Boolean value) {
-                setGridVisibility(value);
-            }
-            @Override
-            public Boolean getter(CommonEditorSettings object) {
-                return getGridVisibility();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Show grid",
+                EditorCommonSettings::setGridVisibility,
+                EditorCommonSettings::getGridVisibility));
 
-        properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
-                this, "Use light grid", Boolean.class) {
-            @Override
-            public void setter(CommonEditorSettings object, Boolean value) {
-                setLightGrid(value);
-            }
-            @Override
-            public Boolean getter(CommonEditorSettings object) {
-                return getLightGrid();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Use light grid",
+                EditorCommonSettings::setLightGrid,
+                EditorCommonSettings::getLightGrid));
 
-        properties.add(new PropertyDeclaration<CommonEditorSettings, Double>(
-                this, "Light grid cross size (mm)", Double.class) {
-            @Override
-            public void setter(CommonEditorSettings object, Double value) {
-                setLightGridSize(value);
-            }
-            @Override
-            public Double getter(CommonEditorSettings object) {
-                return getLightGridSize();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Light grid cross size (mm)",
+                EditorCommonSettings::setLightGridSize,
+                EditorCommonSettings::getLightGridSize));
 
-        properties.add(new PropertyDeclaration<CommonEditorSettings, Color>(
-                this, "Grid color", Color.class) {
-            @Override
-            public void setter(CommonEditorSettings object, Color value) {
-                setGridColor(value);
-            }
-            @Override
-            public Color getter(CommonEditorSettings object) {
-                return getGridColor();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Grid color",
+                EditorCommonSettings::setGridColor,
+                EditorCommonSettings::getGridColor));
 
-        properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
-                this, "Show rulers", Boolean.class) {
-            @Override
-            public void setter(CommonEditorSettings object, Boolean value) {
-                setRulerVisibility(value);
-            }
-            @Override
-            public Boolean getter(CommonEditorSettings object) {
-                return getRulerVisibility();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Show rulers",
+                EditorCommonSettings::setRulerVisibility,
+                EditorCommonSettings::getRulerVisibility));
 
-        properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
-                this, "Show hints", Boolean.class) {
-            @Override
-            public void setter(CommonEditorSettings object, Boolean value) {
-                setHintVisibility(value);
-            }
-            @Override
-            public Boolean getter(CommonEditorSettings object) {
-                return getHintVisibility();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Show hints",
+                EditorCommonSettings::setHintVisibility,
+                EditorCommonSettings::getHintVisibility));
 
-        properties.add(new PropertyDeclaration<CommonEditorSettings, Color>(
-                this, "Hint color", Color.class) {
-            @Override
-            public void setter(CommonEditorSettings object, Color value) {
-                setHintColor(value);
-            }
-            @Override
-            public Color getter(CommonEditorSettings object) {
-                return getHintColor();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Hint color",
+                EditorCommonSettings::setHintColor,
+                EditorCommonSettings::getHintColor));
 
-        properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
-                this, "Show issues", Boolean.class) {
-            @Override
-            public void setter(CommonEditorSettings object, Boolean value) {
-                setIssueVisibility(value);
-            }
-            @Override
-            public Boolean getter(CommonEditorSettings object) {
-                return getIssueVisibility();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Show issues",
+                EditorCommonSettings::setIssueVisibility,
+                EditorCommonSettings::getIssueVisibility));
 
-        properties.add(new PropertyDeclaration<CommonEditorSettings, Color>(
-                this, "Issue color", Color.class) {
-            @Override
-            public void setter(CommonEditorSettings object, Color value) {
-                setIssueColor(value);
-            }
-            @Override
-            public Color getter(CommonEditorSettings object) {
-                return getIssueColor();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Issue color",
+                EditorCommonSettings::setIssueColor,
+                EditorCommonSettings::getIssueColor));
 
-        properties.add(new PropertyDeclaration<CommonEditorSettings, Integer>(
-                this, "Issue visibility interval (ms)", Integer.class) {
-            @Override
-            public void setter(CommonEditorSettings object, Integer value) {
-                setFlashInterval(value);
-            }
-            @Override
-            public Integer getter(CommonEditorSettings object) {
-                return getFlashInterval();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Integer.class,
+                "Issue visibility interval (ms)",
+                EditorCommonSettings::setFlashInterval,
+                EditorCommonSettings::getFlashInterval));
 
-        properties.add(new PropertyDeclaration<CommonEditorSettings, Integer>(
-                this, "Number of recent files (0-99)", Integer.class) {
-            @Override
-            public void setter(CommonEditorSettings object, Integer value) {
-                setRecentCount(value);
-            }
-            @Override
-            public Integer getter(CommonEditorSettings object) {
-                return getRecentCount();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Integer.class,
+                "Number of recent files (0-99)",
+                EditorCommonSettings::setRecentCount,
+                EditorCommonSettings::getRecentCount));
 
-        properties.add(new PropertyDeclaration<CommonEditorSettings, TitleStyle>(
-                this, "Model title style", TitleStyle.class) {
-            @Override
-            public void setter(CommonEditorSettings object, TitleStyle value) {
-                setTitleStyle(value);
-            }
-            @Override
-            public TitleStyle getter(CommonEditorSettings object) {
-                return getTitleStyle();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(TitleStyle.class,
+                "Model title style",
+                EditorCommonSettings::setTitleStyle,
+                EditorCommonSettings::getTitleStyle));
 
-        properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
-                this, "Show names as absolute paths", Boolean.class) {
-            @Override
-            public void setter(CommonEditorSettings object, Boolean value) {
-                setShowAbsolutePaths(value);
-            }
-            @Override
-            public Boolean getter(CommonEditorSettings object) {
-                return getShowAbsolutePaths();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Show names as absolute paths",
+                EditorCommonSettings::setShowAbsolutePaths,
+                EditorCommonSettings::getShowAbsolutePaths));
 
-        properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
-                this, "Open non-visual models (imported or converted)", Boolean.class) {
-            @Override
-            public void setter(CommonEditorSettings object, Boolean value) {
-                setOpenNonvisual(value);
-            }
-            @Override
-            public Boolean getter(CommonEditorSettings object) {
-                return getOpenNonvisual();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Open non-visual models (imported or converted)",
+                EditorCommonSettings::setOpenNonvisual,
+                EditorCommonSettings::getOpenNonvisual));
 
-        properties.add(new PropertyDeclaration<CommonEditorSettings, Integer>(
-                this, "Minimal redraw interval (ms)", Integer.class) {
-            @Override
-            public void setter(CommonEditorSettings object, Integer value) {
-                setRedrawInterval(value);
-            }
-            @Override
-            public Integer getter(CommonEditorSettings object) {
-                return getRedrawInterval();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Integer.class,
+                "Minimal redraw interval (ms)",
+                EditorCommonSettings::setRedrawInterval,
+                EditorCommonSettings::getRedrawInterval));
     }
 
     @Override

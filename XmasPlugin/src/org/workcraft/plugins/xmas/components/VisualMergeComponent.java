@@ -20,8 +20,9 @@ public class VisualMergeComponent extends VisualXmasComponent {
         }
     }
 
-    public MergeComponent getReferencedMergeComponent() {
-        return (MergeComponent) getReferencedComponent();
+    @Override
+    public MergeComponent getReferencedComponent() {
+        return (MergeComponent) super.getReferencedComponent();
     }
 
     @Override

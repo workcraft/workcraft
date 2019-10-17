@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class DfsSettings extends AbstractModelSettings {
+
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "DfsSettings";
 
@@ -49,43 +50,21 @@ public class DfsSettings extends AbstractModelSettings {
         }
     }
 
-    public DfsSettings() {
-        properties.add(new PropertyDeclaration<DfsSettings, Color>(
-                this, "Computed logic color", Color.class) {
-            @Override
-            public void setter(DfsSettings object, Color value) {
-                setComputedLogicColor(value);
-            }
-            @Override
-            public Color getter(DfsSettings object) {
-                return getComputedLogicColor();
-            }
-        });
+    static {
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Computed logic color",
+                DfsSettings::setComputedLogicColor,
+                DfsSettings::getComputedLogicColor));
 
-        properties.add(new PropertyDeclaration<DfsSettings, Color>(
-                this, "Register synchronisation color", Color.class) {
-            @Override
-            public void setter(DfsSettings object, Color value) {
-                setSynchronisationRegisterColor(value);
-            }
-            @Override
-            public Color getter(DfsSettings object) {
-                return getSynchronisationRegisterColor();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Register synchronisation color",
+                DfsSettings::setSynchronisationRegisterColor,
+                DfsSettings::getSynchronisationRegisterColor));
 
-        properties.add(new PropertyDeclaration<DfsSettings, Palette>(
-                this, "Token palette", Palette.class) {
-            @Override
-            public void setter(DfsSettings object, Palette value) {
-                setTokenPalette(value);
-            }
-            @Override
-            public Palette getter(DfsSettings object) {
-                return getTokenPalette();
-            }
-        });
-
+        properties.add(new PropertyDeclaration<>(Palette.class,
+                "Token palette",
+                DfsSettings::setTokenPalette,
+                DfsSettings::getTokenPalette));
     }
 
     @Override

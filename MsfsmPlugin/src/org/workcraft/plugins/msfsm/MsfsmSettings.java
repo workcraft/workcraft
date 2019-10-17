@@ -35,78 +35,36 @@ public class MsfsmSettings extends AbstractToolSettings {
     private static Boolean printStdout = defaultPrintStdout;
     private static Boolean printStderr = defaultPrintStderr;
 
-    public MsfsmSettings() {
-        properties.add(new PropertyDeclaration<MsfsmSettings, Boolean>(
-                this, "Activate MSFSM backend (experimental) - requires restart", Boolean.class) {
-            @Override
-            public void setter(MsfsmSettings object, Boolean value) {
-                setShowInMenu(value);
-            }
-            @Override
-            public Boolean getter(MsfsmSettings object) {
-                return getShowInMenu();
-            }
-        });
+    static {
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Activate MSFSM backend (experimental) - requires restart",
+                MsfsmSettings::setShowInMenu,
+                MsfsmSettings::getShowInMenu));
 
-        properties.add(new PropertyDeclaration<MsfsmSettings, String>(
-                this, "MSFSM command", String.class) {
-            @Override
-            public void setter(MsfsmSettings object, String value) {
-                setCommand(value);
-            }
-            @Override
-            public String getter(MsfsmSettings object) {
-                return getCommand();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "MSFSM command",
+                MsfsmSettings::setCommand,
+                MsfsmSettings::getCommand));
 
-        properties.add(new PropertyDeclaration<MsfsmSettings, String>(
-                this, "Additional parameters", String.class) {
-            @Override
-            public void setter(MsfsmSettings object, String value) {
-                setArgs(value);
-            }
-            @Override
-            public String getter(MsfsmSettings object) {
-                return getArgs();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Additional parameters",
+                MsfsmSettings::setArgs,
+                MsfsmSettings::getArgs));
 
-        properties.add(new PropertyDeclaration<MsfsmSettings, Boolean>(
-                this, "Edit additional parameters before every call", Boolean.class) {
-            @Override
-            public void setter(MsfsmSettings object, Boolean value) {
-                setAdvancedMode(value);
-            }
-            @Override
-            public Boolean getter(MsfsmSettings object) {
-                return getAdvancedMode();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Edit additional parameters before every call",
+                MsfsmSettings::setAdvancedMode,
+                MsfsmSettings::getAdvancedMode));
 
-        properties.add(new PropertyDeclaration<MsfsmSettings, Boolean>(
-                this, "Output stdout", Boolean.class) {
-            @Override
-            public void setter(MsfsmSettings object, Boolean value) {
-                setPrintStdout(value);
-            }
-            @Override
-            public Boolean getter(MsfsmSettings object) {
-                return getPrintStdout();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Output stdout",
+                MsfsmSettings::setPrintStdout,
+                MsfsmSettings::getPrintStdout));
 
-        properties.add(new PropertyDeclaration<MsfsmSettings, Boolean>(
-                this, "Output stderr", Boolean.class) {
-            @Override
-            public void setter(MsfsmSettings object, Boolean value) {
-                setPrintStderr(value);
-            }
-            @Override
-            public Boolean getter(MsfsmSettings object) {
-                return getPrintStderr();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Output stderr",
+                MsfsmSettings::setPrintStderr,
+                MsfsmSettings::getPrintStderr));
     }
 
     @Override

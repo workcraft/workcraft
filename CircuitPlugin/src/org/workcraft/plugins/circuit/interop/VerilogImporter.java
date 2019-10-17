@@ -14,7 +14,7 @@ import org.workcraft.formula.BooleanFormula;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Importer;
-import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
+import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.expression.Expression;
@@ -243,7 +243,7 @@ public class VerilogImporter implements Importer {
         List<VerilogModule> result = null;
         try {
             VerilogParser parser = new VerilogParser(in);
-            if (CommonDebugSettings.getParserTracing()) {
+            if (DebugCommonSettings.getParserTracing()) {
                 parser.enable_tracing();
             } else {
                 parser.disable_tracing();
@@ -252,7 +252,7 @@ public class VerilogImporter implements Importer {
         } catch (FormatException | org.workcraft.plugins.circuit.jj.verilog.ParseException e) {
             throw new DeserialisationException(e);
         }
-        if (CommonDebugSettings.getVerboseImport()) {
+        if (DebugCommonSettings.getVerboseImport()) {
             LogUtils.logInfo("Parsed Verilog modules");
             for (VerilogModule verilogModule : result) {
                 if (!verilogModule.isEmpty()) {
@@ -438,7 +438,7 @@ public class VerilogImporter implements Importer {
 
         String resetFunction = ExpressionUtils.extactResetExpression(function, verilogAssign.name);
         Expression resetExpression = convertStringToExpression(resetFunction);
-        if (CommonDebugSettings.getVerboseImport()) {
+        if (DebugCommonSettings.getVerboseImport()) {
             LogUtils.logInfo("Extracting SET and RESET from assign " + verilogAssign.name + " = " + verilogAssign.formula);
             LogUtils.logInfo("  Function: " + function);
             LogUtils.logInfo("  Set function: " + setFunction);
@@ -470,7 +470,7 @@ public class VerilogImporter implements Importer {
     private Expression convertStringToExpression(String formula) {
         InputStream expressionStream = new ByteArrayInputStream(formula.getBytes());
         ExpressionParser expressionParser = new ExpressionParser(expressionStream);
-        if (CommonDebugSettings.getParserTracing()) {
+        if (DebugCommonSettings.getParserTracing()) {
             expressionParser.enable_tracing();
         } else {
             expressionParser.disable_tracing();

@@ -8,7 +8,8 @@ import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CommonLogSettings extends AbstractCommonSettings {
+public class LogCommonSettings extends AbstractCommonSettings {
+
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CommonLogSettings";
 
@@ -33,78 +34,36 @@ public class CommonLogSettings extends AbstractCommonSettings {
     private static Color stdoutBackground = defaultStdoutBackground;
     private static Color stderrBackground = defaultStderrBackground;
 
-    public CommonLogSettings() {
-        properties.add(new PropertyDeclaration<CommonLogSettings, Color>(
-                this, "Text color", Color.class) {
-            @Override
-            public void setter(CommonLogSettings object, Color value) {
-                setTextColor(value);
-            }
-            @Override
-            public Color getter(CommonLogSettings object) {
-                return getTextColor();
-            }
-        });
+    static {
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Text color",
+                LogCommonSettings::setTextColor,
+                LogCommonSettings::getTextColor));
 
-        properties.add(new PropertyDeclaration<CommonLogSettings, Color>(
-                this, "Important info background", Color.class) {
-            @Override
-            public void setter(CommonLogSettings object, Color value) {
-                setInfoBackground(value);
-            }
-            @Override
-            public Color getter(CommonLogSettings object) {
-                return getInfoBackground();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Important info background",
+                LogCommonSettings::setInfoBackground,
+                LogCommonSettings::getInfoBackground));
 
-        properties.add(new PropertyDeclaration<CommonLogSettings, Color>(
-                this, "Warning background", Color.class) {
-            @Override
-            public void setter(CommonLogSettings object, Color value) {
-                setWarningBackground(value);
-            }
-            @Override
-            public Color getter(CommonLogSettings object) {
-                return getWarningBackground();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Warning background",
+                LogCommonSettings::setWarningBackground,
+                LogCommonSettings::getWarningBackground));
 
-        properties.add(new PropertyDeclaration<CommonLogSettings, Color>(
-                this, "Error background", Color.class) {
-            @Override
-            public void setter(CommonLogSettings object, Color value) {
-                setErrorBackground(value);
-            }
-            @Override
-            public Color getter(CommonLogSettings object) {
-                return getErrorBackground();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Error background",
+                LogCommonSettings::setErrorBackground,
+                LogCommonSettings::getErrorBackground));
 
-        properties.add(new PropertyDeclaration<CommonLogSettings, Color>(
-                this, "Backend stdout background", Color.class) {
-            @Override
-            public void setter(CommonLogSettings object, Color value) {
-                setStdoutBackground(value);
-            }
-            @Override
-            public Color getter(CommonLogSettings object) {
-                return getStdoutBackground();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Backend stdout background",
+                LogCommonSettings::setStdoutBackground,
+                LogCommonSettings::getStdoutBackground));
 
-        properties.add(new PropertyDeclaration<CommonLogSettings, Color>(
-                this, "Backend stderr background", Color.class) {
-            @Override
-            public void setter(CommonLogSettings object, Color value) {
-                setStderrBackground(value);
-            }
-            @Override
-            public Color getter(CommonLogSettings object) {
-                return getStderrBackground();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Backend stderr background",
+                LogCommonSettings::setStderrBackground,
+                LogCommonSettings::getStderrBackground));
     }
 
     @Override

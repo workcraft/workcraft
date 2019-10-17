@@ -47,6 +47,26 @@ public class ActionListDeclaration implements PropertyDescriptor<ActionList> {
     }
 
     @Override
+    public boolean isEditable() {
+        return true;
+    }
+
+    @Override
+    public boolean isVisible() {
+        return true;
+    }
+
+    @Override
+    public boolean isCombinable() {
+        return false;
+    }
+
+    @Override
+    public boolean isTemplatable() {
+        return false;
+    }
+
+    @Override
     public boolean isSpan() {
         return name == null;
     }

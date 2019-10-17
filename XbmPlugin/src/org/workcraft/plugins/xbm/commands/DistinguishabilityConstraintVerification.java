@@ -58,7 +58,7 @@ public class DistinguishabilityConstraintVerification extends AbstractVerificati
                 allBurstEvents.addAll(subsetCompulsories);
                 visualXbm.selectNone();
                 for (VisualBurstEvent vBurstEvent: Hierarchy.getDescendantsOfType(visualXbm.getRoot(), VisualBurstEvent.class)) {
-                    BurstEvent burstEvent = vBurstEvent.getReferencedBurstEvent();
+                    BurstEvent burstEvent = vBurstEvent.getReferencedConnection();
                     if (allBurstEvents.contains(burstEvent)) {
                         visualXbm.addToSelection(vBurstEvent);
                     }

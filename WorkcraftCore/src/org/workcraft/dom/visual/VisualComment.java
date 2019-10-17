@@ -6,7 +6,7 @@ import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.math.CommentNode;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.builtin.settings.CommonCommentSettings;
+import org.workcraft.plugins.builtin.settings.CommentCommonSettings;
 import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
@@ -20,16 +20,16 @@ import java.awt.geom.Rectangle2D;
 public class VisualComment extends VisualComponent {
     public static final String PROPERTY_TEXT_ALIGNMENT = "Text alignment";
 
-    protected double size = CommonCommentSettings.getBaseSize();
-    protected double strokeWidth = CommonCommentSettings.getStrokeWidth();
-    protected Alignment textAlignment = CommonCommentSettings.getTextAlignment();
+    protected double size = CommentCommonSettings.getBaseSize();
+    protected double strokeWidth = CommentCommonSettings.getStrokeWidth();
+    protected Alignment textAlignment = CommentCommonSettings.getTextAlignment();
 
     public VisualComment(CommentNode note) {
         super(note);
         setLabelPositioning(Positioning.CENTER);
-        setForegroundColor(CommonCommentSettings.getBorderColor());
-        setFillColor(CommonCommentSettings.getFillColor());
-        setLabelColor(CommonCommentSettings.getTextColor());
+        setForegroundColor(CommentCommonSettings.getBorderColor());
+        setFillColor(CommentCommonSettings.getFillColor());
+        setLabelColor(CommentCommonSettings.getTextColor());
         removePropertyDeclarationByName(PROPERTY_NAME_POSITIONING);
         removePropertyDeclarationByName(PROPERTY_NAME_COLOR);
         removePropertyDeclarationByName(PROPERTY_LABEL_POSITIONING);
@@ -37,17 +37,8 @@ public class VisualComment extends VisualComponent {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualComment, Alignment>(
-                this, PROPERTY_TEXT_ALIGNMENT, Alignment.class, true, true) {
-            @Override
-            public void setter(VisualComment object, Alignment value) {
-                object.setTextAlignment(value);
-            }
-            @Override
-            public Alignment getter(VisualComment object) {
-                return object.getTextAlignment();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Alignment.class, PROPERTY_TEXT_ALIGNMENT,
+                this::setTextAlignment, this::getTextAlignment).setCombinable().setTemplatable());
     }
 
     public Alignment getTextAlignment() {
@@ -63,7 +54,7 @@ public class VisualComment extends VisualComponent {
 
     @Override
     public Font getLabelFont() {
-        return LABEL_FONT.deriveFont((float) CommonCommentSettings.getFontSize());
+        return LABEL_FONT.deriveFont((float) CommentCommonSettings.getFontSize());
     }
 
     @Override

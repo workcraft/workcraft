@@ -7,14 +7,14 @@ import org.workcraft.dom.visual.*;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
+import org.workcraft.plugins.cpog.formula.CpogBooleanReplacer;
 import org.workcraft.plugins.cpog.formula.CpogFormulaVariable;
 import org.workcraft.plugins.cpog.formula.CpogVisitor;
-import org.workcraft.plugins.cpog.formula.CpogBooleanReplacer;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -69,22 +69,13 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualVertex, RenderType>(
-                this, PROPERTY_RENDER_TYPE, RenderType.class, true, true) {
-            @Override
-            public void setter(VisualVertex object, RenderType value) {
-                object.setRenderType(value);
-            }
-            @Override
-            public RenderType getter(VisualVertex object) {
-                return object.getRenderType();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(RenderType.class, PROPERTY_RENDER_TYPE,
+                this::setRenderType, this::getRenderType).setCombinable().setTemplatable());
     }
 
     @Override
     public Shape getShape() {
-        double size = CommonVisualSettings.getNodeSize() - CommonVisualSettings.getStrokeWidth();
+        double size = VisualCommonSettings.getNodeSize() - VisualCommonSettings.getStrokeWidth();
         double pos = -0.5 * size;
         Shape shape = new Ellipse2D.Double(pos, pos, size, size);
         if (getRenderType() != null) {
@@ -116,7 +107,7 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
         g.setColor(Coloriser.colorise(getFillColor(), background));
         g.fill(shape);
         g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-        double strokeWidth = CommonVisualSettings.getStrokeWidth();
+        double strokeWidth = VisualCommonSettings.getStrokeWidth();
         if (value == Zero.getInstance()) {
             g.setStroke(new BasicStroke((float) strokeWidth, BasicStroke.CAP_BUTT,
                     BasicStroke.JOIN_MITER, 1.0f, new float[] {0.18f, 0.18f}, 0.00f));
@@ -160,16 +151,17 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
         }
     }
 
-    public Vertex getMathVertex() {
-        return (Vertex) getReferencedComponent();
+    @Override
+    public Vertex getReferencedComponent() {
+        return (Vertex) super.getReferencedComponent();
     }
 
     public BooleanFormula getCondition() {
-        return getMathVertex().getCondition();
+        return getReferencedComponent().getCondition();
     }
 
     public void setCondition(BooleanFormula value) {
-        getMathVertex().setCondition(value);
+        getReferencedComponent().setCondition(value);
     }
 
     public BooleanFormula evaluate() {

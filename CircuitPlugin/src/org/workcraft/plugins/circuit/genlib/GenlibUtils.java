@@ -2,7 +2,7 @@ package org.workcraft.plugins.circuit.genlib;
 
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.formula.BooleanFormula;
-import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
+import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.Contact.IOType;
@@ -38,7 +38,7 @@ public class GenlibUtils {
         circuit.setName(contact, gate.function.name);
         String setFunction = getSetFunction(gate);
         String resetFunction = getResetFunction(gate);
-        if (CommonDebugSettings.getVerboseImport()) {
+        if (DebugCommonSettings.getVerboseImport()) {
             LogUtils.logInfo("Instantiating gate " + gate.name + " " + gate.function.name + "=" + gate.function.formula);
             LogUtils.logInfo("  Set function: " + setFunction);
             LogUtils.logInfo("  Reset function: " + resetFunction);
@@ -83,7 +83,7 @@ public class GenlibUtils {
                 try {
                     InputStream genlibInputStream = new FileInputStream(file);
                     GenlibParser genlibParser = new GenlibParser(genlibInputStream);
-                    if (CommonDebugSettings.getParserTracing()) {
+                    if (DebugCommonSettings.getParserTracing()) {
                         genlibParser.enable_tracing();
                     } else {
                         genlibParser.disable_tracing();

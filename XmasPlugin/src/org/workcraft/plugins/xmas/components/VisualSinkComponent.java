@@ -26,8 +26,9 @@ public class VisualSinkComponent extends VisualXmasComponent {
         }
     }
 
-    public SinkComponent getReferencedSinkComponent() {
-        return (SinkComponent) getReferencedComponent();
+    @Override
+    public SinkComponent getReferencedComponent() {
+        return (SinkComponent) super.getReferencedComponent();
     }
 
     @Override

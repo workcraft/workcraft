@@ -5,10 +5,10 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Stylable;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.dfs.decorations.CounterflowRegisterDecoration;
+import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -26,29 +26,17 @@ public class VisualCounterflowRegister extends VisualAbstractRegister {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualCounterflowRegister, Boolean>(
-                this, CounterflowRegister.PROPERTY_OR_MARKED, Boolean.class, true, true) {
-            @Override
-            public void setter(VisualCounterflowRegister object, Boolean value) {
-                object.getReferencedCounterflowRegister().setOrMarked(value);
-            }
-            @Override
-            public Boolean getter(VisualCounterflowRegister object) {
-                return object.getReferencedCounterflowRegister().isOrMarked();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class,
+                CounterflowRegister.PROPERTY_OR_MARKED,
+                (value) -> getReferencedComponent().setOrMarked(value),
+                () -> getReferencedComponent().isOrMarked())
+                .setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualCounterflowRegister, Boolean>(
-                this, CounterflowRegister.PROPERTY_AND_MARKED, Boolean.class, true, true) {
-            @Override
-            public void setter(VisualCounterflowRegister object, Boolean value) {
-                object.getReferencedCounterflowRegister().setAndMarked(value);
-            }
-            @Override
-            public Boolean getter(VisualCounterflowRegister object) {
-                return object.getReferencedCounterflowRegister().isAndMarked();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class,
+                CounterflowRegister.PROPERTY_AND_MARKED,
+                (value) -> getReferencedComponent().setAndMarked(value),
+                () -> getReferencedComponent().isAndMarked())
+                .setCombinable().setTemplatable());
     }
 
     @Override
@@ -90,9 +78,9 @@ public class VisualCounterflowRegister extends VisualAbstractRegister {
         Color tokenColor = getTokenColor();
         boolean forwardExcited = false;
         boolean backwardExcited = false;
-        boolean orMarked = getReferencedCounterflowRegister().isOrMarked();
+        boolean orMarked = getReferencedComponent().isOrMarked();
         boolean orMarkedExcited = false;
-        boolean andMarked = getReferencedCounterflowRegister().isAndMarked();
+        boolean andMarked = getReferencedComponent().isAndMarked();
         boolean andMarkedExcited = false;
         if (d instanceof CounterflowRegisterDecoration) {
             defaultColor = getForegroundColor();
@@ -146,17 +134,18 @@ public class VisualCounterflowRegister extends VisualAbstractRegister {
         drawNameInLocalSpace(r);
     }
 
-    public CounterflowRegister getReferencedCounterflowRegister() {
-        return (CounterflowRegister) getReferencedComponent();
+    @Override
+    public CounterflowRegister getReferencedComponent() {
+        return (CounterflowRegister) super.getReferencedComponent();
     }
 
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualCounterflowRegister) {
-            CounterflowRegister srcRegister = ((VisualCounterflowRegister) src).getReferencedCounterflowRegister();
-            getReferencedCounterflowRegister().setOrMarked(srcRegister.isOrMarked());
-            getReferencedCounterflowRegister().setAndMarked(srcRegister.isAndMarked());
+            CounterflowRegister srcRegister = ((VisualCounterflowRegister) src).getReferencedComponent();
+            getReferencedComponent().setOrMarked(srcRegister.isOrMarked());
+            getReferencedComponent().setAndMarked(srcRegister.isAndMarked());
         }
     }
 

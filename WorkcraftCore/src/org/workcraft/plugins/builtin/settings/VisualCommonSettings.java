@@ -9,7 +9,8 @@ import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CommonVisualSettings extends AbstractCommonSettings {
+public class VisualCommonSettings extends AbstractCommonSettings {
+
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CommonVisualSettings";
 
@@ -82,339 +83,116 @@ public class CommonVisualSettings extends AbstractCommonSettings {
     private static Color connectionColor = defaultConnectionColor;
     private static boolean useSubscript = defaultUseSubscript;
 
-    public CommonVisualSettings() {
-        addPropertyFontSize();
-        addNodeSize();
-        addStrokeWidth();
-        addBorderColor();
-        addFillColor();
-        addPivotSize();
-        addPivotWidth();
-        addLineSpacing();
-        addLabelVisibility();
-        addLabelPositioning();
-        addLabelColor();
-        addLabelFontSize();
-        addNameVisibility();
-        addNamePositioning();
-        addNameColor();
-        addNameFontSize();
-        addConnectionLineWidth();
-        addConnectionArrowWidth();
-        addConnectionArrowLength();
-        addConnectionBubbleSize();
-        addConnectionColor();
-        addUseSubscript();
-    }
+    static {
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Base font size (point) - requires restart",
+                VisualCommonSettings::setFontSize,
+                VisualCommonSettings::getFontSize));
 
-    private void addPropertyFontSize() {
-        properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-                this, "Base font size (point) - requires restart", Double.class) {
-            @Override
-            public void setter(CommonVisualSettings object, Double value) {
-                setFontSize(value);
-            }
-            @Override
-            public Double getter(CommonVisualSettings object) {
-                return getFontSize();
-            }
-        });
-    }
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Node size (cm)",
+                VisualCommonSettings::setNodeSize,
+                VisualCommonSettings::getNodeSize));
 
-    private void addNodeSize() {
-        properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-                this, "Node size (cm)", Double.class) {
-            @Override
-            public void setter(CommonVisualSettings object, Double value) {
-                setNodeSize(value);
-            }
-            @Override
-            public Double getter(CommonVisualSettings object) {
-                return getNodeSize();
-            }
-        });
-    }
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Stroke width (cm)",
+                VisualCommonSettings::setStrokeWidth,
+                VisualCommonSettings::getStrokeWidth));
 
-    private void addStrokeWidth() {
-        properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-                this, "Stroke width (cm)", Double.class) {
-            @Override
-            public void setter(CommonVisualSettings object, Double value) {
-                setStrokeWidth(value);
-            }
-            @Override
-            public Double getter(CommonVisualSettings object) {
-                return getStrokeWidth();
-            }
-        });
-    }
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Border color",
+                VisualCommonSettings::setBorderColor,
+                VisualCommonSettings::getBorderColor));
 
-    private void addBorderColor() {
-        properties.add(new PropertyDeclaration<CommonVisualSettings, Color>(
-                this, "Border color", Color.class) {
-            @Override
-            public void setter(CommonVisualSettings object, Color value) {
-                setBorderColor(value);
-            }
-            @Override
-            public Color getter(CommonVisualSettings object) {
-                return getBorderColor();
-            }
-        });
-    }
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Fill color",
+                VisualCommonSettings::setFillColor,
+                VisualCommonSettings::getFillColor));
 
-    private void addFillColor() {
-        properties.add(new PropertyDeclaration<CommonVisualSettings, Color>(
-                this, "Fill color", Color.class) {
-            @Override
-            public void setter(CommonVisualSettings object, Color value) {
-                setFillColor(value);
-            }
-            @Override
-            public Color getter(CommonVisualSettings object) {
-                return getFillColor();
-            }
-        });
-    }
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Pivot size (cm)",
+                VisualCommonSettings::setPivotSize,
+                VisualCommonSettings::getPivotSize));
 
-    private void addPivotSize() {
-        properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-                this, "Pivot size (cm)", Double.class) {
-            @Override
-            public void setter(CommonVisualSettings object, Double value) {
-                setPivotSize(value);
-            }
-            @Override
-            public Double getter(CommonVisualSettings object) {
-                return getPivotSize();
-            }
-        });
-    }
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Pivot stroke width (cm)",
+                VisualCommonSettings::setPivotWidth,
+                VisualCommonSettings::getPivotWidth));
 
-    private void addPivotWidth() {
-        properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-                this, "Pivot stroke width (cm)", Double.class) {
-            @Override
-            public void setter(CommonVisualSettings object, Double value) {
-                setPivotWidth(value);
-            }
-            @Override
-            public Double getter(CommonVisualSettings object) {
-                return getPivotWidth();
-            }
-        });
-    }
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Line spacing in multi-line text (ratio)",
+                VisualCommonSettings::setLineSpacing,
+                VisualCommonSettings::getLineSpacing));
 
-    private void addLineSpacing() {
-        properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-                this, "Line spacing in multi-line text (ratio)", Double.class) {
-            @Override
-            public void setter(CommonVisualSettings object, Double value) {
-                setLineSpacing(value);
-            }
-            @Override
-            public Double getter(CommonVisualSettings object) {
-                return getLineSpacing();
-            }
-        });
-    }
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Show labels",
+                VisualCommonSettings::setLabelVisibility,
+                VisualCommonSettings::getLabelVisibility));
 
-    private void addLabelVisibility() {
-        properties.add(new PropertyDeclaration<CommonVisualSettings, Boolean>(
-                this, "Show labels", Boolean.class) {
-            @Override
-            public void setter(CommonVisualSettings object, Boolean value) {
-                setLabelVisibility(value);
-            }
-            @Override
-            public Boolean getter(CommonVisualSettings object) {
-                return getLabelVisibility();
-            }
-        });
-    }
+        properties.add(new PropertyDeclaration<>(Positioning.class,
+                "Label positioning",
+                VisualCommonSettings::setLabelPositioning,
+                VisualCommonSettings::getLabelPositioning));
 
-    private void addLabelPositioning() {
-        properties.add(new PropertyDeclaration<CommonVisualSettings, Positioning>(
-                this, "Label positioning", Positioning.class) {
-            @Override
-            public void setter(CommonVisualSettings object, Positioning value) {
-                setLabelPositioning(value);
-            }
-            @Override
-            public Positioning getter(CommonVisualSettings object) {
-                return getLabelPositioning();
-            }
-        });
-    }
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Label color",
+                VisualCommonSettings::setLabelColor,
+                VisualCommonSettings::getLabelColor));
 
-    private void addLabelColor() {
-        properties.add(new PropertyDeclaration<CommonVisualSettings, Color>(
-                this, "Label color", Color.class) {
-            @Override
-            public void setter(CommonVisualSettings object, Color value) {
-                setLabelColor(value);
-            }
-            @Override
-            public Color getter(CommonVisualSettings object) {
-                return getLabelColor();
-            }
-        });
-    }
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Label font size (cm)",
+                VisualCommonSettings::setLabelFontSize,
+                VisualCommonSettings::getLabelFontSize));
 
-    private void addLabelFontSize() {
-        properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-                this, "Label font size (cm)", Double.class) {
-            @Override
-            public void setter(CommonVisualSettings object, Double value) {
-                setLabelFontSize(value);
-            }
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Show names",
+                VisualCommonSettings::setNameVisibility,
+                VisualCommonSettings::getNameVisibility));
 
-            @Override
-            public Double getter(CommonVisualSettings object) {
-                return getLabelFontSize();
-            }
-        });
-    }
+        properties.add(new PropertyDeclaration<>(Positioning.class,
+                "Name positioning",
+                VisualCommonSettings::setNamePositioning,
+                VisualCommonSettings::getNamePositioning));
 
-    private void addNameVisibility() {
-        properties.add(new PropertyDeclaration<CommonVisualSettings, Boolean>(
-                this, "Show names", Boolean.class) {
-            @Override
-            public void setter(CommonVisualSettings object, Boolean value) {
-                setNameVisibility(value);
-            }
-            @Override
-            public Boolean getter(CommonVisualSettings object) {
-                return getNameVisibility();
-            }
-        });
-    }
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Name color",
+                VisualCommonSettings::setNameColor,
+                VisualCommonSettings::getNameColor));
 
-    private void addNamePositioning() {
-        properties.add(new PropertyDeclaration<CommonVisualSettings, Positioning>(
-                this, "Name positioning", Positioning.class) {
-            @Override
-            public void setter(CommonVisualSettings object, Positioning value) {
-                setNamePositioning(value);
-            }
-            @Override
-            public Positioning getter(CommonVisualSettings object) {
-                return getNamePositioning();
-            }
-        });
-    }
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Name font size (cm)",
+                VisualCommonSettings::setNameFontSize,
+                VisualCommonSettings::getNameFontSize));
 
-    private void addNameColor() {
-        properties.add(new PropertyDeclaration<CommonVisualSettings, Color>(
-                this, "Name color", Color.class) {
-            @Override
-            public void setter(CommonVisualSettings object, Color value) {
-                setNameColor(value);
-            }
-            @Override
-            public Color getter(CommonVisualSettings object) {
-                return getNameColor();
-            }
-        });
-    }
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Connection line width (cm)",
+                VisualCommonSettings::setConnectionLineWidth,
+                VisualCommonSettings::getConnectionLineWidth));
 
-    private void addNameFontSize() {
-        properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-                this, "Name font size (cm)", Double.class) {
-            @Override
-            public void setter(CommonVisualSettings object, Double value) {
-                setNameFontSize(value);
-            }
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Connection arrow width (cm)",
+                VisualCommonSettings::setConnectionArrowWidth,
+                VisualCommonSettings::getConnectionArrowWidth));
 
-            @Override
-            public Double getter(CommonVisualSettings object) {
-                return getNameFontSize();
-            }
-        });
-    }
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Connection arrow length (cm)",
+                VisualCommonSettings::setConnectionArrowLength,
+                VisualCommonSettings::getConnectionArrowLength));
 
-    private void addConnectionLineWidth() {
-        properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-                this, "Connection line width (cm)", Double.class) {
-            @Override
-            public void setter(CommonVisualSettings object, Double value) {
-                setConnectionLineWidth(value);
-            }
-            @Override
-            public Double getter(CommonVisualSettings object) {
-                return getConnectionLineWidth();
-            }
-        });
-    }
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Connection bubble size (cm)",
+                VisualCommonSettings::setConnectionBubbleSize,
+                VisualCommonSettings::getConnectionBubbleSize));
 
-    private void addConnectionArrowWidth() {
-        properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-                this, "Connection arrow width (cm)", Double.class) {
-            @Override
-            public void setter(CommonVisualSettings object, Double value) {
-                setConnectionArrowWidth(value);
-            }
-            @Override
-            public Double getter(CommonVisualSettings object) {
-                return getConnectionArrowWidth();
-            }
-        });
-    }
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Connection color",
+                VisualCommonSettings::setConnectionColor,
+                VisualCommonSettings::getConnectionColor));
 
-    private void addConnectionArrowLength() {
-        properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-                this, "Connection arrow length (cm)", Double.class) {
-            @Override
-            public void setter(CommonVisualSettings object, Double value) {
-                setConnectionArrowLength(value);
-            }
-            @Override
-            public Double getter(CommonVisualSettings object) {
-                return getConnectionArrowLength();
-            }
-        });
-    }
-
-    private void addConnectionBubbleSize() {
-        properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-                this, "Connection bubble size (cm)", Double.class) {
-            @Override
-            public void setter(CommonVisualSettings object, Double value) {
-                setConnectionBubbleSize(value);
-            }
-            @Override
-            public Double getter(CommonVisualSettings object) {
-                return getConnectionBubbleSize();
-            }
-        });
-    }
-
-    private void addConnectionColor() {
-        properties.add(new PropertyDeclaration<CommonVisualSettings, Color>(
-                this, "Connection color", Color.class) {
-            @Override
-            public void setter(CommonVisualSettings object, Color value) {
-                setConnectionColor(value);
-            }
-            @Override
-            public Color getter(CommonVisualSettings object) {
-                return getConnectionColor();
-            }
-        });
-    }
-
-    private void addUseSubscript() {
-        properties.add(new PropertyDeclaration<CommonVisualSettings, Boolean>(
-                this, "In Boolean expressions render text after \'_\' as subscript", Boolean.class) {
-            @Override
-            public void setter(CommonVisualSettings object, Boolean value) {
-                setUseSubscript(value);
-            }
-            @Override
-            public Boolean getter(CommonVisualSettings object) {
-                return getUseSubscript();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "In Boolean expressions render text after \'_\' as subscript",
+                VisualCommonSettings::setUseSubscript,
+                VisualCommonSettings::getUseSubscript));
     }
 
     @Override

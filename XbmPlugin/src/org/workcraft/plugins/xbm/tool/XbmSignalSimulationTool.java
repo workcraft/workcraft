@@ -81,9 +81,9 @@ public class XbmSignalSimulationTool extends StgSimulationTool {
                 if (checkBox.getName().equals(xbmSignal.getName() + CHECKBOX_NAME_PREFIX)) {
                     VisualPlace placeLow = elemCycle.getLow();
                     VisualPlace placeHigh = elemCycle.getHigh();
-                    if (placeLow.getReferencedPlace().getTokens() > 0 && placeHigh.getReferencedPlace().getTokens() <= 0) {
+                    if (placeLow.getReferencedComponent().getTokens() > 0 && placeHigh.getReferencedComponent().getTokens() <= 0) {
                         checkBox.setSelected(false);
-                    } else if (placeLow.getReferencedPlace().getTokens() <= 0 && placeHigh.getReferencedPlace().getTokens() > 0) {
+                    } else if (placeLow.getReferencedComponent().getTokens() <= 0 && placeHigh.getReferencedComponent().getTokens() > 0) {
                         checkBox.setSelected(true);
                     }
                 }
@@ -146,7 +146,7 @@ public class XbmSignalSimulationTool extends StgSimulationTool {
         if (p == null) {
             return null;
         }
-        final boolean isMarkedPlace = p.getReferencedPlace().getTokens() > 0;
+        final boolean isMarkedPlace = p.getReferencedComponent().getTokens() > 0;
         return new Decoration() {
             @Override
             public Color getColorisation() {
@@ -182,16 +182,16 @@ public class XbmSignalSimulationTool extends StgSimulationTool {
         if ((node != null) && (node instanceof VisualBurstEvent)) {
             VisualBurstTransition vBurstTransition = converter.getRelatedSignalBurstTransition((VisualBurstEvent) node);
             if (vBurstTransition != null) {
-                if (isEnabledNode(vBurstTransition.getStart().getReferencedTransition())) {
-                    result.add(vBurstTransition.getStart().getReferencedTransition()); //FORK
+                if (isEnabledNode(vBurstTransition.getStart().getReferencedComponent())) {
+                    result.add(vBurstTransition.getStart().getReferencedComponent()); //FORK
                     for (VisualTransition visualTransition: vBurstTransition.getInputTransitions()) {
-                        result.add(visualTransition.getReferencedTransition());
+                        result.add(visualTransition.getReferencedComponent());
                     }
-                    result.add(vBurstTransition.getSplit().getReferencedTransition()); //JOIN_FORK
+                    result.add(vBurstTransition.getSplit().getReferencedComponent()); //JOIN_FORK
                     for (VisualTransition visualTransition: vBurstTransition.getOutputTransitions()) {
-                        result.add(visualTransition.getReferencedTransition());
+                        result.add(visualTransition.getReferencedComponent());
                     }
-                    result.add(vBurstTransition.getEnd().getReferencedTransition()); //JOIN
+                    result.add(vBurstTransition.getEnd().getReferencedComponent()); //JOIN
                 }
             }
         }
@@ -202,8 +202,8 @@ public class XbmSignalSimulationTool extends StgSimulationTool {
         if ((node != null) && (node instanceof VisualBurstEvent)) {
             VisualBurstTransition vBurstTransition = converter.getRelatedSignalBurstTransition((VisualBurstEvent) node);
             if (vBurstTransition != null && vBurstTransition.getStart() != null) {
-                if (isEnabledNode(vBurstTransition.getStart().getReferencedTransition())) {
-                    return vBurstTransition.getStart().getReferencedTransition();
+                if (isEnabledNode(vBurstTransition.getStart().getReferencedComponent())) {
+                    return vBurstTransition.getStart().getReferencedComponent();
                 } else {
                     return null;
                 }
@@ -243,8 +243,8 @@ public class XbmSignalSimulationTool extends StgSimulationTool {
     }
 
     private void fireElementaryCycleTransition(GraphEditor editor, VisualTransition transition) {
-        if (super.isEnabledNode(transition.getReferencedTransition())) {
-            executeTransition(editor, transition.getReferencedTransition());
+        if (super.isEnabledNode(transition.getReferencedComponent())) {
+            executeTransition(editor, transition.getReferencedComponent());
             editor.requestFocus();
         }
     }

@@ -7,8 +7,8 @@ import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
@@ -31,17 +31,17 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
     public static final Font LABEL_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 1);
 
     private MathNode refNode = null;
-    private Color foregroundColor = CommonVisualSettings.getBorderColor();
-    private Color fillColor = CommonVisualSettings.getFillColor();
+    private Color foregroundColor = VisualCommonSettings.getBorderColor();
+    private Color fillColor = VisualCommonSettings.getFillColor();
 
     private String label = "";
-    private Positioning labelPositioning = CommonVisualSettings.getLabelPositioning();
+    private Positioning labelPositioning = VisualCommonSettings.getLabelPositioning();
     private RenderedText labelRenderedText = new RenderedText("", getLabelFont(), getLabelPositioning(), getLabelOffset());
-    private Color labelColor = CommonVisualSettings.getLabelColor();
+    private Color labelColor = VisualCommonSettings.getLabelColor();
 
-    private Positioning namePositioning = CommonVisualSettings.getNamePositioning();
+    private Positioning namePositioning = VisualCommonSettings.getNamePositioning();
     private RenderedText nameRenderedText = new RenderedText("", getNameFont(), getNamePositioning(), getNameOffset());
-    private Color nameColor = CommonVisualSettings.getNameColor();
+    private Color nameColor = VisualCommonSettings.getNameColor();
 
     private final HashSet<Replica> replicas = new HashSet<>();
 
@@ -68,97 +68,34 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
     }
 
     private void addColorPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Color>(
-                this, PROPERTY_COLOR, Color.class, true, true) {
-            @Override
-            public void setter(VisualComponent object, Color value) {
-                object.setForegroundColor(value);
-            }
-            @Override
-            public Color getter(VisualComponent object) {
-                return object.getForegroundColor();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Color.class, PROPERTY_COLOR,
+                this::setForegroundColor, this::getForegroundColor).setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Color>(
-                this, PROPERTY_FILL_COLOR, Color.class, true, true) {
-            @Override
-            public void setter(VisualComponent object, Color value) {
-                object.setFillColor(value);
-            }
-            @Override
-            public Color getter(VisualComponent object) {
-                return object.getFillColor();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Color.class, PROPERTY_FILL_COLOR,
+                this::setFillColor, this::getFillColor).setCombinable().setTemplatable());
     }
 
     private void addLabelPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualComponent, String>(
-                this, PROPERTY_LABEL, String.class, true, true) {
-            @Override
-            public void setter(VisualComponent object, String value) {
-                object.setLabel(value);
-            }
-            @Override
-            public String getter(VisualComponent object) {
-                return object.getLabel();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(String.class, PROPERTY_LABEL,
+                this::setLabel, this::getLabel).setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Positioning>(
-                this, PROPERTY_LABEL_POSITIONING, Positioning.class, true, true) {
-            @Override
-            public void setter(VisualComponent object, Positioning value) {
-                object.setLabelPositioning(value);
-            }
-            @Override
-            public Positioning getter(VisualComponent object) {
-                return object.getLabelPositioning();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Positioning.class, PROPERTY_LABEL_POSITIONING,
+                this::setLabelPositioning, this::getLabelPositioning).setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Color>(
-                this, PROPERTY_LABEL_COLOR, Color.class, true, true) {
-            @Override
-            public void setter(VisualComponent object, Color value) {
-                object.setLabelColor(value);
-            }
-            @Override
-            public Color getter(VisualComponent object) {
-                return object.getLabelColor();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Color.class, PROPERTY_LABEL_COLOR,
+                this::setLabelColor, this::getLabelColor).setCombinable().setTemplatable());
     }
 
     private void addNamePropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Positioning>(
-                this, PROPERTY_NAME_POSITIONING, Positioning.class, true, true) {
-            @Override
-            public void setter(VisualComponent object, Positioning value) {
-                object.setNamePositioning(value);
-            }
-            @Override
-            public Positioning getter(VisualComponent object) {
-                return object.getNamePositioning();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Positioning.class, PROPERTY_NAME_POSITIONING,
+                this::setNamePositioning, this::getNamePositioning).setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Color>(
-                this, PROPERTY_NAME_COLOR, Color.class, true, true) {
-            @Override
-            public void setter(VisualComponent object, Color value) {
-                object.setNameColor(value);
-            }
-            @Override
-            public Color getter(VisualComponent object) {
-                return object.getNameColor();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Color.class, PROPERTY_NAME_COLOR,
+                this::setNameColor, this::getNameColor).setCombinable().setTemplatable());
     }
 
     public Font getLabelFont() {
-        return LABEL_FONT.deriveFont((float) CommonVisualSettings.getLabelFontSize());
+        return LABEL_FONT.deriveFont((float) VisualCommonSettings.getLabelFontSize());
     }
 
     @Override
@@ -197,7 +134,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
     }
 
     public Font getNameFont() {
-        return NAME_FONT.deriveFont((float) CommonVisualSettings.getNameFontSize());
+        return NAME_FONT.deriveFont((float) VisualCommonSettings.getNameFontSize());
     }
 
     public Positioning getNamePositioning() {
@@ -277,7 +214,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
     }
 
     public boolean getLabelVisibility() {
-        return CommonVisualSettings.getLabelVisibility();
+        return VisualCommonSettings.getLabelVisibility();
     }
 
     public Point2D getOffset(Positioning positioning) {
@@ -335,7 +272,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         Graphics2D g = r.getGraphics();
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
         if (bb != null) {
-            g.setStroke(new BasicStroke((float) CommonVisualSettings.getStrokeWidth()));
+            g.setStroke(new BasicStroke((float) VisualCommonSettings.getStrokeWidth()));
             g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
             g.draw(bb);
         }
@@ -345,19 +282,19 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         Decoration d = r.getDecoration();
         Graphics2D g = r.getGraphics();
         if (d.getColorisation() != null) {
-            float s2 = (float) CommonVisualSettings.getPivotSize() / 2;
+            float s2 = (float) VisualCommonSettings.getPivotSize() / 2;
             Path2D p = new Path2D.Double();
             p.moveTo(-s2, 0);
             p.lineTo(s2, 0);
             p.moveTo(0, -s2);
             p.lineTo(0, s2);
-            g.setStroke(new BasicStroke((float) CommonVisualSettings.getPivotWidth()));
+            g.setStroke(new BasicStroke((float) VisualCommonSettings.getPivotWidth()));
             g.draw(p);
         }
     }
 
     public boolean getNameVisibility() {
-        return CommonVisualSettings.getNameVisibility();
+        return VisualCommonSettings.getNameVisibility();
     }
 
     public Point2D getNameOffset() {
@@ -368,7 +305,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         String name = null;
         MathModel mathModel = r.getModel().getMathModel();
         MathNode mathNode = getReferencedComponent();
-        if ((this instanceof Replica) || CommonEditorSettings.getShowAbsolutePaths()) {
+        if ((this instanceof Replica) || EditorCommonSettings.getShowAbsolutePaths()) {
             name = mathModel.getNodeReference(mathNode);
         } else {
             name = mathModel.getName(mathNode);
@@ -403,7 +340,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
     }
 
     public Shape getShape() {
-        double size = CommonVisualSettings.getNodeSize() - CommonVisualSettings.getStrokeWidth();
+        double size = VisualCommonSettings.getNodeSize() - VisualCommonSettings.getStrokeWidth();
         double pos = -0.5 * size;
         return new Rectangle2D.Double(pos, pos, size, size);
     }
@@ -418,7 +355,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         g.fill(shape);
 
         g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-        g.setStroke(new BasicStroke((float) CommonVisualSettings.getStrokeWidth()));
+        g.setStroke(new BasicStroke((float) VisualCommonSettings.getStrokeWidth()));
         g.draw(shape);
 
         drawLabelInLocalSpace(r);
