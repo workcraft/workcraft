@@ -37,9 +37,4 @@ public final class BmFormat implements Format {
     public String getDescription() {
         return "Burst Mode (Minimalist)";
     }
-
-    @Override
-    public String getKeyword() {
-        return ".burst mode";
-    }
 }
