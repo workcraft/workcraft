@@ -10,19 +10,16 @@ import java.util.regex.Matcher;
 
 public class PropertyHelper {
 
-    private static final char TOGGLE_SYMBOL = 0x21C5;
-    private static final String TOGGLE_TEXT = Character.toString(TOGGLE_SYMBOL);
-    private static final char HIGH_SYMBOL = 0x21C8;
-    private static final String HIGH_TEXT = Character.toString(HIGH_SYMBOL);
-    private static final char LOW_SYMBOL = 0x21CA;
-    private static final String LOW_TEXT = Character.toString(LOW_SYMBOL);
-    private static final String BULLET_PREFIX = "  " + PropertyUtils.BULLET_TEXT + " ";
+    private static final String TOGGLE_SYMBOL = Character.toString((char) 0x21C5);
+    private static final String HIGH_SYMBOL = Character.toString((char) 0x21C8);
+    private static final String LOW_SYMBOL = Character.toString((char) 0x21CA);
+    private static final String BULLET_PREFIX = "  " + PropertyUtils.BULLET_SYMBOL + " ";
 
     public static PropertyDescriptor getBurstProperty(XbmState state, String name, XbmSignal.Type type) {
         return new ActionListDeclaration(name)
-                .addAction(TOGGLE_TEXT, () -> toggleSignalsByType(state, type))
-                .addAction(HIGH_TEXT, () -> setSignalsToValueByType(state, type, SignalState.HIGH))
-                .addAction(LOW_TEXT, () -> setSignalsToValueByType(state, type, SignalState.LOW));
+                .addAction(TOGGLE_SYMBOL, () -> toggleSignalsByType(state, type))
+                .addAction(HIGH_SYMBOL, () -> setSignalsToValueByType(state, type, SignalState.HIGH))
+                .addAction(LOW_SYMBOL, () -> setSignalsToValueByType(state, type, SignalState.LOW));
     }
 
     private static void toggleSignalsByType(XbmState state, XbmSignal.Type type) {
@@ -89,7 +86,7 @@ public class PropertyHelper {
                     }
                 },
                 () -> new TextAction(xbm.getName(xbmSignal),
-                        new Action(PropertyUtils.CLEAR_TEXT, () -> xbm.removeSignal(xbmSignal))));
+                        new Action(PropertyUtils.CLEAR_SYMBOL, () -> xbm.removeSignal(xbmSignal))));
     }
 
 }

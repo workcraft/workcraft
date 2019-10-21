@@ -118,7 +118,7 @@ public class VisualBurstEvent extends VisualEvent {
 
     @Override
     public String getLabel(DrawRequest r) {
-        String label = Character.toString(EPSILON_SYMBOL);
+        String label = EPSILON_SYMBOL;
         if (getReferencedConnection().getAsString().isEmpty()) {
             label = getReferencedConnection().getAsString();
         }

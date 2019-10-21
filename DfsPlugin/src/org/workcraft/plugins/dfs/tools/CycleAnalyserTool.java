@@ -27,7 +27,7 @@ import java.util.*;
 
 public class CycleAnalyserTool extends AbstractGraphEditorTool {
     // Infinity symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
-    public static final char INFINITY_SYMBOL = 0x221E;
+    public static final String INFINITY_SYMBOL = Character.toString((char) 0x221E);
 
     private static final int COLUMN_THROUGHPUT = 0;
     private static final int COLUMN_TOKEN = 1;
@@ -317,7 +317,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
                 switch (col) {
                 case COLUMN_THROUGHPUT:
                     if (cycle.totalDelay == 0) {
-                        result = Character.toString(INFINITY_SYMBOL);
+                        result = INFINITY_SYMBOL;
                     } else {
                         result = new DecimalFormat("#.###").format(cycle.throughput);
                     }

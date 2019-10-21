@@ -9,8 +9,7 @@ import org.workcraft.gui.properties.TextAction;
 
 public class PropertyHelper {
 
-    private static final char SEARCH_SYMBOL = 0x2315;
-    private static final String SEARCH_TEXT = Character.toString(SEARCH_SYMBOL);
+    private static final String SEARCH_SYMBOL = Character.toString((char) 0x2315);
 
     public static PropertyDescriptor getSignalTypeProperty(Stg stg, String signal, Container container) {
         return new PropertyDeclaration<>(Signal.Type.class, signal + " type",
@@ -59,7 +58,7 @@ public class PropertyHelper {
                         }
                     }
                 },
-                () -> new TextAction(signal, new Action(SEARCH_TEXT,
+                () -> new TextAction(signal, new Action(SEARCH_SYMBOL,
                         () -> {
                             visualStg.selectNone();
                             Stg mathStg = visualStg.getMathModel();

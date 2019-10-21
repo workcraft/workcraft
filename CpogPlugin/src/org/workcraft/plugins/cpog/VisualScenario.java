@@ -23,7 +23,7 @@ public class VisualScenario extends VisualGroup {
     public static final String PROPERTY_LABEL = "Label";
 
     // Dash symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
-    public static final char DASH_SYMBOL = 0x2013;
+    public static final String DASH_SYMBOL = Character.toString((char) 0x2013);
 
     private static final float frameDepth = 0.25f;
     private static final float strokeWidth = 0.03f;
@@ -196,7 +196,7 @@ public class VisualScenario extends VisualGroup {
 
                 text = encoding.getState(var).getValueAsString();
                 if ("?".equals(text)) {
-                    text = Character.toString(DASH_SYMBOL);
+                    text = DASH_SYMBOL;
                 }
 
                 result = FormulaToGraphics.print(text, labelFont, g.getFontRenderContext());

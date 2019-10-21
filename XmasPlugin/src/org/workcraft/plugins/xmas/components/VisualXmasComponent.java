@@ -21,17 +21,17 @@ import java.util.Collection;
 
 public abstract class VisualXmasComponent extends VisualComponent implements Container, StateObserver, ObservableHierarchy {
     // Degree symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
-    public static final char DEGREE_SYMBOL = 0x00B0;
+    public static final String DEGREE_SYMBOL = Character.toString((char) 0x00B0);
     public static final double SIZE = VisualCommonSettings.getNodeSize();
     public static final double TOKEN_SIZE = 0.18 * SIZE;
 
     private static final String PROPERTY_ORIENTATION = "Orientation";
 
     public enum Orientation {
-        ORIENTATION_0("0" + Character.toString(DEGREE_SYMBOL), 0),
-        ORIENTATION_90("90" + Character.toString(DEGREE_SYMBOL), 1),
-        ORIENTATION_180("180" + Character.toString(DEGREE_SYMBOL), 2),
-        ORIENTATION_270("270" + Character.toString(DEGREE_SYMBOL), 3);
+        ORIENTATION_0("0" + DEGREE_SYMBOL, 0),
+        ORIENTATION_90("90" + DEGREE_SYMBOL, 1),
+        ORIENTATION_180("180" + DEGREE_SYMBOL, 2),
+        ORIENTATION_270("270" + DEGREE_SYMBOL, 3);
 
         private final String name;
         private final int quadrant;

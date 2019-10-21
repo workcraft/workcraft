@@ -8,7 +8,7 @@ import java.util.*;
 
 public class Cycle implements Comparable<Cycle> {
     // Right arrow symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
-    public static final char RIGHT_ARROW_SYMBOL = 0x2192;
+    public static final String RIGHT_ARROW_SYMBOL = Character.toString((char) 0x2192);
 
     public final VisualDfs dfs;
     public final LinkedHashSet<VisualDelayComponent> components;
@@ -161,7 +161,7 @@ public class Cycle implements Comparable<Cycle> {
         if ((components != null) && (dfs != null)) {
             for (VisualDelayComponent component : components) {
                 if (result.length() > 0) {
-                    result += Character.toString(RIGHT_ARROW_SYMBOL);
+                    result += RIGHT_ARROW_SYMBOL;
                 }
                 result += dfs.getMathModel().getNodeReference(component.getReferencedComponent());
             }

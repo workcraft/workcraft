@@ -37,7 +37,7 @@ public class GraphSimulationTool extends PetriSimulationTool {
         if (ref != null) {
             label = converter.getSymbol(ref);
             if (label.isEmpty()) {
-                label = Character.toString(VisualVertex.EPSILON_SYMBOL);
+                label = VisualVertex.EPSILON_SYMBOL;
             }
         }
         if (label == null) {

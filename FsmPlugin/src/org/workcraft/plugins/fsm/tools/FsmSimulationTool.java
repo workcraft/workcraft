@@ -36,7 +36,7 @@ public class FsmSimulationTool extends PetriSimulationTool {
         if (ref != null) {
             label = converter.getSymbol(ref);
             if (label.isEmpty()) {
-                label = Character.toString(VisualEvent.EPSILON_SYMBOL);
+                label = VisualEvent.EPSILON_SYMBOL;
             }
         }
         if (label == null) {

@@ -18,7 +18,7 @@ public class FileCellRenderer extends JPanel implements TableCellRenderer {
         chooseButton.setMargin(PropertyUtils.BUTTON_INSETS);
         chooseButton.setHorizontalAlignment(SwingConstants.LEFT);
 
-        JButton clearButton = new JButton(PropertyUtils.CLEAR_TEXT);
+        JButton clearButton = new JButton(PropertyUtils.CLEAR_SYMBOL);
         clearButton.setFocusable(false);
         clearButton.setMargin(PropertyUtils.BUTTON_INSETS);
 

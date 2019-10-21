@@ -45,7 +45,7 @@ public class FstSimulationTool extends StgSimulationTool {
         if (ref != null) {
             label = converter.getEventLabel(ref);
             if (label.isEmpty()) {
-                label = Character.toString(VisualEvent.EPSILON_SYMBOL);
+                label = VisualEvent.EPSILON_SYMBOL;
             }
         }
         if (label == null) {

@@ -29,7 +29,7 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
         chooseButton.setMargin(PropertyUtils.BUTTON_INSETS);
         chooseButton.setHorizontalAlignment(SwingConstants.LEFT);
 
-        JButton clearButton = new JButton(PropertyUtils.CLEAR_TEXT);
+        JButton clearButton = new JButton(PropertyUtils.CLEAR_SYMBOL);
         clearButton.setActionCommand(TAG_CLEAR);
         clearButton.addActionListener(this);
         clearButton.setFocusable(false);

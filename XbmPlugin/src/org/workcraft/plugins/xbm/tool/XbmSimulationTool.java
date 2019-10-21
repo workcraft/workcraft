@@ -12,12 +12,12 @@ import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
-import org.workcraft.plugins.fsm.*;
+import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.petri.*;
 import org.workcraft.plugins.petri.tools.PetriSimulationTool;
 import org.workcraft.plugins.xbm.*;
-import org.workcraft.plugins.xbm.converters.XbmToPetriConverter;
 import org.workcraft.plugins.xbm.converters.ElementaryCycle;
+import org.workcraft.plugins.xbm.converters.XbmToPetriConverter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,7 +47,7 @@ public class XbmSimulationTool extends PetriSimulationTool {
         if (ref != null) {
             label = converter.getSymbol(ref);
             if ("".equals(label)) {
-                label = Character.toString(VisualEvent.EPSILON_SYMBOL);
+                label = VisualEvent.EPSILON_SYMBOL;
             }
         }
         if (label == null) {

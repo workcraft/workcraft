@@ -18,7 +18,7 @@ import java.awt.geom.Rectangle2D;
 
 public class VisualEvent extends VisualConnection {
     // Epsilon symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
-    public static final char EPSILON_SYMBOL = 0x03B5;
+    public static final String EPSILON_SYMBOL = Character.toString((char) 0x03B5);
 
     public static final String PROPERTY_LABEL_COLOR = "Label color";
 
@@ -69,7 +69,7 @@ public class VisualEvent extends VisualConnection {
     }
 
     public String getLabel(DrawRequest r) {
-        String label = Character.toString(EPSILON_SYMBOL);
+        String label = EPSILON_SYMBOL;
         Symbol symbol = getReferencedConnection().getSymbol();
         if (symbol != null) {
             label = r.getModel().getMathName(symbol);

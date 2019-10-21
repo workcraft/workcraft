@@ -41,7 +41,7 @@ public class VisualVertex extends VisualComponent {
     }
 
     // Epsilon symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
-    public static final char EPSILON_SYMBOL = 0x03B5;
+    public static final String EPSILON_SYMBOL = Character.toString((char) 0x03B5);
 
     public static final String PROPERTY_RENDER_TYPE = "Render type";
     public static final String PROPERTY_SYMBOL_POSITIONING = "Symbol positioning";
