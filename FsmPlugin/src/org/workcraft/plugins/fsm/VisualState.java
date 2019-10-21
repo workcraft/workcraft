@@ -71,15 +71,15 @@ public class VisualState extends VisualComponent {
         if (getReferencedComponent().isInitial()) {
             g.setStroke(new BasicStroke(strokeWidth));
             g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+            AffineTransform savedTransform = g.getTransform();
+            AffineTransform rotateTransform = getInitialMarkerPositioning().getTransform();
+            g.transform(rotateTransform);
             if (getInitialMarkerPositioning() == Positioning.CENTER) {
-                g.fill(getInitialMarkerCenterShape());
+                g.fill(getInitialMarkerShape());
             } else {
-                AffineTransform savedTransform = g.getTransform();
-                AffineTransform rotateTransform = getInitialMarkerPositioning().getTransform();
-                g.transform(rotateTransform);
                 g.draw(getInitialMarkerShape());
-                g.setTransform(savedTransform);
             }
+            g.setTransform(savedTransform);
         }
 
         if (getReferencedComponent().isFinal()) {
@@ -93,19 +93,17 @@ public class VisualState extends VisualComponent {
     }
 
     private Shape getInitialMarkerShape() {
-        double arrowSize = size / 4;
+        double s = size / 4;
+        if (getInitialMarkerPositioning() == Positioning.CENTER) {
+            return new Ellipse2D.Double(-s / 2, -s / 2, s, s);
+        }
         Path2D shape = new Path2D.Double();
         shape.moveTo(0.0, -size - strokeWidth);
         shape.lineTo(0.0, -size / 2 - strokeWidth);
-        shape.moveTo(-arrowSize / 2, -size / 2 - strokeWidth / 2 - arrowSize);
+        shape.moveTo(-s / 2, -size / 2 - strokeWidth / 2 - s);
         shape.lineTo(0.0, -size / 2 - strokeWidth / 2);
-        shape.lineTo(arrowSize / 2, -size / 2 - strokeWidth / 2 - arrowSize);
+        shape.lineTo(s / 2, -size / 2 - strokeWidth / 2 - s);
         return shape;
-    }
-
-    private Shape getInitialMarkerCenterShape() {
-        double s = size / 4;
-        return new Ellipse2D.Double(-s / 2, -s / 2, s, s);
     }
 
     private Shape getFinalMarkerShape() {
@@ -115,14 +113,17 @@ public class VisualState extends VisualComponent {
 
     @Override
     public Rectangle2D getBoundingBoxInLocalSpace() {
-        Rectangle2D bb = super.getBoundingBoxInLocalSpace();
+        Rectangle2D result = super.getBoundingBoxInLocalSpace();
         if (getReferencedComponent().isInitial()) {
-            bb = BoundingBoxHelper.union(bb, getInitialMarkerShape().getBounds2D());
+            AffineTransform rotateTransform = getInitialMarkerPositioning().getTransform();
+            Shape shape = getInitialMarkerShape();
+            Rectangle2D bb = BoundingBoxHelper.transform(shape.getBounds2D(), rotateTransform);
+            result = BoundingBoxHelper.union(result, bb);
         }
         if (getReferencedComponent().isFinal()) {
-            bb = BoundingBoxHelper.union(bb, getFinalMarkerShape().getBounds2D());
+            result = BoundingBoxHelper.union(result, getFinalMarkerShape().getBounds2D());
         }
-        return bb;
+        return result;
     }
 
     @Override
