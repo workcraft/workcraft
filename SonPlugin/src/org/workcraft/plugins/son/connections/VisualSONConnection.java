@@ -3,12 +3,12 @@ package org.workcraft.plugins.son.connections;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.util.Interval;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.utils.Geometry;
 
 import java.awt.*;
@@ -30,40 +30,25 @@ public class VisualSONConnection extends VisualConnection {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualSONConnection, String>(
-                this, "Semantic", String.class, true, true) {
-            @Override
-            public void setter(VisualSONConnection object, String value) {
-            }
-            @Override
-            public String getter(VisualSONConnection object) {
-                switch (getSemantics()) {
-                case PNLINE:
-                    return "Petri-net connection";
-                case SYNCLINE:
-                    return "Synchronous communication";
-                case ASYNLINE:
-                    return "Asynchronous communication";
-                case BHVLINE:
-                    return "Behavioural abstraction";
-                default:
-                    return getSemantics().toString();
-                }
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(String.class, "Semantic",
+                (value) -> { },
+                () -> {
+                    switch (getSemantics()) {
+                    case PNLINE:
+                        return "Petri-net connection";
+                    case SYNCLINE:
+                        return "Synchronous communication";
+                    case ASYNLINE:
+                        return "Asynchronous communication";
+                    case BHVLINE:
+                        return "Behavioural abstraction";
+                    default:
+                        return getSemantics().toString();
+                    }
+                }).setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualSONConnection, Color>(
-                this, "Time color", Color.class, true, true) {
-            @Override
-            public void setter(VisualSONConnection object, Color value) {
-                object.setTimeLabelColor(value);
-            }
-            @Override
-            public Color getter(VisualSONConnection object) {
-                return object.getTimeLabelColor();
-            }
-        });
-
+        addPropertyDeclaration(new PropertyDeclaration<>(Color.class, "Time color",
+                this::setTimeLabelColor, this::getTimeLabelColor).setCombinable().setTemplatable());
     }
 
     public VisualSONConnection(SONConnection refConnection, VisualComponent first, VisualComponent second) {

@@ -2,25 +2,20 @@ package org.workcraft.plugins.wtg;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
+import org.workcraft.dom.generators.DefaultNodeGenerator;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.dom.generators.DefaultNodeGenerator;
+import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.gui.tools.CommentGeneratorTool;
 import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.gui.tools.NodeGeneratorTool;
-import org.workcraft.gui.properties.ModelProperties;
-import org.workcraft.gui.properties.PropertyDeclaration;
-import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.plugins.dtd.Signal;
 import org.workcraft.plugins.dtd.VisualDtd;
 import org.workcraft.plugins.dtd.VisualSignal;
-import org.workcraft.plugins.wtg.properties.SignalDeclarationPropertyDescriptor;
+import org.workcraft.plugins.wtg.tools.SignalGeneratorTool;
 import org.workcraft.plugins.wtg.tools.WtgConnectionTool;
 import org.workcraft.plugins.wtg.tools.WtgSelectionTool;
-import org.workcraft.plugins.wtg.tools.SignalGeneratorTool;
 import org.workcraft.plugins.wtg.tools.WtgSimulationTool;
-import org.workcraft.plugins.wtg.utils.WtgUtils;
 import org.workcraft.utils.Hierarchy;
 
 import java.util.*;
@@ -72,54 +67,17 @@ public class VisualWtg extends VisualDtd {
             if (container instanceof VisualWaveform) {
                 VisualWaveform waveform = (VisualWaveform) container;
                 for (String signalName : signalNames) {
-                    properties.insertOrderedByFirstWord(new SignalDeclarationPropertyDescriptor(this, waveform, signalName));
+                    properties.insertOrderedByFirstWord(WtgPropertyHelper.getSignalDeclarationProperty(this, waveform, signalName));
                 }
                 properties.removeByName(AbstractVisualModel.PROPERTY_TITLE);
             } else {
                 for (String signalName : signalNames) {
-                    properties.insertOrderedByFirstWord(getSignalNameProperty(signalName));
-                    properties.insertOrderedByFirstWord(getSignalTypeProperty(signalName));
+                    properties.insertOrderedByFirstWord(WtgPropertyHelper.getSignalNameProperty(this, signalName));
+                    properties.insertOrderedByFirstWord(WtgPropertyHelper.getSignalTypeProperty(this, signalName));
                 }
             }
         }
         return properties;
-    }
-
-    private PropertyDescriptor getSignalNameProperty(String signalName) {
-        return new PropertyDeclaration<VisualWtg, String>(
-                this, signalName + " name", String.class) {
-            @Override
-            public String getter(VisualWtg object) {
-                return signalName;
-            }
-            @Override
-            public void setter(VisualWtg object, String value) {
-                WtgUtils.renameSignal(getMathModel(), signalName, value);
-            }
-        };
-    }
-
-    private PropertyDescriptor getSignalTypeProperty(String signalName) {
-        return new PropertyDeclaration<VisualWtg, Signal.Type>(
-                this, signalName + " type", Signal.Type.class) {
-            @Override
-            public Signal.Type getter(VisualWtg object) {
-                Wtg wtg = getMathModel();
-                for (Signal signal : wtg.getSignals()) {
-                    if (!signalName.equals(wtg.getName(signal))) continue;
-                    return signal.getType();
-                }
-                return null;
-            }
-            @Override
-            public void setter(VisualWtg object, Signal.Type value) {
-                Wtg wtg = getMathModel();
-                for (Signal signal : wtg.getSignals()) {
-                    if (!signalName.equals(wtg.getName(signal))) continue;
-                    signal.setType(value);
-                }
-            }
-        };
     }
 
     @Override

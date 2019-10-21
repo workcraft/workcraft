@@ -41,7 +41,7 @@ public class MaximalSetPropertyVerification extends AbstractVerificationCommand 
                 mainWindow.getToolbox(we).selectToolInstance(SelectionTool.class);
                 visualXbm.selectNone();
                 for (VisualBurstEvent vBurstEvent: Hierarchy.getDescendantsOfType(visualXbm.getRoot(), VisualBurstEvent.class)) {
-                    BurstEvent burstEvent = vBurstEvent.getReferencedBurstEvent();
+                    BurstEvent burstEvent = vBurstEvent.getReferencedConnection();
                     if (commonBursts.contains(burstEvent)) {
                         visualXbm.addToSelection(vBurstEvent);
                     }

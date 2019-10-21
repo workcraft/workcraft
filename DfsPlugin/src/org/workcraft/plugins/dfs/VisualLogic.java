@@ -1,21 +1,19 @@
 package org.workcraft.plugins.dfs;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.event.KeyEvent;
-import java.awt.geom.Path2D;
-import java.awt.geom.Rectangle2D;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Stylable;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.dfs.decorations.LogicDecoration;
+import org.workcraft.utils.Coloriser;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.Path2D;
+import java.awt.geom.Rectangle2D;
 
 @Hotkey(KeyEvent.VK_L)
 @DisplayName ("Logic")
@@ -28,29 +26,20 @@ public class VisualLogic extends VisualDelayComponent {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualLogic, Boolean>(
-                this, Logic.PROPERTY_COMPUTED, Boolean.class, true, true) {
-            @Override
-            public void setter(VisualLogic object, Boolean value) {
-                object.getReferencedLogic().setComputed(value);
-            }
-            @Override
-            public Boolean getter(VisualLogic object) {
-                return object.getReferencedLogic().isComputed();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, Logic.PROPERTY_COMPUTED,
+                (value) -> getReferencedComponent().setComputed(value),
+                () -> getReferencedComponent().isComputed())
+                .setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualLogic, Boolean>(
-                this, Logic.PROPERTY_EARLY_EVALUATION, Boolean.class, true, true) {
-            @Override
-            public void setter(VisualLogic object, Boolean value) {
-                object.getReferencedLogic().setEarlyEvaluation(value);
-            }
-            @Override
-            public Boolean getter(VisualLogic object) {
-                return object.getReferencedLogic().isEarlyEvaluation();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, Logic.PROPERTY_EARLY_EVALUATION,
+                (value) -> getReferencedComponent().setEarlyEvaluation(value),
+                () -> getReferencedComponent().isEarlyEvaluation())
+                .setCombinable().setTemplatable());
+    }
+
+    @Override
+    public Logic getReferencedComponent() {
+        return (Logic) super.getReferencedComponent();
     }
 
     @Override
@@ -81,7 +70,7 @@ public class VisualLogic extends VisualDelayComponent {
         eeShape.moveTo(+2 * dd + dd, 0);
         eeShape.lineTo(+2 * dd - dd, 0);
 
-        boolean computed = getReferencedLogic().isComputed();
+        boolean computed = getReferencedComponent().isComputed();
         if (d instanceof LogicDecoration) {
             computed = ((LogicDecoration) d).isComputed();
         }
@@ -92,7 +81,7 @@ public class VisualLogic extends VisualDelayComponent {
         }
         g.fill(shape);
         g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-        if (getReferencedLogic().isEarlyEvaluation()) {
+        if (getReferencedComponent().isEarlyEvaluation()) {
             g.setStroke(new BasicStroke(strokeWidth4));
             g.draw(eeShape);
         }
@@ -103,17 +92,13 @@ public class VisualLogic extends VisualDelayComponent {
         drawNameInLocalSpace(r);
     }
 
-    public Logic getReferencedLogic() {
-        return (Logic) getReferencedComponent();
-    }
-
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualLogic) {
-            Logic srcLogic = ((VisualLogic) src).getReferencedLogic();
-            getReferencedLogic().setEarlyEvaluation(srcLogic.isEarlyEvaluation());
-            getReferencedLogic().setComputed(srcLogic.isComputed());
+            Logic srcLogic = ((VisualLogic) src).getReferencedComponent();
+            getReferencedComponent().setEarlyEvaluation(srcLogic.isEarlyEvaluation());
+            getReferencedComponent().setComputed(srcLogic.isComputed());
         }
     }
 

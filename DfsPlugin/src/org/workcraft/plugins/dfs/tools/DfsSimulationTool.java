@@ -46,7 +46,7 @@ public class DfsSimulationTool extends StgSimulationTool {
     private VisualPlace getVisualPlace(Place place) {
         VisualPlace result = null;
         for (VisualPlace vp: Hierarchy.getDescendantsOfType(getUnderlyingModel().getRoot(), VisualPlace.class)) {
-            if (vp.getReferencedPlace() == place) {
+            if (vp.getReferencedComponent() == place) {
                 result = vp;
                 break;
             }
@@ -73,7 +73,7 @@ public class DfsSimulationTool extends StgSimulationTool {
             Node nodeC = getUnderlyingStg().getNodeByReference(refC);
             if ((nodeC instanceof Place) && savedState.containsKey(nodeC)) {
                 boolean computed = savedState.get(nodeC) > 0;
-                l.getReferencedLogic().setComputed(computed);
+                l.getReferencedComponent().setComputed(computed);
             }
         }
         for (VisualRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualRegister.class)) {
@@ -81,7 +81,7 @@ public class DfsSimulationTool extends StgSimulationTool {
             Node nodeM = getUnderlyingStg().getNodeByReference(refM);
             if ((nodeM instanceof Place) && savedState.containsKey(nodeM)) {
                 boolean marked = savedState.get(nodeM) > 0;
-                r.getReferencedRegister().setMarked(marked);
+                r.getReferencedComponent().setMarked(marked);
                 copyTokenColor(r, nodeM);
             }
         }
@@ -90,13 +90,13 @@ public class DfsSimulationTool extends StgSimulationTool {
             Node nodeFwC = getUnderlyingStg().getNodeByReference(refFwC);
             if ((nodeFwC instanceof Place) && savedState.containsKey(nodeFwC)) {
                 boolean forwardComputed = savedState.get(nodeFwC) > 0;
-                l.getReferencedCounterflowLogic().setForwardComputed(forwardComputed);
+                l.getReferencedComponent().setForwardComputed(forwardComputed);
             }
             String refBwC = DfsToStgConverter.nameBwC + dfs.getMathReference(l) + DfsToStgConverter.name1;
             Node nodeBwC = getUnderlyingStg().getNodeByReference(refBwC);
             if ((nodeBwC instanceof Place) && savedState.containsKey(nodeBwC)) {
                 boolean backwardComputed = savedState.get(nodeBwC) > 0;
-                l.getReferencedCounterflowLogic().setBackwardComputed(backwardComputed);
+                l.getReferencedComponent().setBackwardComputed(backwardComputed);
             }
         }
         for (VisualCounterflowRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualCounterflowRegister.class)) {
@@ -104,24 +104,24 @@ public class DfsSimulationTool extends StgSimulationTool {
             Node nodeOrM = getUnderlyingStg().getNodeByReference(refOrM);
             if ((nodeOrM instanceof Place) && savedState.containsKey(nodeOrM)) {
                 boolean orMarked = savedState.get(nodeOrM) > 0;
-                r.getReferencedCounterflowRegister().setOrMarked(orMarked);
+                r.getReferencedComponent().setOrMarked(orMarked);
                 copyTokenColor(r, nodeOrM);
             }
             String refAndM = DfsToStgConverter.nameAndM + dfs.getMathReference(r) + DfsToStgConverter.name1;
             Node nodeAndM = getUnderlyingStg().getNodeByReference(refAndM);
             if ((nodeAndM instanceof Place) && savedState.containsKey(nodeAndM)) {
                 boolean andMarked = savedState.get(nodeAndM) > 0;
-                r.getReferencedCounterflowRegister().setAndMarked(andMarked);
+                r.getReferencedComponent().setAndMarked(andMarked);
                 copyTokenColor(r, nodeAndM);
             }
         }
         for (VisualBinaryRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualBinaryRegister.class)) {
-            r.getReferencedBinaryRegister().setMarking(Marking.EMPTY);
+            r.getReferencedComponent().setMarking(Marking.EMPTY);
             String refTrueM = DfsToStgConverter.nameTrueM + dfs.getMathReference(r) + DfsToStgConverter.name1;
             Node nodeTrueM = getUnderlyingStg().getNodeByReference(refTrueM);
             if ((nodeTrueM instanceof Place) && savedState.containsKey(nodeTrueM)) {
                 if (savedState.get(nodeTrueM) > 0) {
-                    r.getReferencedBinaryRegister().setMarking(Marking.TRUE_TOKEN);
+                    r.getReferencedComponent().setMarking(Marking.TRUE_TOKEN);
                 }
                 copyTokenColor(r, nodeTrueM);
             }
@@ -129,7 +129,7 @@ public class DfsSimulationTool extends StgSimulationTool {
             Node nodeFalseM = getUnderlyingStg().getNodeByReference(refFalseM);
             if ((nodeFalseM instanceof Place) && savedState.containsKey(nodeFalseM)) {
                 if (savedState.get(nodeFalseM) > 0) {
-                    r.getReferencedBinaryRegister().setMarking(Marking.FALSE_TOKEN);
+                    r.getReferencedComponent().setMarking(Marking.FALSE_TOKEN);
                 }
                 copyTokenColor(r, nodeFalseM);
             }
@@ -226,7 +226,7 @@ public class DfsSimulationTool extends StgSimulationTool {
 
                         @Override
                         public boolean isComputed() {
-                            return lstg.c0.getReferencedPlace().getTokens() == 0;
+                            return lstg.c0.getReferencedComponent().getTokens() == 0;
                         }
                     };
                 }
@@ -247,7 +247,7 @@ public class DfsSimulationTool extends StgSimulationTool {
 
                         @Override
                         public boolean isMarked() {
-                            return rstg.m0.getReferencedPlace().getTokens() == 0;
+                            return rstg.m0.getReferencedComponent().getTokens() == 0;
                         }
 
                         @Override
@@ -278,12 +278,12 @@ public class DfsSimulationTool extends StgSimulationTool {
 
                         @Override
                         public boolean isForwardComputed() {
-                            return lstg.fwC0.getReferencedPlace().getTokens() == 0;
+                            return lstg.fwC0.getReferencedComponent().getTokens() == 0;
                         }
 
                         @Override
                         public boolean isBackwardComputed() {
-                            return lstg.bwC0.getReferencedPlace().getTokens() == 0;
+                            return lstg.bwC0.getReferencedComponent().getTokens() == 0;
                         }
 
                         @Override
@@ -324,12 +324,12 @@ public class DfsSimulationTool extends StgSimulationTool {
 
                         @Override
                         public boolean isOrMarked() {
-                            return rstg.orM0.getReferencedPlace().getTokens() == 0;
+                            return rstg.orM0.getReferencedComponent().getTokens() == 0;
                         }
 
                         @Override
                         public boolean isAndMarked() {
-                            return rstg.andM0.getReferencedPlace().getTokens() == 0;
+                            return rstg.andM0.getReferencedComponent().getTokens() == 0;
                         }
 
                         @Override
@@ -375,7 +375,7 @@ public class DfsSimulationTool extends StgSimulationTool {
 
                         @Override
                         public boolean isTrueMarked() {
-                            return rstg.tM0.getReferencedPlace().getTokens() == 0;
+                            return rstg.tM0.getReferencedComponent().getTokens() == 0;
                         }
 
                         @Override
@@ -385,7 +385,7 @@ public class DfsSimulationTool extends StgSimulationTool {
 
                         @Override
                         public boolean isFalseMarked() {
-                            return rstg.fM0.getReferencedPlace().getTokens() == 0;
+                            return rstg.fM0.getReferencedComponent().getTokens() == 0;
                         }
 
                         @Override
@@ -431,7 +431,7 @@ public class DfsSimulationTool extends StgSimulationTool {
         if (ts != null) {
             for (VisualSignalTransition t: ts) {
                 if (t == null) continue;
-                Transition transition = t.getReferencedTransition();
+                Transition transition = t.getReferencedComponent();
                 if (isEnabledNode(transition)) {
                     return transition;
                 }

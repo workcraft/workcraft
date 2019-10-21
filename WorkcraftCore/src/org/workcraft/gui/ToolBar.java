@@ -2,8 +2,8 @@ package org.workcraft.gui;
 
 import org.workcraft.gui.actions.ActionButton;
 import org.workcraft.gui.actions.ActionToggle;
-import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
@@ -116,10 +116,10 @@ public class ToolBar extends JToolBar {
     }
 
     public void refreshToggles() {
-        gridToggle.setSelected(CommonEditorSettings.getGridVisibility());
-        rulerToggle.setSelected(CommonEditorSettings.getRulerVisibility());
-        nameToggle.setSelected(CommonVisualSettings.getNameVisibility());
-        labelToggle.setSelected(CommonVisualSettings.getLabelVisibility());
+        gridToggle.setSelected(EditorCommonSettings.getGridVisibility());
+        rulerToggle.setSelected(EditorCommonSettings.getRulerVisibility());
+        nameToggle.setSelected(VisualCommonSettings.getNameVisibility());
+        labelToggle.setSelected(VisualCommonSettings.getLabelVisibility());
     }
 
 }

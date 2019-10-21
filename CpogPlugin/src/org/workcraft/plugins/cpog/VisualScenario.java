@@ -21,9 +21,7 @@ public class VisualScenario extends VisualGroup {
 
     public static final String PROPERTY_ENCODING = "Encoding";
     public static final String PROPERTY_LABEL = "Label";
-
-    // Dash symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
-    public static final char DASH_SYMBOL = 0x2013;
+    public static final String DASH_SYMBOL = Character.toString((char) 0x2013);
 
     private static final float frameDepth = 0.25f;
     private static final float strokeWidth = 0.03f;
@@ -57,29 +55,11 @@ public class VisualScenario extends VisualGroup {
     }
 
     public VisualScenario() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualScenario, String>(
-                this, PROPERTY_LABEL, String.class, true, true) {
-            @Override
-            public void setter(VisualScenario object, String value) {
-                object.setLabel(value);
-            }
-            @Override
-            public String getter(VisualScenario object) {
-                return object.getLabel();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(String.class, PROPERTY_LABEL,
+                this::setLabel, this::getLabel).setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualScenario, Encoding>(
-                this, PROPERTY_ENCODING, Encoding.class, true, true) {
-            @Override
-            public void setter(VisualScenario object, Encoding value) {
-                object.setEncoding(value);
-            }
-            @Override
-            public Encoding getter(VisualScenario object) {
-                return object.getEncoding();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Encoding.class, PROPERTY_ENCODING,
+                this::setEncoding, this::getEncoding).setCombinable().setTemplatable());
     }
 
     @Override
@@ -214,7 +194,7 @@ public class VisualScenario extends VisualGroup {
 
                 text = encoding.getState(var).getValueAsString();
                 if ("?".equals(text)) {
-                    text = Character.toString(DASH_SYMBOL);
+                    text = DASH_SYMBOL;
                 }
 
                 result = FormulaToGraphics.print(text, labelFont, g.getFontRenderContext());

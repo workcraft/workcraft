@@ -45,11 +45,11 @@ public class FstToStgConverter {
         for (Entry<VisualSignalEvent, VisualNamedTransition> entry: eventToTransitionMap.entrySet()) {
             VisualSignalEvent signalEvent = entry.getKey();
             VisualNamedTransition transition = entry.getValue();
-            Signal signal = signalEvent.getReferencedSignalEvent().getSignal();
+            Signal signal = signalEvent.getReferencedConnection().getSignal();
             String dstName = dstModel.getMathName(transition);
             String srcName = srcModel.getMathName(signal);
             if (signal.hasDirection()) {
-                srcName += signalEvent.getReferencedSignalEvent().getDirection();
+                srcName += signalEvent.getReferencedConnection().getDirection();
             }
             result.put(dstName, srcName);
         }
@@ -59,11 +59,11 @@ public class FstToStgConverter {
     private Map<VisualState, VisualPlace> convertStates() {
         Map<VisualState, VisualPlace> result = new HashMap<>();
         for (VisualState state: srcModel.getVisualStates()) {
-            String name = srcModel.getMathModel().getNodeReference(state.getReferencedState());
+            String name = srcModel.getMathModel().getNodeReference(state.getReferencedComponent());
             VisualPlace place = dstModel.createVisualPlace(name);
             place.copyPosition(state);
             place.copyStyle(state);
-            place.getReferencedPlace().setTokens(state.getReferencedState().isInitial() ? 1 : 0);
+            place.getReferencedComponent().setTokens(state.getReferencedComponent().isInitial() ? 1 : 0);
             place.setTokenColor(state.getForegroundColor());
             result.put(state, place);
         }
@@ -93,12 +93,12 @@ public class FstToStgConverter {
         Map<VisualSignalEvent, VisualNamedTransition> result = new HashMap<>();
         for (VisualSignalEvent signalEvent : srcModel.getVisualSignalEvents()) {
             VisualNamedTransition transition = null;
-            Signal signal = signalEvent.getReferencedSignalEvent().getSignal();
+            Signal signal = signalEvent.getReferencedConnection().getSignal();
             String name = srcModel.getMathName(signal);
             if (signal.hasDirection()) {
                 Signal.Type srcType = signal.getType();
                 org.workcraft.plugins.stg.Signal.Type dstType = convertFstToStgType(srcType);
-                Direction srcDirection = signalEvent.getReferencedSignalEvent().getDirection();
+                Direction srcDirection = signalEvent.getReferencedConnection().getDirection();
                 org.workcraft.plugins.stg.SignalTransition.Direction dstDirection = convertFstToStgDirection(srcDirection);
                 transition = dstModel.createVisualSignalTransition(name, dstType, dstDirection);
             } else {

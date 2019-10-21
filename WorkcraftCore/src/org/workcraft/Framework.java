@@ -33,7 +33,7 @@ import org.workcraft.plugins.builtin.commands.DotLayoutCommand;
 import org.workcraft.plugins.builtin.commands.RandomLayoutCommand;
 import org.workcraft.plugins.builtin.serialisation.XMLModelDeserialiser;
 import org.workcraft.plugins.builtin.serialisation.XMLModelSerialiser;
-import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
+import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
 import org.workcraft.serialisation.DeserialisationResult;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
@@ -628,7 +628,7 @@ public final class Framework {
 
     public WorkspaceEntry createWork(ModelEntry me, Path<String> directory, String desiredName) {
         final Path<String> path = getWorkspace().createWorkPath(directory, desiredName);
-        boolean open = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
+        boolean open = me.isVisual() || EditorCommonSettings.getOpenNonvisual();
         return createWork(me, path, open, true);
     }
 
@@ -1034,7 +1034,7 @@ public final class Framework {
         String lastDirectoryName = getConfigVar(CONFIG_RECENT_LAST_DIRECTORY, false);
         File lastDirectory = (lastDirectoryName == null) ? null : new File(lastDirectoryName);
         setLastDirectory(lastDirectory);
-        for (int i = 0; i < CommonEditorSettings.getRecentCount(); i++) {
+        for (int i = 0; i < EditorCommonSettings.getRecentCount(); i++) {
             String entry = getConfigVar(CONFIG_RECENT_FILE + i, false);
             pushRecentFilePath(entry);
         }
@@ -1045,7 +1045,7 @@ public final class Framework {
             String lastDirectoryPath = getLastDirectory().getAbsolutePath();
             setConfigVar(CONFIG_RECENT_LAST_DIRECTORY, lastDirectoryPath, false);
         }
-        int recentCount = CommonEditorSettings.getRecentCount();
+        int recentCount = EditorCommonSettings.getRecentCount();
         String[] tmp = recentFilePaths.toArray(new String[recentCount]);
         for (int i = 0; i < recentCount; i++) {
             setConfigVar(CONFIG_RECENT_FILE + i, tmp[i], false);
@@ -1061,7 +1061,7 @@ public final class Framework {
             // Remove previous entry of the fileName
             recentFilePaths.remove(filePath);
             // Make sure there is not too many entries
-            int recentCount = CommonEditorSettings.getRecentCount();
+            int recentCount = EditorCommonSettings.getRecentCount();
             for (String entry: new ArrayList<>(recentFilePaths)) {
                 if (recentFilePaths.size() < recentCount) {
                     break;

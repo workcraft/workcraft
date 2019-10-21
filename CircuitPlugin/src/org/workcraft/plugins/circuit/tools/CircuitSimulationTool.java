@@ -65,8 +65,8 @@ public class CircuitSimulationTool extends StgSimulationTool {
             SignalStg signalStg = converter.getSignalStg(contact);
             if (signalStg != null) {
                 for (VisualSignalTransition transition: signalStg.getAllTransitions()) {
-                    if (isEnabledNode(transition.getReferencedTransition())) {
-                        result.add(transition.getReferencedTransition());
+                    if (isEnabledNode(transition.getReferencedComponent())) {
+                        result.add(transition.getReferencedComponent());
                     }
                 }
             }
@@ -219,8 +219,8 @@ public class CircuitSimulationTool extends StgSimulationTool {
         Node traceCurrentNode = getTraceCurrentNode();
         SignalStg signalStg = signalStgAndInversion.getFirst();
         boolean isInverting = signalStgAndInversion.getSecond();
-        final boolean isOne = (signalStg.one.getReferencedPlace().getTokens() == 1) != isInverting;
-        final boolean isZero = (signalStg.zero.getReferencedPlace().getTokens() == 1) != isInverting;
+        final boolean isOne = (signalStg.one.getReferencedComponent().getTokens() == 1) != isInverting;
+        final boolean isZero = (signalStg.zero.getReferencedComponent().getTokens() == 1) != isInverting;
         final boolean isExcited = !getContactExcitedTransitions(contact).isEmpty() && !isZeroDelay;
         final boolean isSuggested = isExcited && signalStg.contains(traceCurrentNode) && !isZeroDelay;
         return new StateDecoration() {
@@ -253,8 +253,8 @@ public class CircuitSimulationTool extends StgSimulationTool {
         }
         SignalStg signalStg = signalStgAndInversion.getFirst();
         boolean isInverting = signalStgAndInversion.getSecond();
-        final boolean isOne = (signalStg.one.getReferencedPlace().getTokens() == 1) != isInverting;
-        final boolean isZero = (signalStg.zero.getReferencedPlace().getTokens() == 1) != isInverting;
+        final boolean isOne = (signalStg.one.getReferencedComponent().getTokens() == 1) != isInverting;
+        final boolean isZero = (signalStg.zero.getReferencedComponent().getTokens() == 1) != isInverting;
         return new StateDecoration() {
             @Override
             public Color getColorisation() {

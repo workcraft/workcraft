@@ -1,7 +1,7 @@
 package org.workcraft.gui;
 
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.plugins.builtin.settings.CommonLogSettings;
+import org.workcraft.plugins.builtin.settings.LogCommonSettings;
 import org.workcraft.utils.LogUtils;
 
 import javax.swing.*;
@@ -93,21 +93,21 @@ public class OutputWindow extends JPanel {
             LogType type = oldType;
             if (LogUtils.isInfoText(text)) {
                 type = LogType.INFO;
-                painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getInfoBackground());
+                painter = new DefaultHighlighter.DefaultHighlightPainter(LogCommonSettings.getInfoBackground());
             } else if (LogUtils.isWarningText(text)) {
                 type = LogType.WARNING;
-                painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getWarningBackground());
+                painter = new DefaultHighlighter.DefaultHighlightPainter(LogCommonSettings.getWarningBackground());
             } else if (LogUtils.isErrorText(text)) {
                 type = LogType.ERROR;
-                painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getErrorBackground());
+                painter = new DefaultHighlighter.DefaultHighlightPainter(LogCommonSettings.getErrorBackground());
             } else if (LogUtils.isStdoutText(text)) {
                 type = LogType.STDOUT;
                 text = LogUtils.getTextWithoutPrefix(text);
-                painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getStdoutBackground());
+                painter = new DefaultHighlighter.DefaultHighlightPainter(LogCommonSettings.getStdoutBackground());
             } else if (LogUtils.isStderrText(text)) {
                 type = LogType.STDERR;
                 text = LogUtils.getTextWithoutPrefix(text);
-                painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getStderrBackground());
+                painter = new DefaultHighlighter.DefaultHighlightPainter(LogCommonSettings.getStderrBackground());
             } else if (!"\n".equals(text)) {
                 type = null;
                 painter = new DefaultHighlighter.DefaultHighlightPainter(target.getBackground());
@@ -124,7 +124,7 @@ public class OutputWindow extends JPanel {
             int toPos = target.getDocument().getLength();
             target.setCaretPosition(toPos);
 
-            Color textColor = CommonLogSettings.getTextColor();
+            Color textColor = LogCommonSettings.getTextColor();
             target.setForeground(textColor);
             target.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
 

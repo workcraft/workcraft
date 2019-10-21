@@ -44,114 +44,51 @@ public class PetrifySettings extends AbstractToolSettings {
     private static boolean printStderr = defaultPrintStderr;
     private static boolean openSynthesisStg = defaultOpenSynthesisStg;
 
-    public PetrifySettings() {
-        properties.add(new PropertyDeclaration<PetrifySettings, String>(
-                this, "Petrify command", String.class) {
-            @Override
-            public void setter(PetrifySettings object, String value) {
-                setCommand(value);
-            }
-            @Override
-            public String getter(PetrifySettings object) {
-                return getCommand();
-            }
-        });
+    static {
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Petrify command",
+                PetrifySettings::setCommand,
+                PetrifySettings::getCommand));
 
-        properties.add(new PropertyDeclaration<PetrifySettings, String>(
-                this, "Additional parameters", String.class) {
-            @Override
-            public void setter(PetrifySettings object, String value) {
-                setArgs(value);
-            }
-            @Override
-            public String getter(PetrifySettings object) {
-                return getArgs();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Additional parameters",
+                PetrifySettings::setArgs,
+                PetrifySettings::getArgs));
 
-        properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
-                this, "Edit additional parameters before every call", Boolean.class) {
-            @Override
-            public void setter(PetrifySettings object, Boolean value) {
-                setAdvancedMode(value);
-            }
-            @Override
-            public Boolean getter(PetrifySettings object) {
-                return getAdvancedMode();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Edit additional parameters before every call",
+                PetrifySettings::setAdvancedMode,
+                PetrifySettings::getAdvancedMode));
 
-        properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
-                this, "Write log file (" + PetrifyUtils.LOG_FILE_NAME + ")", Boolean.class) {
-            @Override
-            public void setter(PetrifySettings object, Boolean value) {
-                setWriteLog(value);
-            }
-            @Override
-            public Boolean getter(PetrifySettings object) {
-                return getWriteLog();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Write log file (" + PetrifyUtils.LOG_FILE_NAME + ")",
+                PetrifySettings::setWriteLog,
+                PetrifySettings::getWriteLog));
 
-        properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
-                this, "Write STG file (" + PetrifyUtils.STG_FILE_NAME + ")", Boolean.class) {
-            @Override
-            public void setter(PetrifySettings object, Boolean value) {
-                setWriteStg(value);
-            }
-            @Override
-            public Boolean getter(PetrifySettings object) {
-                return getWriteStg();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Write STG file (" + PetrifyUtils.STG_FILE_NAME + ")",
+                PetrifySettings::setWriteStg,
+                PetrifySettings::getWriteStg));
 
-        properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
-                this, "Write EQN file (" + PetrifyUtils.EQN_FILE_NAME + ")", Boolean.class) {
-            @Override
-            public void setter(PetrifySettings object, Boolean value) {
-                setWriteEqn(value);
-            }
-            @Override
-            public Boolean getter(PetrifySettings object) {
-                return getWriteEqn();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Write EQN file (" + PetrifyUtils.EQN_FILE_NAME + ")",
+                PetrifySettings::setWriteEqn,
+                PetrifySettings::getWriteEqn));
 
-        properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
-                this, "Output stdout", Boolean.class) {
-            @Override
-            public void setter(PetrifySettings object, Boolean value) {
-                setPrintStdout(value);
-            }
-            @Override
-            public Boolean getter(PetrifySettings object) {
-                return getPrintStdout();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Output stdout",
+                PetrifySettings::setPrintStdout,
+                PetrifySettings::getPrintStdout));
 
-        properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
-                this, "Output stderr", Boolean.class) {
-            @Override
-            public void setter(PetrifySettings object, Boolean value) {
-                setPrintStderr(value);
-            }
-            @Override
-            public Boolean getter(PetrifySettings object) {
-                return getPrintStderr();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Output stderr",
+                PetrifySettings::setPrintStderr,
+                PetrifySettings::getPrintStderr));
 
-        properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
-                this, "Open resulting STG if new signals are inserted", Boolean.class) {
-            @Override
-            public void setter(PetrifySettings object, Boolean value) {
-                setOpenSynthesisStg(value);
-            }
-            @Override
-            public Boolean getter(PetrifySettings object) {
-                return getOpenSynthesisStg();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Open resulting STG if new signals are inserted",
+                PetrifySettings::setOpenSynthesisStg,
+                PetrifySettings::getOpenSynthesisStg));
     }
 
     @Override

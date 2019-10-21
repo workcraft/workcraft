@@ -4,12 +4,12 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.SwitchComponent.Type;
 import org.workcraft.plugins.xmas.components.SwitchComponent.Val;
+import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
 import java.awt.geom.Path2D;
@@ -31,32 +31,22 @@ public class VisualSwitchComponent extends VisualXmasComponent {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualSwitchComponent, Type>(
-                this, SwitchComponent.PROPERTY_TYPE, Type.class, true, true) {
-            @Override
-            public void setter(VisualSwitchComponent object, Type value) {
-                object.getReferencedSwitchComponent().setType(value);
-            }
-            @Override
-            public Type getter(VisualSwitchComponent object) {
-                return object.getReferencedSwitchComponent().getType();
-            }
-        });
-        addPropertyDeclaration(new PropertyDeclaration<VisualSwitchComponent, Val>(
-                this, SwitchComponent.PROPERTY_VAL, Val.class, true, true) {
-            @Override
-            public void setter(VisualSwitchComponent object, Val value) {
-                object.getReferencedSwitchComponent().setVal(value);
-            }
-            @Override
-            public Val getter(VisualSwitchComponent object) {
-                return object.getReferencedSwitchComponent().getVal();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Type.class,
+                SwitchComponent.PROPERTY_TYPE,
+                (value) -> getReferencedComponent().setType(value),
+                () -> getReferencedComponent().getType())
+                .setCombinable().setTemplatable());
+
+        addPropertyDeclaration(new PropertyDeclaration<>(Val.class,
+                SwitchComponent.PROPERTY_VAL,
+                (value) -> getReferencedComponent().setVal(value),
+                () -> getReferencedComponent().getVal())
+                .setCombinable().setTemplatable());
     }
 
-    public SwitchComponent getReferencedSwitchComponent() {
-        return (SwitchComponent) getReferencedComponent();
+    @Override
+    public SwitchComponent getReferencedComponent() {
+        return (SwitchComponent) super.getReferencedComponent();
     }
 
     public Shape getUpPointerShape() {

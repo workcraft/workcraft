@@ -6,8 +6,8 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.utils.Coloriser;
 import org.workcraft.utils.Geometry;
 
@@ -17,15 +17,15 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 public class VisualEvent extends VisualConnection {
-    // Epsilon symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
-    public static final char EPSILON_SYMBOL = 0x03B5;
+
+    public static final String EPSILON_SYMBOL = Character.toString((char) 0x03B5);
 
     public static final String PROPERTY_LABEL_COLOR = "Label color";
 
     public static final Font LABEL_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 1);
 
     private RenderedText labelRenderedText = new RenderedText("", getLabelFont(), Positioning.CENTER, new Point2D.Double());
-    private Color labelColor = CommonVisualSettings.getLabelColor();
+    private Color labelColor = VisualCommonSettings.getLabelColor();
 
     public VisualEvent() {
         this(null, null, null);
@@ -41,22 +41,13 @@ public class VisualEvent extends VisualConnection {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualEvent, Color>(
-                this, PROPERTY_LABEL_COLOR, Color.class, true, true) {
-            @Override
-            public void setter(VisualEvent object, Color value) {
-                object.setLabelColor(value);
-            }
-            @Override
-            public Color getter(VisualEvent object) {
-                return object.getLabelColor();
-            }
-        });
-
+        addPropertyDeclaration(new PropertyDeclaration<>(Color.class, PROPERTY_LABEL_COLOR,
+                this::setLabelColor, this::getLabelColor).setCombinable().setTemplatable());
     }
 
-    public Event getReferencedEvent() {
-        return (Event) getReferencedConnection();
+    @Override
+    public Event getReferencedConnection() {
+        return (Event) super.getReferencedConnection();
     }
 
     public boolean getLabelVisibility() {
@@ -64,7 +55,7 @@ public class VisualEvent extends VisualConnection {
     }
 
     public Font getLabelFont() {
-        return LABEL_FONT.deriveFont((float) CommonVisualSettings.getLabelFontSize());
+        return LABEL_FONT.deriveFont((float) VisualCommonSettings.getLabelFontSize());
     }
 
     protected void cacheLabelRenderedText(DrawRequest r) {
@@ -78,8 +69,8 @@ public class VisualEvent extends VisualConnection {
     }
 
     public String getLabel(DrawRequest r) {
-        String label = Character.toString(EPSILON_SYMBOL);
-        Symbol symbol = getReferencedEvent().getSymbol();
+        String label = EPSILON_SYMBOL;
+        Symbol symbol = getReferencedConnection().getSymbol();
         if (symbol != null) {
             label = r.getModel().getMathName(symbol);
         }
@@ -120,7 +111,7 @@ public class VisualEvent extends VisualConnection {
             g.transform(transform);
             Color background = d.getBackground();
             if (background != null) {
-                g.setColor(Coloriser.colorise(CommonEditorSettings.getBackgroundColor(), background));
+                g.setColor(Coloriser.colorise(EditorCommonSettings.getBackgroundColor(), background));
                 Rectangle2D box = BoundingBoxHelper.expand(labelRenderedText.getBoundingBox(), 0.2, 0.0);
                 g.fill(box);
             }
@@ -168,7 +159,7 @@ public class VisualEvent extends VisualConnection {
         super.copyStyle(src);
         if (src instanceof VisualEvent) {
             VisualEvent srcEvent = (VisualEvent) src;
-            getReferencedEvent().setSymbol(srcEvent.getReferencedEvent().getSymbol());
+            getReferencedConnection().setSymbol(srcEvent.getReferencedConnection().getSymbol());
             setLabelColor(srcEvent.getLabelColor());
         }
     }

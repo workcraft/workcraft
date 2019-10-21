@@ -37,7 +37,7 @@ public class GraphSimulationTool extends PetriSimulationTool {
         if (ref != null) {
             label = converter.getSymbol(ref);
             if (label.isEmpty()) {
-                label = Character.toString(VisualVertex.EPSILON_SYMBOL);
+                label = VisualVertex.EPSILON_SYMBOL;
             }
         }
         if (label == null) {
@@ -132,19 +132,19 @@ public class GraphSimulationTool extends PetriSimulationTool {
     @Override
     public boolean isConnectionExcited(VisualConnection connection) {
         VisualPlace place = converter.getRelatedPlace(connection);
-        return (place == null) ? false : place.getReferencedPlace().getTokens() != 0;
+        return (place == null) ? false : place.getReferencedComponent().getTokens() != 0;
     }
 
     private boolean isVertexExcited(VisualVertex vertex) {
         VisualTransition transition = converter.getRelatedTransition(vertex);
-        return (transition == null) ? false : isEnabledNode(transition.getReferencedTransition());
+        return (transition == null) ? false : isEnabledNode(transition.getReferencedComponent());
     }
 
     private Transition getExcitedTransitionOfNode(Node node) {
         if ((node != null) && (node instanceof VisualVertex)) {
             VisualTransition vTransition = converter.getRelatedTransition((VisualVertex) node);
             if (vTransition != null) {
-                Transition transition = vTransition.getReferencedTransition();
+                Transition transition = vTransition.getReferencedComponent();
                 if (isEnabledNode(transition)) {
                     return transition;
                 }

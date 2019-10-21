@@ -24,32 +24,22 @@ public class VisualCreditComponent extends VisualXmasComponent {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualCreditComponent, Integer>(
-                this, CreditComponent.PROPERTY_CAPACITY, Integer.class, true, true) {
-            @Override
-            public void setter(VisualCreditComponent object, Integer value) {
-                object.getReferencedCreditComponent().setCapacity(value);
-            }
-            @Override
-            public Integer getter(VisualCreditComponent object) {
-                return object.getReferencedCreditComponent().getCapacity();
-            }
-        });
-        addPropertyDeclaration(new PropertyDeclaration<VisualCreditComponent, Integer>(
-                this, CreditComponent.PROPERTY_INIT, Integer.class, true, true) {
-            @Override
-            public void setter(VisualCreditComponent object, Integer value) {
-                object.getReferencedCreditComponent().setInit(value);
-            }
-            @Override
-            public Integer getter(VisualCreditComponent object) {
-                return object.getReferencedCreditComponent().getInit();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Integer.class,
+                CreditComponent.PROPERTY_CAPACITY,
+                (value) -> getReferencedComponent().setCapacity(value),
+                () -> getReferencedComponent().getCapacity())
+                .setCombinable().setTemplatable());
+
+        addPropertyDeclaration(new PropertyDeclaration<>(Integer.class,
+                CreditComponent.PROPERTY_INIT,
+                (value) -> getReferencedComponent().setInit(value),
+                () -> getReferencedComponent().getInit())
+                .setCombinable().setTemplatable());
     }
 
-    public CreditComponent getReferencedCreditComponent() {
-        return (CreditComponent) getReferencedComponent();
+    @Override
+    public CreditComponent getReferencedComponent() {
+        return (CreditComponent) super.getReferencedComponent();
     }
 
     @Override
@@ -79,9 +69,9 @@ public class VisualCreditComponent extends VisualXmasComponent {
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualCreditComponent) {
-            CreditComponent srcComponent = ((VisualCreditComponent) src).getReferencedCreditComponent();
-            getReferencedCreditComponent().setCapacity(srcComponent.getCapacity());
-            getReferencedCreditComponent().setInit(srcComponent.getInit());
+            CreditComponent srcComponent = ((VisualCreditComponent) src).getReferencedComponent();
+            getReferencedComponent().setCapacity(srcComponent.getCapacity());
+            getReferencedComponent().setInit(srcComponent.getInit());
         }
     }
 

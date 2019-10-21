@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SelectionDecorationSettings extends AbstractDecorationSettings {
+
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "SelectionDecorationSettings";
 
@@ -24,42 +25,21 @@ public class SelectionDecorationSettings extends AbstractDecorationSettings {
     private static Color selectionColor = defaultSelectionColor;
     private static Color shadingColor = defaultShadingColor;
 
-    public SelectionDecorationSettings() {
-        properties.add(new PropertyDeclaration<SelectionDecorationSettings, Color>(
-                this, "Highlighting color", Color.class) {
-            @Override
-            public void setter(SelectionDecorationSettings object, Color value) {
-                setHighlightingColor(value);
-            }
-            @Override
-            public Color getter(SelectionDecorationSettings object) {
-                return getHighlightingColor();
-            }
-        });
+    static {
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Highlighting color",
+                SelectionDecorationSettings::setHighlightingColor,
+                SelectionDecorationSettings::getHighlightingColor));
 
-        properties.add(new PropertyDeclaration<SelectionDecorationSettings, Color>(
-                this, "Selection color", Color.class) {
-            @Override
-            public void setter(SelectionDecorationSettings object, Color value) {
-                setSelectionColor(value);
-            }
-            @Override
-            public Color getter(SelectionDecorationSettings object) {
-                return getSelectionColor();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Selection color",
+                SelectionDecorationSettings::setSelectionColor,
+                SelectionDecorationSettings::getSelectionColor));
 
-        properties.add(new PropertyDeclaration<SelectionDecorationSettings, Color>(
-                this, "Shading color", Color.class) {
-            @Override
-            public void setter(SelectionDecorationSettings object, Color value) {
-                setShadingColor(value);
-            }
-            @Override
-            public Color getter(SelectionDecorationSettings object) {
-                return getShadingColor();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Shading color",
+                SelectionDecorationSettings::setShadingColor,
+                SelectionDecorationSettings::getShadingColor));
     }
 
     @Override

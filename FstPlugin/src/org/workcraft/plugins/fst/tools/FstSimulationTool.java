@@ -45,7 +45,7 @@ public class FstSimulationTool extends StgSimulationTool {
         if (ref != null) {
             label = converter.getEventLabel(ref);
             if (label.isEmpty()) {
-                label = Character.toString(VisualEvent.EPSILON_SYMBOL);
+                label = VisualEvent.EPSILON_SYMBOL;
             }
         }
         if (label == null) {
@@ -158,7 +158,7 @@ public class FstSimulationTool extends StgSimulationTool {
         if (p == null) {
             return null;
         }
-        final boolean isMarkedPlace = p.getReferencedPlace().getTokens() > 0;
+        final boolean isMarkedPlace = p.getReferencedComponent().getTokens() > 0;
         return new Decoration() {
             @Override
             public Color getColorisation() {
@@ -175,7 +175,7 @@ public class FstSimulationTool extends StgSimulationTool {
         if ((node != null) && (node instanceof VisualEvent)) {
             VisualTransition vTransition = converter.getRelatedTransition((VisualEvent) node);
             if (vTransition != null) {
-                Transition transition = vTransition.getReferencedTransition();
+                Transition transition = vTransition.getReferencedComponent();
                 if (isEnabledNode(transition)) {
                     return transition;
                 }

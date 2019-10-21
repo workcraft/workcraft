@@ -3,16 +3,16 @@ package org.workcraft.plugins.fst;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.generators.DefaultNodeGenerator;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.dom.generators.DefaultNodeGenerator;
-import org.workcraft.gui.tools.*;
 import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.tools.*;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.VisualFsm;
@@ -57,8 +57,8 @@ public class VisualFst extends VisualFsm {
 
         VisualState vState1 = (VisualState) first;
         VisualState vState2 = (VisualState) second;
-        State mState1 = vState1.getReferencedState();
-        State mState2 = vState2.getReferencedState();
+        State mState1 = vState1.getReferencedComponent();
+        State mState2 = vState2.getReferencedComponent();
 
         if (mConnection == null) {
             Signal signal = getMathModel().createSignal(null, Signal.Type.DUMMY);
@@ -85,7 +85,7 @@ public class VisualFst extends VisualFsm {
             }
         } else if (node instanceof VisualSignalEvent) {
             VisualSignalEvent signalEvent = (VisualSignalEvent) node;
-            Signal signal = signalEvent.getReferencedSignalEvent().getSignal();
+            Signal signal = signalEvent.getReferencedConnection().getSignal();
             properties.add(getEventSignalProperty(signalEvent));
             properties.add(getSignalTypeProperty(signal, Signal.PROPERTY_TYPE));
             if (signal.hasDirection()) {
@@ -97,62 +97,44 @@ public class VisualFst extends VisualFsm {
     }
 
     private PropertyDescriptor getSignalTypeProperty(Signal signal, String description) {
-        return new PropertyDeclaration<Signal, Signal.Type>(
-                signal, description, Signal.Type.class, true, true) {
-            @Override
-            public void setter(Signal object, Signal.Type value) {
-                object.setType(value);
-            }
-            @Override
-            public Signal.Type getter(Signal object) {
-                return object.getType();
-            }
-        };
+        return new PropertyDeclaration<>(Signal.Type.class, description,
+                (value) -> signal.setType(value), () -> signal.getType())
+                .setCombinable().setTemplatable();
     }
 
     private PropertyDescriptor getEventSignalProperty(VisualSignalEvent signalEvent) {
-        return new PropertyDeclaration<VisualSignalEvent, String>(
-                signalEvent, "Signal", String.class, true, true) {
-            @Override
-            public void setter(VisualSignalEvent object, String value) {
-                Signal signal = null;
-                if (!value.isEmpty()) {
-                    Node node = getMathModel().getNodeByReference(value);
-                    if (node instanceof Signal) {
-                        signal = (Signal) node;
-                    } else {
-                        Signal oldSignal = object.getReferencedSignalEvent().getSignal();
-                        Signal.Type type = oldSignal.getType();
-                        signal = getMathModel().createSignal(value, type);
+        return new PropertyDeclaration<>(String.class, "Signal",
+                (value) -> {
+                    Signal signal = null;
+                    if (!value.isEmpty()) {
+                        Node node = getMathModel().getNodeByReference(value);
+                        if (node instanceof Signal) {
+                            signal = (Signal) node;
+                        } else {
+                            Signal oldSignal = signalEvent.getReferencedConnection().getSignal();
+                            Signal.Type type = oldSignal.getType();
+                            signal = getMathModel().createSignal(value, type);
+                        }
                     }
-                }
-                if (signal != null) {
-                    object.getReferencedSignalEvent().setSymbol(signal);
-                }
-            }
-            @Override
-            public String getter(VisualSignalEvent object) {
-                Signal signal = object.getReferencedSignalEvent().getSignal();
-                if (signal != null) {
-                    return getMathModel().getName(signal);
-                }
-                return null;
-            }
-        };
+                    if (signal != null) {
+                        signalEvent.getReferencedConnection().setSymbol(signal);
+                    }
+                },
+                () -> {
+                    Signal signal = signalEvent.getReferencedConnection().getSignal();
+                    if (signal != null) {
+                        return getMathModel().getName(signal);
+                    }
+                    return null;
+                })
+                .setCombinable().setTemplatable();
     }
 
     private PropertyDescriptor getEventDrectionProperty(VisualSignalEvent signalEvent) {
-        return new PropertyDeclaration<VisualSignalEvent, SignalEvent.Direction>(
-                signalEvent, SignalEvent.PROPERTY_DIRECTION, SignalEvent.Direction.class, true, true) {
-            @Override
-            public void setter(VisualSignalEvent object, SignalEvent.Direction value) {
-                object.getReferencedSignalEvent().setDirection(value);
-            }
-            @Override
-            public SignalEvent.Direction getter(VisualSignalEvent object) {
-                return object.getReferencedSignalEvent().getDirection();
-            }
-        };
+        return new PropertyDeclaration<>(SignalEvent.Direction.class, SignalEvent.PROPERTY_DIRECTION,
+                (value) -> signalEvent.getReferencedConnection().setDirection(value),
+                () -> signalEvent.getReferencedConnection().getDirection())
+                .setCombinable().setTemplatable();
     }
 
 }

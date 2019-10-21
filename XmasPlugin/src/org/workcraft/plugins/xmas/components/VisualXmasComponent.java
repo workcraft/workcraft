@@ -4,13 +4,13 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.*;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.XmasContact.IOType;
+import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -20,18 +20,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public abstract class VisualXmasComponent extends VisualComponent implements Container, StateObserver, ObservableHierarchy {
-    // Degree symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
-    public static final char DEGREE_SYMBOL = 0x00B0;
-    public static final double SIZE = CommonVisualSettings.getNodeSize();
+
+    public static final String DEGREE_SYMBOL = Character.toString((char) 0x00B0);
+    public static final double SIZE = VisualCommonSettings.getNodeSize();
     public static final double TOKEN_SIZE = 0.18 * SIZE;
 
     private static final String PROPERTY_ORIENTATION = "Orientation";
 
     public enum Orientation {
-        ORIENTATION_0("0" + Character.toString(DEGREE_SYMBOL), 0),
-        ORIENTATION_90("90" + Character.toString(DEGREE_SYMBOL), 1),
-        ORIENTATION_180("180" + Character.toString(DEGREE_SYMBOL), 2),
-        ORIENTATION_270("270" + Character.toString(DEGREE_SYMBOL), 3);
+        ORIENTATION_0("0" + DEGREE_SYMBOL, 0),
+        ORIENTATION_90("90" + DEGREE_SYMBOL, 1),
+        ORIENTATION_180("180" + DEGREE_SYMBOL, 2),
+        ORIENTATION_270("270" + DEGREE_SYMBOL, 3);
 
         private final String name;
         private final int quadrant;
@@ -98,21 +98,13 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualXmasComponent, Orientation>(
-                this, PROPERTY_ORIENTATION, Orientation.class, true, true) {
-            @Override
-            public void setter(VisualXmasComponent object, Orientation value) {
-                object.setOrientation(value);
-            }
-            @Override
-            public Orientation getter(VisualXmasComponent object) {
-                return object.getOrientation();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Orientation.class, PROPERTY_ORIENTATION,
+                this::setOrientation, this::getOrientation).setCombinable().setTemplatable());
     }
 
-    public XmasComponent getReferencedXmasComponent() {
-        return (XmasComponent) getReferencedComponent();
+    @Override
+    public XmasComponent getReferencedComponent() {
+        return (XmasComponent) super.getReferencedComponent();
     }
 
     public Orientation getOrientation() {
@@ -143,14 +135,14 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 
     public void addContact(VisualXmasContact vc, Positioning positioning) {
         if (!getChildren().contains(vc)) {
-            getReferencedXmasComponent().add(vc.getReferencedComponent());
+            getReferencedComponent().add(vc.getReferencedComponent());
             add(vc);
             setContactPosition(vc, positioning);
         }
     }
 
     public void setContactPosition(VisualXmasContact vc, Positioning positioning) {
-        double size2 = CommonVisualSettings.getNodeSize() / 2.0;
+        double size2 = VisualCommonSettings.getNodeSize() / 2.0;
         vc.setPosition(new Point2D.Double(size2 * positioning.xSign, size2 * positioning.ySign));
     }
 

@@ -40,54 +40,52 @@ public class VisualQueueComponent extends VisualXmasComponent {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualQueueComponent, Integer>(
-                this, QueueComponent.PROPERTY_CAPACITY, Integer.class, true, true) {
-            @Override
-            public void setter(VisualQueueComponent object, Integer value) {
-                if (value < 1) {
-                    throw new ArgumentException("Negative or zero capacity is not allowed.");
-                }
-                object.getReferencedQueueComponent().setCapacity(value);
-                AffineTransform unrotateTransform = new AffineTransform();
-                unrotateTransform.quadrantRotate(-getOrientation().getQuadrant());
-                AffineTransform rotateTransform = new AffineTransform();
-                rotateTransform.quadrantRotate(getOrientation().getQuadrant());
-                for (VisualXmasContact contact: getContacts()) {
-                    TransformHelper.applyTransform(contact, unrotateTransform);
-                    if (contact.isInput()) {
-                        setContactPosition(contact, Positioning.LEFT);
-                    } else {
-                        setContactPosition(contact, Positioning.RIGHT);
+        addPropertyDeclaration(new PropertyDeclaration<>(Integer.class,
+                QueueComponent.PROPERTY_CAPACITY,
+                (value) -> {
+                    if (value < 1) {
+                        throw new ArgumentException("Negative or zero capacity is not allowed.");
                     }
-                    TransformHelper.applyTransform(contact, rotateTransform);
-                }
-            }
-            @Override
-            public Integer getter(VisualQueueComponent object) {
-                return object.getReferencedQueueComponent().getCapacity();
-            }
-        });
+                    getReferencedComponent().setCapacity(value);
+                    AffineTransform unrotateTransform = new AffineTransform();
+                    unrotateTransform.quadrantRotate(-getOrientation().getQuadrant());
+                    AffineTransform rotateTransform = new AffineTransform();
+                    rotateTransform.quadrantRotate(getOrientation().getQuadrant());
+                    for (VisualXmasContact contact: getContacts()) {
+                        TransformHelper.applyTransform(contact, unrotateTransform);
+                        if (contact.isInput()) {
+                            setContactPosition(contact, Positioning.LEFT);
+                        } else {
+                            setContactPosition(contact, Positioning.RIGHT);
+                        }
+                        TransformHelper.applyTransform(contact, rotateTransform);
+                    }
+                },
+                () -> getReferencedComponent().getCapacity())
+                .setCombinable().setTemplatable());
+
     }
 
     @Override
     public void setContactPosition(VisualXmasContact vc, Positioning positioning) {
-        double factor2 = (double) getReferencedQueueComponent().getCapacity() / 2.0;
+        double factor2 = (double) getReferencedComponent().getCapacity() / 2.0;
         double offset = factor2 * (SIZE / 2 - CONTACT_LENGTH) + CONTACT_LENGTH;
         double x = positioning.xSign * offset;
         double y = positioning.ySign * offset;
         vc.setPosition(new Point2D.Double(x, y));
     }
 
-    public QueueComponent getReferencedQueueComponent() {
-        return (QueueComponent) getReferencedComponent();
+    @Override
+    public QueueComponent getReferencedComponent() {
+        return (QueueComponent) super.getReferencedComponent();
     }
 
     private boolean isInitialised() {
-        return getReferencedQueueComponent() != null;
+        return getReferencedComponent() != null;
     }
 
     private double getSlotOffset(int i) {
-        int capacity = getReferencedQueueComponent().getCapacity();
+        int capacity = getReferencedComponent().getCapacity();
         return SLOT_WIDTH * (i - 0.5 * (capacity - 1));
     }
 
@@ -144,7 +142,7 @@ public class VisualQueueComponent extends VisualXmasComponent {
     @Override
     public Shape getShape() {
         Path2D shape = new Path2D.Double();
-        QueueComponent ref = getReferencedQueueComponent();
+        QueueComponent ref = getReferencedComponent();
         if (ref != null) {
             int capacity = ref.getCapacity();
             double contactOffset = 0.5 * capacity * SLOT_WIDTH;
@@ -167,7 +165,7 @@ public class VisualQueueComponent extends VisualXmasComponent {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
         if (d instanceof QueueDecoration) {
-            int capacity = getReferencedQueueComponent().getCapacity();
+            int capacity = getReferencedComponent().getCapacity();
             // Quiescent elements
             g.setColor(getForegroundColor());
             for (int i = 0; i < capacity; i++) {
@@ -225,9 +223,9 @@ public class VisualQueueComponent extends VisualXmasComponent {
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualQueueComponent) {
-            QueueComponent srcComponent = ((VisualQueueComponent) src).getReferencedQueueComponent();
-            getReferencedQueueComponent().setCapacity(srcComponent.getCapacity());
-            getReferencedQueueComponent().setInit(srcComponent.getInit());
+            QueueComponent srcComponent = ((VisualQueueComponent) src).getReferencedComponent();
+            getReferencedComponent().setCapacity(srcComponent.getCapacity());
+            getReferencedComponent().setInit(srcComponent.getInit());
         }
     }
 

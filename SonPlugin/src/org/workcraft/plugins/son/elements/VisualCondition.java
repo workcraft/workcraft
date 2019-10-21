@@ -42,37 +42,11 @@ public class VisualCondition extends VisualPlaceNode {
 
     //uneditable properties
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualCondition, Boolean>(
-                this, PROPERTY_INITIAL, Boolean.class, false, false) {
-            @Override
-            public void setter(VisualCondition object, Boolean value) {
-                setInitial(value);
-            }
-            @Override
-            public Boolean getter(VisualCondition object) {
-                return isInitial();
-            }
-            @Override
-            public boolean isEditable() {
-                return false;
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, PROPERTY_INITIAL,
+                this::setInitial, this::isInitial).setReadonly());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualCondition, Boolean>(
-                this, PROPERTY_FINAL, Boolean.class, false, false) {
-            @Override
-            public void setter(VisualCondition object, Boolean value) {
-                setFinal(value);
-            }
-            @Override
-            public Boolean getter(VisualCondition object) {
-                return isFinal();
-            }
-            @Override
-            public boolean isEditable() {
-                return false;
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, PROPERTY_FINAL,
+                this::setFinal, this::isFinal).setReadonly());
     }
 
     @Override

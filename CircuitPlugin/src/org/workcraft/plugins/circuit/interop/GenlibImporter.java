@@ -11,7 +11,7 @@ import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.Library;
 import org.workcraft.plugins.circuit.jj.genlib.GenlibParser;
 import org.workcraft.plugins.circuit.jj.genlib.ParseException;
-import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
+import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.workspace.ModelEntry;
 
 public class GenlibImporter implements Importer {
@@ -29,7 +29,7 @@ public class GenlibImporter implements Importer {
     public Circuit importGenlib(InputStream in) throws DeserialisationException {
         final Circuit circuit = new Circuit();
         GenlibParser parser = new GenlibParser(in);
-        if (CommonDebugSettings.getParserTracing()) {
+        if (DebugCommonSettings.getParserTracing()) {
             parser.enable_tracing();
         } else {
             parser.disable_tracing();

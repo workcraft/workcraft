@@ -3,9 +3,9 @@ package org.workcraft.plugins.xbm;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.gui.tools.Decoration;
-import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
-import org.workcraft.plugins.builtin.settings.CommonSignalSettings;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
+import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.utils.Coloriser;
@@ -19,7 +19,7 @@ import java.awt.geom.Rectangle2D;
 public class VisualBurstEvent extends VisualEvent {
 
     private final RenderedText labelRenderedText = new RenderedText("", getLabelFont(), Positioning.CENTER, new Point2D.Double());
-    private final Color labelColor = CommonVisualSettings.getLabelColor();
+    private final Color labelColor = VisualCommonSettings.getLabelColor();
 
     private static final String BURST_SPLIT_SYMBOL = "/";
     private static final double LABEL_Y_POSITION_THRESHOLD = 0.25;
@@ -36,19 +36,20 @@ public class VisualBurstEvent extends VisualEvent {
         super(mathConnection, first, second);
     }
 
-    public BurstEvent getReferencedBurstEvent() {
-        return (BurstEvent) getReferencedEvent();
+    @Override
+    public BurstEvent getReferencedConnection() {
+        return (BurstEvent) super.getReferencedConnection();
     }
 
     @Override
     public void draw(DrawRequest r) {
         String input = "";
         String output = "";
-        if (getReferencedBurstEvent().hasConditional()) {
-            input += "<" + getReferencedBurstEvent().getConditional() + "> ";
+        if (getReferencedConnection().hasConditional()) {
+            input += "<" + getReferencedConnection().getConditional() + "> ";
         }
-        input += getReferencedBurstEvent().getInputBurstString();
-        output += getReferencedBurstEvent().getOutputBurstString();
+        input += getReferencedConnection().getInputBurstString();
+        output += getReferencedConnection().getOutputBurstString();
         if (input.isEmpty() && output.isEmpty()) {
             super.draw(r);
         } else {
@@ -63,7 +64,7 @@ public class VisualBurstEvent extends VisualEvent {
             RenderedText burstSplitText = new RenderedText(BURST_SPLIT_SYMBOL, getLabelFont(), Positioning.CENTER, new Point2D.Double());
             Color background = d.getBackground();
             if (background != null) {
-                g.setColor(Coloriser.colorise(CommonEditorSettings.getBackgroundColor(), background));
+                g.setColor(Coloriser.colorise(EditorCommonSettings.getBackgroundColor(), background));
                 Rectangle2D box = BoundingBoxHelper.expand(labelRenderedText.getBoundingBox(), 0.2, 0.0);
                 g.fill(box);
             }
@@ -73,7 +74,7 @@ public class VisualBurstEvent extends VisualEvent {
             double burstSplitBoundary = burstSplitTextWidth + 0.2 / 2;
 
             //Draw input burst first
-            g.setColor(Coloriser.colorise(CommonSignalSettings.getInputColor(), d.getColorisation()));
+            g.setColor(Coloriser.colorise(SignalCommonSettings.getInputColor(), d.getColorisation()));
             g.translate(-(inputTextWidth + burstSplitBoundary), -LABEL_Y_POSITION_THRESHOLD);
             inputText.draw(g);
             g.translate(inputTextWidth + burstSplitBoundary, 0);
@@ -83,7 +84,7 @@ public class VisualBurstEvent extends VisualEvent {
             burstSplitText.draw(g);
 
             //Draw output burst last
-            g.setColor(Coloriser.colorise(CommonSignalSettings.getOutputColor(), d.getColorisation()));
+            g.setColor(Coloriser.colorise(SignalCommonSettings.getOutputColor(), d.getColorisation()));
             g.translate(outputTextWidth + burstSplitBoundary, 0);
             outputText.draw(g);
             g.translate(-(outputTextWidth + burstSplitBoundary), LABEL_Y_POSITION_THRESHOLD);
@@ -117,9 +118,9 @@ public class VisualBurstEvent extends VisualEvent {
 
     @Override
     public String getLabel(DrawRequest r) {
-        String label = Character.toString(EPSILON_SYMBOL);
-        if (getReferencedBurstEvent().getAsString().isEmpty()) {
-            label = getReferencedBurstEvent().getAsString();
+        String label = EPSILON_SYMBOL;
+        if (getReferencedConnection().getAsString().isEmpty()) {
+            label = getReferencedConnection().getAsString();
         }
         return label;
     }
@@ -128,7 +129,7 @@ public class VisualBurstEvent extends VisualEvent {
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualBurstEvent) {
-            getReferencedBurstEvent();
+            getReferencedConnection();
         }
     }
 }

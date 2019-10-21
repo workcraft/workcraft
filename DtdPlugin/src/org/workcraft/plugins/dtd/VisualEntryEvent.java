@@ -1,6 +1,6 @@
 package org.workcraft.plugins.dtd;
 
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 
 import java.awt.BasicStroke;
 import java.awt.Shape;
@@ -14,7 +14,7 @@ public class VisualEntryEvent extends VisualEvent {
 
     @Override
     public Shape getShape() {
-        double size = CommonVisualSettings.getNodeSize();
+        double size = VisualCommonSettings.getNodeSize();
         double w2 = 0.04 * size;
         double s2 = 0.25 * size;
         Path2D shape = new Path2D.Double();
@@ -27,7 +27,7 @@ public class VisualEntryEvent extends VisualEvent {
 
     @Override
     public BasicStroke getStroke() {
-        return new BasicStroke((float) CommonVisualSettings.getStrokeWidth() / 10.0f);
+        return new BasicStroke((float) VisualCommonSettings.getStrokeWidth() / 10.0f);
     }
 
 }

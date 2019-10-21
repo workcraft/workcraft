@@ -44,7 +44,7 @@ public class FsmToPetriConverter {
         for (Entry<VisualEvent, VisualTransition> entry: eventToTransitionMap.entrySet()) {
             VisualEvent event = entry.getKey();
             VisualTransition transition = entry.getValue();
-            Symbol symbol = event.getReferencedEvent().getSymbol();
+            Symbol symbol = event.getReferencedConnection().getSymbol();
             String dstName = dstModel.getMathName(transition);
             String srcName = (symbol == null) ? "" : srcModel.getMathName(symbol);
             result.put(dstName, srcName);
@@ -55,11 +55,11 @@ public class FsmToPetriConverter {
     private Map<VisualState, VisualPlace> convertStates() {
         Map<VisualState, VisualPlace> result = new HashMap<>();
         for (VisualState state: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualState.class)) {
-            String name = srcModel.getMathModel().getNodeReference(state.getReferencedState());
+            String name = srcModel.getMathModel().getNodeReference(state.getReferencedComponent());
             VisualPlace place = dstModel.createPlace(name, null);
             place.copyPosition(state);
             place.copyStyle(state);
-            place.getReferencedPlace().setTokens(state.getReferencedState().isInitial() ? 1 : 0);
+            place.getReferencedComponent().setTokens(state.getReferencedComponent().isInitial() ? 1 : 0);
             place.setTokenColor(state.getForegroundColor());
             result.put(state, place);
         }
@@ -68,10 +68,10 @@ public class FsmToPetriConverter {
 
     private Map<VisualEvent, VisualTransition> convertEvents() {
         Map<VisualEvent, VisualTransition> result = new HashMap<>();
-        HierarchyReferenceManager refManager = (HierarchyReferenceManager) dstModel.getPetriNet().getReferenceManager();
+        HierarchyReferenceManager refManager = (HierarchyReferenceManager) dstModel.getMathModel().getReferenceManager();
         NameManager nameManagerer = refManager.getNameManager(null);
         for (VisualEvent event : Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualEvent.class)) {
-            Symbol symbol = event.getReferencedEvent().getSymbol();
+            Symbol symbol = event.getReferencedConnection().getSymbol();
             String symbolName = (symbol == null) ? Fsm.EPSILON_SERIALISATION : srcModel.getMathName(symbol);
             String name = nameManagerer.getDerivedName(null, symbolName);
             VisualTransition transition = dstModel.createTransition(name, null);

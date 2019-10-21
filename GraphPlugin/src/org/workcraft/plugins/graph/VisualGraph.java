@@ -4,16 +4,16 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.ShortName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.generators.DefaultNodeGenerator;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.FormatException;
-import org.workcraft.dom.generators.DefaultNodeGenerator;
-import org.workcraft.gui.tools.*;
 import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.tools.*;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.graph.tools.GraphSimulationTool;
 
@@ -63,53 +63,44 @@ public class VisualGraph extends AbstractVisualModel {
     }
 
     private PropertyDescriptor getSymbolProperty(Symbol symbol) {
-        return new PropertyDeclaration<Symbol, String>(
-                symbol, getMathModel().getName(symbol) + " name", String.class) {
-            @Override
-            public void setter(Symbol object, String value) {
-                Node node = getMathModel().getNodeByReference(value);
-                if (node == null) {
-                    getMathModel().setName(object, value);
-                    for (Vertex event: getMathModel().getVertices(object)) {
-                        event.sendNotification(new PropertyChangedEvent(event, Vertex.PROPERTY_SYMBOL));
+        return new PropertyDeclaration<>(String.class, getMathModel().getName(symbol) + " name",
+                (value) -> {
+                    Node node = getMathModel().getNodeByReference(value);
+                    if (node == null) {
+                        getMathModel().setName(symbol, value);
+                        for (Vertex event: getMathModel().getVertices(symbol)) {
+                            event.sendNotification(new PropertyChangedEvent(event, Vertex.PROPERTY_SYMBOL));
+                        }
+                    } else if (!(node instanceof Symbol)) {
+                        throw new FormatException("Node '" + value + "' already exists and it is not a symbol.");
                     }
-                } else if (!(node instanceof Symbol)) {
-                    throw new FormatException("Node '" + value + "' already exists and it is not a symbol.");
-                }
-            }
-            @Override
-            public String getter(Symbol object) {
-                return getMathModel().getName(object);
-            }
-        };
+                },
+                () -> getMathModel().getName(symbol));
     }
 
     private PropertyDescriptor getVertexSymbolProperty(VisualVertex event) {
-        return new PropertyDeclaration<VisualVertex, String>(
-                event, Vertex.PROPERTY_SYMBOL, String.class, true, true) {
-            @Override
-            public void setter(VisualVertex object, String value) {
-                Symbol symbol = null;
-                if (!value.isEmpty()) {
-                    Node node = getMathModel().getNodeByReference(value);
-                    if (node instanceof Symbol) {
-                        symbol = (Symbol) node;
-                    } else {
-                        symbol = getMathModel().createSymbol(value);
+        return new PropertyDeclaration<>(String.class, Vertex.PROPERTY_SYMBOL,
+                (value) -> {
+                    Symbol symbol = null;
+                    if (!value.isEmpty()) {
+                        Node node = getMathModel().getNodeByReference(value);
+                        if (node instanceof Symbol) {
+                            symbol = (Symbol) node;
+                        } else {
+                            symbol = getMathModel().createSymbol(value);
+                        }
                     }
-                }
-                object.getReferencedComponent().setSymbol(symbol);
-            }
-            @Override
-            public String getter(VisualVertex object) {
-                Symbol symbol = object.getReferencedComponent().getSymbol();
-                String symbolName = "";
-                if (symbol != null) {
-                    symbolName = getMathModel().getName(symbol);
-                }
-                return symbolName;
-            }
-        };
+                    event.getReferencedComponent().setSymbol(symbol);
+                },
+                () -> {
+                    Symbol symbol = event.getReferencedComponent().getSymbol();
+                    String symbolName = "";
+                    if (symbol != null) {
+                        symbolName = getMathModel().getName(symbol);
+                    }
+                    return symbolName;
+                })
+                .setCombinable().setTemplatable();
     }
 
 }

@@ -6,12 +6,12 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.gui.tools.CommentGeneratorTool;
-import org.workcraft.gui.tools.ConnectionTool;
-import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.tools.CommentGeneratorTool;
+import org.workcraft.gui.tools.ConnectionTool;
+import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.petri.tools.PlaceGeneratorTool;
 import org.workcraft.plugins.policy.observers.SpanningTreeInvalidator;
@@ -156,14 +156,14 @@ public class VisualPolicy extends VisualPetri {
         if (transitions != null && !transitions.isEmpty()) {
             VisualBundle bundle = createVisualBundle();
             for (VisualBundledTransition t: transitions) {
-                bundle.getReferencedBundle().add(t.getReferencedTransition());
+                bundle.getReferencedBundle().add(t.getReferencedComponent());
             }
         }
     }
 
     public void unbundleTransitions(Collection<VisualBundledTransition> transitions) {
         for (VisualBundledTransition t: transitions) {
-            getMathModel().unbundleTransition(t.getReferencedTransition());
+            getMathModel().unbundleTransition(t.getReferencedComponent());
         }
         for (VisualBundle b: getVisualBundles()) {
             if (b.getReferencedBundle().isEmpty()) {
@@ -185,7 +185,7 @@ public class VisualPolicy extends VisualPetri {
 
     public void setBundlesOfTransitionAsString(VisualBundledTransition t, String s) {
         for (Bundle b: getMathModel().getBundles()) {
-            b.remove(t.getReferencedTransition());
+            b.remove(t.getReferencedComponent());
         }
         for (String ref : s.split("\\s*,\\s*")) {
             Node node = getMathModel().getNodeByReference(ref);
@@ -193,7 +193,7 @@ public class VisualPolicy extends VisualPetri {
                 node = createVisualBundle(ref).getReferencedBundle();
             }
             if (node instanceof Bundle) {
-                ((Bundle) node).add(t.getReferencedTransition());
+                ((Bundle) node).add(t.getReferencedComponent());
             }
         }
         for (VisualBundle b: getVisualBundles()) {
@@ -209,7 +209,7 @@ public class VisualPolicy extends VisualPetri {
             if (!result.isEmpty()) {
                 result += ", ";
             }
-            result += getMathModel().getName(t.getReferencedTransition());
+            result += getMathModel().getName(t.getReferencedComponent());
         }
         return result;
     }
@@ -220,7 +220,7 @@ public class VisualPolicy extends VisualPetri {
             b.remove(t);
         }
         for (String ref : s.split("\\s*,\\s*")) {
-            Node node = getPetriNet().getNodeByReference(ref);
+            Node node = getMathModel().getNodeByReference(ref);
             if (node instanceof BundledTransition) {
                 b.add((BundledTransition) node);
             }
@@ -231,7 +231,7 @@ public class VisualPolicy extends VisualPetri {
         Collection<VisualBundle> result = new HashSet<>();
         if (t != null) {
             for (VisualBundle b: getVisualBundles()) {
-                if (b.getReferencedBundle().contains(t.getReferencedTransition())) {
+                if (b.getReferencedBundle().contains(t.getReferencedComponent())) {
                     result.add(b);
                 }
             }
@@ -242,7 +242,7 @@ public class VisualPolicy extends VisualPetri {
     public Collection<VisualBundledTransition> getTransitionsOfBundle(VisualBundle b) {
         Collection<VisualBundledTransition> result = new HashSet<>();
         for (VisualBundledTransition t: getVisualBundledTransitions()) {
-            if (b.getReferencedBundle().contains(t.getReferencedTransition())) {
+            if (b.getReferencedBundle().contains(t.getReferencedComponent())) {
                 result.add(t);
             }
         }
@@ -266,60 +266,29 @@ public class VisualPolicy extends VisualPetri {
     }
 
     private PropertyDescriptor getBundleNameProperty(VisualBundle bundle) {
-        return new PropertyDeclaration<VisualBundle, String>(
-                bundle, getMathModel().getName(bundle.getReferencedBundle()) + " name", String.class) {
-            @Override
-            public String getter(VisualBundle object) {
-                return getMathModel().getName(object.getReferencedBundle());
-            }
-            @Override
-            public void setter(VisualBundle object, String value) {
-                getMathModel().setName(object.getReferencedBundle(), value);
-            }
-        };
+        return new PropertyDeclaration<>(String.class,
+                getMathModel().getName(bundle.getReferencedBundle()) + " name",
+                (value) -> getMathModel().setName(bundle.getReferencedBundle(), value),
+                () -> getMathModel().getName(bundle.getReferencedBundle()));
     }
 
     private PropertyDescriptor getBundleColorProperty(VisualBundle bundle) {
-        return new PropertyDeclaration<VisualBundle, Color>(
-                bundle, getMathModel().getName(bundle.getReferencedBundle()) + " color", Color.class) {
-            @Override
-            public Color getter(VisualBundle object) {
-                return object.getColor();
-            }
-            @Override
-            public void setter(VisualBundle object, Color value) {
-                object.setColor(value);
-            }
-        };
+        return new PropertyDeclaration<>(Color.class,
+                getMathModel().getName(bundle.getReferencedBundle()) + " color",
+                bundle::setColor, bundle::getColor);
     }
 
     private PropertyDescriptor getTransitionsOfBundleProperty(VisualBundle bundle) {
-        return new PropertyDeclaration<VisualBundle, String>(
-                bundle, getMathModel().getName(bundle.getReferencedBundle()) + " transitions", String.class) {
-            @Override
-            public String getter(VisualBundle object) {
-                return getTransitionsOfBundleAsString(object);
-            }
-            @Override
-            public void setter(VisualBundle object, String value) {
-                setTransitionsOfBundleAsString(object, value);
-            }
-        };
+        return new PropertyDeclaration<>(String.class,
+                getMathModel().getName(bundle.getReferencedBundle()) + " transitions",
+                (value) -> setTransitionsOfBundleAsString(bundle, value),
+                () -> getTransitionsOfBundleAsString(bundle));
     }
 
     private PropertyDescriptor getBundlesOfTransitionProperty(VisualBundledTransition transition) {
-        return new PropertyDeclaration<VisualBundledTransition, String>(
-                transition, "Bundles", String.class) {
-            @Override
-            public String getter(VisualBundledTransition object) {
-                return getBundlesOfTransitionAsString(object);
-            }
-
-            @Override
-            public void setter(VisualBundledTransition object, String value) {
-                setBundlesOfTransitionAsString(object, value);
-            }
-        };
+        return new PropertyDeclaration<>(String.class, "Bundles",
+                (value) -> setBundlesOfTransitionAsString(transition, value),
+                () -> getBundlesOfTransitionAsString(transition));
     }
 
 }

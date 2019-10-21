@@ -12,12 +12,12 @@ import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
-import org.workcraft.plugins.fsm.*;
+import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.petri.*;
 import org.workcraft.plugins.petri.tools.PetriSimulationTool;
 import org.workcraft.plugins.xbm.*;
-import org.workcraft.plugins.xbm.converters.XbmToPetriConverter;
 import org.workcraft.plugins.xbm.converters.ElementaryCycle;
+import org.workcraft.plugins.xbm.converters.XbmToPetriConverter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,7 +47,7 @@ public class XbmSimulationTool extends PetriSimulationTool {
         if (ref != null) {
             label = converter.getSymbol(ref);
             if ("".equals(label)) {
-                label = Character.toString(VisualEvent.EPSILON_SYMBOL);
+                label = VisualEvent.EPSILON_SYMBOL;
             }
         }
         if (label == null) {
@@ -116,9 +116,9 @@ public class XbmSimulationTool extends PetriSimulationTool {
                 if (checkBox.getName().equals(xbmSignal.getName() + CHECKBOX_NAME_PREFIX)) {
                     VisualPlace placeLow = elemCycle.getLow();
                     VisualPlace placeHigh = elemCycle.getHigh();
-                    if (placeLow.getReferencedPlace().getTokens() > 0 && placeHigh.getReferencedPlace().getTokens() <= 0) {
+                    if (placeLow.getReferencedComponent().getTokens() > 0 && placeHigh.getReferencedComponent().getTokens() <= 0) {
                         checkBox.setSelected(false);
-                    } else if (placeLow.getReferencedPlace().getTokens() <= 0 && placeHigh.getReferencedPlace().getTokens() > 0) {
+                    } else if (placeLow.getReferencedComponent().getTokens() <= 0 && placeHigh.getReferencedComponent().getTokens() > 0) {
                         checkBox.setSelected(true);
                     }
                 }
@@ -163,7 +163,7 @@ public class XbmSimulationTool extends PetriSimulationTool {
         if (p == null) {
             return null;
         }
-        final boolean isMarkedPlace = p.getReferencedPlace().getTokens() > 0;
+        final boolean isMarkedPlace = p.getReferencedComponent().getTokens() > 0;
 
         return new Decoration() {
             @Override
@@ -181,8 +181,8 @@ public class XbmSimulationTool extends PetriSimulationTool {
         if ((node != null) && (node instanceof VisualBurstEvent)) {
             VisualTransition vTransition = converter.getRelatedTransition((VisualBurstEvent) node);
             if (vTransition != null) {
-                if (isEnabledNode(vTransition.getReferencedTransition())) {
-                    return vTransition.getReferencedTransition();
+                if (isEnabledNode(vTransition.getReferencedComponent())) {
+                    return vTransition.getReferencedComponent();
                 }
             }
         }
@@ -231,8 +231,8 @@ public class XbmSimulationTool extends PetriSimulationTool {
     }
 
     private void fireElementaryCycleTransition(GraphEditor editor, VisualTransition transition) {
-        if (super.isEnabledNode(transition.getReferencedTransition())) {
-            executeTransition(editor, transition.getReferencedTransition());
+        if (super.isEnabledNode(transition.getReferencedComponent())) {
+            executeTransition(editor, transition.getReferencedComponent());
             editor.requestFocus();
         }
     }

@@ -9,7 +9,7 @@ import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -41,7 +41,7 @@ public class VisualVertex extends VisualComponent {
     }
 
     // Epsilon symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
-    public static final char EPSILON_SYMBOL = 0x03B5;
+    public static final String EPSILON_SYMBOL = Character.toString((char) 0x03B5);
 
     public static final String PROPERTY_RENDER_TYPE = "Render type";
     public static final String PROPERTY_SYMBOL_POSITIONING = "Symbol positioning";
@@ -58,17 +58,8 @@ public class VisualVertex extends VisualComponent {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualVertex, RenderType>(
-                this, PROPERTY_RENDER_TYPE, RenderType.class, true, true) {
-            @Override
-            public void setter(VisualVertex object, RenderType value) {
-                object.setRenderType(value);
-            }
-            @Override
-            public RenderType getter(VisualVertex object) {
-                return object.getRenderType();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(RenderType.class, PROPERTY_RENDER_TYPE,
+                this::setRenderType, this::getRenderType).setCombinable().setTemplatable());
     }
 
     @Override
@@ -78,7 +69,7 @@ public class VisualVertex extends VisualComponent {
 
     @Override
     public Shape getShape() {
-        double size = CommonVisualSettings.getNodeSize() - CommonVisualSettings.getStrokeWidth();
+        double size = VisualCommonSettings.getNodeSize() - VisualCommonSettings.getStrokeWidth();
         double pos = -0.5 * size;
         Shape shape = new Ellipse2D.Double(pos, pos, size, size);
         if (getRenderType() != null) {

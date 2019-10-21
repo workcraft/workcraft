@@ -142,81 +142,45 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualContact, Direction>(
-                this, PROPERTY_DIRECTION, Direction.class, true, true) {
-            @Override
-            public void setter(VisualContact object, Direction value) {
-                object.setDirection(value);
-            }
-            @Override
-            public Direction getter(VisualContact object) {
-                return object.getDirection();
-            }
+        addPropertyDeclaration(new PropertyDeclaration<Direction>(Direction.class, PROPERTY_DIRECTION,
+                this::setDirection, this::getDirection) {
             @Override
             public boolean isVisible() {
                 return isPort();
             }
-        });
+        }.setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualContact, IOType>(
-                this, Contact.PROPERTY_IO_TYPE, IOType.class, true, false) {
-            @Override
-            public void setter(VisualContact object, IOType value) {
-                object.getReferencedContact().setIOType(value);
-            }
-            @Override
-            public IOType getter(VisualContact object) {
-                return object.getReferencedContact().getIOType();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(IOType.class, Contact.PROPERTY_IO_TYPE,
+                (value) -> getReferencedContact().setIOType(value),
+                () -> getReferencedContact().getIOType())
+                .setCombinable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualContact, Boolean>(
-                this, Contact.PROPERTY_INIT_TO_ONE, Boolean.class, true, true) {
-            @Override
-            public void setter(VisualContact object, Boolean value) {
-                object.getReferencedContact().setInitToOne(value);
-            }
-            @Override
-            public Boolean getter(VisualContact object) {
-                return object.getReferencedContact().getInitToOne();
-            }
+        addPropertyDeclaration(new PropertyDeclaration<Boolean>(Boolean.class, Contact.PROPERTY_INIT_TO_ONE,
+                (value) -> getReferencedContact().setInitToOne(value),
+                () -> getReferencedContact().getInitToOne()) {
             @Override
             public boolean isVisible() {
                 return isDriver() && !isZeroDelayDriver();
             }
-        });
+        }.setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualContact, Boolean>(
-                this, Contact.PROPERTY_FORCED_INIT, Boolean.class, true, true) {
-            @Override
-            public void setter(VisualContact object, Boolean value) {
-                object.getReferencedContact().setForcedInit(value);
-            }
-            @Override
-            public Boolean getter(VisualContact object) {
-                return object.getReferencedContact().getForcedInit();
-            }
+        addPropertyDeclaration(new PropertyDeclaration<Boolean>(Boolean.class, Contact.PROPERTY_FORCED_INIT,
+                (value) -> getReferencedContact().setForcedInit(value),
+                () -> getReferencedContact().getForcedInit()) {
             @Override
             public boolean isVisible() {
                 return isDriver() && !isZeroDelayPin();
             }
-        });
+        }.setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualContact, Boolean>(
-                this, Contact.PROPERTY_PATH_BREAKER, Boolean.class, true, true) {
-            @Override
-            public void setter(VisualContact object, Boolean value) {
-                object.getReferencedContact().setPathBreaker(value);
-            }
-            @Override
-            public Boolean getter(VisualContact object) {
-                return object.getReferencedContact().getPathBreaker();
-            }
+        addPropertyDeclaration(new PropertyDeclaration<Boolean>(Boolean.class, Contact.PROPERTY_PATH_BREAKER,
+                (value) -> getReferencedContact().setPathBreaker(value),
+                () -> getReferencedContact().getPathBreaker()) {
             @Override
             public boolean isVisible() {
                 return isPin() && !isZeroDelayDriver();
             }
-        });
+        }.setCombinable().setTemplatable());
     }
 
     @Override

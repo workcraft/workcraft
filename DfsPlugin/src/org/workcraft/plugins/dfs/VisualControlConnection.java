@@ -23,33 +23,29 @@ public class VisualControlConnection extends VisualConnection {
 
     private void addPropertyDeclarations() {
         super.initialise();
-        addPropertyDeclaration(new PropertyDeclaration<VisualControlConnection, Boolean>(
-                this, ControlConnection.PROPERTY_INVERTING, Boolean.class, true, true) {
-            @Override
-            public void setter(VisualControlConnection object, Boolean value) {
-                ControlConnection ref = getReferencedControlConnection();
-                // check if ref is not null to trick the order of node creation in deserialiser
-                if (ref != null) {
-                    ref.setInverting(value);
-                }
-                setBubble(value);
-            }
-            @Override
-            public Boolean getter(VisualControlConnection object) {
-                return object.getReferencedControlConnection().isInverting();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, ControlConnection.PROPERTY_INVERTING,
+                (value) -> {
+                    ControlConnection ref = getReferencedConnection();
+                    // check if ref is not null to trick the order of node creation in deserialiser
+                    if (ref != null) {
+                        ref.setInverting(value);
+                    }
+                    setBubble(value);
+                },
+                () -> getReferencedConnection().isInverting())
+                .setCombinable().setTemplatable());
     }
 
-    public ControlConnection getReferencedControlConnection() {
-        return (ControlConnection) getReferencedConnection();
+    @Override
+    public ControlConnection getReferencedConnection() {
+        return (ControlConnection) super.getReferencedConnection();
     }
 
     @Override
     public void setVisualConnectionDependencies(VisualNode first, VisualNode second,
             ConnectionGraphic graphic, MathConnection refConnection) {
         super.setVisualConnectionDependencies(first, second, graphic, refConnection);
-        setBubble(getReferencedControlConnection().isInverting());
+        setBubble(getReferencedConnection().isInverting());
     }
 
 }

@@ -6,7 +6,7 @@ import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.dialogs.ModalDialog;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.PluginManager;
-import org.workcraft.plugins.builtin.settings.CommonFavoriteSettings;
+import org.workcraft.plugins.builtin.settings.FavoriteCommonSettings;
 import org.workcraft.utils.Coloriser;
 import org.workcraft.utils.PluginUtils;
 
@@ -46,7 +46,7 @@ public class CreateWorkDialog extends ModalDialog<Void> {
         @Override
         public String toString() {
             String name = descriptor.getDisplayName();
-            if (CommonFavoriteSettings.getIsFavorite(name)) {
+            if (FavoriteCommonSettings.getIsFavorite(name)) {
                 name = "<html><b>" + name + "</b></html>";
             }
             return name;
@@ -98,7 +98,7 @@ public class CreateWorkDialog extends ModalDialog<Void> {
         JCheckBox favoriteModelsCheckbox = new JCheckBox(getFavoriteModelsCheckboxText());
         favoriteModelsCheckbox.setToolTipText(getFavoriteModelsCheckboxTooltip());
         favoriteModelsCheckbox.addActionListener(event -> toggleFavoriteModelsCheckbox());
-        favoriteModelsCheckbox.setSelected(CommonFavoriteSettings.getFilterFavorites());
+        favoriteModelsCheckbox.setSelected(FavoriteCommonSettings.getFilterFavorites());
         filterPanel.add(favoriteModelsCheckbox);
 
         fillModelList();
@@ -120,7 +120,7 @@ public class CreateWorkDialog extends ModalDialog<Void> {
         for (PluginInfo<? extends ModelDescriptor> plugin: pm.getModelDescriptorPlugins()) {
             ModelDescriptor modelDescriptor = plugin.newInstance();
             String displayName = modelDescriptor.getDisplayName();
-            if (!CommonFavoriteSettings.getFilterFavorites() || CommonFavoriteSettings.getIsFavorite(displayName)) {
+            if (!FavoriteCommonSettings.getFilterFavorites() || FavoriteCommonSettings.getIsFavorite(displayName)) {
                 elements.add(new ListElement(modelDescriptor));
             }
         }
@@ -150,13 +150,13 @@ public class CreateWorkDialog extends ModalDialog<Void> {
     private String getFavoriteModelsCheckboxText() {
         Collection<String> names = PluginUtils.getSortedModelDisplayNames();
         long allCount = names.size();
-        long favoriteCount = names.stream().filter(name -> CommonFavoriteSettings.getIsFavorite(name)).count();
+        long favoriteCount = names.stream().filter(name -> FavoriteCommonSettings.getIsFavorite(name)).count();
         return "<html>Filter <b>favorite</b> model types (" + favoriteCount + " out of " + allCount + ")</html>";
     }
 
     private void toggleFavoriteModelsCheckbox() {
-        boolean filterFavoritesState = CommonFavoriteSettings.getFilterFavorites();
-        CommonFavoriteSettings.setFilterFavorites(!filterFavoritesState);
+        boolean filterFavoritesState = FavoriteCommonSettings.getFilterFavorites();
+        FavoriteCommonSettings.setFilterFavorites(!filterFavoritesState);
         fillModelList();
     }
 

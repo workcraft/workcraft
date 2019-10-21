@@ -47,8 +47,8 @@ public class WtgSelectionTool extends DtdSelectionTool {
             if (node instanceof VisualState) {
                 we.saveMemento();
                 VisualState state = (VisualState) node;
-                boolean isInitial = state.getReferencedState().isInitial();
-                state.getReferencedState().setInitial(!isInitial);
+                boolean isInitial = state.getReferencedComponent().isInitial();
+                state.getReferencedComponent().setInitial(!isInitial);
                 processed = true;
             }
         }

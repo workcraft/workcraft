@@ -2,11 +2,8 @@ package org.workcraft.gui.properties;
 
 import org.workcraft.gui.actions.Action;
 
-import java.util.Map;
+public class ActionListDeclaration extends PropertyDeclaration<ActionList> {
 
-public class ActionListDeclaration implements PropertyDescriptor<ActionList> {
-
-    private final String name;
     private final ActionList actions = new ActionList();
 
     public ActionListDeclaration() {
@@ -14,7 +11,7 @@ public class ActionListDeclaration implements PropertyDescriptor<ActionList> {
     }
 
     public ActionListDeclaration(String name) {
-        this.name = name;
+        super(ActionList.class, name, (value) -> { }, () -> null);
     }
 
     public ActionListDeclaration addAction(String text, Runnable runnable) {
@@ -23,32 +20,13 @@ public class ActionListDeclaration implements PropertyDescriptor<ActionList> {
     }
 
     @Override
-    public Map<ActionList, String> getChoice() {
-        return null;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public Class<ActionList> getType() {
-        return ActionList.class;
-    }
-
-    @Override
     public final ActionList getValue() {
         return actions;
     }
 
     @Override
-    public void setValue(ActionList value) {
-    }
-
-    @Override
     public boolean isSpan() {
-        return name == null;
+        return getName() == null;
     }
 
 }

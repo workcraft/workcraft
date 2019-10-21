@@ -72,7 +72,7 @@ public class MirrorSignalTransformationCommand extends AbstractTransformationCom
             for (VisualNode node: nodes) {
                 if (node instanceof VisualSignalTransition) {
                     VisualSignalTransition visualTransition = (VisualSignalTransition) node;
-                    SignalTransition transition = visualTransition.getReferencedTransition();
+                    SignalTransition transition = visualTransition.getReferencedComponent();
                     String signalRef = stg.getSignalReference(transition);
                     if (!processedSignals.contains(signalRef)) {
                         transform(visualStg, visualTransition);
@@ -86,7 +86,7 @@ public class MirrorSignalTransformationCommand extends AbstractTransformationCom
     @Override
     public void transform(VisualModel model, VisualNode node) {
         if ((model instanceof VisualStg) && (node instanceof VisualSignalTransition)) {
-            SignalTransition signalTransition = ((VisualSignalTransition) node).getReferencedTransition();
+            SignalTransition signalTransition = ((VisualSignalTransition) node).getReferencedComponent();
             Signal.Type signalType = signalTransition.getSignalType();
             signalTransition.setSignalType(signalType.mirror());
         }

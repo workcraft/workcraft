@@ -42,7 +42,7 @@ public class XbmToPetriConverter {
             VisualBurstEvent event = entry.getKey();
             VisualTransition transition = entry.getValue();
             String dstName = dstModel.getMathName(transition);
-            String srcName = (event == null) ? "" : event.getReferencedBurstEvent().getAsString();
+            String srcName = (event == null) ? "" : event.getReferencedConnection().getAsString();
             result.put(dstName, srcName);
         }
         return result;
@@ -51,11 +51,11 @@ public class XbmToPetriConverter {
     private Map<VisualXbmState, VisualPlace> convertStates() {
         Map<VisualXbmState, VisualPlace> result = new HashMap<>();
         for (VisualXbmState state: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualXbmState.class)) {
-            String name = srcModel.getMathModel().getNodeReference(state.getReferencedState());
+            String name = srcModel.getMathModel().getNodeReference(state.getReferencedComponent());
             VisualPlace place = dstModel.createPlace(name, null);
             place.copyPosition(state);
             place.copyStyle(state);
-            place.getReferencedPlace().setTokens(state.getReferencedState().isInitial() ? 1 : 0);
+            place.getReferencedComponent().setTokens(state.getReferencedComponent().isInitial() ? 1 : 0);
             place.setTokenColor(state.getForegroundColor());
             result.put(state, place);
         }
@@ -64,9 +64,9 @@ public class XbmToPetriConverter {
 
     private Map<VisualBurstEvent, VisualTransition> convertEvents() {
         Map<VisualBurstEvent, VisualTransition> result = new HashMap<>();
-        HierarchyReferenceManager refManager = dstModel.getPetriNet().getReferenceManager();
+        HierarchyReferenceManager refManager = dstModel.getMathModel().getReferenceManager();
         for (VisualBurstEvent event: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualBurstEvent.class)) {
-            Burst burst = event.getReferencedBurstEvent().getBurst();
+            Burst burst = event.getReferencedConnection().getBurst();
             String symbolName = burst.getAsString();
             String name = refManager.getName(event);
             VisualTransition transition = dstModel.createTransition(name, null);
@@ -105,8 +105,8 @@ public class XbmToPetriConverter {
                         dstModel.connect(transition, outPlace);
                     }
                 }
-                if (event.getReferencedBurstEvent().hasConditional()) { //Connects the elementary cycle appropriate to the burst transition
-                    for (Map.Entry<String, Boolean> condition: event.getReferencedBurstEvent().getConditionalMapping().entrySet()) {
+                if (event.getReferencedConnection().hasConditional()) { //Connects the elementary cycle appropriate to the burst transition
+                    for (Map.Entry<String, Boolean> condition: event.getReferencedConnection().getConditionalMapping().entrySet()) {
                         VisualPlace readPlace;
                         ElementaryCycle elemCycle = getRelatedElementaryCycle((XbmSignal) srcModel.getMathModel().getNodeByReference(condition.getKey()));
                         if (condition.getValue()) {

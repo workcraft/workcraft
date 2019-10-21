@@ -14,11 +14,11 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
-import org.workcraft.gui.tools.Decorator;
-import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.tools.Decorator;
+import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.observation.*;
 import org.workcraft.plugins.builtin.commands.DotLayoutCommand;
 import org.workcraft.serialisation.NoAutoSerialisation;
@@ -730,40 +730,23 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
     }
 
     private PropertyDescriptor getTitleProperty() {
-        return new PropertyDeclaration<AbstractVisualModel, String>(
-                this, PROPERTY_TITLE, String.class) {
-            @Override
-            public void setter(AbstractVisualModel object, String value) {
-                object.setTitle(value);
-            }
-            @Override
-            public String getter(AbstractVisualModel object) {
-                return object.getTitle();
-            }
-        };
+        return new PropertyDeclaration<>(String.class, PROPERTY_TITLE, this::setTitle, this::getTitle);
     }
 
     private PropertyDescriptor getNameProperty(VisualNode node) {
-        return new PropertyDeclaration<VisualNode, String>(
-                node, PROPERTY_NAME, String.class) {
-            @Override
-            public String getter(VisualNode object) {
-                return getMathName(object);
-            }
-
-            @Override
-            public void setter(VisualNode object, String value) {
-                if (Identifier.isName(value)) {
-                    if (!value.equals(getMathName(object))) {
-                        setMathName(object, value);
-                        object.sendNotification(new PropertyChangedEvent(node, PROPERTY_NAME));
+        return new PropertyDeclaration<>(String.class, PROPERTY_NAME,
+                (value) -> {
+                    if (Identifier.isName(value)) {
+                        if (!value.equals(getMathName(node))) {
+                            setMathName(node, value);
+                            node.sendNotification(new PropertyChangedEvent(node, PROPERTY_NAME));
+                        }
+                    } else {
+                        throw new ArgumentException("'" + value + "' is not a valid C-style identifier.\n"
+                                + "The first character must be alphabetic or '_' and the following -- alphanumeric or '_'.");
                     }
-                } else {
-                    throw new ArgumentException("'" + value + "' is not a valid C-style identifier.\n"
-                            + "The first character must be alphabetic or '_' and the following -- alphanumeric or '_'.");
-                }
-            }
-        };
+                },
+                () -> getMathName(node));
     }
 
 }

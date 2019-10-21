@@ -57,9 +57,9 @@ public class VisualPopRegister extends VisualBinaryRegister {
 
         Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
         Color tokenColor = Coloriser.colorise(getTokenColor(), d.getColorisation());
-        boolean trueMarked = getReferencedPopRegister().isTrueMarked();
+        boolean trueMarked = getReferencedComponent().isTrueMarked();
         boolean trueExcited = false;
-        boolean falseMarked = getReferencedPopRegister().isFalseMarked();
+        boolean falseMarked = getReferencedComponent().isFalseMarked();
         boolean falseExcited = false;
         if (d instanceof BinaryRegisterDecoration) {
             defaultColor = getForegroundColor();
@@ -108,8 +108,9 @@ public class VisualPopRegister extends VisualBinaryRegister {
         drawNameInLocalSpace(r);
     }
 
-    public PopRegister getReferencedPopRegister() {
-        return (PopRegister) getReferencedComponent();
+    @Override
+    public PopRegister getReferencedComponent() {
+        return (PopRegister) super.getReferencedComponent();
     }
 
 }

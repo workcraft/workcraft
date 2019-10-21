@@ -1,6 +1,6 @@
 package org.workcraft.plugins.circuit.verilog;
 
-import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
+import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.jj.substitution.ParseException;
 import org.workcraft.plugins.circuit.jj.substitution.SubstitutionParser;
@@ -36,7 +36,7 @@ public class SubstitutionUtils {
                 try {
                     InputStream substitutionInputStream = new FileInputStream(fileName);
                     SubstitutionParser substitutionParser = new SubstitutionParser(substitutionInputStream, invert);
-                    if (CommonDebugSettings.getParserTracing()) {
+                    if (DebugCommonSettings.getParserTracing()) {
                         substitutionParser.enable_tracing();
                     } else {
                         substitutionParser.disable_tracing();

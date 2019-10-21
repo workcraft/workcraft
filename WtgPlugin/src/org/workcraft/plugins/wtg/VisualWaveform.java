@@ -7,7 +7,7 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.tools.Decoration;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.wtg.decorations.WaveformDecoration;
 import org.workcraft.utils.Coloriser;
 import org.workcraft.utils.Hierarchy;
@@ -31,19 +31,20 @@ public class VisualWaveform extends VisualPage {
         renamePropertyDeclarationByName(PROPERTY_LABEL_POSITIONING, PROPERTY_GUARD_POSITIONING);
     }
 
-    public Waveform getReferencedWaveform() {
-        return (Waveform) getReferencedComponent();
+    @Override
+    public Waveform getReferencedComponent() {
+        return (Waveform) super.getReferencedComponent();
     }
 
     @Override
     public String getLabel() {
-        return getReferencedWaveform().getGuard().toString();
+        return getReferencedComponent().getGuard().toString();
     }
 
     @Override
     public void setLabel(String label) {
         Guard guard = Guard.createFromString(label);
-        getReferencedWaveform().setGuard(guard);
+        getReferencedComponent().setGuard(guard);
         super.setLabel(label);
     }
 
@@ -77,7 +78,7 @@ public class VisualWaveform extends VisualPage {
             if (getIsCollapsed() && !isCurrentLevelInside()) {
                 g.setColor(Coloriser.colorise(getFillColor(), d.getColorisation()));
                 g.fill(bb);
-                g.setStroke(new BasicStroke((float) CommonVisualSettings.getStrokeWidth()));
+                g.setStroke(new BasicStroke((float) VisualCommonSettings.getStrokeWidth()));
             } else {
                 float[] pattern = {0.05f, 0.05f};
                 BasicStroke stroke = new BasicStroke(0.05f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f);

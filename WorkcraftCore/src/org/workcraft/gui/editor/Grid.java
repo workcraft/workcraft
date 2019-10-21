@@ -1,7 +1,7 @@
 package org.workcraft.gui.editor;
 
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
+import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
 
 import java.awt.*;
 import java.awt.geom.Path2D;
@@ -152,7 +152,7 @@ public class Grid implements ViewportListener {
             }
         }
 
-        if (CommonEditorSettings.getLightGrid()) {
+        if (EditorCommonSettings.getLightGrid()) {
             updateGridMinorCrosses(viewport, majorInterval * minorIntervalFactor);
             updateGridMajorCrosses(viewport, majorInterval);
         } else {
@@ -167,13 +167,13 @@ public class Grid implements ViewportListener {
 
     private void updateGridMinorCrosses(Viewport viewport, double interval) {
         minorLinesPath = new Path2D.Double();
-        double radius = Math.max(1.0, CommonEditorSettings.getLightGridSize() * SizeHelper.getScreenDpmm() / 3.0);
+        double radius = Math.max(1.0, EditorCommonSettings.getLightGridSize() * SizeHelper.getScreenDpmm() / 3.0);
         updateGridCrosses(viewport, interval, radius, minorLinePositions, minorLinePositionsScreen, minorLinesPath);
     }
 
     private void updateGridMajorCrosses(Viewport viewport, double interval) {
         majorLinesPath = new Path2D.Double();
-        double radius = Math.max(1.0, CommonEditorSettings.getLightGridSize() * SizeHelper.getScreenDpmm() / 2.0);
+        double radius = Math.max(1.0, EditorCommonSettings.getLightGridSize() * SizeHelper.getScreenDpmm() / 2.0);
         updateGridCrosses(viewport, interval, radius, majorLinePositions, majorLinePositionsScreen, majorLinesPath);
     }
 
@@ -302,9 +302,9 @@ public class Grid implements ViewportListener {
      */
     public void draw(Graphics2D g) {
         g.setStroke(stroke);
-        g.setColor(CommonEditorSettings.getGridColor());
+        g.setColor(EditorCommonSettings.getGridColor());
         g.draw(minorLinesPath);
-        g.setColor(CommonEditorSettings.getGridColor().darker());
+        g.setColor(EditorCommonSettings.getGridColor().darker());
         g.draw(majorLinesPath);
     }
 

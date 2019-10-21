@@ -9,7 +9,8 @@ import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CommonCommentSettings extends AbstractCommonSettings {
+public class CommentCommonSettings extends AbstractCommonSettings {
+
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CommonCommentSettings";
 
@@ -37,90 +38,41 @@ public class CommonCommentSettings extends AbstractCommonSettings {
     private static Color fillColor = defaultFillColor;
     private static double fontSize = defaultFontSize;
 
-    public CommonCommentSettings() {
-        properties.add(new PropertyDeclaration<CommonCommentSettings, Double>(
-                this, "Base size (cm)", Double.class) {
-            @Override
-            public void setter(CommonCommentSettings object, Double value) {
-                setBaseSize(value);
-            }
-            @Override
-            public Double getter(CommonCommentSettings object) {
-                return getBaseSize();
-            }
-        });
+    static {
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Base size (cm)",
+                CommentCommonSettings::setBaseSize,
+                CommentCommonSettings::getBaseSize));
 
-        properties.add(new PropertyDeclaration<CommonCommentSettings, Double>(
-                this, "Stroke width (cm)", Double.class) {
-            @Override
-            public void setter(CommonCommentSettings object, Double value) {
-                setStrokeWidth(value);
-            }
-            @Override
-            public Double getter(CommonCommentSettings object) {
-                return getStrokeWidth();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Stroke width (cm)",
+                CommentCommonSettings::setStrokeWidth,
+                CommentCommonSettings::getStrokeWidth));
 
-        properties.add(new PropertyDeclaration<CommonCommentSettings, Alignment>(
-                this, "Text alignment", Alignment.class) {
-            @Override
-            public void setter(CommonCommentSettings object, Alignment value) {
-                setTextAlignment(value);
-            }
-            @Override
-            public Alignment getter(CommonCommentSettings object) {
-                return getTextAlignment();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Alignment.class,
+                "Text alignment",
+                CommentCommonSettings::setTextAlignment,
+                CommentCommonSettings::getTextAlignment));
 
-        properties.add(new PropertyDeclaration<CommonCommentSettings, Color>(
-                this, "Text color", Color.class) {
-            @Override
-            public void setter(CommonCommentSettings object, Color value) {
-                setTextColor(value);
-            }
-            @Override
-            public Color getter(CommonCommentSettings object) {
-                return getTextColor();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Text color",
+                CommentCommonSettings::setTextColor,
+                CommentCommonSettings::getTextColor));
 
-        properties.add(new PropertyDeclaration<CommonCommentSettings, Color>(
-                this, "Border color", Color.class) {
-            @Override
-            public void setter(CommonCommentSettings object, Color value) {
-                setBorderColor(value);
-            }
-            @Override
-            public Color getter(CommonCommentSettings object) {
-                return getBorderColor();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Border color",
+                CommentCommonSettings::setBorderColor,
+                CommentCommonSettings::getBorderColor));
 
-        properties.add(new PropertyDeclaration<CommonCommentSettings, Color>(
-                this, "Fill color", Color.class) {
-            @Override
-            public void setter(CommonCommentSettings object, Color value) {
-                setFillColor(value);
-            }
-            @Override
-            public Color getter(CommonCommentSettings object) {
-                return getFillColor();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Fill color",
+                CommentCommonSettings::setFillColor,
+                CommentCommonSettings::getFillColor));
 
-        properties.add(new PropertyDeclaration<CommonCommentSettings, Double>(
-                this, "Font size (cm)", Double.class) {
-            @Override
-            public void setter(CommonCommentSettings object, Double value) {
-                setFontSize(value);
-            }
-            @Override
-            public Double getter(CommonCommentSettings object) {
-                return getFontSize();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Font size (cm)",
+                CommentCommonSettings::setFontSize,
+                CommentCommonSettings::getFontSize));
     }
 
     @Override

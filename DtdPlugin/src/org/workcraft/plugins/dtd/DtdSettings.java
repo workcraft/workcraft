@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class DtdSettings extends AbstractModelSettings {
+
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "DtdSettings";
 
@@ -23,33 +24,19 @@ public class DtdSettings extends AbstractModelSettings {
     private static Double verticalSeparation = defaultVerticalSeparation;
     private static Double transitionSeparation = defaultTransitionSeparation;
 
-    public DtdSettings() {
-        properties.add(new PropertyDeclaration<DtdSettings, Double>(
-                this, "Vertical separation between signals", Double.class) {
-            @Override
-            public void setter(DtdSettings object, Double value) {
-                setVerticalSeparationIfValid(value, DtdSettings::setVerticalSeparation);
-            }
-            @Override
-            public Double getter(DtdSettings object) {
-                return getVerticalSeparation();
-            }
-        });
+    static {
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Vertical separation between signals",
+                (value) -> setVerticalSeparationIfValid(value, DtdSettings::setVerticalSeparation),
+                DtdSettings::getVerticalSeparation));
 
-        properties.add(new PropertyDeclaration<DtdSettings, Double>(
-                this, "Horizontal separation between transitions", Double.class) {
-            @Override
-            public void setter(DtdSettings object, Double value) {
-                setTransitionSeparationIfValid(value, DtdSettings::setTransitionSeparation);
-            }
-            @Override
-            public Double getter(DtdSettings object) {
-                return getTransitionSeparation();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Horizontal separation between transitions",
+                (value) -> setTransitionSeparationIfValid(value, DtdSettings::setTransitionSeparation),
+                DtdSettings::getTransitionSeparation));
     }
 
-    private void setVerticalSeparationIfValid(Double value, Consumer<Double> setter) {
+    private static void setVerticalSeparationIfValid(Double value, Consumer<Double> setter) {
         if (value.isNaN() || value.isInfinite()) {
             DialogUtils.showError("Vertical separation has to be a valid number.");
         } else if (value < 0.5) {
@@ -60,7 +47,7 @@ public class DtdSettings extends AbstractModelSettings {
 
     }
 
-    private void setTransitionSeparationIfValid(Double value, Consumer<Double> setter) {
+    private static void setTransitionSeparationIfValid(Double value, Consumer<Double> setter) {
         if (value.isNaN() || value.isInfinite()) {
             DialogUtils.showError("Transition separation has to be a valid number.");
         } else if (value < 0) {
@@ -112,4 +99,5 @@ public class DtdSettings extends AbstractModelSettings {
             transitionSeparation = value;
         }
     }
+
 }

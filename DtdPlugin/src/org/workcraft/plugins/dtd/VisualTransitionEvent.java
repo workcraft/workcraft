@@ -4,7 +4,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.gui.properties.PropertyDeclaration;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.serialisation.NoAutoSerialisation;
 
 import java.awt.*;
@@ -23,17 +23,8 @@ public class VisualTransitionEvent extends VisualEvent {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualTransitionEvent, TransitionEvent.Direction>(
-                this, TransitionEvent.PROPERTY_DIRECTION, TransitionEvent.Direction.class, true, true) {
-            @Override
-            public void setter(VisualTransitionEvent object, TransitionEvent.Direction value) {
-                object.setDirection(value);
-            }
-            @Override
-            public TransitionEvent.Direction getter(VisualTransitionEvent object) {
-                return object.getDirection();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(TransitionEvent.Direction.class, TransitionEvent.PROPERTY_DIRECTION,
+                this::setDirection, this::getDirection).setCombinable().setTemplatable());
     }
 
     private Double getShapeEmpty() {
@@ -42,7 +33,7 @@ public class VisualTransitionEvent extends VisualEvent {
 
     private Shape getShapeRise(double w, double h, double s) {
         Path2D shape = getShapeEmpty();
-        double sw2 = 0.5 * CommonVisualSettings.getStrokeWidth();
+        double sw2 = 0.5 * VisualCommonSettings.getStrokeWidth();
         double w2 = 0.5 * w;
         double s2 = 0.5 * s;
         shape.moveTo(0.0, +s2);
@@ -56,7 +47,7 @@ public class VisualTransitionEvent extends VisualEvent {
 
     private Shape getShapeFall(double w, double h, double s) {
         Path2D shape = getShapeEmpty();
-        double sw2 = 0.5 * CommonVisualSettings.getStrokeWidth();
+        double sw2 = 0.5 * VisualCommonSettings.getStrokeWidth();
         double w2 = 0.5 * w;
         double s2 = 0.5 * s;
         shape.moveTo(0.0, -s2);
@@ -70,7 +61,7 @@ public class VisualTransitionEvent extends VisualEvent {
 
     private Shape getShapeDestabilise(double w, double h, double s) {
         Path2D shape = getShapeEmpty();
-        double sw2 = 0.5 * CommonVisualSettings.getStrokeWidth();
+        double sw2 = 0.5 * VisualCommonSettings.getStrokeWidth();
         double w2 = 0.5 * w;
         double s2 = 0.5 * s;
         shape.moveTo(0.0, +s2 - sw2);
@@ -90,7 +81,7 @@ public class VisualTransitionEvent extends VisualEvent {
 
     private Shape getShapeStabilise(double w, double h, double s) {
         Path2D shape = getShapeEmpty();
-        double sw2 = 0.5 * CommonVisualSettings.getStrokeWidth();
+        double sw2 = 0.5 * VisualCommonSettings.getStrokeWidth();
         double w2 = 0.5 * w;
         double s2 = 0.5 * s;
         shape.moveTo(0.0, +0.0);
@@ -110,14 +101,14 @@ public class VisualTransitionEvent extends VisualEvent {
 
     @Override
     public Shape getShape() {
-        if (getReferencedTransition() == null) {
+        if (getReferencedComponent() == null) {
             return getShapeEmpty();
         }
-        double size = CommonVisualSettings.getNodeSize();
+        double size = VisualCommonSettings.getNodeSize();
         double w = 0.08 * size;
         double h = 0.1 * size;
         double s = 0.5 * size;
-        switch (getReferencedTransition().getDirection()) {
+        switch (getReferencedComponent().getDirection()) {
         case RISE: return getShapeRise(w, h, s);
         case FALL: return getShapeFall(w, h, s);
         case DESTABILISE: return getShapeDestabilise(w, h, s);
@@ -128,21 +119,22 @@ public class VisualTransitionEvent extends VisualEvent {
 
     @Override
     public BasicStroke getStroke() {
-        return new BasicStroke((float) CommonVisualSettings.getStrokeWidth() / 2.0f);
+        return new BasicStroke((float) VisualCommonSettings.getStrokeWidth() / 2.0f);
     }
 
-    public TransitionEvent getReferencedTransition() {
-        return (TransitionEvent) getReferencedComponent();
+    @Override
+    public TransitionEvent getReferencedComponent() {
+        return (TransitionEvent) super.getReferencedComponent();
     }
 
     @NoAutoSerialisation
     public void setDirection(TransitionEvent.Direction value) {
-        getReferencedTransition().setDirection(value);
+        getReferencedComponent().setDirection(value);
     }
 
     @NoAutoSerialisation
     public TransitionEvent.Direction getDirection() {
-        return getReferencedTransition().getDirection();
+        return getReferencedComponent().getDirection();
     }
 
     @Override

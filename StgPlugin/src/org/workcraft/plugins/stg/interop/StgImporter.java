@@ -4,7 +4,7 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.petri.utils.PetriUtils;
-import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
+import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.jj.ParseException;
@@ -30,7 +30,7 @@ public class StgImporter implements Importer {
     public StgModel importStg(InputStream in) throws DeserialisationException {
         try {
             StgParser parser = new StgParser(in);
-            if (CommonDebugSettings.getParserTracing()) {
+            if (DebugCommonSettings.getParserTracing()) {
                 parser.enable_tracing();
             } else {
                 parser.disable_tracing();

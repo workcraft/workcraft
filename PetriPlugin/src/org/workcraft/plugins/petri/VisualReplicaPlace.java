@@ -53,7 +53,7 @@ public class VisualReplicaPlace extends VisualReplica {
     public Place getReferencedPlace() {
         if (getMaster() instanceof VisualPlace) {
             VisualPlace visualPlace = (VisualPlace) getMaster();
-            return visualPlace.getReferencedPlace();
+            return visualPlace.getReferencedComponent();
         }
         return null;
     }

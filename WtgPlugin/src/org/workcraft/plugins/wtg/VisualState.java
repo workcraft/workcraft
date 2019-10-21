@@ -6,11 +6,11 @@ import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.gui.tools.Decoration;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.wtg.decorations.StateDecoration;
+import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -22,7 +22,7 @@ import java.awt.geom.Rectangle2D;
 @DisplayName("State")
 @SVGIcon("images/wtg-node-state.svg")
 public class VisualState extends VisualComponent {
-    private static double tokenSize = CommonVisualSettings.getNodeSize() / 1.9;
+    private static double tokenSize = VisualCommonSettings.getNodeSize() / 1.9;
 
     public VisualState(State state) {
         super(state);
@@ -30,22 +30,14 @@ public class VisualState extends VisualComponent {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualState, Boolean>(
-                this, State.PROPERTY_INITIAL, Boolean.class, false, false) {
-            @Override
-            public void setter(VisualState object, Boolean value) {
-                object.getReferencedState().setInitial(value);
-            }
-            @Override
-            public Boolean getter(VisualState object) {
-                return object.getReferencedState().isInitial();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, State.PROPERTY_INITIAL,
+                (value) -> getReferencedComponent().setInitial(value),
+                () -> getReferencedComponent().isInitial()));
     }
 
     @Override
     public Shape getShape() {
-        double size = CommonVisualSettings.getNodeSize() - CommonVisualSettings.getStrokeWidth();
+        double size = VisualCommonSettings.getNodeSize() - VisualCommonSettings.getStrokeWidth();
         double pos = -0.5 * size;
         return new Ellipse2D.Double(pos, pos, size, size);
     }
@@ -61,7 +53,7 @@ public class VisualState extends VisualComponent {
             if (sd.isMarked()) {
                 g.fill(getInitialMarkerShape());
             }
-        } else if (getReferencedState().isInitial()) {
+        } else if (getReferencedComponent().isInitial()) {
             g.fill(getInitialMarkerShape());
         }
     }
@@ -73,7 +65,7 @@ public class VisualState extends VisualComponent {
     @Override
     public Rectangle2D getBoundingBoxInLocalSpace() {
         Rectangle2D bb = super.getBoundingBoxInLocalSpace();
-        if (getReferencedState().isInitial()) {
+        if (getReferencedComponent().isInitial()) {
             bb = BoundingBoxHelper.union(bb, getInitialMarkerShape().getBounds2D());
         }
         return bb;
@@ -81,12 +73,13 @@ public class VisualState extends VisualComponent {
 
     @Override
     public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-        double size = CommonVisualSettings.getNodeSize() - CommonVisualSettings.getStrokeWidth();
+        double size = VisualCommonSettings.getNodeSize() - VisualCommonSettings.getStrokeWidth();
         return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
     }
 
-    public State getReferencedState() {
-        return (State) getReferencedComponent();
+    @Override
+    public State getReferencedComponent() {
+        return (State) super.getReferencedComponent();
     }
 
 }

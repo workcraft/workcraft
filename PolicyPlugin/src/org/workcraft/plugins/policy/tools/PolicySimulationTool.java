@@ -113,7 +113,7 @@ public class PolicySimulationTool extends PetriSimulationTool {
                         }
                         @Override
                         public int getTokens() {
-                            return p == null ? 0 : p.getReferencedPlace().getTokens();
+                            return p == null ? 0 : p.getReferencedComponent().getTokens();
                         }
                         @Override
                         public Color getTokenColor() {
@@ -165,7 +165,7 @@ public class PolicySimulationTool extends PetriSimulationTool {
         if (ts != null) {
             for (VisualTransition t: ts) {
                 if (t == null) continue;
-                Transition transition = t.getReferencedTransition();
+                Transition transition = t.getReferencedComponent();
                 if (isEnabledNode(transition)) {
                     return transition;
                 }

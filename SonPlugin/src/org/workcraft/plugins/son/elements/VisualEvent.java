@@ -6,12 +6,12 @@ import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.gui.tools.Decoration;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.util.Interval;
+import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -24,9 +24,9 @@ import java.awt.geom.Rectangle2D;
 @SVGIcon("images/son-node-event.svg")
 
 public class VisualEvent extends VisualComponent implements VisualTransitionNode {
-    //private boolean displayName = false;
-    private static double size = CommonVisualSettings.getNodeSize();
-    private static double strokeWidth = CommonVisualSettings.getStrokeWidth();
+
+    private static double size = VisualCommonSettings.getNodeSize();
+    private static double strokeWidth = VisualCommonSettings.getStrokeWidth();
 
     public VisualEvent(Event event) {
         super(event);
@@ -34,19 +34,16 @@ public class VisualEvent extends VisualComponent implements VisualTransitionNode
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualEvent, Boolean>(
-                this, "Fault", Boolean.class, true, true) {
-            @Override
-            public void setter(VisualEvent object, Boolean value) {
-                ((Event) getReferencedComponent()).setFaulty(value);
-            }
-            @Override
-            public Boolean getter(VisualEvent object) {
-                return     ((Event) getReferencedComponent()).isFaulty();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, "Fault",
+                (value) -> getReferencedComponent().setFaulty(value),
+                () -> getReferencedComponent().isFaulty())
+                .setCombinable().setTemplatable());
     }
 
+    @Override
+    public Event getReferencedComponent() {
+        return (Event) super.getReferencedComponent();
+    }
     @Override
     public void draw(DrawRequest r) {
         Graphics2D g = r.getGraphics();

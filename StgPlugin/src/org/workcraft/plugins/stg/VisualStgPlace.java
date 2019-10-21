@@ -5,11 +5,11 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Stylable;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.tools.Decoration;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -26,17 +26,10 @@ public class VisualStgPlace extends VisualPlace {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualStgPlace, Boolean>(
-                this, StgPlace.PROPERTY_MUTEX, Boolean.class, true, false) {
-            @Override
-            public void setter(VisualStgPlace object, Boolean value) {
-                object.getReferencedComponent().setMutex(value);
-            }
-            @Override
-            public Boolean getter(VisualStgPlace object) {
-                return object.getReferencedComponent().isMutex();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, StgPlace.PROPERTY_MUTEX,
+                (value) -> getReferencedComponent().setMutex(value),
+                () -> getReferencedComponent().isMutex())
+                .setCombinable());
     }
 
     @Override
@@ -49,13 +42,13 @@ public class VisualStgPlace extends VisualPlace {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
         if (getReferencedComponent().isMutex()) {
-            double size = CommonVisualSettings.getNodeSize() + CommonVisualSettings.getStrokeWidth();
+            double size = VisualCommonSettings.getNodeSize() + VisualCommonSettings.getStrokeWidth();
             double pos = -0.5 * size;
             Shape shape = new Ellipse2D.Double(pos, pos, size, size);
             g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
             g.fill(shape);
             g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-            g.setStroke(new BasicStroke((float) CommonVisualSettings.getStrokeWidth() / 2.0f));
+            g.setStroke(new BasicStroke((float) VisualCommonSettings.getStrokeWidth() / 2.0f));
             g.draw(shape);
         }
         super.draw(r);

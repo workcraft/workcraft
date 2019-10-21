@@ -7,7 +7,7 @@ import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.FstDescriptor;
 import org.workcraft.plugins.fst.jj.ParseException;
 import org.workcraft.plugins.fst.jj.SgParser;
-import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
+import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.workspace.ModelEntry;
 
 import java.io.InputStream;
@@ -27,7 +27,7 @@ public class SgImporter implements Importer {
     public Fst importSG(InputStream in) throws DeserialisationException {
         try {
             SgParser parser = new SgParser(in);
-            if (CommonDebugSettings.getParserTracing()) {
+            if (DebugCommonSettings.getParserTracing()) {
                 parser.enable_tracing();
             } else {
                 parser.disable_tracing();

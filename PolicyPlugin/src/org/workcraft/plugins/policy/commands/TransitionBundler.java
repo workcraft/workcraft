@@ -27,7 +27,7 @@ public class TransitionBundler {
     public TransitionBundler(PolicyToPetriConverter converter) {
         policyNet = converter.getPolicyNet();
         VisualPetri petriNet = converter.getPetriNet();
-        model = petriNet.getPetriNet();
+        model = petriNet.getMathModel();
         unbundled = new Step();
 
         HashMap<VisualBundledTransition, Transition> vbt2t = new HashMap<>();
@@ -36,7 +36,7 @@ public class TransitionBundler {
             Transition t = null;
             for (VisualTransition vt: converter.getRelatedTransitions(vbt)) {
                 if (t == null) {
-                    t = vt.getReferencedTransition();
+                    t = vt.getReferencedComponent();
                 } else {
                     t = null;
                     break;

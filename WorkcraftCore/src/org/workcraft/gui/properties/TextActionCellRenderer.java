@@ -18,7 +18,7 @@ public class TextActionCellRenderer extends JPanel implements TableCellRenderer 
         textField.setBorder(SizeHelper.getTableCellBorder());
 
         actionButton.setFocusable(false);
-        actionButton.setMargin(PropertyUtils.BUTTON_INSETS);
+        actionButton.setMargin(PropertyHelper.BUTTON_INSETS);
 
         setLayout(new BorderLayout());
         add(textField, BorderLayout.CENTER);

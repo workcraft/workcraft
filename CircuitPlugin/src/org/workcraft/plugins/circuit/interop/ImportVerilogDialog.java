@@ -34,26 +34,20 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
         }
 
         public void add(VerilogModule module, String name) {
-            properties.add(new PropertyDeclaration<VerilogModule, String>(module, name, String.class) {
-                @Override
-                public void setter(VerilogModule object, String value) {
-                    if (moduleToFileMap != null) {
-                        if ((value == null) || value.isEmpty() || FileFilters.DOCUMENT_EXTENSION.equals(value)) {
-                            DialogUtils.showError("File name cannot be empty.");
-                        } else {
-                            if (!value.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
-                                value += FileFilters.DOCUMENT_EXTENSION;
+            properties.add(new PropertyDeclaration<>(String.class, name,
+                    (value) -> {
+                        if (moduleToFileMap != null) {
+                            if ((value == null) || value.isEmpty() || FileFilters.DOCUMENT_EXTENSION.equals(value)) {
+                                DialogUtils.showError("File name cannot be empty.");
+                            } else {
+                                if (!value.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+                                    value += FileFilters.DOCUMENT_EXTENSION;
+                                }
+                                moduleToFileMap.put(module, value);
                             }
-                            moduleToFileMap.put(object, value);
                         }
-                    }
-                }
-
-                @Override
-                public String getter(VerilogModule object) {
-                    return moduleToFileMap == null ? null : moduleToFileMap.get(object);
-                }
-            });
+                    },
+                    () -> moduleToFileMap == null ? null : moduleToFileMap.get(module)));
         }
     }
 

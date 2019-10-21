@@ -30,7 +30,7 @@ import java.util.*;
 public class ConformationNwayOutputHandler extends ConformationOutputHandler {
 
     // Right arrow symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
-    public static final char RIGHT_ARROW_SYMBOL = 0x2192;
+    public static final String RIGHT_ARROW_SYMBOL = Character.toString((char) 0x2192);
 
     private static final String TAG_INPUT = "i";
     private static final String TAG_OUTPUT = "o";

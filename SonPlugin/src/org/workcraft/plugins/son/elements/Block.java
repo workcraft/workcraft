@@ -5,7 +5,7 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.utils.Hierarchy;
@@ -18,8 +18,8 @@ import java.util.Collection;
 @VisualClass (org.workcraft.plugins.son.elements.VisualBlock.class)
 public class Block extends PageNode implements TransitionNode, Time {
     private String label = "";
-    private Color foregroundColor = CommonVisualSettings.getBorderColor();
-    private Color fillColor = CommonVisualSettings.getFillColor();
+    private Color foregroundColor = VisualCommonSettings.getBorderColor();
+    private Color fillColor = VisualCommonSettings.getFillColor();
     private boolean isCollapsed = false;
 
     private Interval duration = new Interval(0, 9999);

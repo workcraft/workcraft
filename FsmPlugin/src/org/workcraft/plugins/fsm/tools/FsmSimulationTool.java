@@ -36,7 +36,7 @@ public class FsmSimulationTool extends PetriSimulationTool {
         if (ref != null) {
             label = converter.getSymbol(ref);
             if (label.isEmpty()) {
-                label = Character.toString(VisualEvent.EPSILON_SYMBOL);
+                label = VisualEvent.EPSILON_SYMBOL;
             }
         }
         if (label == null) {
@@ -149,7 +149,7 @@ public class FsmSimulationTool extends PetriSimulationTool {
         if (p == null) {
             return null;
         }
-        final boolean isMarkedPlace = p.getReferencedPlace().getTokens() > 0;
+        final boolean isMarkedPlace = p.getReferencedComponent().getTokens() > 0;
         return new Decoration() {
             @Override
             public Color getColorisation() {
@@ -166,7 +166,7 @@ public class FsmSimulationTool extends PetriSimulationTool {
         if ((node != null) && (node instanceof VisualEvent)) {
             VisualTransition vTransition = converter.getRelatedTransition((VisualEvent) node);
             if (vTransition != null) {
-                Transition transition = vTransition.getReferencedTransition();
+                Transition transition = vTransition.getReferencedComponent();
                 if (isEnabledNode(transition)) {
                     return transition;
                 }

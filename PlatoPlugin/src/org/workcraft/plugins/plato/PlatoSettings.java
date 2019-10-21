@@ -23,30 +23,16 @@ public class PlatoSettings extends AbstractToolSettings {
     private static String conceptsFolderLocation = defaultPlatoFolderLocation;
     private static String platoIncludesList = defaultPlatoIncludesList;
 
-    public PlatoSettings() {
-        properties.add(new PropertyDeclaration<PlatoSettings, String>(
-                this, "Concepts folder location", String.class) {
-            @Override
-            public void setter(PlatoSettings object, String value) {
-                setPlatoFolderLocation(value);
-            }
-            @Override
-            public String getter(PlatoSettings object) {
-                return getPlatoFolderLocation();
-            }
-        });
+    static {
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Concepts folder location",
+                PlatoSettings::setPlatoFolderLocation,
+                PlatoSettings::getPlatoFolderLocation));
 
-        properties.add(new PropertyDeclaration<PlatoSettings, String>(
-                this, "Folders to always include (separate with \';\')", String.class) {
-            @Override
-            public void setter(PlatoSettings object, String value) {
-                setPlatoIncludesList(value);
-            }
-            @Override
-            public String getter(PlatoSettings object) {
-                return getPlatoIncludesList();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Folders to always include (separate with \';\')",
+                PlatoSettings::setPlatoIncludesList,
+                PlatoSettings::getPlatoIncludesList));
     }
 
     @Override

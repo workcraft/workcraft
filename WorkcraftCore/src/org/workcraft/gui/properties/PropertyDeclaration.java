@@ -2,24 +2,26 @@ package org.workcraft.gui.properties;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-public abstract class PropertyDeclaration<O, V> implements PropertyDescriptor<V> {
-    private final O object;
+public class PropertyDeclaration<V> implements PropertyDescriptor<V> {
+
     private final String name;
     private final Class<V> cls;
-    private final boolean combinable;
-    private final boolean templatable;
+    private final Consumer<V> setter;
+    private final Supplier<V> getter;
+    private boolean editable = true;
+    private boolean visible = true;
+    private boolean combinable = false;
+    private boolean templatable = false;
+    private boolean span = false;
 
-    public PropertyDeclaration(O object, String name, Class<V> cls) {
-        this(object, name, cls, false, false);
-    }
-
-    public PropertyDeclaration(O object, String name, Class<V> cls, boolean combinable, boolean templatable) {
-        this.object = object;
+    public PropertyDeclaration(Class<V> cls, String name, Consumer<V> setter, Supplier<V> getter) {
         this.name = name;
         this.cls = cls;
-        this.combinable = combinable;
-        this.templatable = templatable;
+        this.setter = setter;
+        this.getter = getter;
     }
 
     @Override
@@ -35,37 +37,73 @@ public abstract class PropertyDeclaration<O, V> implements PropertyDescriptor<V>
     }
 
     @Override
-    public final V getValue() {
-        return getter(object);
-    }
-
-    @Override
-    public final void setValue(V value) {
-        setter(object, value);
-    }
-
-    @Override
-    public final String getName() {
+    public String getName() {
         return name;
     }
 
     @Override
-    public final Class<V> getType() {
+    public Class<V> getType() {
         return cls;
     }
 
     @Override
-    public final boolean isCombinable() {
-        return combinable;
+    public V getValue() {
+        return getter.get();
     }
 
     @Override
-    public final boolean isTemplatable() {
+    public void setValue(V value) {
+        setter.accept(value);
+    }
+
+    public PropertyDeclaration<V> setReadonly() {
+        this.editable = false;
+        return this;
+    }
+
+    @Override
+    public boolean isEditable() {
+        return editable;
+    }
+
+    public PropertyDeclaration<V> setHidden() {
+        this.visible = false;
+        return this;
+    }
+
+    @Override
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public PropertyDeclaration<V> setCombinable() {
+        this.combinable = true;
+        return this;
+    }
+
+    @Override
+    public boolean isCombinable() {
+        return combinable;
+    }
+
+    public PropertyDeclaration<V> setTemplatable() {
+        this.templatable = true;
+        return this;
+    }
+
+    @Override
+    public boolean isTemplatable() {
         return templatable;
     }
 
-    public abstract void setter(O object, V value);
+    public PropertyDeclaration<V> setSpan() {
+        this.span = true;
+        return this;
+    }
 
-    public abstract V getter(O object);
+    @Override
+    public boolean isSpan() {
+        return span;
+    }
 
 }

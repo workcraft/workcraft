@@ -29,54 +29,26 @@ public class PcompSettings extends AbstractToolSettings {
     private static Boolean printStdout = defaultPrintStdout;
     private static Boolean printStderr = defaultPrintStderr;
 
-    public PcompSettings() {
-        properties.add(new PropertyDeclaration<PcompSettings, String>(
-                this, "PComp command", String.class) {
-            @Override
-            public void setter(PcompSettings object, String value) {
-                setCommand(value);
-            }
-            @Override
-            public String getter(PcompSettings object) {
-                return getCommand();
-            }
-        });
+    static {
+        properties.add(new PropertyDeclaration<>(String.class,
+                "PComp command",
+                PcompSettings::setCommand,
+                PcompSettings::getCommand));
 
-        properties.add(new PropertyDeclaration<PcompSettings, String>(
-                this, "Additional parameters", String.class) {
-            @Override
-            public void setter(PcompSettings object, String value) {
-                setArgs(value);
-            }
-            @Override
-            public String getter(PcompSettings object) {
-                return getArgs();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Additional parameters",
+                PcompSettings::setArgs,
+                PcompSettings::getArgs));
 
-        properties.add(new PropertyDeclaration<PcompSettings, Boolean>(
-                this, "Output stdout", Boolean.class) {
-            @Override
-            public void setter(PcompSettings object, Boolean value) {
-                setPrintStdout(value);
-            }
-            @Override
-            public Boolean getter(PcompSettings object) {
-                return getPrintStdout();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Output stdout",
+                PcompSettings::setPrintStdout,
+                PcompSettings::getPrintStdout));
 
-        properties.add(new PropertyDeclaration<PcompSettings, Boolean>(
-                this, "Output stderr", Boolean.class) {
-            @Override
-            public void setter(PcompSettings object, Boolean value) {
-                setPrintStderr(value);
-            }
-            @Override
-            public Boolean getter(PcompSettings object) {
-                return getPrintStderr();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Output stderr",
+                PcompSettings::setPrintStderr,
+                PcompSettings::getPrintStderr));
     }
 
     @Override

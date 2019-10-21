@@ -18,13 +18,13 @@ public class BuiltinSettings implements Plugin {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
         // Common settings
-        pm.registerSettings(CommonFavoriteSettings.class);
-        pm.registerSettings(CommonEditorSettings.class);
-        pm.registerSettings(CommonVisualSettings.class);
-        pm.registerSettings(CommonCommentSettings.class);
-        pm.registerSettings(CommonDebugSettings.class);
-        pm.registerSettings(CommonLogSettings.class);
-        pm.registerSettings(CommonSignalSettings.class);
+        pm.registerSettings(FavoriteCommonSettings.class);
+        pm.registerSettings(EditorCommonSettings.class);
+        pm.registerSettings(VisualCommonSettings.class);
+        pm.registerSettings(CommentCommonSettings.class);
+        pm.registerSettings(DebugCommonSettings.class);
+        pm.registerSettings(LogCommonSettings.class);
+        pm.registerSettings(SignalCommonSettings.class);
         // Decoration settings
         pm.registerSettings(SelectionDecorationSettings.class);
         pm.registerSettings(SimulationDecorationSettings.class);

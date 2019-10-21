@@ -21,25 +21,25 @@ public class CommonSettingsTest {
         final Framework framework = Framework.getInstance();
         String prefix = "CommonCommentSettings";
 
-        Assert.assertEquals(Config.toString(CommonCommentSettings.getBaseSize()),
+        Assert.assertEquals(Config.toString(CommentCommonSettings.getBaseSize()),
                 framework.getConfigVar(prefix + ".baseSize", false));
 
-        Assert.assertEquals(Config.toString(CommonCommentSettings.getStrokeWidth()),
+        Assert.assertEquals(Config.toString(CommentCommonSettings.getStrokeWidth()),
                 framework.getConfigVar(prefix + ".strokeWidth", false));
 
-        Assert.assertEquals(Config.toString(CommonCommentSettings.getTextAlignment()),
+        Assert.assertEquals(Config.toString(CommentCommonSettings.getTextAlignment()),
                 framework.getConfigVar(prefix + ".textAlignment", false));
 
-        Assert.assertEquals(Config.toString(CommonCommentSettings.getTextColor()),
+        Assert.assertEquals(Config.toString(CommentCommonSettings.getTextColor()),
                 framework.getConfigVar(prefix + ".textColor", false));
 
-        Assert.assertEquals(Config.toString(CommonCommentSettings.getBorderColor()),
+        Assert.assertEquals(Config.toString(CommentCommonSettings.getBorderColor()),
                 framework.getConfigVar(prefix + ".borderColor", false));
 
-        Assert.assertEquals(Config.toString(CommonCommentSettings.getFillColor()),
+        Assert.assertEquals(Config.toString(CommentCommonSettings.getFillColor()),
                 framework.getConfigVar(prefix + ".fillColor", false));
 
-        Assert.assertEquals(Config.toString(CommonCommentSettings.getFontSize()),
+        Assert.assertEquals(Config.toString(CommentCommonSettings.getFontSize()),
                 framework.getConfigVar(prefix + ".fontSize", false));
     }
 
@@ -48,19 +48,19 @@ public class CommonSettingsTest {
         final Framework framework = Framework.getInstance();
         String prefix = "CommonDebugSettings";
 
-        Assert.assertEquals(Config.toString(CommonDebugSettings.getCopyModelOnChange()),
+        Assert.assertEquals(Config.toString(DebugCommonSettings.getCopyModelOnChange()),
                 framework.getConfigVar(prefix + ".copyModelOnChange", false));
 
-        Assert.assertEquals(Config.toString(CommonDebugSettings.getVerboseImport()),
+        Assert.assertEquals(Config.toString(DebugCommonSettings.getVerboseImport()),
                 framework.getConfigVar(prefix + ".verboseImport", false));
 
-        Assert.assertEquals(Config.toString(CommonDebugSettings.getParserTracing()),
+        Assert.assertEquals(Config.toString(DebugCommonSettings.getParserTracing()),
                 framework.getConfigVar(prefix + ".parserTracing", false));
 
-        Assert.assertEquals(Config.toString(CommonDebugSettings.getVerboseCompatibilityManager()),
+        Assert.assertEquals(Config.toString(DebugCommonSettings.getVerboseCompatibilityManager()),
                 framework.getConfigVar(prefix + ".verboseCompatibilityManager", false));
 
-        Assert.assertEquals(Config.toString(CommonDebugSettings.getShortExportHeader()),
+        Assert.assertEquals(Config.toString(DebugCommonSettings.getShortExportHeader()),
                 framework.getConfigVar(prefix + ".shortExportHeader", false));
     }
 
@@ -69,52 +69,52 @@ public class CommonSettingsTest {
         final Framework framework = Framework.getInstance();
         String prefix = "CommonEditorSettings";
 
-        Assert.assertEquals(Config.toString(CommonEditorSettings.getBackgroundColor()),
+        Assert.assertEquals(Config.toString(EditorCommonSettings.getBackgroundColor()),
                 framework.getConfigVar(prefix + ".backgroundColor", false));
 
-        Assert.assertEquals(Config.toString(CommonEditorSettings.getGridVisibility()),
+        Assert.assertEquals(Config.toString(EditorCommonSettings.getGridVisibility()),
                 framework.getConfigVar(prefix + ".gridVisibility", false));
 
-        Assert.assertEquals(Config.toString(CommonEditorSettings.getLightGrid()),
+        Assert.assertEquals(Config.toString(EditorCommonSettings.getLightGrid()),
                 framework.getConfigVar(prefix + ".lightGrid", false));
 
-        Assert.assertEquals(Config.toString(CommonEditorSettings.getLightGridSize()),
+        Assert.assertEquals(Config.toString(EditorCommonSettings.getLightGridSize()),
                 framework.getConfigVar(prefix + ".lightGridSize", false));
 
-        Assert.assertEquals(Config.toString(CommonEditorSettings.getGridColor()),
+        Assert.assertEquals(Config.toString(EditorCommonSettings.getGridColor()),
                 framework.getConfigVar(prefix + ".gridColor", false));
 
-        Assert.assertEquals(Config.toString(CommonEditorSettings.getRulerVisibility()),
+        Assert.assertEquals(Config.toString(EditorCommonSettings.getRulerVisibility()),
                 framework.getConfigVar(prefix + ".rulerVisibility", false));
 
-        Assert.assertEquals(Config.toString(CommonEditorSettings.getHintVisibility()),
+        Assert.assertEquals(Config.toString(EditorCommonSettings.getHintVisibility()),
                 framework.getConfigVar(prefix + ".hintVisibility", false));
 
-        Assert.assertEquals(Config.toString(CommonEditorSettings.getHintColor()),
+        Assert.assertEquals(Config.toString(EditorCommonSettings.getHintColor()),
                 framework.getConfigVar(prefix + ".hintColor", false));
 
-        Assert.assertEquals(Config.toString(CommonEditorSettings.getIssueVisibility()),
+        Assert.assertEquals(Config.toString(EditorCommonSettings.getIssueVisibility()),
                 framework.getConfigVar(prefix + ".issueVisibility", false));
 
-        Assert.assertEquals(Config.toString(CommonEditorSettings.getIssueColor()),
+        Assert.assertEquals(Config.toString(EditorCommonSettings.getIssueColor()),
                 framework.getConfigVar(prefix + ".issueColor", false));
 
-        Assert.assertEquals(Config.toString(CommonEditorSettings.getFlashInterval()),
+        Assert.assertEquals(Config.toString(EditorCommonSettings.getFlashInterval()),
                 framework.getConfigVar(prefix + ".flashInterval", false));
 
-        Assert.assertEquals(Config.toString(CommonEditorSettings.getRecentCount()),
+        Assert.assertEquals(Config.toString(EditorCommonSettings.getRecentCount()),
                 framework.getConfigVar(prefix + ".recentCount", false));
 
-        Assert.assertEquals(Config.toString(CommonEditorSettings.getTitleStyle()),
+        Assert.assertEquals(Config.toString(EditorCommonSettings.getTitleStyle()),
                 framework.getConfigVar(prefix + ".titleStyle", false));
 
-        Assert.assertEquals(Config.toString(CommonEditorSettings.getShowAbsolutePaths()),
+        Assert.assertEquals(Config.toString(EditorCommonSettings.getShowAbsolutePaths()),
                 framework.getConfigVar(prefix + ".showAbsolutePaths", false));
 
-        Assert.assertEquals(Config.toString(CommonEditorSettings.getOpenNonvisual()),
+        Assert.assertEquals(Config.toString(EditorCommonSettings.getOpenNonvisual()),
                 framework.getConfigVar(prefix + ".openNonvisual", false));
 
-        Assert.assertEquals(Config.toString(CommonEditorSettings.getRedrawInterval()),
+        Assert.assertEquals(Config.toString(EditorCommonSettings.getRedrawInterval()),
                 framework.getConfigVar(prefix + ".redrawInterval", false));
     }
 
@@ -123,7 +123,7 @@ public class CommonSettingsTest {
         final Framework framework = Framework.getInstance();
         String prefix = "CommonFavoriteSettings";
 
-        Assert.assertEquals(Config.toString(CommonFavoriteSettings.getFilterFavorites()),
+        Assert.assertEquals(Config.toString(FavoriteCommonSettings.getFilterFavorites()),
                 framework.getConfigVar(prefix + ".filterFavorites", false));
     }
 
@@ -132,22 +132,22 @@ public class CommonSettingsTest {
         final Framework framework = Framework.getInstance();
         String prefix = "CommonLogSettings";
 
-        Assert.assertEquals(Config.toString(CommonLogSettings.getTextColor()),
+        Assert.assertEquals(Config.toString(LogCommonSettings.getTextColor()),
                 framework.getConfigVar(prefix + ".textColor", false));
 
-        Assert.assertEquals(Config.toString(CommonLogSettings.getInfoBackground()),
+        Assert.assertEquals(Config.toString(LogCommonSettings.getInfoBackground()),
                 framework.getConfigVar(prefix + ".infoBackground", false));
 
-        Assert.assertEquals(Config.toString(CommonLogSettings.getWarningBackground()),
+        Assert.assertEquals(Config.toString(LogCommonSettings.getWarningBackground()),
                 framework.getConfigVar(prefix + ".warningBackground", false));
 
-        Assert.assertEquals(Config.toString(CommonLogSettings.getErrorBackground()),
+        Assert.assertEquals(Config.toString(LogCommonSettings.getErrorBackground()),
                 framework.getConfigVar(prefix + ".errorBackground", false));
 
-        Assert.assertEquals(Config.toString(CommonLogSettings.getStdoutBackground()),
+        Assert.assertEquals(Config.toString(LogCommonSettings.getStdoutBackground()),
                 framework.getConfigVar(prefix + ".stdoutBackground", false));
 
-        Assert.assertEquals(Config.toString(CommonLogSettings.getStderrBackground()),
+        Assert.assertEquals(Config.toString(LogCommonSettings.getStderrBackground()),
                 framework.getConfigVar(prefix + ".stderrBackground", false));
     }
 
@@ -156,19 +156,19 @@ public class CommonSettingsTest {
         final Framework framework = Framework.getInstance();
         String prefix = "CommonSignalSettings";
 
-        Assert.assertEquals(Config.toString(CommonSignalSettings.getInputColor()),
+        Assert.assertEquals(Config.toString(SignalCommonSettings.getInputColor()),
                 framework.getConfigVar(prefix + ".inputColor", false));
 
-        Assert.assertEquals(Config.toString(CommonSignalSettings.getOutputColor()),
+        Assert.assertEquals(Config.toString(SignalCommonSettings.getOutputColor()),
                 framework.getConfigVar(prefix + ".outputColor", false));
 
-        Assert.assertEquals(Config.toString(CommonSignalSettings.getInternalColor()),
+        Assert.assertEquals(Config.toString(SignalCommonSettings.getInternalColor()),
                 framework.getConfigVar(prefix + ".internalColor", false));
 
-        Assert.assertEquals(Config.toString(CommonSignalSettings.getDummyColor()),
+        Assert.assertEquals(Config.toString(SignalCommonSettings.getDummyColor()),
                 framework.getConfigVar(prefix + ".dummyColor", false));
 
-        Assert.assertEquals(Config.toString(CommonSignalSettings.getShowToggle()),
+        Assert.assertEquals(Config.toString(SignalCommonSettings.getShowToggle()),
                 framework.getConfigVar(prefix + ".showToggle", false));
     }
 
@@ -177,70 +177,70 @@ public class CommonSettingsTest {
         final Framework framework = Framework.getInstance();
         String prefix = "CommonVisualSettings";
 
-        Assert.assertEquals(Config.toString(CommonVisualSettings.getFontSize()),
+        Assert.assertEquals(Config.toString(VisualCommonSettings.getFontSize()),
                 framework.getConfigVar(prefix + ".fontSize", false));
 
-        Assert.assertEquals(Config.toString(CommonVisualSettings.getNodeSize()),
+        Assert.assertEquals(Config.toString(VisualCommonSettings.getNodeSize()),
                 framework.getConfigVar(prefix + ".nodeSize", false));
 
-        Assert.assertEquals(Config.toString(CommonVisualSettings.getStrokeWidth()),
+        Assert.assertEquals(Config.toString(VisualCommonSettings.getStrokeWidth()),
                 framework.getConfigVar(prefix + ".strokeWidth", false));
 
-        Assert.assertEquals(Config.toString(CommonVisualSettings.getBorderColor()),
+        Assert.assertEquals(Config.toString(VisualCommonSettings.getBorderColor()),
                 framework.getConfigVar(prefix + ".borderColor", false));
 
-        Assert.assertEquals(Config.toString(CommonVisualSettings.getFillColor()),
+        Assert.assertEquals(Config.toString(VisualCommonSettings.getFillColor()),
                 framework.getConfigVar(prefix + ".fillColor", false));
 
-        Assert.assertEquals(Config.toString(CommonVisualSettings.getPivotSize()),
+        Assert.assertEquals(Config.toString(VisualCommonSettings.getPivotSize()),
                 framework.getConfigVar(prefix + ".pivotSize", false));
 
-        Assert.assertEquals(Config.toString(CommonVisualSettings.getPivotWidth()),
+        Assert.assertEquals(Config.toString(VisualCommonSettings.getPivotWidth()),
                 framework.getConfigVar(prefix + ".pivotWidth", false));
 
-        Assert.assertEquals(Config.toString(CommonVisualSettings.getLineSpacing()),
+        Assert.assertEquals(Config.toString(VisualCommonSettings.getLineSpacing()),
                 framework.getConfigVar(prefix + ".lineSpacing", false));
 
-        Assert.assertEquals(Config.toString(CommonVisualSettings.getLabelVisibility()),
+        Assert.assertEquals(Config.toString(VisualCommonSettings.getLabelVisibility()),
                 framework.getConfigVar(prefix + ".labelVisibility", false));
 
-        Assert.assertEquals(Config.toString(CommonVisualSettings.getLabelPositioning()),
+        Assert.assertEquals(Config.toString(VisualCommonSettings.getLabelPositioning()),
                 framework.getConfigVar(prefix + ".labelPositioning", false));
 
-        Assert.assertEquals(Config.toString(CommonVisualSettings.getLabelColor()),
+        Assert.assertEquals(Config.toString(VisualCommonSettings.getLabelColor()),
                 framework.getConfigVar(prefix + ".labelColor", false));
 
-        Assert.assertEquals(Config.toString(CommonVisualSettings.getLabelFontSize()),
+        Assert.assertEquals(Config.toString(VisualCommonSettings.getLabelFontSize()),
                 framework.getConfigVar(prefix + ".labelFontSize", false));
 
-        Assert.assertEquals(Config.toString(CommonVisualSettings.getNameVisibility()),
+        Assert.assertEquals(Config.toString(VisualCommonSettings.getNameVisibility()),
                 framework.getConfigVar(prefix + ".nameVisibility", false));
 
-        Assert.assertEquals(Config.toString(CommonVisualSettings.getNamePositioning()),
+        Assert.assertEquals(Config.toString(VisualCommonSettings.getNamePositioning()),
                 framework.getConfigVar(prefix + ".namePositioning", false));
 
-        Assert.assertEquals(Config.toString(CommonVisualSettings.getNameColor()),
+        Assert.assertEquals(Config.toString(VisualCommonSettings.getNameColor()),
                 framework.getConfigVar(prefix + ".nameColor", false));
 
-        Assert.assertEquals(Config.toString(CommonVisualSettings.getNameFontSize()),
+        Assert.assertEquals(Config.toString(VisualCommonSettings.getNameFontSize()),
                 framework.getConfigVar(prefix + ".nameFontSize", false));
 
-        Assert.assertEquals(Config.toString(CommonVisualSettings.getConnectionLineWidth()),
+        Assert.assertEquals(Config.toString(VisualCommonSettings.getConnectionLineWidth()),
                 framework.getConfigVar(prefix + ".connectionLineWidth", false));
 
-        Assert.assertEquals(Config.toString(CommonVisualSettings.getConnectionArrowWidth()),
+        Assert.assertEquals(Config.toString(VisualCommonSettings.getConnectionArrowWidth()),
                 framework.getConfigVar(prefix + ".connectionArrowWidth", false));
 
-        Assert.assertEquals(Config.toString(CommonVisualSettings.getConnectionArrowLength()),
+        Assert.assertEquals(Config.toString(VisualCommonSettings.getConnectionArrowLength()),
                 framework.getConfigVar(prefix + ".connectionArrowLength", false));
 
-        Assert.assertEquals(Config.toString(CommonVisualSettings.getConnectionBubbleSize()),
+        Assert.assertEquals(Config.toString(VisualCommonSettings.getConnectionBubbleSize()),
                 framework.getConfigVar(prefix + ".connectionBubbleSize", false));
 
-        Assert.assertEquals(Config.toString(CommonVisualSettings.getConnectionColor()),
+        Assert.assertEquals(Config.toString(VisualCommonSettings.getConnectionColor()),
                 framework.getConfigVar(prefix + ".connectionColor", false));
 
-        Assert.assertEquals(Config.toString(CommonVisualSettings.getUseSubscript()),
+        Assert.assertEquals(Config.toString(VisualCommonSettings.getUseSubscript()),
                 framework.getConfigVar(prefix + ".useSubscript", false));
     }
 

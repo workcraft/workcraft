@@ -50,7 +50,7 @@ public class VariableConsistencySupervisor extends HierarchySupervisor {
             Encoding oldEncoding = group.getEncoding();
             Encoding newEncoding = new Encoding();
             for (VisualVariable var : cpog.getVariables()) {
-                Variable mathVariable = var.getMathVariable();
+                Variable mathVariable = var.getReferencedComponent();
                 newEncoding.setState(mathVariable, oldEncoding.getState(mathVariable));
             }
             group.setEncoding(newEncoding);

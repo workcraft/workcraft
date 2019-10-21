@@ -4,7 +4,7 @@ import org.workcraft.dom.visual.*;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.util.Interval;
@@ -53,7 +53,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode {
                 g.setStroke(new BasicStroke(strokeWidth));
                 g.draw(bb);
 
-                double s = 2.3 * CommonVisualSettings.getNodeSize() / 3.0;
+                double s = 2.3 * VisualCommonSettings.getNodeSize() / 3.0;
                 Shape shape = new Rectangle2D.Double(-s / 2, -s / 2, s, s);
                 g.setStroke(new BasicStroke(strokeWidth / 2));
                 g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));

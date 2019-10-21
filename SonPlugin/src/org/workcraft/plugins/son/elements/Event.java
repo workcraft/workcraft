@@ -4,7 +4,7 @@ import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.son.util.Interval;
 
 import java.awt.*;
@@ -13,8 +13,8 @@ import java.awt.*;
 @VisualClass (org.workcraft.plugins.son.elements.VisualEvent.class)
 public class Event extends MathNode implements TransitionNode, Time {
 
-    private Color foregroundColor = CommonVisualSettings.getBorderColor();
-    private Color fillColor = CommonVisualSettings.getFillColor();
+    private Color foregroundColor = VisualCommonSettings.getBorderColor();
+    private Color fillColor = VisualCommonSettings.getFillColor();
     private String label = "";
     private Boolean faulty = false;
 

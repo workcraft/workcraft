@@ -43,8 +43,9 @@ public class VisualPetri extends AbstractVisualModel {
         setGraphEditorTools(tools);
     }
 
-    public Petri getPetriNet() {
-        return (Petri) getMathModel();
+    @Override
+    public Petri getMathModel() {
+        return (Petri) super.getMathModel();
     }
 
     public VisualPlace createPlace(String mathName, Container container) {
@@ -52,7 +53,7 @@ public class VisualPetri extends AbstractVisualModel {
             container = getRoot();
         }
         Container mathContainer = NamespaceHelper.getMathContainer(this, container);
-        Place place = getPetriNet().createPlace(mathName, mathContainer);
+        Place place = getMathModel().createPlace(mathName, mathContainer);
         VisualPlace visualPlace = new VisualPlace(place);
         container.add(visualPlace);
         return visualPlace;
@@ -63,7 +64,7 @@ public class VisualPetri extends AbstractVisualModel {
             container = getRoot();
         }
         Container mathContainer = NamespaceHelper.getMathContainer(this, container);
-        Transition transition = getPetriNet().createTransition(mathName, mathContainer);
+        Transition transition = getMathModel().createTransition(mathName, mathContainer);
         VisualTransition visualTransition = new VisualTransition(transition);
         add(visualTransition);
         return visualTransition;
@@ -137,23 +138,22 @@ public class VisualPetri extends AbstractVisualModel {
 
     private VisualReadArc createReadArcConnection(VisualNode place, VisualNode transition)
              throws InvalidConnectionException {
-        Petri petriNet = (Petri) getMathModel();
 
         Place mPlace = null;
         if (place instanceof VisualPlace) {
-            mPlace = ((VisualPlace) place).getReferencedPlace();
+            mPlace = ((VisualPlace) place).getReferencedComponent();
         } else if (place instanceof VisualReplicaPlace) {
             mPlace = ((VisualReplicaPlace) place).getReferencedPlace();
         }
         Transition mTransition = null;
         if (transition instanceof VisualTransition) {
-            mTransition = ((VisualTransition) transition).getReferencedTransition();
+            mTransition = ((VisualTransition) transition).getReferencedComponent();
         }
 
         VisualReadArc connection = null;
         if ((mPlace != null) && (mTransition != null)) {
-            MathConnection mConsumingConnection = petriNet.connect(mPlace, mTransition);
-            MathConnection mProducingConnection = petriNet.connect(mTransition, mPlace);
+            MathConnection mConsumingConnection = getMathModel().connect(mPlace, mTransition);
+            MathConnection mProducingConnection = getMathModel().connect(mTransition, mPlace);
 
             connection = new VisualReadArc(place, transition, mConsumingConnection, mProducingConnection);
             Hierarchy.getNearestContainer(place, transition).add(connection);
@@ -171,7 +171,7 @@ public class VisualPetri extends AbstractVisualModel {
 
     public VisualTransition getVisualTransition(Transition transition) {
         for (VisualTransition vt: getVisualTransitions()) {
-            if (vt.getReferencedTransition() == transition) {
+            if (vt.getReferencedComponent() == transition) {
                 return vt;
             }
         }

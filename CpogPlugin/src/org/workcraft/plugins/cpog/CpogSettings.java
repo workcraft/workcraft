@@ -1,8 +1,8 @@
 package org.workcraft.plugins.cpog;
 
 import org.workcraft.Config;
-import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.plugins.builtin.settings.AbstractModelSettings;
 import org.workcraft.utils.DesktopApi;
 
@@ -54,90 +54,41 @@ public class CpogSettings extends AbstractModelSettings {
     private static String claspCommand = defaultClaspCommand;
     private static String minisatCommand = defaultMinisatCommand;
 
-    public CpogSettings() {
-        properties.add(new PropertyDeclaration<CpogSettings, String>(
-                this, "Scenco command", String.class) {
-            @Override
-            public void setter(CpogSettings object, String value) {
-                setScencoCommand(value);
-            }
-            @Override
-            public String getter(CpogSettings object) {
-                return getScencoCommand();
-            }
-        });
+    static {
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Scenco command",
+                CpogSettings::setScencoCommand,
+                CpogSettings::getScencoCommand));
 
-        properties.add(new PropertyDeclaration<CpogSettings, String>(
-                this, "Espresso command", String.class) {
-            @Override
-            public void setter(CpogSettings object, String value) {
-                setEspressoCommand(value);
-            }
-            @Override
-            public String getter(CpogSettings object) {
-                return getEspressoCommand();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Espresso command",
+                CpogSettings::setEspressoCommand,
+                CpogSettings::getEspressoCommand));
 
-        properties.add(new PropertyDeclaration<CpogSettings, String>(
-                this, "Abc command", String.class) {
-            @Override
-            public void setter(CpogSettings object, String value) {
-                setAbcTool(value);
-            }
-            @Override
-            public String getter(CpogSettings object) {
-                return getAbcTool();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Abc command",
+                CpogSettings::setAbcTool,
+                CpogSettings::getAbcTool));
 
-        properties.add(new PropertyDeclaration<CpogSettings, String>(
-                this, "PG miner command", String.class) {
-            @Override
-            public void setter(CpogSettings object, String value) {
-                setPgminerCommand(value);
-            }
-            @Override
-            public String getter(CpogSettings object) {
-                return getPgminerCommand();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "PG miner command",
+                CpogSettings::setPgminerCommand,
+                CpogSettings::getPgminerCommand));
 
-        properties.add(new PropertyDeclaration<CpogSettings, SatSolver>(
-                this, "SAT solver", SatSolver.class) {
-            @Override
-            public void setter(CpogSettings object, SatSolver value) {
-                setSatSolver(value);
-            }
-            @Override
-            public SatSolver getter(CpogSettings object) {
-                return getSatSolver();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(SatSolver.class,
+                "SAT solver",
+                CpogSettings::setSatSolver,
+                CpogSettings::getSatSolver));
 
-        properties.add(new PropertyDeclaration<CpogSettings, String>(
-                this, "Clasp solver command", String.class) {
-            @Override
-            public void setter(CpogSettings object, String value) {
-                setClaspCommand(value);
-            }
-            @Override
-            public String getter(CpogSettings object) {
-                return getClaspCommand();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Clasp solver command",
+                CpogSettings::setClaspCommand,
+                CpogSettings::getClaspCommand));
 
-        properties.add(new PropertyDeclaration<CpogSettings, String>(
-                this, "MiniSat solver command", String.class) {
-            @Override
-            public void setter(CpogSettings object, String value) {
-                setMinisatCommand(value);
-            }
-            @Override
-            public String getter(CpogSettings object) {
-                return getMinisatCommand();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "MiniSat solver command",
+                CpogSettings::setMinisatCommand,
+                CpogSettings::getMinisatCommand));
     }
 
     @Override

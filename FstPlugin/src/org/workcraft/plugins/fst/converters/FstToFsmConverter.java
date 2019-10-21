@@ -55,10 +55,10 @@ public class FstToFsmConverter extends DefaultModelConverter<VisualFst, VisualFs
     public void postprocessing() {
         VisualFst fst = getSrcModel();
         for (VisualState srcState: fst.getVisualStates()) {
-            if (srcState.getReferencedState().isInitial()) {
+            if (srcState.getReferencedComponent().isInitial()) {
                 VisualState dstState = (VisualState) getSrcToDstNode(srcState);
                 if (dstState != null) {
-                    dstState.getReferencedState().setInitial(true);
+                    dstState.getReferencedComponent().setInitial(true);
                 }
             }
         }

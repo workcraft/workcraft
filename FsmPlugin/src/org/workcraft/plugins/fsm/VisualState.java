@@ -4,10 +4,10 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.*;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -31,41 +31,17 @@ public class VisualState extends VisualComponent {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualState, Boolean>(
-                this, State.PROPERTY_INITIAL, Boolean.class, false, false) {
-            @Override
-            public void setter(VisualState object, Boolean value) {
-                object.getReferencedState().setInitial(value);
-            }
-            @Override
-            public Boolean getter(VisualState object) {
-                return object.getReferencedState().isInitial();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, State.PROPERTY_INITIAL,
+                (value) -> getReferencedComponent().setInitial(value),
+                () -> getReferencedComponent().isInitial()));
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualState, Positioning>(
-                this, PROPERTY_INITIAL_MARKER_POSITIONING, Positioning.class, true, true) {
-            @Override
-            public void setter(VisualState object, Positioning value) {
-                object.setInitialMarkerPositioning(value);
-            }
-            @Override
-            public Positioning getter(VisualState object) {
-                return object.getInitialMarkerPositioning();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Positioning.class, PROPERTY_INITIAL_MARKER_POSITIONING,
+                this::setInitialMarkerPositioning, this::getInitialMarkerPositioning).setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualState, Boolean>(
-                this, State.PROPERTY_FINAL, Boolean.class, true, true) {
-            @Override
-            public void setter(VisualState object, Boolean value) {
-                object.getReferencedState().setFinal(value);
-            }
-            @Override
-            public Boolean getter(VisualState object) {
-                return object.getReferencedState().isFinal();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, State.PROPERTY_FINAL,
+                (value) -> getReferencedComponent().setFinal(value),
+                () -> getReferencedComponent().isFinal())
+                .setCombinable().setTemplatable());
     }
 
     public Positioning getInitialMarkerPositioning() {
@@ -92,21 +68,21 @@ public class VisualState extends VisualComponent {
         g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
         g.draw(shape);
 
-        if (getReferencedState().isInitial()) {
+        if (getReferencedComponent().isInitial()) {
             g.setStroke(new BasicStroke(strokeWidth));
             g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+            AffineTransform savedTransform = g.getTransform();
+            AffineTransform rotateTransform = getInitialMarkerPositioning().getTransform();
+            g.transform(rotateTransform);
             if (getInitialMarkerPositioning() == Positioning.CENTER) {
-                g.fill(getInitialMarkerCenterShape());
+                g.fill(getInitialMarkerShape());
             } else {
-                AffineTransform savedTransform = g.getTransform();
-                AffineTransform rotateTransform = getInitialMarkerPositioning().getTransform();
-                g.transform(rotateTransform);
                 g.draw(getInitialMarkerShape());
-                g.setTransform(savedTransform);
             }
+            g.setTransform(savedTransform);
         }
 
-        if (getReferencedState().isFinal()) {
+        if (getReferencedComponent().isFinal()) {
             g.setStroke(new BasicStroke(strokeWidth / 2));
             g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
             g.draw(getFinalMarkerShape());
@@ -117,19 +93,17 @@ public class VisualState extends VisualComponent {
     }
 
     private Shape getInitialMarkerShape() {
-        double arrowSize = size / 4;
+        double s = size / 4;
+        if (getInitialMarkerPositioning() == Positioning.CENTER) {
+            return new Ellipse2D.Double(-s / 2, -s / 2, s, s);
+        }
         Path2D shape = new Path2D.Double();
         shape.moveTo(0.0, -size - strokeWidth);
         shape.lineTo(0.0, -size / 2 - strokeWidth);
-        shape.moveTo(-arrowSize / 2, -size / 2 - strokeWidth / 2 - arrowSize);
+        shape.moveTo(-s / 2, -size / 2 - strokeWidth / 2 - s);
         shape.lineTo(0.0, -size / 2 - strokeWidth / 2);
-        shape.lineTo(arrowSize / 2, -size / 2 - strokeWidth / 2 - arrowSize);
+        shape.lineTo(s / 2, -size / 2 - strokeWidth / 2 - s);
         return shape;
-    }
-
-    private Shape getInitialMarkerCenterShape() {
-        double s = size / 4;
-        return new Ellipse2D.Double(-s / 2, -s / 2, s, s);
     }
 
     private Shape getFinalMarkerShape() {
@@ -139,14 +113,17 @@ public class VisualState extends VisualComponent {
 
     @Override
     public Rectangle2D getBoundingBoxInLocalSpace() {
-        Rectangle2D bb = super.getBoundingBoxInLocalSpace();
-        if (getReferencedState().isInitial()) {
-            bb = BoundingBoxHelper.union(bb, getInitialMarkerShape().getBounds2D());
+        Rectangle2D result = super.getBoundingBoxInLocalSpace();
+        if (getReferencedComponent().isInitial()) {
+            AffineTransform rotateTransform = getInitialMarkerPositioning().getTransform();
+            Shape shape = getInitialMarkerShape();
+            Rectangle2D bb = BoundingBoxHelper.transform(shape.getBounds2D(), rotateTransform);
+            result = BoundingBoxHelper.union(result, bb);
         }
-        if (getReferencedState().isFinal()) {
-            bb = BoundingBoxHelper.union(bb, getFinalMarkerShape().getBounds2D());
+        if (getReferencedComponent().isFinal()) {
+            result = BoundingBoxHelper.union(result, getFinalMarkerShape().getBounds2D());
         }
-        return bb;
+        return result;
     }
 
     @Override
@@ -154,8 +131,9 @@ public class VisualState extends VisualComponent {
         return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
     }
 
-    public State getReferencedState() {
-        return (State) getReferencedComponent();
+    @Override
+    public State getReferencedComponent() {
+        return (State) super.getReferencedComponent();
     }
 
     @Override
@@ -163,7 +141,7 @@ public class VisualState extends VisualComponent {
         super.copyStyle(src);
         if (src instanceof VisualState) {
             VisualState srcComponent = (VisualState) src;
-            getReferencedState().setFinal(srcComponent.getReferencedState().isFinal());
+            getReferencedComponent().setFinal(srcComponent.getReferencedComponent().isFinal());
             setInitialMarkerPositioning(((VisualState) src).getInitialMarkerPositioning());
         }
     }
@@ -177,17 +155,17 @@ public class VisualState extends VisualComponent {
         for (Stylable src: srcs) {
             if (src instanceof VisualState) {
                 VisualState srcState = (VisualState) src;
-                if (srcState.getReferencedState().isFinal()) {
+                if (srcState.getReferencedComponent().isFinal()) {
                     isFinal = true;
                 }
-                if (srcState.getReferencedState().isInitial()) {
+                if (srcState.getReferencedComponent().isInitial()) {
                     isInitial = true;
                 }
                 initialMarkerPositioning.add(srcState.getInitialMarkerPositioning());
             }
         }
-        getReferencedState().setFinal(isFinal);
-        getReferencedState().setInitial(isInitial);
+        getReferencedComponent().setFinal(isFinal);
+        getReferencedComponent().setInitial(isInitial);
         setInitialMarkerPositioning(MixUtils.vote(initialMarkerPositioning, Positioning.TOP));
     }
 

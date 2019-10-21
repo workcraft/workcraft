@@ -8,7 +8,7 @@ import java.util.*;
 
 public class Cycle implements Comparable<Cycle> {
     // Right arrow symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
-    public static final char RIGHT_ARROW_SYMBOL = 0x2192;
+    public static final String RIGHT_ARROW_SYMBOL = Character.toString((char) 0x2192);
 
     public final VisualDfs dfs;
     public final LinkedHashSet<VisualDelayComponent> components;
@@ -38,10 +38,10 @@ public class Cycle implements Comparable<Cycle> {
             if (c instanceof VisualRegister || c instanceof VisualBinaryRegister) {
                 boolean hasToken = false;
                 if (c instanceof VisualRegister) {
-                    hasToken = ((VisualRegister) c).getReferencedRegister().isMarked();
+                    hasToken = ((VisualRegister) c).getReferencedComponent().isMarked();
                 }
                 if (c instanceof VisualBinaryRegister) {
-                    BinaryRegister ref = ((VisualBinaryRegister) c).getReferencedBinaryRegister();
+                    BinaryRegister ref = ((VisualBinaryRegister) c).getReferencedComponent();
                     hasToken = ref.isTrueMarked() || ref.isFalseMarked();
                 }
 
@@ -137,7 +137,7 @@ public class Cycle implements Comparable<Cycle> {
         }
         double probability = 1.0;
         for (VisualControlRegister control : controls) {
-            probability *= control.getReferencedControlRegister().getProbability();
+            probability *= control.getReferencedComponent().getProbability();
         }
         double delay = ((MathDelayNode) component.getReferencedComponent()).getDelay();
         return delay * probability;
@@ -161,7 +161,7 @@ public class Cycle implements Comparable<Cycle> {
         if ((components != null) && (dfs != null)) {
             for (VisualDelayComponent component : components) {
                 if (result.length() > 0) {
-                    result += Character.toString(RIGHT_ARROW_SYMBOL);
+                    result += RIGHT_ARROW_SYMBOL;
                 }
                 result += dfs.getMathModel().getNodeReference(component.getReferencedComponent());
             }

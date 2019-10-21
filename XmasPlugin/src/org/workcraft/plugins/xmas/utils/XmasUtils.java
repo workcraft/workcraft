@@ -31,8 +31,8 @@ public class XmasUtils {
     }
 
     public static VisualXmasComponent getConnectedComponent(final VisualXmas visualXmas, VisualXmasContact visualContact) {
-        Xmas xmas = (Xmas) visualXmas.getMathModel();
-        XmasContact contact = visualContact.getReferencedContact();
+        Xmas xmas = visualXmas.getMathModel();
+        XmasContact contact = visualContact.getReferencedComponent();
         XmasComponent component = getConnectedComponent(xmas, contact);
         return visualXmas.getVisualComponent(component, VisualXmasComponent.class);
     }
@@ -58,8 +58,8 @@ public class XmasUtils {
     }
 
     public static VisualXmasContact getConnectedContact(final VisualXmas visualXmas, VisualXmasContact visualContact) {
-        Xmas xmas = (Xmas) visualXmas.getMathModel();
-        XmasContact contact = visualContact.getReferencedContact();
+        Xmas xmas = visualXmas.getMathModel();
+        XmasContact contact = visualContact.getReferencedComponent();
         XmasContact connectedContact = getConnectedContact(xmas, contact);
         return visualXmas.getVisualComponent(connectedContact, VisualXmasContact.class);
     }

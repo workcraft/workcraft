@@ -3,15 +3,15 @@ package org.workcraft.dom.visual;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.ContainerDecoration;
 import org.workcraft.gui.tools.Decoration;
-import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
@@ -23,7 +23,7 @@ import java.util.Collection;
 public class VisualGroup extends VisualTransformableNode implements Drawable, Collapsible, Container, ObservableHierarchy {
     public static final String PROPERTY_IS_COLLAPSED = "Is collapsed";
 
-    protected double size = CommonVisualSettings.getNodeSize();
+    protected double size = VisualCommonSettings.getNodeSize();
     protected static final double margin = 0.20;
 
     private boolean currentLevelInside = false;
@@ -37,17 +37,8 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualGroup, Boolean>(
-                this, PROPERTY_IS_COLLAPSED, Boolean.class, true, true) {
-            @Override
-            public void setter(VisualGroup object, Boolean value) {
-                object.setIsCollapsed(value);
-            }
-            @Override
-            public Boolean getter(VisualGroup object) {
-                return object.getIsCollapsed();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, PROPERTY_IS_COLLAPSED,
+                this::setIsCollapsed, this::getIsCollapsed).setCombinable().setTemplatable());
     }
 
     @Override
@@ -120,13 +111,13 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
         Decoration d = r.getDecoration();
         Graphics2D g = r.getGraphics();
         if (d.getColorisation() != null) {
-            float s2 = (float) CommonVisualSettings.getPivotSize() / 2;
+            float s2 = (float) VisualCommonSettings.getPivotSize() / 2;
             Path2D p = new Path2D.Double();
             p.moveTo(-s2, 0);
             p.lineTo(s2, 0);
             p.moveTo(0, -s2);
             p.lineTo(0, s2);
-            g.setStroke(new BasicStroke((float) CommonVisualSettings.getPivotWidth()));
+            g.setStroke(new BasicStroke((float) VisualCommonSettings.getPivotWidth()));
             g.draw(p);
         }
     }

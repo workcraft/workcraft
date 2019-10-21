@@ -8,9 +8,9 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
 import org.workcraft.serialisation.NoAutoSerialisation;
 
 import java.awt.*;
@@ -27,7 +27,7 @@ public class VisualImplicitPlaceArc extends VisualConnection {
     private static double singleTokenSize = tokenSpace / 1.9;
     private static double multipleTokenSeparation = 0.0125;
 
-    protected Color tokenColor = CommonVisualSettings.getBorderColor();
+    protected Color tokenColor = VisualCommonSettings.getBorderColor();
 
     public VisualImplicitPlaceArc() {
         super();
@@ -46,41 +46,18 @@ public class VisualImplicitPlaceArc extends VisualConnection {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualImplicitPlaceArc, Integer>(
-                this, Place.PROPERTY_TOKENS, Integer.class, true, true) {
-            @Override
-            public void setter(VisualImplicitPlaceArc object, Integer value) {
-                object.getImplicitPlace().setTokens(value);
-            }
-            @Override
-            public Integer getter(VisualImplicitPlaceArc object) {
-                return object.getImplicitPlace().getTokens();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Integer.class, Place.PROPERTY_TOKENS,
+                (value) -> getImplicitPlace().setTokens(value),
+                () -> getImplicitPlace().getTokens())
+                .setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualImplicitPlaceArc, Integer>(
-                this, Place.PROPERTY_CAPACITY, Integer.class, true, true) {
-            @Override
-            public void setter(VisualImplicitPlaceArc object, Integer value) {
-                object.getImplicitPlace().setCapacity(value);
-            }
-            @Override
-            public Integer getter(VisualImplicitPlaceArc object) {
-                return object.getImplicitPlace().getCapacity();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Integer.class, Place.PROPERTY_CAPACITY,
+                (value) -> getImplicitPlace().setCapacity(value),
+                () -> getImplicitPlace().getCapacity())
+                .setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualImplicitPlaceArc, Color>(
-                this, VisualPlace.PROPERTY_TOKEN_COLOR, Color.class, true, true) {
-            @Override
-            public void setter(VisualImplicitPlaceArc object, Color value) {
-                object.setTokenColor(value);
-            }
-            @Override
-            public Color getter(VisualImplicitPlaceArc object) {
-                return object.getTokenColor();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Color.class, VisualPlace.PROPERTY_TOKEN_COLOR,
+                this::setTokenColor, this::getTokenColor).setCombinable().setTemplatable());
     }
 
     private void addPlaceObserver(Place implicitPlace) {

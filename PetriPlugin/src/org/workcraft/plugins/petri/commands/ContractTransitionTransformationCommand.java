@@ -89,7 +89,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
         if (node instanceof VisualTransition) {
             PetriModel mathModel = (PetriModel) model.getMathModel();
             VisualTransition transition = (VisualTransition) node;
-            Transition mathTransition = transition.getReferencedTransition();
+            Transition mathTransition = transition.getReferencedComponent();
             if (hasSelfLoop(mathModel, mathTransition)) {
                 DialogUtils.showError("A transition with a self-loop/read-arc cannot be contracted.");
             } else if (needsWaitedArcs(mathModel, mathTransition)) {
@@ -308,9 +308,9 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
         productPlace.setRootSpacePosition(pos);
         productPlace.mixStyle(predPlace, succPlace);
         // Correct the token count and capacity of the new place
-        Place mathPredPlace = predPlace.getReferencedPlace();
-        Place mathSuccPlace = succPlace.getReferencedPlace();
-        Place mathProductPlace = productPlace.getReferencedPlace();
+        Place mathPredPlace = predPlace.getReferencedComponent();
+        Place mathSuccPlace = succPlace.getReferencedComponent();
+        Place mathProductPlace = productPlace.getReferencedComponent();
         int tokens = mathPredPlace.getTokens() + mathSuccPlace.getTokens();
         mathProductPlace.setTokens(tokens);
         int capacity = tokens;

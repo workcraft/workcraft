@@ -6,7 +6,6 @@ import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.properties.PropertyDeclaration;
-import org.workcraft.plugins.xmas.components.FunctionComponent.Type;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -27,21 +26,16 @@ public class VisualFunctionComponent extends VisualXmasComponent {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualFunctionComponent, Type>(
-                this, FunctionComponent.PROPERTY_TYPE, Type.class, true, true) {
-            @Override
-            public void setter(VisualFunctionComponent object, Type value) {
-                object.getReferencedFunctionComponent().setType(value);
-            }
-            @Override
-            public Type getter(VisualFunctionComponent object) {
-                return object.getReferencedFunctionComponent().getType();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(FunctionComponent.Type.class,
+                FunctionComponent.PROPERTY_TYPE,
+                (value) -> getReferencedComponent().setType(value),
+                () -> getReferencedComponent().getType())
+                .setCombinable().setTemplatable());
     }
 
-    public FunctionComponent getReferencedFunctionComponent() {
-        return (FunctionComponent) getReferencedComponent();
+    @Override
+    public FunctionComponent getReferencedComponent() {
+        return (FunctionComponent) super.getReferencedComponent();
     }
 
     @Override
@@ -61,8 +55,8 @@ public class VisualFunctionComponent extends VisualXmasComponent {
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualFunctionComponent) {
-            FunctionComponent srcComponent = ((VisualFunctionComponent) src).getReferencedFunctionComponent();
-            getReferencedFunctionComponent().setType(srcComponent.getType());
+            FunctionComponent srcComponent = ((VisualFunctionComponent) src).getReferencedComponent();
+            getReferencedComponent().setType(srcComponent.getType());
         }
     }
 

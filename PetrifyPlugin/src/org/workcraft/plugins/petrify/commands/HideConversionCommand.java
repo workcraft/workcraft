@@ -40,7 +40,7 @@ public class HideConversionCommand extends AbstractPetrifyConversionCommand {
             if (transition instanceof VisualSignalTransition) {
                 name = ((VisualSignalTransition) transition).getSignalName();
             } else if (transition instanceof VisualDummyTransition) {
-                name = ((VisualDummyTransition) transition).getReferencedTransition().getName();
+                name = ((VisualDummyTransition) transition).getReferencedComponent().getName();
             } else {
                 name = visualModel.getMathName(transition);
             }

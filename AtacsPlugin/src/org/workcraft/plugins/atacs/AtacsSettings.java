@@ -35,78 +35,36 @@ public class AtacsSettings extends AbstractToolSettings {
     private static Boolean printStdout = defaultPrintStdout;
     private static Boolean printStderr = defaultPrintStderr;
 
-    public AtacsSettings() {
-        properties.add(new PropertyDeclaration<AtacsSettings, Boolean>(
-                this, "Activate ATACS synthesis (experimental) - requires restart", Boolean.class) {
-            @Override
-            public void setter(AtacsSettings object, Boolean value) {
-                setShowInMenu(value);
-            }
-            @Override
-            public Boolean getter(AtacsSettings object) {
-                return getShowInMenu();
-            }
-        });
+    static {
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Activate ATACS synthesis (experimental) - requires restart",
+                AtacsSettings::setShowInMenu,
+                AtacsSettings::getShowInMenu));
 
-        properties.add(new PropertyDeclaration<AtacsSettings, String>(
-                this, "ATACS command", String.class) {
-            @Override
-            public void setter(AtacsSettings object, String value) {
-                setCommand(value);
-            }
-            @Override
-            public String getter(AtacsSettings object) {
-                return getCommand();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "ATACS command",
+                AtacsSettings::setCommand,
+                AtacsSettings::getCommand));
 
-        properties.add(new PropertyDeclaration<AtacsSettings, String>(
-                this, "Additional parameters", String.class) {
-            @Override
-            public void setter(AtacsSettings object, String value) {
-                setArgs(value);
-            }
-            @Override
-            public String getter(AtacsSettings object) {
-                return getArgs();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Additional parameters",
+                AtacsSettings::setArgs,
+                AtacsSettings::getArgs));
 
-        properties.add(new PropertyDeclaration<AtacsSettings, Boolean>(
-                this, "Edit additional parameters before every call", Boolean.class) {
-            @Override
-            public void setter(AtacsSettings object, Boolean value) {
-                setAdvancedMode(value);
-            }
-            @Override
-            public Boolean getter(AtacsSettings object) {
-                return getAdvancedMode();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Edit additional parameters before every call",
+                AtacsSettings::setAdvancedMode,
+                AtacsSettings::getAdvancedMode));
 
-        properties.add(new PropertyDeclaration<AtacsSettings, Boolean>(
-                this, "Output stdout", Boolean.class) {
-            @Override
-            public void setter(AtacsSettings object, Boolean value) {
-                setPrintStdout(value);
-            }
-            @Override
-            public Boolean getter(AtacsSettings object) {
-                return getPrintStdout();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Output stdout",
+                AtacsSettings::setPrintStdout,
+                AtacsSettings::getPrintStdout));
 
-        properties.add(new PropertyDeclaration<AtacsSettings, Boolean>(
-                this, "Output stderr", Boolean.class) {
-            @Override
-            public void setter(AtacsSettings object, Boolean value) {
-                setPrintStderr(value);
-            }
-            @Override
-            public Boolean getter(AtacsSettings object) {
-                return getPrintStderr();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Output stderr",
+                AtacsSettings::setPrintStderr,
+                AtacsSettings::getPrintStderr));
     }
 
     @Override

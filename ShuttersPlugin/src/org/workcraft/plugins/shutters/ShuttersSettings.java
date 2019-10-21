@@ -1,8 +1,8 @@
 package org.workcraft.plugins.shutters;
 
 import org.workcraft.Config;
-import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.plugins.builtin.settings.AbstractToolSettings;
 import org.workcraft.utils.DesktopApi;
 
@@ -39,67 +39,31 @@ public class ShuttersSettings extends AbstractToolSettings {
     private static String espressoCommand = defaultEspressoCommand;
     private static String abcCommand = defaultAbcCommand;
 
-    public ShuttersSettings() {
+    static {
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Ltscat module path",
+                ShuttersSettings::setLtscatFolder,
+                ShuttersSettings::getLtscatFolder));
 
-        properties.add(new PropertyDeclaration<ShuttersSettings, String>(
-                this, "Ltscat module path", String.class) {
-            @Override
-            public void setter(ShuttersSettings object, String value) {
-                setLtscatFolder(value);
-            }
-            @Override
-            public String getter(ShuttersSettings object) {
-                return getLtscatFolder();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Shutters command",
+                ShuttersSettings::setShuttersCommand,
+                ShuttersSettings::getShuttersCommand));
 
-        properties.add(new PropertyDeclaration<ShuttersSettings, String>(
-                this, "Shutters command", String.class) {
-            @Override
-            public void setter(ShuttersSettings object, String value) {
-                setShuttersCommand(value);
-            }
-            @Override
-            public String getter(ShuttersSettings object) {
-                return getShuttersCommand();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Espresso command",
+                ShuttersSettings::setEspressoCommand,
+                ShuttersSettings::getEspressoCommand));
 
-        properties.add(new PropertyDeclaration<ShuttersSettings, String>(
-                this, "Espresso command", String.class) {
-            @Override
-            public void setter(ShuttersSettings object, String value) {
-                setEspressoCommand(value);
-            }
-            @Override
-            public String getter(ShuttersSettings object) {
-                return getEspressoCommand();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Abc command",
+                ShuttersSettings::setAbcCommand,
+                ShuttersSettings::getAbcCommand));
 
-        properties.add(new PropertyDeclaration<ShuttersSettings, String>(
-                this, "Abc command", String.class) {
-            @Override
-            public void setter(ShuttersSettings object, String value) {
-                setAbcCommand(value);
-            }
-            @Override
-            public String getter(ShuttersSettings object) {
-                return getAbcCommand();
-            }
-        });
-
-        properties.add(new PropertyDeclaration<ShuttersSettings, Boolean>(
-                this, "Force positive literals", Boolean.class) {
-            @Override
-            public void setter(ShuttersSettings object, Boolean value) {
-                setForcePositiveMode(value);
-            }
-            @Override
-            public Boolean getter(ShuttersSettings object) {
-                return getForcePositiveMode();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Force positive literals",
+                ShuttersSettings::setForcePositiveMode,
+                ShuttersSettings::getForcePositiveMode));
     }
 
     @Override

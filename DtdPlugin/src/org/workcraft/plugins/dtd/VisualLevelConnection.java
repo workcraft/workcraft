@@ -4,7 +4,7 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.dtd.utils.DtdUtils;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.serialisation.NoAutoSerialisation;
 
 import java.awt.*;
@@ -30,7 +30,7 @@ public class VisualLevelConnection extends VisualConnection {
 
     @Override
     public double getLineWidth() {
-        return 0.5 * CommonVisualSettings.getStrokeWidth();
+        return 0.5 * VisualCommonSettings.getStrokeWidth();
     }
 
     @Override
@@ -46,7 +46,7 @@ public class VisualLevelConnection extends VisualConnection {
     @Override
     public Stroke getStroke() {
         Signal.State state = getState();
-        float width = 0.5f * (float) CommonVisualSettings.getStrokeWidth();
+        float width = 0.5f * (float) VisualCommonSettings.getStrokeWidth();
         if (state == Signal.State.UNSTABLE) {
             float[] pattern = {0.1f, 0.1f};
             return new BasicStroke(width, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f);
@@ -58,7 +58,7 @@ public class VisualLevelConnection extends VisualConnection {
         VisualNode node = getFirst();
         if (node instanceof VisualEvent) {
             VisualEvent event = (VisualEvent) node;
-            return DtdUtils.getNextState(event.getReferencedSignalEvent());
+            return DtdUtils.getNextState(event.getReferencedComponent());
         }
         return null;
     }

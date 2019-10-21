@@ -1,8 +1,8 @@
 package org.workcraft.plugins.xmas;
 
 import org.workcraft.Config;
-import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.plugins.builtin.settings.AbstractModelSettings;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.FileUtils;
@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 public class XmasSettings extends AbstractModelSettings {
+
     private static final String VSETTINGS_FILE_NAME = "vsettings";
     private static final String VSETTINGS_DEFAULT_CONTENT = "trace q1\nlevel normal\nhighlight none\ndisplay popup\nsoln 2\n";
     private static final String CPN_FILE_NAME = "CPNFile";
@@ -47,54 +48,26 @@ public class XmasSettings extends AbstractModelSettings {
 
     private static File vxmTempDirectory = null;
 
-    public XmasSettings() {
-        properties.add(new PropertyDeclaration<XmasSettings, Boolean>(
-                this, "Show contacts", Boolean.class) {
-            @Override
-            public void setter(XmasSettings object, Boolean value) {
-                setShowContacts(value);
-            }
-            @Override
-            public Boolean getter(XmasSettings object) {
-                return getShowContacts();
-            }
-        });
+    static {
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Show contacts",
+                XmasSettings::setShowContacts,
+                XmasSettings::getShowContacts));
 
-        properties.add(new PropertyDeclaration<XmasSettings, Double>(
-                this, "Border width", Double.class) {
-            @Override
-            public void setter(XmasSettings object, Double value) {
-                XmasSettings.setBorderWidth(value);
-            }
-            @Override
-            public Double getter(XmasSettings object) {
-                return XmasSettings.getBorderWidth();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Border width",
+                XmasSettings::setBorderWidth,
+                XmasSettings::getBorderWidth));
 
-        properties.add(new PropertyDeclaration<XmasSettings, Double>(
-                this, "Wire width", Double.class) {
-            @Override
-            public void setter(XmasSettings object, Double value) {
-                XmasSettings.setWireWidth(value);
-            }
-            @Override
-            public Double getter(XmasSettings object) {
-                return XmasSettings.getWireWidth();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Wire width",
+                XmasSettings::setWireWidth,
+                XmasSettings::getWireWidth));
 
-        properties.add(new PropertyDeclaration<XmasSettings, String>(
-                this, "VXM cmmand", String.class) {
-            @Override
-            public void setter(XmasSettings object, String value) {
-                XmasSettings.setVxmCommand(value);
-            }
-            @Override
-            public String getter(XmasSettings object) {
-                return XmasSettings.getVxmCommand();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "VXM cmmand",
+                XmasSettings::setVxmCommand,
+                XmasSettings::getVxmCommand));
     }
 
     @Override

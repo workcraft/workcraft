@@ -8,7 +8,8 @@ import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CommonSignalSettings extends AbstractCommonSettings {
+public class SignalCommonSettings extends AbstractCommonSettings {
+
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CommonSignalSettings";
 
@@ -30,66 +31,31 @@ public class CommonSignalSettings extends AbstractCommonSettings {
     private static Color dummyColor = defaultDummyColor;
     private static boolean showToggle = defaultShowToggle;
 
-    public CommonSignalSettings() {
-        properties.add(new PropertyDeclaration<CommonSignalSettings, Color>(
-                this, "Input signal color", Color.class) {
-            @Override
-            public void setter(CommonSignalSettings object, Color value) {
-                setInputColor(value);
-            }
-            @Override
-            public Color getter(CommonSignalSettings object) {
-                return getInputColor();
-            }
-        });
+    static {
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Input signal color",
+                SignalCommonSettings::setInputColor,
+                SignalCommonSettings::getInputColor));
 
-        properties.add(new PropertyDeclaration<CommonSignalSettings, Color>(
-                this, "Output signal color", Color.class) {
-            @Override
-            public void setter(CommonSignalSettings object, Color value) {
-                setOutputColor(value);
-            }
-            @Override
-            public Color getter(CommonSignalSettings object) {
-                return getOutputColor();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Output signal color",
+                SignalCommonSettings::setOutputColor,
+                SignalCommonSettings::getOutputColor));
 
-        properties.add(new PropertyDeclaration<CommonSignalSettings, Color>(
-                this, "Internal signal color", Color.class) {
-            @Override
-            public void setter(CommonSignalSettings object, Color value) {
-                setInternalColor(value);
-            }
-            @Override
-            public Color getter(CommonSignalSettings object) {
-                return getInternalColor();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Internal signal color",
+                SignalCommonSettings::setInternalColor,
+                SignalCommonSettings::getInternalColor));
 
-        properties.add(new PropertyDeclaration<CommonSignalSettings, Color>(
-                this, "Dummy color", Color.class) {
-            @Override
-            public void setter(CommonSignalSettings object, Color value) {
-                setDummyColor(value);
-            }
-            @Override
-            public Color getter(CommonSignalSettings object) {
-                return getDummyColor();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Dummy color",
+                SignalCommonSettings::setDummyColor,
+                SignalCommonSettings::getDummyColor));
 
-        properties.add(new PropertyDeclaration<CommonSignalSettings, Boolean>(
-                this, "Show signal toggle (~)", Boolean.class) {
-            @Override
-            public void setter(CommonSignalSettings object, Boolean value) {
-                setShowToggle(value);
-            }
-            @Override
-            public Boolean getter(CommonSignalSettings object) {
-                return getShowToggle();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Show signal toggle (~)",
+                SignalCommonSettings::setShowToggle,
+                SignalCommonSettings::getShowToggle));
     }
 
     @Override

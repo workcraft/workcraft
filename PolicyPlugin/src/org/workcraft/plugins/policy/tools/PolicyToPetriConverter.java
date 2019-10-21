@@ -42,7 +42,7 @@ public class PolicyToPetriConverter {
     private Map<VisualPlace, VisualPlace> convertPlaces() {
         Map<VisualPlace, VisualPlace> result = new HashMap<>();
         for (VisualPlace place : Hierarchy.getDescendantsOfType(policyNet.getRoot(), VisualPlace.class)) {
-            String name = policyNet.getMathModel().getNodeReference(place.getReferencedPlace());
+            String name = policyNet.getMathModel().getNodeReference(place.getReferencedComponent());
             VisualPlace newPlace = petriNet.createPlace(name, null);
             newPlace.copyPosition(place);
             newPlace.copyStyle(place);
@@ -54,9 +54,9 @@ public class PolicyToPetriConverter {
     private Map<VisualBundledTransition, VisualTransition> convertTransitions() {
         Map<VisualBundledTransition, VisualTransition> result = new HashMap<>();
         for (VisualBundledTransition transition : Hierarchy.getDescendantsOfType(policyNet.getRoot(), VisualBundledTransition.class)) {
-            Collection<Bundle> bundles = policyNet.getMathModel().getBundlesOfTransition(transition.getReferencedTransition());
+            Collection<Bundle> bundles = policyNet.getMathModel().getBundlesOfTransition(transition.getReferencedComponent());
             if (bundles.isEmpty()) {
-                String name = policyNet.getMathModel().getNodeReference(transition.getReferencedTransition());
+                String name = policyNet.getMathModel().getNodeReference(transition.getReferencedComponent());
                 VisualTransition newTransition = petriNet.createTransition(name, null);
                 newTransition.copyPosition(transition);
                 newTransition.copyStyle(transition);
@@ -74,7 +74,7 @@ public class PolicyToPetriConverter {
                 double y = 0;
                 int count = 0;
                 for (VisualBundledTransition transition : policyNet.getVisualBundledTransitions()) {
-                    if (bundle.getReferencedBundle().contains(transition.getReferencedTransition())) {
+                    if (bundle.getReferencedBundle().contains(transition.getReferencedComponent())) {
                         x += transition.getX();
                         y += transition.getY();
                         count++;

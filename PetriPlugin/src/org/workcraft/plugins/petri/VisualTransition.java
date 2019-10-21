@@ -4,7 +4,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.shared.ColorGenerator;
 
 import java.awt.*;
@@ -25,13 +25,14 @@ public class VisualTransition extends VisualComponent {
         super(transition, hasColorProperties, hasLabelProperties, hasNameProperties);
     }
 
-    public Transition getReferencedTransition() {
-        return (Transition) getReferencedComponent();
+    @Override
+    public Transition getReferencedComponent() {
+        return (Transition) super.getReferencedComponent();
     }
 
     @Override
     public Shape getShape() {
-        double size = CommonVisualSettings.getNodeSize() - CommonVisualSettings.getStrokeWidth();
+        double size = VisualCommonSettings.getNodeSize() - VisualCommonSettings.getStrokeWidth();
         double pos = -0.5 * size;
         return new Rectangle2D.Double(pos, pos, size, size);
     }

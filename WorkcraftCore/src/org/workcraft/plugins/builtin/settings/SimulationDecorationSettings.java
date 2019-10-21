@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SimulationDecorationSettings extends AbstractDecorationSettings {
+
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "SimulationDecorationSettings";
 
@@ -21,30 +22,16 @@ public class SimulationDecorationSettings extends AbstractDecorationSettings {
     private static Color simulationExcitedComponentColor = defaultExcitedComponentColor;
     private static Color simulationSuggestedComponentColor = defaultSuggestedComponentColor;
 
-    public SimulationDecorationSettings() {
-        properties.add(new PropertyDeclaration<SimulationDecorationSettings, Color>(
-                this, "Excited component outline", Color.class) {
-            @Override
-            public void setter(SimulationDecorationSettings object, Color value) {
-                setExcitedComponentColor(value);
-            }
-            @Override
-            public Color getter(SimulationDecorationSettings object) {
-                return getExcitedComponentColor();
-            }
-        });
+    static {
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Excited component outline",
+                SimulationDecorationSettings::setExcitedComponentColor,
+                SimulationDecorationSettings::getExcitedComponentColor));
 
-        properties.add(new PropertyDeclaration<SimulationDecorationSettings, Color>(
-                this, "Suggested component background", Color.class) {
-            @Override
-            public void setter(SimulationDecorationSettings object, Color value) {
-                setSuggestedComponentColor(value);
-            }
-            @Override
-            public Color getter(SimulationDecorationSettings object) {
-                return getSuggestedComponentColor();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Suggested component background",
+                SimulationDecorationSettings::setSuggestedComponentColor,
+                SimulationDecorationSettings::getSuggestedComponentColor));
     }
 
     @Override

@@ -3,13 +3,14 @@ package org.workcraft.plugins.dfs;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 
 import java.awt.*;
 
 public abstract class VisualAbstractRegister extends VisualDelayComponent {
+
     public static final String PROPERTY_TOKEN_COLOR = "Token color";
-    protected Color tokenColor = CommonVisualSettings.getBorderColor();
+    protected Color tokenColor = VisualCommonSettings.getBorderColor();
 
     public VisualAbstractRegister(MathDelayNode ref) {
         super(ref);
@@ -17,17 +18,8 @@ public abstract class VisualAbstractRegister extends VisualDelayComponent {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualAbstractRegister, Color>(
-                this, PROPERTY_TOKEN_COLOR, Color.class, true, true) {
-            @Override
-            public void setter(VisualAbstractRegister object, Color value) {
-                object.setTokenColor(value);
-            }
-            @Override
-            public Color getter(VisualAbstractRegister object) {
-                return object.getTokenColor();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Color.class, PROPERTY_TOKEN_COLOR,
+                this::setTokenColor, this::getTokenColor).setCombinable().setTemplatable());
     }
 
     public Color getTokenColor() {

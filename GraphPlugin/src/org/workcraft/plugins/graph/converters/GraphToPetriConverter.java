@@ -66,7 +66,7 @@ public class GraphToPetriConverter {
             VisualPlace place = dstModel.createPlace(name, null);
             place.setPosition(connection.getMiddleSegmentCenterPoint());
             place.setForegroundColor(connection.getColor());
-            place.getReferencedPlace().setTokens(0);
+            place.getReferencedComponent().setTokens(0);
             place.setTokenColor(connection.getColor());
             result.put(connection, place);
         }
@@ -75,7 +75,7 @@ public class GraphToPetriConverter {
 
     private Map<VisualVertex, VisualTransition> convertVertices() {
         Map<VisualVertex, VisualTransition> result = new HashMap<>();
-        HierarchyReferenceManager refManager = (HierarchyReferenceManager) dstModel.getPetriNet().getReferenceManager();
+        HierarchyReferenceManager refManager = (HierarchyReferenceManager) dstModel.getMathModel().getReferenceManager();
         NameManager nameManagerer = refManager.getNameManager(null);
         for (VisualVertex vertex: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualVertex.class)) {
             Symbol symbol = vertex.getReferencedComponent().getSymbol();
@@ -162,14 +162,14 @@ public class GraphToPetriConverter {
                 VisualPlace place = dstModel.createPlace(null, null);
                 Point2D pos = getBestPredPosition(srcModel, vertex);
                 place.setPosition(pos);
-                place.getReferencedPlace().setTokens(1);
+                place.getReferencedComponent().setTokens(1);
                 dstModel.connect(place, transition);
             }
             if (srcModel.getPostset(vertex).isEmpty()) {
                 VisualPlace place = dstModel.createPlace(null, null);
                 Point2D pos = getBestSuccPosition(srcModel, vertex);
                 place.setPosition(pos);
-                place.getReferencedPlace().setTokens(0);
+                place.getReferencedComponent().setTokens(0);
                 dstModel.connect(transition, place);
             }
         }
@@ -196,12 +196,12 @@ public class GraphToPetriConverter {
         if (highLevelNode instanceof VisualVertex) {
             VisualTransition transiton = getRelatedTransition((VisualVertex) highLevelNode);
             if (transiton != null) {
-                result = (node == transiton) || (node == transiton.getReferencedTransition());
+                result = (node == transiton) || (node == transiton.getReferencedComponent());
             }
         } else if (highLevelNode instanceof VisualConnection) {
             VisualPlace place = getRelatedPlace((VisualConnection) highLevelNode);
             if (place != null) {
-                result = (node == place) || (node == place.getReferencedPlace());
+                result = (node == place) || (node == place.getReferencedComponent());
             }
         }
         return result;

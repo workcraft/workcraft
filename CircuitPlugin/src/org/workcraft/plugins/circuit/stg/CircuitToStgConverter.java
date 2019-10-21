@@ -210,13 +210,13 @@ public class CircuitToStgConverter {
                 String zeroName = SignalStg.appendLowSuffix(signalName);
                 VisualPlace zeroPlace = stg.createVisualPlace(zeroName, container);
                 if (!initToOne) {
-                    zeroPlace.getReferencedPlace().setTokens(1);
+                    zeroPlace.getReferencedComponent().setTokens(1);
                 }
 
                 String oneName = SignalStg.appendHighSuffix(signalName);
                 VisualPlace onePlace = stg.createVisualPlace(oneName, container);
                 if (initToOne) {
-                    onePlace.getReferencedPlace().setTokens(1);
+                    onePlace.getReferencedComponent().setTokens(1);
                 }
 
                 SignalStg signalStg = new SignalStg(zeroPlace, onePlace);

@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class RandomLayoutSettings extends AbstractLayoutSettings {
+
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "RandomLayoutSettings";
 
@@ -26,54 +27,26 @@ public class RandomLayoutSettings extends AbstractLayoutSettings {
     private static double rangeX = defaultRangeX;
     private static double rangeY = defaultRangeY;
 
-    public RandomLayoutSettings() {
-        properties.add(new PropertyDeclaration<RandomLayoutSettings, Double>(
-                this, "Start X", Double.class) {
-            @Override
-            public void setter(RandomLayoutSettings object, Double value) {
-                setStartX(value);
-            }
-            @Override
-            public Double getter(RandomLayoutSettings object) {
-                return getStartX();
-            }
-        });
+    static {
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Start X",
+                RandomLayoutSettings::setStartX,
+                RandomLayoutSettings::getStartX));
 
-        properties.add(new PropertyDeclaration<RandomLayoutSettings, Double>(
-                this, "Start Y", Double.class) {
-            @Override
-            public void setter(RandomLayoutSettings object, Double value) {
-                setStartY(value);
-            }
-            @Override
-            public Double getter(RandomLayoutSettings object) {
-                return getStartY();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Start Y",
+                RandomLayoutSettings::setStartY,
+                RandomLayoutSettings::getStartY));
 
-        properties.add(new PropertyDeclaration<RandomLayoutSettings, Double>(
-                this, "Range X", Double.class) {
-            @Override
-            public void setter(RandomLayoutSettings object, Double value) {
-                setRangeX(value);
-            }
-            @Override
-            public Double getter(RandomLayoutSettings object) {
-                return getRangeX();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Range X",
+                RandomLayoutSettings::setRangeX,
+                RandomLayoutSettings::getRangeX));
 
-        properties.add(new PropertyDeclaration<RandomLayoutSettings, Double>(
-                this, "Range Y", Double.class) {
-            @Override
-            public void setter(RandomLayoutSettings object, Double value) {
-                setRangeY(value);
-            }
-            @Override
-            public Double getter(RandomLayoutSettings object) {
-                return getRangeY();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Range Y",
+                RandomLayoutSettings::setRangeY,
+                RandomLayoutSettings::getRangeY));
     }
 
     @Override

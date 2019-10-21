@@ -12,29 +12,23 @@ public abstract class VisualBinaryRegister extends VisualAbstractRegister {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualBinaryRegister, Marking>(
-                this, BinaryRegister.PROPERTY_MARKING, Marking.class, true, true) {
-            @Override
-            public void setter(VisualBinaryRegister object, Marking value) {
-                object.getReferencedBinaryRegister().setMarking(value);
-            }
-            @Override
-            public Marking getter(VisualBinaryRegister object) {
-                return object.getReferencedBinaryRegister().getMarking();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Marking.class, BinaryRegister.PROPERTY_MARKING,
+                (value) -> getReferencedComponent().setMarking(value),
+                () -> getReferencedComponent().getMarking())
+                .setCombinable().setTemplatable());
     }
 
-    public BinaryRegister getReferencedBinaryRegister() {
-        return (BinaryRegister) getReferencedComponent();
+    @Override
+    public BinaryRegister getReferencedComponent() {
+        return (BinaryRegister) super.getReferencedComponent();
     }
 
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualBinaryRegister) {
-            BinaryRegister srcBinaryRegister = ((VisualBinaryRegister) src).getReferencedBinaryRegister();
-            getReferencedBinaryRegister().setMarking(srcBinaryRegister.getMarking());
+            BinaryRegister srcBinaryRegister = ((VisualBinaryRegister) src).getReferencedComponent();
+            getReferencedComponent().setMarking(srcBinaryRegister.getMarking());
         }
     }
 

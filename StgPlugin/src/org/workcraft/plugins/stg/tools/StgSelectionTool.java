@@ -26,7 +26,7 @@ public class StgSelectionTool extends SelectionTool {
             Node node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
             if (node != null) {
                 if (node instanceof VisualPlace) {
-                    Place place = ((VisualPlace) node).getReferencedPlace();
+                    Place place = ((VisualPlace) node).getReferencedComponent();
                     toggleToken(place, editor);
                     return;
                 }
@@ -41,11 +41,11 @@ public class StgSelectionTool extends SelectionTool {
                     VisualSignalTransition transition = (VisualSignalTransition) node;
                     boolean processed = false;
                     if ((e.getKeyModifiers() & DesktopApi.getMenuKeyMouseMask()) != 0) {
-                        toggleSignalType(transition.getReferencedTransition(), editor);
+                        toggleSignalType(transition.getReferencedComponent(), editor);
                         processed = true;
                     }
                     if ((e.getModifiers() & MouseEvent.SHIFT_DOWN_MASK) != 0) {
-                        toggleDirection(transition.getReferencedTransition(), editor);
+                        toggleDirection(transition.getReferencedComponent(), editor);
                         processed = true;
                     }
                     if (processed) {

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class WtgSettings extends AbstractModelSettings {
+
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "WtgSettings";
 
@@ -44,117 +45,54 @@ public class WtgSettings extends AbstractModelSettings {
     private static String exitEventSuffix = defaultExitEventSuffix;
     private static String inactivePlaceSuffix = defaultInactivePlaceSuffix;
 
-    public WtgSettings() {
-        properties.add(new PropertyDeclaration<WtgSettings, String>(
-                this, "Suffix for signal low state (STG conversion)", String.class) {
-            @Override
-            public void setter(WtgSettings object, String value) {
-                setSuffixIfValid(value, WtgSettings::setLowStateSuffix);
-            }
-            @Override
-            public String getter(WtgSettings object) {
-                return getLowStateSuffix();
-            }
-        });
+    static {
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Suffix for signal low state (STG conversion)",
+                (value) -> setSuffixIfValid(value, WtgSettings::setLowStateSuffix),
+                () -> getLowStateSuffix()));
 
-        properties.add(new PropertyDeclaration<WtgSettings, String>(
-                this, "Suffix for signal high state (STG conversion)", String.class) {
-            @Override
-            public void setter(WtgSettings object, String value) {
-                setSuffixIfValid(value, WtgSettings::setHighStateSuffix);
-            }
-            @Override
-            public String getter(WtgSettings object) {
-                return getHighStateSuffix();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Suffix for signal high state (STG conversion)",
+                (value) -> setSuffixIfValid(value, WtgSettings::setHighStateSuffix),
+                () -> getHighStateSuffix()));
 
-        properties.add(new PropertyDeclaration<WtgSettings, String>(
-                this, "STG conversion suffix for signal stable state", String.class) {
-            @Override
-            public void setter(WtgSettings object, String value) {
-                setSuffixIfValid(value, WtgSettings::setStableStateSuffix);
-            }
-            @Override
-            public String getter(WtgSettings object) {
-                return getStableStateSuffix();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "STG conversion suffix for signal stable state",
+                (value) -> setSuffixIfValid(value, WtgSettings::setStableStateSuffix),
+                () -> getStableStateSuffix()));
 
-        properties.add(new PropertyDeclaration<WtgSettings, String>(
-                this, "STG conversion suffix for signal unstable state", String.class) {
-            @Override
-            public void setter(WtgSettings object, String value) {
-                setSuffixIfValid(value, WtgSettings::setUnstableStateSuffix);
-            }
-            @Override
-            public String getter(WtgSettings object) {
-                return getUnstableStateSuffix();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "STG conversion suffix for signal unstable state",
+                (value) -> setSuffixIfValid(value, WtgSettings::setUnstableStateSuffix),
+                () -> getUnstableStateSuffix()));
 
-        properties.add(new PropertyDeclaration<WtgSettings, String>(
-                this, "STG conversion suffix for signal stabilise event", String.class) {
-            @Override
-            public void setter(WtgSettings object, String value) {
-                setSuffixIfValid(value, WtgSettings::setStabiliseEventSuffix);
-            }
-            @Override
-            public String getter(WtgSettings object) {
-                return getStabiliseEventSuffix();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "STG conversion suffix for signal stabilise event",
+                (value) -> setSuffixIfValid(value, WtgSettings::setStabiliseEventSuffix),
+                () -> getStabiliseEventSuffix()));
 
-        properties.add(new PropertyDeclaration<WtgSettings, String>(
-                this, "STG conversion suffix for signal destabilise event", String.class) {
-            @Override
-            public void setter(WtgSettings object, String value) {
-                setSuffixIfValid(value, WtgSettings::setDestabiliseEventSuffix);
-            }
-            @Override
-            public String getter(WtgSettings object) {
-                return getDestabiliseEventSuffix();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "STG conversion suffix for signal destabilise event",
+                (value) -> setSuffixIfValid(value, WtgSettings::setDestabiliseEventSuffix),
+                () -> getDestabiliseEventSuffix()));
 
-        properties.add(new PropertyDeclaration<WtgSettings, String>(
-                this, "STG conversion suffix for waveform entry event", String.class) {
-            @Override
-            public void setter(WtgSettings object, String value) {
-                setSuffixIfValid(value, WtgSettings::setEntryEventSuffix);
-            }
-            @Override
-            public String getter(WtgSettings object) {
-                return getEntryEventSuffix();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "STG conversion suffix for waveform entry event",
+                (value) -> setSuffixIfValid(value, WtgSettings::setEntryEventSuffix),
+                () -> getEntryEventSuffix()));
 
-        properties.add(new PropertyDeclaration<WtgSettings, String>(
-                this, "STG conversion suffix for waveform exit event", String.class) {
-            @Override
-            public void setter(WtgSettings object, String value) {
-                setSuffixIfValid(value, WtgSettings::setExitEventSuffix);
-            }
-            @Override
-            public String getter(WtgSettings object) {
-                return getExitEventSuffix();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "STG conversion suffix for waveform exit event",
+                (value) -> setSuffixIfValid(value, WtgSettings::setExitEventSuffix),
+                () -> getExitEventSuffix()));
 
-        properties.add(new PropertyDeclaration<WtgSettings, String>(
-                this, "STG conversion suffix for waveform inactive place", String.class) {
-            @Override
-            public void setter(WtgSettings object, String value) {
-                setSuffixIfValid(value, WtgSettings::setInactivePlaceSuffix);
-            }
-            @Override
-            public String getter(WtgSettings object) {
-                return getInactivePlaceSuffix();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(String.class,
+                "STG conversion suffix for waveform inactive place",
+                (value) -> setSuffixIfValid(value, WtgSettings::setInactivePlaceSuffix),
+                () -> getInactivePlaceSuffix()));
     }
 
-    private void setSuffixIfValid(String value, Consumer<String> setter) {
+    private static void setSuffixIfValid(String value, Consumer<String> setter) {
         for (int i = 0; i < value.length(); ++i) {
             char c = value.charAt(i);
             if (!Character.isDigit(c) && !Character.isLetter(c) && (c != '_')) {

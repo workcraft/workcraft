@@ -7,7 +7,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.*;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.*;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.serialisation.NoAutoSerialisation;
 import org.workcraft.utils.Coloriser;
 
@@ -74,11 +74,11 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 
     public static final double HIT_THRESHOLD = 0.2;
 
-    private Color color = CommonVisualSettings.getConnectionColor();
-    private double lineWidth = CommonVisualSettings.getConnectionLineWidth();
-    private double arrowWidth = CommonVisualSettings.getConnectionArrowWidth();
-    private double arrowLength = CommonVisualSettings.getConnectionArrowLength();
-    private double bubbleSize = CommonVisualSettings.getConnectionBubbleSize();
+    private Color color = VisualCommonSettings.getConnectionColor();
+    private double lineWidth = VisualCommonSettings.getConnectionLineWidth();
+    private double arrowWidth = VisualCommonSettings.getConnectionArrowWidth();
+    private double arrowLength = VisualCommonSettings.getConnectionArrowLength();
+    private double bubbleSize = VisualCommonSettings.getConnectionBubbleSize();
 
     private boolean withArrow = true;
     private boolean withBubble = false;
@@ -108,40 +108,14 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualConnection, Double>(
-                this, PROPERTY_LINE_WIDTH, Double.class, true, true) {
-            @Override
-            public void setter(VisualConnection object, Double value) {
-                object.setLineWidth(value);
-            }
-            @Override
-            public Double getter(VisualConnection object) {
-                return object.getLineWidth();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Double.class, PROPERTY_LINE_WIDTH,
+                this::setLineWidth, this::getLineWidth).setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualConnection, Double>(
-                this, PROPERTY_ARROW_WIDTH, Double.class, true, true) {
-            @Override
-            public void setter(VisualConnection object, Double value) {
-                object.setArrowWidth(value);
-            }
-            @Override
-            public Double getter(VisualConnection object) {
-                return object.getArrowWidth();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Double.class, PROPERTY_ARROW_WIDTH,
+                this::setArrowWidth, this::getArrowWidth).setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualConnection, Double>(
-                this, PROPERTY_ARROW_LENGTH, Double.class, true, true) {
-            @Override
-            public void setter(VisualConnection object, Double value) {
-                object.setArrowLength(value);
-            }
-            @Override
-            public Double getter(VisualConnection object) {
-                return object.getArrowLength();
-            }
+        addPropertyDeclaration(new PropertyDeclaration<Double>(Double.class, PROPERTY_ARROW_LENGTH,
+                this::setArrowLength, this::getArrowLength) {
             @Override
             public Map<Double, String> getChoice() {
                 LinkedHashMap<Double, String> result = new LinkedHashMap<>();
@@ -151,49 +125,24 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
                 result.put(0.8, "long");
                 return result;
             }
-        });
+        }.setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualConnection, ConnectionType>(
-                this, PROPERTY_CONNECTION_TYPE, ConnectionType.class, true, false) {
-            @Override
-            public void setter(VisualConnection object, ConnectionType value) {
-                object.setConnectionType(value);
-                for (ControlPoint cp: object.getGraphic().getControlPoints()) {
-                    if (cp != null) {
-                        cp.setHidden(false);
+        addPropertyDeclaration(new PropertyDeclaration<>(ConnectionType.class, PROPERTY_CONNECTION_TYPE,
+                (value) -> {
+                    setConnectionType(value);
+                    for (ControlPoint cp : getGraphic().getControlPoints()) {
+                        if (cp != null) {
+                            cp.setHidden(false);
+                        }
                     }
-                }
-            }
-            @Override
-            public ConnectionType getter(VisualConnection object) {
-                return object.getConnectionType();
-            }
-        });
+                },
+                this::getConnectionType).setCombinable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualConnection, ScaleMode>(
-                this, PROPERTY_SCALE_MODE, ScaleMode.class, true, true) {
-            @Override
-            public void setter(VisualConnection object, ScaleMode value) {
-                object.setScaleMode(value);
-            }
-            @Override
-            public ScaleMode getter(VisualConnection object) {
-                return object.getScaleMode();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(ScaleMode.class, PROPERTY_SCALE_MODE,
+                this::setScaleMode, this::getScaleMode).setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualConnection, Color>(
-                this, PROPERTY_COLOR, Color.class, true, true) {
-            @Override
-            public void setter(VisualConnection object, Color value) {
-                object.setColor(value);
-            }
-            @Override
-            public Color getter(VisualConnection object) {
-                return object.getColor();
-            }
-        });
-
+        addPropertyDeclaration(new PropertyDeclaration<>(Color.class, PROPERTY_COLOR,
+                this::setColor, this::getColor).setCombinable().setTemplatable());
     }
 
     protected void initialise() {
@@ -607,8 +556,8 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 
     public void setDefaultArrow() {
         setArrow(true);
-        setArrowLength(CommonVisualSettings.getConnectionArrowLength());
-        setArrowWidth(CommonVisualSettings.getConnectionArrowWidth());
+        setArrowLength(VisualCommonSettings.getConnectionArrowLength());
+        setArrowWidth(VisualCommonSettings.getConnectionArrowWidth());
     }
 
     public Set<Point2D> getIntersections(Rectangle2D rect) {

@@ -19,8 +19,8 @@ public class ConversionUtils {
             if ((first != null) && (second != null)) {
                 Collection<VisualBurstEvent> events = Hierarchy.getDescendantsOfType(model.getRoot(), VisualBurstEvent.class);
                 for (VisualBurstEvent c: events) {
-                    if (c.getReferencedBurstEvent().getFirst() instanceof XbmState && c.getReferencedBurstEvent().getSecond() instanceof XbmState) {
-                        found = found || (c.getReferencedBurstEvent().getFirst() == from.getReferencedState()) && (c.getReferencedBurstEvent().getSecond() == to.getReferencedState());
+                    if (c.getReferencedConnection().getFirst() instanceof XbmState && c.getReferencedConnection().getSecond() instanceof XbmState) {
+                        found = found || (c.getReferencedConnection().getFirst() == from.getReferencedComponent()) && (c.getReferencedConnection().getSecond() == to.getReferencedComponent());
                     }
                 }
             }

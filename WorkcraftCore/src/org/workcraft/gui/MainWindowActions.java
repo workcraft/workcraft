@@ -6,8 +6,8 @@ import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.gui.tools.GraphEditor;
-import org.workcraft.plugins.builtin.settings.CommonEditorSettings;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.LogUtils;
@@ -235,25 +235,25 @@ public class MainWindowActions {
 
     public static final Action TOGGLE_GRID = new Action("Toggle grid visibility",
             () -> {
-                CommonEditorSettings.setGridVisibility(!CommonEditorSettings.getGridVisibility());
+                EditorCommonSettings.setGridVisibility(!EditorCommonSettings.getGridVisibility());
                 repaintAndFocusCurrentEditor();
             });
 
     public static final Action TOGGLE_RULER = new Action("Toggle ruler visibility",
             () -> {
-                CommonEditorSettings.setRulerVisibility(!CommonEditorSettings.getRulerVisibility());
+                EditorCommonSettings.setRulerVisibility(!EditorCommonSettings.getRulerVisibility());
                 repaintAndFocusCurrentEditor();
             });
 
     public static final Action TOGGLE_NAME = new Action("Toggle name visibility",
             () -> {
-                CommonVisualSettings.setNameVisibility(!CommonVisualSettings.getNameVisibility());
+                VisualCommonSettings.setNameVisibility(!VisualCommonSettings.getNameVisibility());
                 repaintAndFocusCurrentEditor();
             });
 
     public static final Action TOGGLE_LABEL = new Action("Toggle label visibility",
             () -> {
-                CommonVisualSettings.setLabelVisibility(!CommonVisualSettings.getLabelVisibility());
+                VisualCommonSettings.setLabelVisibility(!VisualCommonSettings.getLabelVisibility());
                 repaintAndFocusCurrentEditor();
             });
 

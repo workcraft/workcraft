@@ -8,11 +8,11 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.formula.One;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.gui.tools.Decoration;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.serialisation.NoAutoSerialisation;
+import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -54,17 +54,8 @@ public class VisualVariable extends VisualComponent {
     public VisualVariable(Variable variable) {
         super(variable);
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualVariable, VariableState>(
-                this, Variable.PROPERTY_STATE, VariableState.class, true, true) {
-            @Override
-            public void setter(VisualVariable object, VariableState value) {
-                object.setState(value);
-            }
-            @Override
-            public VariableState getter(VisualVariable object) {
-                return object.getState();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(VariableState.class, Variable.PROPERTY_STATE,
+                this::setState, this::getState).setCombinable().setTemplatable());
 
         removePropertyDeclarationByName(PROPERTY_NAME_POSITIONING);
         removePropertyDeclarationByName(PROPERTY_NAME_COLOR);
@@ -72,7 +63,7 @@ public class VisualVariable extends VisualComponent {
 
     @Override
     public Shape getShape() {
-        double size = CommonVisualSettings.getNodeSize() - CommonVisualSettings.getStrokeWidth();
+        double size = VisualCommonSettings.getNodeSize() - VisualCommonSettings.getStrokeWidth();
         double pos = -0.5 * size;
         return new Rectangle2D.Double(pos, pos, size, size);
     }
@@ -85,7 +76,7 @@ public class VisualVariable extends VisualComponent {
         Shape shape = getShape();
         g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
         g.fill(shape);
-        g.setStroke(new BasicStroke((float) CommonVisualSettings.getStrokeWidth()));
+        g.setStroke(new BasicStroke((float) VisualCommonSettings.getStrokeWidth()));
         g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
         g.draw(shape);
 
@@ -126,13 +117,13 @@ public class VisualVariable extends VisualComponent {
     @NoAutoSerialisation
     @Override
     public String getLabel() {
-        return getMathVariable().getLabel();
+        return getReferencedComponent().getLabel();
     }
 
     @NoAutoSerialisation
     @Override
     public void setLabel(String label) {
-        getMathVariable().setLabel(label);
+        getReferencedComponent().setLabel(label);
     }
 
     @Override
@@ -149,16 +140,17 @@ public class VisualVariable extends VisualComponent {
         return bb;
     }
 
-    public Variable getMathVariable() {
-        return (Variable) getReferencedComponent();
+    @Override
+    public Variable getReferencedComponent() {
+        return (Variable) super.getReferencedComponent();
     }
 
     public VariableState getState() {
-        return getMathVariable().getState();
+        return getReferencedComponent().getState();
     }
 
     public void setState(VariableState state) {
-        getMathVariable().setState(state);
+        getReferencedComponent().setState(state);
     }
 
     public void toggle() {

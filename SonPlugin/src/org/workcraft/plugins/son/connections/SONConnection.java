@@ -4,7 +4,7 @@ import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.util.Interval;
 
@@ -15,7 +15,7 @@ public class SONConnection extends MathConnection {
 
     private Interval time = new Interval(0, 9999);
     private Color timeColor = Color.BLACK;
-    private Color color = CommonVisualSettings.getBorderColor();
+    private Color color = VisualCommonSettings.getBorderColor();
 
     public enum Semantics {
         PNLINE("Petri net connection"),

@@ -16,40 +16,28 @@ public class PropertyEditorTableUI extends BasicTableUI {
 
     @Override
     public void paint(Graphics g, JComponent c) {
-        Rectangle clip = g.getClipBounds();
-        Rectangle bounds = table.getBounds();
-        bounds.x = 0;
-        bounds.y = 0;
-        if ((table.getRowCount() > 0) && (table.getColumnCount() > 0) && bounds.intersects(clip)) {
-            Point upperLeft = clip.getLocation();
-            Point lowerRight = new Point(clip.x + clip.width - 1, clip.y + clip.height - 1);
-            int minRow = table.rowAtPoint(upperLeft);
-            if (minRow == -1) {
-                minRow = 0;
+        if (table instanceof PropertyEditorTable) {
+            Rectangle clip = g.getClipBounds();
+            Rectangle bounds = table.getBounds();
+            bounds.x = 0;
+            bounds.y = 0;
+            if ((table.getRowCount() > 0) && (table.getColumnCount() > 0) && bounds.intersects(clip)) {
+                Point minCell = ((PropertyEditorTable) table).getClipMinCell(clip);
+                Point maxCell = ((PropertyEditorTable) table).getClipMaxCell(clip);
+                paintGrid(g, minCell.y, maxCell.y, minCell.x, maxCell.x);
+                paintCells(g, minCell.y, maxCell.y, minCell.x, maxCell.x);
             }
-            int maxRow = table.rowAtPoint(lowerRight);
-            if (maxRow == -1) {
-                maxRow = table.getRowCount() - 1;
-            }
-            int minColumn = table.columnAtPoint(upperLeft);
-            if (minColumn == -1) {
-                minColumn = 0;
-            }
-            int maxColumn = table.columnAtPoint(lowerRight);
-            if (maxColumn == -1) {
-                maxColumn = table.getColumnCount() - 1;
-            }
-            paintGrid(g, minRow, maxRow, minColumn, maxColumn);
-            paintCells(g, minRow, maxRow, minColumn, maxColumn);
+        } else {
+            super.paint(g, c);
         }
     }
 
     private void paintGrid(Graphics g, int minRow, int maxRow, int minColumn, int maxColumn) {
         g.setColor(table.getGridColor());
 
-        Rectangle minCell = table.getCellRect(minRow, minColumn, true);
-        Rectangle maxCell = table.getCellRect(maxRow, maxColumn, true);
-        Rectangle rect = minCell.union(maxCell);
+        Rectangle minCellBound = table.getCellRect(minRow, minColumn, true);
+        Rectangle maxCellBound = table.getCellRect(maxRow, maxColumn, true);
+        Rectangle rect = minCellBound.union(maxCellBound);
 
         int w = rect.x + rect.width;
         int y = rect.y;

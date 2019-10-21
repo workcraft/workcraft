@@ -1,75 +1,76 @@
-package org.workcraft.plugins.wtg.properties;
+package org.workcraft.plugins.wtg;
 
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.exceptions.NodeCreationException;
-import org.workcraft.gui.tools.GraphEditorTool;
+import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.dtd.DtdSettings;
 import org.workcraft.plugins.dtd.Signal;
 import org.workcraft.plugins.dtd.VisualSignal;
-import org.workcraft.plugins.wtg.*;
 import org.workcraft.plugins.wtg.tools.SignalGeneratorTool;
+import org.workcraft.plugins.wtg.utils.WtgUtils;
 
 import java.awt.geom.Point2D;
 import java.util.*;
 
 import static org.workcraft.plugins.wtg.utils.WtgUtils.getFinalSignalStatesFromWaveform;
 
-public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor<Boolean> {
+public class WtgPropertyHelper {
 
-    private final VisualWtg visualWtg;
-    private final VisualWaveform visualWaveform;
-    private final String signalName;
-
-    public SignalDeclarationPropertyDescriptor(VisualWtg visualWtg, VisualWaveform visualWaveform, String signalName) {
-        this.visualWtg = visualWtg;
-        this.visualWaveform = visualWaveform;
-        this.signalName = signalName;
+    public static PropertyDescriptor getSignalNameProperty(VisualWtg visualWtg, String signalName) {
+        return new PropertyDeclaration<>(String.class, signalName + " name",
+                (value) -> WtgUtils.renameSignal(visualWtg.getMathModel(), signalName, value),
+                () -> signalName);
     }
 
-    @Override
-    public Map<Boolean, String> getChoice() {
-        return null;
+    public static PropertyDescriptor getSignalTypeProperty(VisualWtg visualWtg, String signalName) {
+        return new PropertyDeclaration<>(Signal.Type.class, signalName + " type",
+                (value) -> {
+                    Wtg wtg = visualWtg.getMathModel();
+                    for (Signal signal : wtg.getSignals()) {
+                        if (!signalName.equals(wtg.getName(signal))) continue;
+                        signal.setType(value);
+                    }
+                },
+                () -> {
+                    Wtg wtg = visualWtg.getMathModel();
+                    for (Signal signal : wtg.getSignals()) {
+                        if (!signalName.equals(wtg.getName(signal))) continue;
+                        return signal.getType();
+                    }
+                    return null;
+                });
     }
 
-    @Override
-    public String getName() {
-        return signalName + " declared";
+    public static PropertyDescriptor getSignalDeclarationProperty(VisualWtg visualWtg, VisualWaveform visualWaveform, String signalName) {
+        return new PropertyDeclaration<>(Boolean.class, signalName + " declared",
+                (value) -> {
+                    if (signalName != null) {
+                        if (value) {
+                            insertNewSignal(visualWtg, visualWaveform, signalName);
+                        } else {
+                            deleteAndSpaceVertically(visualWtg, visualWaveform, signalName);
+                        }
+                    }
+                },
+                () -> {
+                    Wtg wtg = visualWtg.getMathModel();
+                    for (Signal signal : wtg.getSignals(visualWaveform.getReferencedComponent())) {
+                        if (wtg.getName(signal).equals(signalName)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
     }
 
-    @Override
-    public Class<Boolean> getType() {
-        return Boolean.class;
-    }
-
-    @Override
-    public Boolean getValue() {
-        Wtg wtg = visualWtg.getMathModel();
-        for (Signal signal : wtg.getSignals(visualWaveform.getReferencedWaveform())) {
-            if (wtg.getName(signal).equals(signalName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public void setValue(Boolean value) {
-        if (signalName != null) {
-            if (value) {
-                insertNewSignal();
-            } else {
-                deleteAndSpaceVertically();
-            }
-        }
-    }
-
-    private void insertNewSignal() {
+    private static void insertNewSignal(VisualWtg visualWtg, VisualWaveform visualWaveform, String signalName) {
         for (GraphEditorTool tool : visualWtg.getGraphEditorTools()) {
             if (tool instanceof SignalGeneratorTool) {
-                Point2D position = newSignalPosition();
+                Point2D position = newSignalPosition(visualWaveform);
                 VisualSignal newSignal;
                 try {
                     newSignal = (VisualSignal)
@@ -77,10 +78,10 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor<B
                 } catch (NodeCreationException e1) {
                     throw new RuntimeException(e1);
                 }
-                Signal signal = newSignal.getReferencedSignal();
+                Signal signal = newSignal.getReferencedComponent();
                 visualWtg.getMathModel().setName(signal, signalName);
                 signal.sendNotification(new PropertyChangedEvent(signal, Signal.PROPERTY_NAME));
-                Signal.State initialState = inferInitialState();
+                Signal.State initialState = inferInitialState(visualWtg, visualWaveform, signalName);
                 if (initialState != null) {
                     signal.setInitialState(initialState);
                 }
@@ -89,18 +90,18 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor<B
         }
     }
 
-    private Signal.State inferInitialState() {
+    private static Signal.State inferInitialState(VisualWtg visualWtg, VisualWaveform visualWaveform, String signalName) {
         Signal.State result;
-        Guard guard = visualWaveform.getReferencedWaveform().getGuard();
+        Guard guard = visualWaveform.getReferencedComponent().getGuard();
         if (guard.containsKey(signalName)) {
             result = guard.get(signalName) ? Signal.State.HIGH : Signal.State.LOW;
         } else {
-            result = findPreviousSignalState();
+            result = findPreviousSignalState(visualWtg, visualWaveform, signalName);
         }
         return result;
     }
 
-    private Point2D newSignalPosition() {
+    private static Point2D newSignalPosition(VisualWaveform visualWaveform) {
         Point2D result = null;
         for (VisualComponent visualComponent : visualWaveform.getComponents()) {
             if (visualComponent instanceof VisualSignal) {
@@ -122,9 +123,9 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor<B
         return result;
     }
 
-    private Signal.State findPreviousSignalState() {
+    private static Signal.State findPreviousSignalState(VisualWtg visualWtg, VisualWaveform visualWaveform, String signalName) {
         Wtg wtg = visualWtg.getMathModel();
-        Waveform waveform = visualWaveform.getReferencedWaveform();
+        Waveform waveform = visualWaveform.getReferencedComponent();
         if (wtg.getPreset(waveform).size() == 0) {
             return null;
         }
@@ -160,7 +161,7 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor<B
         return result;
     }
 
-    private void deleteAndSpaceVertically() {
+    private static void deleteAndSpaceVertically(VisualWtg visualWtg, VisualWaveform visualWaveform, String signalName) {
         ArrayList<VisualSignal> visualSignals = new ArrayList<>();
         for (VisualComponent visualComponent : visualWaveform.getComponents()) {
             if (visualComponent instanceof VisualSignal) {
@@ -173,7 +174,7 @@ public class SignalDeclarationPropertyDescriptor implements PropertyDescriptor<B
         Double nextSignalY = null;
         double offset = 0;
         for (VisualSignal visualSignal : visualSignals) {
-            String name = visualWtg.getMathModel().getName(visualSignal.getReferencedSignal());
+            String name = visualWtg.getMathModel().getName(visualSignal.getReferencedComponent());
             if (name.equals(signalName)) {
                 signalFound = true;
                 //Setting the Y for the next signal

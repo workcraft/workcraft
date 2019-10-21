@@ -40,102 +40,46 @@ public class CircuitLayoutSettings extends AbstractLayoutSettings {
     private static double snappingMinor = defaultSnappingMinor;
     private static boolean debugRouting = defaultDebugRouting;
 
-    public CircuitLayoutSettings() {
-        properties.add(new PropertyDeclaration<CircuitLayoutSettings, Double>(
-                this, "Placement spacing horizontally", Double.class) {
-            @Override
-            public void setter(CircuitLayoutSettings object, Double value) {
-                setSpacingHorizontal(value);
-            }
-            @Override
-            public Double getter(CircuitLayoutSettings object) {
-                return getSpacingHorizontal();
-            }
-        });
+    static {
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Placement spacing horizontally",
+                CircuitLayoutSettings::setSpacingHorizontal,
+                CircuitLayoutSettings::getSpacingHorizontal));
 
-        properties.add(new PropertyDeclaration<CircuitLayoutSettings, Double>(
-                this, "Placement spacing vertically", Double.class) {
-            @Override
-            public void setter(CircuitLayoutSettings object, Double value) {
-                setSpacingVertical(value);
-            }
-            @Override
-            public Double getter(CircuitLayoutSettings object) {
-                return getSpacingVertical();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Placement spacing vertically",
+                CircuitLayoutSettings::setSpacingVertical,
+                CircuitLayoutSettings::getSpacingVertical));
 
-        properties.add(new PropertyDeclaration<CircuitLayoutSettings, Double>(
-                this, "Routing preferred margin to bypass obstacles", Double.class) {
-            @Override
-            public void setter(CircuitLayoutSettings object, Double value) {
-                setMarginObstacle(value);
-            }
-            @Override
-            public Double getter(CircuitLayoutSettings object) {
-                return getMarginObstacle();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Routing preferred margin to bypass obstacles",
+                CircuitLayoutSettings::setMarginObstacle,
+                CircuitLayoutSettings::getMarginObstacle));
 
-        properties.add(new PropertyDeclaration<CircuitLayoutSettings, Double>(
-                this, "Routing minimal margin for obstacles in busy locations", Double.class) {
-            @Override
-            public void setter(CircuitLayoutSettings object, Double value) {
-                setMarginObstacleBusy(value);
-            }
-            @Override
-            public Double getter(CircuitLayoutSettings object) {
-                return getMarginObstacleBusy();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Routing minimal margin for obstacles in busy locations",
+                CircuitLayoutSettings::setMarginObstacleBusy,
+                CircuitLayoutSettings::getMarginObstacleBusy));
 
-        properties.add(new PropertyDeclaration<CircuitLayoutSettings, Double>(
-                this, "Routing channel width for wires", Double.class) {
-            @Override
-            public void setter(CircuitLayoutSettings object, Double value) {
-                setChannelWidth(value);
-            }
-            @Override
-            public Double getter(CircuitLayoutSettings object) {
-                return getChannelWidth();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Routing channel width for wires",
+                CircuitLayoutSettings::setChannelWidth,
+                CircuitLayoutSettings::getChannelWidth));
 
-        properties.add(new PropertyDeclaration<CircuitLayoutSettings, Double>(
-                this, "Routing major snapping", Double.class) {
-            @Override
-            public void setter(CircuitLayoutSettings object, Double value) {
-                setSnappingMajor(value);
-            }
-            @Override
-            public Double getter(CircuitLayoutSettings object) {
-                return getSnappingMajor();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Routing major snapping",
+                CircuitLayoutSettings::setSnappingMajor,
+                CircuitLayoutSettings::getSnappingMajor));
 
-        properties.add(new PropertyDeclaration<CircuitLayoutSettings, Double>(
-                this, "Routing minor snapping", Double.class) {
-            @Override
-            public void setter(CircuitLayoutSettings object, Double value) {
-                setSnappingMinor(value);
-            }
-            @Override
-            public Double getter(CircuitLayoutSettings object) {
-                return getSnappingMinor();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Double.class,
+                "Routing minor snapping",
+                CircuitLayoutSettings::setSnappingMinor,
+                CircuitLayoutSettings::getSnappingMinor));
 
-        properties.add(new PropertyDeclaration<CircuitLayoutSettings, Boolean>(
-                this, "Debug routing", Boolean.class) {
-            @Override
-            public void setter(CircuitLayoutSettings object, Boolean value) {
-                setDebugRouting(value);
-            }
-            @Override
-            public Boolean getter(CircuitLayoutSettings object) {
-                return getDebugRouting();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Debug routing",
+                CircuitLayoutSettings::setDebugRouting,
+                CircuitLayoutSettings::getDebugRouting));
     }
 
     @Override

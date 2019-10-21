@@ -81,7 +81,7 @@ public class WtgSimulationTool extends StgSimulationTool {
     @Override
     public boolean isContainerExcited(Container container) {
         if (container instanceof VisualWaveform) {
-            Waveform waveform = ((VisualWaveform) container).getReferencedWaveform();
+            Waveform waveform = ((VisualWaveform) container).getReferencedComponent();
             return converter.isActiveWaveform(waveform);
         }
         return false;
@@ -136,7 +136,7 @@ public class WtgSimulationTool extends StgSimulationTool {
     }
 
     private Decoration getStateDecoration(VisualState state) {
-        StgPlace p = converter.getRelatedPlace(state.getReferencedState());
+        StgPlace p = converter.getRelatedPlace(state.getReferencedComponent());
         if (p == null) {
             return null;
         }
@@ -162,7 +162,7 @@ public class WtgSimulationTool extends StgSimulationTool {
     private Decoration getEventDecoration(VisualEvent event) {
         MathNode transition = getTraceCurrentNode();
         final boolean isExcited = getExcitedTransitionOfEvent(event) != null;
-        final boolean isSuggested = isExcited && converter.isRelated(event.getReferencedSignalEvent(), transition);
+        final boolean isSuggested = isExcited && converter.isRelated(event.getReferencedComponent(), transition);
         return new Decoration() {
             @Override
             public Color getColorisation() {
@@ -182,8 +182,8 @@ public class WtgSimulationTool extends StgSimulationTool {
         VisualEvent secondEvent = (VisualEvent) level.getSecond();
         VisualSignal signal = secondEvent.getVisualSignal();
 
-        Signal.State state = DtdUtils.getNextState(firstEvent.getReferencedSignalEvent());
-        NamedTransition enabledUnstableTransition = converter.getEnabledUnstableTransition(signal.getReferencedSignal());
+        Signal.State state = DtdUtils.getNextState(firstEvent.getReferencedComponent());
+        NamedTransition enabledUnstableTransition = converter.getEnabledUnstableTransition(signal.getReferencedComponent());
         boolean isEnabledUnstable = (state == Signal.State.UNSTABLE) && (enabledUnstableTransition != null);
         boolean isExcitedWaveform = isContainerExcited(getWaveform(signal));
 
@@ -214,7 +214,7 @@ public class WtgSimulationTool extends StgSimulationTool {
 
     private Transition getExcitedTransitionOfEvent(VisualEvent event) {
         if (event != null) {
-            NamedTransition transition = converter.getRelatedTransition(event.getReferencedSignalEvent());
+            NamedTransition transition = converter.getRelatedTransition(event.getReferencedComponent());
             if ((transition != null) && isEnabledNode(transition)) {
                 return transition;
             }
@@ -226,7 +226,7 @@ public class WtgSimulationTool extends StgSimulationTool {
         Transition result = null;
         VisualWaveform waveform = getWaveform(signal);
         if ((waveform != null) && isContainerExcited(waveform)) {
-            result = converter.getEnabledUnstableTransition(signal.getReferencedSignal());
+            result = converter.getEnabledUnstableTransition(signal.getReferencedComponent());
             if (result == null) {
                 result = getExcitedTransitionOfEvent(signal.getVisualSignalEntry());
             }

@@ -1,7 +1,7 @@
 package org.workcraft.formula.visitors;
 
 import org.workcraft.formula.*;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 
 import java.awt.*;
 import java.awt.font.FontRenderContext;
@@ -44,7 +44,7 @@ public class FormulaToGraphics {
             res = print(text.charAt(0), defaultFont.deriveFont(fontSize), fontRenderContext);
         }
 
-        int subIndex = CommonVisualSettings.getUseSubscript() ? text.lastIndexOf('_') : -1;
+        int subIndex = VisualCommonSettings.getUseSubscript() ? text.lastIndexOf('_') : -1;
         if (subIndex < 0) subIndex = text.length();
 
         for (int i = 1; i < text.length(); i++) {

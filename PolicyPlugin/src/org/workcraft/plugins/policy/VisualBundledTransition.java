@@ -5,7 +5,7 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.gui.tools.Decoration;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.utils.Coloriser;
 
@@ -25,13 +25,13 @@ public class VisualBundledTransition extends VisualTransition {
     }
 
     @Override
-    public BundledTransition getReferencedTransition() {
-        return (BundledTransition) getReferencedComponent();
+    public BundledTransition getReferencedComponent() {
+        return (BundledTransition) super.getReferencedComponent();
     }
 
     @Override
     public Color getFillColor() {
-        return CommonVisualSettings.getFillColor();
+        return VisualCommonSettings.getFillColor();
     }
 
     @Override
@@ -40,8 +40,8 @@ public class VisualBundledTransition extends VisualTransition {
         Decoration d = r.getDecoration();
         VisualPolicy model = (VisualPolicy) r.getModel();
 
-        double size = CommonVisualSettings.getNodeSize();
-        double strokeWidth = CommonVisualSettings.getStrokeWidth();
+        double size = VisualCommonSettings.getNodeSize();
+        double strokeWidth = VisualCommonSettings.getStrokeWidth();
         double w = size - strokeWidth;
         double h = size - strokeWidth;
         double w2 = w / 2;

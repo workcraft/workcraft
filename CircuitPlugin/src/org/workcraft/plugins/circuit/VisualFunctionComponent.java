@@ -33,6 +33,7 @@ import java.util.Collection;
 @Hotkey(KeyEvent.VK_F)
 @SVGIcon("images/circuit-node-function.svg")
 public class VisualFunctionComponent extends VisualCircuitComponent {
+
     private RenderType renderType = RenderType.GATE;
     private ComponentRenderingResult renderingResult = null;
 
@@ -42,29 +43,14 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualFunctionComponent, RenderType>(
-                this, PROPERTY_RENDER_TYPE, RenderType.class, true, true) {
-            @Override
-            public void setter(VisualFunctionComponent object, RenderType value) {
-                object.setRenderType(value);
-            }
-            @Override
-            public RenderType getter(VisualFunctionComponent object) {
-                return object.getRenderType();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(RenderType.class,
+                PROPERTY_RENDER_TYPE,
+                this::setRenderType, this::getRenderType)
+                .setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualFunctionComponent, Boolean>(
-                this, FunctionComponent.PROPERTY_IS_ZERO_DELAY, Boolean.class, true, true) {
-            @Override
-            public void setter(VisualFunctionComponent object, Boolean value) {
-                object.setIsZeroDelay(value);
-            }
-            @Override
-            public Boolean getter(VisualFunctionComponent object) {
-                return object.getIsZeroDelay();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class,
+                FunctionComponent.PROPERTY_IS_ZERO_DELAY,
+                this::setIsZeroDelay, this::getIsZeroDelay));
     }
 
     @Override

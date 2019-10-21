@@ -139,8 +139,8 @@ public class ScencoSolver {
         if (settings.getGenMode() != GenerationMode.OLD_SYNT) {
             freeVariables = settings.getBits();
             vars = new Variable[freeVariables + pr];
-            for (int i = 0; i < freeVariables; i++) vars[i] = cpog.createVisualVariable().getMathVariable();
-            for (int i = 0; i < pr; i++) vars[freeVariables + i] = predicatives[i].getMathVariable();
+            for (int i = 0; i < freeVariables; i++) vars[i] = cpog.createVisualVariable().getReferencedComponent();
+            for (int i = 0; i < pr; i++) vars[freeVariables + i] = predicatives[i].getReferencedComponent();
         }
 
         String prefix = FileUtils.getTempPrefix(we.getTitle());
@@ -411,8 +411,8 @@ public class ScencoSolver {
 
             if (settings.getGenMode() == GenerationMode.OLD_SYNT) {
                 vars = new Variable[freeVariables + pr];
-                for (int i = 0; i < freeVariables; i++) vars[i] = cpog.createVisualVariable().getMathVariable();
-                for (int i = 0; i < pr; i++) vars[freeVariables + i] = predicatives[i].getMathVariable();
+                for (int i = 0; i < freeVariables; i++) vars[i] = cpog.createVisualVariable().getReferencedComponent();
+                for (int i = 0; i < pr; i++) vars[freeVariables + i] = predicatives[i].getReferencedComponent();
             }
 
             // Set optimal formulae to graphs

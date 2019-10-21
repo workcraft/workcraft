@@ -4,13 +4,14 @@ import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.builtin.settings.AbstractModelSettings;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 
 import java.awt.*;
 import java.util.Collection;
 import java.util.LinkedList;
 
 public class SONSettings extends AbstractModelSettings {
+
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "SONSettings";
 
@@ -22,7 +23,7 @@ public class SONSettings extends AbstractModelSettings {
     private static final Color defaultRelationErrColor = new Color(255, 204, 204);
     private static final Color defaultCyclePathColor = new Color(255, 102, 102);
     private static final Color defaultConnectionErrColor = new  Color(255, 102, 102);
-    private static final Color defaultErrLabelColor = CommonVisualSettings.getLabelColor();
+    private static final Color defaultErrLabelColor = VisualCommonSettings.getLabelColor();
     private static final Color defaultGroupForegroundColor = Color.GRAY;
 
     private static final boolean defaultTimeVisibility = false;
@@ -36,78 +37,36 @@ public class SONSettings extends AbstractModelSettings {
     private static boolean timeVisibility = defaultTimeVisibility;
     private static boolean errorTracing = defaultErrorTracing;
 
-    public SONSettings() {
-        properties.add(new PropertyDeclaration<SONSettings, Color>(
-                this, "Erroneous node color(relation)", Color.class) {
-            @Override
-            public void setter(SONSettings object, Color value) {
-                setRelationErrColor(value);
-            }
-            @Override
-            public Color getter(SONSettings object) {
-                return getRelationErrColor();
-            }
-        });
+    static {
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Erroneous node color(relation)",
+                SONSettings::setRelationErrColor,
+                SONSettings::getRelationErrColor));
 
-        properties.add(new PropertyDeclaration<SONSettings, Color>(
-                this, "Erroneous node color(cycle)", Color.class) {
-            @Override
-            public void setter(SONSettings object, Color value) {
-                setCyclePathColor(value);
-            }
-            @Override
-            public Color getter(SONSettings object) {
-                return getCyclePathColor();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Erroneous node color(cycle)",
+                SONSettings::setCyclePathColor,
+                SONSettings::getCyclePathColor));
 
-        properties.add(new PropertyDeclaration<SONSettings, Color>(
-                this, "Erroneous connection color", Color.class) {
-            @Override
-            public void setter(SONSettings object, Color value) {
-                setConnectionErrColor(value);
-            }
-            @Override
-            public Color getter(SONSettings object) {
-                return getConnectionErrColor();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Erroneous connection color",
+                SONSettings::setConnectionErrColor,
+                SONSettings::getConnectionErrColor));
 
-        properties.add(new PropertyDeclaration<SONSettings, Color>(
-                this, "Error label color", Color.class) {
-            @Override
-            public void setter(SONSettings object, Color value) {
-                setErrLabelColor(value);
-            }
-            @Override
-            public Color getter(SONSettings object) {
-                return getErrLabelColor();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Error label color",
+                SONSettings::setErrLabelColor,
+                SONSettings::getErrLabelColor));
 
-        properties.add(new PropertyDeclaration<SONSettings, Color>(
-                this, "Group Foreground color", Color.class) {
-            @Override
-            public void setter(SONSettings object, Color value) {
-                setGroupForegroundColor(value);
-            }
-            @Override
-            public Color getter(SONSettings object) {
-                return getGroupForegroundColor();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Group Foreground color",
+                SONSettings::setGroupForegroundColor,
+                SONSettings::getGroupForegroundColor));
 
-        properties.add(new PropertyDeclaration<SONSettings, Color>(
-                this, "Block fill color", Color.class) {
-            @Override
-            public void setter(SONSettings object, Color value) {
-                setGroupForegroundColor(value);
-            }
-            @Override
-            public Color getter(SONSettings object) {
-                return getGroupForegroundColor();
-            }
-        });
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Block fill color",
+                SONSettings::setGroupForegroundColor,
+                SONSettings::getGroupForegroundColor));
     }
 
     @Override
@@ -191,4 +150,5 @@ public class SONSettings extends AbstractModelSettings {
     public static void setErrorTracing(boolean value) {
         errorTracing = value;
     }
+
 }

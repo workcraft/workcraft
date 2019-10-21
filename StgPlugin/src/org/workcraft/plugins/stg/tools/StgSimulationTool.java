@@ -10,7 +10,7 @@ import org.workcraft.gui.properties.*;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.tools.Trace;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.plugins.builtin.settings.CommonSignalSettings;
+import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.dtd.DtdDescriptor;
 import org.workcraft.plugins.dtd.VisualDtd;
 import org.workcraft.plugins.petri.Transition;
@@ -551,10 +551,10 @@ public class StgSimulationTool extends PetriSimulationTool {
 
     private Color getTypeColor(final Signal.Type type) {
         switch (type) {
-        case INPUT:    return CommonSignalSettings.getInputColor();
-        case OUTPUT:   return CommonSignalSettings.getOutputColor();
-        case INTERNAL: return CommonSignalSettings.getInternalColor();
-        default:       return CommonSignalSettings.getDummyColor();
+        case INPUT:    return SignalCommonSettings.getInputColor();
+        case OUTPUT:   return SignalCommonSettings.getOutputColor();
+        case INTERNAL: return SignalCommonSettings.getInternalColor();
+        default:       return SignalCommonSettings.getDummyColor();
         }
     }
 

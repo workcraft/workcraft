@@ -15,12 +15,12 @@ public class FileCellRenderer extends JPanel implements TableCellRenderer {
         chooseButton.setBorderPainted(false);
         chooseButton.setFocusable(false);
         chooseButton.setOpaque(true);
-        chooseButton.setMargin(PropertyUtils.BUTTON_INSETS);
+        chooseButton.setMargin(PropertyHelper.BUTTON_INSETS);
         chooseButton.setHorizontalAlignment(SwingConstants.LEFT);
 
-        JButton clearButton = new JButton(PropertyUtils.CLEAR_TEXT);
+        JButton clearButton = new JButton(PropertyHelper.CLEAR_SYMBOL);
         clearButton.setFocusable(false);
-        clearButton.setMargin(PropertyUtils.BUTTON_INSETS);
+        clearButton.setMargin(PropertyHelper.BUTTON_INSETS);
 
         setLayout(new BorderLayout());
         add(chooseButton, BorderLayout.CENTER);

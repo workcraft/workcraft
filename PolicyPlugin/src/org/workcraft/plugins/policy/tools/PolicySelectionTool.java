@@ -57,13 +57,13 @@ public class PolicySelectionTool extends SelectionTool {
             VisualNode node = (VisualNode) HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
             if (node instanceof VisualPlace) {
                 VisualPlace place = (VisualPlace) node;
-                if (place.getReferencedPlace().getTokens() <= 1) {
+                if (place.getReferencedComponent().getTokens() <= 1) {
                     e.getEditor().getWorkspaceEntry().saveMemento();
 
-                    if (place.getReferencedPlace().getTokens() == 1) {
-                        place.getReferencedPlace().setTokens(0);
+                    if (place.getReferencedComponent().getTokens() == 1) {
+                        place.getReferencedComponent().setTokens(0);
                     } else {
-                        place.getReferencedPlace().setTokens(1);
+                        place.getReferencedComponent().setTokens(1);
                     }
                 }
                 processed = true;

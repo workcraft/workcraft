@@ -6,12 +6,12 @@ import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.petri.tools.PlaceDecoration;
-import org.workcraft.plugins.builtin.settings.CommonVisualSettings;
+import org.workcraft.utils.Coloriser;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -27,9 +27,9 @@ public class VisualPlace extends VisualComponent {
 
     public static final String PROPERTY_TOKEN_COLOR = "Token color";
 
-    protected static double singleTokenSize = CommonVisualSettings.getNodeSize() / 1.9;
-    protected static double multipleTokenSeparation = CommonVisualSettings.getStrokeWidth() / 8;
-    protected Color tokenColor = CommonVisualSettings.getBorderColor();
+    protected static double singleTokenSize = VisualCommonSettings.getNodeSize() / 1.9;
+    protected static double multipleTokenSeparation = VisualCommonSettings.getStrokeWidth() / 8;
+    protected Color tokenColor = VisualCommonSettings.getBorderColor();
 
     public VisualPlace(Place place) {
         super(place);
@@ -37,41 +37,18 @@ public class VisualPlace extends VisualComponent {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualPlace, Integer>(
-                this, Place.PROPERTY_TOKENS, Integer.class, true, false) {
-            @Override
-            public void setter(VisualPlace object, Integer value) {
-                object.getReferencedPlace().setTokens(value);
-            }
-            @Override
-            public Integer getter(VisualPlace object) {
-                return object.getReferencedPlace().getTokens();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Integer.class, Place.PROPERTY_TOKENS,
+                (value) -> getReferencedComponent().setTokens(value),
+                () -> getReferencedComponent().getTokens())
+                .setCombinable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualPlace, Color>(
-                this, PROPERTY_TOKEN_COLOR, Color.class, true, true) {
-            @Override
-            public void setter(VisualPlace object, Color value) {
-                object.setTokenColor(value);
-            }
-            @Override
-            public Color getter(VisualPlace object) {
-                return object.getTokenColor();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Color.class, PROPERTY_TOKEN_COLOR,
+                this::setTokenColor, this::getTokenColor).setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualPlace, Integer>(
-                this, Place.PROPERTY_CAPACITY, Integer.class, true, true) {
-            @Override
-            public void setter(VisualPlace object, Integer value) {
-                object.getReferencedPlace().setCapacity(value);
-            }
-            @Override
-            public Integer getter(VisualPlace object) {
-                return object.getReferencedPlace().getCapacity();
-            }
-        });
+        addPropertyDeclaration(new PropertyDeclaration<>(Integer.class, Place.PROPERTY_CAPACITY,
+                (value) -> getReferencedComponent().setCapacity(value),
+                () -> getReferencedComponent().getCapacity())
+                .setCombinable().setTemplatable());
     }
 
     @Override
@@ -81,14 +58,14 @@ public class VisualPlace extends VisualComponent {
 
     @Override
     public Shape getShape() {
-        double size = CommonVisualSettings.getNodeSize() - CommonVisualSettings.getStrokeWidth();
+        double size = VisualCommonSettings.getNodeSize() - VisualCommonSettings.getStrokeWidth();
         double pos = -0.5 * size;
         return new Ellipse2D.Double(pos, pos, size, size);
     }
 
     @Override
     public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-        double size = CommonVisualSettings.getNodeSize() - CommonVisualSettings.getStrokeWidth();
+        double size = VisualCommonSettings.getNodeSize() - VisualCommonSettings.getStrokeWidth();
         return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
     }
 
@@ -96,19 +73,20 @@ public class VisualPlace extends VisualComponent {
     public void draw(DrawRequest r) {
         super.draw(r);
         Decoration d = r.getDecoration();
-        Place place = (Place) getReferencedComponent();
+        Place place = getReferencedComponent();
         int tokenCount = place.getTokens();
         Color tokenColor = getTokenColor();
         if (d instanceof PlaceDecoration) {
             tokenCount = ((PlaceDecoration) d).getTokens();
             tokenColor = ((PlaceDecoration) d).getTokenColor();
         }
-        double tokenSpace = CommonVisualSettings.getNodeSize() - 2.0 * CommonVisualSettings.getStrokeWidth();
+        double tokenSpace = VisualCommonSettings.getNodeSize() - 2.0 * VisualCommonSettings.getStrokeWidth();
         drawTokens(r, tokenCount, singleTokenSize, multipleTokenSeparation, tokenSpace, tokenColor);
     }
 
-    public Place getReferencedPlace() {
-        return (Place) getReferencedComponent();
+    @Override
+    public Place getReferencedComponent() {
+        return (Place) super.getReferencedComponent();
     }
 
     public Color getTokenColor() {
@@ -151,7 +129,7 @@ public class VisualPlace extends VisualComponent {
                 }
             } else if (count > 7) {
                 String tokenString = Integer.toString(count);
-                Font superFont = g.getFont().deriveFont((float) CommonVisualSettings.getNodeSize() / 2);
+                Font superFont = g.getFont().deriveFont((float) VisualCommonSettings.getNodeSize() / 2);
                 Rectangle2D rect = superFont.getStringBounds(tokenString, g.getFontRenderContext());
                 g.setFont(superFont);
                 g.setColor(Coloriser.colorise(color, d.getColorisation()));
@@ -165,8 +143,8 @@ public class VisualPlace extends VisualComponent {
         super.copyStyle(src);
         if (src instanceof VisualPlace) {
             VisualPlace srcPlace = (VisualPlace) src;
-            getReferencedPlace().setCapacity(srcPlace.getReferencedPlace().getCapacity());
-            getReferencedPlace().setTokens(srcPlace.getReferencedPlace().getTokens());
+            getReferencedComponent().setCapacity(srcPlace.getReferencedComponent().getCapacity());
+            getReferencedComponent().setTokens(srcPlace.getReferencedComponent().getTokens());
             setTokenColor(srcPlace.getTokenColor());
         }
     }
@@ -180,19 +158,19 @@ public class VisualPlace extends VisualComponent {
         for (Stylable src: srcs) {
             if (src instanceof VisualPlace) {
                 VisualPlace srcPlace = (VisualPlace) src;
-                int tmpTokens = srcPlace.getReferencedPlace().getTokens();
+                int tmpTokens = srcPlace.getReferencedComponent().getTokens();
                 if (tokens < tmpTokens) {
                     tokens = tmpTokens;
                 }
-                int tmpCapacity = srcPlace.getReferencedPlace().getCapacity();
+                int tmpCapacity = srcPlace.getReferencedComponent().getCapacity();
                 if (capacity < tmpCapacity) {
                     capacity = tmpCapacity;
                 }
                 tokenColors.add(srcPlace.getTokenColor());
             }
         }
-        getReferencedPlace().setTokens(tokens);
-        getReferencedPlace().setCapacity(capacity);
+        getReferencedComponent().setTokens(tokens);
+        getReferencedComponent().setCapacity(capacity);
         setTokenColor(Coloriser.mix(tokenColors));
     }
 

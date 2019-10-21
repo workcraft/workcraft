@@ -8,4 +8,5 @@ public abstract class AbstractToolSettings implements Settings {
     public String getSection() {
         return "External tools";
     }
+
 }

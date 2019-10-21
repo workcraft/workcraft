@@ -19,7 +19,7 @@ public class FirstStateSupervisor extends HierarchySupervisor {
                 Collection<VisualState> newStates = Hierarchy.filterNodesByType(e.getAffectedNodes(), VisualState.class);
                 if (!newStates.isEmpty()) {
                     VisualState state = newStates.iterator().next();
-                    state.getReferencedState().setInitial(true);
+                    state.getReferencedComponent().setInitial(true);
                 }
             }
         }

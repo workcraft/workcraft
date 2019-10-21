@@ -26,7 +26,7 @@ public class PetriToCpogConverter {
 
     /** constructor **/
     public PetriToCpogConverter(VisualPetri vpn) {
-        this.pn = vpn.getPetriNet();
+        this.pn = vpn.getMathModel();
         this.visualCpog = new VisualCpog(new Cpog());
         this.xRightmostVertex = -1;
     }

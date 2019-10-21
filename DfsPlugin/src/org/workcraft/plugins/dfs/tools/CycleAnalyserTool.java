@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.*;
 
 public class CycleAnalyserTool extends AbstractGraphEditorTool {
-    // Infinity symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
-    public static final char INFINITY_SYMBOL = 0x221E;
+
+    public static final String INFINITY_SYMBOL = Character.toString((char) 0x221E);
 
     private static final int COLUMN_THROUGHPUT = 0;
     private static final int COLUMN_TOKEN = 1;
@@ -200,7 +200,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
             public Decoration getDecoration(Node node) {
                 if (node instanceof VisualDelayComponent) {
                     if (selectedCycle == null) {
-                        double delay = ((VisualDelayComponent) node).getReferencedDelayComponent().getDelay();
+                        double delay = ((VisualDelayComponent) node).getReferencedComponent().getDelay();
                         double range = maxDelay - minDelay;
                         double offset = delay - minDelay;
                         final Color fgColor = (range > 0 &&  offset > 0.8 * range) ? Color.RED : null;
@@ -249,7 +249,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         boolean first = true;
         for (VisualDelayComponent c: allComponents) {
             graph.put(c, dfs.getPostset(c, VisualDelayComponent.class));
-            double delay = c.getReferencedDelayComponent().getDelay();
+            double delay = c.getReferencedComponent().getDelay();
             if (first || minDelay > delay) {
                 minDelay = delay;
             }
@@ -317,7 +317,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
                 switch (col) {
                 case COLUMN_THROUGHPUT:
                     if (cycle.totalDelay == 0) {
-                        result = Character.toString(INFINITY_SYMBOL);
+                        result = INFINITY_SYMBOL;
                     } else {
                         result = new DecimalFormat("#.###").format(cycle.throughput);
                     }
