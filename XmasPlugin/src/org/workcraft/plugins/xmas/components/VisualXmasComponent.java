@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public abstract class VisualXmasComponent extends VisualComponent implements Container, StateObserver, ObservableHierarchy {
-    // Degree symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
+
     public static final String DEGREE_SYMBOL = Character.toString((char) 0x00B0);
     public static final double SIZE = VisualCommonSettings.getNodeSize();
     public static final double TOKEN_SIZE = 0.18 * SIZE;

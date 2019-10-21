@@ -3,6 +3,7 @@ package org.workcraft.plugins.circuit;
 import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.builtin.settings.AbstractModelSettings;
 import org.workcraft.plugins.circuit.utils.Gate2;
 import org.workcraft.plugins.circuit.utils.Gate3;
@@ -53,22 +54,26 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyInactiveWireColor = prefix + ".inactiveWireColor";
     private static final String keySimplifyStg = prefix + ".simplifyStg";
     private static final String keyGateLibrary = prefix + ".gateLibrary";
+    private static final String keyBufData = prefix + ".bufData";
+    private static final String keyMutexData = prefix + ".mutexData";
+    // Import/export
     private static final String keyExportSubstitutionLibrary = prefix + ".exportSubstitutionLibrary";
     private static final String keyInvertExportSubstitutionRules = prefix + ".invertExportSubstitutionRules";
     private static final String keyImportSubstitutionLibrary = prefix + ".importSubstitutionLibrary";
     private static final String keyInvertImportSubstitutionRules = prefix + ".invertImportSubstitutionRules";
-    private static final String keyBufData = prefix + ".bufData";
+    private static final String keyVerilogAssignDelay = prefix + ".verilogAssignDelay";
+    private static final String keyBusSuffix = prefix + ".busSuffix";
+    // Reset
+    private static final String keyResetPort = prefix + ".resetPort";
+    private static final String keySetPin = prefix + ".setPin";
+    private static final String keyClearPin = prefix + ".clearPin";
     private static final String keyAndData = prefix + ".andData";
     private static final String keyOrData = prefix + ".orData";
     private static final String keyNandData = prefix + ".nandData";
     private static final String keyNorData = prefix + ".norData";
     private static final String keyNandbData = prefix + ".nandbData";
     private static final String keyNorbData = prefix + ".norbData";
-    private static final String keyMutexData = prefix + ".mutexData";
-    private static final String keyBusSuffix = prefix + ".busSuffix";
-    private static final String keyResetPort = prefix + ".resetPort";
-    private static final String keySetPin = prefix + ".setPin";
-    private static final String keyClearPin = prefix + ".clearPin";
+    // Scan
     private static final String keyTbufData = prefix + ".tbufData";
     private static final String keyTinvData = prefix + ".tinvData";
     private static final String keyScanSuffix = prefix + ".scanSuffix";
@@ -77,7 +82,6 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyScanckPortPin = prefix + ".scanckPortPin";
     private static final String keyScanenPortPin = prefix + ".scanenPortPin";
     private static final String keyScantmPortPin = prefix + ".scantmPortPin";
-    private static final String keyVerilogAssignDelay = prefix + ".verilogAssignDelay";
 
     private static final boolean defaultShowContacts = false;
     private static final double defaultContactFontSize = 0.4f;
@@ -93,6 +97,8 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final boolean defaultInvertExportSubstitutionRules = false;
     private static final String defaultImportSubstitutionLibrary = "";
     private static final boolean defaultInvertImportSubstitutionRules = true;
+    private static final boolean defaultVerilogAssignDelay = false;
+    private static final String defaultBusSuffix = "__$";
     private static final String defaultBufData = "BUF (I, O)";
     private static final String defaultAndData = "AND2 (A, B, O)";
     private static final String defaultOrData = "OR2 (A, B, O)";
@@ -101,7 +107,6 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String defaultNandbData = "NAND2B (AN, B, ON)";
     private static final String defaultNorbData = "NOR2B (AN, B, ON)";
     private static final String defaultMutexData = "MUTEX ((r1, g1), (r2, g2))";
-    private static final String defaultBusSuffix = "__$";
     private static final String defaultResetPort = "reset";
     private static final String defaultSetPin = "S";
     private static final String defaultClearPin = "R";
@@ -113,7 +118,6 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String defaultScanckPortPin = "scanck / CK";
     private static final String defaultScanenPortPin = "scanen / SE";
     private static final String defaultScantmPortPin = "scantm / TM";
-    private static final boolean defaultVerilogAssignDelay = false;
 
     private static boolean showContacts = defaultShowContacts;
     private static double contactFontSize = defaultContactFontSize;
@@ -129,6 +133,8 @@ public class CircuitSettings extends AbstractModelSettings {
     private static boolean invertExportSubstitutionRules = defaultInvertExportSubstitutionRules;
     private static String importSubstitutionLibrary = defaultImportSubstitutionLibrary;
     private static boolean invertImportSubstitutionRules = defaultInvertImportSubstitutionRules;
+    private static boolean verilogAssignDelay = defaultVerilogAssignDelay;
+    private static String busSuffix = defaultBusSuffix;
     private static String bufData = defaultBufData;
     private static String andData = defaultAndData;
     private static String orData = defaultOrData;
@@ -137,7 +143,6 @@ public class CircuitSettings extends AbstractModelSettings {
     private static String nandbData = defaultNandbData;
     private static String norbData = defaultNorbData;
     private static String mutexData = defaultMutexData;
-    private static String busSuffix = defaultBusSuffix;
     private static String resetPort = defaultResetPort;
     private static String setPin = defaultSetPin;
     private static String clearPin = defaultClearPin;
@@ -149,7 +154,6 @@ public class CircuitSettings extends AbstractModelSettings {
     private static String scanckPortPin = defaultScanckPortPin;
     private static String scanenPortPin = defaultScanenPortPin;
     private static String scantmPortPin = defaultScantmPortPin;
-    private static boolean verilogAssignDelay = defaultVerilogAssignDelay;
 
     static {
         properties.add(new PropertyDeclaration<>(Boolean.class,
@@ -202,60 +206,10 @@ public class CircuitSettings extends AbstractModelSettings {
                 (value) -> setGateLibrary(ExecutableUtils.getBaseRelativePath(value)),
                 () -> ExecutableUtils.getBaseRelativeFile(getGateLibrary())));
 
-        properties.add(new PropertyDeclaration<>(File.class,
-                "Substitution rules for export",
-                (value) -> setExportSubstitutionLibrary(ExecutableUtils.getBaseRelativePath(value)),
-                () -> ExecutableUtils.getBaseRelativeFile(getExportSubstitutionLibrary())));
-
-        properties.add(new PropertyDeclaration<>(Boolean.class,
-                "Invert substitution rules for export",
-                CircuitSettings::setInvertExportSubstitutionRules,
-                CircuitSettings::getInvertExportSubstitutionRules));
-
-        properties.add(new PropertyDeclaration<>(File.class,
-                "Substitution rules for import",
-                (value) -> setImportSubstitutionLibrary(ExecutableUtils.getBaseRelativePath(value)),
-                () -> ExecutableUtils.getBaseRelativeFile(getImportSubstitutionLibrary())));
-
-        properties.add(new PropertyDeclaration<>(Boolean.class,
-                "Invert substitution rules for import",
-                CircuitSettings::setInvertImportSubstitutionRules,
-                CircuitSettings::getInvertImportSubstitutionRules));
-
         properties.add(new PropertyDeclaration<>(String.class,
                 "BUF name and input-output pins",
                 (value) -> setGate2Data(value, CircuitSettings::setBufData, "BUF", defaultBufData),
                 CircuitSettings::getBufData));
-
-        properties.add(new PropertyDeclaration<>(String.class,
-                "AND2 name and input-output pins",
-                (value) -> setGate3Data(value, CircuitSettings::setAndData, "AND2", defaultAndData),
-                CircuitSettings::getAndData));
-
-        properties.add(new PropertyDeclaration<>(String.class,
-                "OR2 name and input-output pins",
-                (value) -> setGate3Data(value, CircuitSettings::setOrData, "OR2", defaultOrData),
-                CircuitSettings::getOrData));
-
-        properties.add(new PropertyDeclaration<>(String.class,
-                "NAND2 name and input-output pins",
-                (value) -> setGate3Data(value, CircuitSettings::setNandData, "NAND2", defaultNandData),
-                CircuitSettings::getNandData));
-
-        properties.add(new PropertyDeclaration<>(String.class,
-                "NOR2 name and input-output pins",
-                (value) -> setGate3Data(value, CircuitSettings::setNorData, "NOR2", defaultNorData),
-                CircuitSettings::getNorData));
-
-        properties.add(new PropertyDeclaration<>(String.class,
-                "NAND2B name and input-output pins",
-                (value) -> setGate3Data(value, CircuitSettings::setNandbData, "NAND2B", defaultNandbData),
-                CircuitSettings::getNandbData));
-
-        properties.add(new PropertyDeclaration<>(String.class,
-                "NOR2B name and input-output pins",
-                (value) -> setGate3Data(value, CircuitSettings::setNorbData, "NOR2B", defaultNorbData),
-                CircuitSettings::getNorbData));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 "Mutex name and request-grant pairs",
@@ -273,70 +227,126 @@ public class CircuitSettings extends AbstractModelSettings {
                 StgSettings::setMutexProtocol,
                 StgSettings::getMutexProtocol));
 
+        properties.add(PropertyHelper.createSeparatorProperty("Verilog import and export"));
+
+        properties.add(new PropertyDeclaration<>(File.class,
+                PropertyHelper.BULLET_PREFIX + "Substitution rules for export",
+                (value) -> setExportSubstitutionLibrary(ExecutableUtils.getBaseRelativePath(value)),
+                () -> ExecutableUtils.getBaseRelativeFile(getExportSubstitutionLibrary())));
+
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                PropertyHelper.BULLET_PREFIX + "Invert substitution rules for export",
+                CircuitSettings::setInvertExportSubstitutionRules,
+                CircuitSettings::getInvertExportSubstitutionRules));
+
+        properties.add(new PropertyDeclaration<>(File.class,
+                PropertyHelper.BULLET_PREFIX + "Substitution rules for import",
+                (value) -> setImportSubstitutionLibrary(ExecutableUtils.getBaseRelativePath(value)),
+                () -> ExecutableUtils.getBaseRelativeFile(getImportSubstitutionLibrary())));
+
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                PropertyHelper.BULLET_PREFIX + "Invert substitution rules for import",
+                CircuitSettings::setInvertImportSubstitutionRules,
+                CircuitSettings::getInvertImportSubstitutionRules));
+
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                PropertyHelper.BULLET_PREFIX + "Delay assign statements in Verilog export",
+                CircuitSettings::setVerilogAssignDelay,
+                CircuitSettings::getVerilogAssignDelay));
+
         properties.add(new PropertyDeclaration<>(String.class,
-                "Bus split suffix ($ is replaced by index)",
+                PropertyHelper.BULLET_PREFIX + "Bus split suffix on Veriolog import ($ is replaced by index)",
                 CircuitSettings::setBusSuffix,
                 CircuitSettings::getBusSuffix));
 
+        properties.add(PropertyHelper.createSeparatorProperty("Initialisation and auxiliary gates for reset logic"));
+
         properties.add(new PropertyDeclaration<>(String.class,
-                "Reset port name",
+                PropertyHelper.BULLET_PREFIX + "Reset port name",
                 CircuitSettings::setResetPort,
                 CircuitSettings::getResetPort));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                "Initialisation SET pin name",
+                PropertyHelper.BULLET_PREFIX + "Initialisation SET pin name",
                 CircuitSettings::setSetPin,
                 CircuitSettings::getSetPin));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                "Initialisation CLEAR pin name",
+                PropertyHelper.BULLET_PREFIX + "Initialisation CLEAR pin name",
                 CircuitSettings::setClearPin,
                 CircuitSettings::getClearPin));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                "Testable buffer name and input-output pins",
+                PropertyHelper.BULLET_PREFIX + "AND2 name and input-output pins",
+                (value) -> setGate3Data(value, CircuitSettings::setAndData, "AND2", defaultAndData),
+                CircuitSettings::getAndData));
+
+        properties.add(new PropertyDeclaration<>(String.class,
+                PropertyHelper.BULLET_PREFIX + "OR2 name and input-output pins",
+                (value) -> setGate3Data(value, CircuitSettings::setOrData, "OR2", defaultOrData),
+                CircuitSettings::getOrData));
+
+        properties.add(new PropertyDeclaration<>(String.class,
+                PropertyHelper.BULLET_PREFIX + "NAND2 name and input-output pins",
+                (value) -> setGate3Data(value, CircuitSettings::setNandData, "NAND2", defaultNandData),
+                CircuitSettings::getNandData));
+
+        properties.add(new PropertyDeclaration<>(String.class,
+                PropertyHelper.BULLET_PREFIX + "NOR2 name and input-output pins",
+                (value) -> setGate3Data(value, CircuitSettings::setNorData, "NOR2", defaultNorData),
+                CircuitSettings::getNorData));
+
+        properties.add(new PropertyDeclaration<>(String.class,
+                PropertyHelper.BULLET_PREFIX + "NAND2B name and input-output pins",
+                (value) -> setGate3Data(value, CircuitSettings::setNandbData, "NAND2B", defaultNandbData),
+                CircuitSettings::getNandbData));
+
+        properties.add(new PropertyDeclaration<>(String.class,
+                PropertyHelper.BULLET_PREFIX + "NOR2B name and input-output pins",
+                (value) -> setGate3Data(value, CircuitSettings::setNorbData, "NOR2B", defaultNorbData),
+                CircuitSettings::getNorbData));
+
+        properties.add(PropertyHelper.createSeparatorProperty("Loop breaking and scan insertion"));
+
+        properties.add(new PropertyDeclaration<>(String.class,
+                PropertyHelper.BULLET_PREFIX + "Testable buffer name and input-output pins",
                 (value) -> setGate2Data(value, CircuitSettings::setTbufData, "Testable buffer", defaultTbufData),
                 CircuitSettings::getTbufData));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                "Testable inverter name and input-output pins",
+                PropertyHelper.BULLET_PREFIX + "Testable inverter name and input-output pins",
                 (value) -> setGate2Data(value, CircuitSettings::setTinvData, "Testable inverter", defaultTinvData),
                 CircuitSettings::getTinvData));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                "Scan module suffix",
+                PropertyHelper.BULLET_PREFIX + "Scan module suffix",
                 CircuitSettings::setScanSuffix,
                 CircuitSettings::getScanSuffix));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                "Scan input port / pin names",
+                PropertyHelper.BULLET_PREFIX + "Scan input port / pin names",
                 (value) -> setPortPinPair(value, CircuitSettings::setScaninPortPin, "Scan input"),
                                 CircuitSettings::getScaninPortPin));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                "Scan output port / pin (for multi-output component) names",
+                PropertyHelper.BULLET_PREFIX + "Scan output port / pin (for multi-output component) names",
                 (value) -> setPortPinPair(value, CircuitSettings::setScanoutPortPin, "Scan output"),
                 CircuitSettings::getScanoutPortPin));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                "Scan clock port / pin names",
+                PropertyHelper.BULLET_PREFIX + "Scan clock port / pin names",
                 (value) -> setPortPinPair(value, CircuitSettings::setScanckPortPin, "Scan clock"),
                 CircuitSettings::getScanckPortPin));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                "Scan enable port / pin name",
+                PropertyHelper.BULLET_PREFIX + "Scan enable port / pin name",
                 (value) -> setPortPinPair(value, CircuitSettings::setScanenPortPin, "Scan enable"),
                 CircuitSettings::getScanenPortPin));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                "Scan test mode port / pin names",
+                PropertyHelper.BULLET_PREFIX + "Scan test mode port / pin names",
                 (value) -> setPortPinPair(value, CircuitSettings::setScantmPortPin, "Scan test mode"),
                 CircuitSettings::getScantmPortPin));
-
-        properties.add(new PropertyDeclaration<>(Boolean.class,
-                "Delay assign statements in Verilog export",
-                CircuitSettings::setVerilogAssignDelay,
-                CircuitSettings::getVerilogAssignDelay));
     }
 
     private static void errorDescriptionFormat(String prefix, String suffix) {
@@ -369,22 +379,26 @@ public class CircuitSettings extends AbstractModelSettings {
         setInactiveWireColor(config.getColor(keyInactiveWireColor, defaultInactiveWireColor));
         setSimplifyStg(config.getBoolean(keySimplifyStg, defaultSimplifyStg));
         setGateLibrary(config.getString(keyGateLibrary, defaultGateLibrary));
+        setBufData(config.getString(keyBufData, defaultBufData));
+        setMutexData(config.getString(keyMutexData, defaultMutexData));
+        // Import/export
         setExportSubstitutionLibrary(config.getString(keyExportSubstitutionLibrary, defaultExportSubstitutionLibrary));
         setInvertExportSubstitutionRules(config.getBoolean(keyInvertExportSubstitutionRules, defaultInvertExportSubstitutionRules));
         setImportSubstitutionLibrary(config.getString(keyImportSubstitutionLibrary, defaultImportSubstitutionLibrary));
         setInvertImportSubstitutionRules(config.getBoolean(keyInvertImportSubstitutionRules, defaultInvertImportSubstitutionRules));
-        setBufData(config.getString(keyBufData, defaultBufData));
+        setVerilogAssignDelay(config.getBoolean(keyVerilogAssignDelay, defaultVerilogAssignDelay));
+        setBusSuffix(config.getString(keyBusSuffix, defaultBusSuffix));
+        // Reset
+        setResetPort(config.getString(keyResetPort, defaultResetPort));
+        setSetPin(config.getString(keySetPin, defaultSetPin));
+        setClearPin(config.getString(keyClearPin, defaultClearPin));
         setAndData(config.getString(keyAndData, defaultAndData));
         setOrData(config.getString(keyOrData, defaultOrData));
         setNandbData(config.getString(keyNandData, defaultNandData));
         setNorbData(config.getString(keyNorData, defaultNorData));
         setNandbData(config.getString(keyNandbData, defaultNandbData));
         setNorbData(config.getString(keyNorbData, defaultNorbData));
-        setMutexData(config.getString(keyMutexData, defaultMutexData));
-        setBusSuffix(config.getString(keyBusSuffix, defaultBusSuffix));
-        setResetPort(config.getString(keyResetPort, defaultResetPort));
-        setSetPin(config.getString(keySetPin, defaultSetPin));
-        setClearPin(config.getString(keyClearPin, defaultClearPin));
+        // Scan
         setTbufData(config.getString(keyTbufData, defaultTbufData));
         setTinvData(config.getString(keyTinvData, defaultTinvData));
         setScanSuffix(config.getString(keyScanSuffix, defaultScanSuffix));
@@ -393,7 +407,6 @@ public class CircuitSettings extends AbstractModelSettings {
         setScanckPortPin(config.getString(keyScanckPortPin, defaultScanckPortPin));
         setScanenPortPin(config.getString(keyScanenPortPin, defaultScanenPortPin));
         setScantmPortPin(config.getString(keyScantmPortPin, defaultScantmPortPin));
-        setVerilogAssignDelay(config.getBoolean(keyVerilogAssignDelay, defaultVerilogAssignDelay));
     }
 
     @Override
@@ -408,22 +421,26 @@ public class CircuitSettings extends AbstractModelSettings {
         config.setColor(keyInactiveWireColor, getInactiveWireColor());
         config.setBoolean(keySimplifyStg, getSimplifyStg());
         config.set(keyGateLibrary, getGateLibrary());
+        config.set(keyBufData, getBufData());
+        config.set(keyMutexData, getMutexData());
+        // Import/export
         config.set(keyExportSubstitutionLibrary, getExportSubstitutionLibrary());
         config.setBoolean(keyInvertExportSubstitutionRules, getInvertExportSubstitutionRules());
         config.set(keyImportSubstitutionLibrary, getImportSubstitutionLibrary());
         config.setBoolean(keyInvertImportSubstitutionRules, getInvertImportSubstitutionRules());
-        config.set(keyBufData, getBufData());
+        config.setBoolean(keyVerilogAssignDelay, getVerilogAssignDelay());
+        config.set(keyBusSuffix, getBusSuffix());
+        // reset
+        config.set(keyResetPort, getResetPort());
+        config.set(keySetPin, getSetPin());
+        config.set(keyClearPin, getClearPin());
         config.set(keyAndData, getAndData());
         config.set(keyOrData, getOrData());
         config.set(keyNandData, getNandData());
         config.set(keyNorData, getNorData());
         config.set(keyNandbData, getNandbData());
         config.set(keyNorbData, getNorbData());
-        config.set(keyMutexData, getMutexData());
-        config.set(keyBusSuffix, getBusSuffix());
-        config.set(keyResetPort, getResetPort());
-        config.set(keySetPin, getSetPin());
-        config.set(keyClearPin, getClearPin());
+        // Scan
         config.set(keyTbufData, getTbufData());
         config.set(keyTinvData, getTinvData());
         config.set(keyScanSuffix, getScanSuffix());
@@ -432,7 +449,6 @@ public class CircuitSettings extends AbstractModelSettings {
         config.set(keyScanckPortPin, getScanckPortPin());
         config.set(keyScanenPortPin, getScanenPortPin());
         config.set(keyScantmPortPin, getScantmPortPin());
-        config.setBoolean(keyVerilogAssignDelay, getVerilogAssignDelay());
     }
 
     public static boolean getShowContacts() {
@@ -515,6 +531,30 @@ public class CircuitSettings extends AbstractModelSettings {
         gateLibrary = value;
     }
 
+    public static String getBufData() {
+        return bufData;
+    }
+
+    public static void setBufData(String value) {
+        bufData = value;
+    }
+
+    public static Gate2 parseBufData() {
+        return parseGate2Data(getBufData());
+    }
+
+    public static String getMutexData() {
+        return mutexData;
+    }
+
+    public static void setMutexData(String value) {
+        mutexData = value;
+    }
+
+    public static Mutex parseMutexData() {
+        return parseMutexData(getMutexData());
+    }
+
     public static String getExportSubstitutionLibrary() {
         return exportSubstitutionLibrary;
     }
@@ -547,16 +587,44 @@ public class CircuitSettings extends AbstractModelSettings {
         invertImportSubstitutionRules = value;
     }
 
-    public static String getBufData() {
-        return bufData;
+    public static boolean getVerilogAssignDelay() {
+        return verilogAssignDelay;
     }
 
-    public static void setBufData(String value) {
-        bufData = value;
+    public static void setVerilogAssignDelay(boolean value) {
+        verilogAssignDelay = value;
     }
 
-    public static Gate2 parseBufData() {
-        return parseGate2Data(getBufData());
+    public static String getBusSuffix() {
+        return busSuffix;
+    }
+
+    public static void setBusSuffix(String value) {
+        busSuffix = value;
+    }
+
+    public static String getResetPort() {
+        return resetPort;
+    }
+
+    public static void setResetPort(String value) {
+        resetPort = value;
+    }
+
+    public static String getSetPin() {
+        return setPin;
+    }
+
+    public static void setSetPin(String value) {
+        setPin = value;
+    }
+
+    public static String getClearPin() {
+        return clearPin;
+    }
+
+    public static void setClearPin(String value) {
+        clearPin = value;
     }
 
     public static String getAndData() {
@@ -629,50 +697,6 @@ public class CircuitSettings extends AbstractModelSettings {
 
     public static Gate3 parseNorbData() {
         return parseGate3Data(getNorbData());
-    }
-
-    public static String getMutexData() {
-        return mutexData;
-    }
-
-    public static void setMutexData(String value) {
-        mutexData = value;
-    }
-
-    public static Mutex parseMutexData() {
-        return parseMutexData(getMutexData());
-    }
-
-    public static String getBusSuffix() {
-        return busSuffix;
-    }
-
-    public static void setBusSuffix(String value) {
-        busSuffix = value;
-    }
-
-    public static String getResetPort() {
-        return resetPort;
-    }
-
-    public static void setResetPort(String value) {
-        resetPort = value;
-    }
-
-    public static String getSetPin() {
-        return setPin;
-    }
-
-    public static void setSetPin(String value) {
-        setPin = value;
-    }
-
-    public static String getClearPin() {
-        return clearPin;
-    }
-
-    public static void setClearPin(String value) {
-        clearPin = value;
     }
 
     public static String getTbufData() {
@@ -765,14 +789,6 @@ public class CircuitSettings extends AbstractModelSettings {
 
     public static Pair<String, String> parseScantmPortPin() {
         return parsePortPinPair(getScantmPortPin());
-    }
-
-    public static boolean getVerilogAssignDelay() {
-        return verilogAssignDelay;
-    }
-
-    public static void setVerilogAssignDelay(boolean value) {
-        verilogAssignDelay = value;
     }
 
     private static void setGate2Data(String value, Consumer<String> setter, String msg, String defaultValue) {

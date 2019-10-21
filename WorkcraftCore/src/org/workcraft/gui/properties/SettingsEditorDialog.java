@@ -24,7 +24,6 @@ import java.util.Collections;
 
 public class SettingsEditorDialog extends JDialog {
 
-    // Right arrow symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
     private static final String RIGHT_ARROW_SYMBOL = Character.toString((char) 0x2192);
     private static final String SEPARATOR = " " + RIGHT_ARROW_SYMBOL + " ";
 

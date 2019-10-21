@@ -208,4 +208,22 @@ public class PropertyEditorTable extends JTable {
         return column;
     }
 
+    public Point getClipMinCell(Rectangle clip) {
+        Point p = clip.getLocation();
+        int column = getPositiveOrDefaultValue(super.columnAtPoint(p), 0);
+        int row = getPositiveOrDefaultValue(super.rowAtPoint(p), 0);
+        return new Point(column, row);
+    }
+
+    public Point getClipMaxCell(Rectangle clip) {
+        Point p = new Point(clip.x + clip.width - 1, clip.y + clip.height - 1);
+        int column = getPositiveOrDefaultValue(super.columnAtPoint(p), getColumnCount() - 1);
+        int row = getPositiveOrDefaultValue(super.rowAtPoint(p), getRowCount() - 1);
+        return new Point(column, row);
+    }
+
+    private int getPositiveOrDefaultValue(int value, int defaultValue) {
+        return value < 0 ? defaultValue : value;
+    }
+
 }

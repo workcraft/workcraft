@@ -67,13 +67,13 @@ public class VisualWtg extends VisualDtd {
             if (container instanceof VisualWaveform) {
                 VisualWaveform waveform = (VisualWaveform) container;
                 for (String signalName : signalNames) {
-                    properties.insertOrderedByFirstWord(PropertyHelper.getSignalDeclarationProperty(this, waveform, signalName));
+                    properties.insertOrderedByFirstWord(WtgPropertyHelper.getSignalDeclarationProperty(this, waveform, signalName));
                 }
                 properties.removeByName(AbstractVisualModel.PROPERTY_TITLE);
             } else {
                 for (String signalName : signalNames) {
-                    properties.insertOrderedByFirstWord(PropertyHelper.getSignalNameProperty(this, signalName));
-                    properties.insertOrderedByFirstWord(PropertyHelper.getSignalTypeProperty(this, signalName));
+                    properties.insertOrderedByFirstWord(WtgPropertyHelper.getSignalNameProperty(this, signalName));
+                    properties.insertOrderedByFirstWord(WtgPropertyHelper.getSignalTypeProperty(this, signalName));
                 }
             }
         }

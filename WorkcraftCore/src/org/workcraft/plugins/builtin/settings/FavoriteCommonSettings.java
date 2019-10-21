@@ -4,6 +4,7 @@ import org.workcraft.Config;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.utils.PluginUtils;
 
 import java.util.HashMap;
@@ -34,7 +35,7 @@ public class FavoriteCommonSettings extends AbstractCommonSettings {
 
             for (String name : PluginUtils.getSortedModelDisplayNames()) {
                 properties.add(new PropertyDeclaration<>(Boolean.class,
-                        "  - " + name,
+                        PropertyHelper.BULLET_PREFIX + name,
                         (value) -> setIsFavorite(name, value),
                         () -> getIsFavorite(name)));
             }

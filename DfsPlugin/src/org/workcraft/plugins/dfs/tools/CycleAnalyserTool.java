@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.*;
 
 public class CycleAnalyserTool extends AbstractGraphEditorTool {
-    // Infinity symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
+
     public static final String INFINITY_SYMBOL = Character.toString((char) 0x221E);
 
     private static final int COLUMN_THROUGHPUT = 0;

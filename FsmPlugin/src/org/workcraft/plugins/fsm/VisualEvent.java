@@ -17,7 +17,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 public class VisualEvent extends VisualConnection {
-    // Epsilon symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
+
     public static final String EPSILON_SYMBOL = Character.toString((char) 0x03B5);
 
     public static final String PROPERTY_LABEL_COLOR = "Label color";

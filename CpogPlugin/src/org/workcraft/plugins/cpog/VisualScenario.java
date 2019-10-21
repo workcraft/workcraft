@@ -21,8 +21,6 @@ public class VisualScenario extends VisualGroup {
 
     public static final String PROPERTY_ENCODING = "Encoding";
     public static final String PROPERTY_LABEL = "Label";
-
-    // Dash symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
     public static final String DASH_SYMBOL = Character.toString((char) 0x2013);
 
     private static final float frameDepth = 0.25f;

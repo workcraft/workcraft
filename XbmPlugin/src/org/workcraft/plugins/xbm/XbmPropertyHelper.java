@@ -8,12 +8,11 @@ import org.workcraft.gui.properties.*;
 import java.util.Map;
 import java.util.regex.Matcher;
 
-public class PropertyHelper {
+public class XbmPropertyHelper {
 
     private static final String TOGGLE_SYMBOL = Character.toString((char) 0x21C5);
     private static final String HIGH_SYMBOL = Character.toString((char) 0x21C8);
     private static final String LOW_SYMBOL = Character.toString((char) 0x21CA);
-    private static final String BULLET_PREFIX = "  " + PropertyUtils.BULLET_SYMBOL + " ";
 
     public static PropertyDescriptor getBurstProperty(XbmState state, String name, XbmSignal.Type type) {
         return new ActionListDeclaration(name)
@@ -46,14 +45,14 @@ public class PropertyHelper {
 
     public static PropertyDescriptor getStateValueProperty(final VisualXbm xbm, final XbmState xbmState, final XbmSignal xbmSignal) {
         return new PropertyDeclaration<>(SignalState.class,
-                BULLET_PREFIX + xbm.getMathName(xbmState) + " type",
+                PropertyHelper.BULLET_PREFIX + xbm.getMathName(xbmState) + " type",
                 (value) -> xbmState.addOrChangeSignalValue(xbmSignal, value),
                 () -> xbmState.getEncoding().get(xbmSignal));
     }
 
     public static PropertyDescriptor getBurstDirectionProperty(final VisualXbm xbm, final BurstEvent burstEvent, final XbmSignal xbmSignal) {
         return new PropertyDeclaration<>(Burst.Direction.class,
-                BULLET_PREFIX + xbm.getMathName(xbmSignal) + " direction",
+                PropertyHelper.BULLET_PREFIX + xbm.getMathName(xbmSignal) + " direction",
                 (value) -> burstEvent.addOrChangeSignalDirection(xbmSignal, value),
                 () -> burstEvent.getBurst().getDirection().get(xbmSignal));
     }
@@ -86,7 +85,7 @@ public class PropertyHelper {
                     }
                 },
                 () -> new TextAction(xbm.getName(xbmSignal),
-                        new Action(PropertyUtils.CLEAR_SYMBOL, () -> xbm.removeSignal(xbmSignal))));
+                        new Action(org.workcraft.gui.properties.PropertyHelper.CLEAR_SYMBOL, () -> xbm.removeSignal(xbmSignal))));
     }
 
 }

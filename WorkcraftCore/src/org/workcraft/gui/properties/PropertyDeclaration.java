@@ -47,7 +47,7 @@ public class PropertyDeclaration<V> implements PropertyDescriptor<V> {
     }
 
     @Override
-    public final V getValue() {
+    public V getValue() {
         return getter.get();
     }
 

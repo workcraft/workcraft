@@ -119,8 +119,8 @@ public class VisualXbm extends VisualFsm {
         final Xbm xbm = getMathModel();
         final List<PropertyDescriptor> list = new LinkedList<>();
         for (final XbmSignal s: xbm.getSignals()) {
-            list.add(PropertyHelper.getSignalNameProperty(xbm, s));
-            list.add(PropertyHelper.getSignalTypeProperty(this, s));
+            list.add(XbmPropertyHelper.getSignalNameProperty(xbm, s));
+            list.add(XbmPropertyHelper.getSignalTypeProperty(this, s));
         }
         return list;
     }
@@ -131,15 +131,15 @@ public class VisualXbm extends VisualFsm {
         final Set<XbmSignal> inputs = new LinkedHashSet<>(xbm.getSignals(XbmSignal.Type.INPUT));
         final Set<XbmSignal> outputs = new LinkedHashSet<>(xbm.getSignals(XbmSignal.Type.OUTPUT));
         if (!inputs.isEmpty()) {
-            list.add(PropertyHelper.getBurstProperty(state, "Input burst", XbmSignal.Type.INPUT));
+            list.add(XbmPropertyHelper.getBurstProperty(state, "Input burst", XbmSignal.Type.INPUT));
             for (XbmSignal i: inputs) {
-                list.add(PropertyHelper.getStateValueProperty(this, state, i));
+                list.add(XbmPropertyHelper.getStateValueProperty(this, state, i));
             }
         }
         if (!outputs.isEmpty()) {
-            list.add(PropertyHelper.getBurstProperty(state, "Output burst", XbmSignal.Type.OUTPUT));
+            list.add(XbmPropertyHelper.getBurstProperty(state, "Output burst", XbmSignal.Type.OUTPUT));
             for (XbmSignal o: outputs) {
-                list.add(PropertyHelper.getStateValueProperty(this, state, o));
+                list.add(XbmPropertyHelper.getStateValueProperty(this, state, o));
             }
         }
         return list;
@@ -156,7 +156,7 @@ public class VisualXbm extends VisualFsm {
 
         if (!inputs.isEmpty()) {
             for (XbmSignal i: inputs) {
-                result.add(PropertyHelper.getBurstDirectionProperty(this, burstEvent, i));
+                result.add(XbmPropertyHelper.getBurstDirectionProperty(this, burstEvent, i));
             }
         }
 
@@ -165,7 +165,7 @@ public class VisualXbm extends VisualFsm {
 
         if (!outputs.isEmpty()) {
             for (XbmSignal o: outputs) {
-                result.add(PropertyHelper.getBurstDirectionProperty(this, burstEvent, o));
+                result.add(XbmPropertyHelper.getBurstDirectionProperty(this, burstEvent, o));
             }
         }
         return result;

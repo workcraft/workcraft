@@ -7,7 +7,7 @@ import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.TextAction;
 
-public class PropertyHelper {
+public class StgPropertyHelper {
 
     private static final String SEARCH_SYMBOL = Character.toString((char) 0x2315);
 

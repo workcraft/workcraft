@@ -422,28 +422,28 @@ public class VisualStg extends AbstractVisualModel {
         ModelProperties properties = super.getProperties(node);
         Stg stg = getMathModel();
         if (node == null) {
-            properties.add(PropertyHelper.getRefinementProperty(stg));
+            properties.add(StgPropertyHelper.getRefinementProperty(stg));
             for (Signal.Type type : Signal.Type.values()) {
                 Container container = NamespaceHelper.getMathContainer(this, getCurrentLevel());
                 for (final String signalName : stg.getSignalNames(type, container)) {
                     if (stg.getSignalTransitions(signalName, container).isEmpty()) continue;
-                    properties.insertOrderedByFirstWord(PropertyHelper.getSignalNameModelProperty(this, signalName, container));
-                    properties.insertOrderedByFirstWord(PropertyHelper.getSignalTypeProperty(stg, signalName, container));
+                    properties.insertOrderedByFirstWord(StgPropertyHelper.getSignalNameModelProperty(this, signalName, container));
+                    properties.insertOrderedByFirstWord(StgPropertyHelper.getSignalTypeProperty(stg, signalName, container));
                 }
             }
         } else if (node instanceof VisualSignalTransition) {
             SignalTransition transition = ((VisualSignalTransition) node).getReferencedComponent();
             properties.removeByName(AbstractVisualModel.PROPERTY_NAME);
-            properties.add(PropertyHelper.getSignalNameProperty(stg, transition));
-            properties.add(PropertyHelper.getSignalTypeProperty(stg, transition));
-            properties.add(PropertyHelper.getDirectionProperty(stg, transition));
+            properties.add(StgPropertyHelper.getSignalNameProperty(stg, transition));
+            properties.add(StgPropertyHelper.getSignalTypeProperty(stg, transition));
+            properties.add(StgPropertyHelper.getDirectionProperty(stg, transition));
             if (StgSettings.getShowTransitionInstance()) {
-                properties.add(PropertyHelper.getInstanceProperty(stg, transition));
+                properties.add(StgPropertyHelper.getInstanceProperty(stg, transition));
             }
         } else if (node instanceof VisualDummyTransition) {
             DummyTransition dummy = ((VisualDummyTransition) node).getReferencedComponent();
             if (StgSettings.getShowTransitionInstance()) {
-                properties.add(PropertyHelper.getInstanceProperty(stg, dummy));
+                properties.add(StgPropertyHelper.getInstanceProperty(stg, dummy));
             }
         }
         return properties;

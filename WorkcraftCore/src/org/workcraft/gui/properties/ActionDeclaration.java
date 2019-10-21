@@ -2,12 +2,7 @@ package org.workcraft.gui.properties;
 
 import org.workcraft.gui.actions.Action;
 
-import java.util.Map;
-
-public class ActionDeclaration implements PropertyDescriptor<Action> {
-
-    private final String name;
-    private final Action action;
+public class ActionDeclaration extends PropertyDeclaration<Action> {
 
     public ActionDeclaration(String text, Runnable runnable) {
         this(null, text, runnable);
@@ -18,57 +13,12 @@ public class ActionDeclaration implements PropertyDescriptor<Action> {
     }
 
     public ActionDeclaration(String name, Action action) {
-        this.name = name;
-        this.action = action;
-    }
-
-    @Override
-    public Map<Action, String> getChoice() {
-        return null;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public Class<Action> getType() {
-        return Action.class;
-    }
-
-    @Override
-    public final Action getValue() {
-        return action;
-    }
-
-    @Override
-    public void setValue(Action value) {
-    }
-
-    @Override
-    public boolean isEditable() {
-        return true;
-    }
-
-    @Override
-    public boolean isVisible() {
-        return true;
-    }
-
-    @Override
-    public boolean isCombinable() {
-        return false;
-    }
-
-    @Override
-    public boolean isTemplatable() {
-        return false;
+        super(Action.class, name, (value) -> { }, () -> action);
     }
 
     @Override
     public boolean isSpan() {
-        return name == null;
+        return getName() == null;
     }
 
 }

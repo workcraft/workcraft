@@ -29,7 +29,7 @@ public class TextActionCellEditor extends AbstractCellEditor implements TableCel
         });
 
         actionButton.setFocusable(false);
-        actionButton.setMargin(PropertyUtils.BUTTON_INSETS);
+        actionButton.setMargin(PropertyHelper.BUTTON_INSETS);
 
 
         panel.add(textField, BorderLayout.CENTER);

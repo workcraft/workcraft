@@ -18,7 +18,7 @@ import java.util.*;
 
 import static org.workcraft.plugins.wtg.utils.WtgUtils.getFinalSignalStatesFromWaveform;
 
-public class PropertyHelper {
+public class WtgPropertyHelper {
 
     public static PropertyDescriptor getSignalNameProperty(VisualWtg visualWtg, String signalName) {
         return new PropertyDeclaration<>(String.class, signalName + " name",
