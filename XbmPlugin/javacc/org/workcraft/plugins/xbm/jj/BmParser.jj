@@ -1,7 +1,6 @@
 /**
  * JavaCC file
  */
-
 options
 {
     JDK_VERSION = "1.8";
@@ -13,7 +12,6 @@ options
 
 PARSER_BEGIN(BmParser)
 package org.workcraft.plugins.xbm.jj;
-
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.plugins.xbm.Burst;
 import org.workcraft.plugins.xbm.Burst.Direction;

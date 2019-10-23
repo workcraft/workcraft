@@ -121,7 +121,7 @@ public class ElementaryCycle {
         }
         if (result != null) {
             final String prefixParse = namePrefix.equals(PLACE_NAME_HIGH) ? "=1" : "=0";
-            result.getReferencedPlace().setTokens(tokenCount);
+            result.getReferencedComponent().setTokens(tokenCount);
             result.setLabel(xbmSignal.getName() + prefixParse);
         }
         return result;

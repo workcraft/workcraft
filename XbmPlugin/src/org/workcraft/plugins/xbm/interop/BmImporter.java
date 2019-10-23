@@ -2,10 +2,9 @@ package org.workcraft.plugins.xbm.interop;
 
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
-import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.interop.Format;
 import org.workcraft.interop.Importer;
-import org.workcraft.plugins.builtin.settings.CommonDebugSettings;
+import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.plugins.xbm.Xbm;
 import org.workcraft.plugins.xbm.XbmDescriptor;
 import org.workcraft.plugins.xbm.jj.BmParser;
@@ -29,7 +28,7 @@ public class BmImporter implements Importer {
     public Xbm importXbm(InputStream in) throws DeserialisationException {
         try {
             BmParser parser = new BmParser(in);
-            if (CommonDebugSettings.getParserTracing()) {
+            if (DebugCommonSettings.getParserTracing()) {
                 parser.enable_tracing();
             } else {
                 parser.disable_tracing();

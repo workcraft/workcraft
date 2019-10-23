@@ -147,8 +147,7 @@ public class XbmSimulationTool extends StgSimulationTool {
             return null;
         }
         final boolean isMarkedPlace = p.getReferencedComponent().getTokens() > 0;
-	
-	return new Decoration() {
+        return new Decoration() {
             @Override
             public Color getColorisation() {
                 return isMarkedPlace ? SimulationDecorationSettings.getExcitedComponentColor() : null;
@@ -183,16 +182,16 @@ public class XbmSimulationTool extends StgSimulationTool {
         if ((node != null) && (node instanceof VisualBurstEvent)) {
             VisualBurstTransition vBurstTransition = converter.getRelatedSignalBurstTransition((VisualBurstEvent) node);
             if (vBurstTransition != null) {
-                if (isEnabledNode(vBurstTransition.getStart().getReferencedTransition())) {
-                    result.add(vBurstTransition.getStart().getReferencedTransition()); //FORK
+                if (isEnabledNode(vBurstTransition.getStart().getReferencedComponent())) {
+                    result.add(vBurstTransition.getStart().getReferencedComponent()); //FORK
                     for (VisualTransition visualTransition: vBurstTransition.getInputTransitions()) {
-                        result.add(visualTransition.getReferencedTransition());
+                        result.add(visualTransition.getReferencedComponent());
                     }
-                    result.add(vBurstTransition.getSplit().getReferencedTransition()); //JOIN_FORK
+                    result.add(vBurstTransition.getSplit().getReferencedComponent()); //JOIN_FORK
                     for (VisualTransition visualTransition: vBurstTransition.getOutputTransitions()) {
-                        result.add(visualTransition.getReferencedTransition());
+                        result.add(visualTransition.getReferencedComponent());
                     }
-                    result.add(vBurstTransition.getEnd().getReferencedTransition()); //JOIN
+                    result.add(vBurstTransition.getEnd().getReferencedComponent()); //JOIN
                 }
             }
         }
@@ -203,8 +202,8 @@ public class XbmSimulationTool extends StgSimulationTool {
         if ((node != null) && (node instanceof VisualBurstEvent)) {
             VisualBurstTransition vBurstTransition = converter.getRelatedSignalBurstTransition((VisualBurstEvent) node);
             if (vBurstTransition != null && vBurstTransition.getStart() != null) {
-                if (isEnabledNode(vBurstTransition.getStart().getReferencedTransition())) {
-                    return vBurstTransition.getStart().getReferencedTransition();
+                if (isEnabledNode(vBurstTransition.getStart().getReferencedComponent())) {
+                    return vBurstTransition.getStart().getReferencedComponent();
                 } else {
                     return null;
                 }

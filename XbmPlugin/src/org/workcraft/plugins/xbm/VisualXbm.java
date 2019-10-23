@@ -18,7 +18,6 @@ import org.workcraft.gui.tools.*;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.xbm.tool.XbmSimulationTool;
->>>>>>> 38c925fb2... Improve UI and refactor code for XBM
 import org.workcraft.plugins.xbm.utils.ConversionUtils;
 import org.workcraft.utils.Hierarchy;
 
