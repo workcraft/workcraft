@@ -11,15 +11,10 @@ public class StgPropertyHelper {
 
     private static final String SEARCH_SYMBOL = Character.toString((char) 0x2315);
 
-    public static PropertyDescriptor getSignalTypeProperty(Stg stg, String signal, Container container) {
-        return new PropertyDeclaration<>(Signal.Type.class, signal + " type",
-                (value) -> stg.setSignalType(signal, value, container),
-                () -> stg.getSignalType(signal, container));
-    }
-
     public static PropertyDescriptor getSignalNameProperty(Stg stg, SignalTransition signalTransition) {
         return new PropertyDeclaration<>(String.class, "Signal name",
-                signalTransition::setSignalName, signalTransition::getSignalName)
+                (value) -> stg.setName(signalTransition, value),
+                signalTransition::getSignalName)
                 .setCombinable();
     }
 
@@ -68,6 +63,12 @@ public class StgPropertyHelper {
                             }
                         }))
         );
+    }
+
+    public static PropertyDescriptor getSignalTypeModelProperty(Stg stg, String signal, Container container) {
+        return new PropertyDeclaration<>(Signal.Type.class, signal + " type",
+                (value) -> stg.setSignalType(signal, value, container),
+                () -> stg.getSignalType(signal, container));
     }
 
 }

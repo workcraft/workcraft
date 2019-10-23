@@ -428,7 +428,7 @@ public class VisualStg extends AbstractVisualModel {
                 for (final String signalName : stg.getSignalNames(type, container)) {
                     if (stg.getSignalTransitions(signalName, container).isEmpty()) continue;
                     properties.insertOrderedByFirstWord(StgPropertyHelper.getSignalNameModelProperty(this, signalName, container));
-                    properties.insertOrderedByFirstWord(StgPropertyHelper.getSignalTypeProperty(stg, signalName, container));
+                    properties.insertOrderedByFirstWord(StgPropertyHelper.getSignalTypeModelProperty(stg, signalName, container));
                 }
             }
         } else if (node instanceof VisualSignalTransition) {
