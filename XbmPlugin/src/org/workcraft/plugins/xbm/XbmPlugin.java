@@ -4,6 +4,9 @@ import org.workcraft.Framework;
 import org.workcraft.plugins.Plugin;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.xbm.commands.*;
+import org.workcraft.plugins.xbm.interop.BmExporter;
+import org.workcraft.plugins.xbm.interop.BmImporter;
+import org.workcraft.plugins.xbm.interop.NouncExporter;
 import org.workcraft.plugins.xbm.serialisation.BurstEventDeserialiser;
 import org.workcraft.plugins.xbm.serialisation.BurstEventSerialiser;
 import org.workcraft.plugins.xbm.serialisation.EncodingDeserialiser;
@@ -31,6 +34,11 @@ public class XbmPlugin implements Plugin {
 
         pm.registerXmlSerialiser(BurstEventSerialiser.class);
         pm.registerXmlDeserialiser(BurstEventDeserialiser.class);
+
+        pm.registerExporter(BmExporter.class);
+        pm.registerImporter(BmImporter.class);
+
+        pm.registerExporter(NouncExporter.class);
 
         ScriptableCommandUtils.register(XbmToPetriConversionCommand.class, "convertXbmToPetri",
                 "convert the given XBM 'work' into a new Petri net work");

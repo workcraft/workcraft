@@ -168,11 +168,7 @@ public class SignalSupervisor extends StateSupervisor {
                     if (to.getEncoding().get(s) != from.getEncoding().get(s)) {
                         to.addOrChangeSignalValue(s, from.getEncoding().get(s));
                     }
-                    break;
-                case TOGGLE:
-                    if (to.getEncoding().get(s) != SignalState.DDC && to.getEncoding().get(s) == from.getEncoding().get(s)) {
-                        to.addOrChangeSignalValue(s, from.getEncoding().get(s).toggle());
-                    }
+                    burst.removeSignal(s);
                     break;
                 }
             }

@@ -17,7 +17,7 @@ import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.tools.*;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.VisualFsm;
-import org.workcraft.plugins.xbm.tool.XbmSignalSimulationTool;
+import org.workcraft.plugins.xbm.tool.XbmSimulationTool;
 import org.workcraft.plugins.xbm.utils.ConversionUtils;
 import org.workcraft.utils.Hierarchy;
 
@@ -46,8 +46,7 @@ public class VisualXbm extends VisualFsm {
         tools.add(new CommentGeneratorTool());
         tools.add(new ConnectionTool(false, true, true));
         tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(XbmState.class)));
-//        tools.add(new XbmSimulationTool());
-        tools.add(new XbmSignalSimulationTool());
+        tools.add(new XbmSimulationTool());
         setGraphEditorTools(tools);
     }
 
@@ -100,6 +99,7 @@ public class VisualXbm extends VisualFsm {
             properties.add(getConditionalProperty(burstEvent));
             properties.addAll(getSignalDirectionProperties(burstEvent));
             properties.removeByName(Event.PROPERTY_SYMBOL);
+            //TODO Add VisualBurstTransition here
         } else if (node instanceof VisualXbmState) {
             final VisualXbmState vXbmState = (VisualXbmState) node;
             final XbmState xbmState = vXbmState.getReferencedComponent();

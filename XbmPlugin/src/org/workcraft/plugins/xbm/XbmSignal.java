@@ -12,12 +12,11 @@ public class XbmSignal extends MathNode {
     public static final String PROPERTY_NAME = "Name";
     public static final String PROPERTY_TYPE = "Type";
     public static final Pattern VALID_SIGNAL_NAME = Pattern.compile("^\\w+$");
-    public static final Type DEFAULT_SIGNAL_TYPE = Type.DUMMY;
+    public static final Type DEFAULT_SIGNAL_TYPE = Type.INPUT;
 
     public enum Type {
         INPUT("input"),
         OUTPUT("output"),
-        DUMMY("dummy"),
         CONDITIONAL("conditional");
 
         private final String name;

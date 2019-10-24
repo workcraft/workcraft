@@ -7,7 +7,6 @@ import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
-import org.workcraft.plugins.fsm.Symbol;
 import org.workcraft.plugins.xbm.observers.ConditionalSupervisor;
 import org.workcraft.plugins.xbm.observers.SignalSupervisor;
 import org.workcraft.plugins.xbm.observers.SignalTypeConsistencySupervisor;
@@ -15,7 +14,6 @@ import org.workcraft.serialisation.References;
 import org.workcraft.utils.Hierarchy;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
 
 public class Xbm extends Fsm {
 
@@ -28,20 +26,6 @@ public class Xbm extends Fsm {
         new SignalTypeConsistencySupervisor(this).attach(getRoot());
         new SignalSupervisor(this).attach(getRoot());
         new ConditionalSupervisor(this).attach(getRoot());
-    }
-
-    @Override
-    public boolean isDeterministicSymbol(Symbol symbol) {
-        boolean result = true;
-        if (symbol instanceof Burst) {
-            Burst bSymbol = (Burst) symbol;
-            for (XbmSignal s: bSymbol.getSignals()) {
-                result = result && (s.getType() != XbmSignal.Type.DUMMY);
-            }
-        } else {
-            result = super.isDeterministicSymbol(symbol);
-        }
-        return result;
     }
 
     @Override
@@ -138,45 +122,5 @@ public class Xbm extends Fsm {
 
     public final Collection<Burst> getBursts() {
         return Hierarchy.getDescendantsOfType(getRoot(), Burst.class);
-    }
-
-    public final Collection<BurstEvent> getPresetBursts(XbmState target) {
-        Collection<BurstEvent> result = new LinkedHashSet<>();
-        for (BurstEvent event: getBurstEvents()) {
-            if (event.getBurst().getTo() == target) {
-                result.add(event);
-            }
-        }
-        return result;
-    }
-
-    public final Collection<BurstEvent> getPostsetBursts(XbmState target) {
-        Collection<BurstEvent> result = new LinkedHashSet<>();
-        for (BurstEvent event: getBurstEvents()) {
-            if (event.getBurst().getFrom() == target) {
-                result.add(event);
-            }
-        }
-        return result;
-    }
-
-    public final Collection<XbmState> getPresetStates(BurstEvent target) {
-        Collection<XbmState> result = new LinkedHashSet<>();
-        for (XbmState state: getXbmStates()) {
-            if (target.getBurst().getFrom() == state) {
-                result.add(state);
-            }
-        }
-        return result;
-    }
-
-    public final Collection<XbmState> getPostsetStates(BurstEvent target) {
-        Collection<XbmState> result = new LinkedHashSet<>();
-        for (XbmState state: getXbmStates()) {
-            if (target.getBurst().getTo() == state) {
-                result.add(state);
-            }
-        }
-        return result;
     }
 }

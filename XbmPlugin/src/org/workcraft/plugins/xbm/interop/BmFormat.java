@@ -25,21 +25,16 @@ public final class BmFormat implements Format {
 
     @Override
     public String getName() {
-        return "BM";
+        return "BM (Minimalist)";
     }
 
     @Override
     public String getExtension() {
-        return ".bm";
+        return ".bms";
     }
 
     @Override
     public String getDescription() {
-        return "Burst Mode";
-    }
-
-    @Override
-    public String getKeyword() {
-        return ".burst mode";
+        return "Burst Mode (Minimalist)";
     }
 }

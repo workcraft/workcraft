@@ -1,0 +1,325 @@
+/**
+ * JavaCC file
+ */
+options
+{
+    JDK_VERSION = "1.8";
+    STATIC = false;
+    DEBUG_PARSER = true;
+    DEBUG_LOOKAHEAD = false;
+    DEBUG_TOKEN_MANAGER = false;
+}
+
+PARSER_BEGIN(BmParser)
+package org.workcraft.plugins.xbm.jj;
+import org.workcraft.exceptions.FormatException;
+import org.workcraft.plugins.xbm.Burst;
+import org.workcraft.plugins.xbm.Burst.Direction;
+import org.workcraft.plugins.xbm.BurstEvent;
+import org.workcraft.plugins.xbm.SignalState;
+import org.workcraft.plugins.xbm.Xbm;
+import org.workcraft.plugins.xbm.XbmState;
+import org.workcraft.plugins.xbm.XbmSignal;
+import org.workcraft.plugins.xbm.XbmSignal.Type;
+import org.workcraft.utils.LogUtils;
+
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.HashMap;
+
+public class BmParser
+{
+    private HashMap<String, Type> signals;
+    private Xbm xbm;
+
+    private void init()
+    {
+        signals = new HashMap<String, Type>();
+        xbm = new Xbm();
+    }
+
+    private void addSignals(List<String> list, Type type) {
+        for (String name : list) {
+            if (signals.containsKey(name)) {
+                Type oldType = signals.get(name);
+                if (!oldType.equals(type)) {
+                    throw new FormatException("The " + type + " signal '" + name
+                        + "' was already listed as an " + oldType + "signal.");
+                } else {
+                    signals.put(name, type);
+                }
+            }
+        }
+    }
+}
+
+PARSER_END(BmParser)
+
+<*>
+SKIP :
+{
+    " "
+|
+    "\t"
+}
+
+<IGNORE_LINE>
+TOKEN :
+{
+    <REST: (~["\r", "\n", ";"])*> : DEFAULT
+}
+
+<IGNORE_ALL>
+TOKEN :
+{
+    <ANY: ~[]>
+}
+
+TOKEN :
+{
+    <COMMENT : ";" (~["\r", "\n"])*>
+    |
+    <LINEBREAK : ((<COMMENT>)? ["\r", "\n"])+>
+    |
+    <MODEL_NAME : "Name">
+    |
+    <INPUT_HEADER : "Input">
+    |
+    <OUTPUT_HEADER : "Output">
+    |
+    <SIGNAL_VALUE : (["0", "1"])>
+    |
+    <NAME : ["A"-"Z", "a"-"z", "_"] (["_", "A"-"Z", "a"-"z", "0"-"9", "/"])*>
+    |
+    <INTEGER : (["0"-"9"])+>
+    |
+    <DIRECTION : ["+", "-"]>
+    |
+    <BLANK_SPACE : ([" ", "\t"])+>
+    |
+    <INPUT_STATE : (<INPUT_HEADER> <BLANK_SPACE> <NAME> <BLANK_SPACE> <SIGNAL_VALUE>)>
+    |
+    <OUTPUT_STATE : (<OUTPUT_HEADER> <BLANK_SPACE> <NAME> <BLANK_SPACE> <SIGNAL_VALUE>)>
+    |
+    <INITIAL_STATE : ((<INPUT_STATE> "\n")+ (<OUTPUT_STATE> "\n")+)>
+    |
+    <BURST : (<BURST_INPUTS> <BLANK_SPACE> "|" <BLANK_SPACE> <BURST_OUTPUTS>)>
+    |
+    <BURST_INPUTS : (<NAME> <DIRECTION> <BLANK_SPACE>)+>
+    |
+    <BURST_OUTPUTS : (<NAME> <DIRECTION> <BLANK_SPACE>)*>
+    |
+    <TRANSITION : (<INTEGER> <BLANK_SPACE> <INTEGER> <BLANK_SPACE> <BURST>)+>
+    |
+    <UNSUPPORTED_HEADER : "." <NAME>> : IGNORE_LINE
+}
+
+Xbm parse() :
+{}
+{
+    {
+        init();
+    }
+    (
+        header() <LINEBREAK>
+    )*
+    state()
+    graph()
+    (
+        footer() <LINEBREAK>
+    )*
+    <EOF>
+    {
+        return xbm;
+    }
+}
+
+void header() :
+{
+    Token t;
+    List<String> list;
+}
+{
+    (<LINEBREAK>)*
+    (
+        <MODEL_NAME> t = <NAME>
+        {
+            xbm.setTitle(t.image);
+        }
+        |
+        <INPUT_HEADER> list = stringList()
+        {
+            addSignals(list, Type.INPUT);
+        }
+        |
+        <OUTPUT_HEADER> list = stringList()
+        {
+            addSignals(list, Type.OUTPUT);
+        }
+        |
+        t = <UNSUPPORTED_HEADER> <REST>
+        {
+            LogUtils.logWarning("Unsupported keyword '" + t.image + "' in line " + t.beginLine + ". The whole line is ignored.");
+        }
+    )
+}
+
+List<String> stringList() :
+{
+    Token t;
+    List<String> list = new LinkedList<String>();
+}
+{
+    (
+        t = <NAME>
+        {
+            list.add(t.image);
+        }
+    )
+    {
+        return list;
+    }
+}
+
+void footer() :
+{}
+{
+    <UNSUPPORTED_HEADER> <REST>
+}
+
+void state() :
+{
+    Token t;
+    XbmState state;
+    XbmSignal signal;
+    List<XbmSignal> inputs = new LinkedList<XbmSignal>();
+    List<XbmSignal> outputs = new LinkedList<XbmSignal>();
+    Map<XbmSignal, SignalState> encoding = new HashMap<XbmSignal, SignalState>();
+}
+{
+    (
+        t = <INITIAL_STATE>
+        {
+            state = xbm.getOrCreateState("s0");
+        }
+        (
+            t = <INPUT_STATE>
+            (
+                t = <NAME>
+                {
+                    signal = xbm.getOrCreateSignal(t.image, Type.INPUT);
+                    inputs.add(signal);
+                }
+                (
+                    t = <SIGNAL_VALUE>
+                    {
+                        encoding.put(signal, SignalState.convertFromString(t.image));
+                    }
+                )
+            )
+            t = <OUTPUT_STATE>
+            (
+                t = <NAME>
+                {
+                    signal = xbm.getOrCreateSignal(t.image, Type.OUTPUT);
+                    outputs.add(signal);
+                }
+                (
+                    t = <SIGNAL_VALUE>
+                    {
+                        encoding.put(signal, SignalState.convertFromString(t.image));
+                    }
+                )
+            )
+        )
+    )
+    {
+        for (Map.Entry<XbmSignal, SignalState> entry: encoding.entrySet()) {
+            state.addOrChangeSignalValue(entry.getKey(), entry.getValue());
+        }
+        state.setInitial(true);
+    }
+}
+
+void graph() :
+{}
+{
+    (
+        graphLine() <LINEBREAK>
+    )*
+}
+
+void graphLine():
+{
+    Token t;
+    XbmState fromState;
+    Burst burst;
+    BurstEvent burstEvent;
+    XbmState toState;
+    XbmSignal signal;
+    Direction direction;
+}
+{
+    (
+        t = <TRANSITION>
+        (
+            t = <INTEGER> <BLANK_SPACE> <INTEGER>
+            {
+                String text = t.image;
+                String[] splitText = text.split("\\s");
+                fromState = xbm.getOrCreateState("s" + splitText[0]);
+                toState = xbm.getOrCreateState("s" + splitText[1]);
+            }
+            (
+                t = <BURST>
+                {
+                    burst = new Burst(fromState, toState);
+                }
+                (
+                    t = <BURST_INPUTS>
+                    {
+                        String inputBurst = t.image;
+                        String[] inputs = inputBurst.split("\\s");
+                    }
+                    (
+                        t = <NAME>
+                        {
+                            signal = xbm.getOrCreateSignal(t.image, Type.INPUT);
+                        }
+                        (
+                            t = <DIRECTION>
+                            {
+                                direction = Direction.convertFromString(t.image);
+                                burst.addOrChangeSignalDirection(signal, direction);
+                            }
+                        )
+                    )
+                )
+                (
+                    t = <BURST_OUTPUTS>
+                    {
+                        String outputBurst = t.image;
+                        String[] outputs = outputBurst.split("\\s");
+                    }
+                    (
+                        t = <NAME>
+                        {
+                            signal = xbm.getOrCreateSignal(t.image, Type.OUTPUT);
+                        }
+                        (
+                            t = <DIRECTION>
+                            {
+                                direction = Direction.convertFromString(t.image);
+                                burst.addOrChangeSignalDirection(signal, direction);
+                            }
+                        )
+                    )
+                )
+            )
+            {
+                burstEvent = xbm.createBurstEvent(fromState, toState, burst);
+            }
+        )
+    )
+}

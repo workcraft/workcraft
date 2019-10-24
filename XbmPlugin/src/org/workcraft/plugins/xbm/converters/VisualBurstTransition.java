@@ -23,6 +23,7 @@ public class VisualBurstTransition {
     private static final String JOIN_PREFIX = "JOIN";
     private static final String FORK_PREFIX = "FORK";
     private static final String JOIN_FORK_PREFIX = JOIN_PREFIX + "_" + FORK_PREFIX;
+    private static final String OUTPUT_DUMMY = "DUMMY_OUTPUT";
 
     public VisualBurstTransition(VisualStg target, VisualBurstEvent ref) {
         visualStg = target;
@@ -36,9 +37,15 @@ public class VisualBurstTransition {
                 visualStg.connect(start, inputTransition);
                 visualStg.connect(inputTransition, split);
             }
-            for (VisualSignalTransition outputTransition: outputTransitions) {
-                visualStg.connect(split, outputTransition);
-                visualStg.connect(outputTransition, end);
+            if (!outputTransitions.isEmpty()) {
+                for (VisualSignalTransition outputTransition: outputTransitions) {
+                    visualStg.connect(split, outputTransition);
+                    visualStg.connect(outputTransition, end);
+                }
+            } else {
+                VisualDummyTransition internalChange = target.createVisualDummyTransition(OUTPUT_DUMMY);
+                visualStg.connect(split, internalChange);
+                visualStg.connect(internalChange, end);
             }
         } catch (InvalidConnectionException ice) {
             inputTransitions.clear();
