@@ -7,7 +7,10 @@ import org.workcraft.workspace.FileFilters;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class VerilogUtils {
+public final class VerilogUtils {
+
+    private VerilogUtils() {
+    }
 
     public static Map<VerilogModule, String> getModuleToFileMap(Collection<VerilogModule> modules) {
         Map<VerilogModule, String> result = new HashMap<>();

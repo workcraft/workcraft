@@ -18,7 +18,10 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
-public class RefinementUtils {
+public final class RefinementUtils {
+
+    private RefinementUtils() {
+    }
 
     public static boolean hasRefinementModel(VisualFunctionComponent component) {
         return (component != null) && hasRefinementModel(component.getReferencedComponent());

@@ -7,8 +7,8 @@ import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.genlib.Gate;
-import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.Library;
+import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.types.MultiSet;
 import org.workcraft.utils.WorkspaceUtils;
@@ -84,9 +84,9 @@ public class StatisticsCommand extends AbstractStatisticsCommand {
             }
         }
 
-        Library library = GenlibUtils.readLibrary();
         double gateArea = 0.0;
         int mappedCount = 0;
+        Library library = LibraryManager.getLibrary();
         MultiSet<String> namedComponents = new MultiSet<>();
         for (FunctionComponent component: components) {
             if (component.isMapped()) {

@@ -242,7 +242,7 @@ public class VisualCircuit extends AbstractVisualModel {
 
     public VisualFunctionContact getOrCreateContact(VisualFunctionComponent component, String name, Contact.IOType ioType) {
         for (VisualFunctionContact contact : component.getVisualFunctionContacts()) {
-            String contactName = getMathModel().getName(contact.getReferencedContact());
+            String contactName = getMathModel().getName(contact.getReferencedComponent());
             if (name.equals(contactName)) {
                 return contact;
             }

@@ -12,7 +12,10 @@ import org.workcraft.plugins.circuit.VisualContact;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-public class ConnectionUtils {
+public final class ConnectionUtils {
+
+    private ConnectionUtils() {
+    }
 
     public static void moveInternalContacts(VisualConnection connection) {
         if ((connection != null) && (connection.getGraphic() instanceof Polyline)) {

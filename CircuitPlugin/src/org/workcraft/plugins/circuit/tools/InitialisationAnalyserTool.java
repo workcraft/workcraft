@@ -237,7 +237,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
             if ((contact != null) && contact.isDriver() && !contact.isZeroDelayPin()) {
                 editor.getWorkspaceEntry().saveMemento();
-                contact.getReferencedContact().setForcedInit(!contact.getReferencedContact().getForcedInit());
+                contact.getReferencedComponent().setForcedInit(!contact.getReferencedComponent().getForcedInit());
                 processed = true;
             }
         }

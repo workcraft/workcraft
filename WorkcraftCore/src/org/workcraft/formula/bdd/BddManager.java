@@ -13,7 +13,7 @@ public class BddManager {
     private final BDD bdd = new BDD(1000, 100);
     private final Map<BooleanVariable, Integer> varMap = new HashMap<>();
 
-    public class BddGenerator implements BooleanVisitor<Integer> {
+    private class BddGenerator implements BooleanVisitor<Integer> {
 
         @Override
         public Integer visit(Zero node) {

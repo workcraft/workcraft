@@ -21,7 +21,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-public class VerificationUtils {
+public final class VerificationUtils {
+
+    private VerificationUtils() {
+    }
 
     public static Stg getEnvironmentStg(WorkspaceEntry we) {
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);

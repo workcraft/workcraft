@@ -52,7 +52,7 @@ public class ToggleBubbleTransformationCommand extends AbstractTransformationCom
                 result = true;
             }
         } else if (node instanceof VisualFunctionContact) {
-            FunctionContact contact = ((VisualFunctionContact) node).getReferencedContact();
+            FunctionContact contact = ((VisualFunctionContact) node).getReferencedComponent();
             for (FunctionContact dependantContact: getDependantContacts(contact)) {
                 if ((dependantContact.getSetFunction() != null) || (dependantContact.getResetFunction() != null)) {
                     result = true;
@@ -107,7 +107,7 @@ public class ToggleBubbleTransformationCommand extends AbstractTransformationCom
     @Override
     public void transform(VisualModel model, VisualNode node) {
         if ((model instanceof VisualCircuit) && (node instanceof VisualFunctionContact)) {
-            FunctionContact contact = ((VisualFunctionContact) node).getReferencedContact();
+            FunctionContact contact = ((VisualFunctionContact) node).getReferencedComponent();
             if (contact.isOutput()) {
                 BooleanFormula setFunction = contact.getSetFunction();
                 BooleanFormula resetFunction = contact.getResetFunction();

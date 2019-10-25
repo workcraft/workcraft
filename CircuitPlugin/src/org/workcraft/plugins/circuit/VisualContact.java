@@ -151,13 +151,13 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
         }.setCombinable().setTemplatable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(IOType.class, Contact.PROPERTY_IO_TYPE,
-                (value) -> getReferencedContact().setIOType(value),
-                () -> getReferencedContact().getIOType())
+                (value) -> getReferencedComponent().setIOType(value),
+                () -> getReferencedComponent().getIOType())
                 .setCombinable());
 
         addPropertyDeclaration(new PropertyDeclaration<Boolean>(Boolean.class, Contact.PROPERTY_INIT_TO_ONE,
-                (value) -> getReferencedContact().setInitToOne(value),
-                () -> getReferencedContact().getInitToOne()) {
+                (value) -> getReferencedComponent().setInitToOne(value),
+                () -> getReferencedComponent().getInitToOne()) {
             @Override
             public boolean isVisible() {
                 return isDriver() && !isZeroDelayDriver();
@@ -165,8 +165,8 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
         }.setCombinable().setTemplatable());
 
         addPropertyDeclaration(new PropertyDeclaration<Boolean>(Boolean.class, Contact.PROPERTY_FORCED_INIT,
-                (value) -> getReferencedContact().setForcedInit(value),
-                () -> getReferencedContact().getForcedInit()) {
+                (value) -> getReferencedComponent().setForcedInit(value),
+                () -> getReferencedComponent().getForcedInit()) {
             @Override
             public boolean isVisible() {
                 return isDriver() && !isZeroDelayPin();
@@ -174,8 +174,8 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
         }.setCombinable().setTemplatable());
 
         addPropertyDeclaration(new PropertyDeclaration<Boolean>(Boolean.class, Contact.PROPERTY_PATH_BREAKER,
-                (value) -> getReferencedContact().setPathBreaker(value),
-                () -> getReferencedContact().getPathBreaker()) {
+                (value) -> getReferencedComponent().setPathBreaker(value),
+                () -> getReferencedComponent().getPathBreaker()) {
             @Override
             public boolean isVisible() {
                 return isPin() && !isZeroDelayDriver();
@@ -184,18 +184,13 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
     }
 
     @Override
-    public Contact getReferencedComponent() {
-        return (Contact) super.getReferencedComponent();
-    }
-
-    @Override
     public Shape getShape() {
-        Contact contact = getReferencedContact();
+        Contact contact = getReferencedComponent();
         return ((contact != null) && contact.isPort()) ? getPortShape() : getContactShape();
     }
 
     private Shape getForcedShape() {
-        Contact contact = getReferencedContact();
+        Contact contact = getReferencedComponent();
         return contact.isPort() ? getPortShape() : getForcedContactShape();
     }
 
@@ -352,7 +347,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
     }
 
     public final void setDefaultDirection() {
-        setDirection(getReferencedContact().getIOType() == IOType.INPUT ? Direction.WEST : Direction.EAST);
+        setDirection(getReferencedComponent().getIOType() == IOType.INPUT ? Direction.WEST : Direction.EAST);
     }
 
     public final void setDirection(Direction value) {
@@ -370,51 +365,52 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
 
     @NoAutoSerialisation
     public String getName() {
-        return getReferencedContact().getName();
+        return getReferencedComponent().getName();
     }
 
-    public Contact getReferencedContact() {
-        return getReferencedComponent();
+    @Override
+    public Contact getReferencedComponent() {
+        return (Contact) super.getReferencedComponent();
     }
 
     public boolean isInput() {
-        return getReferencedContact().isInput();
+        return getReferencedComponent().isInput();
     }
 
     public boolean isOutput() {
-        return getReferencedContact().isOutput();
+        return getReferencedComponent().isOutput();
     }
 
     public boolean isPin() {
-        return getReferencedContact().isPin();
+        return getReferencedComponent().isPin();
     }
 
     public boolean isEnvironmentPin() {
-        return getReferencedContact().isEnvironmentPin();
+        return getReferencedComponent().isEnvironmentPin();
     }
 
     public boolean isPort() {
-        return getReferencedContact().isPort();
+        return getReferencedComponent().isPort();
     }
 
     public boolean isDriver() {
-        return getReferencedContact().isDriver();
+        return getReferencedComponent().isDriver();
     }
 
     public boolean isDriven() {
-        return getReferencedContact().isDriven();
+        return getReferencedComponent().isDriven();
     }
 
     public boolean isForcedDriver() {
-        return getReferencedContact().isForcedDriver();
+        return getReferencedComponent().isForcedDriver();
     }
 
     public boolean isZeroDelayPin() {
-        return getReferencedContact().isZeroDelayPin();
+        return getReferencedComponent().isZeroDelayPin();
     }
 
     public boolean isZeroDelayDriver() {
-        return getReferencedContact().isZeroDelayDriver();
+        return getReferencedComponent().isZeroDelayDriver();
     }
 
     @Override
@@ -480,9 +476,9 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
         super.copyStyle(src);
         if (src instanceof VisualContact) {
             VisualContact srcComponent = (VisualContact) src;
-            getReferencedContact().setInitToOne(srcComponent.getReferencedContact().getInitToOne());
-            getReferencedContact().setForcedInit(srcComponent.getReferencedContact().getForcedInit());
-            getReferencedContact().setPathBreaker(srcComponent.getReferencedContact().getPathBreaker());
+            getReferencedComponent().setInitToOne(srcComponent.getReferencedComponent().getInitToOne());
+            getReferencedComponent().setForcedInit(srcComponent.getReferencedComponent().getForcedInit());
+            getReferencedComponent().setPathBreaker(srcComponent.getReferencedComponent().getPathBreaker());
             // TODO: Note that IOType and Direction are currently NOT copied to allow input/output
             //       port generation with Shift key (and not to be copied from a template node).
             // getReferencedContact().setIOType(srcComponent.getReferencedContact().getIOType());

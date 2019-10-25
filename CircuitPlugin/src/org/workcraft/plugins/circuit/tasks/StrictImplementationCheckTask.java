@@ -87,9 +87,9 @@ public class StrictImplementationCheckTask extends VerificationChainTask {
                 for (CircuitSignalInfo.SignalInfo signalInfo: circuitInfo.getComponentSignalInfos(component)) {
                     String signalName = circuitInfo.getContactSignal(signalInfo.contact);
                     BooleanFormula setFormula = signalInfo.setFormula;
-                    String setExpr = StringGenerator.toString(setFormula, Style.VERILOG);
+                    String setExpr = StringGenerator.toString(setFormula, Style.REACH);
                     BooleanFormula resetFormula = signalInfo.resetFormula;
-                    String resetExpr = StringGenerator.toString(resetFormula, Style.VERILOG);
+                    String resetExpr = StringGenerator.toString(resetFormula, Style.REACH);
                     signalInfos.add(new VerificationParameters.SignalInfo(signalName, setExpr, resetExpr));
                 }
             }

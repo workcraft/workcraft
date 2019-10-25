@@ -12,12 +12,17 @@ import org.workcraft.formula.workers.BooleanWorker;
 import org.workcraft.formula.workers.CleverBooleanWorker;
 import org.workcraft.formula.workers.DumbBooleanWorker;
 import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.circuit.genlib.BinaryGateInterface;
+import org.workcraft.plugins.circuit.genlib.Gate;
+import org.workcraft.plugins.circuit.genlib.GenlibUtils;
+import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.LogUtils;
 
 import java.awt.geom.Point2D;
 import java.util.*;
+import java.util.function.BiFunction;
 
 public class GateUtils {
 
@@ -118,102 +123,88 @@ public class GateUtils {
     }
 
     public static VisualFunctionComponent createBufferGate(VisualCircuit circuit) {
-        Gate2 gate = CircuitSettings.parseBufData();
-        VisualFunctionComponent component = circuit.createVisualComponent(new FunctionComponent(), VisualFunctionComponent.class);
-        component.setLabel(gate.name);
+        String gateName = "";
+        String inName = "I";
+        String outName = "O";
 
-        VisualFunctionContact inputContact = circuit.getOrCreateContact(component, gate.in, Contact.IOType.INPUT);
+        FreeVariable inVar = new FreeVariable(inName);
+        Pair<Gate, Map<BooleanVariable, String>> mapping = GenlibUtils.findMapping(inVar, LibraryManager.getLibrary());
+        if (mapping != null) {
+            Gate gate = mapping.getFirst();
+            gateName = gate.name;
+            Map<BooleanVariable, String> assignments = mapping.getSecond();
+            inName = assignments.get(inVar);
+            outName = gate.function.name;
+        }
+
+        VisualFunctionComponent component = circuit.createVisualComponent(new FunctionComponent(), VisualFunctionComponent.class);
+        component.setLabel(gateName);
+
+        VisualFunctionContact inputContact = circuit.getOrCreateContact(component, inName, Contact.IOType.INPUT);
         inputContact.setPosition(new Point2D.Double(-1.5, 0.0));
 
-        VisualFunctionContact outputContact = circuit.getOrCreateContact(component, gate.out, Contact.IOType.OUTPUT);
+        VisualFunctionContact outputContact = circuit.getOrCreateContact(component, outName, Contact.IOType.OUTPUT);
         outputContact.setPosition(new Point2D.Double(1.5, 0.0));
-        outputContact.setSetFunction(inputContact.getReferencedContact());
+        outputContact.setSetFunction(inputContact.getReferencedComponent());
 
         return component;
     }
 
     public static VisualFunctionComponent createAndGate(VisualCircuit circuit) {
-        Gate3 gate = CircuitSettings.parseAndData();
-        VisualFunctionComponent component = circuit.createVisualComponent(new FunctionComponent(), VisualFunctionComponent.class);
-        component.setLabel(gate.name);
-
-        VisualFunctionContact firstInputContact = circuit.getOrCreateContact(component, gate.in1, Contact.IOType.INPUT);
-        firstInputContact.setPosition(new Point2D.Double(-1.5, -0.5));
-
-        VisualFunctionContact secondInputContact = circuit.getOrCreateContact(component, gate.in2, Contact.IOType.INPUT);
-        secondInputContact.setPosition(new Point2D.Double(-1.5, 0.5));
-
-        VisualFunctionContact outputContact = circuit.getOrCreateContact(component, gate.out, Contact.IOType.OUTPUT);
-        outputContact.setPosition(new Point2D.Double(1.5, 0.0));
-
-        Contact firstVar = firstInputContact.getReferencedContact();
-        Contact secondVar = secondInputContact.getReferencedContact();
-        BooleanFormula setFunction = CLEVER_WORKER.and(firstVar, secondVar);
-        outputContact.setSetFunction(setFunction);
-
-        return component;
+        return createBinaryGate(circuit, new BinaryGateInterface("", "A", "B", "O"), And::new);
     }
 
     public static VisualFunctionComponent createOrGate(VisualCircuit circuit) {
-        Gate3 gate = CircuitSettings.parseOrData();
-        VisualFunctionComponent component = circuit.createVisualComponent(new FunctionComponent(), VisualFunctionComponent.class);
-        component.setLabel(gate.name);
-
-        VisualFunctionContact firstInputContact = circuit.getOrCreateContact(component, gate.in1, Contact.IOType.INPUT);
-        firstInputContact.setPosition(new Point2D.Double(-1.5, -0.5));
-
-        VisualFunctionContact secondInputContact = circuit.getOrCreateContact(component, gate.in2, Contact.IOType.INPUT);
-        secondInputContact.setPosition(new Point2D.Double(-1.5, 0.5));
-
-        VisualFunctionContact outputContact = circuit.getOrCreateContact(component, gate.out, Contact.IOType.OUTPUT);
-        outputContact.setPosition(new Point2D.Double(1.5, 0.0));
-
-        Contact firstVar = firstInputContact.getReferencedContact();
-        Contact secondVar = secondInputContact.getReferencedContact();
-        BooleanFormula setFunction = CLEVER_WORKER.or(firstVar, secondVar);
-        outputContact.setSetFunction(setFunction);
-
-        return component;
+        return createBinaryGate(circuit, new BinaryGateInterface("", "A", "B", "O"), Or::new);
     }
 
     public static VisualFunctionComponent createNandbGate(VisualCircuit circuit) {
-        Gate3 gate = CircuitSettings.parseNandbData();
-        VisualFunctionComponent component = circuit.createVisualComponent(new FunctionComponent(), VisualFunctionComponent.class);
-        component.setLabel(gate.name);
-
-        VisualFunctionContact firstInputContact = circuit.getOrCreateContact(component, gate.in1, Contact.IOType.INPUT);
-        firstInputContact.setPosition(new Point2D.Double(-1.5, -0.5));
-
-        VisualFunctionContact secondInputContact = circuit.getOrCreateContact(component, gate.in2, Contact.IOType.INPUT);
-        secondInputContact.setPosition(new Point2D.Double(-1.5, 0.5));
-
-        VisualFunctionContact outputContact = circuit.getOrCreateContact(component, gate.out, Contact.IOType.OUTPUT);
-        outputContact.setPosition(new Point2D.Double(1.5, 0.0));
-
-        Contact firstVar = firstInputContact.getReferencedContact();
-        Contact secondVar = secondInputContact.getReferencedContact();
-        outputContact.setSetFunction(CLEVER_WORKER.not(CLEVER_WORKER.and(CLEVER_WORKER.not(firstVar), secondVar)));
-
-        return component;
+        return createBinaryGate(circuit, new BinaryGateInterface("",  "AN", "B", "ON"),
+                (var1, var2) -> new Not(new And(new Not(var1), var2)));
     }
 
     public static VisualFunctionComponent createNorbGate(VisualCircuit circuit) {
-        Gate3 gate = CircuitSettings.parseNorbData();
-        VisualFunctionComponent component = circuit.createVisualComponent(new FunctionComponent(), VisualFunctionComponent.class);
-        component.setLabel(gate.name);
+        return createBinaryGate(circuit, new BinaryGateInterface("",  "AN", "B", "ON"),
+                (var1, var2) -> new Not(new Or(new Not(var1), var2)));
+    }
 
-        VisualFunctionContact firstInputContact = circuit.getOrCreateContact(component, gate.in1, Contact.IOType.INPUT);
+    public static VisualFunctionComponent createBinaryGate(VisualCircuit circuit, BinaryGateInterface defaultGateInterface,
+            BiFunction<FreeVariable, FreeVariable, BooleanFormula> func) {
+
+        String gateName = defaultGateInterface.name;
+        String outName = defaultGateInterface.output;
+        String in1Name = defaultGateInterface.firstInput;
+        String in2Name = defaultGateInterface.secondInput;
+
+        FreeVariable in1Var = new FreeVariable(in1Name);
+        FreeVariable in2Var = new FreeVariable(in2Name);
+        BooleanFormula formula = func.apply(in1Var, in2Var);
+        Pair<Gate, Map<BooleanVariable, String>> mapping = GenlibUtils.findMapping(formula, LibraryManager.getLibrary());
+        if (mapping != null) {
+            Gate gate = mapping.getFirst();
+            gateName = gate.name;
+            Map<BooleanVariable, String> assignments = mapping.getSecond();
+            in1Name = assignments.get(in1Var);
+            in2Name = assignments.get(in2Var);
+            outName = gate.function.name;
+        }
+
+        VisualFunctionComponent component = circuit.createVisualComponent(new FunctionComponent(), VisualFunctionComponent.class);
+        component.setLabel(gateName);
+
+        VisualFunctionContact firstInputContact = circuit.getOrCreateContact(component, in1Name, Contact.IOType.INPUT);
         firstInputContact.setPosition(new Point2D.Double(-1.5, -0.5));
 
-        VisualFunctionContact secondInputContact = circuit.getOrCreateContact(component, gate.in2, Contact.IOType.INPUT);
+        VisualFunctionContact secondInputContact = circuit.getOrCreateContact(component, in2Name, Contact.IOType.INPUT);
         secondInputContact.setPosition(new Point2D.Double(-1.5, 0.5));
 
-        VisualFunctionContact outputContact = circuit.getOrCreateContact(component, gate.out, Contact.IOType.OUTPUT);
+        VisualFunctionContact outputContact = circuit.getOrCreateContact(component, outName, Contact.IOType.OUTPUT);
         outputContact.setPosition(new Point2D.Double(1.5, 0.0));
 
-        Contact firstVar = firstInputContact.getReferencedContact();
-        Contact secondVar = secondInputContact.getReferencedContact();
-        outputContact.setSetFunction(CLEVER_WORKER.not(CLEVER_WORKER.or(CLEVER_WORKER.not(firstVar), secondVar)));
+        BooleanFormula setFunction = FormulaUtils.replace(formula, Arrays.asList(in1Var, in2Var),
+                Arrays.asList(firstInputContact.getReferencedComponent(), (Contact) secondInputContact.getReferencedComponent()));
+
+        outputContact.setSetFunction(setFunction);
 
         return component;
     }
@@ -360,7 +351,7 @@ public class GateUtils {
         for (int i = 0; i < count; i++) {
             VisualFunctionContact inputContact = circuit.getOrCreateContact(component, "i" + i, Contact.IOType.INPUT);
             inputContact.setPosition(new Point2D.Double(-1.5, i - 0.5 * (count - 1)));
-            vars.add(inputContact.getReferencedContact());
+            vars.add(inputContact.getReferencedComponent());
         }
         return vars;
     }

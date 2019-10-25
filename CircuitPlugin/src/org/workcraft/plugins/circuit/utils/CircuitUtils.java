@@ -10,15 +10,15 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.BooleanVariable;
-import org.workcraft.formula.FormulaUtils;
-import org.workcraft.formula.Not;
+import org.workcraft.formula.*;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
+import org.workcraft.plugins.circuit.genlib.Gate;
+import org.workcraft.plugins.circuit.genlib.GenlibUtils;
+import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
@@ -51,7 +51,7 @@ public class CircuitUtils {
     }
 
     public static VisualContact findDriver(VisualCircuit circuit, VisualContact contact, boolean transparentZeroDelayComponents) {
-        Contact mathDriver = findDriver(circuit.getMathModel(), contact.getReferencedContact(), transparentZeroDelayComponents);
+        Contact mathDriver = findDriver(circuit.getMathModel(), contact.getReferencedComponent(), transparentZeroDelayComponents);
         return circuit.getVisualComponent(mathDriver, VisualContact.class);
     }
 
@@ -113,7 +113,7 @@ public class CircuitUtils {
     }
 
     public static Collection<VisualContact> findDriven(VisualCircuit circuit, VisualContact contact, boolean transparentZeroDelayComponents) {
-        Collection<Contact> drivenContacts = findDriven(circuit.getMathModel(), contact.getReferencedContact(), transparentZeroDelayComponents);
+        Collection<Contact> drivenContacts = findDriven(circuit.getMathModel(), contact.getReferencedComponent(), transparentZeroDelayComponents);
         return getVisualContacts(circuit, drivenContacts);
     }
 
@@ -185,7 +185,7 @@ public class CircuitUtils {
     }
 
     public static VisualContact findSignal(VisualCircuit circuit, VisualContact contact, boolean transparentZeroDelayComponents) {
-        Contact mathSignal = findSignal(circuit.getMathModel(), contact.getReferencedContact(), transparentZeroDelayComponents);
+        Contact mathSignal = findSignal(circuit.getMathModel(), contact.getReferencedComponent(), transparentZeroDelayComponents);
         return circuit.getVisualComponent(mathSignal, VisualContact.class);
     }
 
@@ -200,7 +200,7 @@ public class CircuitUtils {
     }
 
     public static String getSignalReference(VisualCircuit circuit, VisualContact contact) {
-        return getSignalReference(circuit.getMathModel(), contact.getReferencedContact());
+        return getSignalReference(circuit.getMathModel(), contact.getReferencedComponent());
     }
 
     public static String getContactReference(Circuit circuit, Contact contact) {
@@ -247,7 +247,7 @@ public class CircuitUtils {
     }
 
     public static Signal.Type getSignalType(VisualCircuit circuit, VisualContact contact) {
-        return getSignalType(circuit.getMathModel(), contact.getReferencedContact());
+        return getSignalType(circuit.getMathModel(), contact.getReferencedComponent());
     }
 
     public static Signal.Type getSignalType(Circuit circuit, Contact contact) {
@@ -297,8 +297,8 @@ public class CircuitUtils {
         return BooleanFormulaParser.parse(function, name -> {
             BooleanFormula result = null;
             VisualFunctionContact contact = circuit.getOrCreateContact(component, name, IOType.INPUT);
-            if ((contact != null) && (contact.getReferencedContact() instanceof BooleanFormula)) {
-                result = contact.getReferencedContact();
+            if ((contact != null) && (contact.getReferencedComponent() instanceof BooleanFormula)) {
+                result = contact.getReferencedComponent();
             }
             return result;
         });
@@ -311,8 +311,8 @@ public class CircuitUtils {
         return BooleanFormulaParser.parse(function, name -> {
             BooleanFormula result = null;
             VisualFunctionContact port = circuit.getOrCreatePort(name, IOType.OUTPUT);
-            if ((port != null) && (port.getReferencedContact() instanceof BooleanFormula)) {
-                result = port.getReferencedContact();
+            if ((port != null) && (port.getReferencedComponent() instanceof BooleanFormula)) {
+                result = port.getReferencedComponent();
             }
             return result;
         });
@@ -433,15 +433,22 @@ public class CircuitUtils {
     public static boolean mapUnmappedBuffers(WorkspaceEntry we) {
         boolean result = false;
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-        Gate2 buf = CircuitSettings.parseBufData();
-        for (FunctionComponent component: circuit.getFunctionComponents()) {
-            if (!component.isMapped() && component.isBuffer()) {
-                Contact input = component.getFirstInput();
-                Contact output = component.getFirstOutput();
-                component.setModule(buf.name);
-                circuit.setName(input, buf.in);
-                circuit.setName(output, buf.out);
-                result = true;
+        FreeVariable inVar = new FreeVariable("I");
+        Pair<Gate, Map<BooleanVariable, String>> mapping = GenlibUtils.findMapping(inVar, LibraryManager.getLibrary());
+        if (mapping != null) {
+            Gate buf = mapping.getFirst();
+            Map<BooleanVariable, String> assignments = mapping.getSecond();
+            String inName = assignments.get(inVar);
+            String outName = buf.function.name;
+            for (FunctionComponent component : circuit.getFunctionComponents()) {
+                if (!component.isMapped() && component.isBuffer()) {
+                    Contact input = component.getFirstInput();
+                    Contact output = component.getFirstOutput();
+                    component.setModule(buf.name);
+                    circuit.setName(input, inName);
+                    circuit.setName(output, outName);
+                    result = true;
+                }
             }
         }
         return result;
@@ -466,7 +473,7 @@ public class CircuitUtils {
     public static void removeUnusedPins(VisualCircuit circuit, VisualFunctionComponent component) {
         Set<BooleanVariable> usedVariables = GateUtils.getUsedVariables(component.getReferencedComponent());
         for (VisualFunctionContact contact : component.getVisualFunctionContacts()) {
-            if (!usedVariables.contains(contact.getReferencedContact()) &&
+            if (!usedVariables.contains(contact.getReferencedComponent()) &&
                     ((contact.isDriver() && circuit.getPostset(contact).isEmpty()) ||
                     (contact.isDriven() && circuit.getPreset(contact).isEmpty()))) {
 
