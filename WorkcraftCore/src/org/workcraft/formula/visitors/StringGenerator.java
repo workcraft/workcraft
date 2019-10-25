@@ -11,7 +11,7 @@ public class StringGenerator implements BooleanVisitor<String> {
     }
 
     public enum Style {
-        DEFAULT, UNICODE, VERILOG
+        DEFAULT, UNICODE, VERILOG, REACH
     };
 
     public static class PrinterSuite {
@@ -140,8 +140,6 @@ public class StringGenerator implements BooleanVisitor<String> {
             switch (style) {
             case UNICODE:
                 return visitBinary(next, " \u21d2 ", node);
-            case VERILOG:
-                return visitBinary(next, " => ", node);
             default:
                 return visitBinary(next, " => ", node);
             }
@@ -151,7 +149,12 @@ public class StringGenerator implements BooleanVisitor<String> {
     public static class IffPrinter extends DelegatingPrinter {
         @Override
         public Void visit(Iff node) {
-            return visitBinary(this, " = ", node);
+            switch (style) {
+            case REACH:
+                return visitBinary(this, " <-> ", node);
+            default:
+                return visitBinary(this, " = ", node);
+            }
         }
     }
 
@@ -159,9 +162,8 @@ public class StringGenerator implements BooleanVisitor<String> {
         @Override
         public Void visit(Or node) {
             switch (style) {
-            case UNICODE:
-                return visitBinary(this, " + ", node);
             case VERILOG:
+            case REACH:
                 return visitBinary(this, " | ", node);
             default:
                 return visitBinary(this, " + ", node);
@@ -175,8 +177,6 @@ public class StringGenerator implements BooleanVisitor<String> {
             switch (style) {
             case UNICODE:
                 return visitBinary(this, " \u2295 ", node);
-            case VERILOG:
-                return visitBinary(this, " ^ ", node);
             default:
                 return visitBinary(this, " ^ ", node);
             }
@@ -190,6 +190,7 @@ public class StringGenerator implements BooleanVisitor<String> {
             case UNICODE:
                 return visitBinary(this, " \u00b7 ", node);
             case VERILOG:
+            case REACH:
                 return visitBinary(this, " & ", node);
             default:
                 return visitBinary(this, " * ", node);
@@ -205,6 +206,7 @@ public class StringGenerator implements BooleanVisitor<String> {
                 append("\u00ac");
                 return node.getX().accept(this);
             case VERILOG:
+            case REACH:
                 append("~");
                 return node.getX().accept(this);
             default:
