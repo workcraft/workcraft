@@ -5,8 +5,7 @@ import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.builtin.settings.AbstractModelSettings;
-import org.workcraft.plugins.circuit.utils.Gate2;
-import org.workcraft.plugins.circuit.utils.Gate3;
+import org.workcraft.plugins.circuit.genlib.UnaryGateInterface;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.StgSettings;
@@ -35,11 +34,9 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final int MUTEX_G2_GROUP = 5;
 
     private static final Pattern GATE2_DATA_PATTERN = Pattern.compile("(\\w+)\\((\\w+),(\\w+)\\)");
-    private static final Pattern GATE3_DATA_PATTERN = Pattern.compile("(\\w+)\\((\\w+),(\\w+),(\\w+)\\)");
     private static final int GATE_NAME_GROUP = 1;
     private static final int GATE_PIN1_GROUP = 2;
     private static final int GATE_PIN2_GROUP = 3;
-    private static final int GATE_PIN3_GROUP = 4;
 
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CircuitSettings";
@@ -54,7 +51,6 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyInactiveWireColor = prefix + ".inactiveWireColor";
     private static final String keySimplifyStg = prefix + ".simplifyStg";
     private static final String keyGateLibrary = prefix + ".gateLibrary";
-    private static final String keyBufData = prefix + ".bufData";
     private static final String keyMutexData = prefix + ".mutexData";
     // Import/export
     private static final String keyExportSubstitutionLibrary = prefix + ".exportSubstitutionLibrary";
@@ -67,12 +63,6 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyResetPort = prefix + ".resetPort";
     private static final String keySetPin = prefix + ".setPin";
     private static final String keyClearPin = prefix + ".clearPin";
-    private static final String keyAndData = prefix + ".andData";
-    private static final String keyOrData = prefix + ".orData";
-    private static final String keyNandData = prefix + ".nandData";
-    private static final String keyNorData = prefix + ".norData";
-    private static final String keyNandbData = prefix + ".nandbData";
-    private static final String keyNorbData = prefix + ".norbData";
     // Scan
     private static final String keyTbufData = prefix + ".tbufData";
     private static final String keyTinvData = prefix + ".tinvData";
@@ -93,23 +83,19 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final Color defaultInactiveWireColor = new Color(0.0f, 0.0f, 1.0f);
     private static final boolean defaultSimplifyStg = true;
     private static final String defaultGateLibrary = DesktopApi.getOs().isWindows() ? "libraries\\workcraft.lib" : "libraries/workcraft.lib";
+    // Import/export
     private static final String defaultExportSubstitutionLibrary = "";
     private static final boolean defaultInvertExportSubstitutionRules = false;
     private static final String defaultImportSubstitutionLibrary = "";
     private static final boolean defaultInvertImportSubstitutionRules = true;
     private static final boolean defaultVerilogAssignDelay = false;
     private static final String defaultBusSuffix = "__$";
-    private static final String defaultBufData = "BUF (I, O)";
-    private static final String defaultAndData = "AND2 (A, B, O)";
-    private static final String defaultOrData = "OR2 (A, B, O)";
-    private static final String defaultNandData = "NAND2 (A, B, ON)";
-    private static final String defaultNorData = "NOR2 (A, B, ON)";
-    private static final String defaultNandbData = "NAND2B (AN, B, ON)";
-    private static final String defaultNorbData = "NOR2B (AN, B, ON)";
     private static final String defaultMutexData = "MUTEX ((r1, g1), (r2, g2))";
+    // Reset
     private static final String defaultResetPort = "reset";
     private static final String defaultSetPin = "S";
     private static final String defaultClearPin = "R";
+    // Scan
     private static final String defaultTbufData = "TBUF (I, O)";
     private static final String defaultTinvData = "TINV (I, ON)";
     private static final String defaultScanSuffix = "_scan";
@@ -135,17 +121,12 @@ public class CircuitSettings extends AbstractModelSettings {
     private static boolean invertImportSubstitutionRules = defaultInvertImportSubstitutionRules;
     private static boolean verilogAssignDelay = defaultVerilogAssignDelay;
     private static String busSuffix = defaultBusSuffix;
-    private static String bufData = defaultBufData;
-    private static String andData = defaultAndData;
-    private static String orData = defaultOrData;
-    private static String nandData = defaultNandData;
-    private static String norData = defaultNorData;
-    private static String nandbData = defaultNandbData;
-    private static String norbData = defaultNorbData;
     private static String mutexData = defaultMutexData;
+    // Reset
     private static String resetPort = defaultResetPort;
     private static String setPin = defaultSetPin;
     private static String clearPin = defaultClearPin;
+    // Scan
     private static String tbufData = defaultTbufData;
     private static String tinvData = defaultTinvData;
     private static String scanSuffix = defaultScanSuffix;
@@ -205,11 +186,6 @@ public class CircuitSettings extends AbstractModelSettings {
                 "Gate library for technology mapping",
                 (value) -> setGateLibrary(ExecutableUtils.getBaseRelativePath(value)),
                 () -> ExecutableUtils.getBaseRelativeFile(getGateLibrary())));
-
-        properties.add(new PropertyDeclaration<>(String.class,
-                "BUF name and input-output pins",
-                (value) -> setGate2Data(value, CircuitSettings::setBufData, "BUF", defaultBufData),
-                CircuitSettings::getBufData));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 "Mutex name and request-grant pairs",
@@ -275,36 +251,6 @@ public class CircuitSettings extends AbstractModelSettings {
                 PropertyHelper.BULLET_PREFIX + "Initialisation CLEAR pin name",
                 CircuitSettings::setClearPin,
                 CircuitSettings::getClearPin));
-
-        properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "AND2 name and input-output pins",
-                (value) -> setGate3Data(value, CircuitSettings::setAndData, "AND2", defaultAndData),
-                CircuitSettings::getAndData));
-
-        properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "OR2 name and input-output pins",
-                (value) -> setGate3Data(value, CircuitSettings::setOrData, "OR2", defaultOrData),
-                CircuitSettings::getOrData));
-
-        properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "NAND2 name and input-output pins",
-                (value) -> setGate3Data(value, CircuitSettings::setNandData, "NAND2", defaultNandData),
-                CircuitSettings::getNandData));
-
-        properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "NOR2 name and input-output pins",
-                (value) -> setGate3Data(value, CircuitSettings::setNorData, "NOR2", defaultNorData),
-                CircuitSettings::getNorData));
-
-        properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "NAND2B name and input-output pins",
-                (value) -> setGate3Data(value, CircuitSettings::setNandbData, "NAND2B", defaultNandbData),
-                CircuitSettings::getNandbData));
-
-        properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "NOR2B name and input-output pins",
-                (value) -> setGate3Data(value, CircuitSettings::setNorbData, "NOR2B", defaultNorbData),
-                CircuitSettings::getNorbData));
 
         properties.add(PropertyHelper.createSeparatorProperty("Loop breaking and scan insertion"));
 
@@ -379,7 +325,6 @@ public class CircuitSettings extends AbstractModelSettings {
         setInactiveWireColor(config.getColor(keyInactiveWireColor, defaultInactiveWireColor));
         setSimplifyStg(config.getBoolean(keySimplifyStg, defaultSimplifyStg));
         setGateLibrary(config.getString(keyGateLibrary, defaultGateLibrary));
-        setBufData(config.getString(keyBufData, defaultBufData));
         setMutexData(config.getString(keyMutexData, defaultMutexData));
         // Import/export
         setExportSubstitutionLibrary(config.getString(keyExportSubstitutionLibrary, defaultExportSubstitutionLibrary));
@@ -392,12 +337,6 @@ public class CircuitSettings extends AbstractModelSettings {
         setResetPort(config.getString(keyResetPort, defaultResetPort));
         setSetPin(config.getString(keySetPin, defaultSetPin));
         setClearPin(config.getString(keyClearPin, defaultClearPin));
-        setAndData(config.getString(keyAndData, defaultAndData));
-        setOrData(config.getString(keyOrData, defaultOrData));
-        setNandbData(config.getString(keyNandData, defaultNandData));
-        setNorbData(config.getString(keyNorData, defaultNorData));
-        setNandbData(config.getString(keyNandbData, defaultNandbData));
-        setNorbData(config.getString(keyNorbData, defaultNorbData));
         // Scan
         setTbufData(config.getString(keyTbufData, defaultTbufData));
         setTinvData(config.getString(keyTinvData, defaultTinvData));
@@ -421,7 +360,6 @@ public class CircuitSettings extends AbstractModelSettings {
         config.setColor(keyInactiveWireColor, getInactiveWireColor());
         config.setBoolean(keySimplifyStg, getSimplifyStg());
         config.set(keyGateLibrary, getGateLibrary());
-        config.set(keyBufData, getBufData());
         config.set(keyMutexData, getMutexData());
         // Import/export
         config.set(keyExportSubstitutionLibrary, getExportSubstitutionLibrary());
@@ -434,12 +372,6 @@ public class CircuitSettings extends AbstractModelSettings {
         config.set(keyResetPort, getResetPort());
         config.set(keySetPin, getSetPin());
         config.set(keyClearPin, getClearPin());
-        config.set(keyAndData, getAndData());
-        config.set(keyOrData, getOrData());
-        config.set(keyNandData, getNandData());
-        config.set(keyNorData, getNorData());
-        config.set(keyNandbData, getNandbData());
-        config.set(keyNorbData, getNorbData());
         // Scan
         config.set(keyTbufData, getTbufData());
         config.set(keyTinvData, getTinvData());
@@ -531,18 +463,6 @@ public class CircuitSettings extends AbstractModelSettings {
         gateLibrary = value;
     }
 
-    public static String getBufData() {
-        return bufData;
-    }
-
-    public static void setBufData(String value) {
-        bufData = value;
-    }
-
-    public static Gate2 parseBufData() {
-        return parseGate2Data(getBufData());
-    }
-
     public static String getMutexData() {
         return mutexData;
     }
@@ -627,78 +547,6 @@ public class CircuitSettings extends AbstractModelSettings {
         clearPin = value;
     }
 
-    public static String getAndData() {
-        return andData;
-    }
-
-    public static void setAndData(String value) {
-        andData = value;
-    }
-
-    public static Gate3 parseAndData() {
-        return parseGate3Data(getAndData());
-    }
-
-    public static String getOrData() {
-        return orData;
-    }
-
-    public static void setOrData(String value) {
-        orData = value;
-    }
-
-    public static Gate3 parseOrData() {
-        return parseGate3Data(getOrData());
-    }
-
-    public static String getNandData() {
-        return nandData;
-    }
-
-    public static void setNandData(String value) {
-        nandData = value;
-    }
-
-    public static Gate3 parseNandData() {
-        return parseGate3Data(getNandData());
-    }
-
-    public static String getNorData() {
-        return norData;
-    }
-
-    public static void setNorData(String value) {
-        norData = value;
-    }
-
-    public static Gate3 parseNorData() {
-        return parseGate3Data(getNorData());
-    }
-
-    public static String getNandbData() {
-        return nandbData;
-    }
-
-    public static void setNandbData(String value) {
-        nandbData = value;
-    }
-
-    public static Gate3 parseNandbData() {
-        return parseGate3Data(getNandbData());
-    }
-
-    public static String getNorbData() {
-        return norbData;
-    }
-
-    public static void setNorbData(String value) {
-        norbData = value;
-    }
-
-    public static Gate3 parseNorbData() {
-        return parseGate3Data(getNorbData());
-    }
-
     public static String getTbufData() {
         return tbufData;
     }
@@ -707,7 +555,7 @@ public class CircuitSettings extends AbstractModelSettings {
         tbufData = value;
     }
 
-    public static Gate2 parseTbufData() {
+    public static UnaryGateInterface parseTbufData() {
         return parseGate2Data(getTbufData());
     }
 
@@ -719,7 +567,7 @@ public class CircuitSettings extends AbstractModelSettings {
         tinvData = value;
     }
 
-    public static Gate2 parseTinvData() {
+    public static UnaryGateInterface parseTinvData() {
         return parseGate2Data(getTinvData());
     }
 
@@ -799,37 +647,15 @@ public class CircuitSettings extends AbstractModelSettings {
         }
     }
 
-    private static Gate2 parseGate2Data(String value) {
-        Gate2 result = null;
+    private static UnaryGateInterface parseGate2Data(String value) {
         Matcher matcher = GATE2_DATA_PATTERN.matcher(value.replaceAll("\\s", ""));
         if (matcher.find()) {
             String name = matcher.group(GATE_NAME_GROUP);
-            String in = matcher.group(GATE_PIN1_GROUP);
-            String out = matcher.group(GATE_PIN2_GROUP);
-            result = new Gate2(name, in, out);
+            String input = matcher.group(GATE_PIN1_GROUP);
+            String output = matcher.group(GATE_PIN2_GROUP);
+            return new UnaryGateInterface(name, input, output);
         }
-        return result;
-    }
-
-    private static void setGate3Data(String value, Consumer<String> setter, String msg, String defaultValue) {
-        if (parseGate3Data(value) != null) {
-            setter.accept(value);
-        } else {
-            errorDescriptionFormat(msg, defaultValue);
-        }
-    }
-
-    private static Gate3 parseGate3Data(String value) {
-        Gate3 result = null;
-        Matcher matcher = GATE3_DATA_PATTERN.matcher(value.replaceAll("\\s", ""));
-        if (matcher.find()) {
-            String name = matcher.group(GATE_NAME_GROUP);
-            String in1 = matcher.group(GATE_PIN1_GROUP);
-            String in2 = matcher.group(GATE_PIN2_GROUP);
-            String out = matcher.group(GATE_PIN3_GROUP);
-            result = new Gate3(name, in1, in2, out);
-        }
-        return result;
+        return null;
     }
 
     private static Mutex parseMutexData(String str) {
@@ -870,4 +696,5 @@ public class CircuitSettings extends AbstractModelSettings {
         }
         return Pair.of(portName, pinName);
     }
+
 }

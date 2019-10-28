@@ -47,7 +47,7 @@ public class PathbreakConstraintSerialiser implements PathbreakSerialiser {
     }
 
     private void writeCircuit(PrintWriter out, Circuit circuit) {
-        HashMap<String, SubstitutionRule> substitutionRules = SubstitutionUtils.readExportSubsritutionRules();
+        HashMap<String, SubstitutionRule> substitutionRules = SubstitutionUtils.readExportSubstitutionRules();
         for (FunctionComponent component: Hierarchy.getDescendantsOfType(circuit.getRoot(), FunctionComponent.class)) {
             writeInstance(out, circuit, component, substitutionRules);
         }

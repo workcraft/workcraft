@@ -468,7 +468,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
             contactNameGlyphs.clear();
         }
         Circuit circuit = (Circuit) r.getModel().getMathModel();
-        String name = circuit.getName(vc.getReferencedContact());
+        String name = circuit.getName(vc.getReferencedComponent());
         GlyphVector gv = contactNameGlyphs.get(vc);
         if (gv == null) {
             FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);

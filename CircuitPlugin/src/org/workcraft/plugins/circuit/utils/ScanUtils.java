@@ -7,6 +7,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.Zero;
 import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.circuit.genlib.UnaryGateInterface;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
 import org.workcraft.utils.DialogUtils;
 
@@ -18,8 +19,8 @@ public class ScanUtils {
         Set<VisualFunctionComponent> components = new HashSet<>();
         for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {
             for (VisualContact contact : component.getVisualOutputs()) {
-                if (contact.getReferencedContact().getPathBreaker()) {
-                    contact.getReferencedContact().setPathBreaker(false);
+                if (contact.getReferencedComponent().getPathBreaker()) {
+                    contact.getReferencedComponent().setPathBreaker(false);
                     VisualFunctionComponent testableGate = insertTestableGate(circuit, contact);
                     if (testableGate != null) {
                         components.add(testableGate);
@@ -37,13 +38,13 @@ public class ScanUtils {
             result = GateUtils.createBufferGate(circuit);
             GateUtils.insertGateAfter(circuit, result, contact);
             GateUtils.propagateInitialState(circuit, result);
-            result.getGateOutput().getReferencedContact().setPathBreaker(true);
+            result.getGateOutput().getReferencedComponent().setPathBreaker(true);
         }
-        Gate2 testableGate = result.isInverter() ? CircuitSettings.parseTinvData() : CircuitSettings.parseTbufData();
-        result.getReferencedComponent().setModule(testableGate.name);
-        circuit.setMathName(result.getFirstVisualInput(), testableGate.in);
-        circuit.setMathName(result.getFirstVisualOutput(), testableGate.out);
-        result.getGateOutput().getReferencedContact().setPathBreaker(true);
+        UnaryGateInterface testableGateInterface = result.isInverter() ? CircuitSettings.parseTinvData() : CircuitSettings.parseTbufData();
+        result.getReferencedComponent().setModule(testableGateInterface.name);
+        circuit.setMathName(result.getFirstVisualInput(), testableGateInterface.input);
+        circuit.setMathName(result.getFirstVisualOutput(), testableGateInterface.output);
+        result.getGateOutput().getReferencedComponent().setPathBreaker(true);
         return result;
     }
 
@@ -135,7 +136,7 @@ public class ScanUtils {
 
             String outName = CircuitSettings.parseScanoutPortPin().getFirst();
 
-            Contact existingPort = CircuitUtils.getDrivenOutputPort(circuit.getMathModel(), outPin.getReferencedContact());
+            Contact existingPort = CircuitUtils.getDrivenOutputPort(circuit.getMathModel(), outPin.getReferencedComponent());
             if (existingPort == null) {
                 VisualFunctionContact outPort = CircuitUtils.getOrCreatePort(
                         circuit, outName, Contact.IOType.OUTPUT, VisualContact.Direction.EAST);

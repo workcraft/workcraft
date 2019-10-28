@@ -2,22 +2,26 @@ package org.workcraft.plugins.circuit.genlib;
 
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.BooleanVariable;
+import org.workcraft.formula.FormulaUtils;
+import org.workcraft.formula.bdd.BddManager;
+import org.workcraft.formula.jj.BooleanFormulaParser;
+import org.workcraft.formula.jj.ParseException;
 import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.expression.ExpressionUtils;
-import org.workcraft.plugins.circuit.jj.genlib.GenlibParser;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
-import org.workcraft.utils.FileUtils;
+import org.workcraft.types.Pair;
 import org.workcraft.utils.LogUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class GenlibUtils {
 
@@ -72,31 +76,68 @@ public class GenlibUtils {
         return result;
     }
 
-    public static Library readLibrary() {
-        Library library = new Library();
-        String fileName = CircuitSettings.getGateLibrary();
-        if ((fileName == null) || fileName.isEmpty()) {
-            LogUtils.logWarning("Gate library is not specified.");
-        } else {
-            File file = new File(fileName);
-            if (FileUtils.checkAvailability(file, "Gate library access error", false)) {
-                try {
-                    InputStream genlibInputStream = new FileInputStream(file);
-                    GenlibParser genlibParser = new GenlibParser(genlibInputStream);
-                    if (DebugCommonSettings.getParserTracing()) {
-                        genlibParser.enable_tracing();
-                    } else {
-                        genlibParser.disable_tracing();
-                    }
-                    library = genlibParser.parseGenlib();
-                    LogUtils.logInfo("Mapping the imported Verilog into the gate library '" + fileName + "'.");
-                } catch (FileNotFoundException e) {
-                } catch (org.workcraft.plugins.circuit.jj.genlib.ParseException e) {
-                    LogUtils.logWarning("Could not parse the gate library '" + fileName + "'.");
+    public static Pair<Gate, Map<BooleanVariable, String>> findMapping(BooleanFormula formula, Library library) {
+        if (library != null) {
+            for (String gateName : library.getNames()) {
+                Gate gate = library.get(gateName);
+                Map<BooleanVariable, String> mapping = findMapping(formula, gate);
+                if (mapping != null) {
+                    return Pair.of(gate, mapping);
                 }
             }
         }
-        return library;
+        return null;
+    }
+
+    private static Map<BooleanVariable, String> findMapping(BooleanFormula formula, Gate gate) {
+        if (!gate.isSequential()) {
+            try {
+                BooleanFormula gateFormula = BooleanFormulaParser.parse(gate.function.formula);
+                Map<BooleanVariable, BooleanVariable> mapping = findMapping(formula, gateFormula);
+                if (mapping != null) {
+                    return mapping.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getLabel()));
+                }
+            } catch (ParseException e) {
+            }
+        }
+        return null;
+    }
+
+    private static Map<BooleanVariable, BooleanVariable> findMapping(BooleanFormula firstFormula, BooleanFormula secondFormula) {
+        List<BooleanVariable> firstVars = FormulaUtils.extractLiterals(firstFormula);
+        List<BooleanVariable> secondVars = FormulaUtils.extractLiterals(secondFormula);
+        if (firstVars.size() == secondVars.size()) {
+            BddManager bdd = new BddManager();
+            for (List<BooleanVariable> vars : generatePermutations(firstVars)) {
+                BooleanFormula mappedFormula = FormulaUtils.replace(firstFormula, vars, secondVars);
+                if (bdd.equal(mappedFormula, secondFormula)) {
+                    Map<BooleanVariable, BooleanVariable> result = new HashMap<>();
+                    for (int i = 0; i < vars.size(); i++) {
+                        result.put(vars.get(i), secondVars.get(i));
+                    }
+                    return result;
+                }
+            }
+        }
+        return null;
+    }
+
+    private static <T> List<List<T>> generatePermutations(List<T> list) {
+        List<List<T>> result = new ArrayList<>();
+        if (list.isEmpty()) {
+            result.add(new ArrayList<>());
+        } else {
+            T firstElement = list.remove(0);
+            List<List<T>> permutations = generatePermutations(list);
+            for (List<T> permutation : permutations) {
+                for (int index = 0; index <= permutation.size(); index++) {
+                    List<T> tmp = new ArrayList<>(permutation);
+                    tmp.add(index, firstElement);
+                    result.add(tmp);
+                }
+            }
+        }
+        return result;
     }
 
 }

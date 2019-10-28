@@ -30,6 +30,12 @@ public class FormulaUtils {
     }
 
     public static BooleanFormula replace(BooleanFormula formula, List<? extends BooleanVariable> params,
+            List<? extends BooleanFormula> values) {
+
+        return replace(formula, params, values, DumbBooleanWorker.getInstance());
+    }
+
+    public static BooleanFormula replace(BooleanFormula formula, List<? extends BooleanVariable> params,
             List<? extends BooleanFormula> values, BooleanWorker worker) {
 
         BooleanFormula result = null;

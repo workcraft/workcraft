@@ -199,7 +199,7 @@ public class CircuitToStgConverter {
         for (VisualContact driver: drivers) {
             VisualContact signal = CircuitUtils.findSignal(circuit, driver, true);
             if (signal.isDriver() || signal.isPort()) {
-                boolean initToOne = signal.getReferencedContact().getInitToOne();
+                boolean initToOne = signal.getReferencedComponent().getInitToOne();
                 String signalRef = CircuitUtils.getSignalReference(circuit, signal);
 
                 String parentRef = NamespaceHelper.getParentReference(signalRef);

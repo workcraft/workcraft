@@ -230,7 +230,7 @@ public class FormulaToGraphics {
                 varMap.put(label, var);
             } else {
                 if (nameHolder != var) {
-                    throw new RuntimeException("name conflict! duplicate name " + label);
+                    throw new RuntimeException("Duplicate name '" + label + "'");
                 }
             }
             return print(label);

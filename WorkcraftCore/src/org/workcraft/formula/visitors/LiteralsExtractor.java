@@ -31,30 +31,30 @@ public class LiteralsExtractor implements BooleanVisitor<List<BooleanVariable>> 
 
     @Override
     public List<BooleanVariable> visit(And node) {
-        return accept(node);
+        return visitBinaryOperator(node);
     }
 
     @Override
     public List<BooleanVariable> visit(Or node) {
-        return accept(node);
+        return visitBinaryOperator(node);
     }
 
     @Override
     public List<BooleanVariable> visit(Iff node) {
-        return accept(node);
+        return visitBinaryOperator(node);
     }
 
     @Override
     public List<BooleanVariable> visit(Xor node) {
-        return accept(node);
+        return visitBinaryOperator(node);
     }
 
     @Override
     public List<BooleanVariable> visit(Imply node) {
-        return accept(node);
+        return visitBinaryOperator(node);
     }
 
-    private List<BooleanVariable> accept(BinaryBooleanFormula node) {
+    private List<BooleanVariable> visitBinaryOperator(BinaryBooleanFormula node) {
         List<BooleanVariable> result = new LinkedList<>();
         result.addAll(node.getX().accept(this));
         result.addAll(node.getY().accept(this));

@@ -52,13 +52,13 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
     }
 
     @Override
-    public FunctionContact getReferencedContact() {
+    public FunctionContact getReferencedComponent() {
         return (FunctionContact) super.getReferencedComponent();
     }
 
     @NoAutoSerialisation
     public BooleanFormula getSetFunction() {
-        return getReferencedContact().getSetFunction();
+        return getReferencedComponent().getSetFunction();
     }
 
     @NoAutoSerialisation
@@ -68,32 +68,32 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
             p.invalidateRenderingResult();
         }
         renderedSetFunction = null;
-        getReferencedContact().setSetFunction(setFunction);
+        getReferencedComponent().setSetFunction(setFunction);
     }
 
     @NoAutoSerialisation
     public BooleanFormula getResetFunction() {
-        return getReferencedContact().getResetFunction();
+        return getReferencedComponent().getResetFunction();
     }
 
     @NoAutoSerialisation
     public void setForcedInit(boolean value) {
-        getReferencedContact().setForcedInit(value);
+        getReferencedComponent().setForcedInit(value);
     }
 
     @NoAutoSerialisation
     public boolean getForcedInit() {
-        return getReferencedContact().getForcedInit();
+        return getReferencedComponent().getForcedInit();
     }
 
     @NoAutoSerialisation
     public void setInitToOne(boolean value) {
-        getReferencedContact().setInitToOne(value);
+        getReferencedComponent().setInitToOne(value);
     }
 
     @NoAutoSerialisation
     public boolean getInitToOne() {
-        return getReferencedContact().getInitToOne();
+        return getReferencedComponent().getInitToOne();
     }
 
     @NoAutoSerialisation
@@ -103,7 +103,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
             p.invalidateRenderingResult();
         }
         renderedResetFunction = null;
-        getReferencedContact().setResetFunction(resetFunction);
+        getReferencedComponent().setResetFunction(resetFunction);
     }
 
     public void invalidateRenderedFormula() {
@@ -120,7 +120,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
             functionFontSize = CircuitSettings.getContactFontSize();
             renderedSetFunction = null;
         }
-        BooleanFormula setFunction = getReferencedContact().getSetFunction();
+        BooleanFormula setFunction = getReferencedComponent().getSetFunction();
         if (setFunction == null) {
             renderedSetFunction = null;
         } else if (renderedSetFunction == null) {
@@ -168,7 +168,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
             functionFontSize = CircuitSettings.getContactFontSize();
             renderedResetFunction = null;
         }
-        BooleanFormula resetFunction = getReferencedContact().getResetFunction();
+        BooleanFormula resetFunction = getReferencedComponent().getResetFunction();
         if (resetFunction == null) {
             renderedResetFunction = null;
         } else if (renderedResetFunction == null) {

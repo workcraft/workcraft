@@ -102,7 +102,7 @@ public class ContractComponentTransformationCommand extends AbstractTransformati
         Contact driver = CircuitUtils.findDriver(mathCircuit, inputContact.getReferencedComponent(), true);
         HashSet<Contact> drivenSet = new HashSet<>();
         drivenSet.addAll(CircuitUtils.findDriven(mathCircuit, driver, true));
-        drivenSet.addAll(CircuitUtils.findDriven(mathCircuit, outputContact.getReferencedContact(), true));
+        drivenSet.addAll(CircuitUtils.findDriven(mathCircuit, outputContact.getReferencedComponent(), true));
         int outputPortCount = 0;
         for (Contact driven: drivenSet) {
             if (driven.isOutput() && driven.isPort()) {
@@ -124,7 +124,7 @@ public class ContractComponentTransformationCommand extends AbstractTransformati
         if (directDriverParent instanceof FunctionComponent) {
             FunctionComponent directDriverComponent = (FunctionComponent) directDriverParent;
             if (directDriverComponent.getIsZeroDelay()) {
-                Collection<Contact> directDrivenSet = CircuitUtils.findDriven(mathCircuit, outputContact.getReferencedContact(), false);
+                Collection<Contact> directDrivenSet = CircuitUtils.findDriven(mathCircuit, outputContact.getReferencedComponent(), false);
                 for (Contact directDriven: directDrivenSet) {
                     if (directDriven.isOutput() && directDriven.isPort()) {
                         LogUtils.logError("Cannot contract component '" + componentName + "' as it leads to connection of zero delay component to output port.");

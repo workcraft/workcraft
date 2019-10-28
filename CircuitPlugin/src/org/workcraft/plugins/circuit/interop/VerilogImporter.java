@@ -20,10 +20,7 @@ import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.expression.Expression;
 import org.workcraft.plugins.circuit.expression.ExpressionUtils;
 import org.workcraft.plugins.circuit.expression.Literal;
-import org.workcraft.plugins.circuit.genlib.Function;
-import org.workcraft.plugins.circuit.genlib.Gate;
-import org.workcraft.plugins.circuit.genlib.GenlibUtils;
-import org.workcraft.plugins.circuit.genlib.Library;
+import org.workcraft.plugins.circuit.genlib.*;
 import org.workcraft.plugins.circuit.jj.expression.ExpressionParser;
 import org.workcraft.plugins.circuit.jj.verilog.VerilogParser;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
@@ -58,7 +55,6 @@ public class VerilogImporter implements Importer {
 
     private final boolean sequentialAssign;
 
-    private Library library = null;
     private Map<String, SubstitutionRule> substitutionRules = null;
     private Map<VerilogModule, String> moduleFileNames = null;
 
@@ -237,7 +233,6 @@ public class VerilogImporter implements Importer {
     }
 
     private Collection<VerilogModule> importVerilogModules(InputStream in) throws DeserialisationException {
-        library = null;
         substitutionRules = null;
         moduleFileNames = null;
         List<VerilogModule> result = null;
@@ -276,15 +271,13 @@ public class VerilogImporter implements Importer {
             createAssignGate(circuit, verilogAssign, wires);
         }
         Mutex mutexModule = CircuitSettings.parseMutexData();
-        for (VerilogInstance verilogInstance: verilogModule.instances) {
+        for (VerilogInstance verilogInstance : verilogModule.instances) {
             SubstitutionRule substitutionRule = null;
             Gate gate = createPrimitiveGate(verilogInstance);
             if (gate == null) {
-                if (library == null) {
-                    library = GenlibUtils.readLibrary();
-                }
+                Library library = LibraryManager.getLibrary();
                 if (substitutionRules == null) {
-                    substitutionRules = SubstitutionUtils.readImportSubsritutionRules();
+                    substitutionRules = SubstitutionUtils.readImportSubstitutionRules();
                 }
                 substitutionRule = substitutionRules.get(verilogInstance.moduleName);
                 String msg = "Processing instance '" + verilogInstance.name + "' in module '" + verilogModule.name + "': ";

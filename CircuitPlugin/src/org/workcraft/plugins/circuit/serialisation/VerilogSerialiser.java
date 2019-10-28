@@ -46,7 +46,7 @@ public class VerilogSerialiser implements ModelSerialiser {
                 writer.println(Info.getGeneratedByText("// Verilog netlist ", ""));
                 refinementCircuits.clear();
                 substitutionRules.clear();
-                substitutionRules.putAll(SubstitutionUtils.readExportSubsritutionRules());
+                substitutionRules.putAll(SubstitutionUtils.readExportSubstitutionRules());
                 writeCircuit(writer, circuit);
                 writeRefinementCircuits(writer);
                 writer.close();

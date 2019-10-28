@@ -124,7 +124,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         for (Node node: getChildren()) {
             if (!(node instanceof VisualFunctionContact)) continue;
             VisualFunctionContact visualContact = (VisualFunctionContact) node;
-            if (visualContact.getReferencedContact() == contact) {
+            if (visualContact.getReferencedComponent() == contact) {
                 return visualContact;
             }
         }
@@ -326,7 +326,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
     private Point2D getContactLinePositionInLocalSpace(VisualFunctionContact vc, ComponentRenderingResult rr) {
         Point2D pinPosition = null;
         if (vc.isInput()) {
-            String cname = vc.getReferencedContact().getName();
+            String cname = vc.getReferencedComponent().getName();
             Point2D p = rr.contactPositions().get(cname);
             if (p != null) {
                 pinPosition = new Point2D.Double(p.getX(), p.getY());

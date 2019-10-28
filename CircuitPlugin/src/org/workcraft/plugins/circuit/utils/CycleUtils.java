@@ -9,7 +9,10 @@ import org.workcraft.utils.Hierarchy;
 
 import java.util.*;
 
-public class CycleUtils {
+public final class CycleUtils {
+
+    private CycleUtils() {
+    }
 
     public static Collection<Contact> tagPathBreakerClearAll(Circuit circuit) {
         Collection<Contact> contacts = Hierarchy.getDescendantsOfType(circuit.getRoot(),

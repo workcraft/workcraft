@@ -14,21 +14,24 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 
-public class SubstitutionUtils {
+public final class SubstitutionUtils {
 
-    public static HashMap<String, SubstitutionRule> readExportSubsritutionRules() {
-        return readSubsritutionRules(
+    private SubstitutionUtils() {
+    }
+
+    public static HashMap<String, SubstitutionRule> readExportSubstitutionRules() {
+        return readSubstitutionRules(
                 CircuitSettings.getExportSubstitutionLibrary(),
                 CircuitSettings.getInvertExportSubstitutionRules());
     }
 
-    public static HashMap<String, SubstitutionRule> readImportSubsritutionRules() {
-        return readSubsritutionRules(
+    public static HashMap<String, SubstitutionRule> readImportSubstitutionRules() {
+        return readSubstitutionRules(
                 CircuitSettings.getImportSubstitutionLibrary(),
                 CircuitSettings.getInvertImportSubstitutionRules());
     }
 
-    private static HashMap<String, SubstitutionRule> readSubsritutionRules(String fileName, boolean invert) {
+    private static HashMap<String, SubstitutionRule> readSubstitutionRules(String fileName, boolean invert) {
         HashMap<String, SubstitutionRule> result = new HashMap<>();
         if ((fileName != null) && !fileName.isEmpty()) {
             File libraryFile = new File(fileName);

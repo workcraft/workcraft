@@ -301,7 +301,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
             }
             if ((contact != null) && contact.isPin() && !contact.isZeroDelayDriver()) {
-                FunctionContact mathContact = ((VisualFunctionContact) contact).getReferencedContact();
+                FunctionContact mathContact = ((VisualFunctionContact) contact).getReferencedComponent();
                 editor.getWorkspaceEntry().saveMemento();
                 mathContact.setPathBreaker(!mathContact.getPathBreaker());
                 processed = true;

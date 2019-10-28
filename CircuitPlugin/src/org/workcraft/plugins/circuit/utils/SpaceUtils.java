@@ -13,7 +13,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class SpaceUtils {
+public final class SpaceUtils {
+
+    private SpaceUtils() {
+    }
 
     public static void makeSpaceAfterContact(VisualCircuit circuit, VisualContact contact, double space) {
         // Change connection scale mode to LOCK_RELATIVELY for cleaner relocation of components
