@@ -112,7 +112,9 @@ public class Burst extends Symbol {
     }
 
     public void addOrChangeSignalDirection(XbmSignal s, Direction d) {
-        direction.put(s, d);
+        if (d != null) {
+            direction.put(s, d);
+        }
     }
 
     public void addOrChangeSignalDirection(XbmSignal s, SignalState fromState, SignalState toState) {
