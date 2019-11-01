@@ -27,7 +27,7 @@ public class VisualStgPlace extends VisualPlace {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, StgPlace.PROPERTY_MUTEX,
-                (value) -> getReferencedComponent().setMutex(value),
+                value -> getReferencedComponent().setMutex(value),
                 () -> getReferencedComponent().isMutex())
                 .setCombinable());
     }

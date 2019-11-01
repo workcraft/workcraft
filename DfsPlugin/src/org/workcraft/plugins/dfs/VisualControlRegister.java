@@ -29,12 +29,12 @@ public class VisualControlRegister extends VisualBinaryRegister {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<>(Double.class, ControlRegister.PROPERTY_PROBABILITY,
-                (value) -> getReferencedComponent().setProbability(value),
+                value -> getReferencedComponent().setProbability(value),
                 () -> getReferencedComponent().getProbability())
                 .setCombinable().setTemplatable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(SynchronisationType.class, ControlRegister.PROPERTY_SYNCHRONISATION_TYPE,
-                (value) -> getReferencedComponent().setSynchronisationType(value),
+                value -> getReferencedComponent().setSynchronisationType(value),
                 () -> getReferencedComponent().getSynchronisationType())
                 .setCombinable().setTemplatable());
     }

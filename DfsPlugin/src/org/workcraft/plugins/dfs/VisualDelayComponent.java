@@ -22,7 +22,7 @@ public abstract class VisualDelayComponent extends VisualComponent {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<>(Double.class, MathDelayNode.PROPERTY_DELAY,
-                (value) -> getReferencedComponent().setDelay(value),
+                value -> getReferencedComponent().setDelay(value),
                 () -> getReferencedComponent().getDelay())
                 .setCombinable().setTemplatable());
     }

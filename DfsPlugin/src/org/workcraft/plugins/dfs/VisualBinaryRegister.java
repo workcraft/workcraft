@@ -13,7 +13,7 @@ public abstract class VisualBinaryRegister extends VisualAbstractRegister {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<>(Marking.class, BinaryRegister.PROPERTY_MARKING,
-                (value) -> getReferencedComponent().setMarking(value),
+                value -> getReferencedComponent().setMarking(value),
                 () -> getReferencedComponent().getMarking())
                 .setCombinable().setTemplatable());
     }

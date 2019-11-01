@@ -48,47 +48,47 @@ public class WtgSettings extends AbstractModelSettings {
     static {
         properties.add(new PropertyDeclaration<>(String.class,
                 "Suffix for signal low state (STG conversion)",
-                (value) -> setSuffixIfValid(value, WtgSettings::setLowStateSuffix),
+                value -> setSuffixIfValid(value, WtgSettings::setLowStateSuffix),
                 () -> getLowStateSuffix()));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 "Suffix for signal high state (STG conversion)",
-                (value) -> setSuffixIfValid(value, WtgSettings::setHighStateSuffix),
+                value -> setSuffixIfValid(value, WtgSettings::setHighStateSuffix),
                 () -> getHighStateSuffix()));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 "STG conversion suffix for signal stable state",
-                (value) -> setSuffixIfValid(value, WtgSettings::setStableStateSuffix),
+                value -> setSuffixIfValid(value, WtgSettings::setStableStateSuffix),
                 () -> getStableStateSuffix()));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 "STG conversion suffix for signal unstable state",
-                (value) -> setSuffixIfValid(value, WtgSettings::setUnstableStateSuffix),
+                value -> setSuffixIfValid(value, WtgSettings::setUnstableStateSuffix),
                 () -> getUnstableStateSuffix()));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 "STG conversion suffix for signal stabilise event",
-                (value) -> setSuffixIfValid(value, WtgSettings::setStabiliseEventSuffix),
+                value -> setSuffixIfValid(value, WtgSettings::setStabiliseEventSuffix),
                 () -> getStabiliseEventSuffix()));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 "STG conversion suffix for signal destabilise event",
-                (value) -> setSuffixIfValid(value, WtgSettings::setDestabiliseEventSuffix),
+                value -> setSuffixIfValid(value, WtgSettings::setDestabiliseEventSuffix),
                 () -> getDestabiliseEventSuffix()));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 "STG conversion suffix for waveform entry event",
-                (value) -> setSuffixIfValid(value, WtgSettings::setEntryEventSuffix),
+                value -> setSuffixIfValid(value, WtgSettings::setEntryEventSuffix),
                 () -> getEntryEventSuffix()));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 "STG conversion suffix for waveform exit event",
-                (value) -> setSuffixIfValid(value, WtgSettings::setExitEventSuffix),
+                value -> setSuffixIfValid(value, WtgSettings::setExitEventSuffix),
                 () -> getExitEventSuffix()));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 "STG conversion suffix for waveform inactive place",
-                (value) -> setSuffixIfValid(value, WtgSettings::setInactivePlaceSuffix),
+                value -> setSuffixIfValid(value, WtgSettings::setInactivePlaceSuffix),
                 () -> getInactivePlaceSuffix()));
     }
 

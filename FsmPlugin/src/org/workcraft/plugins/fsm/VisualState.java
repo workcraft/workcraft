@@ -32,14 +32,14 @@ public class VisualState extends VisualComponent {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, State.PROPERTY_INITIAL,
-                (value) -> getReferencedComponent().setInitial(value),
+                value -> getReferencedComponent().setInitial(value),
                 () -> getReferencedComponent().isInitial()));
 
         addPropertyDeclaration(new PropertyDeclaration<>(Positioning.class, PROPERTY_INITIAL_MARKER_POSITIONING,
                 this::setInitialMarkerPositioning, this::getInitialMarkerPositioning).setCombinable().setTemplatable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, State.PROPERTY_FINAL,
-                (value) -> getReferencedComponent().setFinal(value),
+                value -> getReferencedComponent().setFinal(value),
                 () -> getReferencedComponent().isFinal())
                 .setCombinable().setTemplatable());
     }

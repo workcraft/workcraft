@@ -22,13 +22,13 @@ public class WtgPropertyHelper {
 
     public static PropertyDescriptor getSignalNameProperty(VisualWtg visualWtg, String signalName) {
         return new PropertyDeclaration<>(String.class, signalName + " name",
-                (value) -> WtgUtils.renameSignal(visualWtg.getMathModel(), signalName, value),
+                value -> WtgUtils.renameSignal(visualWtg.getMathModel(), signalName, value),
                 () -> signalName);
     }
 
     public static PropertyDescriptor getSignalTypeProperty(VisualWtg visualWtg, String signalName) {
         return new PropertyDeclaration<>(Signal.Type.class, signalName + " type",
-                (value) -> {
+                value -> {
                     Wtg wtg = visualWtg.getMathModel();
                     for (Signal signal : wtg.getSignals()) {
                         if (!signalName.equals(wtg.getName(signal))) continue;
@@ -47,7 +47,7 @@ public class WtgPropertyHelper {
 
     public static PropertyDescriptor getSignalDeclarationProperty(VisualWtg visualWtg, VisualWaveform visualWaveform, String signalName) {
         return new PropertyDeclaration<>(Boolean.class, signalName + " declared",
-                (value) -> {
+                value -> {
                     if (signalName != null) {
                         if (value) {
                             insertNewSignal(visualWtg, visualWaveform, signalName);

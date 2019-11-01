@@ -184,12 +184,12 @@ public class CircuitSettings extends AbstractModelSettings {
 
         properties.add(new PropertyDeclaration<>(File.class,
                 "Gate library for technology mapping",
-                (value) -> setGateLibrary(ExecutableUtils.getBaseRelativePath(value)),
+                value -> setGateLibrary(ExecutableUtils.getBaseRelativePath(value)),
                 () -> ExecutableUtils.getBaseRelativeFile(getGateLibrary())));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 "Mutex name and request-grant pairs",
-                (value) -> {
+                value -> {
                     if (parseMutexData(value) != null) {
                         setMutexData(value);
                     } else {
@@ -207,7 +207,7 @@ public class CircuitSettings extends AbstractModelSettings {
 
         properties.add(new PropertyDeclaration<>(File.class,
                 PropertyHelper.BULLET_PREFIX + "Substitution rules for export",
-                (value) -> setExportSubstitutionLibrary(ExecutableUtils.getBaseRelativePath(value)),
+                value -> setExportSubstitutionLibrary(ExecutableUtils.getBaseRelativePath(value)),
                 () -> ExecutableUtils.getBaseRelativeFile(getExportSubstitutionLibrary())));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
@@ -217,7 +217,7 @@ public class CircuitSettings extends AbstractModelSettings {
 
         properties.add(new PropertyDeclaration<>(File.class,
                 PropertyHelper.BULLET_PREFIX + "Substitution rules for import",
-                (value) -> setImportSubstitutionLibrary(ExecutableUtils.getBaseRelativePath(value)),
+                value -> setImportSubstitutionLibrary(ExecutableUtils.getBaseRelativePath(value)),
                 () -> ExecutableUtils.getBaseRelativeFile(getImportSubstitutionLibrary())));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
@@ -256,12 +256,12 @@ public class CircuitSettings extends AbstractModelSettings {
 
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "Testable buffer name and input-output pins",
-                (value) -> setGate2Data(value, CircuitSettings::setTbufData, "Testable buffer", defaultTbufData),
+                value -> setGate2Data(value, CircuitSettings::setTbufData, "Testable buffer", defaultTbufData),
                 CircuitSettings::getTbufData));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "Testable inverter name and input-output pins",
-                (value) -> setGate2Data(value, CircuitSettings::setTinvData, "Testable inverter", defaultTinvData),
+                value -> setGate2Data(value, CircuitSettings::setTinvData, "Testable inverter", defaultTinvData),
                 CircuitSettings::getTinvData));
 
         properties.add(new PropertyDeclaration<>(String.class,
@@ -271,27 +271,27 @@ public class CircuitSettings extends AbstractModelSettings {
 
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "Scan input port / pin names",
-                (value) -> setPortPinPair(value, CircuitSettings::setScaninPortPin, "Scan input"),
+                value -> setPortPinPair(value, CircuitSettings::setScaninPortPin, "Scan input"),
                                 CircuitSettings::getScaninPortPin));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "Scan output port / pin (for multi-output component) names",
-                (value) -> setPortPinPair(value, CircuitSettings::setScanoutPortPin, "Scan output"),
+                value -> setPortPinPair(value, CircuitSettings::setScanoutPortPin, "Scan output"),
                 CircuitSettings::getScanoutPortPin));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "Scan clock port / pin names",
-                (value) -> setPortPinPair(value, CircuitSettings::setScanckPortPin, "Scan clock"),
+                value -> setPortPinPair(value, CircuitSettings::setScanckPortPin, "Scan clock"),
                 CircuitSettings::getScanckPortPin));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "Scan enable port / pin name",
-                (value) -> setPortPinPair(value, CircuitSettings::setScanenPortPin, "Scan enable"),
+                value -> setPortPinPair(value, CircuitSettings::setScanenPortPin, "Scan enable"),
                 CircuitSettings::getScanenPortPin));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "Scan test mode port / pin names",
-                (value) -> setPortPinPair(value, CircuitSettings::setScantmPortPin, "Scan test mode"),
+                value -> setPortPinPair(value, CircuitSettings::setScantmPortPin, "Scan test mode"),
                 CircuitSettings::getScantmPortPin));
     }
 

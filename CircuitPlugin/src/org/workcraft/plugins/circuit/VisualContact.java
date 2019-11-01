@@ -151,12 +151,12 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
         }.setCombinable().setTemplatable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(IOType.class, Contact.PROPERTY_IO_TYPE,
-                (value) -> getReferencedComponent().setIOType(value),
+                value -> getReferencedComponent().setIOType(value),
                 () -> getReferencedComponent().getIOType())
                 .setCombinable());
 
         addPropertyDeclaration(new PropertyDeclaration<Boolean>(Boolean.class, Contact.PROPERTY_INIT_TO_ONE,
-                (value) -> getReferencedComponent().setInitToOne(value),
+                value -> getReferencedComponent().setInitToOne(value),
                 () -> getReferencedComponent().getInitToOne()) {
             @Override
             public boolean isVisible() {
@@ -165,7 +165,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
         }.setCombinable().setTemplatable());
 
         addPropertyDeclaration(new PropertyDeclaration<Boolean>(Boolean.class, Contact.PROPERTY_FORCED_INIT,
-                (value) -> getReferencedComponent().setForcedInit(value),
+                value -> getReferencedComponent().setForcedInit(value),
                 () -> getReferencedComponent().getForcedInit()) {
             @Override
             public boolean isVisible() {
@@ -174,7 +174,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
         }.setCombinable().setTemplatable());
 
         addPropertyDeclaration(new PropertyDeclaration<Boolean>(Boolean.class, Contact.PROPERTY_PATH_BREAKER,
-                (value) -> getReferencedComponent().setPathBreaker(value),
+                value -> getReferencedComponent().setPathBreaker(value),
                 () -> getReferencedComponent().getPathBreaker()) {
             @Override
             public boolean isVisible() {

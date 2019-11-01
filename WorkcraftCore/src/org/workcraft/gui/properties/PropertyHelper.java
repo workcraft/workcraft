@@ -18,7 +18,7 @@ public class PropertyHelper {
 
     public static PropertyDescriptor<String> createSeparatorProperty(String text) {
         return new PropertyDeclaration<>(String.class, "",
-                (value) -> { }, () -> text).setReadonly().setSpan();
+                value -> { }, () -> text).setReadonly().setSpan();
     }
 
 }

@@ -6,9 +6,9 @@ plugins {
 }
 
 ext {
-    checkstyleVersion = '8.1' // Problems with versions above 8.1
+    checkstyleVersion = '8.26'
     pmdVersion = '6.18.0'
-    jacocoVersion = '0.8.4'
+    jacocoVersion = '0.8.5'
 }
 
 repositories {
@@ -68,7 +68,7 @@ subprojects {
         libs fileTree(dir: 'libs', include: ['**/*.jar'])
         configurations.compile.extendsFrom(configurations.libs)
         testCompile 'junit:junit:4.12'
-        javacc 'net.java.dev.javacc:javacc:7.0.4'
+        javacc 'net.java.dev.javacc:javacc:7.0.5'
     }
 
     jar {

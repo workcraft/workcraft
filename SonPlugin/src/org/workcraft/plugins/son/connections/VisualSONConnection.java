@@ -31,7 +31,7 @@ public class VisualSONConnection extends VisualConnection {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<>(String.class, "Semantic",
-                (value) -> { },
+                value -> { },
                 () -> {
                     switch (getSemantics()) {
                     case PNLINE:

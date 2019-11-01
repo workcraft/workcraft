@@ -27,12 +27,12 @@ public class VisualLogic extends VisualDelayComponent {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, Logic.PROPERTY_COMPUTED,
-                (value) -> getReferencedComponent().setComputed(value),
+                value -> getReferencedComponent().setComputed(value),
                 () -> getReferencedComponent().isComputed())
                 .setCombinable().setTemplatable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, Logic.PROPERTY_EARLY_EVALUATION,
-                (value) -> getReferencedComponent().setEarlyEvaluation(value),
+                value -> getReferencedComponent().setEarlyEvaluation(value),
                 () -> getReferencedComponent().isEarlyEvaluation())
                 .setCombinable().setTemplatable());
     }

@@ -33,13 +33,13 @@ public class VisualSwitchComponent extends VisualXmasComponent {
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<>(Type.class,
                 SwitchComponent.PROPERTY_TYPE,
-                (value) -> getReferencedComponent().setType(value),
+                value -> getReferencedComponent().setType(value),
                 () -> getReferencedComponent().getType())
                 .setCombinable().setTemplatable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(Val.class,
                 SwitchComponent.PROPERTY_VAL,
-                (value) -> getReferencedComponent().setVal(value),
+                value -> getReferencedComponent().setVal(value),
                 () -> getReferencedComponent().getVal())
                 .setCombinable().setTemplatable());
     }

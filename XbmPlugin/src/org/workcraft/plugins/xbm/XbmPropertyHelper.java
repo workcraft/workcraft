@@ -46,21 +46,21 @@ public class XbmPropertyHelper {
     public static PropertyDescriptor getStateValueProperty(final VisualXbm xbm, final XbmState xbmState, final XbmSignal xbmSignal) {
         return new PropertyDeclaration<>(SignalState.class,
                 PropertyHelper.BULLET_PREFIX + xbm.getMathName(xbmState) + " type",
-                (value) -> xbmState.addOrChangeSignalValue(xbmSignal, value),
+                value -> xbmState.addOrChangeSignalValue(xbmSignal, value),
                 () -> xbmState.getEncoding().get(xbmSignal));
     }
 
     public static PropertyDescriptor getBurstDirectionProperty(final VisualXbm xbm, final BurstEvent burstEvent, final XbmSignal xbmSignal) {
         return new PropertyDeclaration<>(Burst.Direction.class,
                 PropertyHelper.BULLET_PREFIX + xbm.getMathName(xbmSignal) + " direction",
-                (value) -> burstEvent.addOrChangeSignalDirection(xbmSignal, value),
+                value -> burstEvent.addOrChangeSignalDirection(xbmSignal, value),
                 () -> burstEvent.getBurst().getDirection().get(xbmSignal));
     }
 
     public static PropertyDescriptor getSignalNameProperty(final Xbm xbm, final XbmSignal xbmSignal) {
         return new PropertyDeclaration<>(TextAction.class,
                 xbm.getName(xbmSignal) + " name",
-                (value) -> {
+                value -> {
                     String newName = value.getText();
                     Node node = xbm.getNodeByReference(newName);
                     Matcher matcher = XbmSignal.VALID_SIGNAL_NAME.matcher(newName);

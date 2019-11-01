@@ -42,7 +42,7 @@ public class VisualQueueComponent extends VisualXmasComponent {
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<>(Integer.class,
                 QueueComponent.PROPERTY_CAPACITY,
-                (value) -> {
+                value -> {
                     if (value < 1) {
                         throw new ArgumentException("Negative or zero capacity is not allowed.");
                     }

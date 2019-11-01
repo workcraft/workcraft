@@ -27,7 +27,7 @@ public class VisualRegister extends VisualAbstractRegister {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, Register.PROPERTY_MARKED,
-                (value) -> getReferencedComponent().setMarked(value),
+                value -> getReferencedComponent().setMarked(value),
                 () -> getReferencedComponent().isMarked())
                 .setCombinable().setTemplatable());
     }

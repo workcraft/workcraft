@@ -28,13 +28,13 @@ public class VisualCounterflowRegister extends VisualAbstractRegister {
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class,
                 CounterflowRegister.PROPERTY_OR_MARKED,
-                (value) -> getReferencedComponent().setOrMarked(value),
+                value -> getReferencedComponent().setOrMarked(value),
                 () -> getReferencedComponent().isOrMarked())
                 .setCombinable().setTemplatable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class,
                 CounterflowRegister.PROPERTY_AND_MARKED,
-                (value) -> getReferencedComponent().setAndMarked(value),
+                value -> getReferencedComponent().setAndMarked(value),
                 () -> getReferencedComponent().isAndMarked())
                 .setCombinable().setTemplatable());
     }

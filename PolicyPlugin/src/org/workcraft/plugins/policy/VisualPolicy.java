@@ -268,7 +268,7 @@ public class VisualPolicy extends VisualPetri {
     private PropertyDescriptor getBundleNameProperty(VisualBundle bundle) {
         return new PropertyDeclaration<>(String.class,
                 getMathModel().getName(bundle.getReferencedBundle()) + " name",
-                (value) -> getMathModel().setName(bundle.getReferencedBundle(), value),
+                value -> getMathModel().setName(bundle.getReferencedBundle(), value),
                 () -> getMathModel().getName(bundle.getReferencedBundle()));
     }
 
@@ -281,13 +281,13 @@ public class VisualPolicy extends VisualPetri {
     private PropertyDescriptor getTransitionsOfBundleProperty(VisualBundle bundle) {
         return new PropertyDeclaration<>(String.class,
                 getMathModel().getName(bundle.getReferencedBundle()) + " transitions",
-                (value) -> setTransitionsOfBundleAsString(bundle, value),
+                value -> setTransitionsOfBundleAsString(bundle, value),
                 () -> getTransitionsOfBundleAsString(bundle));
     }
 
     private PropertyDescriptor getBundlesOfTransitionProperty(VisualBundledTransition transition) {
         return new PropertyDeclaration<>(String.class, "Bundles",
-                (value) -> setBundlesOfTransitionAsString(transition, value),
+                value -> setBundlesOfTransitionAsString(transition, value),
                 () -> getBundlesOfTransitionAsString(transition));
     }
 

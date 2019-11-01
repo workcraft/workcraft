@@ -28,7 +28,7 @@ public class VisualFunctionComponent extends VisualXmasComponent {
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<>(FunctionComponent.Type.class,
                 FunctionComponent.PROPERTY_TYPE,
-                (value) -> getReferencedComponent().setType(value),
+                value -> getReferencedComponent().setType(value),
                 () -> getReferencedComponent().getType())
                 .setCombinable().setTemplatable());
     }

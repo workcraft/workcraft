@@ -64,7 +64,7 @@ public class VisualGraph extends AbstractVisualModel {
 
     private PropertyDescriptor getSymbolProperty(Symbol symbol) {
         return new PropertyDeclaration<>(String.class, getMathModel().getName(symbol) + " name",
-                (value) -> {
+                value -> {
                     Node node = getMathModel().getNodeByReference(value);
                     if (node == null) {
                         getMathModel().setName(symbol, value);
@@ -80,7 +80,7 @@ public class VisualGraph extends AbstractVisualModel {
 
     private PropertyDescriptor getVertexSymbolProperty(VisualVertex event) {
         return new PropertyDeclaration<>(String.class, Vertex.PROPERTY_SYMBOL,
-                (value) -> {
+                value -> {
                     Symbol symbol = null;
                     if (!value.isEmpty()) {
                         Node node = getMathModel().getNodeByReference(value);

@@ -74,7 +74,7 @@ public class BddManager {
     }
 
     private int addVariable(BooleanVariable var) {
-        return varMap.computeIfAbsent(var, (key) -> bdd.createVar());
+        return varMap.computeIfAbsent(var, key -> bdd.createVar());
     }
 
     private int addFormula(BooleanFormula formula) {

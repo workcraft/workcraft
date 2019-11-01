@@ -47,12 +47,12 @@ public class StgSettings extends AbstractModelSettings {
 
         properties.add(new PropertyDeclaration<>(String.class,
                 "Signal low level suffix for conversion to STG",
-                (value) -> setLevelSuffix(value, StgSettings::setLowLevelSuffix),
+                value -> setLevelSuffix(value, StgSettings::setLowLevelSuffix),
                 StgSettings::getLowLevelSuffix));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 "Signal high level suffix for conversion to STG",
-                (value) -> setLevelSuffix(value, StgSettings::setHighLevelSuffix),
+                value -> setLevelSuffix(value, StgSettings::setHighLevelSuffix),
                 StgSettings::getHighLevelSuffix));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,

@@ -27,7 +27,7 @@ public class VisualXmasContact extends VisualComponent implements StateObserver 
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<>(IOType.class, XmasContact.PROPERTY_IO_TYPE,
-                (value) -> getReferencedComponent().setIOType(value),
+                value -> getReferencedComponent().setIOType(value),
                 () -> getReferencedComponent().getIOType())
                 .setReadonly());
     }
