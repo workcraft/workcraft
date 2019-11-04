@@ -1,9 +1,88 @@
+pluginManagement {
+    plugins {
+        id 'org.jetbrains.kotlin.jvm' version '1.3.50'
+        id 'ca.coglinc.javacc' version '2.4.0'
+        id 'com.github.kt3k.coveralls' version '2.8.4'
+        id 'de.aaschmid.cpd' version '3.0'
+    }
+}
+
+
+/*
+ * Versions of languages and tools
+ */
+
+// Java version for source code and target bytecode compatibility
+gradle.ext.javaVersion = '1.8'
+
+// Code quality and coverage tools (Checkstyle, PMD, Jacoco)
+gradle.ext.checkstyleVersion = '8.26'
+gradle.ext.pmdVersion = '6.18.0'
+gradle.ext.jacocoVersion = '0.8.5'
+
+
+/*
+ * Compile-time dependencies for all subprojects
+ */
+
+// Unit testing
+gradle.ext.junit = 'junit:junit:4.12'
+
+// JavaCC parser generator
+gradle.ext.javacc = 'net.java.dev.javacc:javacc:7.0.5'
+
+
+/*
+ * WorkcraftCore library dependencies (both compile-time and run-time)
+ */
+
+// for Kotlin support
+gradle.ext.kotlinLib = 'org.jetbrains.kotlin:kotlin-stdlib:1.3.50'
+
+// for JavaScript execution
+gradle.ext.rhinoLib = 'org.mozilla:rhino:1.7.11'
+
+// for JavaBeans Activation Framework (JAF)
+gradle.ext.jafLib = 'com.sun.activation:javax.activation:1.2.0'
+
+// for configuration of log in FOP
+gradle.ext.log4jLib = 'log4j:log4j:1.2.8'
+
+// for UnaryFunctor class
+gradle.ext.jgaLib = 'net.sf.jga:jga:0.8.3'
+
+// for TableLayout
+gradle.ext.tableLayoutLib = 'info.clearthought:table-layout:4.3.0'
+
+
+/*
+ * Subprojects
+ */
+
+// Include core subprojects
 include "WorkcraftRunner"
 include "WorkcraftCore"
 
-// Include all plugins
+// Include plugin subprojects
 rootDir.listFiles().findAll {
     it.isDirectory() && it =~ ".*Plugin"
 }.collect {
     include it.getName()
 }
+
+
+/*
+ * Subprojects for coverage
+ */
+
+gradle.ext.coverageProjects = [
+    'AtacsPlugin',
+    'CircuitPlugin',
+    'MpsatSynthesisPlugin',
+    'MpsatVerificationPlugin',
+    'PetrifyPlugin',
+    'PetriPlugin',
+    'StgPlugin',
+    'WtgPlugin',
+    'WorkcraftCore'
+]
