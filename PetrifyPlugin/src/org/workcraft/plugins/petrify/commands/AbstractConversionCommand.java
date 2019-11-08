@@ -1,11 +1,10 @@
 package org.workcraft.plugins.petrify.commands;
 
-import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -13,7 +12,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public abstract class AbstractPetrifyConversionCommand extends AbstractConversionCommand {
+public abstract class AbstractConversionCommand extends  org.workcraft.commands.AbstractConversionCommand {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {

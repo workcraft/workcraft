@@ -73,7 +73,7 @@ public class FormulaUtilsTests {
         BooleanVariable sVar = new FreeVariable("s");
 
         BooleanFormula muxFormula = buildMuxFormula(aVar, bVar, sVar);
-        Assert.assertEquals(4, FormulaUtils.countLiterals(muxFormula).intValue());
+        Assert.assertEquals(4, FormulaUtils.countLiterals(muxFormula));
         Assert.assertEquals(Arrays.asList(aVar, sVar, bVar), FormulaUtils.extractOrderedVariables(muxFormula));
         Assert.assertEquals(new HashSet(Arrays.asList(sVar)), FormulaUtils.extractNegatedVariables(muxFormula));
     }

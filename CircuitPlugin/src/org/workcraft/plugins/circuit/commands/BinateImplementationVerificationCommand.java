@@ -19,7 +19,6 @@ import org.workcraft.plugins.mpsat.tasks.CombinedChainResultHandler;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -78,11 +77,6 @@ public class BinateImplementationVerificationCommand extends AbstractVerificatio
         }
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         Collection<BinateData> binateItems = getBinateData(circuit);
-        if (binateItems.isEmpty()) {
-            DialogUtils.showInfo("Circuit does not implement binate functions.");
-            return null;
-        }
-
         List<VerificationParameters> settingsList = new ArrayList<>();
         LogUtils.logInfo("Verifying implementations of binate functions:");
         for (BinateData binateItem : binateItems) {
@@ -90,13 +84,13 @@ public class BinateImplementationVerificationCommand extends AbstractVerificatio
             settingsList.add(VerificationParameters.getBinateImplementationReachSettings(signal, binateItem.formula, binateItem.variable));
             LogUtils.logMessage("  " + signal
                     + " = " + StringGenerator.toString(binateItem.formula)
-                    + "  // (binate in " + binateItem.variable.getLabel() + "): ");
+                    + "  // (binate in " + binateItem.variable.getLabel() + ")");
         }
 
         TaskManager manager = Framework.getInstance().getTaskManager();
-        CombinedCheckTask task = new CombinedCheckTask(we, settingsList);
+        CombinedCheckTask task = new CombinedCheckTask(we, settingsList, "Binate function implementation vacuously holds");
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
-        CombinedChainResultHandler monitor = new CombinedChainResultHandler(task, null);
+        CombinedChainResultHandler monitor = new CombinedChainResultHandler(we, null);
         manager.queue(task, description, monitor);
         return monitor;
     }

@@ -13,7 +13,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class NetConversionCommand extends AbstractPetrifyConversionCommand {
+public class NetConversionCommand extends AbstractConversionCommand {
 
     @Override
     public String getDisplayName() {

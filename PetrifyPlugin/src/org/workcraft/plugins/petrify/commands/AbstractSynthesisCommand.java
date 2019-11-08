@@ -1,13 +1,12 @@
 package org.workcraft.plugins.petrify.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.commands.AbstractSynthesisCommand;
 import org.workcraft.plugins.petrify.tasks.SynthesisResultHandler;
 import org.workcraft.plugins.petrify.tasks.SynthesisTask;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -15,7 +14,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class AbstractPetrifySynthesisCommand extends AbstractSynthesisCommand {
+public abstract class AbstractSynthesisCommand extends  org.workcraft.commands.AbstractSynthesisCommand {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {

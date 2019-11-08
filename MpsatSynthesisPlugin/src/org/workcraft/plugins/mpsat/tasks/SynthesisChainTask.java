@@ -123,10 +123,6 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
         }
     }
 
-    public SynthesisParameters getSettings() {
-        return settings;
-    }
-
     public WorkspaceEntry getWorkspaceEntry() {
         return we;
     }

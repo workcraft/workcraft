@@ -150,12 +150,4 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
         return taskManager.execute(extraTask, description, subtaskMonitor);
     }
 
-    public WorkspaceEntry getWorkspaceEntry() {
-        return we;
-    }
-
-    public List<VerificationParameters> getSettingsList() {
-        return settingsList;
-    }
-
 }

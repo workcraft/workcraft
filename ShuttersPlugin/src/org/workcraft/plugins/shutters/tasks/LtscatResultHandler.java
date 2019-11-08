@@ -25,8 +25,8 @@ public class LtscatResultHandler extends AbstractResultHandler<LtscatResult>  {
     private final WorkspaceEntry we;
     private final File tmpDir;
 
-    public LtscatResultHandler(LtscatTask ltscatTask, File tmpDir) {
-        this.we = ltscatTask.getWorkspaceEntry();
+    public LtscatResultHandler(WorkspaceEntry we, File tmpDir) {
+        this.we = we;
         this.tmpDir = tmpDir;
     }
 

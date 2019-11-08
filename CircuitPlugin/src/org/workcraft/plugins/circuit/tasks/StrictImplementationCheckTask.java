@@ -10,7 +10,10 @@ import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.tasks.*;
+import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
+import org.workcraft.plugins.mpsat.tasks.VerificationOutput;
+import org.workcraft.plugins.mpsat.tasks.VerificationOutputParser;
+import org.workcraft.plugins.mpsat.tasks.VerificationTask;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.Stg;
@@ -26,16 +29,17 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class StrictImplementationCheckTask extends VerificationChainTask {
+public class StrictImplementationCheckTask implements Task<VerificationChainOutput> {
+
+    private final WorkspaceEntry we;
 
     public StrictImplementationCheckTask(WorkspaceEntry we) {
-        super(we, null);
+        this.we = we;
     }
 
     @Override
     public Result<? extends VerificationChainOutput> run(ProgressMonitor<? super VerificationChainOutput> monitor) {
         Framework framework = Framework.getInstance();
-        WorkspaceEntry we = getWorkspaceEntry();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         String stgFileExtension = StgFormat.getInstance().getExtension();

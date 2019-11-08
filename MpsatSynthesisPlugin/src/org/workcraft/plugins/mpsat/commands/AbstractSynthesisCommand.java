@@ -1,7 +1,6 @@
 package org.workcraft.plugins.mpsat.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.commands.AbstractSynthesisCommand;
 import org.workcraft.plugins.mpsat.SynthesisMode;
 import org.workcraft.plugins.mpsat.SynthesisParameters;
 import org.workcraft.plugins.mpsat.tasks.SynthesisChainTask;
@@ -9,9 +8,9 @@ import org.workcraft.plugins.mpsat.tasks.SynthesisResultHandler;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -29,7 +28,7 @@ import java.util.LinkedList;
     mpsat -T -f -p2 -cl -! -d gate_library.lib file.bp.pnml file.mapped.v
 */
 
-public abstract class AbstractPetrifySynthesisCommand extends AbstractSynthesisCommand {
+public abstract class AbstractSynthesisCommand extends  org.workcraft.commands.AbstractSynthesisCommand {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
@@ -65,7 +64,7 @@ public abstract class AbstractPetrifySynthesisCommand extends AbstractSynthesisC
         SynthesisParameters settings = getSettings();
         SynthesisChainTask task = new SynthesisChainTask(we, settings, mutexes);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
-        SynthesisResultHandler monitor = new SynthesisResultHandler(task, mutexes);
+        SynthesisResultHandler monitor = new SynthesisResultHandler(we, mutexes);
         manager.queue(task, description, monitor);
         return monitor;
     }

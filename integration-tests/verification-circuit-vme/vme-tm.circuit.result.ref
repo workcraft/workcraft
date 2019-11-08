@@ -2,4 +2,5 @@ Combined check: true
 Deadlock-freeness: true
 Conformation: true
 Output persistency: true
+Binate function implementation: false
 Strict implementation: null

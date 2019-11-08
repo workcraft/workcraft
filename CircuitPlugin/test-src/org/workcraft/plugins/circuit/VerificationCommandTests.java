@@ -5,10 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.plugins.circuit.commands.ConformationVerificationCommand;
-import org.workcraft.plugins.circuit.commands.DeadlockFreenessVerificationCommand;
-import org.workcraft.plugins.circuit.commands.OutputPersistencyVerificationCommand;
-import org.workcraft.plugins.circuit.commands.StrictImplementationVerificationCommand;
+import org.workcraft.plugins.circuit.commands.*;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.punf.PunfSettings;
@@ -35,7 +32,8 @@ public class VerificationCommandTests {
                 true,  // conformation
                 true,  // deadlock freeness
                 true,  // output persistency
-                true   // strict implementation
+                true,   // strict implementation
+                true  // binate implementation
         );
     }
 
@@ -46,7 +44,8 @@ public class VerificationCommandTests {
                 null,  // conformation
                 true,  // deadlock freeness
                 false, // output persistency
-                null   // strict implementation
+                null,   // strict implementation
+                true  // binate implementation
         );
     }
 
@@ -57,7 +56,8 @@ public class VerificationCommandTests {
                 true,  // conformation
                 true,  // deadlock freeness
                 true,  // output persistency
-                true   // strict implementation
+                true,   // strict implementation
+                true  // binate implementation
         );
     }
 
@@ -68,7 +68,8 @@ public class VerificationCommandTests {
                 true,  // conformation
                 true,  // deadlock freeness
                 true,  // output persistency
-                null   // strict implementation
+                null,   // strict implementation
+                true  // binate implementation
         );
     }
 
@@ -79,7 +80,8 @@ public class VerificationCommandTests {
                 true,  // conformation
                 true,  // deadlock freeness
                 true,  // output persistency
-                null   // strict implementation
+                null,  // strict implementation
+                false  // binate implementation
         );
     }
 
@@ -90,13 +92,38 @@ public class VerificationCommandTests {
                 false,  // conformation
                 true,  // deadlock freeness
                 false,  // output persistency
-                null   // strict implementation
+                null,  // strict implementation
+                true  // binate implementation
+        );
+    }
+
+    @Test
+    public void mappedDlatchVerification() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "dlatch-tm.circuit.work");
+        testVerificationCommands(workName,
+                true,  // conformation
+                true,  // deadlock freeness
+                true,  // output persistency
+                true,  // strict implementation
+                false  // binate implementation
+        );
+    }
+
+    @Test
+    public void mappedDlatchConsensusVerification() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "dlatch-consensus-tm.circuit.work");
+        testVerificationCommands(workName,
+                true,  // conformation
+                true,  // deadlock freeness
+                true,  // output persistency
+                true,  // strict implementation
+                true  // binate implementation
         );
     }
 
     private void testVerificationCommands(String workName,
             Boolean conformation, Boolean deadlockFreeness, Boolean outputPersistency,
-            Boolean strictImplementation) throws DeserialisationException {
+            Boolean strictImplementation, Boolean binateImplementation) throws DeserialisationException {
 
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
@@ -115,6 +142,9 @@ public class VerificationCommandTests {
 
         StrictImplementationVerificationCommand strictImplementationCommand = new StrictImplementationVerificationCommand();
         Assert.assertEquals(strictImplementation, strictImplementationCommand.execute(we));
+
+        BinateImplementationVerificationCommand binateImplementationCommand = new BinateImplementationVerificationCommand();
+        Assert.assertEquals(binateImplementation, binateImplementationCommand.execute(we));
 
         framework.closeWork(we);
     }

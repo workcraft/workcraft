@@ -58,10 +58,6 @@ public class WriteSgConversionTask implements Task<WriteSgConversionOutput> {
         this.binary = binary;
     }
 
-    public WorkspaceEntry getWorkspaceEntry() {
-        return we;
-    }
-
     @Override
     public Result<? extends WriteSgConversionOutput> run(ProgressMonitor<? super WriteSgConversionOutput> monitor) {
         final Framework framework = Framework.getInstance();

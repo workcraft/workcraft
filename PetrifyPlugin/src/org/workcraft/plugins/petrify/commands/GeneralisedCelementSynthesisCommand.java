@@ -3,7 +3,7 @@ package org.workcraft.plugins.petrify.commands;
 import java.util.Arrays;
 import java.util.List;
 
-public class GeneralisedCelementSynthesisCommand extends AbstractPetrifySynthesisCommand {
+public class GeneralisedCelementSynthesisCommand extends AbstractSynthesisCommand {
 
     @Override
     public List<String> getSynthesisParameter() {

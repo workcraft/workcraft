@@ -5,7 +5,10 @@ import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.tasks.*;
+import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
+import org.workcraft.plugins.mpsat.tasks.VerificationOutput;
+import org.workcraft.plugins.mpsat.tasks.VerificationOutputParser;
+import org.workcraft.plugins.mpsat.tasks.VerificationTask;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
@@ -22,17 +25,20 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.io.File;
 import java.util.Set;
 
-public class CustomCheckTask extends VerificationChainTask {
+public class CustomCheckTask implements Task<VerificationChainOutput> {
+
+    private final WorkspaceEntry we;
+    private final VerificationParameters settings;
 
     public CustomCheckTask(WorkspaceEntry we, VerificationParameters settings) {
-        super(we, settings);
+        this.we = we;
+        this.settings = settings;
     }
 
     @Override
     public Result<? extends VerificationChainOutput> run(ProgressMonitor<? super VerificationChainOutput> monitor) {
         Framework framework = Framework.getInstance();
         TaskManager manager = framework.getTaskManager();
-        WorkspaceEntry we = getWorkspaceEntry();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         String stgFileExtension = StgFormat.getInstance().getExtension();
@@ -115,7 +121,6 @@ public class CustomCheckTask extends VerificationChainTask {
             monitor.progressUpdate(0.40);
 
             // Check custom property (if requested)
-            VerificationParameters settings = getSettings();
             VerificationTask verificationTask = new VerificationTask(settings.getMpsatArguments(directory),
                     unfoldingFile, directory, sysStgFile);
             SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);

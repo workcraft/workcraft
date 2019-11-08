@@ -8,13 +8,13 @@ import org.workcraft.plugins.mpsat.tasks.CombinedChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.CombinedChainTask;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -68,7 +68,7 @@ public class MutexImplementabilityVerificationCommand extends AbstractVerificati
                 ArrayList<VerificationParameters> settingsList = MpsatUtils.getMutexImplementabilitySettings(mutexes);
                 CombinedChainTask task = new CombinedChainTask(we, settingsList, null);
                 String description = MpsatUtils.getToolchainDescription(we.getTitle());
-                monitor = new CombinedChainResultHandler(task, mutexes);
+                monitor = new CombinedChainResultHandler(we, mutexes);
                 manager.queue(task, description, monitor);
             }
         }

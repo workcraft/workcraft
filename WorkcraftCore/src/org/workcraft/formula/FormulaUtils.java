@@ -5,10 +5,7 @@ import org.workcraft.formula.workers.BooleanWorker;
 import org.workcraft.formula.workers.CleverBooleanWorker;
 import org.workcraft.formula.workers.DumbBooleanWorker;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class FormulaUtils {
 
@@ -55,25 +52,25 @@ public class FormulaUtils {
     }
 
     public static Set<BooleanVariable> extractNegatedVariables(BooleanFormula formula) {
-        Set<BooleanVariable> result = null;
+        Set<BooleanVariable> result = new HashSet<>();
         if (formula != null) {
-            result = formula.accept(new NegatedVariableExtractor());
+            result.addAll(formula.accept(new NegatedVariableExtractor()));
         }
         return result;
     }
 
-    public static Integer countLiterals(BooleanFormula formula) {
-        Integer result = null;
+    public static int countLiterals(BooleanFormula formula) {
+        int result = 0;
         if (formula != null) {
-            result = formula.accept(new LiteralCounter());
+            result += formula.accept(new LiteralCounter());
         }
         return result;
     }
 
     public static List<BooleanVariable> extractOrderedVariables(BooleanFormula formula) {
-        List<BooleanVariable> result = null;
+        List<BooleanVariable> result = new ArrayList<>();
         if (formula != null) {
-            result = new ArrayList<>(formula.accept(new OrderedVariableExtractor()));
+            result.addAll(formula.accept(new OrderedVariableExtractor()));
         }
         return result;
     }

@@ -2,7 +2,7 @@ package org.workcraft.plugins.mpsat.commands;
 
 import org.workcraft.plugins.mpsat.SynthesisMode;
 
-public class StandardCelementSynthesisCommand extends AbstractPetrifySynthesisCommand {
+public class StandardCelementSynthesisCommand extends AbstractSynthesisCommand {
 
     @Override
     public SynthesisMode getSynthesisMode() {

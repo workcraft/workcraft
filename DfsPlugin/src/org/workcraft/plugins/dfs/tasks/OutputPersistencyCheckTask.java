@@ -1,7 +1,5 @@
 package org.workcraft.plugins.dfs.tasks;
 
-import java.io.File;
-
 import org.workcraft.Framework;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
@@ -9,36 +7,34 @@ import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.plugins.dfs.stg.DfsToStgConverter;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainTask;
-import org.workcraft.plugins.mpsat.tasks.VerificationOutputParser;
 import org.workcraft.plugins.mpsat.tasks.VerificationOutput;
+import org.workcraft.plugins.mpsat.tasks.VerificationOutputParser;
 import org.workcraft.plugins.mpsat.tasks.VerificationTask;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
-import org.workcraft.tasks.ExportOutput;
-import org.workcraft.tasks.ExportTask;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.Result;
+import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.utils.ExportUtils;
 import org.workcraft.utils.FileUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
-public class OutputPersistencyCheckTask extends VerificationChainTask {
+import java.io.File;
+
+public class OutputPersistencyCheckTask implements Task<VerificationChainOutput> {
+
+    private final WorkspaceEntry we;
 
     public OutputPersistencyCheckTask(WorkspaceEntry we) {
-        super(we, VerificationParameters.getOutputPersistencySettings());
+        this.we = we;
     }
 
     @Override
     public Result<? extends VerificationChainOutput> run(ProgressMonitor<? super VerificationChainOutput> monitor) {
         final Framework framework = Framework.getInstance();
-        WorkspaceEntry we = getWorkspaceEntry();
-        VerificationParameters settings = getSettings();
+        VerificationParameters settings = VerificationParameters.getOutputPersistencySettings();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         StgFormat format = StgFormat.getInstance();

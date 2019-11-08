@@ -12,7 +12,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.util.Arrays;
 import java.util.Collection;
 
-public class HideDummyConversionCommand extends AbstractPetrifyConversionCommand {
+public class HideDummyConversionCommand extends AbstractConversionCommand {
 
     @Override
     public String getDisplayName() {
