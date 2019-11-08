@@ -47,12 +47,12 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<>(Integer.class, Place.PROPERTY_TOKENS,
-                (value) -> getImplicitPlace().setTokens(value),
+                value -> getImplicitPlace().setTokens(value),
                 () -> getImplicitPlace().getTokens())
                 .setCombinable().setTemplatable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(Integer.class, Place.PROPERTY_CAPACITY,
-                (value) -> getImplicitPlace().setCapacity(value),
+                value -> getImplicitPlace().setCapacity(value),
                 () -> getImplicitPlace().getCapacity())
                 .setCombinable().setTemplatable());
 

@@ -3,7 +3,7 @@ package org.workcraft.plugins.petrify.commands;
 import java.util.Arrays;
 import java.util.List;
 
-public class ComplexGateSynthesisCommand extends AbstractPetrifySynthesisCommand {
+public class ComplexGateSynthesisCommand extends AbstractSynthesisCommand {
 
     @Override
     public List<String> getSynthesisParameter() {

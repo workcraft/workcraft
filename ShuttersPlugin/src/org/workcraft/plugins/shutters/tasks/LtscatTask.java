@@ -67,7 +67,4 @@ public class LtscatTask implements Task<LtscatResult>, ExternalProcessListener {
     public void outputData(byte[] data) {
     }
 
-    public WorkspaceEntry getWorkspaceEntry() {
-        return we;
-    }
 }

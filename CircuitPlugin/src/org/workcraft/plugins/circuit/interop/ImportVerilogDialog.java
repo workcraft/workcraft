@@ -35,7 +35,7 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
 
         public void add(VerilogModule module, String name) {
             properties.add(new PropertyDeclaration<>(String.class, name,
-                    (value) -> {
+                    value -> {
                         if (moduleToFileMap != null) {
                             if ((value == null) || value.isEmpty() || FileFilters.DOCUMENT_EXTENSION.equals(value)) {
                                 DialogUtils.showError("File name cannot be empty.");

@@ -28,25 +28,25 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class,
                 CounterflowLogic.PROPERTY_FORWARD_COMPUTED,
-                (value) -> getReferencedComponent().setForwardComputed(value),
+                value -> getReferencedComponent().setForwardComputed(value),
                 () -> getReferencedComponent().isForwardComputed())
                 .setCombinable().setTemplatable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class,
                 CounterflowLogic.PROPERTY_BACKWARD_COMPUTED,
-                (value) -> getReferencedComponent().setBackwardComputed(value),
+                value -> getReferencedComponent().setBackwardComputed(value),
                 () -> getReferencedComponent().isBackwardComputed())
                 .setCombinable().setTemplatable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class,
                 CounterflowLogic.PROPERTY_FORWARD_EARLY_EVALUATION,
-                (value) -> getReferencedComponent().setForwardEarlyEvaluation(value),
+                value -> getReferencedComponent().setForwardEarlyEvaluation(value),
                 () -> getReferencedComponent().isForwardEarlyEvaluation())
                 .setCombinable().setTemplatable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class,
                 CounterflowLogic.PROPERTY_BACKWARD_EARLY_EVALUATION,
-                (value) -> getReferencedComponent().setBackwardEarlyEvaluation(value),
+                value -> getReferencedComponent().setBackwardEarlyEvaluation(value),
                 () -> getReferencedComponent().isBackwardEarlyEvaluation())
                 .setCombinable().setTemplatable());
     }

@@ -102,7 +102,7 @@ public class VisualFsm extends AbstractVisualModel {
 
     private PropertyDescriptor getSymbolProperty(Symbol symbol) {
         return new PropertyDeclaration<>(String.class, getMathModel().getName(symbol) + " name",
-                (value) -> {
+                value -> {
                     Node node = getMathModel().getNodeByReference(value);
                     if (node == null) {
                         getMathModel().setName(symbol, value);
@@ -118,7 +118,7 @@ public class VisualFsm extends AbstractVisualModel {
 
     private PropertyDescriptor getEventSymbolProperty(VisualEvent event) {
         return new PropertyDeclaration<>(String.class, Event.PROPERTY_SYMBOL,
-                (value) -> {
+                value -> {
                     Symbol symbol = null;
                     if (!value.isEmpty()) {
                         Node node = getMathModel().getNodeByReference(value);

@@ -6,7 +6,7 @@ import org.workcraft.utils.ExecutableUtils;
 import java.util.Arrays;
 import java.util.List;
 
-public class TechnologyMappingSynthesisCommand extends AbstractPetrifySynthesisCommand {
+public class TechnologyMappingSynthesisCommand extends AbstractSynthesisCommand {
 
     @Override
     public List<String> getSynthesisParameter() {

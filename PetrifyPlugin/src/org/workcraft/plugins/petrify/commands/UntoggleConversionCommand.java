@@ -12,7 +12,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.util.Arrays;
 import java.util.Collection;
 
-public class UntoggleConversionCommand extends AbstractPetrifyConversionCommand {
+public class UntoggleConversionCommand extends AbstractConversionCommand {
 
     @Override
     public String getDisplayName() {

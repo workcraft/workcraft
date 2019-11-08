@@ -128,7 +128,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
         }.setCombinable().setTemplatable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(ConnectionType.class, PROPERTY_CONNECTION_TYPE,
-                (value) -> {
+                value -> {
                     setConnectionType(value);
                     for (ControlPoint cp : getGraphic().getControlPoints()) {
                         if (cp != null) {

@@ -735,7 +735,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
 
     private PropertyDescriptor getNameProperty(VisualNode node) {
         return new PropertyDeclaration<>(String.class, PROPERTY_NAME,
-                (value) -> {
+                value -> {
                     if (Identifier.isName(value)) {
                         if (!value.equals(getMathName(node))) {
                             setMathName(node, value);

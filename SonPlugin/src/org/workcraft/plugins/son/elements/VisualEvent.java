@@ -35,7 +35,7 @@ public class VisualEvent extends VisualComponent implements VisualTransitionNode
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, "Fault",
-                (value) -> getReferencedComponent().setFaulty(value),
+                value -> getReferencedComponent().setFaulty(value),
                 () -> getReferencedComponent().isFaulty())
                 .setCombinable().setTemplatable());
     }

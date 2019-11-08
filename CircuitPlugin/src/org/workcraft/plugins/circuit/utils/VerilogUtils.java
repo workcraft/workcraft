@@ -46,11 +46,7 @@ public final class VerilogUtils {
         Map<VerilogModule, Set<VerilogModule>> result = new HashMap<>();
         HashMap<String, VerilogModule> nameToModuleMap = getNameToModuleMap(modules);
         for (VerilogModule module : modules) {
-            Set<VerilogModule> instantiatedModules = result.get(module);
-            if (instantiatedModules == null) {
-                instantiatedModules = new HashSet<>();
-                result.put(module, instantiatedModules);
-            }
+            Set<VerilogModule> instantiatedModules = result.computeIfAbsent(module, s -> new HashSet<>());
             for (VerilogInstance instance : module.instances) {
                 VerilogModule instantiatedModule = nameToModuleMap.get(instance.moduleName);
                 if (instantiatedModule != null) {

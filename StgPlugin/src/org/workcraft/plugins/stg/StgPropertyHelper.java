@@ -13,7 +13,7 @@ public class StgPropertyHelper {
 
     public static PropertyDescriptor getSignalNameProperty(Stg stg, SignalTransition signalTransition) {
         return new PropertyDeclaration<>(String.class, "Signal name",
-                (value) -> stg.setName(signalTransition, value),
+                value -> stg.setName(signalTransition, value),
                 signalTransition::getSignalName)
                 .setCombinable();
     }
@@ -26,14 +26,14 @@ public class StgPropertyHelper {
 
     public static PropertyDescriptor getDirectionProperty(Stg stg, SignalTransition signalTransition) {
         return new PropertyDeclaration<>(SignalTransition.Direction.class, SignalTransition.PROPERTY_DIRECTION,
-                (value) -> stg.setDirection(signalTransition, value),
+                value -> stg.setDirection(signalTransition, value),
                 () -> stg.getDirection(signalTransition))
                 .setCombinable();
     }
 
     public static PropertyDescriptor getInstanceProperty(Stg stg, NamedTransition namedTransition) {
         return new PropertyDeclaration<>(Integer.class, "Instance",
-                (value) -> stg.setInstanceNumber(namedTransition, value),
+                value -> stg.setInstanceNumber(namedTransition, value),
                 () -> stg.getInstanceNumber(namedTransition));
     }
 
@@ -44,7 +44,7 @@ public class StgPropertyHelper {
 
     public static PropertyDescriptor getSignalNameModelProperty(VisualStg visualStg, String signal, Container container) {
         return new PropertyDeclaration<>(TextAction.class, signal + " name",
-                (value) -> {
+                value -> {
                     String newName = value.getText();
                     if (!signal.equals(newName)) {
                         Stg mathStg = visualStg.getMathModel();
@@ -67,7 +67,7 @@ public class StgPropertyHelper {
 
     public static PropertyDescriptor getSignalTypeModelProperty(Stg stg, String signal, Container container) {
         return new PropertyDeclaration<>(Signal.Type.class, signal + " type",
-                (value) -> stg.setSignalType(signal, value, container),
+                value -> stg.setSignalType(signal, value, container),
                 () -> stg.getSignalType(signal, container));
     }
 

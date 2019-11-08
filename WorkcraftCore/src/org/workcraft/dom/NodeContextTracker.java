@@ -10,18 +10,9 @@ public class NodeContextTracker<N    extends Node, C extends Connection> extends
     private final HashMap<N, LinkedHashSet<C>> connections = new HashMap<>();
 
     private void initHashes(N n) {
-        LinkedHashSet<N> set = presets.get(n);
-        if (set == null) {
-            presets.put(n, new LinkedHashSet<>());
-        }
-        set = postsets.get(n);
-        if (set == null) {
-            postsets.put(n, new LinkedHashSet<>());
-        }
-        LinkedHashSet<C> conSet = connections.get(n);
-        if (conSet == null) {
-            connections.put(n, new LinkedHashSet<>());
-        }
+        presets.computeIfAbsent(n, s -> new LinkedHashSet<>());
+        postsets.computeIfAbsent(n, s -> new LinkedHashSet<>());
+        connections.computeIfAbsent(n, s -> new LinkedHashSet<>());
     }
 
     private void removeHashes(Node n) {
@@ -117,10 +108,7 @@ public class NodeContextTracker<N    extends Node, C extends Connection> extends
     @Override
     public Set<C> getConnections(N node) {
         Set<C> ret = connections.get(node);
-        if (ret == null) {
-            ret = new HashSet<>();
-        }
-        return Collections.unmodifiableSet(ret);
+        return Collections.unmodifiableSet(ret == null ? new HashSet<>() : ret);
     }
 
     @Override

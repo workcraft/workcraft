@@ -6,7 +6,10 @@ import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.tasks.*;
+import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
+import org.workcraft.plugins.mpsat.tasks.VerificationOutput;
+import org.workcraft.plugins.mpsat.tasks.VerificationOutputParser;
+import org.workcraft.plugins.mpsat.tasks.VerificationTask;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -27,14 +30,15 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.io.File;
 import java.util.*;
 
-public class CheckTask extends VerificationChainTask {
+public class CheckTask implements Task<VerificationChainOutput> {
 
+    private final WorkspaceEntry we;
     private final boolean checkConformation;
     private final boolean checkDeadlock;
     private final boolean checkPersistency;
 
     public CheckTask(WorkspaceEntry we, boolean checkConformation, boolean checkDeadlock, boolean checkPersistency) {
-        super(we, null);
+        this.we = we;
         this.checkConformation = checkConformation;
         this.checkDeadlock = checkDeadlock;
         this.checkPersistency = checkPersistency;
@@ -44,7 +48,6 @@ public class CheckTask extends VerificationChainTask {
     public Result<? extends VerificationChainOutput> run(ProgressMonitor<? super VerificationChainOutput> monitor) {
         Framework framework = Framework.getInstance();
         TaskManager manager = framework.getTaskManager();
-        WorkspaceEntry we = getWorkspaceEntry();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         String stgFileExtension = StgFormat.getInstance().getExtension();

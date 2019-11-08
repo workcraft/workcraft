@@ -219,12 +219,22 @@ public class StringGenerator implements BooleanVisitor<String> {
     public static class ConstantPrinter extends DelegatingPrinter {
         @Override
         public Void visit(One one) {
-            return append("1");
+            switch (style) {
+            case REACH:
+                return append("true");
+            default:
+                return append("1");
+            }
         }
 
         @Override
         public Void visit(Zero zero) {
-            return append("0");
+            switch (style) {
+            case REACH:
+                return append("false");
+            default:
+                return append("0");
+            }
         }
     }
 
@@ -243,9 +253,13 @@ public class StringGenerator implements BooleanVisitor<String> {
                 }
             }
 
-            append(label);
+            switch (style) {
+            case REACH:
+                return append("$S\"" + label + "\"");
 
-            return null;
+            default:
+                return append(label);
+            }
         }
     }
 

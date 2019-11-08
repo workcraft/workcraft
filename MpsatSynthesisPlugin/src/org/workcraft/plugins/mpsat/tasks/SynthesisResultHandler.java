@@ -33,12 +33,14 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class SynthesisResultHandler extends AbstractExtendedResultHandler<SynthesisChainOutput, WorkspaceEntry> {
+
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
-    private final SynthesisChainTask task;
+
+    private final WorkspaceEntry we;
     private final Collection<Mutex> mutexes;
 
-    public SynthesisResultHandler(final SynthesisChainTask task, Collection<Mutex> mutexes) {
-        this.task = task;
+    public SynthesisResultHandler(WorkspaceEntry we, Collection<Mutex> mutexes) {
+        this.we = we;
         this.mutexes = mutexes;
     }
 
@@ -102,7 +104,7 @@ public class SynthesisResultHandler extends AbstractExtendedResultHandler<Synthe
 
     private WorkspaceEntry handleStgSynthesisOutput(SynthesisOutput mpsatOutput) {
         if (MpsatSynthesisSettings.getOpenSynthesisStg()) {
-            return StgUtils.createStgIfNewSignals(task.getWorkspaceEntry(), mpsatOutput.getStgOutput());
+            return StgUtils.createStgIfNewSignals(we, mpsatOutput.getStgOutput());
         }
         return null;
     }
@@ -125,21 +127,20 @@ public class SynthesisResultHandler extends AbstractExtendedResultHandler<Synthe
                 Circuit circuit = verilogImporter.importTopModule(verilogStream, mutexes);
                 ModelEntry dstMe = new ModelEntry(new CircuitDescriptor(), circuit);
 
-                WorkspaceEntry srcWe = task.getWorkspaceEntry();
-                Path<String> path = srcWe.getWorkspacePath();
+                Path<String> path = we.getWorkspacePath();
                 dstWe = Framework.getInstance().createWork(dstMe, path);
 
                 final VisualModel visualModel = dstWe.getModelEntry().getVisualModel();
                 if (visualModel instanceof VisualCircuit) {
                     VisualCircuit visualCircuit = (VisualCircuit) visualModel;
                     setComponentsRenderStyle(visualCircuit, renderType);
-                    String title = srcWe.getModelEntry().getModel().getTitle();
+                    String title = we.getModelEntry().getModel().getTitle();
                     visualCircuit.setTitle(title);
-                    if (!srcWe.getFile().exists()) {
+                    if (!we.getFile().exists()) {
                         DialogUtils.showError("Unsaved STG cannot be set as the circuit environment.");
                     } else {
-                        visualCircuit.getMathModel().setEnvironmentFile(srcWe.getFile());
-                        if (srcWe.isChanged()) {
+                        visualCircuit.getMathModel().setEnvironmentFile(we.getFile());
+                        if (we.isChanged()) {
                             DialogUtils.showWarning("The STG with unsaved changes is set as the circuit environment.");
                         }
                     }

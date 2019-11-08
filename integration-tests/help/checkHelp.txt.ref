@@ -1,3 +1,4 @@
+checkCircuitBinateImplementation(work) - check the Circuit 'work' for correct implementation of its binate functions
 checkCircuitCombined(work) - combined check of the Circuit 'work' for conformation to environment, deadlock freeness, and output persistency
 checkCircuitConformation(work) - check the Circuit 'work' for conformation to environment
 checkCircuitCycles(work) - check if the Circuit 'work' is free from cyclic paths

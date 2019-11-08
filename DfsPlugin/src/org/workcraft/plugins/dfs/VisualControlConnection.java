@@ -24,7 +24,7 @@ public class VisualControlConnection extends VisualConnection {
     private void addPropertyDeclarations() {
         super.initialise();
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, ControlConnection.PROPERTY_INVERTING,
-                (value) -> {
+                value -> {
                     ControlConnection ref = getReferencedConnection();
                     // check if ref is not null to trick the order of node creation in deserialiser
                     if (ref != null) {

@@ -34,13 +34,13 @@ public class VisualSourceComponent extends VisualXmasComponent {
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<>(SourceComponent.Type.class,
                 SourceComponent.PROPERTY_TYPE,
-                (value) -> getReferencedComponent().setType(value),
+                value -> getReferencedComponent().setType(value),
                 () -> getReferencedComponent().getType())
                 .setCombinable().setTemplatable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(SourceComponent.Mode.class,
                 SourceComponent.PROPERTY_MODE,
-                (value) -> getReferencedComponent().setMode(value),
+                value -> getReferencedComponent().setMode(value),
                 () -> getReferencedComponent().getMode())
                 .setCombinable().setTemplatable());
     }

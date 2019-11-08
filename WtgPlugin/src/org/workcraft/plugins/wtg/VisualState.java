@@ -31,7 +31,7 @@ public class VisualState extends VisualComponent {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, State.PROPERTY_INITIAL,
-                (value) -> getReferencedComponent().setInitial(value),
+                value -> getReferencedComponent().setInitial(value),
                 () -> getReferencedComponent().isInitial()));
     }
 

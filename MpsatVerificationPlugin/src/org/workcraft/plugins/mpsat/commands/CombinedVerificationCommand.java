@@ -99,7 +99,7 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand {
         CombinedChainTask task = new CombinedChainTask(we, settingsList, extraTask);
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
-        CombinedChainResultHandler monitor = new CombinedChainResultHandler(task, mutexes);
+        CombinedChainResultHandler monitor = new CombinedChainResultHandler(we, mutexes);
         manager.queue(task, description, monitor);
         return monitor;
     }

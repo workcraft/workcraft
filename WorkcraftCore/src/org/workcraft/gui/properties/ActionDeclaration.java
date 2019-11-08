@@ -13,7 +13,7 @@ public class ActionDeclaration extends PropertyDeclaration<Action> {
     }
 
     public ActionDeclaration(String name, Action action) {
-        super(Action.class, name, (value) -> { }, () -> action);
+        super(Action.class, name, value -> { }, () -> action);
     }
 
     @Override

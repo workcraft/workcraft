@@ -74,10 +74,7 @@ public class BddManager {
     }
 
     private int addVariable(BooleanVariable var) {
-        if (!varMap.containsKey(var)) {
-            varMap.put(var, bdd.createVar());
-        }
-        return varMap.get(var);
+        return varMap.computeIfAbsent(var, key -> bdd.createVar());
     }
 
     private int addFormula(BooleanFormula formula) {
@@ -105,9 +102,9 @@ public class BddManager {
         int rightBdd = addFormula(rightFormula);
         int notRightBdd = bdd.ref(bdd.not(rightBdd));
 
-        List<BooleanVariable> vars = new ArrayList<>();
-        vars.addAll(FormulaUtils.extractLiterals(leftFormula));
-        vars.addAll(FormulaUtils.extractLiterals(rightFormula));
+        Set<BooleanVariable> vars = new HashSet<>();
+        vars.addAll(FormulaUtils.extractOrderedVariables(leftFormula));
+        vars.addAll(FormulaUtils.extractOrderedVariables(rightFormula));
         int cube = buildCube(vars);
 
         boolean result = bdd.relProd(leftBdd, notRightBdd, cube) == bdd.getZero();

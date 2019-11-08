@@ -28,11 +28,11 @@ public class CombinedChainResultHandler extends AbstractResultHandler<CombinedCh
     private static final String ASK_SIMULATE_SUFFIX = "\n\nSimulate the problematic trace?";
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
 
-    private final CombinedChainTask task;
+    private final WorkspaceEntry we;
     private final Collection<Mutex> mutexes;
 
-    public CombinedChainResultHandler(CombinedChainTask task, Collection<Mutex> mutexes) {
-        this.task = task;
+    public CombinedChainResultHandler(WorkspaceEntry we, Collection<Mutex> mutexes) {
+        this.we = we;
         this.mutexes = mutexes;
     }
 
@@ -48,7 +48,6 @@ public class CombinedChainResultHandler extends AbstractResultHandler<CombinedCh
     }
 
     private void handleSuccess(final Result<? extends CombinedChainOutput> chainResult) {
-        WorkspaceEntry we = task.getWorkspaceEntry();
         CombinedChainOutput chainOutput = chainResult.getPayload();
         Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
         ExportOutput exportOutput = (exportResult == null) ? null : exportResult.getPayload();
@@ -81,7 +80,8 @@ public class CombinedChainResultHandler extends AbstractResultHandler<CombinedCh
                 // Add trivial mutex implementability result if no mutex places found
                 verifiedMessageDetailes += "\n * Mutex implementability (vacuously)";
             }
-            DialogUtils.showInfo("The following checks passed:" + verifiedMessageDetailes);
+            DialogUtils.showInfo(verifiedMessageDetailes.isEmpty() ? chainOutput.getMessage()
+                    : "The following checks passed:" + verifiedMessageDetailes);
         } else {
             // One of the Mpsat tasks returned a solution trace
             switch (violationMpsatSettings.getMode()) {
@@ -157,7 +157,6 @@ public class CombinedChainResultHandler extends AbstractResultHandler<CombinedCh
                         }
                     }
                 }
-                WorkspaceEntry we = task.getWorkspaceEntry();
                 if (isConsistencyCheck) {
                     PcompOutput pcompOutput = (pcompResult == null) ? null : pcompResult.getPayload();
                     int cost = solution.getMainTrace().size();

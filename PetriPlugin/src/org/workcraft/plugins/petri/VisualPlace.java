@@ -38,7 +38,7 @@ public class VisualPlace extends VisualComponent {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<>(Integer.class, Place.PROPERTY_TOKENS,
-                (value) -> getReferencedComponent().setTokens(value),
+                value -> getReferencedComponent().setTokens(value),
                 () -> getReferencedComponent().getTokens())
                 .setCombinable());
 
@@ -46,7 +46,7 @@ public class VisualPlace extends VisualComponent {
                 this::setTokenColor, this::getTokenColor).setCombinable().setTemplatable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(Integer.class, Place.PROPERTY_CAPACITY,
-                (value) -> getReferencedComponent().setCapacity(value),
+                value -> getReferencedComponent().setCapacity(value),
                 () -> getReferencedComponent().getCapacity())
                 .setCombinable().setTemplatable());
     }

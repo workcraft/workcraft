@@ -11,7 +11,7 @@ public class ActionListDeclaration extends PropertyDeclaration<ActionList> {
     }
 
     public ActionListDeclaration(String name) {
-        super(ActionList.class, name, (value) -> { }, () -> null);
+        super(ActionList.class, name, value -> { }, () -> null);
     }
 
     public ActionListDeclaration addAction(String text, Runnable runnable) {

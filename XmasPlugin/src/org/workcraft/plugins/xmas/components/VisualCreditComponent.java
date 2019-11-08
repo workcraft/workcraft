@@ -26,13 +26,13 @@ public class VisualCreditComponent extends VisualXmasComponent {
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<>(Integer.class,
                 CreditComponent.PROPERTY_CAPACITY,
-                (value) -> getReferencedComponent().setCapacity(value),
+                value -> getReferencedComponent().setCapacity(value),
                 () -> getReferencedComponent().getCapacity())
                 .setCombinable().setTemplatable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(Integer.class,
                 CreditComponent.PROPERTY_INIT,
-                (value) -> getReferencedComponent().setInit(value),
+                value -> getReferencedComponent().setInit(value),
                 () -> getReferencedComponent().getInit())
                 .setCombinable().setTemplatable());
     }

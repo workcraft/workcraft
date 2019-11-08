@@ -79,7 +79,7 @@ public class ExtractWindowsCommand implements Command, MenuOrdering {
 
         // calling ltscat
         final LtscatTask ltscatTask = new LtscatTask(we, dir, scriptFile);
-        final LtscatResultHandler ltscatResult = new LtscatResultHandler(ltscatTask, dir);
+        final LtscatResultHandler ltscatResult = new LtscatResultHandler(we, dir);
         final TaskManager taskManager = framework.getTaskManager();
         taskManager.queue(ltscatTask, "Ltscat - process windows", ltscatResult);
 

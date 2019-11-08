@@ -4,6 +4,7 @@ write(
     "Deadlock-freeness: " + checkCircuitDeadlockFreeness(work) + "\n" +
     "Conformation: " + checkCircuitConformation(work) + "\n" +
     "Output persistency: " + checkCircuitOutputPersistency(work) + "\n" +
+    "Binate function implementation: " + checkCircuitBinateImplementation(work) + "\n" +
     "Strict implementation: " + checkCircuitStrictImplementation(work) + "\n",
     "flat_arbiter.circuit.result");
 
@@ -13,6 +14,7 @@ write(
     "Deadlock-freeness: " + checkCircuitDeadlockFreeness(work) + "\n" +
     "Conformation: " + checkCircuitConformation(work) + "\n" +
     "Output persistency: " + checkCircuitOutputPersistency(work) + "\n" +
+    "Binate function implementation: " + checkCircuitBinateImplementation(work) + "\n" +
     "Strict implementation: " + checkCircuitStrictImplementation(work) + "\n",
     "flat_arbiter-deadlock.circuit.result");
 exit();

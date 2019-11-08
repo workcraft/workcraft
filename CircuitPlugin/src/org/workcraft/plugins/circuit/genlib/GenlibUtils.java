@@ -104,8 +104,8 @@ public class GenlibUtils {
     }
 
     private static Map<BooleanVariable, BooleanVariable> findMapping(BooleanFormula firstFormula, BooleanFormula secondFormula) {
-        List<BooleanVariable> firstVars = FormulaUtils.extractLiterals(firstFormula);
-        List<BooleanVariable> secondVars = FormulaUtils.extractLiterals(secondFormula);
+        List<BooleanVariable> firstVars = FormulaUtils.extractOrderedVariables(firstFormula);
+        List<BooleanVariable> secondVars = FormulaUtils.extractOrderedVariables(secondFormula);
         if (firstVars.size() == secondVars.size()) {
             BddManager bdd = new BddManager();
             for (List<BooleanVariable> vars : generatePermutations(firstVars)) {

@@ -27,12 +27,12 @@ public class DtdSettings extends AbstractModelSettings {
     static {
         properties.add(new PropertyDeclaration<>(Double.class,
                 "Vertical separation between signals",
-                (value) -> setVerticalSeparationIfValid(value, DtdSettings::setVerticalSeparation),
+                value -> setVerticalSeparationIfValid(value, DtdSettings::setVerticalSeparation),
                 DtdSettings::getVerticalSeparation));
 
         properties.add(new PropertyDeclaration<>(Double.class,
                 "Horizontal separation between transitions",
-                (value) -> setTransitionSeparationIfValid(value, DtdSettings::setTransitionSeparation),
+                value -> setTransitionSeparationIfValid(value, DtdSettings::setTransitionSeparation),
                 DtdSettings::getTransitionSeparation));
     }
 

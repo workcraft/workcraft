@@ -511,9 +511,7 @@ public class ScencoExecutionSupport {
             for (int j = 0; j < n; j++) {
                 if (trivialEncoding(constraints, m, i, j) == '?') {
                     String constraint = generateConstraint(constraints, m, i, j);
-                    if (!task.containsKey(constraint)) {
-                        task.put(constraint, task.size());
-                    }
+                    task.computeIfAbsent(constraint, s -> task.size());
                 }
             }
         }

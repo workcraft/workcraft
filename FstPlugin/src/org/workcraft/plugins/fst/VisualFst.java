@@ -98,13 +98,13 @@ public class VisualFst extends VisualFsm {
 
     private PropertyDescriptor getSignalTypeProperty(Signal signal, String description) {
         return new PropertyDeclaration<>(Signal.Type.class, description,
-                (value) -> signal.setType(value), () -> signal.getType())
+                value -> signal.setType(value), () -> signal.getType())
                 .setCombinable().setTemplatable();
     }
 
     private PropertyDescriptor getEventSignalProperty(VisualSignalEvent signalEvent) {
         return new PropertyDeclaration<>(String.class, "Signal",
-                (value) -> {
+                value -> {
                     Signal signal = null;
                     if (!value.isEmpty()) {
                         Node node = getMathModel().getNodeByReference(value);
@@ -132,7 +132,7 @@ public class VisualFst extends VisualFsm {
 
     private PropertyDescriptor getEventDrectionProperty(VisualSignalEvent signalEvent) {
         return new PropertyDeclaration<>(SignalEvent.Direction.class, SignalEvent.PROPERTY_DIRECTION,
-                (value) -> signalEvent.getReferencedConnection().setDirection(value),
+                value -> signalEvent.getReferencedConnection().setDirection(value),
                 () -> signalEvent.getReferencedConnection().getDirection())
                 .setCombinable().setTemplatable();
     }

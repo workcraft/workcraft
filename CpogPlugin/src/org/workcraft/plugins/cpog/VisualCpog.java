@@ -232,21 +232,21 @@ public class VisualCpog extends AbstractVisualModel {
 
     private PropertyDescriptor getRhoClauseFunctionProperty(VisualRhoClause rhoClause) {
         return new PropertyDeclaration<>(String.class, "Function",
-                (value) -> rhoClause.setFormula(parseFormula(value)),
+                value -> rhoClause.setFormula(parseFormula(value)),
                 () -> StringGenerator.toString(rhoClause.getFormula()))
                 .setCombinable().setTemplatable();
     }
 
     private PropertyDescriptor getVertexConditionProperty(VisualVertex vertex) {
         return new PropertyDeclaration<>(String.class, "Condition",
-                (value) -> vertex.setCondition(parseFormula(value)),
+                value -> vertex.setCondition(parseFormula(value)),
                 () -> StringGenerator.toString(vertex.getCondition()))
                 .setCombinable().setTemplatable();
     }
 
     private PropertyDescriptor getArcConditionProperty(VisualArc arc) {
         return new PropertyDeclaration<>(String.class, "Condition",
-                (value) -> arc.setCondition(parseFormula(value)),
+                value -> arc.setCondition(parseFormula(value)),
                 () -> StringGenerator.toString(arc.getCondition()))
                 .setCombinable().setTemplatable();
     }

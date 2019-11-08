@@ -350,7 +350,7 @@ public class VisualCircuit extends AbstractVisualModel {
 
     private PropertyDescriptor getSetFunctionProperty(VisualFunctionContact contact) {
         return new PropertyDeclaration<String>(String.class, FunctionContact.PROPERTY_SET_FUNCTION,
-                (value) -> {
+                value -> {
                     try {
                         contact.setSetFunction(CircuitUtils.parseContactFunction(this, contact, value));
                     } catch (ParseException e) {
@@ -367,7 +367,7 @@ public class VisualCircuit extends AbstractVisualModel {
 
     private PropertyDescriptor getResetFunctionProperty(VisualFunctionContact contact) {
         return new PropertyDeclaration<String>(String.class, FunctionContact.PROPERTY_RESET_FUNCTION,
-                (value) -> {
+                value -> {
                     try {
                         contact.setResetFunction(CircuitUtils.parseContactFunction(this, contact, value));
                     } catch (ParseException e) {

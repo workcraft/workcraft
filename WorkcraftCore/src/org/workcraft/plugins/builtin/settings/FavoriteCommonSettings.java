@@ -36,7 +36,7 @@ public class FavoriteCommonSettings extends AbstractCommonSettings {
             for (String name : PluginUtils.getSortedModelDisplayNames()) {
                 properties.add(new PropertyDeclaration<>(Boolean.class,
                         PropertyHelper.BULLET_PREFIX + name,
-                        (value) -> setIsFavorite(name, value),
+                        value -> setIsFavorite(name, value),
                         () -> getIsFavorite(name)));
             }
         }
