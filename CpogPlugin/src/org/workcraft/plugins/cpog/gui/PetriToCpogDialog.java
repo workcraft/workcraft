@@ -1,7 +1,5 @@
 package org.workcraft.plugins.cpog.gui;
 
-import info.clearthought.layout.TableLayout;
-import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.layouts.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.commands.PetriToCpogParameters;
@@ -33,13 +31,11 @@ public class PetriToCpogDialog extends JDialog {
         createSettingPanel();
         createButtonPanel(settings);
 
-        JPanel content = new JPanel(GuiUtils.createTableLayout(
-                new double[]{TableLayout.FILL}, new double[]{110, TableLayout.FILL}));
-
+        JPanel content = new JPanel(GuiUtils.createBorderLayout());
         content.setBorder(SizeHelper.getEmptyBorder());
 
-        content.add(settingPanel, new TableLayoutConstraints(0, 0));
-        content.add(buttonPanel, new TableLayoutConstraints(0, 1));
+        content.add(settingPanel, BorderLayout.CENTER);
+        content.add(buttonPanel, BorderLayout.SOUTH);
 
         setContentPane(content);
 
@@ -47,8 +43,8 @@ public class PetriToCpogDialog extends JDialog {
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-        setMinimumSize(new Dimension(560, 200));
         pack();
+        setMinimumSize(new Dimension(560, 200));
         setLocationRelativeTo(owner);
     }
 

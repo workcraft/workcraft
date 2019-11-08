@@ -1,7 +1,5 @@
 package org.workcraft.gui.tasks;
 
-import info.clearthought.layout.TableLayout;
-import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.utils.GuiUtils;
 
@@ -13,14 +11,12 @@ import java.awt.*;
 public class TaskControl extends JPanel {
 
     private final JProgressBar progressBar;
-    private final JButton btnCancel;
+    private final JButton cancelButton;
 
     private volatile boolean cancelRequested;
 
     public TaskControl(String taskDescription) {
-        setLayout(GuiUtils.createTableLayout(
-                new double[]{TableLayout.FILL, 80, 120},
-                new double[]{25, 25, 25}));
+        setLayout(GuiUtils.createBorderLayout());
 
         Border outsideBorder = BorderFactory.createLineBorder(Color.LIGHT_GRAY);
         Border insideBorder = SizeHelper.getEmptyBorder();
@@ -39,12 +35,15 @@ public class TaskControl extends JPanel {
         progressBar.setMinimumSize(new Dimension(100, 20));
         progressBar.setPreferredSize(new Dimension(300, 20));
 
-        btnCancel = new JButton("Cancel");
-        btnCancel.addActionListener(event -> cancel());
+        cancelButton = new JButton("Cancel");
+        cancelButton.addActionListener(event -> cancel());
 
-        add(label, new TableLayoutConstraints(0, 0, 2, 0));
-        add(progressBar, new TableLayoutConstraints(0, 1, 2, 1));
-        add(btnCancel, new TableLayoutConstraints(2, 2));
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
+        buttonsPanel.add(cancelButton);
+
+        add(label, BorderLayout.NORTH);
+        add(progressBar, BorderLayout.CENTER);
+        add(buttonsPanel, BorderLayout.SOUTH);
     }
 
     public void progressUpdate(final double completion) {
@@ -58,8 +57,8 @@ public class TaskControl extends JPanel {
 
     public void cancel() {
         cancelRequested = true;
-        btnCancel.setEnabled(false);
-        btnCancel.setText("Cancelling...");
+        cancelButton.setEnabled(false);
+        cancelButton.setText("Cancelling...");
     }
 
 }

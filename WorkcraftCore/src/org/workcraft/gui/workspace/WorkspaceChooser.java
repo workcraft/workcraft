@@ -1,7 +1,5 @@
 package org.workcraft.gui.workspace;
 
-import info.clearthought.layout.TableLayout;
-import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.trees.FilteredTreeSource;
 import org.workcraft.gui.trees.TreeWindow;
@@ -13,6 +11,7 @@ import org.workcraft.workspace.Workspace;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import java.awt.*;
 import java.util.Set;
 
 @SuppressWarnings("serial")
@@ -26,10 +25,7 @@ public class WorkspaceChooser extends JPanel {
         super();
         this.filter = filter;
 
-        setLayout(GuiUtils.createTableLayout(
-                new double[]{TableLayout.FILL},
-                new double[]{TableLayout.PREFERRED, TableLayout.FILL}));
-
+        setLayout(GuiUtils.createBorderLayout());
         setBorder(SizeHelper.getEmptyBorder());
 
         nameFilter = new JTextField();
@@ -52,7 +48,7 @@ public class WorkspaceChooser extends JPanel {
             }
         });
 
-        add(GuiUtils.createLabeledComponent(nameFilter, "Search: "), new TableLayoutConstraints(0, 0));
+        add(GuiUtils.createLabeledComponent(nameFilter, "Search: "), BorderLayout.NORTH);
 
         filteredSource = new FilteredTreeSource<>(workspace.getTree(), filter);
 
@@ -63,7 +59,7 @@ public class WorkspaceChooser extends JPanel {
 
         expand(filteredSource.getRoot());
 
-        add(scroll, new TableLayoutConstraints(0, 1));
+        add(scroll, BorderLayout.CENTER);
 
         filteredSource.setFilter(filter);
     }

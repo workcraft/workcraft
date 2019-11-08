@@ -1,7 +1,5 @@
 package org.workcraft.plugins.mpsat.gui;
 
-import info.clearthought.layout.TableLayout;
-import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.dialogs.ModalDialog;
@@ -35,14 +33,12 @@ public class AssertionDialog extends ModalDialog<MpsatPresetManager> {
     @Override
     public JPanel createControlsPanel() {
         JPanel result = super.createControlsPanel();
-        result.setLayout(GuiUtils.createTableLayout(
-                new double[]{TableLayout.FILL},
-                new double[]{TableLayout.PREFERRED, TableLayout.FILL}));
+        result.setLayout(GuiUtils.createBorderLayout());
 
         PresetManagerPanel<VerificationParameters> presetPanel = createPresetPanel();
 
-        result.add(presetPanel, new TableLayoutConstraints(0, 0));
-        result.add(createAssertionPanel(), new TableLayoutConstraints(0, 1));
+        result.add(presetPanel, BorderLayout.NORTH);
+        result.add(createAssertionPanel(), BorderLayout.CENTER);
 
         presetPanel.selectFirst();
 
@@ -63,8 +59,6 @@ public class AssertionDialog extends ModalDialog<MpsatPresetManager> {
     private PresetManagerPanel<VerificationParameters> createPresetPanel() {
         ArrayList<Preset<VerificationParameters>> builtInPresets = new ArrayList<>();
 
-        builtInPresets.add(new Preset<>("", VerificationParameters.getEmptyAssertionSettings(), false));
-
         SettingsToControlsMapper<VerificationParameters> guiMapper = new SettingsToControlsMapper<VerificationParameters>() {
             @Override
             public void applySettingsToControls(VerificationParameters settings) {
@@ -77,7 +71,7 @@ public class AssertionDialog extends ModalDialog<MpsatPresetManager> {
             }
         };
 
-        return new PresetManagerPanel<>(getUserData(), builtInPresets, guiMapper, this);
+        return new PresetManagerPanel<>(getUserData(), builtInPresets, guiMapper);
     }
 
     private JPanel createAssertionPanel() {

@@ -107,7 +107,7 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
             }
         };
 
-        return new PresetManagerPanel<>(userData, builtInPresets, guiMapper, this);
+        return new PresetManagerPanel<>(userData, builtInPresets, guiMapper);
     }
 
     private JPanel createOptionsPanel() {
