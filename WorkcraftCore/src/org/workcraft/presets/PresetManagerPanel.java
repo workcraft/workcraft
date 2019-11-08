@@ -1,36 +1,26 @@
 package org.workcraft.presets;
 
-import java.awt.BorderLayout;
-import java.awt.Dialog.ModalityType;
-import java.awt.FlowLayout;
-import java.awt.Window;
-import java.util.List;
-
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.GuiUtils;
 
+import javax.swing.*;
+import java.awt.*;
+import java.util.List;
+
 @SuppressWarnings("serial")
 public class PresetManagerPanel<T> extends JPanel {
+
     private JComboBox presetCombo;
 
     private final PresetManager<T> presetManager;
     private final SettingsToControlsMapper<T> guiMapper;
-    private JButton updatePresetButton;
-    private final Window dialogOwner;
 
-    @SuppressWarnings("unchecked")
-    public PresetManagerPanel(PresetManager<T> presetManager, List<Preset<T>> builtIn, SettingsToControlsMapper<T> guiMapper, Window dialogOwner) {
+    public PresetManagerPanel(PresetManager<T> presetManager, List<Preset<T>> builtIn, SettingsToControlsMapper<T> guiMapper) {
         super();
 
         this.guiMapper = guiMapper;
         this.presetManager = presetManager;
-        this.dialogOwner = dialogOwner;
 
         for (Preset<T> p : builtIn) {
             presetManager.add(p);
@@ -39,99 +29,96 @@ public class PresetManagerPanel<T> extends JPanel {
     }
 
     private void initialise() {
-        //presetManager.sort();
         presetCombo = new JComboBox();
         for (Preset<T> p : presetManager.list()) {
             presetCombo.addItem(p);
         }
-        presetCombo.addActionListener(event -> {
-            Preset<T> p = (Preset<T>) presetCombo.getSelectedItem();
-            if (p == null) {
-                return;
-            }
-            if (p.isBuiltIn()) {
-                updatePresetButton.setEnabled(false);
-                updatePresetButton.setToolTipText("Cannot make changes to a built-in preset");
-            } else {
-                updatePresetButton.setEnabled(true);
-                updatePresetButton.setToolTipText("Save these settings to the currently selected preset");
-            }
 
-            T settings = p.getSettings();
-            guiMapper.applySettingsToControls(settings);
-        });
+        JButton createButton = GuiUtils.createDialogButton("Save as...");
+        createButton.addActionListener(event -> createPreset());
 
-        JButton manageButton = new JButton("Manage...");
-        manageButton.addActionListener(event -> {
-            boolean haveCustomPresets = false;
-            for (Preset<T> p : presetManager.list()) {
-                if (!p.isBuiltIn()) {
-                    haveCustomPresets = true;
-                    break;
-                }
-            }
-            if (haveCustomPresets) {
-                managePresets();
-            } else {
-                JOptionPane.showMessageDialog(this, "There are no custom presets to manage.");
-            }
-        });
+        JButton updateButton = GuiUtils.createDialogButton("Update");
+        updateButton.setEnabled(false);
+        updateButton.addActionListener(event -> updatePreset());
 
-        updatePresetButton = new JButton("Update");
-        updatePresetButton.addActionListener(event -> {
-            Preset<T> selected = (Preset<T>) presetCombo.getSelectedItem();
-            presetManager.update(selected, guiMapper.getSettingsFromControls());
-        });
+        JButton renameButton = GuiUtils.createDialogButton("Rename...");
+        renameButton.setEnabled(false);
+        renameButton.addActionListener(event -> renamePreset());
 
-        JButton saveAsButton = new JButton("Save as...");
-        saveAsButton.addActionListener(event -> createPreset());
+        JButton deleteButton = GuiUtils.createDialogButton("Delete");
+        deleteButton.setEnabled(false);
+        deleteButton.addActionListener(event -> deletePreset());
 
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonsPanel.add(updatePresetButton);
-        buttonsPanel.add(saveAsButton);
-        buttonsPanel.add(manageButton);
+        buttonsPanel.add(createButton);
+        buttonsPanel.add(updateButton);
+        buttonsPanel.add(renameButton);
+        buttonsPanel.add(deleteButton);
+
+        presetCombo.addActionListener(event -> setButtonsState(updateButton, renameButton, deleteButton));
 
         setBorder(SizeHelper.getTitledBorder("Presets"));
-        setLayout(new BorderLayout(SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
+        setLayout(GuiUtils.createBorderLayout());
         add(presetCombo, BorderLayout.CENTER);
         add(buttonsPanel, BorderLayout.SOUTH);
     }
 
-    @SuppressWarnings("unchecked")
-    public void managePresets() {
-        Preset<T> selected = (Preset<T>) presetCombo.getSelectedItem();
-
-        PresetManagerDialog<T> dlg = new PresetManagerDialog<>(dialogOwner, presetManager);
-        dlg.setModalityType(ModalityType.APPLICATION_MODAL);
-        GuiUtils.centerAndSizeToParent(dlg, dialogOwner);
-        dlg.setVisible(true);
-
-        presetCombo.removeAllItems();
-        List<Preset<T>> presets = presetManager.list();
-
-        boolean haveOldSelection = false;
-
-        for (Preset<T> p : presets) {
-            presetCombo.addItem(p);
-            if (p == selected) {
-                haveOldSelection = true;
-            }
-        }
-
-        if (haveOldSelection) {
-            presetCombo.setSelectedItem(selected);
-        } else {
-            presetCombo.setSelectedIndex(0);
+    private void createPreset() {
+        String description = DialogUtils.showInput("Enter preset description:", "");
+        if ((description != null) && !description.isEmpty()) {
+            T settings = guiMapper.getSettingsFromControls();
+            Preset<T> preset = presetManager.save(settings, description);
+            presetCombo.addItem(preset);
+            presetCombo.setSelectedItem(preset);
         }
     }
 
-    public void createPreset() {
-        String desc = DialogUtils.showInput("Please enter the description of the new preset:", "");
-        if (!(desc == null || desc.isEmpty())) {
-            T settings = guiMapper.getSettingsFromControls();
-            Preset<T> preset = presetManager.save(settings, desc);
-            presetCombo.addItem(preset);
-            presetCombo.setSelectedItem(preset);
+    private void updatePreset() {
+        Preset<T> selectedPreset = (Preset<T>) presetCombo.getSelectedItem();
+        presetManager.update(selectedPreset, guiMapper.getSettingsFromControls());
+    }
+
+    private void renamePreset() {
+        Preset<T> selectedPreset = (Preset<T>) presetCombo.getSelectedItem();
+        String description = DialogUtils.showInput("Enter preset description:", selectedPreset.getDescription());
+        if ((description != null) && !description.isEmpty()) {
+            presetManager.rename(selectedPreset, description);
+        }
+    }
+
+    private void deletePreset() {
+        Preset<T> selectedPreset = (Preset<T>) presetCombo.getSelectedItem();
+        String msg = "Are you sure you want to delete the preset \'" + selectedPreset.getDescription() + "\'?";
+        if (DialogUtils.showConfirm(msg, "Delete preset", false)) {
+            presetManager.delete(selectedPreset);
+            presetCombo.removeItem(selectedPreset);
+        }
+    }
+
+    private void setButtonsState(JButton updateButton, JButton renameButton, JButton deleteButton) {
+        updateButton.setEnabled(false);
+        updateButton.setToolTipText("");
+        renameButton.setEnabled(false);
+        renameButton.setToolTipText("");
+        deleteButton.setEnabled(false);
+        deleteButton.setToolTipText("");
+        Object selectedItem = presetCombo.getSelectedItem();
+        if (selectedItem instanceof Preset) {
+            Preset<T> selectedPreset = (Preset<T>) selectedItem;
+            if (selectedPreset.isBuiltIn()) {
+                String hintText = "Cannot make changes to a built-in preset";
+                updateButton.setToolTipText(hintText);
+                renameButton.setToolTipText(hintText);
+                deleteButton.setToolTipText(hintText);
+            } else {
+                updateButton.setEnabled(true);
+                updateButton.setToolTipText("Save these settings to the currently selected preset");
+                renameButton.setEnabled(true);
+                renameButton.setToolTipText("Rename the currently selected preset");
+                deleteButton.setEnabled(true);
+                deleteButton.setToolTipText("Delete the currently selected preset");
+            }
+            guiMapper.applySettingsToControls(selectedPreset.getSettings());
         }
     }
 
@@ -140,4 +127,5 @@ public class PresetManagerPanel<T> extends JPanel {
             presetCombo.setSelectedIndex(0);
         }
     }
+
 }
