@@ -1,5 +1,6 @@
 dependencies {
-    compile project(':WorkcraftCore')
-    compile project(':FsmPlugin')
-    compile project(':StgPlugin')
+    implementation project(':WorkcraftCore')
+    implementation project(':FsmPlugin')
+    implementation project(':PetriPlugin')
+    implementation project(':StgPlugin')
 }

@@ -1,7 +1,8 @@
 dependencies {
-    compile project(':WorkcraftCore')
-    compile project(':PetriPlugin')
-    compile project(':StgPlugin')
-    compile project(':FstPlugin')
-    compile project(':MpsatVerificationPlugin')
+    implementation project(':WorkcraftCore')
+    implementation project(':FsmPlugin')
+    implementation project(':FstPlugin')
+    implementation project(':PetriPlugin')
+    implementation project(':StgPlugin')
+    implementation project(':MpsatVerificationPlugin')
 }

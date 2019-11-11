@@ -1,7 +1,8 @@
 dependencies {
-    compile project(':WorkcraftCore')
-    compile project(':CircuitPlugin')
-    compile project(':StgPlugin')
+    implementation project(':WorkcraftCore')
+    implementation project(':PetriPlugin')
+    implementation project(':StgPlugin')
+    implementation project(':CircuitPlugin')
 
-    testCompile project(path: ':CircuitPlugin', configuration: 'testArchives')
+    testImplementation project(path: ':CircuitPlugin', configuration: 'testArchives')
 }
