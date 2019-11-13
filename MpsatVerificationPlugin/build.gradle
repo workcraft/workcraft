@@ -1,8 +1,9 @@
 dependencies {
-    compile project(':WorkcraftCore')
-    compile project(':PetriPlugin')
-    compile project(':PunfPlugin')
-    compile project(':PcompPlugin')
+    implementation project(':WorkcraftCore')
+    implementation project(':PetriPlugin')
+    implementation project(':StgPlugin')
+    implementation project(':PcompPlugin')
+    implementation project(':PunfPlugin')
 }
 
 cpdCheck {

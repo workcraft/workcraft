@@ -3,6 +3,10 @@ plugins {
 }
 
 dependencies {
-    compile project(':WorkcraftCore')
-    compile project(':MpsatVerificationPlugin')
+    implementation project(':WorkcraftCore')
+    implementation project(':PetriPlugin')
+    implementation project(':StgPlugin')
+    implementation project(':PcompPlugin')
+    implementation project(':PunfPlugin')
+    implementation project(':MpsatVerificationPlugin')
 }

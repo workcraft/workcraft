@@ -1,4 +1,4 @@
 dependencies {
-    compile project(':WorkcraftCore')
-    compile project(':PetriPlugin')
+    implementation project(':WorkcraftCore')
+    implementation project(':PetriPlugin')
 }
