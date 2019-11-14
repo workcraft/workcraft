@@ -5,6 +5,7 @@ import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.properties.*;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 
@@ -28,8 +29,8 @@ public class XbmPropertyHelper {
         return new ActionListDeclaration(name)
                 .addAction(NEW_SYMBOL, () -> xbm.createSignal(null, type))
                 .addAction(TOGGLE_SYMBOL, () -> toggleDirectionsByType(burstEvent, type))
-                .addAction(RISING_SYMBOL, () -> setDirectionsToValueByType(burstEvent, type, Burst.Direction.PLUS))
-                .addAction(FALLING_SYMBOL, () -> setDirectionsToValueByType(burstEvent, type, Burst.Direction.MINUS));
+                .addAction(RISING_SYMBOL, () -> setDirectionsToValueByType(burstEvent, type, Direction.PLUS))
+                .addAction(FALLING_SYMBOL, () -> setDirectionsToValueByType(burstEvent, type, Direction.MINUS));
     }
 
     private static void toggleSignalsByType(XbmState state, XbmSignal.Type type) {
@@ -49,15 +50,16 @@ public class XbmPropertyHelper {
     }
 
     private static void toggleDirectionsByType(BurstEvent burstEvent, XbmSignal.Type type) {
-        for (Map.Entry<XbmSignal, Burst.Direction> entry : burstEvent.getBurst().getDirection().entrySet()) {
+        Map<XbmSignal, Direction> directionMap = new HashMap<>(burstEvent.getBurst().getDirection());
+        for (Map.Entry<XbmSignal, Direction> entry : directionMap.entrySet()) {
             if (entry.getKey().getType() == type) {
                 burstEvent.addOrChangeSignalDirection(entry.getKey(), entry.getValue().toggle());
             }
         }
     }
 
-    private static void setDirectionsToValueByType(BurstEvent burstEvent, XbmSignal.Type type, Burst.Direction value) {
-        for (Map.Entry<XbmSignal, Burst.Direction> entry : burstEvent.getBurst().getDirection().entrySet()) {
+    private static void setDirectionsToValueByType(BurstEvent burstEvent, XbmSignal.Type type, Direction value) {
+        for (Map.Entry<XbmSignal, Direction> entry : burstEvent.getBurst().getDirection().entrySet()) {
             if (entry.getKey().getType() == type && (entry.getValue() != value)) {
                 burstEvent.addOrChangeSignalDirection(entry.getKey(), value);
             }
@@ -70,23 +72,29 @@ public class XbmPropertyHelper {
                 xbmSignal::setType, xbmSignal::getType);
     }
 
-    public static PropertyDescriptor getStateValueProperty(final VisualXbm xbm, final XbmState xbmState, final XbmSignal xbmSignal) {
+    public static PropertyDescriptor getSignalValueProperty(final VisualXbm xbm, final XbmState xbmState, final XbmSignal xbmSignal) {
         return new PropertyDeclaration<>(SignalState.class,
-<<<<<<< HEAD
-                PropertyHelper.BULLET_PREFIX + xbm.getMathName(xbmState) + " type",
-                value -> xbmState.addOrChangeSignalValue(xbmSignal, value),
-=======
                 PropertyHelper.BULLET_PREFIX + xbm.getMathName(xbmSignal) + " value",
                 (value) -> xbmState.addOrChangeSignalValue(xbmSignal, value),
->>>>>>> 3a57d4e50... Add batch commands for burst and fix null issue
                 () -> xbmState.getEncoding().get(xbmSignal));
     }
 
     public static PropertyDescriptor getSignalDirectionProperty(final VisualXbm xbm, final BurstEvent burstEvent, final XbmSignal xbmSignal) {
-        return new PropertyDeclaration<>(Burst.Direction.class,
+        return new PropertyDeclaration<Direction>(Direction.class,
                 PropertyHelper.BULLET_PREFIX + xbm.getMathName(xbmSignal) + " direction",
-                value -> burstEvent.addOrChangeSignalDirection(xbmSignal, value),
-                () -> burstEvent.getBurst().getDirection().get(xbmSignal));
+                (value) -> burstEvent.addOrChangeSignalDirection(xbmSignal, value),
+                () -> burstEvent.getBurst().getDirection().get(xbmSignal)) {
+
+            @Override
+            public Map<Direction, String> getChoice() {
+                Map<Direction, String> result = new HashMap<>();
+                for (Map.Entry<Direction, String> entry: super.getChoice().entrySet()) {
+                    result.put(entry.getKey(), entry.getValue() + " " + Direction.getPostfix(entry.getKey()));
+                }
+                return result;
+            }
+        };
+
     }
 
     public static PropertyDescriptor getSignalNameProperty(final Xbm xbm, final XbmSignal xbmSignal) {

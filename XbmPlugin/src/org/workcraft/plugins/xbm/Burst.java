@@ -13,50 +13,6 @@ import java.util.HashSet;
 //FIXME PropertyChangedEvents are now updating slowly
 public class Burst extends Symbol {
 
-    public enum Direction {
-
-        PLUS("+"),
-        MINUS("-"),
-        UNSTABLE("*"),
-        STABLE("!");
-
-        private final String name;
-
-        Direction(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
-
-        public Direction toggle() {
-            switch (this) {
-            case MINUS:
-                return Direction.PLUS;
-            case PLUS:
-                return Direction.MINUS;
-            default:
-                return this;
-            }
-        }
-
-        public static Direction convertFromString(String value) {
-            if (value.equals(PLUS.toString())) {
-                return PLUS;
-            } else if (value.equals(MINUS.toString())) {
-                return MINUS;
-            } else if (value.equals(STABLE.toString())) {
-                return STABLE;
-            } else if (value.equals(UNSTABLE.toString())) {
-                return UNSTABLE;
-            } else {
-                throw new ArgumentException("An unknown direction was set for the signal.");
-            }
-        }
-    }
-
     public static final String PROPERTY_DIRECTION = "Direction";
 
     private final Map<XbmSignal, Direction> direction = new LinkedHashMap<>();

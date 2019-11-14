@@ -1,12 +1,13 @@
 package org.workcraft.plugins.xbm;
 
 import org.workcraft.exceptions.ArgumentException;
+import org.workcraft.plugins.xbm.utils.SignalPropertyUtil;
 
 public enum SignalState {
 
-    HIGH("1"),
-    LOW("0"),
-    DDC("?");
+    HIGH(SignalPropertyUtil.VALUE_HIGH),
+    LOW(SignalPropertyUtil.VALUE_LOW),
+    DDC(SignalPropertyUtil.VALUE_DDC);
 
     private final String name;
 
@@ -35,14 +36,15 @@ public enum SignalState {
     }
 
     public static SignalState convertFromString(String value) {
-        if (value.equals(LOW.toString())) {
+        switch (value) {
+        case SignalPropertyUtil.VALUE_LOW:
             return LOW;
-        } else if (value.equals(HIGH.toString())) {
+        case SignalPropertyUtil.VALUE_HIGH:
             return HIGH;
-        } else if (value.equals(DDC.toString())) {
+        case SignalPropertyUtil.VALUE_DDC:
             return DDC;
-        } else {
-            throw new ArgumentException("An unknown state was set for the signal.");
+        default:
+            throw new ArgumentException("An unknown state was set for the signal");
         }
     }
 }

@@ -14,7 +14,7 @@ PARSER_BEGIN(BmParser)
 package org.workcraft.plugins.xbm.jj;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.plugins.xbm.Burst;
-import org.workcraft.plugins.xbm.Burst.Direction;
+import org.workcraft.plugins.xbm.Direction;
 import org.workcraft.plugins.xbm.BurstEvent;
 import org.workcraft.plugins.xbm.SignalState;
 import org.workcraft.plugins.xbm.Xbm;

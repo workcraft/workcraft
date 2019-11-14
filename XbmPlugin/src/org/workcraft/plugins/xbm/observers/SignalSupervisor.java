@@ -5,6 +5,7 @@ import org.workcraft.observation.*;
 import org.workcraft.plugins.xbm.*;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
@@ -137,10 +138,11 @@ public class SignalSupervisor extends StateSupervisor {
         Burst burst = target.getBurst();
         XbmState from = burst.getFrom();
         XbmState to = burst.getTo();
-        Map<XbmSignal, Burst.Direction> direction = burst.getDirection();
-        for (Map.Entry<XbmSignal, Burst.Direction> entry: direction.entrySet()) {
+        Map<XbmSignal, Direction> direction = burst.getDirection();
+        Map<XbmSignal, Direction> dirReader = new HashMap<>(direction);
+        for (Map.Entry<XbmSignal, Direction> entry: dirReader.entrySet()) {
             XbmSignal s = entry.getKey();
-            Burst.Direction d = entry.getValue();
+            Direction d = entry.getValue();
             if (d != null) {
                 switch (d) {
                 case PLUS:

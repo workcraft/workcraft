@@ -133,13 +133,13 @@ public class VisualXbm extends VisualFsm {
         if (!inputs.isEmpty()) {
             list.add(XbmPropertyHelper.getBurstProperty(state, "Input burst", XbmSignal.Type.INPUT));
             for (XbmSignal i: inputs) {
-                list.add(XbmPropertyHelper.getStateValueProperty(this, state, i));
+                list.add(XbmPropertyHelper.getSignalValueProperty(this, state, i));
             }
         }
         if (!outputs.isEmpty()) {
             list.add(XbmPropertyHelper.getBurstProperty(state, "Output burst", XbmSignal.Type.OUTPUT));
             for (XbmSignal o: outputs) {
-                list.add(XbmPropertyHelper.getStateValueProperty(this, state, o));
+                list.add(XbmPropertyHelper.getSignalValueProperty(this, state, o));
             }
         }
         return list;

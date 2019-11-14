@@ -56,7 +56,14 @@ public class MaximalSetPropertyVerification extends AbstractVerificationCommand 
         return WorkspaceUtils.isApplicable(we, Xbm.class);
     }
 
+    /*
+    An input burst in a given state cannot be a subset of another state
+     */
+
     private HashSet<BurstEvent> findSignalChangesInMoreThanOneBurst(Xbm xbm) {
+
+        Collection<XbmState> states = xbm.getXbmStates();
+
         Collection<BurstEvent> burstEvents = xbm.getBurstEvents();
         HashSet<BurstEvent> result = new LinkedHashSet<>();
         for (BurstEvent event1: burstEvents) {
@@ -64,9 +71,9 @@ public class MaximalSetPropertyVerification extends AbstractVerificationCommand 
                 if (event1 != event2) {
                     Burst b1 = event1.getBurst();
                     Burst b2 = event2.getBurst();
-                    Map<XbmSignal, Burst.Direction> b1Dir = new LinkedHashMap<>(b1.getDirections(XbmSignal.Type.INPUT));
-                    Map<XbmSignal, Burst.Direction> b2Dir = new LinkedHashMap<>(b2.getDirections(XbmSignal.Type.INPUT));
-                    if (b1Dir.entrySet().containsAll(b2Dir.entrySet())) {
+                    Map<XbmSignal, Direction> b1Dir = new LinkedHashMap<>(b1.getDirections(XbmSignal.Type.INPUT));
+                    Map<XbmSignal, Direction> b2Dir = new LinkedHashMap<>(b2.getDirections(XbmSignal.Type.INPUT));
+                    if (b1.getTo() != b2.getTo() && b1Dir.entrySet().containsAll(b2Dir.entrySet())) {
                         result.add(event1);
                         result.add(event2);
                     }
