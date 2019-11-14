@@ -75,10 +75,6 @@ public class AssertionDialog extends ModalDialog<MpsatPresetManager> {
     }
 
     private JPanel createAssertionPanel() {
-        JPanel result = new JPanel(new BorderLayout());
-        String title = "Assertion (use '" + NamespaceHelper.getHierarchySeparator() + "' as hierarchy separator)";
-        result.setBorder(SizeHelper.getTitledBorder(title));
-
         propertyText = new JTextArea();
         propertyText.setMargin(SizeHelper.getTextMargin());
         propertyText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
@@ -91,13 +87,8 @@ public class AssertionDialog extends ModalDialog<MpsatPresetManager> {
             }
         });
         JScrollPane assertionScrollPane = new JScrollPane(propertyText);
-
-        JPanel propertyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,
-                SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
-
-        result.add(assertionScrollPane, BorderLayout.CENTER);
-        result.add(propertyPanel, BorderLayout.SOUTH);
-        return result;
+        String title = "Assertion (use '" + NamespaceHelper.getHierarchySeparator() + "' as hierarchy separator)";
+        return GuiUtils.createBorderedComponent(assertionScrollPane, title);
     }
 
     public VerificationParameters getSettings() {

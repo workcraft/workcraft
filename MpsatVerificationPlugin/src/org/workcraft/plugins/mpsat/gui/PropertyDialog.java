@@ -193,11 +193,9 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
     @Override
     public JPanel createButtonsPanel() {
         JPanel result = super.createButtonsPanel();
-
         JButton helpButton = GuiUtils.createDialogButton("Help");
         helpButton.addActionListener(event -> DesktopApi.open(new File("help/reach.html")));
         result.add(helpButton);
-
         return result;
     }
 

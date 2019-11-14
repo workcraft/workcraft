@@ -5,6 +5,8 @@ import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -139,16 +141,16 @@ public class SizeHelper {
     }
 
     public static CompoundBorder getTitledBorder(String title) {
-        return BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(title), getEmptyBorder());
+        return new CompoundBorder(new TitledBorder(title), getEmptyBorder());
     }
 
     public static Border getEmptyBorder() {
         int gap = (int) Math.round(0.2 * getBaseSize());
-        return BorderFactory.createEmptyBorder(gap, gap, gap, gap);
+        return new EmptyBorder(gap, gap, gap, gap);
     }
 
     public static Border getTableCellBorder() {
-        return BorderFactory.createEmptyBorder(1, 3, 1, 1);
+        return new EmptyBorder(1, 3, 1, 1);
     }
 
     public static Border getTableHeaderBorder() {

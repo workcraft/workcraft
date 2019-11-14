@@ -3,8 +3,8 @@ package org.workcraft.plugins.mpsat;
 import org.workcraft.Framework;
 import org.workcraft.plugins.Plugin;
 import org.workcraft.plugins.PluginManager;
-import org.workcraft.utils.ScriptableCommandUtils;
 import org.workcraft.plugins.mpsat.commands.*;
+import org.workcraft.utils.ScriptableCommandUtils;
 
 @SuppressWarnings("unused")
 public class MpsatVerificationPlugin implements Plugin {
@@ -55,6 +55,7 @@ public class MpsatVerificationPlugin implements Plugin {
         pm.registerCommand(ConformationVerificationCommand.class);
         pm.registerCommand(PropertyVerificationCommand.class);
         pm.registerCommand(AssertionVerificationCommand.class);
+        pm.registerCommand(HandshakeVerificationCommand.class);
     }
 
 }

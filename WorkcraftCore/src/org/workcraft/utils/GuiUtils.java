@@ -31,6 +31,13 @@ public class GuiUtils {
         return result;
     }
 
+    public static JPanel createBorderedComponent(JComponent component, String borderText) {
+        JPanel result = new JPanel(createBorderLayout());
+        result.setBorder(SizeHelper.getTitledBorder(borderText));
+        result.add(component, BorderLayout.CENTER);
+        return result;
+    }
+
     public static void centerAndSizeToParent(Window frame, Window parent) {
         if ((frame != null) && (parent != null)) {
             Dimension parentSize = parent.getSize();
@@ -218,6 +225,10 @@ public class GuiUtils {
         result.setHGap(SizeHelper.getLayoutHGap());
         result.setVGap(SizeHelper.getLayoutVGap());
         return result;
+    }
+
+    public static GridLayout createGridLayout(int rows, int cols) {
+        return new GridLayout(rows, cols, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap());
     }
 
     public static void setButtonPanelLayout(JPanel panel, Dimension buttonSize) {

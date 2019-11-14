@@ -1,6 +1,7 @@
 package org.workcraft.gui.properties;
 
 import javax.swing.*;
+import javax.swing.border.MatteBorder;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.io.File;
@@ -48,7 +49,7 @@ public class FileCellRenderer extends JPanel implements TableCellRenderer {
             setToolTipText(file.getAbsolutePath());
 
             Color background = isSelected ? table.getSelectionBackground() : table.getBackground();
-            setBorder(BorderFactory.createMatteBorder(0, 0, 0, 0, background));
+            setBorder(new MatteBorder(0, 0, 0, 0, background));
         }
         return this;
     }
