@@ -6,6 +6,7 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
+import org.workcraft.plugins.mpsat.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -135,7 +136,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             CompositionData compositionData = new CompositionData(detailFile);
             ComponentData devComponentData = compositionData.getComponentData(devStgFile);
             Set<String> devPlaceNames = devComponentData.getDstPlaces();
-            VerificationParameters mpsatSettings = VerificationParameters.getConformationSettings(devPlaceNames);
+            VerificationParameters mpsatSettings = ReachUtils.getConformationSettings(devPlaceNames);
             VerificationTask verificationTask = new VerificationTask(mpsatSettings.getMpsatArguments(directory),
                     unfoldingFile, directory, sysStgFile);
             Result<? extends VerificationOutput>  mpsatResult = taskManager.execute(

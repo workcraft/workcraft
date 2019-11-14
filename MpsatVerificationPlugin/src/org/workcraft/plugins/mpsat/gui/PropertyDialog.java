@@ -9,6 +9,7 @@ import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.VerificationParameters.SolutionMode;
+import org.workcraft.plugins.mpsat.utils.ReachUtils;
 import org.workcraft.presets.Preset;
 import org.workcraft.presets.PresetManagerPanel;
 import org.workcraft.presets.SettingsToControlsMapper;
@@ -77,23 +78,23 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
         MpsatPresetManager userData = getUserData();
         if (userData.isAllowStgPresets()) {
             builtInPresets.add(new Preset<>("Consistency",
-                    VerificationParameters.getConsistencySettings(), true));
+                    ReachUtils.getConsistencySettings(), true));
 
             builtInPresets.add(new Preset<>("Delay insensitive interface",
-                    VerificationParameters.getDiInterfaceSettings(), true));
+                    ReachUtils.getDiInterfaceSettings(), true));
 
             builtInPresets.add(new Preset<>("Input properness",
-                    VerificationParameters.getInputPropernessSettings(), true));
+                    ReachUtils.getInputPropernessSettings(), true));
 
             builtInPresets.add(new Preset<>("Output persistency (without dummies)",
-                    VerificationParameters.getOutputPersistencySettings(), true));
+                    ReachUtils.getOutputPersistencySettings(), true));
         }
 
         builtInPresets.add(new Preset<>("Deadlock freeness",
-                VerificationParameters.getDeadlockReachSettings(), true));
+                ReachUtils.getDeadlockReachSettings(), true));
 
         builtInPresets.add(new Preset<>("Deadlock freeness without maximal dummies",
-                VerificationParameters.getDeadlockWithoutMaximalDummyReachSettings(), true));
+                ReachUtils.getDeadlockWithoutMaximalDummyReachSettings(), true));
 
         SettingsToControlsMapper<VerificationParameters> guiMapper = new SettingsToControlsMapper<VerificationParameters>() {
             @Override

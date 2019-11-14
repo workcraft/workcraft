@@ -1,6 +1,7 @@
 package org.workcraft.plugins.mpsat.commands;
 
 import org.workcraft.plugins.mpsat.VerificationParameters;
+import org.workcraft.plugins.mpsat.utils.ReachUtils;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
@@ -24,7 +25,7 @@ public class DiInterfaceVerificationCommand extends AbstractVerificationCommand 
 
     @Override
     public VerificationParameters getSettings(WorkspaceEntry we) {
-        return VerificationParameters.getDiInterfaceSettings();
+        return ReachUtils.getDiInterfaceSettings();
     }
 
 }

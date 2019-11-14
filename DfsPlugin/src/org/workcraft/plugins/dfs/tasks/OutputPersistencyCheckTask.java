@@ -10,6 +10,7 @@ import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat.tasks.VerificationOutput;
 import org.workcraft.plugins.mpsat.tasks.VerificationOutputParser;
 import org.workcraft.plugins.mpsat.tasks.VerificationTask;
+import org.workcraft.plugins.mpsat.utils.ReachUtils;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.StgModel;
@@ -34,7 +35,7 @@ public class OutputPersistencyCheckTask implements Task<VerificationChainOutput>
     @Override
     public Result<? extends VerificationChainOutput> run(ProgressMonitor<? super VerificationChainOutput> monitor) {
         final Framework framework = Framework.getInstance();
-        VerificationParameters settings = VerificationParameters.getOutputPersistencySettings();
+        VerificationParameters settings = ReachUtils.getOutputPersistencySettings();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         StgFormat format = StgFormat.getInstance();

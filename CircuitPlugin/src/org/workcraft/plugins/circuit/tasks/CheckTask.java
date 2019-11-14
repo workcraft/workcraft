@@ -10,6 +10,7 @@ import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat.tasks.VerificationOutput;
 import org.workcraft.plugins.mpsat.tasks.VerificationOutputParser;
 import org.workcraft.plugins.mpsat.tasks.VerificationTask;
+import org.workcraft.plugins.mpsat.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -51,7 +52,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         String stgFileExtension = StgFormat.getInstance().getExtension();
-        VerificationParameters preparationSettings = VerificationParameters.getToolchainPreparationSettings();
+        VerificationParameters preparationSettings = ReachUtils.getToolchainPreparationSettings();
         try {
             // Common variables
             VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
@@ -231,7 +232,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                 CompositionData compositionData = new CompositionData(detailModFile);
                 ComponentData devComponentData = compositionData.getComponentData(devStgFile);
                 Set<String> devPlaceNames = devComponentData.getDstPlaces();
-                VerificationParameters conformationSettings = VerificationParameters.getConformationSettings(devPlaceNames);
+                VerificationParameters conformationSettings = ReachUtils.getConformationSettings(devPlaceNames);
                 VerificationTask mpsatConformationTask = new VerificationTask(conformationSettings.getMpsatArguments(directory),
                         unfoldingModFile, directory, sysModStgFile);
                 SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
@@ -258,7 +259,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
 
             // Check for deadlock (if requested)
             if (checkDeadlock) {
-                VerificationParameters deadlockSettings = VerificationParameters.getDeadlockSettings();
+                VerificationParameters deadlockSettings = ReachUtils.getDeadlockSettings();
                 VerificationTask mpsatDeadlockTask = new VerificationTask(deadlockSettings.getMpsatArguments(directory),
                         unfoldingFile, directory, sysStgFile);
                 SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
@@ -285,7 +286,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
 
             // Check for persistency (if requested)
             if (checkPersistency) {
-                VerificationParameters persistencySettings = VerificationParameters.getOutputPersistencySettings(grantPairs);
+                VerificationParameters persistencySettings = ReachUtils.getOutputPersistencySettings(grantPairs);
                 VerificationTask mpsatPersistencyTask = new VerificationTask(persistencySettings.getMpsatArguments(directory),
                         unfoldingFile, directory, sysStgFile);
                 SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
@@ -312,7 +313,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
 
             // Success
             Result<? extends VerificationOutput>  mpsatResult = new Result<>(Outcome.SUCCESS);
-            VerificationParameters completionSettings = VerificationParameters.getToolchainCompletionSettings();
+            VerificationParameters completionSettings = ReachUtils.getToolchainCompletionSettings();
             String message = getSuccessMessage(envFile);
             return new Result<>(Outcome.SUCCESS,
                     new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, completionSettings, message));

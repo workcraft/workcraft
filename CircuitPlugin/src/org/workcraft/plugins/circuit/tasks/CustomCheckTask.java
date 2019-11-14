@@ -9,6 +9,7 @@ import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat.tasks.VerificationOutput;
 import org.workcraft.plugins.mpsat.tasks.VerificationOutputParser;
 import org.workcraft.plugins.mpsat.tasks.VerificationTask;
+import org.workcraft.plugins.mpsat.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
@@ -42,7 +43,7 @@ public class CustomCheckTask implements Task<VerificationChainOutput> {
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         String stgFileExtension = StgFormat.getInstance().getExtension();
-        VerificationParameters preparationSettings = VerificationParameters.getToolchainPreparationSettings();
+        VerificationParameters preparationSettings = ReachUtils.getToolchainPreparationSettings();
         try {
             // Common variables
             VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);

@@ -3,18 +3,38 @@ package org.workcraft.plugins.mpsat.commands;
 import org.workcraft.commands.NodeTransformer;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
+import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 public class PlaceRedundancyVerificationCommand extends AbstractVerificationCommand implements NodeTransformer {
+
+    private static final String REACH_PLACE_REDUNDANCY_NAMES =
+            "/* insert place names for redundancy check */"; // For example: "p1", "<a+;b->
+
+    private static final String REACH_PLACE_REDUNDANCY =
+            "// Checks whether the given set of places can be removed from the net without affecting its behaviour, in the\n" +
+            "// sense that no transition can be disabled solely because of the absence of tokens on any of these places.\n" +
+            "let\n" +
+            "    PNAMES = {" + REACH_PLACE_REDUNDANCY_NAMES + "\"\"} \\ {\"\"},\n" +
+            "    PL = gather pn in PNAMES { P pn }\n" +
+            "{\n" +
+            "    exists t in TRANSITIONS {\n" +
+            "        ~@t\n" +
+            "        &\n" +
+            "        forall p in pre t \\ PL { $p }\n" +
+            "    }\n" +
+            "}\n";
 
     @Override
     public String getDisplayName() {
@@ -58,7 +78,13 @@ public class PlaceRedundancyVerificationCommand extends AbstractVerificationComm
     @Override
     public VerificationParameters getSettings(WorkspaceEntry we) {
         HashSet<String> placeNames = getSelectedPlaces(we);
-        return VerificationParameters.getPlaceRedundancySettings(placeNames);
+        String str = placeNames.stream().map(ref -> "\"" + ref + "\", ").collect(Collectors.joining());
+        String reachPlaceRedundancy = REACH_PLACE_REDUNDANCY.replace(REACH_PLACE_REDUNDANCY_NAMES, str);
+        return new VerificationParameters("Place redundancy",
+                VerificationMode.REACHABILITY_REDUNDANCY, 0,
+                MpsatVerificationSettings.getSolutionMode(),
+                MpsatVerificationSettings.getSolutionCount(),
+                reachPlaceRedundancy, true);
     }
 
     protected HashSet<String> getSelectedPlaces(WorkspaceEntry we) {

@@ -3,18 +3,22 @@ package org.workcraft.plugins.mpsat.commands;
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.tasks.*;
+import org.workcraft.plugins.mpsat.tasks.CombinedChainOutput;
+import org.workcraft.plugins.mpsat.tasks.CombinedChainResultHandler;
+import org.workcraft.plugins.mpsat.tasks.CombinedChainTask;
+import org.workcraft.plugins.mpsat.tasks.OutputDeterminacyTask;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
+import org.workcraft.plugins.mpsat.utils.ReachUtils;
 import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.utils.DialogUtils;
 import org.workcraft.types.Pair;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -81,16 +85,16 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand {
 
         Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
         ArrayList<VerificationParameters> settingsList = new ArrayList<>();
-        settingsList.add(VerificationParameters.getConsistencySettings());
-        settingsList.add(VerificationParameters.getDeadlockSettings());
+        settingsList.add(ReachUtils.getConsistencySettings());
+        settingsList.add(ReachUtils.getDeadlockSettings());
         if (noDummies) {
-            settingsList.add(VerificationParameters.getInputPropernessSettings());
+            settingsList.add(ReachUtils.getInputPropernessSettings());
         }
 
-        settingsList.addAll(MpsatUtils.getMutexImplementabilitySettings(mutexes));
+        settingsList.addAll(ReachUtils.getMutexImplementabilitySettings(mutexes));
         if (noDummies) {
             LinkedList<Pair<String, String>> exceptions = MutexUtils.getMutexGrantPairs(stg);
-            settingsList.add(VerificationParameters.getOutputPersistencySettings(exceptions));
+            settingsList.add(ReachUtils.getOutputPersistencySettings(exceptions));
         }
 
         OutputDeterminacyTask extraTask = new OutputDeterminacyTask(we);

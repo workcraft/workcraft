@@ -2,6 +2,7 @@ package org.workcraft.plugins.mpsat.commands;
 
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
+import org.workcraft.plugins.mpsat.utils.ReachUtils;
 import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.utils.DialogUtils;
@@ -53,7 +54,7 @@ public class OutputPersistencyVerificationCommand extends AbstractVerificationCo
     public VerificationParameters getSettings(WorkspaceEntry we) {
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         LinkedList<Pair<String, String>> exceptions = MutexUtils.getMutexGrantPairs(stg);
-        return VerificationParameters.getOutputPersistencySettings(exceptions);
+        return ReachUtils.getOutputPersistencySettings(exceptions);
     }
 
 }

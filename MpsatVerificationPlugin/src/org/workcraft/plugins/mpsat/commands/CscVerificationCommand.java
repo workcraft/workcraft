@@ -1,9 +1,10 @@
 package org.workcraft.plugins.mpsat.commands;
 
+import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class CscVerificationCommand extends AbstractVerificationCommand {
 
@@ -24,7 +25,11 @@ public class CscVerificationCommand extends AbstractVerificationCommand {
 
     @Override
     public VerificationParameters getSettings(WorkspaceEntry we) {
-        return VerificationParameters.getCscSettings();
+        return new VerificationParameters("Complete state coding",
+                VerificationMode.CSC_CONFLICT_DETECTION, 0,
+                VerificationParameters.SolutionMode.ALL,
+                -1 /* unlimited */,
+                null, true);
     }
 
 }

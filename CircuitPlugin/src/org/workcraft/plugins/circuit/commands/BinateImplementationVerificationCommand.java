@@ -2,9 +2,7 @@ package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
-import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.BooleanVariable;
-import org.workcraft.formula.FormulaUtils;
+import org.workcraft.formula.*;
 import org.workcraft.formula.bdd.BddManager;
 import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.plugins.circuit.Circuit;
@@ -13,6 +11,8 @@ import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.tasks.CombinedCheckTask;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
+import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
+import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.tasks.CombinedChainOutput;
 import org.workcraft.plugins.mpsat.tasks.CombinedChainResultHandler;
@@ -81,7 +81,7 @@ public class BinateImplementationVerificationCommand extends AbstractVerificatio
         LogUtils.logInfo("Verifying implementations of binate functions:");
         for (BinateData binateItem : binateItems) {
             String signal = CircuitUtils.getSignalReference(circuit, binateItem.contact);
-            settingsList.add(VerificationParameters.getBinateImplementationReachSettings(signal, binateItem.formula, binateItem.variable));
+            settingsList.add(getBinateImplementationReachSettings(signal, binateItem.formula, binateItem.variable));
             LogUtils.logMessage("  " + signal
                     + " = " + StringGenerator.toString(binateItem.formula)
                     + "  // (binate in " + binateItem.variable.getLabel() + ")");
@@ -116,6 +116,25 @@ public class BinateImplementationVerificationCommand extends AbstractVerificatio
             }
         }
         return result;
+    }
+
+    private VerificationParameters getBinateImplementationReachSettings(String signal, BooleanFormula formula, BooleanVariable variable) {
+        BooleanFormula insensitivityFormula = new Iff(FormulaUtils.replaceOne(formula, variable), FormulaUtils.replaceZero(formula, variable));
+
+        FreeVariable positiveVar = new FreeVariable("@" + variable.getLabel());
+        BooleanFormula splitVarFormula = FormulaUtils.replaceBinateVariable(formula, variable, positiveVar);
+        BooleanFormula derivativeFormula = FormulaUtils.derive(splitVarFormula, positiveVar);
+
+        String reach = "@S\"" + variable.getLabel() + "\" &\n"
+                + "(" + StringGenerator.toString(insensitivityFormula, StringGenerator.Style.REACH) + ") &\n"
+                + "(" + StringGenerator.toString(derivativeFormula, StringGenerator.Style.REACH) + ")";
+
+        String s = signal + " = " + StringGenerator.toString(formula);
+        return new VerificationParameters("Binate function implementation for " + s,
+                VerificationMode.STG_REACHABILITY, 0,
+                MpsatVerificationSettings.getSolutionMode(),
+                MpsatVerificationSettings.getSolutionCount(),
+                reach, true);
     }
 
 }

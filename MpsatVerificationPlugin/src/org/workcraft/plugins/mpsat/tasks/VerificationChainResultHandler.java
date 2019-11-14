@@ -4,6 +4,7 @@ import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.tasks.PunfOutputParser.Cause;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
+import org.workcraft.plugins.mpsat.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.stg.Mutex;
@@ -144,7 +145,7 @@ public class VerificationChainResultHandler extends AbstractResultHandler<Verifi
                     Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
                     ExportOutput exportOutput = (exportResult == null) ? null : exportResult.getPayload();
                     SwingUtilities.invokeLater(new ConsistencyOutputHandler(
-                            we, exportOutput, pcompOutput, mpsatFakeOutput, VerificationParameters.getConsistencySettings()));
+                            we, exportOutput, pcompOutput, mpsatFakeOutput, ReachUtils.getConsistencySettings()));
                 } else {
                     String comment = solution.getComment();
                     String message = CANNOT_VERIFY_PREFIX;
