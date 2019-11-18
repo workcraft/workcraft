@@ -2,7 +2,6 @@ package org.workcraft.plugins.xbm.converters;
 
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.xbm.Burst;
 import org.workcraft.plugins.xbm.Direction;
 import org.workcraft.plugins.xbm.XbmSignal;
 

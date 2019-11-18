@@ -61,9 +61,6 @@ public class MaximalSetPropertyVerification extends AbstractVerificationCommand 
      */
 
     private HashSet<BurstEvent> findSignalChangesInMoreThanOneBurst(Xbm xbm) {
-
-        Collection<XbmState> states = xbm.getXbmStates();
-
         Collection<BurstEvent> burstEvents = xbm.getBurstEvents();
         HashSet<BurstEvent> result = new LinkedHashSet<>();
         for (BurstEvent event1: burstEvents) {

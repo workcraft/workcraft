@@ -57,8 +57,5 @@ public class XbmPlugin implements Plugin {
 
         ScriptableCommandUtils.register(DistinguishabilityConstraintVerification.class, "checkXbmDistinguishabilityConstraint",
                 "check the XBM model for any conflicts of conditionals and instances of the same bursts");
-
-        ScriptableCommandUtils.register(CorrectConditionalImplementationVerification.class, "checkXbmConditionalImplementation",
-                "check the XBM model for any incorrect conditional implementations");
     }
 }

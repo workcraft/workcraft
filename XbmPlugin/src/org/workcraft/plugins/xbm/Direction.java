@@ -1,7 +1,6 @@
 package org.workcraft.plugins.xbm;
 
 import org.workcraft.exceptions.ArgumentException;
-import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.xbm.utils.SignalPropertyUtil;
 
 public enum Direction {
@@ -26,12 +25,12 @@ public enum Direction {
 
     public Direction toggle() {
         switch (this) {
-            case MINUS:
-                return Direction.PLUS;
-            case PLUS:
-                return Direction.MINUS;
-            default:
-                return this;
+        case MINUS:
+            return Direction.PLUS;
+        case PLUS:
+            return Direction.MINUS;
+        default:
+            return this;
         }
     }
 
@@ -56,20 +55,20 @@ public enum Direction {
 
     public static String getPostfix(Direction value) {
         switch (value) {
-            case PLUS:
-                return SignalPropertyUtil.POSTFIX_RISING;
-            case MINUS:
-                return SignalPropertyUtil.POSTFIX_FALLING;
-            case STABLE:
-                return SignalPropertyUtil.POSTFIX_STABLE;
-            case UNSTABLE:
-                return SignalPropertyUtil.POSTFIX_DDC_UNDETERMINED;
-            case EVENTUALLY_HIGH:
-                return SignalPropertyUtil.POSTFIX_DDC_RISING;
-            case EVENTUALLY_LOW:
-                return SignalPropertyUtil.POSTFIX_DDC_FALLING;
-            default:
-                throw new RuntimeException("An unknown direction was found.");
+        case PLUS:
+            return SignalPropertyUtil.POSTFIX_RISING;
+        case MINUS:
+            return SignalPropertyUtil.POSTFIX_FALLING;
+        case STABLE:
+            return SignalPropertyUtil.POSTFIX_STABLE;
+        case UNSTABLE:
+            return SignalPropertyUtil.POSTFIX_DDC_UNDETERMINED;
+        case EVENTUALLY_HIGH:
+            return SignalPropertyUtil.POSTFIX_DDC_RISING;
+        case EVENTUALLY_LOW:
+            return SignalPropertyUtil.POSTFIX_DDC_FALLING;
+        default:
+            throw new RuntimeException("An unknown direction was found.");
         }
     }
 }

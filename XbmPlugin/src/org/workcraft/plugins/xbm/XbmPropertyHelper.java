@@ -75,14 +75,14 @@ public class XbmPropertyHelper {
     public static PropertyDescriptor getSignalValueProperty(final VisualXbm xbm, final XbmState xbmState, final XbmSignal xbmSignal) {
         return new PropertyDeclaration<>(SignalState.class,
                 PropertyHelper.BULLET_PREFIX + xbm.getMathName(xbmSignal) + " value",
-                (value) -> xbmState.addOrChangeSignalValue(xbmSignal, value),
+                value -> xbmState.addOrChangeSignalValue(xbmSignal, value),
                 () -> xbmState.getEncoding().get(xbmSignal));
     }
 
     public static PropertyDescriptor getSignalDirectionProperty(final VisualXbm xbm, final BurstEvent burstEvent, final XbmSignal xbmSignal) {
         return new PropertyDeclaration<Direction>(Direction.class,
                 PropertyHelper.BULLET_PREFIX + xbm.getMathName(xbmSignal) + " direction",
-                (value) -> burstEvent.addOrChangeSignalDirection(xbmSignal, value),
+                value -> burstEvent.addOrChangeSignalDirection(xbmSignal, value),
                 () -> burstEvent.getBurst().getDirection().get(xbmSignal)) {
 
             @Override

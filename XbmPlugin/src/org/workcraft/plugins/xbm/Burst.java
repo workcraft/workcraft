@@ -1,14 +1,13 @@
 package org.workcraft.plugins.xbm;
 
-import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.fsm.Symbol;
 import org.workcraft.plugins.fsm.VisualEvent;
 
-import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 //FIXME PropertyChangedEvents are now updating slowly
 public class Burst extends Symbol {
