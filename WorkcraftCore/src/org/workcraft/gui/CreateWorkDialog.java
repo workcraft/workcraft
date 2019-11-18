@@ -125,20 +125,32 @@ public class CreateWorkDialog extends ModalDialog<Void> {
 
     private void fillModelList() {
         PluginManager pm = Framework.getInstance().getPluginManager();
-        ArrayList<ListElement> elements = new ArrayList<>();
-        for (PluginInfo<? extends ModelDescriptor> plugin: pm.getModelDescriptorPlugins()) {
-            ModelDescriptor modelDescriptor = plugin.newInstance();
-            String displayName = modelDescriptor.getDisplayName();
-            if (!FavoriteCommonSettings.getFilterFavorites() || FavoriteCommonSettings.getIsFavorite(displayName)) {
-                elements.add(new ListElement(modelDescriptor));
-            }
+        Collection<PluginInfo<? extends ModelDescriptor>> plugins = pm.getModelDescriptorPlugins();
+
+        ArrayList<ListElement> elements = getModelList(plugins, true);
+        if (!FavoriteCommonSettings.getFilterFavorites()) {
+            ArrayList<ListElement> otherElements = getModelList(plugins, false);
+            elements.addAll(otherElements);
         }
-        Collections.sort(elements);
+
         DefaultListModel listModel = (DefaultListModel) workTypeList.getModel();
         listModel.clear();
-        for (ListElement element: elements) {
+        for (ListElement element : elements) {
             listModel.addElement(element);
         }
+    }
+
+    private ArrayList<ListElement> getModelList(Collection<PluginInfo<? extends ModelDescriptor>> plugins, boolean favorite) {
+        ArrayList<ListElement> result = new ArrayList<>();
+        for (PluginInfo<? extends ModelDescriptor> plugin : plugins) {
+            ModelDescriptor modelDescriptor = plugin.newInstance();
+            String displayName = modelDescriptor.getDisplayName();
+            if (FavoriteCommonSettings.getIsFavorite(displayName) == favorite) {
+                result.add(new ListElement(modelDescriptor));
+            }
+        }
+        Collections.sort(result);
+        return result;
     }
 
     private JScrollPane getModelScroll() {
