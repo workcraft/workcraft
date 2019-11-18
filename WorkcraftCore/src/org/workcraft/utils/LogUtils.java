@@ -1,10 +1,5 @@
 package org.workcraft.utils;
 
-import org.workcraft.dom.references.ReferenceHelper;
-import org.workcraft.dom.visual.SizeHelper;
-
-import java.util.Collection;
-
 public class LogUtils {
     private static final String PREFIX_INFO = "[INFO] ";
     private static final String PREFIX_WARNING = "[WARNING] ";
@@ -81,38 +76,6 @@ public class LogUtils {
             return text.substring(prefix.length());
         }
         return text;
-    }
-
-    public static String getTextWithRefs(String msg, Collection<String> refs) {
-        return getTextWithRefs(msg, refs, SizeHelper.getWrapLength());
-    }
-
-    public static String getTextWithRefs(String msg, Collection<String> refs, int len) {
-        if (refs.size() == 1) {
-            msg += " '" + refs.iterator().next() + "'.";
-        } else {
-            msg = makePlural(msg) + ":";
-            String str = String.join(", ", refs);
-            if (msg.length() + str.length() > len) {
-                msg += "\n";
-            } else {
-                msg += " ";
-            }
-            msg += ReferenceHelper.getReferencesAsString(refs, len);
-        }
-        return msg;
-    }
-
-    private static String makePlural(String s) {
-        if (s.endsWith("y")) {
-            s = s.substring(0, s.length() - 1) + "ie";
-        }
-        if (s.endsWith("s") || s.endsWith("x") || s.endsWith("z") || s.endsWith("ch") || s.endsWith("sh")) {
-            s += "es";
-        } else {
-            s += "s";
-        }
-        return s;
     }
 
 }

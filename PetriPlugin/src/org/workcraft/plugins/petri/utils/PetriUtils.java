@@ -1,6 +1,7 @@
 package org.workcraft.plugins.petri.utils;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.gui.tools.Trace;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.Place;
@@ -77,10 +78,10 @@ public class PetriUtils {
             }
         }
         if (!hangingTransitions.isEmpty()) {
-            msg += LogUtils.getTextWithRefs("\n* Disconnected transition", hangingTransitions);
+            msg += ReferenceHelper.getTextWithReferences("\n* Disconnected transition", hangingTransitions);
         }
         if (!unboundedTransitions.isEmpty()) {
-            msg += LogUtils.getTextWithRefs("\n* Empty preset transition", unboundedTransitions);
+            msg += ReferenceHelper.getTextWithReferences("\n* Empty preset transition", unboundedTransitions);
         }
 
         Set<String> hangingPlaces = new HashSet<>();
@@ -96,10 +97,10 @@ public class PetriUtils {
             }
         }
         if (!hangingPlaces.isEmpty()) {
-            msg += LogUtils.getTextWithRefs("\n* Disconnected place", hangingPlaces);
+            msg += ReferenceHelper.getTextWithReferences("\n* Disconnected place", hangingPlaces);
         }
         if (!deadPlaces.isEmpty()) {
-            msg += LogUtils.getTextWithRefs("\n* Dead place", deadPlaces);
+            msg += ReferenceHelper.getTextWithReferences("\n* Dead place", deadPlaces);
         }
 
         if (!msg.isEmpty()) {

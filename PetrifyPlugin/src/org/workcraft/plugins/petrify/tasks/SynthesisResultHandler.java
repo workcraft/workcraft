@@ -2,6 +2,7 @@ package org.workcraft.plugins.petrify.tasks;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractLayoutCommand;
+import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
@@ -103,7 +104,7 @@ public class SynthesisResultHandler extends AbstractExtendedResultHandler<Synthe
         String errorMessage = petrifyOutput.getStderrString();
         List<String> stateSignals = getMatchedSignals(errorMessage, patternAddingStateSignal);
         if (!stateSignals.isEmpty()) {
-            String msg = LogUtils.getTextWithRefs(
+            String msg = ReferenceHelper.getTextWithReferences(
                     "CSC conflicts are automatically resolved by inserting signal", stateSignals);
             DialogUtils.showInfo(msg);
         }

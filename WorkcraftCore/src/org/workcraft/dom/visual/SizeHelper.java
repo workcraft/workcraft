@@ -14,9 +14,14 @@ public class SizeHelper {
 
     private static final double ICON_SCALE_THRESHOLD = 0.2;
     private static final int WRAP_LENGTH = 100;
+    private static final int TRANCATE_LENGTH = 120;
 
     public static int getWrapLength() {
         return WRAP_LENGTH;
+    }
+
+    public static int getTrauncateLength() {
+        return TRANCATE_LENGTH;
     }
 
     public static double getScreenDpi() {

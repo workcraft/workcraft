@@ -2,6 +2,7 @@ package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractTransformationCommand;
+import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.circuit.VisualCircuit;
@@ -16,7 +17,6 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.Hierarchy;
-import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -81,7 +81,7 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
                 DialogUtils.showInfo("All zero delay assumptions for the selected components are necessary.");
             }
         } else {
-            DialogUtils.showInfo(LogUtils.getTextWithRefs("Zero delay assumption is removed for component", refs));
+            DialogUtils.showInfo(ReferenceHelper.getTextWithReferences("Zero delay assumption is removed for component", refs));
         }
         return null;
     }
