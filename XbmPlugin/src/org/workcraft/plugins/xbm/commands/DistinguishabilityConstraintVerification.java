@@ -4,12 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.tools.SelectionTool;
-import org.workcraft.plugins.xbm.BurstEvent;
-import org.workcraft.plugins.xbm.VisualBurstEvent;
-import org.workcraft.plugins.xbm.VisualXbm;
-import org.workcraft.plugins.xbm.Xbm;
-import org.workcraft.plugins.xbm.XbmSignal;
-import org.workcraft.plugins.xbm.Burst;
+import org.workcraft.plugins.xbm.*;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.WorkspaceUtils;
@@ -98,7 +93,7 @@ public class DistinguishabilityConstraintVerification extends AbstractVerificati
                     Set<XbmSignal> firstBurstInputs = first.getBurst().getSignals(XbmSignal.Type.INPUT);
                     boolean isASubset = true;
                     for (XbmSignal input: firstBurstInputs) {
-                        if (!second.getBurst().getDirection().keySet().contains(input) || (second.getBurst().getDirection().get(input) != Burst.Direction.UNSTABLE && first.getBurst().getDirection().get(input) != second.getBurst().getDirection().get(input))) {
+                        if (!second.getBurst().getDirection().keySet().contains(input) || (second.getBurst().getDirection().get(input) != Direction.UNSTABLE && first.getBurst().getDirection().get(input) != second.getBurst().getDirection().get(input))) {
                             isASubset = false;
                         }
                     }

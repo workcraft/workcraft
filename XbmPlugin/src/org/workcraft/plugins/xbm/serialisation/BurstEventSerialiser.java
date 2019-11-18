@@ -3,6 +3,7 @@ package org.workcraft.plugins.xbm.serialisation;
 import org.w3c.dom.Element;
 import org.workcraft.plugins.xbm.Burst;
 import org.workcraft.plugins.xbm.BurstEvent;
+import org.workcraft.plugins.xbm.Direction;
 import org.workcraft.plugins.xbm.XbmSignal;
 import org.workcraft.plugins.xbm.utils.CommonXbmSerialistionUtil;
 import org.workcraft.serialisation.CustomXMLSerialiser;
@@ -24,7 +25,7 @@ public class BurstEventSerialiser implements CustomXMLSerialiser<BurstEvent> {
         Burst burst = object.getBurst();
         element.setAttribute(CommonXbmSerialistionUtil.BURST_FROM_STATE, internalReferences.getReference(burst.getFrom()));
         element.setAttribute(CommonXbmSerialistionUtil.BURST_TO_STATE, internalReferences.getReference(burst.getTo()));
-        for (Map.Entry<XbmSignal, Burst.Direction> entry: burst.getDirection().entrySet()) {
+        for (Map.Entry<XbmSignal, Direction> entry: burst.getDirection().entrySet()) {
             element.setAttribute(CommonXbmSerialistionUtil.BURST_DIRECTION_SIGNAL + dirCounter, internalReferences.getReference(entry.getKey()));
             element.setAttribute(CommonXbmSerialistionUtil.BURST_DIRECTION_VALUE + dirCounter, entry.getValue().toString());
             ++dirCounter;

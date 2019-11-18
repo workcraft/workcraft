@@ -5,6 +5,7 @@ import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.xbm.Burst;
+import org.workcraft.plugins.xbm.Direction;
 import org.workcraft.plugins.xbm.VisualBurstEvent;
 import org.workcraft.plugins.xbm.XbmSignal;
 
@@ -87,7 +88,7 @@ public class VisualBurstTransition {
         for (XbmSignal signal: burst.getSignals(targetType)) {
             String name = signal.getName();
             XbmSignal.Type type = signal.getType();
-            Burst.Direction direction = burst.getDirection().get(signal);
+            Direction direction = burst.getDirection().get(signal);
             VisualSignalTransition transition = visualStg.createVisualSignalTransition(name, XbmToStgConversionUtil.getReferredType(type), XbmToStgConversionUtil.getReferredDirection(direction));
             transition.setForegroundColor(ref.getColor());
             transition.setLabelColor(ref.getLabelColor());

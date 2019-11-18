@@ -2,7 +2,7 @@ package org.workcraft.plugins.xbm.converters;
 
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.xbm.Burst;
+import org.workcraft.plugins.xbm.Direction;
 import org.workcraft.plugins.xbm.XbmSignal;
 
 public class XbmToStgConversionUtil {
@@ -17,7 +17,7 @@ public class XbmToStgConversionUtil {
         }
     }
 
-    public static SignalTransition.Direction getReferredDirection(Burst.Direction burstDirection) {
+    public static SignalTransition.Direction getReferredDirection(Direction burstDirection) {
         switch (burstDirection) {
         case PLUS:
             return SignalTransition.Direction.PLUS;

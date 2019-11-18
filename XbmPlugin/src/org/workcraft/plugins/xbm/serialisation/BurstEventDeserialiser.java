@@ -1,10 +1,7 @@
 package org.workcraft.plugins.xbm.serialisation;
 
 import org.w3c.dom.Element;
-import org.workcraft.plugins.xbm.Burst;
-import org.workcraft.plugins.xbm.BurstEvent;
-import org.workcraft.plugins.xbm.XbmSignal;
-import org.workcraft.plugins.xbm.XbmState;
+import org.workcraft.plugins.xbm.*;
 import org.workcraft.plugins.xbm.utils.CommonXbmSerialistionUtil;
 import org.workcraft.serialisation.CustomXMLDeserialiser;
 import org.workcraft.serialisation.NodeFinaliser;
@@ -35,7 +32,7 @@ public class BurstEventDeserialiser implements CustomXMLDeserialiser<BurstEvent>
         XbmState to = (XbmState) internalReferenceResolver.getObject(element.getAttribute(CommonXbmSerialistionUtil.BURST_TO_STATE));
         while (internalReferenceResolver.getObject(element.getAttribute(CommonXbmSerialistionUtil.BURST_DIRECTION_SIGNAL + dirCounter)) != null) {
             XbmSignal xbmSignal = (XbmSignal) internalReferenceResolver.getObject(element.getAttribute(CommonXbmSerialistionUtil.BURST_DIRECTION_SIGNAL + dirCounter));
-            Burst.Direction direction = Burst.Direction.convertFromString(element.getAttribute(CommonXbmSerialistionUtil.BURST_DIRECTION_VALUE + dirCounter));
+            Direction direction = Direction.convertFromString(element.getAttribute(CommonXbmSerialistionUtil.BURST_DIRECTION_VALUE + dirCounter));
             burst.addOrChangeSignalDirection(xbmSignal, direction);
             ++dirCounter;
         }

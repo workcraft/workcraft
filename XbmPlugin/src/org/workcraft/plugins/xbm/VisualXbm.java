@@ -133,13 +133,13 @@ public class VisualXbm extends VisualFsm {
         if (!inputs.isEmpty()) {
             list.add(XbmPropertyHelper.getBurstProperty(state, "Input burst", XbmSignal.Type.INPUT));
             for (XbmSignal i: inputs) {
-                list.add(XbmPropertyHelper.getStateValueProperty(this, state, i));
+                list.add(XbmPropertyHelper.getSignalValueProperty(this, state, i));
             }
         }
         if (!outputs.isEmpty()) {
             list.add(XbmPropertyHelper.getBurstProperty(state, "Output burst", XbmSignal.Type.OUTPUT));
             for (XbmSignal o: outputs) {
-                list.add(XbmPropertyHelper.getStateValueProperty(this, state, o));
+                list.add(XbmPropertyHelper.getSignalValueProperty(this, state, o));
             }
         }
         return list;
@@ -147,28 +147,26 @@ public class VisualXbm extends VisualFsm {
 
     private List<PropertyDescriptor> getSignalDirectionProperties(final BurstEvent burstEvent) {
         final Xbm xbm = getMathModel();
-        final List<PropertyDescriptor> result = new LinkedList<>();
+        final List<PropertyDescriptor> list = new LinkedList<>();
         final Set<XbmSignal> inputs = new LinkedHashSet<>(xbm.getSignals(XbmSignal.Type.INPUT));
         final Set<XbmSignal> outputs = new LinkedHashSet<>(xbm.getSignals(XbmSignal.Type.OUTPUT));
 
-        result.add(new ActionDeclaration("Input burst", "Create input",
-                () -> getMathModel().createSignal(null, XbmSignal.Type.INPUT)));
+        list.add(XbmPropertyHelper.getBurstDirectionProperty(getMathModel(), burstEvent, "Input burst", XbmSignal.Type.INPUT));
 
         if (!inputs.isEmpty()) {
             for (XbmSignal i: inputs) {
-                result.add(XbmPropertyHelper.getBurstDirectionProperty(this, burstEvent, i));
+                list.add(XbmPropertyHelper.getSignalDirectionProperty(this, burstEvent, i));
             }
         }
 
-        result.add(new ActionDeclaration("Output burst", "Create output",
-                () -> getMathModel().createSignal(null, XbmSignal.Type.OUTPUT)));
+        list.add(XbmPropertyHelper.getBurstDirectionProperty(getMathModel(), burstEvent, "Output burst", XbmSignal.Type.OUTPUT));
 
         if (!outputs.isEmpty()) {
             for (XbmSignal o: outputs) {
-                result.add(XbmPropertyHelper.getBurstDirectionProperty(this, burstEvent, o));
+                list.add(XbmPropertyHelper.getSignalDirectionProperty(this, burstEvent, o));
             }
         }
-        return result;
+        return list;
     }
 
     private PropertyDescriptor getConditionalProperty(final BurstEvent event) {
