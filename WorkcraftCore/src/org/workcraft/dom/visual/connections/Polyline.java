@@ -1,29 +1,22 @@
 package org.workcraft.dom.visual.connections;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.Line2D;
-import java.awt.geom.Path2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.*;
-
 import org.workcraft.dom.ArbitraryInsertionGroupImpl;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawHelper;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.observation.*;
 import org.workcraft.utils.Coloriser;
-import org.workcraft.observation.HierarchyEvent;
-import org.workcraft.observation.HierarchyObserver;
-import org.workcraft.observation.NodesAddedEvent;
-import org.workcraft.observation.NodesDeletingEvent;
-import org.workcraft.observation.ObservableHierarchy;
-import org.workcraft.observation.SelectionChangedEvent;
-import org.workcraft.observation.StateEvent;
-import org.workcraft.observation.StateObserver;
 import org.workcraft.utils.Geometry;
 import org.workcraft.utils.Hierarchy;
+
+import java.awt.*;
+import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.List;
+import java.util.*;
 
 public class Polyline implements ConnectionGraphic, Container, StateObserver,
         HierarchyObserver, ObservableHierarchy, SelectionObserver {
@@ -411,10 +404,9 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
             Collection<ControlPoint> controlPoints = Hierarchy.filterNodesByType(getChildren(), ControlPoint.class);
             scaler.scale(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter(),
                     controlPoints, connectionInfo.getScaleMode());
-
-            scaler = new ControlPointScaler(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter());
-            invalidate();
         }
+        scaler = new ControlPointScaler(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter());
+        invalidate();
     }
 
     @Override
