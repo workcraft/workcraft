@@ -15,6 +15,7 @@ import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.plugins.son.util.ScenarioRef;
 import org.workcraft.plugins.son.util.ScenarioSaveList;
+import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -79,7 +80,7 @@ public class TimeEstimatorDialog extends JDialog {
 
     protected void creatCheckboxPanel() {
         defaultDurationPanel = new DefaultDurationPanel(settings.getDuration());
-        defaultDurationPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        defaultDurationPanel.setLayout(GuiUtils.createFlowLayout());
 
         JPanel entirePanel = new JPanel(new BorderLayout());
         entirePanel.setBorder(SizeHelper.getTitledBorder("Entire estimation"));
@@ -87,16 +88,16 @@ public class TimeEstimatorDialog extends JDialog {
 
         entireEst = new JCheckBox("Estimate time value for entire SON");
         entireEst.setSelected(false);
-        entireEst.setLayout(new FlowLayout(FlowLayout.LEFT));
+        entireEst.setLayout(GuiUtils.createFlowLayout());
 
         narrow = new JCheckBox("Narrow down specified values");
         narrow.setSelected(false);
-        narrow.setLayout(new FlowLayout(FlowLayout.LEFT));
+        narrow.setLayout(GuiUtils.createFlowLayout());
         narrow.setEnabled(false);
 
         twoDir = new JCheckBox("Two directions search");
         twoDir.setSelected(false);
-        twoDir.setLayout(new FlowLayout(FlowLayout.LEFT));
+        twoDir.setLayout(GuiUtils.createFlowLayout());
         twoDir.setEnabled(false);
 
         entirePanel.add(entireEst);
@@ -109,11 +110,11 @@ public class TimeEstimatorDialog extends JDialog {
 
         intermediate = new JCheckBox("Set values for intermediate nodes");
         intermediate.setSelected(false);
-        intermediate.setLayout(new FlowLayout(FlowLayout.LEFT));
+        intermediate.setLayout(GuiUtils.createFlowLayout());
 
         setDuration = new JCheckBox("Set default duration for all unspecifed nodes");
         setDuration.setSelected(false);
-        setDuration.setLayout(new FlowLayout(FlowLayout.LEFT));
+        setDuration.setLayout(GuiUtils.createFlowLayout());
 
         // singlePanel.add(intermediate);
         // singlePanel.add(setDuration);

@@ -124,7 +124,7 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
 
         result.add(GuiUtils.createLabeledComponent(modeCombo, "  Mode:      "), BorderLayout.NORTH);
 
-        JPanel solutionModePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
+        JPanel solutionModePanel = new JPanel(GuiUtils.createFlowLayout());
         solutionModePanel.add(new JLabel("Solution:"));
         cheapestSolutionRadioButton = new JRadioButton("minimise cost function");
         cheapestSolutionRadioButton.setSelected(true);
@@ -178,8 +178,7 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
         buttonGroup.add(unsatisfiableRadioButton);
         unsatisfiableRadioButton.setSelected(true);
 
-        JPanel propertyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,
-                SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
+        JPanel propertyPanel = new JPanel(GuiUtils.createFlowLayout());
 
         propertyPanel.add(new JLabel("Property holds if predicate is:"));
         propertyPanel.add(satisfiableRadioButton);

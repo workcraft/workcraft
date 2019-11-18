@@ -154,6 +154,12 @@ public class SizeHelper {
         return new EmptyBorder(gap, gap, gap, gap);
     }
 
+    public static Border getGapBorder() {
+        int hGap = getLayoutHGap();
+        int vGap = getLayoutVGap();
+        return new EmptyBorder(vGap, hGap, vGap, hGap);
+    }
+
     public static Border getTableCellBorder() {
         return new EmptyBorder(1, 3, 1, 1);
     }

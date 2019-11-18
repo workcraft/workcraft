@@ -532,7 +532,7 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
         List<JPanel> panellist = new ArrayList<>();
 
         JPanel panela = new JPanel();
-        panela.setLayout(new FlowLayout(FlowLayout.LEFT));
+        panela.setLayout(GuiUtils.createFlowLayout());
         panela.add(new JLabel(" QUERY [USE DEMO EXAMPLES] "));
         panela.add(Box.createHorizontalGlue());
         panelmain.add(panela);

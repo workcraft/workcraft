@@ -15,10 +15,7 @@ import org.workcraft.plugins.xmas.components.VisualQueueComponent;
 import org.workcraft.plugins.xmas.components.VisualSyncComponent;
 import org.workcraft.plugins.xmas.gui.SolutionsDialog1;
 import org.workcraft.plugins.xmas.gui.SolutionsDialog2;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.FileUtils;
-import org.workcraft.utils.LogUtils;
-import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
@@ -432,7 +429,7 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
         List<JPanel> panellist = new ArrayList<>();
 
         JPanel panela = new JPanel();
-        panela.setLayout(new FlowLayout(FlowLayout.LEFT));
+        panela.setLayout(GuiUtils.createFlowLayout());
         panela.add(new JLabel(" UNIQUE SOLUTIONS "));
         panela.add(Box.createHorizontalGlue());
         panelmain.add(panela);
