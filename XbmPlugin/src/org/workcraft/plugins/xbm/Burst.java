@@ -36,13 +36,11 @@ public class Burst extends Symbol {
     }
 
     public Map<XbmSignal, Direction> getDirections(XbmSignal.Type type) {
-        Set<XbmSignal> signals = getSignals(type);
         Map<XbmSignal, Direction> result = new LinkedHashMap<>(direction);
-        for (XbmSignal signal: signals) {
-            result.remove(signal);
-        }
+        result.entrySet().removeIf(xbmSignalDirectionEntry -> xbmSignalDirectionEntry.getKey().getType() != type);
         return result;
     }
+
 
     public Map<XbmSignal, Direction> getDirection() {
         return direction;

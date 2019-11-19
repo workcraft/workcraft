@@ -154,8 +154,8 @@ public class XbmSimulationTool extends StgSimulationTool {
             }
             @Override
             public Color getBackground() {
-                return null;
-            }
+                    return null;
+                }
         };
     }
 
@@ -181,7 +181,7 @@ public class XbmSimulationTool extends StgSimulationTool {
         Set<Transition> result = new LinkedHashSet<>();
         if ((node != null) && (node instanceof VisualBurstEvent)) {
             VisualBurstTransition vBurstTransition = converter.getRelatedSignalBurstTransition((VisualBurstEvent) node);
-            if (vBurstTransition != null) {
+            if (vBurstTransition != null && !vBurstTransition.getInputTransitions().isEmpty()) {
                 if (isEnabledNode(vBurstTransition.getStart().getReferencedComponent())) {
                     result.add(vBurstTransition.getStart().getReferencedComponent()); //FORK
                     for (VisualTransition visualTransition: vBurstTransition.getInputTransitions()) {
