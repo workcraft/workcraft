@@ -588,25 +588,24 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         Graphics2D g = r.getGraphics();
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
         if ((bb != null) && hasRefinement()) {
-            double dx = VisualCommonSettings.getNodeSize() / 5;
-            double dy = VisualCommonSettings.getNodeSize() / 5;
+            double dx = VisualCommonSettings.getNodeSize() / 10;
+            double dy = VisualCommonSettings.getNodeSize() / 10;
             double x = bb.getCenterX();
             double y = bb.getCenterY() + VisualCommonSettings.getNodeSize() / 10;
-            double w = VisualCommonSettings.getNodeSize() / 10;
+            double w = VisualCommonSettings.getNodeSize() / 20;
             double w2 = w / 2;
             Path2D p = new Path2D.Double();
-            p.moveTo(x - dx - w2, y + dy);
-            p.lineTo(x - dx + w2, y + dy + w);
+            p.moveTo(x - dx - w, y + dy);
+            p.lineTo(x - dx + w2, y + dy + w2 + w);
             p.lineTo(x - dx + w2, y + dy + w2);
             p.lineTo(x + dx + w2, y + dy + w2);
             p.lineTo(x + dx + w2, y);
             p.lineTo(x + dx - w2, y);
             p.lineTo(x + dx - w2, y + dy - w2);
             p.lineTo(x - dx + w2, y + dy - w2);
-            p.lineTo(x - dx + w2, y + dy - w);
+            p.lineTo(x - dx + w2, y + dy - w2 - w);
             p.closePath();
-            g.setStroke(new BasicStroke((float) VisualCommonSettings.getConnectionLineWidth()));
-            g.draw(p);
+            g.fill(p);
         }
     }
 
