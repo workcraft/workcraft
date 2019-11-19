@@ -43,7 +43,7 @@ public class BinateImplementationVerificationCommand extends AbstractVerificatio
 
     @Override
     public String getDisplayName() {
-        return "Binate functions implementation [MPSat]";
+        return "Binate consensus [MPSat]";
     }
 
     @Override
@@ -78,17 +78,17 @@ public class BinateImplementationVerificationCommand extends AbstractVerificatio
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         Collection<BinateData> binateItems = getBinateData(circuit);
         List<VerificationParameters> settingsList = new ArrayList<>();
-        LogUtils.logInfo("Verifying implementations of binate functions:");
+        LogUtils.logInfo("Verifying binate consensus for functions:");
         for (BinateData binateItem : binateItems) {
             String signal = CircuitUtils.getSignalReference(circuit, binateItem.contact);
             settingsList.add(getBinateImplementationReachSettings(signal, binateItem.formula, binateItem.variable));
             LogUtils.logMessage("  " + signal
                     + " = " + StringGenerator.toString(binateItem.formula)
-                    + "  // (binate in " + binateItem.variable.getLabel() + ")");
+                    + "   [binate in " + binateItem.variable.getLabel() + "]");
         }
 
         TaskManager manager = Framework.getInstance().getTaskManager();
-        CombinedCheckTask task = new CombinedCheckTask(we, settingsList, "Binate function implementation vacuously holds");
+        CombinedCheckTask task = new CombinedCheckTask(we, settingsList, "Binate consensus vacuously holds");
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         CombinedChainResultHandler monitor = new CombinedChainResultHandler(we, null);
         manager.queue(task, description, monitor);
@@ -130,7 +130,7 @@ public class BinateImplementationVerificationCommand extends AbstractVerificatio
                 + "(" + StringGenerator.toString(derivativeFormula, StringGenerator.Style.REACH) + ")";
 
         String s = signal + " = " + StringGenerator.toString(formula);
-        return new VerificationParameters("Binate function implementation for " + s,
+        return new VerificationParameters("Binate consensus for " + s,
                 VerificationMode.STG_REACHABILITY, 0,
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount(),
