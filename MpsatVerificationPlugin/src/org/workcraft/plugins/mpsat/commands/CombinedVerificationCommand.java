@@ -28,7 +28,7 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand {
 
     @Override
     public String getDisplayName() {
-        return "Consistency, deadlock freeness, input properness, mutex implementability, output persistency, output determinacy [MPSat]";
+        return "All of the above (reuse unfolding) [MPSat]";
     }
 
     @Override
