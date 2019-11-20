@@ -2,11 +2,11 @@ package org.workcraft.dom.references;
 
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.SizeHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 public class ReferenceHelper {
 
@@ -44,18 +44,36 @@ public class ReferenceHelper {
         return sb.toString();
     }
 
-    public static List<String> parseReferenceList(String str) {
-        List<String> result = new ArrayList<>();
-        if ((str != null) && !str.isEmpty()) {
-            for (String name : str.replaceAll("\\s", "").split(",")) {
-                if (Identifier.isName(name)) {
-                    result.add(name);
-                } else {
-                    return null;
-                }
+    public static String getTextWithReferences(String msg, Collection<String> refs) {
+        return getTextWithReferences(msg, refs, SizeHelper.getWrapLength());
+    }
+
+    public static String getTextWithReferences(String msg, Collection<String> refs, int len) {
+        if (refs.size() == 1) {
+            msg += " '" + refs.iterator().next() + "'.";
+        } else {
+            msg = makePlural(msg) + ":";
+            String str = String.join(", ", refs);
+            if (msg.length() + str.length() > len) {
+                msg += "\n";
+            } else {
+                msg += " ";
             }
+            msg += ReferenceHelper.getReferencesAsString(refs, len);
         }
-        return result;
+        return msg;
+    }
+
+    private static String makePlural(String s) {
+        if (s.endsWith("y")) {
+            s = s.substring(0, s.length() - 1) + "ie";
+        }
+        if (s.endsWith("s") || s.endsWith("x") || s.endsWith("z") || s.endsWith("ch") || s.endsWith("sh")) {
+            s += "es";
+        } else {
+            s += "s";
+        }
+        return s;
     }
 
 }

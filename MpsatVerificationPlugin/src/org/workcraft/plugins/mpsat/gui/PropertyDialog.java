@@ -9,6 +9,7 @@ import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.VerificationParameters.SolutionMode;
+import org.workcraft.plugins.mpsat.utils.ReachUtils;
 import org.workcraft.presets.Preset;
 import org.workcraft.presets.PresetManagerPanel;
 import org.workcraft.presets.SettingsToControlsMapper;
@@ -28,6 +29,8 @@ import java.util.ArrayList;
 public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
 
     private static final int DEFAULT_ALL_SOLUTION_LIMIT = 10;
+
+    private static VerificationParameters autoSavedProperty = null;
 
     private JComboBox<VerificationMode> modeCombo;
     private JTextField solutionLimitText;
@@ -74,26 +77,31 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
     private PresetManagerPanel<VerificationParameters> createPresetPanel() {
         ArrayList<Preset<VerificationParameters>> builtInPresets = new ArrayList<>();
 
-        MpsatPresetManager userData = getUserData();
-        if (userData.isAllowStgPresets()) {
+        if (autoSavedProperty != null) {
+            builtInPresets.add(new Preset<>("Auto-saved property",
+                    autoSavedProperty, true));
+        }
+
+        MpsatPresetManager presetManager = getUserData();
+        if (presetManager.isAllowStgPresets()) {
             builtInPresets.add(new Preset<>("Consistency",
-                    VerificationParameters.getConsistencySettings(), true));
+                    ReachUtils.getConsistencySettings(), true));
 
             builtInPresets.add(new Preset<>("Delay insensitive interface",
-                    VerificationParameters.getDiInterfaceSettings(), true));
+                    ReachUtils.getDiInterfaceSettings(), true));
 
             builtInPresets.add(new Preset<>("Input properness",
-                    VerificationParameters.getInputPropernessSettings(), true));
+                    ReachUtils.getInputPropernessSettings(), true));
 
             builtInPresets.add(new Preset<>("Output persistency (without dummies)",
-                    VerificationParameters.getOutputPersistencySettings(), true));
+                    ReachUtils.getOutputPersistencySettings(), true));
         }
 
         builtInPresets.add(new Preset<>("Deadlock freeness",
-                VerificationParameters.getDeadlockReachSettings(), true));
+                ReachUtils.getDeadlockReachSettings(), true));
 
         builtInPresets.add(new Preset<>("Deadlock freeness without maximal dummies",
-                VerificationParameters.getDeadlockWithoutMaximalDummyReachSettings(), true));
+                ReachUtils.getDeadlockWithoutMaximalDummyReachSettings(), true));
 
         SettingsToControlsMapper<VerificationParameters> guiMapper = new SettingsToControlsMapper<VerificationParameters>() {
             @Override
@@ -107,7 +115,7 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
             }
         };
 
-        return new PresetManagerPanel<>(userData, builtInPresets, guiMapper);
+        return new PresetManagerPanel<>(presetManager, builtInPresets, guiMapper);
     }
 
     private JPanel createOptionsPanel() {
@@ -123,7 +131,7 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
 
         result.add(GuiUtils.createLabeledComponent(modeCombo, "  Mode:      "), BorderLayout.NORTH);
 
-        JPanel solutionModePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
+        JPanel solutionModePanel = new JPanel(GuiUtils.createFlowLayout());
         solutionModePanel.add(new JLabel("Solution:"));
         cheapestSolutionRadioButton = new JRadioButton("minimise cost function");
         cheapestSolutionRadioButton.setSelected(true);
@@ -177,8 +185,7 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
         buttonGroup.add(unsatisfiableRadioButton);
         unsatisfiableRadioButton.setSelected(true);
 
-        JPanel propertyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,
-                SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
+        JPanel propertyPanel = new JPanel(GuiUtils.createFlowLayout());
 
         propertyPanel.add(new JLabel("Property holds if predicate is:"));
         propertyPanel.add(satisfiableRadioButton);
@@ -192,11 +199,9 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
     @Override
     public JPanel createButtonsPanel() {
         JPanel result = super.createButtonsPanel();
-
         JButton helpButton = GuiUtils.createDialogButton("Help");
         helpButton.addActionListener(event -> DesktopApi.open(new File("help/reach.html")));
         result.add(helpButton);
-
         return result;
     }
 
@@ -256,6 +261,15 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
 
         return new VerificationParameters(null, (VerificationMode) modeCombo.getSelectedItem(),
                 0, solutionMode, solutionLimin, propertyText.getText(), unsatisfiableRadioButton.isSelected());
+    }
+
+    @Override
+    public boolean okAction() {
+        if (super.okAction()) {
+            autoSavedProperty = getSettings();
+            return true;
+        }
+        return false;
     }
 
 }

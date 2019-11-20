@@ -25,8 +25,19 @@ public class GuiUtils {
     private static final int BUTTON_PREFERRED_HEIGHT = 25;
 
     public static JPanel createLabeledComponent(JComponent component, String labelText) {
+        return createLabeledComponent(component, labelText, BorderLayout.WEST);
+    }
+
+    public static JPanel createLabeledComponent(JComponent component, String labelText, Object labelPosition) {
         JPanel result = new JPanel(createBorderLayout());
-        result.add(new JLabel(labelText), BorderLayout.WEST);
+        result.add(new JLabel(labelText), labelPosition);
+        result.add(component, BorderLayout.CENTER);
+        return result;
+    }
+
+    public static JPanel createBorderedComponent(JComponent component, String borderText) {
+        JPanel result = new JPanel(createBorderLayout());
+        result.setBorder(SizeHelper.getTitledBorder(borderText));
         result.add(component, BorderLayout.CENTER);
         return result;
     }
@@ -209,6 +220,10 @@ public class GuiUtils {
         return result;
     }
 
+    public static FlowLayout createFlowLayout() {
+        return new FlowLayout(FlowLayout.LEFT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap());
+    }
+
     public static BorderLayout createBorderLayout() {
         return new BorderLayout(SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap());
     }
@@ -218,6 +233,10 @@ public class GuiUtils {
         result.setHGap(SizeHelper.getLayoutHGap());
         result.setVGap(SizeHelper.getLayoutVGap());
         return result;
+    }
+
+    public static GridLayout createGridLayout(int rows, int cols) {
+        return new GridLayout(rows, cols, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap());
     }
 
     public static void setButtonPanelLayout(JPanel panel, Dimension buttonSize) {

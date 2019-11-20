@@ -1,6 +1,7 @@
 package org.workcraft.plugins.mpsat.commands;
 
 import org.workcraft.plugins.mpsat.VerificationParameters;
+import org.workcraft.plugins.mpsat.utils.ReachUtils;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -43,7 +44,7 @@ public class InputPropernessVerificationCommand extends AbstractVerificationComm
 
     @Override
     public VerificationParameters getSettings(WorkspaceEntry we) {
-        return VerificationParameters.getInputPropernessSettings();
+        return ReachUtils.getInputPropernessSettings();
     }
 
 }

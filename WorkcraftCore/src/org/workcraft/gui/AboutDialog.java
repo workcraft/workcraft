@@ -6,6 +6,7 @@ import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -44,7 +45,7 @@ public class AboutDialog extends JDialog {
             logoLabel.setFont(font.deriveFont(72.0f));
         }
         int borderSize = SizeHelper.getLayoutHGap() + SizeHelper.getLayoutVGap();
-        logoLabel.setBorder(BorderFactory.createEmptyBorder(borderSize, borderSize, borderSize, borderSize));
+        logoLabel.setBorder(new EmptyBorder(borderSize, borderSize, borderSize, borderSize));
 
         JEditorPane infoPane = new JEditorPane();
         infoPane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);

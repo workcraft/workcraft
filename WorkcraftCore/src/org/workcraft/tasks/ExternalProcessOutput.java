@@ -1,5 +1,7 @@
 package org.workcraft.tasks;
 
+import org.workcraft.utils.TextUtils;
+
 import java.util.Collections;
 import java.util.Map;
 
@@ -46,28 +48,7 @@ public class ExternalProcessOutput {
     }
 
     public String getErrorsHeadAndTail() {
-        return getErrorsHeadAndTail(10, 10);
-    }
-
-    public String getErrorsHeadAndTail(int firstCount, int lastCount) {
-        return getHeadAndTail(getStderrString(), firstCount, lastCount);
-    }
-
-    private String getHeadAndTail(String text, int firstCount, int lastCount) {
-        String result = "";
-        String[] lines = text.split("\n");
-        int index = 0;
-        boolean dotsInserted = false;
-        for (String line: lines) {
-            if ((index < firstCount) || (index >= lines.length - lastCount)) {
-                result += line + "\n";
-            } else if (!dotsInserted) {
-                result += "...\n";
-                dotsInserted = true;
-            }
-            index++;
-        }
-        return result;
+        return TextUtils.getHeadAndTail(getStderrString(), 10, 10);
     }
 
 }

@@ -308,7 +308,7 @@ public class StructureVerifyDialog extends JDialog {
     }
 
     protected TitledBorder createTitileBorder(String title) {
-        TitledBorder titledBorder = BorderFactory.createTitledBorder(title);
+        TitledBorder titledBorder = new TitledBorder(title);
         titledBorder.setTitleColor(Color.BLUE.darker());
         return titledBorder;
     }

@@ -3,6 +3,7 @@ package org.workcraft.gui.properties;
 import org.workcraft.dom.references.FileReference;
 
 import javax.swing.*;
+import javax.swing.border.MatteBorder;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.io.File;
@@ -17,6 +18,7 @@ public class FileReferenceCellRenderer extends JPanel implements TableCellRender
 
     public FileReferenceCellRenderer() {
         enterButton = new JButton(PropertyHelper.ENTER_SYMBOL);
+        enterButton.setEnabled(false);
         enterButton.setFocusable(false);
         enterButton.setMargin(PropertyHelper.BUTTON_INSETS);
 
@@ -28,6 +30,7 @@ public class FileReferenceCellRenderer extends JPanel implements TableCellRender
         chooseButton.setHorizontalAlignment(SwingConstants.LEFT);
 
         clearButton = new JButton(PropertyHelper.CLEAR_SYMBOL);
+        clearButton.setEnabled(false);
         clearButton.setFocusable(false);
         clearButton.setMargin(PropertyHelper.BUTTON_INSETS);
 
@@ -68,7 +71,7 @@ public class FileReferenceCellRenderer extends JPanel implements TableCellRender
             }
 
             Color background = isSelected ? table.getSelectionBackground() : table.getBackground();
-            setBorder(BorderFactory.createMatteBorder(0, 0, 0, 0, background));
+            setBorder(new MatteBorder(0, 0, 0, 0, background));
         }
         return this;
     }

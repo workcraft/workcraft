@@ -47,7 +47,7 @@ public abstract class AbstractTagCommand implements ScriptableCommand<Void> {
         } else {
             we.saveMemento();
             ArrayList<String> refs = ReferenceHelper.getReferenceList(circuit, contacts);
-            LogUtils.logInfo(LogUtils.getTextWithRefs(getMessage(), refs));
+            LogUtils.logInfo(ReferenceHelper.getTextWithReferences(getMessage(), refs));
         }
 
         final Framework framework = Framework.getInstance();

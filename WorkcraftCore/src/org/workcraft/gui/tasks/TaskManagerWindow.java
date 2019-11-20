@@ -10,6 +10,8 @@ import org.workcraft.tasks.TaskMonitor;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 
@@ -107,9 +109,9 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         scroll.setViewportView(content);
         scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        Border outsideBorder = BorderFactory.createLineBorder(Color.LIGHT_GRAY);
+        Border outsideBorder = new LineBorder(Color.LIGHT_GRAY);
         Border insideBorder = SizeHelper.getEmptyBorder();
-        Border lineBorder = BorderFactory.createCompoundBorder(outsideBorder, insideBorder);
+        Border lineBorder = new CompoundBorder(outsideBorder, insideBorder);
         setBorder(lineBorder);
 
         final Framework framework = Framework.getInstance();

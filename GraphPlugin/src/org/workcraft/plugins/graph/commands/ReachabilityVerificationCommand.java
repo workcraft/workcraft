@@ -12,8 +12,8 @@ import org.workcraft.gui.tools.SelectionTool;
 import org.workcraft.plugins.graph.Graph;
 import org.workcraft.plugins.graph.Vertex;
 import org.workcraft.utils.DialogUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.HashSet;
 import java.util.LinkedList;

@@ -4,6 +4,7 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.ExceptionDialog;
@@ -14,7 +15,6 @@ import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.shared.ColorGenerator;
 import org.workcraft.utils.Coloriser;
 import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.LogUtils;
 
 import java.awt.*;
 import java.util.*;
@@ -147,7 +147,7 @@ public class PetriSimulationTool extends SimulationTool {
                 }
             }
             if (!placeRefs.isEmpty()) {
-                DialogUtils.showWarning(LogUtils.getTextWithRefs("Promised capacity is violated for place", placeRefs));
+                DialogUtils.showWarning(ReferenceHelper.getTextWithReferences("Promised capacity is violated for place", placeRefs));
             }
             result = true;
         }

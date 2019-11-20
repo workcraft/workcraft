@@ -8,6 +8,7 @@ import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.builtin.settings.FavoriteCommonSettings;
 import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.GuiUtils;
 import org.workcraft.utils.PluginUtils;
 
 import javax.swing.*;
@@ -21,6 +22,8 @@ import java.util.Collections;
 
 public class CreateWorkDialog extends ModalDialog<Void> {
 
+    public static final String SHORTCUT_PLACEHOLDER = "SHORTCUT";
+
     class WorkTypeCellRenderer extends DefaultListCellRenderer {
         @Override
         public Component getListCellRendererComponent(JList list,
@@ -32,6 +35,9 @@ public class CreateWorkDialog extends ModalDialog<Void> {
                 setBackground(Coloriser.colorise(color, Color.LIGHT_GRAY));
                 setOpaque(true);
             }
+            String shortcut = KeyEvent.getKeyText(getKeyCode(index));
+            String text = getText().replace(SHORTCUT_PLACEHOLDER, shortcut);
+            setText(text);
             return this;
         }
     }
@@ -46,10 +52,11 @@ public class CreateWorkDialog extends ModalDialog<Void> {
         @Override
         public String toString() {
             String name = descriptor.getDisplayName();
+            String shortcut = "<sup><font size='-2' color='#888888'>" + SHORTCUT_PLACEHOLDER + "</font></sup> ";
             if (FavoriteCommonSettings.getIsFavorite(name)) {
-                name = "<html><b>" + name + "</b></html>";
+                name = "<b>" + name + "</b>";
             }
-            return name;
+            return "<html>" + shortcut + name + "</html>";
         }
 
         @Override
@@ -63,20 +70,27 @@ public class CreateWorkDialog extends ModalDialog<Void> {
     public CreateWorkDialog(MainWindow owner) {
         super(owner, "New work", null);
 
-        // Assign number keys as shortcuts for model types (the order is 1234567890).
-        for (int i = 0; i <= 9; i++) {
+        // Assign number keys as shortcuts for model types (the order is 1234567890A..Z).
+        for (int i = 0; i < 36; i++) {
             final int index = i;
-            int keyCode = (i < 9) ? KeyEvent.VK_1 + i : KeyEvent.VK_0;
+            int keyCode = getKeyCode(i);
             getRootPane().registerKeyboardAction(event -> okAction(index),
                     KeyStroke.getKeyStroke(keyCode, 0),
                     JComponent.WHEN_IN_FOCUSED_WINDOW);
         }
     }
 
+    private int getKeyCode(int index) {
+        if (index < 9) return KeyEvent.VK_1 + index;
+        if (index == 9) return KeyEvent.VK_0;
+        return KeyEvent.VK_A + index - 10;
+    }
+
     @Override
     public JPanel createControlsPanel() {
         JPanel result = super.createControlsPanel();
-        result.setLayout(new BorderLayout());
+        result.setLayout(GuiUtils.createBorderLayout());
+        result.setBorder(SizeHelper.getGapBorder());
 
         workTypeList = new JList(new DefaultListModel());
         workTypeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -94,19 +108,14 @@ public class CreateWorkDialog extends ModalDialog<Void> {
             }
         });
 
-        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
         JCheckBox favoriteModelsCheckbox = new JCheckBox(getFavoriteModelsCheckboxText());
         favoriteModelsCheckbox.setToolTipText(getFavoriteModelsCheckboxTooltip());
         favoriteModelsCheckbox.addActionListener(event -> toggleFavoriteModelsCheckbox());
         favoriteModelsCheckbox.setSelected(FavoriteCommonSettings.getFilterFavorites());
-        filterPanel.add(favoriteModelsCheckbox);
-
         fillModelList();
-        JScrollPane modelScroll = getModelScroll();
 
-        result.add(filterPanel, BorderLayout.NORTH);
-        result.add(modelScroll, BorderLayout.CENTER);
-
+        result.add(favoriteModelsCheckbox, BorderLayout.NORTH);
+        result.add(getModelScroll(), BorderLayout.CENTER);
         return result;
     }
 
@@ -116,20 +125,32 @@ public class CreateWorkDialog extends ModalDialog<Void> {
 
     private void fillModelList() {
         PluginManager pm = Framework.getInstance().getPluginManager();
-        ArrayList<ListElement> elements = new ArrayList<>();
-        for (PluginInfo<? extends ModelDescriptor> plugin: pm.getModelDescriptorPlugins()) {
-            ModelDescriptor modelDescriptor = plugin.newInstance();
-            String displayName = modelDescriptor.getDisplayName();
-            if (!FavoriteCommonSettings.getFilterFavorites() || FavoriteCommonSettings.getIsFavorite(displayName)) {
-                elements.add(new ListElement(modelDescriptor));
-            }
+        Collection<PluginInfo<? extends ModelDescriptor>> plugins = pm.getModelDescriptorPlugins();
+
+        ArrayList<ListElement> elements = getModelList(plugins, true);
+        if (!FavoriteCommonSettings.getFilterFavorites()) {
+            ArrayList<ListElement> otherElements = getModelList(plugins, false);
+            elements.addAll(otherElements);
         }
-        Collections.sort(elements);
+
         DefaultListModel listModel = (DefaultListModel) workTypeList.getModel();
         listModel.clear();
-        for (ListElement element: elements) {
+        for (ListElement element : elements) {
             listModel.addElement(element);
         }
+    }
+
+    private ArrayList<ListElement> getModelList(Collection<PluginInfo<? extends ModelDescriptor>> plugins, boolean favorite) {
+        ArrayList<ListElement> result = new ArrayList<>();
+        for (PluginInfo<? extends ModelDescriptor> plugin : plugins) {
+            ModelDescriptor modelDescriptor = plugin.newInstance();
+            String displayName = modelDescriptor.getDisplayName();
+            if (FavoriteCommonSettings.getIsFavorite(displayName) == favorite) {
+                result.add(new ListElement(modelDescriptor));
+            }
+        }
+        Collections.sort(result);
+        return result;
     }
 
     private JScrollPane getModelScroll() {

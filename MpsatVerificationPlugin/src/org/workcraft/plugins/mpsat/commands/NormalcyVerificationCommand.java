@@ -1,9 +1,11 @@
 package org.workcraft.plugins.mpsat.commands;
 
+import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
+import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class NormalcyVerificationCommand extends AbstractVerificationCommand {
 
@@ -24,7 +26,11 @@ public class NormalcyVerificationCommand extends AbstractVerificationCommand {
 
     @Override
     public VerificationParameters getSettings(WorkspaceEntry we) {
-        return VerificationParameters.getNormalcySettings();
+        return new VerificationParameters("Normalcy",
+                VerificationMode.NORMALCY, 0,
+                MpsatVerificationSettings.getSolutionMode(),
+                MpsatVerificationSettings.getSolutionCount(),
+                null, true);
     }
 
 }

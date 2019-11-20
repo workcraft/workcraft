@@ -22,7 +22,7 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand {
 
     @Override
     public String getDisplayName() {
-        return "Conformation, deadlock freeness, and output persistency (reuse unfolding) [MPSat]";
+        return "All of the above (reuse unfolding) [MPSat]";
     }
 
     @Override

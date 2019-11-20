@@ -8,7 +8,7 @@ public class PropertyHelper {
     public static final String CLEAR_SYMBOL = Character.toString((char) 0x00D7);
 
     // Enter symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
-    public static final String ENTER_SYMBOL = Character.toString((char) 0x23CE);
+    public static final String ENTER_SYMBOL = Character.toString((char) 0x21B5);
 
     // Bullet symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
     public static final String BULLET_SYMBOL = Character.toString((char) 0x2022);

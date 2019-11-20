@@ -315,7 +315,7 @@ public class VerilogImporter implements Importer {
             if (!msg.isEmpty()) {
                 msg += " and ";
             }
-            msg += LogUtils.getTextWithRefs("hanging contact", hangingSignals);
+            msg += ReferenceHelper.getTextWithReferences("hanging contact", hangingSignals);
         }
         if (!msg.isEmpty()) {
             DialogUtils.showWarning("The imported circuit " + msg);

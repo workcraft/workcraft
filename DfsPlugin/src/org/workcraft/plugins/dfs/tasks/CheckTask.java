@@ -10,6 +10,7 @@ import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat.tasks.VerificationOutput;
 import org.workcraft.plugins.mpsat.tasks.VerificationOutputParser;
 import org.workcraft.plugins.mpsat.tasks.VerificationTask;
+import org.workcraft.plugins.mpsat.utils.ReachUtils;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.StgModel;
@@ -36,7 +37,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
         final Framework framework = Framework.getInstance();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
-        VerificationParameters preparationSettings = VerificationParameters.getToolchainPreparationSettings();
+        VerificationParameters preparationSettings = ReachUtils.getToolchainPreparationSettings();
         try {
             VisualDfs dfs = WorkspaceUtils.getAs(we, VisualDfs.class);
             DfsToStgConverter converter = new DfsToStgConverter(dfs);
@@ -77,7 +78,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
             }
             monitor.progressUpdate(0.40);
 
-            VerificationParameters deadlockSettings = VerificationParameters.getDeadlockSettings();
+            VerificationParameters deadlockSettings = ReachUtils.getDeadlockSettings();
             VerificationTask deadlockVerificationTask = new VerificationTask(deadlockSettings.getMpsatArguments(directory),
                     unfoldingFile, directory, netFile);
             Result<? extends VerificationOutput> deadlockMpsatResult = framework.getTaskManager().execute(
@@ -100,7 +101,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
             }
             monitor.progressUpdate(0.70);
 
-            VerificationParameters persistencySettings = VerificationParameters.getOutputPersistencySettings();
+            VerificationParameters persistencySettings = ReachUtils.getOutputPersistencySettings();
             VerificationTask persistencyVerificationTask = new VerificationTask(persistencySettings.getMpsatArguments(directory),
                     unfoldingFile, directory, netFile);
             Result<? extends VerificationOutput> persistencyMpsatResult = framework.getTaskManager().execute(persistencyVerificationTask,
@@ -122,7 +123,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
             }
             monitor.progressUpdate(1.0);
 
-            VerificationParameters completionSettings = VerificationParameters.getToolchainCompletionSettings();
+            VerificationParameters completionSettings = ReachUtils.getToolchainCompletionSettings();
             return new Result<>(Outcome.SUCCESS,
                     new VerificationChainOutput(exportResult, null, punfResult, null, completionSettings,
                             "Dataflow is deadlock-free and output-persistent"));

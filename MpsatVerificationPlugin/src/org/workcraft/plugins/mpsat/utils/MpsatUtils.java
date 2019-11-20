@@ -12,9 +12,9 @@ import org.workcraft.plugins.mpsat.tasks.*;
 import org.workcraft.plugins.mpsat.tasks.PunfOutputParser.Cause;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgPlace;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.types.Pair;
@@ -196,14 +196,6 @@ public class MpsatUtils {
             return false;
         }
         return true;
-    }
-
-    public static ArrayList<VerificationParameters> getMutexImplementabilitySettings(Collection<Mutex> mutexes) {
-        final ArrayList<VerificationParameters> settingsList = new ArrayList<>();
-        for (Mutex mutex: mutexes) {
-            settingsList.add(VerificationParameters.getMutexImplementabilitySettings(mutex));
-        }
-        return settingsList;
     }
 
 }

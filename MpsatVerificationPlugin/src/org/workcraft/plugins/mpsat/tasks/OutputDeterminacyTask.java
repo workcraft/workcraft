@@ -2,6 +2,7 @@ package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.utils.TransformUtils;
@@ -25,8 +26,39 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
+
+    private static final String REPLACEMENT_SHADOW_TRANSITIONS =
+            "/* insert set of names of shadow transitions here */"; // For example: "x+/1", "x-", "y+", "y-/1"
+
+    private static final String REACH_OUTPUT_DETERMINACY =
+            "// Check whether an STG is output-determinate.\n" +
+            "// The enabled-via-dummies semantics is assumed for @.\n" +
+            "// Configurations with maximal dummies are assumed to be allowed.\n" +
+            "let\n" +
+            "    // Set of phantom output transition names in the whole composed STG.\n" +
+            "    SHADOW_OUTPUT_TRANSITIONS_NAMES = {" + REPLACEMENT_SHADOW_TRANSITIONS + "\"\"} \\ {\"\"},\n" +
+            "    SHADOW_OUTPUT_TRANSITIONS = gather n in SHADOW_OUTPUT_TRANSITIONS_NAMES { T n }\n" +
+            "{\n" +
+            "    // Optimisation: make sure phantom events are not in the configuration.\n" +
+            "    forall e in ev SHADOW_OUTPUT_TRANSITIONS \\ CUTOFFS { ~$e }\n" +
+            "    &\n" +
+            "    // Check if some output signal in the composition is enabled due to phantom transitions only;\n" +
+            "    // this would mean that in the original STG there are two executions with the same visible\n" +
+            "    // traces, leading to two markings M1 and M2 such that M1 enables some output signal o\n" +
+            "    // but M2 does not enable o, so the output-determinacy is violated.\n" +
+            "    exists o in OUTPUTS {\n" +
+            "        let tran_o = tran o {\n" +
+            "            exists t in tran_o * SHADOW_OUTPUT_TRANSITIONS {\n" +
+            "                forall p in pre t { $p }\n" +
+            "            }\n" +
+            "            &\n" +
+            "            forall tt in tran_o \\ SHADOW_OUTPUT_TRANSITIONS { ~@tt }\n" +
+            "        }\n" +
+            "    }\n" +
+            "}\n";
 
     private final WorkspaceEntry we;
 
@@ -129,7 +161,7 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
             monitor.progressUpdate(0.60);
 
             // Check for output determinacy
-            VerificationParameters mpsatSettings = VerificationParameters.getOutputDeterminacySettings(devShadowTransitions);
+            VerificationParameters mpsatSettings = getSettings(devShadowTransitions);
             VerificationTask verificationTask = new VerificationTask(mpsatSettings.getMpsatArguments(directory),
                     unfoldingFile, directory, sysStgFile);
             Result<? extends VerificationOutput>  mpsatResult = taskManager.execute(
@@ -179,6 +211,17 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
             }
         }
         return true;
+    }
+
+    private VerificationParameters getSettings(Collection<String> shadowTransitionRefs) {
+        String str = shadowTransitionRefs.stream().map(ref -> "\"" + ref + "\", ").collect(Collectors.joining());
+        String reachConformationNway = REACH_OUTPUT_DETERMINACY.replace(REPLACEMENT_SHADOW_TRANSITIONS, str);
+
+        return new VerificationParameters("Output determinacy",
+                VerificationMode.STG_REACHABILITY_OUTPUT_DETERMINACY, 0,
+                MpsatVerificationSettings.getSolutionMode(),
+                MpsatVerificationSettings.getSolutionCount(),
+                reachConformationNway, true);
     }
 
 }

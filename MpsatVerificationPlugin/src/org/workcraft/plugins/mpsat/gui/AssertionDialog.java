@@ -24,6 +24,8 @@ import java.util.ArrayList;
 
 public class AssertionDialog extends ModalDialog<MpsatPresetManager> {
 
+    private static VerificationParameters autoSavedProperty = null;
+
     private JTextArea propertyText;
 
     public AssertionDialog(Window owner, MpsatPresetManager presetManager) {
@@ -58,6 +60,10 @@ public class AssertionDialog extends ModalDialog<MpsatPresetManager> {
 
     private PresetManagerPanel<VerificationParameters> createPresetPanel() {
         ArrayList<Preset<VerificationParameters>> builtInPresets = new ArrayList<>();
+        if (autoSavedProperty != null) {
+            builtInPresets.add(new Preset<>("Auto-saved assertion",
+                    autoSavedProperty, true));
+        }
 
         SettingsToControlsMapper<VerificationParameters> guiMapper = new SettingsToControlsMapper<VerificationParameters>() {
             @Override
@@ -75,10 +81,6 @@ public class AssertionDialog extends ModalDialog<MpsatPresetManager> {
     }
 
     private JPanel createAssertionPanel() {
-        JPanel result = new JPanel(new BorderLayout());
-        String title = "Assertion (use '" + NamespaceHelper.getHierarchySeparator() + "' as hierarchy separator)";
-        result.setBorder(SizeHelper.getTitledBorder(title));
-
         propertyText = new JTextArea();
         propertyText.setMargin(SizeHelper.getTextMargin());
         propertyText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
@@ -91,13 +93,8 @@ public class AssertionDialog extends ModalDialog<MpsatPresetManager> {
             }
         });
         JScrollPane assertionScrollPane = new JScrollPane(propertyText);
-
-        JPanel propertyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,
-                SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
-
-        result.add(assertionScrollPane, BorderLayout.CENTER);
-        result.add(propertyPanel, BorderLayout.SOUTH);
-        return result;
+        String title = "Assertion (use '" + NamespaceHelper.getHierarchySeparator() + "' as hierarchy separator)";
+        return GuiUtils.createBorderedComponent(assertionScrollPane, title);
     }
 
     public VerificationParameters getSettings() {
@@ -122,6 +119,15 @@ public class AssertionDialog extends ModalDialog<MpsatPresetManager> {
     private VerificationParameters getSettingsFromControls() {
         return new VerificationParameters(null, VerificationMode.ASSERTION,
                 0, SolutionMode.MINIMUM_COST, 0, propertyText.getText(), true);
+    }
+
+    @Override
+    public boolean okAction() {
+        if (super.okAction()) {
+            autoSavedProperty = getSettings();
+            return true;
+        }
+        return false;
     }
 
 }

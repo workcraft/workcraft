@@ -5,6 +5,8 @@ import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 
 @SuppressWarnings("serial")
@@ -18,9 +20,9 @@ public class TaskControl extends JPanel {
     public TaskControl(String taskDescription) {
         setLayout(GuiUtils.createBorderLayout());
 
-        Border outsideBorder = BorderFactory.createLineBorder(Color.LIGHT_GRAY);
+        Border outsideBorder = new LineBorder(Color.LIGHT_GRAY);
         Border insideBorder = SizeHelper.getEmptyBorder();
-        Border lineBorder = BorderFactory.createCompoundBorder(outsideBorder, insideBorder);
+        Border lineBorder = new CompoundBorder(outsideBorder, insideBorder);
         setBorder(lineBorder);
 
         JLabel label = new JLabel(taskDescription);

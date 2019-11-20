@@ -1,6 +1,7 @@
 package org.workcraft.plugins.mpsat.commands;
 
 import org.workcraft.plugins.mpsat.VerificationParameters;
+import org.workcraft.plugins.mpsat.utils.ReachUtils;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
@@ -29,7 +30,7 @@ public class DeadlockFreenessVerificationCommand extends AbstractVerificationCom
 
     @Override
     public VerificationParameters getSettings(WorkspaceEntry we) {
-        return VerificationParameters.getDeadlockSettings();
+        return ReachUtils.getDeadlockSettings();
     }
 
 }

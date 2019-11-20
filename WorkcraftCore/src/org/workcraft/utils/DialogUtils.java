@@ -1,6 +1,7 @@
 package org.workcraft.utils;
 
 import org.workcraft.Framework;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.MainWindow;
 
 import javax.swing.*;
@@ -30,7 +31,8 @@ public class DialogUtils {
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
         if ((mainWindow != null) && framework.isInGuiMode()) {
-            JOptionPane.showMessageDialog(mainWindow, msg, title, messageType);
+            String wrapText = TextUtils.truncateText(msg, SizeHelper.getTrauncateLength());
+            JOptionPane.showMessageDialog(mainWindow, wrapText, title, messageType);
         }
     }
 

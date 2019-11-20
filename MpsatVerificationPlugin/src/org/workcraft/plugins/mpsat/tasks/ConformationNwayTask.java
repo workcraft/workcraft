@@ -1,7 +1,10 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.Framework;
+import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
+import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
+import org.workcraft.plugins.mpsat.utils.ReachUtils;
 import org.workcraft.plugins.mpsat.utils.TransformUtils;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -24,8 +27,37 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ConformationNwayTask implements Task<VerificationChainOutput> {
+
+    private static final String REPLACEMENT_SHADOW_TRANSITIONS =
+            "/* insert set of names of shadow transitions here */"; // For example: "x+/1", "x-", "y+", "y-/1"
+
+    private static final String REACH_CONFORMATION_NWAY =
+            "// Check whether several STGs conform to each other.\n" +
+            "// The enabled-via-dummies semantics is assumed for @.\n" +
+            "// Configurations with maximal dummies are assumed to be allowed.\n" +
+            "let\n" +
+            "    // Set of phantom output transition names in the whole composed STG.\n" +
+            "    SHADOW_OUTPUT_TRANSITIONS_NAMES = {" + REPLACEMENT_SHADOW_TRANSITIONS + "\"\"} \\ {\"\"},\n" +
+            "    SHADOW_OUTPUT_TRANSITIONS = gather n in SHADOW_OUTPUT_TRANSITIONS_NAMES { T n }\n" +
+            "{\n" +
+            "    // Optimisation: make sure phantom events are not in the configuration.\n" +
+            "    forall e in ev SHADOW_OUTPUT_TRANSITIONS \\ CUTOFFS { ~$e }\n" +
+            "    &\n" +
+            "    // Check if some output signal is enabled due to phantom transitions only;\n" +
+            "    // this would mean that some component STG does not conform to the rest of the composition.\n" +
+            "    exists o in OUTPUTS {\n" +
+            "        let tran_o = tran o {\n" +
+            "            exists t in tran_o * SHADOW_OUTPUT_TRANSITIONS {\n" +
+            "                forall p in pre t { $p }\n" +
+            "            }\n" +
+            "            &\n" +
+            "            forall tt in tran_o \\ SHADOW_OUTPUT_TRANSITIONS { ~@tt }\n" +
+            "        }\n" +
+            "    }\n" +
+            "}\n";
 
     private final List<WorkspaceEntry> wes;
 
@@ -42,7 +74,7 @@ public class ConformationNwayTask implements Task<VerificationChainOutput> {
         String prefix = FileUtils.getTempPrefix("-nway_conformation");
         File directory = FileUtils.createTempDirectory(prefix);
         String stgFileExtension = StgFormat.getInstance().getExtension();
-        VerificationParameters preparationSettings = VerificationParameters.getToolchainPreparationSettings();
+        VerificationParameters preparationSettings = ReachUtils.getToolchainPreparationSettings();
         try {
             List<File> stgFiles = new ArrayList<>();
             List<Map<String, String>> substitutes = new ArrayList<>();
@@ -110,7 +142,7 @@ public class ConformationNwayTask implements Task<VerificationChainOutput> {
             monitor.progressUpdate(0.60);
 
             // Check for conformation
-            VerificationParameters mpsatSettings = VerificationParameters.getConformationNwaySettings(shadowTransitions);
+            VerificationParameters mpsatSettings = getSettings(shadowTransitions);
             VerificationTask verificationTask = new VerificationTask(mpsatSettings.getMpsatArguments(directory),
                     unfoldingFile, directory, sysStgFile);
             Result<? extends VerificationOutput>  mpsatResult = taskManager.execute(
@@ -143,6 +175,17 @@ public class ConformationNwayTask implements Task<VerificationChainOutput> {
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
         }
+    }
+
+    private VerificationParameters getSettings(Set<String> shadowTransitionNames) {
+        String str = shadowTransitionNames.stream().map(ref -> "\"" + ref + "\", ").collect(Collectors.joining());
+        String reachConformationNway = REACH_CONFORMATION_NWAY.replace(REPLACEMENT_SHADOW_TRANSITIONS, str);
+
+        return new VerificationParameters("N-way conformation",
+                VerificationMode.STG_REACHABILITY_CONFORMATION_NWAY, 0,
+                MpsatVerificationSettings.getSolutionMode(),
+                MpsatVerificationSettings.getSolutionCount(),
+                reachConformationNway, true);
     }
 
 }
