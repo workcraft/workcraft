@@ -63,11 +63,13 @@ public class ModalDialog<T> extends JDialog {
         okButton.setEnabled(value);
     }
 
-    public void okAction() {
+    public boolean okAction() {
         if (okButton.isEnabled()) {
             modalResult = true;
             setVisible(false);
+            return true;
         }
+        return false;
     }
 
     public void cancelAction() {

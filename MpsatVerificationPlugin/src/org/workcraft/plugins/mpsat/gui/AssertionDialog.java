@@ -24,6 +24,8 @@ import java.util.ArrayList;
 
 public class AssertionDialog extends ModalDialog<MpsatPresetManager> {
 
+    private static VerificationParameters autoSavedProperty = null;
+
     private JTextArea propertyText;
 
     public AssertionDialog(Window owner, MpsatPresetManager presetManager) {
@@ -58,6 +60,10 @@ public class AssertionDialog extends ModalDialog<MpsatPresetManager> {
 
     private PresetManagerPanel<VerificationParameters> createPresetPanel() {
         ArrayList<Preset<VerificationParameters>> builtInPresets = new ArrayList<>();
+        if (autoSavedProperty != null) {
+            builtInPresets.add(new Preset<>("Auto-saved assertion",
+                    autoSavedProperty, true));
+        }
 
         SettingsToControlsMapper<VerificationParameters> guiMapper = new SettingsToControlsMapper<VerificationParameters>() {
             @Override
@@ -113,6 +119,15 @@ public class AssertionDialog extends ModalDialog<MpsatPresetManager> {
     private VerificationParameters getSettingsFromControls() {
         return new VerificationParameters(null, VerificationMode.ASSERTION,
                 0, SolutionMode.MINIMUM_COST, 0, propertyText.getText(), true);
+    }
+
+    @Override
+    public boolean okAction() {
+        if (super.okAction()) {
+            autoSavedProperty = getSettings();
+            return true;
+        }
+        return false;
     }
 
 }
