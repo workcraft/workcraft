@@ -47,19 +47,10 @@ public class XbmState extends State {
         for (XbmSignal s: getSignals()) {
             switch (s.getType()) {
             case INPUT:
-                if (encoding.get(s) == SignalState.DDC) {
-                    input += "X";
-                } else {
-                    input += encoding.get(s);
-                }
+                input = concatenateEncoding(input, encoding.get(s));
                 break;
-
             case OUTPUT:
-                if (encoding.get(s) == SignalState.DDC) {
-                    output += "X";
-                } else {
-                    output += encoding.get(s);
-                }
+                output = concatenateEncoding(output, encoding.get(s));
                 break;
             }
         }
@@ -74,6 +65,14 @@ public class XbmState extends State {
             return encoding;
         } else {
             return super.toString();
+        }
+    }
+
+    private static String concatenateEncoding(String target, SignalState signalValue) {
+        if (signalValue == SignalState.DDC) {
+            return target + "X";
+        } else {
+            return target + signalValue;
         }
     }
 }

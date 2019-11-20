@@ -47,4 +47,25 @@ public enum SignalState {
             throw new ArgumentException("An unknown state was set for the signal");
         }
     }
+
+    public Direction determineDirectionBetween(SignalState other) {
+        if (this == null || other == null) {
+            return null;
+        } else {
+            if (this == other) {
+                return other == DDC ? Direction.UNSTABLE : Direction.STABLE;
+            } else {
+                switch (other) {
+                case HIGH:
+                    return Direction.PLUS;
+                case LOW:
+                    return Direction.MINUS;
+                case DDC:
+                    return Direction.UNSTABLE;
+                default:
+                    return null;
+                }
+            }
+        }
+    }
 }

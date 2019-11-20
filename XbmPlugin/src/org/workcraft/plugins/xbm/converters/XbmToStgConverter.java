@@ -4,6 +4,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.xbm.*;
@@ -78,7 +79,7 @@ public class XbmToStgConverter {
                         if (burstTransition.getStart() != null) {
                             dstModel.connect(inPlace, burstTransition.getStart());
                         } else {
-                            for (VisualSignalTransition inputTransition: burstTransition.getInputTransitions()) {
+                            for (VisualTransition inputTransition: burstTransition.getInputTransitions()) {
                                 dstModel.connect(inPlace, inputTransition);
                             }
                         }
@@ -94,7 +95,7 @@ public class XbmToStgConverter {
                                 if (burstTransition.getStart() != null) {
                                     dstModel.connectUndirected(readPlace, burstTransition.getStart());
                                 } else {
-                                    for (VisualSignalTransition inputTransition: burstTransition.getInputTransitions()) {
+                                    for (VisualTransition inputTransition: burstTransition.getInputTransitions()) {
                                         dstModel.connectUndirected(readPlace, inputTransition);
                                     }
                                 }
@@ -109,7 +110,7 @@ public class XbmToStgConverter {
                         if (burstTransition.getEnd() != null) {
                             dstModel.connect(burstTransition.getEnd(), outPlace);
                         } else {
-                            for (VisualSignalTransition outputTransition: burstTransition.getOutputTransitions()) {
+                            for (VisualTransition outputTransition: burstTransition.getOutputTransitions()) {
                                 dstModel.connect(outputTransition, outPlace);
                             }
                         }
@@ -167,12 +168,18 @@ public class XbmToStgConverter {
                     VisualBurstEvent vbe = (VisualBurstEvent) node;
                     for (XbmSignal s: vbe.getReferencedConnection().getBurst().getSignals()) {
                         boolean isInput = false;
-                        for (VisualSignalTransition i: relatedTransition.getInputTransitions()) {
-                            isInput = isInput || i.getName().equals(s.getName());
+                        for (VisualTransition i: relatedTransition.getInputTransitions()) {
+                            if (i instanceof VisualSignalTransition) {
+                                VisualSignalTransition sigI = (VisualSignalTransition) i;
+                                isInput = isInput || sigI.getName().equals(s.getName());
+                            }
                         }
                         boolean isOutput = false;
-                        for (VisualSignalTransition o: relatedTransition.getOutputTransitions()) {
-                            isOutput = isOutput || o.getName().equals(s.getName());
+                        for (VisualTransition o: relatedTransition.getOutputTransitions()) {
+                            if (o instanceof VisualSignalTransition) {
+                                VisualSignalTransition sigO = (VisualSignalTransition) o;
+                                isInput = isInput || sigO.getName().equals(s.getName());
+                            }
                         }
                         allSignalsFound = true && (isInput || isOutput);
                     }
@@ -180,12 +187,18 @@ public class XbmToStgConverter {
                     BurstEvent be = (BurstEvent) node;
                     for (XbmSignal s: be.getBurst().getSignals()) {
                         boolean isInput = false;
-                        for (VisualSignalTransition i: relatedTransition.getInputTransitions()) {
-                            isInput = isInput || i.getName().equals(s.getName());
+                        for (VisualTransition i: relatedTransition.getInputTransitions()) {
+                            if (i instanceof VisualSignalTransition) {
+                                VisualSignalTransition sigI = (VisualSignalTransition) i;
+                                isInput = isInput || sigI.getName().equals(s.getName());
+                            }
                         }
                         boolean isOutput = false;
-                        for (VisualSignalTransition o: relatedTransition.getOutputTransitions()) {
-                            isOutput = isOutput || o.getName().equals(s.getName());
+                        for (VisualTransition o: relatedTransition.getOutputTransitions()) {
+                            if (o instanceof VisualSignalTransition) {
+                                VisualSignalTransition sigO = (VisualSignalTransition) o;
+                                isInput = isInput || sigO.getName().equals(s.getName());
+                            }
                         }
                         allSignalsFound = true && (isInput || isOutput);
                     }

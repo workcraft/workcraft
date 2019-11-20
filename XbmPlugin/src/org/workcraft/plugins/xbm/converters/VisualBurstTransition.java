@@ -1,8 +1,8 @@
 package org.workcraft.plugins.xbm.converters;
 
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.VisualDummyTransition;
-import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.xbm.Burst;
 import org.workcraft.plugins.xbm.Direction;
@@ -15,8 +15,8 @@ import java.util.Set;
 public class VisualBurstTransition {
 
     private final VisualStg visualStg;
-    private final Set<VisualSignalTransition> inputTransitions;
-    private final Set<VisualSignalTransition> outputTransitions;
+    private final Set<VisualTransition> inputTransitions;
+    private final Set<VisualTransition> outputTransitions;
     private final VisualDummyTransition start;
     private final VisualDummyTransition split;
     private final VisualDummyTransition end;
@@ -34,17 +34,18 @@ public class VisualBurstTransition {
         split = target.createVisualDummyTransition(JOIN_FORK_PREFIX);
         end = target.createVisualDummyTransition(JOIN_PREFIX);
         try {
-            for (VisualSignalTransition inputTransition: inputTransitions) {
+            for (VisualTransition inputTransition: inputTransitions) {
                 visualStg.connect(start, inputTransition);
                 visualStg.connect(inputTransition, split);
             }
             if (!outputTransitions.isEmpty()) {
-                for (VisualSignalTransition outputTransition: outputTransitions) {
+                for (VisualTransition outputTransition: outputTransitions) {
                     visualStg.connect(split, outputTransition);
                     visualStg.connect(outputTransition, end);
                 }
             } else {
                 VisualDummyTransition internalChange = target.createVisualDummyTransition(OUTPUT_DUMMY);
+                outputTransitions.add(internalChange);
                 visualStg.connect(split, internalChange);
                 visualStg.connect(internalChange, end);
             }
@@ -54,11 +55,11 @@ public class VisualBurstTransition {
         }
     }
 
-    public Set<VisualSignalTransition> getInputTransitions() {
+    public Set<VisualTransition> getInputTransitions() {
         return inputTransitions;
     }
 
-    public Set<VisualSignalTransition> getOutputTransitions() {
+    public Set<VisualTransition> getOutputTransitions() {
         return outputTransitions;
     }
 
@@ -74,22 +75,22 @@ public class VisualBurstTransition {
         return end;
     }
 
-    private Set<VisualSignalTransition> convertInputBursts(VisualBurstEvent ref) {
+    private Set<VisualTransition> convertInputBursts(VisualBurstEvent ref) {
         return getBurstAsTransitions(ref, visualStg, XbmSignal.Type.INPUT);
     }
 
-    private Set<VisualSignalTransition> convertOutputBursts(VisualBurstEvent ref) {
+    private Set<VisualTransition> convertOutputBursts(VisualBurstEvent ref) {
         return getBurstAsTransitions(ref, visualStg, XbmSignal.Type.OUTPUT);
     }
 
-    private static Set<VisualSignalTransition> getBurstAsTransitions(VisualBurstEvent ref, VisualStg visualStg, XbmSignal.Type targetType) {
-        Set<VisualSignalTransition> result = new HashSet<>();
+    private static Set<VisualTransition> getBurstAsTransitions(VisualBurstEvent ref, VisualStg visualStg, XbmSignal.Type targetType) {
+        Set<VisualTransition> result = new HashSet<>();
         Burst burst = ref.getReferencedConnection().getBurst();
         for (XbmSignal signal: burst.getSignals(targetType)) {
             String name = signal.getName();
             XbmSignal.Type type = signal.getType();
             Direction direction = burst.getDirection().get(signal);
-            VisualSignalTransition transition = visualStg.createVisualSignalTransition(name, XbmToStgConversionUtil.getReferredType(type), XbmToStgConversionUtil.getReferredDirection(direction));
+            VisualTransition transition = visualStg.createVisualSignalTransition(name, XbmToStgConversionUtil.getReferredType(type), XbmToStgConversionUtil.getReferredDirection(direction));
             transition.setForegroundColor(ref.getColor());
             transition.setLabelColor(ref.getLabelColor());
             result.add(transition);

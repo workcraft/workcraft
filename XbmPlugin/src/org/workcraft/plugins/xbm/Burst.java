@@ -25,24 +25,18 @@ public class Burst extends Symbol {
         this.from = from;
         this.to = to;
         for (XbmSignal s: this.from.getSignals()) {
-            if (from.getEncoding().get(s) == SignalState.HIGH && to.getEncoding().get(s) == SignalState.LOW) {
-                direction.put(s, Direction.MINUS);
-            } else if (from.getEncoding().get(s) == SignalState.LOW && to.getEncoding().get(s) == SignalState.HIGH) {
-                direction.put(s, Direction.PLUS);
-            } else if (from.getEncoding().get(s) == SignalState.DDC) {
-                direction.put(s, Direction.UNSTABLE);
-            }
+            SignalState fromState = from.getEncoding().get(s);
+            SignalState toState = to.getEncoding().get(s);
+            direction.put(s, fromState.determineDirectionBetween(toState));
         }
     }
 
     public Map<XbmSignal, Direction> getDirections(XbmSignal.Type type) {
-        Set<XbmSignal> signals = getSignals(type);
         Map<XbmSignal, Direction> result = new LinkedHashMap<>(direction);
-        for (XbmSignal signal: signals) {
-            result.remove(signal);
-        }
+        result.entrySet().removeIf(xbmSignalDirectionEntry -> xbmSignalDirectionEntry.getKey().getType() != type);
         return result;
     }
+
 
     public Map<XbmSignal, Direction> getDirection() {
         return direction;
@@ -73,23 +67,10 @@ public class Burst extends Symbol {
     }
 
     public void addOrChangeSignalDirection(XbmSignal s, SignalState fromState, SignalState toState) {
-        if (fromState == toState) {
+        if (fromState == toState && fromState != SignalState.DDC) {
             direction.remove(s);
         } else {
-            Direction dir;
-            boolean isRising = (fromState == SignalState.LOW && toState == SignalState.HIGH) || (fromState == SignalState.DDC && toState == SignalState.HIGH);
-            boolean isFalling = (fromState == SignalState.HIGH && toState == SignalState.LOW) || (fromState == SignalState.DDC && toState == SignalState.LOW);
-            boolean isUnstable = fromState != SignalState.DDC && toState == SignalState.DDC;
-            if (isRising && !isFalling && !isUnstable) {
-                dir = Direction.PLUS;
-            } else if (!isRising && isFalling && !isUnstable) {
-                dir = Direction.MINUS;
-            } else if (!isRising && !isFalling && isUnstable) {
-                dir = Direction.UNSTABLE;
-            } else { //No changes to be made
-                dir = Direction.STABLE;
-            }
-            direction.put(s, dir);
+            direction.put(s, fromState.determineDirectionBetween(toState));
         }
     }
 
