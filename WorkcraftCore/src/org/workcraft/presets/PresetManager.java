@@ -10,10 +10,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class PresetManager<T> {
+
     private final ArrayList<Preset<T>> presets = new ArrayList<>();
     private final File presetFile;
     private final SettingsSerialiser<T> serialiser;
@@ -26,12 +26,43 @@ public class PresetManager<T> {
             if (presetFile.exists()) {
                 Document doc = XmlUtils.loadDocument(presetFile);
                 for (Element p : XmlUtils.getChildElements("preset", doc.getDocumentElement())) {
-                    presets.add(new Preset<T>(p, serialiser));
+                    presets.add(new Preset<>(p, serialiser));
                 }
             }
         } catch (ParserConfigurationException | SAXException | IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void addFirst(List<Preset<T>> otherPresets) {
+        presets.addAll(0, otherPresets);
+    }
+
+    public void savePreset(Preset<T> preset) {
+        presets.add(preset);
+        savePresets();
+    }
+
+    public void updatePreset(Preset<T> preset, T settings) {
+        checkBuiltIn(preset);
+        preset.setSettings(settings);
+        savePresets();
+    }
+
+    public void removePreset(Preset<T> preset) {
+        checkBuiltIn(preset);
+        presets.remove(preset);
+        savePresets();
+    }
+
+    public void renamePreset(Preset<T> preset, String description) {
+        checkBuiltIn(preset);
+        preset.setDescription(description);
+        savePresets();
+    }
+
+    public List<Preset<T>> getPresets() {
+        return Collections.unmodifiableList(presets);
     }
 
     private void savePresets() {
@@ -56,55 +87,9 @@ public class PresetManager<T> {
         }
     }
 
-    public void sort() {
-        Collections.sort(presets, Comparator.comparing(Preset::getDescription));
-    }
-
-    public void add(Preset<T> preset) {
-        presets.add(preset);
-    }
-
-    public Preset<T> save(T settings, String description) {
-        Preset<T> preset = new Preset<>(description, settings, false);
-        presets.add(0, preset);
-        savePresets();
-        return preset;
-    }
-
-    public void update(Preset<T> preset, T settings) {
-        checkBuiltIn(preset);
-        preset.setSettings(settings);
-        savePresets();
-    }
-
-    public void delete(Preset<T> preset) {
-        checkBuiltIn(preset);
-        presets.remove(preset);
-        savePresets();
-    }
-
     private void checkBuiltIn(Preset<T> preset) {
         if (preset.isBuiltIn()) {
             throw new RuntimeException("Invalid operation attempted on a built-in preset.");
         }
-    }
-
-    public Preset<T> find(String description) {
-        for (Preset<T> p : presets) {
-            if (p.getDescription().equals(description)) {
-                return p;
-            }
-        }
-        return null;
-    }
-
-    public void rename(Preset<T> preset, String description) {
-        checkBuiltIn(preset);
-        preset.setDescription(description);
-        savePresets();
-    }
-
-    public List<Preset<T>> list() {
-        return Collections.unmodifiableList(presets);
     }
 }
