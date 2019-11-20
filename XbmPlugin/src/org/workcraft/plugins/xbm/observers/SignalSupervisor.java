@@ -146,30 +146,18 @@ public class SignalSupervisor extends StateSupervisor {
             if (d != null) {
                 switch (d) {
                 case PLUS:
-                    if (from.getEncoding().get(s) != SignalState.LOW) {
-                        from.addOrChangeSignalValue(s, SignalState.LOW);
-                    }
-                    if (to.getEncoding().get(s) != SignalState.HIGH) {
-                        to.addOrChangeSignalValue(s, SignalState.HIGH);
-                    }
+                    from.addOrChangeSignalValue(s, SignalState.LOW);
+                    to.addOrChangeSignalValue(s, SignalState.HIGH);
                     break;
                 case MINUS:
-                    if (from.getEncoding().get(s) != SignalState.HIGH) {
-                        from.addOrChangeSignalValue(s, SignalState.HIGH);
-                    }
-                    if (to.getEncoding().get(s) != SignalState.LOW) {
-                        to.addOrChangeSignalValue(s, SignalState.LOW);
-                    }
+                    from.addOrChangeSignalValue(s, SignalState.HIGH);
+                    to.addOrChangeSignalValue(s, SignalState.LOW);
                     break;
                 case UNSTABLE:
-                    if (to.getEncoding().get(s) != SignalState.DDC) {
-                        to.addOrChangeSignalValue(s, SignalState.DDC);
-                    }
+                    to.addOrChangeSignalValue(s, SignalState.DDC);
                     break;
                 case STABLE: //This essentially pushes the signal(direction) to the next arc
-                    if (to.getEncoding().get(s) != from.getEncoding().get(s)) {
-                        to.addOrChangeSignalValue(s, from.getEncoding().get(s));
-                    }
+                    to.addOrChangeSignalValue(s, from.getEncoding().get(s));
                     burst.removeSignal(s);
                     break;
                 }
