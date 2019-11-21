@@ -76,11 +76,11 @@ public class GraphToPetriConverter {
     private Map<VisualVertex, VisualTransition> convertVertices() {
         Map<VisualVertex, VisualTransition> result = new HashMap<>();
         HierarchyReferenceManager refManager = (HierarchyReferenceManager) dstModel.getMathModel().getReferenceManager();
-        NameManager nameManagerer = refManager.getNameManager(null);
+        NameManager nameManager = refManager.getNameManager(null);
         for (VisualVertex vertex: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualVertex.class)) {
             Symbol symbol = vertex.getReferencedComponent().getSymbol();
             String symbolName = (symbol == null) ? Graph.EPSILON_SERIALISATION : srcModel.getMathName(symbol);
-            String name = nameManagerer.getDerivedName(null, symbolName);
+            String name = nameManager.getDerivedName(null, symbolName);
             VisualTransition transition = dstModel.createTransition(name, null);
             transition.copyPosition(vertex);
             transition.copyStyle(vertex);

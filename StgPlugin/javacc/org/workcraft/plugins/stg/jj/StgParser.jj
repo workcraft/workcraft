@@ -13,29 +13,31 @@ options {
 PARSER_BEGIN(StgParser)
 package org.workcraft.plugins.stg.jj;
 
-import java.util.HashSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.LinkedList;
-
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.plugins.stg.Signal;
-import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.NamedTransition;
-import org.workcraft.plugins.stg.ImplicitPlaceConnection;
+import org.workcraft.dom.references.HierarchyReferenceManager;
+import org.workcraft.dom.references.Identifier;
+import org.workcraft.dom.references.NameManager;
+import org.workcraft.exceptions.FormatException;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.stg.*;
-import org.workcraft.utils.EnumUtils;
-import org.workcraft.utils.LogUtils;
 import org.workcraft.types.Pair;
 import org.workcraft.types.Triple;
-import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.FormatException;
+import org.workcraft.utils.EnumUtils;
+import org.workcraft.utils.LogUtils;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 
 public class StgParser {
 
     private HashMap<String, Signal.Type> signals;
     private HashSet<String> dummies;
+    private HashMap<String, StgPlace> places;
     private HashMap<Pair<Node, Node>, StgPlace> implicitPlaces;
     private Stg stg;
 
@@ -44,10 +46,11 @@ public class StgParser {
         dummies = new HashSet<String>();
         stg = new Stg();
         implicitPlaces = new HashMap<Pair<Node, Node>, StgPlace>();
+        places = new HashMap<String, StgPlace>();
     }
 
     private Node getOrCreate(String ref) {
-        Node node = stg.getNodeByReference(ref);
+        Node node = places.get(ref);
         if (node == null) {
             node = stg.getNodeByReference(ref + "/0");
         }
@@ -58,7 +61,7 @@ public class StgParser {
                 Pair<String, Integer> refPair = Pair.of(ref, 0);
                 node = getOrCreate(refPair);
             } else {
-                node = stg.createPlace(ref, null);
+                node = getOrCreatePlace(ref, null);
             }
         }
         return node;
@@ -157,6 +160,26 @@ public class StgParser {
         }
     }
 
+    private StgPlace getOrCreatePlace(String ref, String suffix) {
+        String fullRef = ref + (suffix == null ? "" : suffix);
+        StgPlace node = places.get(fullRef);
+        if (node == null) {
+            // Create place with all the hierarchy and a temporary (internal) name
+            String pathRef = NamespaceHelper.getReferencePath(ref);
+            String name = NamespaceHelper.getReferenceName(ref);
+            String tmpName = Identifier.createInternal(name);
+            node = stg.createPlace(pathRef + tmpName, null);
+            places.put(fullRef, node);
+            // Rename the place to a derived name in order to avoid clashes
+            HierarchyReferenceManager refManager = stg.getReferenceManager();
+            NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(node);
+            NameManager nameManager = refManager.getNameManager(namespaceProvider);
+            String newName = nameManager.getDerivedName(node, name);
+            stg.setName(node, newName);
+        }
+        return node;
+    }
+
 }
 PARSER_END(StgParser)
 
@@ -214,6 +237,8 @@ TOKEN :
 |
     <INTEGER : (["0"-"9"])+>
 |
+    <SPLIT_SUFFIX : "@" (<INTEGER>)+>
+|
     "{"
 |
     "}"
@@ -230,7 +255,8 @@ TOKEN :
 }
 
 Stg parse() :
-{}
+{
+}
 {
     {
         init();
@@ -312,7 +338,8 @@ List<String> stringList() :
 }
 
 void footer() :
-{}
+{
+}
 {
     <MARKING> marking()
 |
@@ -322,7 +349,8 @@ void footer() :
 }
 
 void capacity() :
-{}
+{
+}
 {
     (
         capacityEntry()
@@ -338,7 +366,8 @@ void capacityEntry() :
     (
         (
             p = implicitPlaceReference()
-        |   p = explicitPlaceReference()
+        |
+            p = explicitPlaceReference()
         )
         value = assignment()
     )
@@ -348,7 +377,8 @@ void capacityEntry() :
 }
 
 void marking() :
-{}
+{
+}
 {
     "{"
     (
@@ -377,7 +407,7 @@ void markingEntry() :
     (
         (
             p = implicitPlaceReference()
-        |
+    |
             p = explicitPlaceReference()
         )
         (
@@ -391,39 +421,37 @@ void markingEntry() :
 
 StgPlace implicitPlaceReference() :
 {
-    Node t1, t2;
-    Token t;
-    Integer tokens = null;
+    Node from;
+    Node to;
 }
 {
-    (
-        "<" t1 = anyTransition() "," t2 = anyTransition() ">"
-    )
+    "<" from = anyTransition() "," to = anyTransition() ">"
     {
-        return implicitPlaces.get(Pair.of(t1, t2));
+        return implicitPlaces.get(Pair.of(from, to));
     }
 }
 
 StgPlace explicitPlaceReference() :
 {
     Token t;
-    String name;
-    Integer tokens = null;
+    Token t1;
 }
 {
-    (
-        t = <NAME>
-        {
-            name = t.image;
-        }
-    )
+    LOOKAHEAD(<NAME> <SPLIT_SUFFIX>)
+    t = <NAME> t1 = <SPLIT_SUFFIX>
     {
-        return (StgPlace) stg.getNodeByReference(name);
+        return places.get(t.image + t1.image);
+    }
+|
+    t = <NAME>
+    {
+        return places.get(t.image);
     }
 }
 
 void graph() :
-{}
+{
+}
 {
     <GRAPH> <LINEBREAK>
     (
@@ -484,35 +512,51 @@ Node anyTransition() :
 {
     Triple<String, SignalTransition.Direction, Integer> r;
     Pair<String, Integer> r2;
-    Node t;
+    Node node;
 }
 {
     (
         LOOKAHEAD(signalTransition())
         r = signalTransition()
         {
-            t = getOrCreate(r);
+            node = getOrCreate(r);
         }
     |
         r2 = dummyTransition()
         {
-            t = getOrCreate(r2);
+            node = getOrCreate(r2);
         }
     )
     {
-        return t;
+        return node;
+    }
+}
+
+Node splitPlace() :
+{
+    Token t1;
+    Token t2;
+}
+{
+    t1 = <NAME> t2 = <SPLIT_SUFFIX>
+    {
+        return getOrCreatePlace(t1.image, t2.image);
     }
 }
 
 void graphLine() :
 {
     Token t;
-    Node from, to;
+    Node from;
+    Node to;
 }
 {
     (
         LOOKAHEAD(<NAME> (<DIRECTION> | "/"))
         from = anyTransition()
+    |
+        LOOKAHEAD(<NAME> <SPLIT_SUFFIX>)
+        from = splitPlace()
     |
         t = <NAME>
         {
@@ -523,6 +567,9 @@ void graphLine() :
         (
             LOOKAHEAD(<NAME> (<DIRECTION> | "/"))
             to = anyTransition()
+        |
+            LOOKAHEAD(<NAME> <SPLIT_SUFFIX>)
+            to = splitPlace()
         |
             t = <NAME>
             {

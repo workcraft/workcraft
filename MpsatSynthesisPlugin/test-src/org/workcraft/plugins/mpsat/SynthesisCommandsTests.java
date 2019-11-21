@@ -21,6 +21,7 @@ public class SynthesisCommandsTests {
         framework.init();
         PunfSettings.setCommand(TestUtils.getToolPath("UnfoldingTools", "punf"));
         MpsatSynthesisSettings.setCommand(TestUtils.getToolPath("UnfoldingTools", "mpsat"));
+        MpsatSynthesisSettings.setOpenSynthesisStg(true);
         CircuitSettings.setGateLibrary(TestUtils.getLibraryPath("workcraft.lib"));
     }
 
@@ -154,6 +155,18 @@ public class SynthesisCommandsTests {
     public void duplicatorCscHierTechnologyMappingSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "duplicator-hier-csc.stg.work");
         testTechnologyMappingSynthesisCommand(workName, 11);
+    }
+
+    @Test
+    public void dlatchSplitPlaceTechnologyMappingSynthesis() {
+        String workName = PackageUtils.getPackagePath(getClass(), "dlatch.stg.work");
+        testTechnologyMappingSynthesisCommand(workName, 2);
+    }
+
+    @Test
+    public void dlatchHierSplitPlaceTechnologyMappingSynthesis() {
+        String workName = PackageUtils.getPackagePath(getClass(), "dlatch-hier.stg.work");
+        testTechnologyMappingSynthesisCommand(workName, 2);
     }
 
     private void testTechnologyMappingSynthesisCommand(String workName, int expectedGateCount) {

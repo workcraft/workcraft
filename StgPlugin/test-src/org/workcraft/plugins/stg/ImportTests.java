@@ -52,26 +52,39 @@ public class ImportTests {
     }
 
     @Test
-    public void test2() throws Throwable {
+    public void test2Test() throws DeserialisationException {
+        testStg("test2.g", 17, 0, 18, 2);
+    }
+
+    @Test
+    public void dlatchSplitPlaceHierarchyTest() throws DeserialisationException {
+        testStg("dlatch-split_place-hierarchy.g", 8, 0, 8, 4);
+    }
+
+    @Test
+    public void dlatchSplitPlaceReverseTest() throws DeserialisationException {
+        testStg("dlatch-split_place-reverse.g", 8, 0, 8, 4);
+    }
+
+    private void testStg(String workName, int transitionCount, int dummyCount, int placeCount, int explicitPlaceCount) throws DeserialisationException {
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        String resourceName = PackageUtils.getPackagePath(getClass(), "test2.g");
-        final InputStream test = classLoader.getResourceAsStream(resourceName);
-        StgModel imported = new StgImporter().importStg(test);
-        Assert.assertEquals(17, imported.getTransitions().size());
-        Assert.assertEquals(0, imported.getDummyTransitions().size());
+        String resourceName = PackageUtils.getPackagePath(getClass(), workName);
+        final InputStream stream = classLoader.getResourceAsStream(resourceName);
+        StgModel stg = new StgImporter().importStg(stream);
 
-        int explicitPlaces = 0;
-        for (Place p : imported.getPlaces()) {
-            if (!((StgPlace) p).isImplicit()) explicitPlaces++;
+        Assert.assertEquals(transitionCount, stg.getTransitions().size());
+        Assert.assertEquals(dummyCount, stg.getDummyTransitions().size());
+        Assert.assertEquals(placeCount, stg.getPlaces().size());
+
+        int count = 0;
+        for (Place place : stg.getPlaces()) {
+            if (!((StgPlace) place).isImplicit()) count++;
         }
+        Assert.assertEquals(explicitPlaceCount, count);
 
-        Assert.assertEquals(2, explicitPlaces);
-
-        Assert.assertEquals(18, imported.getPlaces().size());
-
-        for (Transition t : imported.getTransitions()) {
-            Assert.assertTrue(imported.getPreset(t).size() > 0);
-            Assert.assertTrue(imported.getPostset(t).size() > 0);
+        for (Transition t : stg.getTransitions()) {
+            Assert.assertTrue(stg.getPreset(t).size() > 0);
+            Assert.assertTrue(stg.getPostset(t).size() > 0);
         }
     }
 

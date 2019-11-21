@@ -55,8 +55,8 @@ public class StgToPetriConverter extends DefaultModelConverter<VisualStg, Visual
 
         HierarchyReferenceManager refManager = getDstModel().getMathModel().getReferenceManager();
         NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(container);
-        NameManager nameManagerer = refManager.getNameManager(namespaceProvider);
-        return nameManagerer.getDerivedName(null, dstCandidate);
+        NameManager nameManager = refManager.getNameManager(namespaceProvider);
+        return nameManager.getDerivedName(null, dstCandidate);
     }
 
     @Override

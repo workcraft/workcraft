@@ -216,8 +216,8 @@ public class HierarchyReferenceManager extends HierarchySupervisor implements Re
 
     public void setDefaultName(MathNode node) {
         NamespaceProvider namespaceProvider = getNamespaceProvider(node);
-        NameManager nameManagerer = getNameManager(namespaceProvider);
-        nameManagerer.setDefaultName(node);
+        NameManager nameManager = getNameManager(namespaceProvider);
+        nameManager.setDefaultName(node);
     }
 
 }
