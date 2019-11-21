@@ -295,10 +295,10 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
         Container mathContainer = NamespaceHelper.getMathContainer(visualModel, visualContainer);
         MathModel mathModel = visualModel.getMathModel();
         HierarchyReferenceManager refManager = (HierarchyReferenceManager) mathModel.getReferenceManager();
-        NameManager nameManagerer = refManager.getNameManager((NamespaceProvider) mathContainer);
+        NameManager nameManager = refManager.getNameManager((NamespaceProvider) mathContainer);
         String predName = visualModel.getMathName(predPlace);
         String succName = visualModel.getMathName(succPlace);
-        String productName = nameManagerer.getDerivedName(null, predName + succName);
+        String productName = nameManager.getDerivedName(null, predName + succName);
         Place mathPlace = mathModel.createNode(productName, mathContainer, Place.class);
         return visualModel.createVisualComponent(mathPlace, VisualPlace.class, visualContainer);
     }

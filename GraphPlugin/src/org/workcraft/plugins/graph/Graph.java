@@ -59,7 +59,7 @@ public class Graph extends AbstractMathModel {
             srcModel = this;
         }
         HierarchyReferenceManager refManager = getReferenceManager();
-        NameManager nameManagerer = refManager.getNameManager(null);
+        NameManager nameManager = refManager.getNameManager(null);
         for (MathNode srcNode: srcChildren) {
             if (srcNode instanceof Vertex) {
                 Vertex srcVertex = (Vertex) srcNode;
@@ -72,7 +72,7 @@ public class Graph extends AbstractMathModel {
                         dstSymbol = (Symbol) dstNode;
                     } else {
                         if (dstNode != null) {
-                            symbolName = nameManagerer.getDerivedName(null, symbolName);
+                            symbolName = nameManager.getDerivedName(null, symbolName);
                         }
                         dstSymbol = createSymbol(symbolName);
                     }

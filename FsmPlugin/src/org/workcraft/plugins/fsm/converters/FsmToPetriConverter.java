@@ -69,11 +69,11 @@ public class FsmToPetriConverter {
     private Map<VisualEvent, VisualTransition> convertEvents() {
         Map<VisualEvent, VisualTransition> result = new HashMap<>();
         HierarchyReferenceManager refManager = (HierarchyReferenceManager) dstModel.getMathModel().getReferenceManager();
-        NameManager nameManagerer = refManager.getNameManager(null);
+        NameManager nameManager = refManager.getNameManager(null);
         for (VisualEvent event : Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualEvent.class)) {
             Symbol symbol = event.getReferencedConnection().getSymbol();
             String symbolName = (symbol == null) ? Fsm.EPSILON_SERIALISATION : srcModel.getMathName(symbol);
-            String name = nameManagerer.getDerivedName(null, symbolName);
+            String name = nameManager.getDerivedName(null, symbolName);
             VisualTransition transition = dstModel.createTransition(name, null);
             transition.setPosition(event.getCenter());
             transition.setForegroundColor(event.getColor());

@@ -769,8 +769,8 @@ public class VerilogImporter implements Importer {
         try {
             HierarchyReferenceManager refManager = circuit.getReferenceManager();
             NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(component);
-            NameManager nameManagerer = refManager.getNameManager(namespaceProvider);
-            String derivedName = nameManagerer.getDerivedName(component, name);
+            NameManager nameManager = refManager.getNameManager(namespaceProvider);
+            String derivedName = nameManager.getDerivedName(component, name);
             circuit.setName(component, derivedName);
         } catch (ArgumentException e) {
             String componentRef = circuit.getNodeReference(component);

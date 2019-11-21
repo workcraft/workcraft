@@ -1,19 +1,15 @@
 package org.workcraft.plugins.punf.tasks;
 
 import org.workcraft.plugins.punf.PunfSettings;
-import org.workcraft.tasks.ExternalProcessOutput;
-import org.workcraft.tasks.ExternalProcessTask;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.Result;
+import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.tasks.SubtaskMonitor;
-import org.workcraft.tasks.Task;
 import org.workcraft.utils.ExecutableUtils;
 
 import java.io.File;
 import java.util.ArrayList;
 
 public class PunfTask implements Task<PunfOutput> {
+
     public static final String PNML_FILE_EXTENSION = ".pnml";
     public static final String MCI_FILE_EXTENSION = ".mci";
     public static final String LEGACY_TOOL_SUFFIX = "-mci";

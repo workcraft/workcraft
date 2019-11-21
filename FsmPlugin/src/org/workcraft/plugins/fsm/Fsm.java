@@ -105,7 +105,7 @@ public class Fsm extends AbstractMathModel {
             srcModel = this;
         }
         HierarchyReferenceManager refManager = (HierarchyReferenceManager) getReferenceManager();
-        NameManager nameManagerer = refManager.getNameManager(null);
+        NameManager nameManager = refManager.getNameManager(null);
         for (MathNode srcNode: srcChildren) {
             if (srcNode instanceof Event) {
                 Event srcEvent = (Event) srcNode;
@@ -118,7 +118,7 @@ public class Fsm extends AbstractMathModel {
                         dstSymbol = (Symbol) dstNode;
                     } else {
                         if (dstNode != null) {
-                            symbolName = nameManagerer.getDerivedName(null, symbolName);
+                            symbolName = nameManager.getDerivedName(null, symbolName);
                         }
                         dstSymbol = createSymbol(symbolName);
                     }

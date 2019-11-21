@@ -81,10 +81,10 @@ public class ContractNamedTransitionTransformationCommand extends ContractTransi
         Container mathContainer = NamespaceHelper.getMathContainer(visualModel, visualContainer);
         MathModel mathModel = visualModel.getMathModel();
         HierarchyReferenceManager refManager = (HierarchyReferenceManager) mathModel.getReferenceManager();
-        NameManager nameManagerer = refManager.getNameManager((NamespaceProvider) mathContainer);
+        NameManager nameManager = refManager.getNameManager((NamespaceProvider) mathContainer);
         String predName = visualModel.getMathName(predPlace);
         String succName = visualModel.getMathName(succPlace);
-        String productName = nameManagerer.getDerivedName(null, predName + succName);
+        String productName = nameManager.getDerivedName(null, predName + succName);
         StgPlace mathPlace = mathModel.createNode(productName, mathContainer, StgPlace.class);
         return visualModel.createVisualComponent(mathPlace, VisualStgPlace.class, visualContainer);
     }

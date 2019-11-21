@@ -77,9 +77,9 @@ public class CircuitSignalInfo {
                 if (NamespaceHelper.isHierarchical(result)) {
                     HierarchyReferenceManager refManager = circuit.getReferenceManager();
                     NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(circuit.getRoot());
-                    NameManager nameManagerer = refManager.getNameManager(namespaceProvider);
+                    NameManager nameManager = refManager.getNameManager(namespaceProvider);
                     String candidateName = NamespaceHelper.flattenReference(result);
-                    result = nameManagerer.getDerivedName(contact, candidateName);
+                    result = nameManager.getDerivedName(contact, candidateName);
                 }
                 contactSignalMap.put(contact, result);
             }
