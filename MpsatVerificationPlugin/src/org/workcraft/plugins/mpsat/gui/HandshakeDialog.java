@@ -6,6 +6,7 @@ import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
+import org.workcraft.plugins.mpsat.utils.ReachUtils;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.utils.GuiUtils;
@@ -28,6 +29,12 @@ public class HandshakeDialog extends ModalDialog<Stg> {
     private static final String ACK_NAMES_REPLACEMENT =
             "/* insert acknowledgement signal names here */"; // For example: "ack1", "ack2"
 
+    private static final String CHECK_ASSERT_ENABLED_REPLACEMENT =
+            "/* insert check assert enabled flag here */"; // true or false
+
+    private static final String CHECK_WITHDRAW_ENABLED_REPLACEMENT =
+            "/* insert check withdraw enabled flag here */"; // true or false
+
     private static final String REQ_INITIALLY_ASSERTED_REPLACEMENT =
             "/* insert request initial assertion state here */"; // true or false
 
@@ -45,6 +52,9 @@ public class HandshakeDialog extends ModalDialog<Stg> {
             "    REQ_NAMES = {" + REQ_NAMES_REPLACEMENT + "},\n" +
             "    // Non-empty set of acknowledgement signal names.\n" +
             "    ACK_NAMES = {" + ACK_NAMES_REPLACEMENT + "},\n" +
+            "    // If true then check assertion/withdrawal receptiveness.\n" +
+            "    CHECK_ASSERT_ENABLED = " + CHECK_ASSERT_ENABLED_REPLACEMENT + ",\n" +
+            "    CHECK_WITHDRAW_ENABLED = " + CHECK_WITHDRAW_ENABLED_REPLACEMENT + ",\n" +
             "    // The following two values specify the initial state of the handshake.\n" +
             "    REQ_INITIALLY_ASSERTED = " + REQ_INITIALLY_ASSERTED_REPLACEMENT + ",\n" +
             "    ACK_INITIALLY_ASSERTED = " + ACK_INITIALLY_ASSERTED_REPLACEMENT + ",\n" +
@@ -102,11 +112,13 @@ public class HandshakeDialog extends ModalDialog<Stg> {
             "    |\n" +
             "    ~req &  ack & (en_req | en_ack_assert)\n" +
             "    |\n" +
-            "    // If the handshake is active, check that the appropriate acknowledgement edge is enabled immediately after request changes.\n" +
-            "    active & (req & ~ack & ~en_ack_assert | ~req & ack & ~en_ack_withdraw)\n" +
+            "    // If the handshake is active, check that the appropriate acknowledgement edge\n" +
+            "    // is enabled after request changes, unless this check is disabled.\n" +
+            "    active & (CHECK_ASSERT_ENABLED & req & ~ack & ~en_ack_assert | CHECK_WITHDRAW_ENABLED & ~req & ack & ~en_ack_withdraw)\n" +
             "    |\n" +
-            "    // If the h/s is passive, check that the appropriate request edge is enabled immediately after acknowledgement changes.\n" +
-            "    ~active & (req & ack & ~en_req_withdraw | ~req & ~ack & ~en_req_assert)" +
+            "    // If the handshake is passive, check that the appropriate request edge\n" +
+            "    // is enabled after acknowledgement changes, unless this check is disabled.\n" +
+            "    ~active & (CHECK_WITHDRAW_ENABLED & req & ack & ~en_req_withdraw | CHECK_ASSERT_ENABLED & ~req & ~ack & ~en_req_assert)\n" +
             "}\n";
 
     private static final String REQ_LABEL = "REQ";
@@ -124,7 +136,9 @@ public class HandshakeDialog extends ModalDialog<Stg> {
     private JRadioButton stateReq1Ack0RadioButton;
     private JRadioButton stateReq1Ack1RadioButton;
     private JRadioButton stateReq0Ack1RadioButton;
-    private JCheckBox inversionCheckbox;
+    private JCheckBox checkAssertEnabledCheckbox;
+    private JCheckBox checkWithdrawEnabledCheckbox;
+    private JCheckBox allowInversionCheckbox;
 
     private static class ListMultipleSelectionModel extends DefaultListSelectionModel {
 
@@ -225,12 +239,6 @@ public class HandshakeDialog extends ModalDialog<Stg> {
         JScrollPane ackScroll = new JScrollPane();
         signalPanel.add(GuiUtils.createLabeledComponent(ackScroll, ACK_LABEL + ":", BorderLayout.NORTH));
 
-        passiveRadioButton.addChangeListener(l -> {
-            reqScroll.setViewportView(getReqList());
-            ackScroll.setViewportView(getAckList());
-        });
-        passiveRadioButton.setSelected(true);
-
         JPanel statePanel = new JPanel(GuiUtils.createFlowLayout());
         ButtonGroup stateButtonGroup = new ButtonGroup();
 
@@ -256,11 +264,29 @@ public class HandshakeDialog extends ModalDialog<Stg> {
 
         stateReq0Ack0RadioButton.setSelected(true);
 
-        inversionCheckbox = new JCheckBox(" Allow arbitrary inversions of signals");
+        JPanel receptivenessPanel = new JPanel(GuiUtils.createGridLayout(2, 1));
+        checkAssertEnabledCheckbox = new JCheckBox();
+        checkAssertEnabledCheckbox.setSelected(true);
+        checkWithdrawEnabledCheckbox = new JCheckBox();
+        checkWithdrawEnabledCheckbox.setSelected(true);
+        receptivenessPanel.add(checkAssertEnabledCheckbox);
+        receptivenessPanel.add(checkWithdrawEnabledCheckbox);
+
+        allowInversionCheckbox = new JCheckBox(" Allow arbitrary inversions of signals");
+        receptivenessPanel.add(allowInversionCheckbox);
 
         JPanel optionsPanel = new JPanel(GuiUtils.createBorderLayout());
-        optionsPanel.add(GuiUtils.createBorderedComponent(statePanel, "Initial state: "), BorderLayout.NORTH);
-        optionsPanel.add(inversionCheckbox, BorderLayout.SOUTH);
+        optionsPanel.add(GuiUtils.createBorderedComponent(receptivenessPanel, "Receptiveness check:"), BorderLayout.NORTH);
+        optionsPanel.add(GuiUtils.createBorderedComponent(statePanel, "Initial state: "), BorderLayout.CENTER);
+        optionsPanel.add(allowInversionCheckbox, BorderLayout.SOUTH);
+
+        passiveRadioButton.addChangeListener(l -> {
+            reqScroll.setViewportView(getReqList());
+            ackScroll.setViewportView(getAckList());
+            checkAssertEnabledCheckbox.setText(getCheckAssertEnabledText());
+            checkWithdrawEnabledCheckbox.setText(getCheckWithdrawEnabledText());
+        });
+        passiveRadioButton.setSelected(true);
 
         result.add(typePanel, BorderLayout.NORTH);
         result.add(signalPanel, BorderLayout.CENTER);
@@ -274,9 +300,11 @@ public class HandshakeDialog extends ModalDialog<Stg> {
         String reach = HANDSHAKE_REACH
                 .replace(REQ_NAMES_REPLACEMENT, getQuotedSelectedItems(getReqList()))
                 .replace(ACK_NAMES_REPLACEMENT, getQuotedSelectedItems(getAckList()))
+                .replace(CHECK_ASSERT_ENABLED_REPLACEMENT, getCheckAssertEnabledFlag())
+                .replace(CHECK_WITHDRAW_ENABLED_REPLACEMENT, getCheckWithdrawEnabledFlag())
                 .replace(REQ_INITIALLY_ASSERTED_REPLACEMENT, getReqAssertionState())
                 .replace(ACK_INITIALLY_ASSERTED_REPLACEMENT, getAckAssertionState())
-                .replace(ALLOW_INVERSIONS_REPLACEMENT, getInversionPermission());
+                .replace(ALLOW_INVERSIONS_REPLACEMENT, getAllowInversionFlag());
 
         return new VerificationParameters("Handshake protocol",
                 VerificationMode.STG_REACHABILITY, 0,
@@ -293,16 +321,36 @@ public class HandshakeDialog extends ModalDialog<Stg> {
         return passiveRadioButton.isSelected() ? outputList : inputList;
     }
 
+    private String getCheckAssertEnabledText() {
+        String first = passiveRadioButton.isSelected() ? REQ_LABEL + ASSERTED_LABEL : ACK_LABEL + ASSERTED_LABEL;
+        String second = passiveRadioButton.isSelected() ? ACK_LABEL + WITHDRAWN_LABEL : REQ_LABEL + ASSERTED_LABEL;
+        return  first +  " must be enabled after " + second;
+    }
+
+    private String getCheckWithdrawEnabledText() {
+        String first = passiveRadioButton.isSelected() ? REQ_LABEL + WITHDRAWN_LABEL : ACK_LABEL + WITHDRAWN_LABEL;
+        String second = passiveRadioButton.isSelected() ? ACK_LABEL + ASSERTED_LABEL : REQ_LABEL + WITHDRAWN_LABEL;
+        return  first +  " must be enabled after " + second;
+    }
+
+    private String getCheckAssertEnabledFlag() {
+        return ReachUtils.getBooleanAsString(checkAssertEnabledCheckbox.isSelected());
+    }
+
+    private String getCheckWithdrawEnabledFlag() {
+        return ReachUtils.getBooleanAsString(checkWithdrawEnabledCheckbox.isSelected());
+    }
+
     private String getReqAssertionState() {
-        return stateReq1Ack0RadioButton.isSelected() || stateReq1Ack1RadioButton.isSelected() ? "true" : "false";
+        return ReachUtils.getBooleanAsString(stateReq1Ack0RadioButton.isSelected() || stateReq1Ack1RadioButton.isSelected());
     }
 
     private String getAckAssertionState() {
-        return stateReq0Ack1RadioButton.isSelected() || stateReq1Ack1RadioButton.isSelected() ? "true" : "false";
+        return ReachUtils.getBooleanAsString(stateReq0Ack1RadioButton.isSelected() || stateReq1Ack1RadioButton.isSelected());
     }
 
-    private String getInversionPermission() {
-        return inversionCheckbox.isSelected() ? "true" : "false";
+    private String getAllowInversionFlag() {
+        return ReachUtils.getBooleanAsString(allowInversionCheckbox.isSelected());
     }
 
     private void updateOkEnableness() {

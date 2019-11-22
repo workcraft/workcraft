@@ -396,4 +396,8 @@ public class ReachUtils {
         return REACH_MUTEX_IMPLEMENTABILITY_STRICT;
     }
 
+    public static String getBooleanAsString(boolean value) {
+        return value ? "true" : "false";
+    }
+
 }
