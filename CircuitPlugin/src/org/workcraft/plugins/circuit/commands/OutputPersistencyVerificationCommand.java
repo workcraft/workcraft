@@ -9,7 +9,7 @@ public class OutputPersistencyVerificationCommand extends CombinedVerificationCo
 
     @Override
     public String getDisplayName() {
-        return "Output persistency [MPSat]";
+        return "Output persistency (environment without dummies) [MPSat]";
     }
 
     @Override

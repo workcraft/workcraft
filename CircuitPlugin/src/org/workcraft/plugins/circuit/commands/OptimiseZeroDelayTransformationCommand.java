@@ -13,6 +13,8 @@ import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
+import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.DialogUtils;
@@ -20,9 +22,12 @@ import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
+import java.io.File;
 import java.util.*;
 
 public class OptimiseZeroDelayTransformationCommand extends AbstractTransformationCommand {
+
+    public static final String TITLE = "Zero delay optimisation";
 
     @Override
     public String getDisplayName() {
@@ -55,19 +60,56 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
             }
             return null;
         }
-        if (!checkSpeedIndependence(we, MpsatUtils.getToolchainDescription(we.getTitle()))) {
-            DialogUtils.showError("Conformantion and output persistency"
-                    + " must hold before optimising zero delay components.");
-
+        boolean checkConformation = true;
+        boolean checkPersistency = true;
+        File envFile = circuit.getMathModel().getEnvironmentFile();
+        Stg envStg = StgUtils.loadStg(envFile);
+        if (envStg == null) {
+            String msg = "Environment STG is missing, so conformation cannot be checked during optimisation.\n\n" +
+                    "Proceed checking output persistency only?";
+            if (!DialogUtils.showConfirmWarning(msg, TITLE, true)) {
+                return null;
+            }
+            checkConformation = false;
+        } else {
+            if (!VerificationUtils.checkInterfaceConstrains(we, true)) {
+                return null;
+            }
+            if (!envStg.getDummyTransitions().isEmpty()) {
+                String msg = "Environment STG has dummies, so output persistency cannot be checked during optimisation.\n\n" +
+                        "Proceed checking conformation only?";
+                if (!DialogUtils.showConfirmWarning(msg, TITLE, true)) {
+                    return null;
+                }
+                checkPersistency = false;
+            }
+        }
+        String description = MpsatUtils.getToolchainDescription(we.getTitle());
+        Boolean isGoodInitial = checkSpeedIndependence(we, description, checkConformation, checkPersistency);
+        if (isGoodInitial == null) {
             return null;
         }
-        we.saveMemento();
+        if (!isGoodInitial) {
+            String msg = (checkConformation && checkPersistency
+                    ? "Conformantion and output persistency"
+                    : checkConformation ? "Conformation" : "Output persistence")
+                    + " must hold before optimising zero delay components.";
+            DialogUtils.showError(msg);
+            return null;
+        }
+        we.captureMemento();
         Collection<String> refs = new ArrayList<>();
         for (VisualFunctionComponent component : components) {
             if (component.getIsZeroDelay()) {
                 component.setIsZeroDelay(false);
                 String ref = circuit.getMathReference(component);
-                if (checkSpeedIndependence(we, MpsatUtils.getToolchainDescription("zero delay '" + ref + "'"))) {
+                String descriptionIteration = MpsatUtils.getToolchainDescription("zero delay '" + ref + "'");
+                Boolean isGoodIteration = checkSpeedIndependence(we, descriptionIteration, checkConformation, checkPersistency);
+                if (isGoodIteration == null) {
+                    we.cancelMemento();
+                    return null;
+                }
+                if (isGoodIteration) {
                     refs.add(ref);
                 } else {
                     component.setIsZeroDelay(true);
@@ -81,22 +123,22 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
                 DialogUtils.showInfo("All zero delay assumptions for the selected components are necessary.");
             }
         } else {
+            we.saveMemento();
             DialogUtils.showInfo(ReferenceHelper.getTextWithReferences("Zero delay assumption is removed for component", refs));
         }
         return null;
     }
 
     private boolean checkPrerequisites(WorkspaceEntry we) {
-        return isApplicableTo(we)
-                && VerificationUtils.checkCircuitHasComponents(we)
-                && VerificationUtils.checkInterfaceInitialState(we)
-                && VerificationUtils.checkInterfaceConstrains(we, true);
+        return isApplicableTo(we) && VerificationUtils.checkInterfaceInitialState(we);
     }
 
-    private Boolean checkSpeedIndependence(WorkspaceEntry we, String description) {
+    private Boolean checkSpeedIndependence(WorkspaceEntry we, String description,
+            boolean checkConformation, boolean checkPersistence) {
+
         Framework framework = Framework.getInstance();
         TaskManager manager = framework.getTaskManager();
-        CheckTask task = new CheckTask(we, true, false, true);
+        CheckTask task = new CheckTask(we, checkConformation, false, checkPersistence);
         Result<? extends VerificationChainOutput> result = manager.execute(task, description);
         return MpsatUtils.getChainOutcome(result);
     }
