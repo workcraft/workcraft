@@ -17,52 +17,43 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class AssertionDialog extends ModalDialog<MpsatPresetManager> {
 
-    private static VerificationParameters autoSavedProperty = null;
+    private static VerificationParameters autoPreservedParameters = null;
 
+    private PresetManagerPanel<VerificationParameters> presetPanel;
     private JTextArea propertyText;
 
     public AssertionDialog(Window owner, MpsatPresetManager presetManager) {
         super(owner, "Custom assertion", presetManager);
+        initialise();
+    }
+
+    private void initialise() {
+        presetPanel.selectFirst();
+        propertyText.setCaretPosition(0);
+        propertyText.requestFocus();
     }
 
     @Override
     public JPanel createControlsPanel() {
         JPanel result = super.createControlsPanel();
         result.setLayout(GuiUtils.createBorderLayout());
-
-        PresetManagerPanel<VerificationParameters> presetPanel = createPresetPanel();
-
+        presetPanel = createPresetPanel();
         result.add(presetPanel, BorderLayout.NORTH);
         result.add(createAssertionPanel(), BorderLayout.CENTER);
-
-        presetPanel.selectFirst();
-
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowOpened(WindowEvent e) {
-                if (propertyText.getText().isEmpty()) {
-                    propertyText.setText("\n\n");
-                }
-                propertyText.setCaretPosition(0);
-                propertyText.requestFocus();
-            }
-        });
-
         return result;
     }
 
     private PresetManagerPanel<VerificationParameters> createPresetPanel() {
         ArrayList<Preset<VerificationParameters>> builtInPresets = new ArrayList<>();
-        if (autoSavedProperty != null) {
-            builtInPresets.add(new Preset<>("Auto-saved assertion",
-                    autoSavedProperty, true));
+        if (autoPreservedParameters != null) {
+            builtInPresets.add(new Preset<>("Auto-preserved configuration",
+                    autoPreservedParameters, true));
         }
 
         SettingsToControlsMapper<VerificationParameters> guiMapper = new SettingsToControlsMapper<VerificationParameters>() {
@@ -84,6 +75,7 @@ public class AssertionDialog extends ModalDialog<MpsatPresetManager> {
         propertyText = new JTextArea();
         propertyText.setMargin(SizeHelper.getTextMargin());
         propertyText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
+        propertyText.setText(String.join("", Collections.nCopies(4, "\n")));
         propertyText.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -114,6 +106,8 @@ public class AssertionDialog extends ModalDialog<MpsatPresetManager> {
 
     private void applySettingsToControls(VerificationParameters settings) {
         propertyText.setText(settings.getExpression());
+        propertyText.setCaretPosition(0);
+        propertyText.requestFocus();
     }
 
     private VerificationParameters getSettingsFromControls() {
@@ -124,7 +118,7 @@ public class AssertionDialog extends ModalDialog<MpsatPresetManager> {
     @Override
     public boolean okAction() {
         if (super.okAction()) {
-            autoSavedProperty = getSettings();
+            autoPreservedParameters = getSettings();
             return true;
         }
         return false;

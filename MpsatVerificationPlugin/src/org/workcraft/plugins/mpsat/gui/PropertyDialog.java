@@ -21,17 +21,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
 
     private static final int DEFAULT_ALL_SOLUTION_LIMIT = 10;
 
-    private static VerificationParameters autoSavedProperty = null;
+    private static VerificationParameters autoPreservedParameters = null;
 
+    private PresetManagerPanel<VerificationParameters> presetPanel;
     private JComboBox<VerificationMode> modeCombo;
     private JTextField solutionLimitText;
     private JTextArea propertyText;
@@ -43,6 +43,13 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
 
     public PropertyDialog(Window owner, MpsatPresetManager presetManager) {
         super(owner, "Custom property", presetManager);
+        initialise();
+    }
+
+    private void initialise() {
+        presetPanel.selectFirst();
+        propertyText.setCaretPosition(0);
+        propertyText.requestFocus();
     }
 
     @Override
@@ -52,34 +59,19 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
                 new double[]{TableLayout.FILL},
                 new double[]{TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL}));
 
-        PresetManagerPanel<VerificationParameters> presetPanel = createPresetPanel();
-
+        presetPanel = createPresetPanel();
         result.add(presetPanel, new TableLayoutConstraints(0, 0));
         result.add(createOptionsPanel(), new TableLayoutConstraints(0, 1));
         result.add(createPropertyPanel(), new TableLayoutConstraints(0, 2));
-
-        presetPanel.selectFirst();
-
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowOpened(WindowEvent e) {
-                if (propertyText.getText().isEmpty()) {
-                    propertyText.setText("\n\n");
-                }
-                propertyText.setCaretPosition(0);
-                propertyText.requestFocus();
-            }
-        });
-
         return result;
     }
 
     private PresetManagerPanel<VerificationParameters> createPresetPanel() {
         ArrayList<Preset<VerificationParameters>> builtInPresets = new ArrayList<>();
 
-        if (autoSavedProperty != null) {
-            builtInPresets.add(new Preset<>("Auto-saved property",
-                    autoSavedProperty, true));
+        if (autoPreservedParameters != null) {
+            builtInPresets.add(new Preset<>("Auto-preserved configuration",
+                    autoPreservedParameters, true));
         }
 
         MpsatPresetManager presetManager = getUserData();
@@ -168,6 +160,7 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
         propertyText = new JTextArea();
         propertyText.setMargin(SizeHelper.getTextMargin());
         propertyText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
+        propertyText.setText(String.join("", Collections.nCopies(6, "\n")));
         propertyText.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -231,12 +224,15 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
             break;
         }
 
-        propertyText.setText(settings.getExpression());
         if (settings.getInversePredicate()) {
             unsatisfiableRadioButton.setSelected(true);
         } else {
             satisfiableRadioButton.setSelected(true);
         }
+
+        propertyText.setText(settings.getExpression());
+        propertyText.setCaretPosition(0);
+        propertyText.requestFocus();
     }
 
     private VerificationParameters getSettingsFromControls() {
@@ -266,7 +262,7 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
     @Override
     public boolean okAction() {
         if (super.okAction()) {
-            autoSavedProperty = getSettings();
+            autoPreservedParameters = getSettings();
             return true;
         }
         return false;

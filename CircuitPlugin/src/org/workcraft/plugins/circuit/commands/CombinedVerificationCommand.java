@@ -62,7 +62,22 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand {
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         File envFile = circuit.getEnvironmentFile();
         Stg envStg = StgUtils.loadStg(envFile);
-        if (envStg == null) {
+        if (envStg != null) {
+            boolean noDummies = envStg.getDummyTransitions().isEmpty();
+            if (!noDummies && checkPersistency) {
+                if (!checkConformation && !checkDeadlock) {
+                    DialogUtils.showError("Output persistency can currently be checked only for environment STGs without dummies.");
+                    return null;
+                } else {
+                    String msg = "Output persistency can currently be checked only for environment STGs without dummies.\n\n" +
+                            "Proceed with verification of other properties?";
+                    if (!DialogUtils.showConfirmWarning(msg, "Verification", true)) {
+                        return null;
+                    }
+                    checkPersistency = false;
+                }
+            }
+        } else {
             String messagePrefix = "";
             if (envFile != null) {
                 messagePrefix = "Cannot read an STG model from the file:\n" + envFile.getAbsolutePath() + "\n\n";
