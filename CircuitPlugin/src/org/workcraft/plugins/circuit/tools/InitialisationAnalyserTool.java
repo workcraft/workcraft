@@ -150,7 +150,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     private void insertReset(final GraphEditor editor, boolean isActiveLow) {
         VisualCircuit circuit = (VisualCircuit) editor.getModel();
         editor.getWorkspaceEntry().saveMemento();
-        ResetUtils.insertReset(circuit, CircuitSettings.getResetPort(), isActiveLow);
+        ResetUtils.insertReset(circuit, isActiveLow);
         editor.requestFocus();
     }
 

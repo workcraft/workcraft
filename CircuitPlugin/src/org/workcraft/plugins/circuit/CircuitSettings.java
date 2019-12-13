@@ -60,7 +60,8 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyVerilogAssignDelay = prefix + ".verilogAssignDelay";
     private static final String keyBusSuffix = prefix + ".busSuffix";
     // Reset
-    private static final String keyResetPort = prefix + ".resetPort";
+    private static final String keyResetActiveHighPort = prefix + ".resetActiveHighPort";
+    private static final String keyResetActiveLowPort = prefix + ".resetActiveLowPort";
     private static final String keySetPin = prefix + ".setPin";
     private static final String keyClearPin = prefix + ".clearPin";
     // Scan
@@ -92,7 +93,8 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String defaultBusSuffix = "__$";
     private static final String defaultMutexData = "MUTEX ((r1, g1), (r2, g2))";
     // Reset
-    private static final String defaultResetPort = "reset";
+    private static final String defaultResetActiveHighPort = "rst";
+    private static final String defaultResetActiveLowPort = "rst_n";
     private static final String defaultSetPin = "S";
     private static final String defaultClearPin = "R";
     // Scan
@@ -123,7 +125,8 @@ public class CircuitSettings extends AbstractModelSettings {
     private static String busSuffix = defaultBusSuffix;
     private static String mutexData = defaultMutexData;
     // Reset
-    private static String resetPort = defaultResetPort;
+    private static String resetActiveHighPort = defaultResetActiveHighPort;
+    private static String resetActiveLowPort = defaultResetActiveLowPort;
     private static String setPin = defaultSetPin;
     private static String clearPin = defaultClearPin;
     // Scan
@@ -235,20 +238,25 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::setBusSuffix,
                 CircuitSettings::getBusSuffix));
 
-        properties.add(PropertyHelper.createSeparatorProperty("Initialisation and auxiliary gates for reset logic"));
+        properties.add(PropertyHelper.createSeparatorProperty("Initialisation"));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "Reset port name",
-                CircuitSettings::setResetPort,
-                CircuitSettings::getResetPort));
+                PropertyHelper.BULLET_PREFIX + "Active-high reset port name",
+                CircuitSettings::setResetActiveHighPort,
+                CircuitSettings::getResetActiveHighPort));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "Initialisation SET pin name",
+                PropertyHelper.BULLET_PREFIX + "Active-low reset port name",
+                CircuitSettings::setResetActiveLowPort,
+                CircuitSettings::getResetActiveLowPort));
+
+        properties.add(new PropertyDeclaration<>(String.class,
+                PropertyHelper.BULLET_PREFIX + "SET pin name",
                 CircuitSettings::setSetPin,
                 CircuitSettings::getSetPin));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "Initialisation CLEAR pin name",
+                PropertyHelper.BULLET_PREFIX + "CLEAR pin name",
                 CircuitSettings::setClearPin,
                 CircuitSettings::getClearPin));
 
@@ -334,7 +342,8 @@ public class CircuitSettings extends AbstractModelSettings {
         setVerilogAssignDelay(config.getBoolean(keyVerilogAssignDelay, defaultVerilogAssignDelay));
         setBusSuffix(config.getString(keyBusSuffix, defaultBusSuffix));
         // Reset
-        setResetPort(config.getString(keyResetPort, defaultResetPort));
+        setResetActiveHighPort(config.getString(keyResetActiveHighPort, defaultResetActiveHighPort));
+        setResetActiveLowPort(config.getString(keyResetActiveLowPort, defaultResetActiveLowPort));
         setSetPin(config.getString(keySetPin, defaultSetPin));
         setClearPin(config.getString(keyClearPin, defaultClearPin));
         // Scan
@@ -369,7 +378,8 @@ public class CircuitSettings extends AbstractModelSettings {
         config.setBoolean(keyVerilogAssignDelay, getVerilogAssignDelay());
         config.set(keyBusSuffix, getBusSuffix());
         // reset
-        config.set(keyResetPort, getResetPort());
+        config.set(keyResetActiveHighPort, getResetActiveHighPort());
+        config.set(keyResetActiveLowPort, getResetActiveLowPort());
         config.set(keySetPin, getSetPin());
         config.set(keyClearPin, getClearPin());
         // Scan
@@ -523,12 +533,20 @@ public class CircuitSettings extends AbstractModelSettings {
         busSuffix = value;
     }
 
-    public static String getResetPort() {
-        return resetPort;
+    public static String getResetActiveHighPort() {
+        return resetActiveHighPort;
     }
 
-    public static void setResetPort(String value) {
-        resetPort = value;
+    public static void setResetActiveHighPort(String value) {
+        resetActiveHighPort = value;
+    }
+
+    public static String getResetActiveLowPort() {
+        return resetActiveLowPort;
+    }
+
+    public static void setResetActiveLowPort(String value) {
+        resetActiveLowPort = value;
     }
 
     public static String getSetPin() {
