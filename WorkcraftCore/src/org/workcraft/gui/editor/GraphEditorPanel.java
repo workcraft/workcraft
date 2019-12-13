@@ -148,7 +148,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         view.addListener(grid);
         grid.addListener(ruler);
 
-        centerButton = new ActionButton(MainWindowActions.VIEW_PAN_CENTER, "");
+        centerButton = new ActionButton(MainWindowActions.VIEW_PAN_CENTER);
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
         centerButton.addScriptedActionListener(mainWindow.getDefaultActionListener());

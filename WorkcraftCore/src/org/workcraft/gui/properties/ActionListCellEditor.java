@@ -1,6 +1,7 @@
 package org.workcraft.gui.properties;
 
 import org.workcraft.gui.actions.Action;
+import org.workcraft.gui.actions.ActionUtils;
 
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
@@ -11,17 +12,19 @@ public class ActionListCellEditor extends AbstractCellEditor implements TableCel
 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-        JPanel actionPanel = new JPanel();
+        JPanel result = new JPanel(new GridLayout());
+        result.setFocusable(false);
         if (value instanceof ActionList) {
             ActionList actions = (ActionList) value;
-            actionPanel.setLayout(new GridLayout(1, actions.size()));
             for (Action action : actions) {
-                JButton actionButton = new JButton(action.getText());
-                actionButton.addActionListener(e -> action.run());
-                actionPanel.add(actionButton);
+                JButton button = new JButton(action.getTitle());
+                button.setToolTipText(ActionUtils.getActionTooltip(action));
+                button.setFocusable(false);
+                button.addActionListener(e -> action.run());
+                result.add(button);
             }
         }
-        return actionPanel;
+        return result;
     }
 
     @Override

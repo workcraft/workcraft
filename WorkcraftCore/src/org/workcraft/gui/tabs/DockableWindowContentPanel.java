@@ -22,7 +22,7 @@ public class DockableWindowContentPanel extends JPanel {
         public static final int MAXIMIZE_ACTION = 3;
 
         public ViewAction(int windowID, int actionType) {
-            super(() -> {
+            super(null, () -> {
                 MainWindow mainWindow = Framework.getInstance().getMainWindow();
                 switch (actionType) {
                 case CLOSE_ACTION:

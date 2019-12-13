@@ -7,11 +7,14 @@ import java.awt.event.KeyEvent;
 public class ActionUtils {
 
     public static String getActionTooltip(Action action) {
-        String result = action.getText();
-        KeyStroke keystroke = action.getKeyStroke();
-        if (keystroke != null) {
-            result += " (" + getKeystrokeString(keystroke) + ")";
+        String result = action.getDescription();
+        if (result == null) {
+            result = action.getTitle();
+            KeyStroke keystroke = action.getKeyStroke();
+            if (keystroke != null) {
+                result += " (" + getKeystrokeString(keystroke) + ")";
 
+            }
         }
         return result;
     }

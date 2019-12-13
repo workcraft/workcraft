@@ -35,22 +35,20 @@ public class MainWindowActions {
     }
 
     public static final Action CREATE_WORK_ACTION = new Action("Create work...",
-            KeyStroke.getKeyStroke(KeyEvent.VK_N, DesktopApi.getMenuKeyMask()),
             () -> {
                 try {
                     Framework.getInstance().getMainWindow().createWork();
                 } catch (OperationCancelledException e) {
                 }
-            });
+            }, KeyStroke.getKeyStroke(KeyEvent.VK_N, DesktopApi.getMenuKeyMask()));
 
     public static final Action OPEN_WORK_ACTION = new Action("Open work...",
-            KeyStroke.getKeyStroke(KeyEvent.VK_O, DesktopApi.getMenuKeyMask()),
             () -> {
                 try {
                     Framework.getInstance().getMainWindow().openWork();
                 } catch (OperationCancelledException e) {
                 }
-            });
+            }, KeyStroke.getKeyStroke(KeyEvent.VK_O, DesktopApi.getMenuKeyMask()));
 
     public static final Action MERGE_WORK_ACTION = new Action("Merge work...",
             () -> {
@@ -61,13 +59,12 @@ public class MainWindowActions {
             });
 
     public static final Action SAVE_WORK_ACTION = new Action("Save work",
-            KeyStroke.getKeyStroke(KeyEvent.VK_S, DesktopApi.getMenuKeyMask()),
             () -> {
                 try {
                     Framework.getInstance().getMainWindow().saveWork();
                 } catch (OperationCancelledException e) {
                 }
-            });
+            }, KeyStroke.getKeyStroke(KeyEvent.VK_S, DesktopApi.getMenuKeyMask()));
 
     public static final Action SAVE_WORK_AS_ACTION = new Action("Save work as...",
             () -> {
@@ -78,13 +75,12 @@ public class MainWindowActions {
             });
 
     public static final Action CLOSE_ACTIVE_EDITOR_ACTION = new Action("Close active work",
-            KeyStroke.getKeyStroke(KeyEvent.VK_F4, DesktopApi.getMenuKeyMask()),
             () -> {
                 try {
                     Framework.getInstance().getMainWindow().closeActiveEditor();
                 } catch (OperationCancelledException e) {
                 }
-            });
+            }, KeyStroke.getKeyStroke(KeyEvent.VK_F4, DesktopApi.getMenuKeyMask()));
 
     public static final Action CLOSE_ALL_EDITORS_ACTION = new Action("Close all works",
             () -> {
@@ -102,49 +98,48 @@ public class MainWindowActions {
             });
 
     public static final Action EXIT_ACTION = new Action("Exit",
-            KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK),
-            () -> Framework.getInstance().shutdown());
+            () -> Framework.getInstance().shutdown(),
+            KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
 
     public static final Action IMPORT_ACTION = new Action("Import...",
             () -> Framework.getInstance().getMainWindow().importFrom());
 
     public static final Action EDIT_UNDO_ACTION = new Action("Undo",
-            KeyStroke.getKeyStroke(KeyEvent.VK_Z, DesktopApi.getMenuKeyMask()),
-            () -> Framework.getInstance().getMainWindow().undo());
+            () -> Framework.getInstance().getMainWindow().undo(),
+            KeyStroke.getKeyStroke(KeyEvent.VK_Z, DesktopApi.getMenuKeyMask()));
 
     public static final Action EDIT_REDO_ACTION = new Action("Redo",
-            KeyStroke.getKeyStroke(KeyEvent.VK_Z, DesktopApi.getMenuKeyMask() | ActionEvent.SHIFT_MASK),
-            () -> Framework.getInstance().getMainWindow().redo());
+            () -> Framework.getInstance().getMainWindow().redo(),
+            KeyStroke.getKeyStroke(KeyEvent.VK_Z, DesktopApi.getMenuKeyMask() | ActionEvent.SHIFT_MASK));
 
     public static final Action EDIT_CUT_ACTION = new Action("Cut",
-            KeyStroke.getKeyStroke(KeyEvent.VK_X, DesktopApi.getMenuKeyMask()),
-            () -> Framework.getInstance().getMainWindow().cut());
+            () -> Framework.getInstance().getMainWindow().cut(),
+            KeyStroke.getKeyStroke(KeyEvent.VK_X, DesktopApi.getMenuKeyMask()));
 
     public static final Action EDIT_COPY_ACTION = new Action("Copy",
-            KeyStroke.getKeyStroke(KeyEvent.VK_C, DesktopApi.getMenuKeyMask()),
-            () -> Framework.getInstance().getMainWindow().copy());
+            () -> Framework.getInstance().getMainWindow().copy(),
+            KeyStroke.getKeyStroke(KeyEvent.VK_C, DesktopApi.getMenuKeyMask()));
 
     public static final Action EDIT_PASTE_ACTION = new Action("Paste",
-            KeyStroke.getKeyStroke(KeyEvent.VK_V, DesktopApi.getMenuKeyMask()),
             () -> {
                 GraphEditorPanel editor = Framework.getInstance().getMainWindow().getCurrentEditor();
                 if (!editor.hasFocus()) {
                     editor.getWorkspaceEntry().setPastePosition(null);
                 }
                 Framework.getInstance().getMainWindow().paste();
-            });
+            }, KeyStroke.getKeyStroke(KeyEvent.VK_V, DesktopApi.getMenuKeyMask()));
 
     public static final Action EDIT_DELETE_ACTION = new Action("Delete",
-            KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0),
-            () -> Framework.getInstance().getMainWindow().delete());
+            () -> Framework.getInstance().getMainWindow().delete(),
+            KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
 
     public static final Action EDIT_SELECT_ALL_ACTION = new Action("Select all",
-            KeyStroke.getKeyStroke(KeyEvent.VK_A, DesktopApi.getMenuKeyMask()),
-            () -> Framework.getInstance().getMainWindow().selectAll());
+            () -> Framework.getInstance().getMainWindow().selectAll(),
+            KeyStroke.getKeyStroke(KeyEvent.VK_A, DesktopApi.getMenuKeyMask()));
 
     public static final Action EDIT_SELECT_INVERSE_ACTION = new Action("Inverse selection",
-            KeyStroke.getKeyStroke(KeyEvent.VK_I, DesktopApi.getMenuKeyMask()),
-            () -> Framework.getInstance().getMainWindow().selectInverse());
+            () -> Framework.getInstance().getMainWindow().selectInverse(),
+            KeyStroke.getKeyStroke(KeyEvent.VK_I, DesktopApi.getMenuKeyMask()));
 
     public static final Action EDIT_SELECT_NONE_ACTION = new Action("Deselect",
             () -> Framework.getInstance().getMainWindow().selectNone());
@@ -153,85 +148,76 @@ public class MainWindowActions {
             () -> Framework.getInstance().getMainWindow().editSettings());
 
     public static final Action VIEW_ZOOM_IN = new Action("Zoom in",
-            KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, DesktopApi.getMenuKeyMask()),
             () -> {
                 final GraphEditor editor = getCurrentEditor();
                 if (editor != null) {
                     editor.zoomIn();
                 }
-            });
+            }, KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, DesktopApi.getMenuKeyMask()));
 
     public static final Action VIEW_ZOOM_OUT = new Action("Zoom out",
-            KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, DesktopApi.getMenuKeyMask()),
             () -> {
                 final GraphEditor editor = getCurrentEditor();
                 if (editor != null) {
                     editor.zoomOut();
                 }
-            });
+            }, KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, DesktopApi.getMenuKeyMask()));
 
     public static final Action VIEW_ZOOM_DEFAULT = new Action("Default zoom",
-            KeyStroke.getKeyStroke(KeyEvent.VK_0, DesktopApi.getMenuKeyMask()),
             () -> {
                 final GraphEditor editor = getCurrentEditor();
                 if (editor != null) {
                     editor.zoomDefault();
                 }
-            });
+            }, KeyStroke.getKeyStroke(KeyEvent.VK_0, DesktopApi.getMenuKeyMask()));
 
     public static final Action VIEW_PAN_CENTER = new Action("Center selection",
-            KeyStroke.getKeyStroke(KeyEvent.VK_T, DesktopApi.getMenuKeyMask()),
             () -> {
                 final GraphEditor editor = getCurrentEditor();
                 if (editor != null) {
                     editor.panCenter();
                 }
-            });
+            }, KeyStroke.getKeyStroke(KeyEvent.VK_T, DesktopApi.getMenuKeyMask()));
 
     public static final Action VIEW_ZOOM_FIT = new Action("Fit selection to screen",
-            KeyStroke.getKeyStroke(KeyEvent.VK_F, DesktopApi.getMenuKeyMask()),
             () -> {
                 final GraphEditor editor = getCurrentEditor();
                 if (editor != null) {
                     editor.zoomFit();
                 }
-            });
+            }, KeyStroke.getKeyStroke(KeyEvent.VK_F, DesktopApi.getMenuKeyMask()));
 
     public static final Action VIEW_PAN_LEFT = new Action("Pan left",
-            KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, DesktopApi.getMenuKeyMask()),
             () -> {
                 final GraphEditor editor = getCurrentEditor();
                 if (editor != null) {
                     editor.panLeft();
                 }
-            });
+            }, KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, DesktopApi.getMenuKeyMask()));
 
     public static final Action VIEW_PAN_UP = new Action("Pan up",
-            KeyStroke.getKeyStroke(KeyEvent.VK_UP, DesktopApi.getMenuKeyMask()),
             () -> {
                 final GraphEditor editor = getCurrentEditor();
                 if (editor != null) {
                     editor.panUp();
                 }
-            });
+            }, KeyStroke.getKeyStroke(KeyEvent.VK_UP, DesktopApi.getMenuKeyMask()));
 
     public static final Action VIEW_PAN_RIGHT = new Action("Pan right",
-            KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, DesktopApi.getMenuKeyMask()),
             () -> {
                 final GraphEditor editor = getCurrentEditor();
                 if (editor != null) {
                     editor.panRight();
                 }
-            });
+            }, KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, DesktopApi.getMenuKeyMask()));
 
     public static final Action VIEW_PAN_DOWN = new Action("Pan down",
-            KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, DesktopApi.getMenuKeyMask()),
             () -> {
                 final GraphEditor editor = getCurrentEditor();
                 if (editor != null) {
                     editor.panDown();
                 }
-            });
+            }, KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, DesktopApi.getMenuKeyMask()));
 
     public static final Action TOGGLE_GRID = new Action("Toggle grid visibility",
             () -> {
@@ -264,8 +250,8 @@ public class MainWindowActions {
             () -> FileUtils.openExternally("overview/start.html", "Overview access error"));
 
     public static final Action HELP_CONTENTS_ACTION = new Action("Help contents",
-            KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0),
-            () -> FileUtils.openExternally("help/start.html", "Help access error"));
+            () -> FileUtils.openExternally("help/start.html", "Help access error"),
+            KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
 
     public static final Action HELP_TUTORIALS_ACTION = new Action("Tutorials",
             () -> FileUtils.openExternally("tutorial/start.html", "Tutorials access error"));

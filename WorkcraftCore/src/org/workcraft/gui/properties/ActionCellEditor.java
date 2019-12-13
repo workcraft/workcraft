@@ -14,7 +14,7 @@ public class ActionCellEditor extends AbstractCellEditor implements TableCellEdi
         JButton actionButton = new JButton();
         if (value instanceof Action) {
             Action action = (Action) value;
-            actionButton.setText(action.getText());
+            actionButton.setText(action.getTitle());
             actionButton.addActionListener(e -> action.run());
         }
         return actionButton;

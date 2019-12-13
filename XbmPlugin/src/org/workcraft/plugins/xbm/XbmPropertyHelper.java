@@ -16,25 +16,26 @@ public class XbmPropertyHelper {
     private static final String LOW_SYMBOL = Character.toString((char) 0x21CA);
     private static final String NEW_SYMBOL = Character.toString((char) 0x2217);
     private static final String RISING_SYMBOL = Character.toString((char) 0x002B);
-    private static final String FALLING_SYMBOL = Character.toString((char) 0x2014);
+    private static final String FALLING_SYMBOL = Character.toString((char) 0x2013);
 
     public static PropertyDescriptor getBurstProperty(XbmState state, String name, XbmSignal.Type type) {
         return new ActionListDeclaration(name)
-                .addAction(TOGGLE_SYMBOL, () -> toggleSignalsByType(state, type))
-                .addAction(HIGH_SYMBOL, () -> setSignalsToValueByType(state, type, SignalState.HIGH))
-                .addAction(LOW_SYMBOL, () -> setSignalsToValueByType(state, type, SignalState.LOW));
+                .addAction(TOGGLE_SYMBOL, () -> toggleSignalsByType(state, type), "Toggle " + type + "  burst signals")
+                .addAction(HIGH_SYMBOL, () -> setSignalsToValueByType(state, type, SignalState.HIGH), "Set " + type + " burst signals high")
+                .addAction(LOW_SYMBOL, () -> setSignalsToValueByType(state, type, SignalState.LOW), "Set " + type + " burst signals low");
     }
 
     public static PropertyDescriptor getBurstDirectionProperty(Xbm xbm, BurstEvent burstEvent, String name, XbmSignal.Type type) {
         return new ActionListDeclaration(name)
-                .addAction(NEW_SYMBOL, () -> xbm.createSignal(null, type))
-                .addAction(TOGGLE_SYMBOL, () -> toggleDirectionsByType(burstEvent, type))
-                .addAction(RISING_SYMBOL, () -> setDirectionsToValueByType(burstEvent, type, Direction.PLUS))
-                .addAction(FALLING_SYMBOL, () -> setDirectionsToValueByType(burstEvent, type, Direction.MINUS));
+                .addAction(NEW_SYMBOL, () -> xbm.createSignal(null, type), "Create " + type + " signal in the bust")
+                .addAction(TOGGLE_SYMBOL, () -> toggleDirectionsByType(burstEvent, type), "Toggle " + type + " burst signals")
+                .addAction(RISING_SYMBOL, () -> setDirectionsToValueByType(burstEvent, type, Direction.PLUS), "Rise " + type + " burst signals")
+                .addAction(FALLING_SYMBOL, () -> setDirectionsToValueByType(burstEvent, type, Direction.MINUS), "Fall " + type + " burst signals");
     }
 
     private static void toggleSignalsByType(XbmState state, XbmSignal.Type type) {
-        for (Map.Entry<XbmSignal, SignalState> entry: state.getEncoding().entrySet()) {
+        Map<XbmSignal, SignalState> encodingMap = new HashMap<>(state.getEncoding());
+        for (Map.Entry<XbmSignal, SignalState> entry : encodingMap.entrySet()) {
             if (entry.getKey().getType() == type) {
                 state.addOrChangeSignalValue(entry.getKey(), entry.getValue().toggle());
             }
@@ -42,7 +43,8 @@ public class XbmPropertyHelper {
     }
 
     private static void setSignalsToValueByType(XbmState state, XbmSignal.Type type, SignalState value) {
-        for (Map.Entry<XbmSignal, SignalState> entry: state.getEncoding().entrySet()) {
+        Map<XbmSignal, SignalState> encodingMap = new HashMap<>(state.getEncoding());
+        for (Map.Entry<XbmSignal, SignalState> entry: encodingMap.entrySet()) {
             if ((entry.getKey().getType() == type) && (entry.getValue() != value)) {
                 state.addOrChangeSignalValue(entry.getKey(), value);
             }
@@ -59,7 +61,8 @@ public class XbmPropertyHelper {
     }
 
     private static void setDirectionsToValueByType(BurstEvent burstEvent, XbmSignal.Type type, Direction value) {
-        for (Map.Entry<XbmSignal, Direction> entry : burstEvent.getBurst().getDirection().entrySet()) {
+        Map<XbmSignal, Direction> directionMap = new HashMap<>(burstEvent.getBurst().getDirection());
+        for (Map.Entry<XbmSignal, Direction> entry : directionMap.entrySet()) {
             if (entry.getKey().getType() == type && (entry.getValue() != value)) {
                 burstEvent.addOrChangeSignalDirection(entry.getKey(), value);
             }
@@ -98,34 +101,36 @@ public class XbmPropertyHelper {
     }
 
     public static PropertyDescriptor getSignalNameProperty(final Xbm xbm, final XbmSignal xbmSignal) {
+        String signalName = xbm.getName(xbmSignal);
         return new PropertyDeclaration<>(TextAction.class,
-                xbm.getName(xbmSignal) + " name",
+                signalName + " name",
                 value -> {
-                    String newName = value.getText();
-                    Node node = xbm.getNodeByReference(newName);
-                    Matcher matcher = XbmSignal.VALID_SIGNAL_NAME.matcher(newName);
+                    String newSignalName = value.getText();
+                    Node node = xbm.getNodeByReference(newSignalName);
+                    Matcher matcher = XbmSignal.VALID_SIGNAL_NAME.matcher(newSignalName);
                     if ((node == null) && matcher.find()) {
                         String origName = xbmSignal.getName();
                         for (BurstEvent event: xbm.getBurstEvents()) {
                             for (String ref: event.getConditionalMapping().keySet()) {
                                 if (ref.equals(origName)) {
                                     boolean mapValue = event.getConditionalMapping().get(origName);
-                                    event.getConditionalMapping().put(newName, mapValue);
+                                    event.getConditionalMapping().put(newSignalName, mapValue);
                                     event.getConditionalMapping().remove(origName);
                                     break;
                                 }
                             }
                         }
-                        xbm.setName(xbmSignal, newName);
-                        xbmSignal.setName(newName);
+                        xbm.setName(xbmSignal, newSignalName);
+                        xbmSignal.setName(newSignalName);
                     } else if (!matcher.find()) {
                         throw new ArgumentException(value + " is not a valid node name.");
                     } else if (xbmSignal != node) {
                         throw new ArgumentException("Node " + value + " already exists.");
                     }
                 },
-                () -> new TextAction(xbm.getName(xbmSignal),
-                        new Action(org.workcraft.gui.properties.PropertyHelper.CLEAR_SYMBOL, () -> xbm.removeSignal(xbmSignal))));
+                () -> new TextAction(signalName, new Action(PropertyHelper.CLEAR_SYMBOL,
+                        () -> xbm.removeSignal(xbmSignal), "Remove signal '" + signalName + "'")
+                ));
     }
 
 }

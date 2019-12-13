@@ -19,7 +19,7 @@ public class ActionMenuItem extends JMenuItem implements Actor {
     private Action action = null;
 
     public ActionMenuItem(Action action) {
-        this(action.getText(), action);
+        this(action.getTitle(), action);
     }
 
     public ActionMenuItem(String text, Action action) {

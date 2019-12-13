@@ -4,15 +4,15 @@ import org.workcraft.gui.actions.Action;
 
 public class ActionDeclaration extends PropertyDeclaration<Action> {
 
-    public ActionDeclaration(String text, Runnable runnable) {
-        this(null, text, runnable);
+    public ActionDeclaration(String description, Runnable runnable) {
+        this(null, description, runnable);
     }
 
-    public ActionDeclaration(String name, String text, Runnable runnable) {
-        this(name, new Action(text, runnable));
+    public ActionDeclaration(String name, String description, Runnable runnable) {
+        this(name, new Action(description, runnable));
     }
 
-    public ActionDeclaration(String name, Action action) {
+    private ActionDeclaration(String name, Action action) {
         super(Action.class, name, value -> { }, () -> action);
     }
 
