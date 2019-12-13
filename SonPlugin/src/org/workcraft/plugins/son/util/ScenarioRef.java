@@ -1,6 +1,7 @@
 package org.workcraft.plugins.son.util;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection;
@@ -125,9 +126,10 @@ public class ScenarioRef extends ArrayList<String> {
 
     public void fromString(String str, SON net) throws IncompatibleScenarioException {
         clear();
-        for (String s : str.split("\\s*,\\s*")) {
-            if (net.getNodeByReference(s) != null) {
-                add(s);
+        String refs = NamespaceHelper.convertLegacyHierarchySeparators(str);
+        for (String ref : refs.replaceAll("\\s", "").split(",")) {
+            if (net.getNodeByReference(ref) != null) {
+                add(ref);
             } else {
                 throw new IncompatibleScenarioException();
             }
