@@ -15,7 +15,7 @@ public class ActionCellRenderer extends JButton implements TableCellRenderer {
 
         if (value instanceof Action) {
             Action action = (Action) value;
-            setText(action.getText());
+            setText(action.getTitle());
         }
         return this;
     }

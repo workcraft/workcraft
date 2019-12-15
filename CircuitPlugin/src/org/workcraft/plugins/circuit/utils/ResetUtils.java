@@ -152,7 +152,8 @@ public final class ResetUtils {
         return simplifyForceInit(circuit, contacts);
     }
 
-    public static void insertReset(VisualCircuit circuit, String portName, boolean isActiveLow) {
+    public static void insertReset(VisualCircuit circuit, boolean isActiveLow) {
+        String portName = isActiveLow ? CircuitSettings.getResetActiveLowPort() : CircuitSettings.getResetActiveHighPort();
         VisualFunctionContact resetPort = CircuitUtils.getOrCreatePort(circuit, portName,
                 Contact.IOType.INPUT, VisualContact.Direction.WEST);
 

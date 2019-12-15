@@ -5,24 +5,30 @@ import java.util.LinkedList;
 
 public class Action implements Runnable {
 
+    private final String title;
     private final Runnable runnable;
-    private final String text;
     private final KeyStroke keyStroke;
+    private final String description;
     private final LinkedList<Actor> actors = new LinkedList<>();
     private boolean enabled = true;
 
-    public Action(Runnable runnable) {
-        this(null, null, runnable);
+    public Action(String title, Runnable runnable) {
+        this(title, runnable, null, null);
     }
 
-    public Action(String text, Runnable runnable) {
-        this(text, null, runnable);
+    public Action(String title, Runnable runnable, KeyStroke keyStroke) {
+        this(title, runnable, keyStroke, null);
     }
 
-    public Action(String text, KeyStroke keyStroke, Runnable runnable) {
-        this.text = text;
+    public Action(String title, Runnable runnable, String description) {
+        this(title, runnable, null, description);
+    }
+
+    public Action(String title, Runnable runnable, KeyStroke keyStroke, String description) {
+        this.title = title;
         this.keyStroke = keyStroke;
         this.runnable = runnable;
+        this.description = description;
     }
 
     @Override
@@ -32,12 +38,16 @@ public class Action implements Runnable {
         }
     }
 
-    public final String getText() {
-        return text;
+    public String getTitle() {
+        return title;
     }
 
     public KeyStroke getKeyStroke() {
         return keyStroke;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public void addActor(Actor actor) {
@@ -56,6 +66,7 @@ public class Action implements Runnable {
             }
         }
     }
+
     public boolean isEnabled() {
         return enabled;
     }

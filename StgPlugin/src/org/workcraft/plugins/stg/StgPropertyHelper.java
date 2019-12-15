@@ -9,7 +9,7 @@ import org.workcraft.gui.properties.TextAction;
 
 public class StgPropertyHelper {
 
-    private static final String SEARCH_SYMBOL = Character.toString((char) 0x2315);
+    private static final String SEARCH_SYMBOL = Character.toString((char) 0x26B2);
 
     public static PropertyDescriptor getSignalNameProperty(Stg stg, SignalTransition signalTransition) {
         return new PropertyDeclaration<>(String.class, "Signal name",
@@ -61,8 +61,8 @@ public class StgPropertyHelper {
                                 visualStg.getVisualComponent(transition, VisualSignalTransition.class);
                                 visualStg.addToSelection(visualStg.getVisualComponent(transition, VisualSignalTransition.class));
                             }
-                        }))
-        );
+                        }, "Select all events of signal '" + signal + "'")
+                ));
     }
 
     public static PropertyDescriptor getSignalTypeModelProperty(Stg stg, String signal, Container container) {

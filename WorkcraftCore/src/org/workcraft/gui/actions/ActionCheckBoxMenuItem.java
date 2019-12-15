@@ -19,7 +19,7 @@ public class ActionCheckBoxMenuItem extends JCheckBoxMenuItem implements Actor {
     private Action action = null;
 
     public ActionCheckBoxMenuItem(Action action) {
-        this(action.getText(), action);
+        this(action.getTitle(), action);
     }
 
     public ActionCheckBoxMenuItem(String text, Action action) {

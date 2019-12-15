@@ -1,6 +1,5 @@
 package org.workcraft.plugins.circuit.commands;
 
-import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.utils.ResetUtils;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
@@ -14,7 +13,7 @@ public class ResetActiveHighInsertionCommand extends AbstractInsertionCommand {
         if (isApplicableTo(we) && VerificationUtils.checkCircuitHasComponents(we)) {
             we.saveMemento();
             VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
-            ResetUtils.insertReset(circuit, CircuitSettings.getResetPort(), false);
+            ResetUtils.insertReset(circuit, false);
         }
         return null;
     }

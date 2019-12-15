@@ -187,7 +187,7 @@ public class VisualPolicy extends VisualPetri {
         for (Bundle b: getMathModel().getBundles()) {
             b.remove(t.getReferencedComponent());
         }
-        for (String ref : s.split("\\s*,\\s*")) {
+        for (String ref : s.replaceAll("\\s", "").split(",")) {
             Node node = getMathModel().getNodeByReference(ref);
             if (node == null) {
                 node = createVisualBundle(ref).getReferencedBundle();
@@ -219,7 +219,7 @@ public class VisualPolicy extends VisualPetri {
         for (BundledTransition t: new ArrayList<>(b.getTransitions())) {
             b.remove(t);
         }
-        for (String ref : s.split("\\s*,\\s*")) {
+        for (String ref : s.replaceAll("\\s", "").split(",")) {
             Node node = getMathModel().getNodeByReference(ref);
             if (node instanceof BundledTransition) {
                 b.add((BundledTransition) node);

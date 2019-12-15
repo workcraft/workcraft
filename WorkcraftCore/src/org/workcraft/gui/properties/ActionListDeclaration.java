@@ -6,16 +6,12 @@ public class ActionListDeclaration extends PropertyDeclaration<ActionList> {
 
     private final ActionList actions = new ActionList();
 
-    public ActionListDeclaration() {
-        this(null);
-    }
-
     public ActionListDeclaration(String name) {
         super(ActionList.class, name, value -> { }, () -> null);
     }
 
-    public ActionListDeclaration addAction(String text, Runnable runnable) {
-        actions.add(new Action(text, runnable));
+    public ActionListDeclaration addAction(String title, Runnable runnable, String description) {
+        actions.add(new Action(title, runnable, description));
         return this;
     }
 

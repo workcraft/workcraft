@@ -1,13 +1,11 @@
 package org.workcraft.gui.actions;
 
+import org.workcraft.utils.GuiUtils;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
-
-import javax.swing.Icon;
-import javax.swing.JButton;
-
-import org.workcraft.utils.GuiUtils;
 
 @SuppressWarnings("serial")
 public class ActionButton extends JButton implements Actor {
@@ -20,27 +18,21 @@ public class ActionButton extends JButton implements Actor {
     }
 
     private final LinkedList<ScriptedActionListener> listeners = new LinkedList<>();
-    private Action action = null;
+    private final Action action;
 
     public ActionButton(Action action) {
-        this(action, action.getText());
-    }
-
-    public ActionButton(Action action, String text) {
-        super(text);
-        String toolTip = ActionUtils.getActionTooltip(action);
-        setToolTipText(toolTip);
-        this.action = action;
-        action.addActor(this);
-        setEnabled(action.isEnabled());
-        addActionListener(new ActionForwarder());
+        this(action, null);
     }
 
     public ActionButton(Action action, Icon icon) {
         super();
-        String toolTip = ActionUtils.getActionTooltip(action);
-        GuiUtils.decorateButton(this, icon, toolTip);
         this.action = action;
+        String toolTip = ActionUtils.getActionTooltip(action);
+        if (icon == null) {
+            setToolTipText(toolTip);
+        } else {
+            GuiUtils.decorateButton(this, icon, toolTip);
+        }
         action.addActor(this);
         setEnabled(action.isEnabled());
         addActionListener(new ActionForwarder());

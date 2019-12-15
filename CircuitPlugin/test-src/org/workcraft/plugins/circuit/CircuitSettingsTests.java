@@ -68,8 +68,11 @@ public class CircuitSettingsTests {
         Assert.assertEquals(Config.toString(CircuitSettings.getBusSuffix()),
                 framework.getConfigVar(prefix + ".busSuffix", false));
 
-        Assert.assertEquals(Config.toString(CircuitSettings.getResetPort()),
-                framework.getConfigVar(prefix + ".resetPort", false));
+        Assert.assertEquals(Config.toString(CircuitSettings.getResetActiveHighPort()),
+                framework.getConfigVar(prefix + ".resetActiveHighPort", false));
+
+        Assert.assertEquals(Config.toString(CircuitSettings.getResetActiveLowPort()),
+                framework.getConfigVar(prefix + ".resetActiveLowPort", false));
 
         Assert.assertEquals(Config.toString(CircuitSettings.getSetPin()),
                 framework.getConfigVar(prefix + ".setPin", false));

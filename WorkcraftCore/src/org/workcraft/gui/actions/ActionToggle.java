@@ -23,7 +23,7 @@ public class ActionToggle extends JToggleButton implements Actor {
     private Action action = null;
 
     public ActionToggle(Action action) {
-        this(action, action.getText());
+        this(action, action.getTitle());
     }
 
     public ActionToggle(Action action, String text) {
