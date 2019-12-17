@@ -60,18 +60,19 @@ public class VisualONGroup extends VisualPage {
         Color colorisation = r.getDecoration().getColorisation();
         Rectangle2D groupBB = getInternalBoundingBoxInLocalSpace();
         if ((groupBB != null) && (getParent() != null)) {
-            //draw label
+            // Draw label
             Rectangle2D labelBB = getLabelBoundingBox();
-            if (labelBB != null) {
+            if ((labelBB != null) && getLabelVisibility()) {
                 g.setColor(Coloriser.colorise(Color.WHITE, colorisation));
                 g.fill(labelBB);
                 g.setStroke(new BasicStroke(strokeWidth - 0.005f, BasicStroke.CAP_BUTT,
                         BasicStroke.JOIN_ROUND, 3.0f, new float[]{0.1f, 0.05f}, 0f));
+
                 g.setColor(Coloriser.colorise(getLabelColor(), colorisation));
                 g.draw(labelBB);
                 drawLabelInLocalSpace(r);
             }
-            //draw group
+            // Draw group
             g.setColor(Coloriser.colorise(this.getForegroundColor(), colorisation));
             g.setStroke(new BasicStroke(strokeWidth));
             groupBB = BoundingBoxHelper.expand(groupBB, getExpansion().getX(), getExpansion().getY());
@@ -82,14 +83,13 @@ public class VisualONGroup extends VisualPage {
 
     @Override
     public void setLabel(String label) {
+        getMathGroup().setLabel(label);
         super.setLabel(label);
-        this.getMathGroup().setLabel(label);
     }
 
     @Override
     public String getLabel() {
-        super.getLabel();
-        return this.getMathGroup().getLabel();
+        return getMathGroup().getLabel();
     }
 
     @Override

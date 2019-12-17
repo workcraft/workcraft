@@ -1,23 +1,20 @@
 package org.workcraft.plugins.son.gui;
 
-import java.awt.FlowLayout;
-
-import javax.swing.ButtonGroup;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.border.Border;
-
+import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
+
+import javax.swing.*;
+import javax.swing.border.Border;
 
 public class GranularityPanel extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
-    private JRadioButton yearYearButton;
-    private JRadioButton hourMinsButton;
+    private final JRadioButton yearYearButton;
+    private final JRadioButton hourMinsButton;
 
     public GranularityPanel(Border border) {
-        setLayout(new FlowLayout());
+        setLayout(new WrapLayout());
         setBorder(border);
 
         yearYearButton = new JRadioButton();
@@ -33,10 +30,6 @@ public class GranularityPanel extends JPanel {
 
         add(yearYearButton);
         add(hourMinsButton);
-    }
-
-    public GranularityPanel() {
-        this(null);
     }
 
     public Granularity getSelection() {
@@ -63,4 +56,5 @@ public class GranularityPanel extends JPanel {
     public JRadioButton getHourMinsButton() {
         return hourMinsButton;
     }
+
 }

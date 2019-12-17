@@ -1,7 +1,6 @@
 package org.workcraft.plugins.son.util;
 
 import org.workcraft.dom.Node;
-import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection;
@@ -20,7 +19,6 @@ public class ScenarioRef extends ArrayList<String> {
 
     public Collection<Node> getNodes(SON net) {
         Collection<Node> result = new HashSet<>();
-
         for (String ref : this) {
             Node node = net.getNodeByReference(ref);
             if ((node instanceof PlaceNode) || (node instanceof TransitionNode)) {
@@ -32,7 +30,6 @@ public class ScenarioRef extends ArrayList<String> {
 
     public Collection<ChannelPlace> getChannelPlaces(SON net) {
         Collection<ChannelPlace> result = new HashSet<>();
-
         for (String ref : this) {
             Node node = net.getNodeByReference(ref);
             if (node instanceof ChannelPlace) {
@@ -44,7 +41,6 @@ public class ScenarioRef extends ArrayList<String> {
 
     public Collection<TransitionNode> getTransitionNodes(SON net) {
         Collection<TransitionNode> result = new HashSet<>();
-
         for (String ref : this) {
             Node node = net.getNodeByReference(ref);
             if (node instanceof TransitionNode) {
@@ -56,7 +52,6 @@ public class ScenarioRef extends ArrayList<String> {
 
     public Collection<Condition> getConditions(SON net) {
         Collection<Condition> result = new HashSet<>();
-
         for (String ref : this) {
             Node node = net.getNodeByReference(ref);
             if (node instanceof Condition) {
@@ -75,14 +70,6 @@ public class ScenarioRef extends ArrayList<String> {
             }
         }
         return result;
-    }
-
-    public boolean isNodeRef(String str, SON net) {
-        Node node = net.getNodeByReference(str);
-        if ((node instanceof PlaceNode) || (node instanceof TransitionNode)) {
-            return true;
-        }
-        return false;
     }
 
     public Collection<SONConnection> getConnections(SON net) {
@@ -114,20 +101,12 @@ public class ScenarioRef extends ArrayList<String> {
 
     @Override
     public String toString() {
-        String result = "";
-        for (String s : this) {
-            if (!result.isEmpty()) {
-                result += ", ";
-            }
-            result += s;
-        }
-        return result;
+        return String.join(", ", this);
     }
 
     public void fromString(String str, SON net) throws IncompatibleScenarioException {
         clear();
-        String refs = NamespaceHelper.convertLegacyHierarchySeparators(str);
-        for (String ref : refs.replaceAll("\\s", "").split(",")) {
+        for (String ref : str.replaceAll("\\s", "").split(",")) {
             if (net.getNodeByReference(ref) != null) {
                 add(ref);
             } else {

@@ -29,8 +29,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.Timer;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -44,10 +42,6 @@ import java.util.*;
 
 public class SONSimulationTool extends AbstractGraphEditorTool implements ClipboardOwner {
 
-    protected SON net;
-    protected VisualSON visualNet;
-    protected GraphEditor editor;
-
     protected RelationAlgorithm relationAlg;
     protected BSONAlg bsonAlg;
     protected SimulationAlg simuAlg;
@@ -59,7 +53,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
 
     protected JPanel panel;
     protected JPanel controlPanel;
-    protected JScrollPane tabelPanel;
+    protected JScrollPane tablePanel;
     protected JTable traceTable;
 
     protected JSlider speedSlider;
@@ -111,6 +105,8 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         if (panel != null) {
             return panel;
         }
+        final VisualSON visualNet = (VisualSON) editor.getModel();
+        final SON net = visualNet.getMathModel();
 
         playButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG("images/son-simulation-play.svg"),
                 "Automatic trace playback");
@@ -176,20 +172,17 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         traceTable = new JTable(new TraceTableModel());
         traceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        tabelPanel = new JScrollPane(traceTable);
-        tabelPanel.setPreferredSize(new Dimension(1, 1));
+        tablePanel = new JScrollPane(traceTable);
+        tablePanel.setPreferredSize(new Dimension(1, 1));
 
-        speedSlider.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                if (timer != null) {
-                    timer.stop();
-                    timer.setInitialDelay(getAnimationDelay());
-                    timer.setDelay(getAnimationDelay());
-                    timer.start();
-                }
-                updateState(editor);
+        speedSlider.addChangeListener(e -> {
+            if (timer != null) {
+                timer.stop();
+                timer.setInitialDelay(getAnimationDelay());
+                timer.setDelay(getAnimationDelay());
+                timer.start();
             }
+            updateState(editor);
         });
 
         playButton.addActionListener(event -> {
@@ -206,7 +199,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
 
         stopButton.addActionListener(event -> {
             reset(editor);
-            setDecoration(simuAlg.getEnabledNodes(sync, phases, isRev));
+            setDecoration(editor, simuAlg.getEnabledNodes(sync, phases, isRev));
         });
 
         backwardButton.addActionListener(event -> stepBack(editor));
@@ -214,10 +207,10 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         forwardButton.addActionListener(event -> step(editor));
 
         reverseButton.addActionListener(event -> {
-            Map<PlaceNode, Boolean> currentMarking = readSONMarking();
+            Map<PlaceNode, Boolean> currentMarking = readSONMarking(net);
             setReverse(editor, !isRev);
             writeModelState(currentMarking);
-            setDecoration(simuAlg.getEnabledNodes(sync, phases, isRev));
+            setDecoration(editor, simuAlg.getEnabledNodes(sync, phases, isRev));
             excitedContainers.clear();
             updateState(editor);
             editor.requestFocus();
@@ -225,7 +218,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
 
         autoSimuButton.addActionListener(event -> {
             if (autoSimuButton.isSelected()) {
-                if (!acyclicChecker()) {
+                if (!acyclicChecker(editor)) {
                     autoSimuButton.setSelected(false);
                     try {
                         throw new InvalidStructureException("Cyclic structure error");
@@ -303,7 +296,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         panel = new JPanel();
         panel.setLayout(new BorderLayout());
         panel.add(controlPanel, BorderLayout.NORTH);
-        panel.add(tabelPanel, BorderLayout.CENTER);
+        panel.add(tablePanel, BorderLayout.CENTER);
         panel.setPreferredSize(new Dimension(0, 0));
         return panel;
     }
@@ -311,16 +304,16 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
     @Override
     public void activated(final GraphEditor editor) {
         super.activated(editor);
-        this.editor = editor;
-        visualNet = (VisualSON) editor.getModel();
-        net = visualNet.getMathModel();
         editor.getWorkspaceEntry().captureMemento();
 
+        final VisualSON visualNet = (VisualSON) editor.getModel();
+        final SON net = visualNet.getMathModel();
         BlockConnector.blockBoundingConnector(visualNet);
+
         errAlg = new ErrorTracingAlg(net);
-        initialise();
+        initialise(editor);
         reset(editor);
-        setDecoration(simuAlg.getEnabledNodes(sync, phases, isRev));
+        setDecoration(editor, simuAlg.getEnabledNodes(sync, phases, isRev));
 
         if (SONSettings.isErrorTracing()) {
             net.resetConditionErrStates();
@@ -350,16 +343,18 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         we.setCanCopy(true);
     }
 
-    protected void initialise() {
+    protected void initialise(final GraphEditor editor) {
+        final VisualSON visualNet = (VisualSON) editor.getModel();
+        final SON net = visualNet.getMathModel();
         relationAlg = new RelationAlgorithm(net);
         bsonAlg = new BSONAlg(net);
         simuAlg = new SimulationAlg(net);
         initialMarking = simuAlg.getInitialMarking();
-        sync = getSyncEventCycles();
+        sync = getSyncEventCycles(net);
         phases = bsonAlg.getAllPhases();
     }
 
-    protected Collection<Path> getSyncEventCycles() {
+    protected Collection<Path> getSyncEventCycles(final SON net) {
         HashSet<Node> nodes = new HashSet<>();
         nodes.addAll(net.getTransitionNodes());
         nodes.addAll(net.getChannelPlaces());
@@ -434,16 +429,15 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
     }
 
     protected void errorMsg(String message, final GraphEditor editor) {
-
         final Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
+        JOptionPane.showMessageDialog(mainWindow, message,
+                "Invalid structure", JOptionPane.WARNING_MESSAGE);
 
-        JOptionPane.showMessageDialog(mainWindow,
-                message, "Invalid structure", JOptionPane.WARNING_MESSAGE);
         reset(editor);
     }
 
-    protected Map<PlaceNode, Boolean> readSONMarking() {
+    protected Map<PlaceNode, Boolean> readSONMarking(final SON net) {
         HashMap<PlaceNode, Boolean> result = new HashMap<>();
         for (PlaceNode c : net.getPlaceNodes()) {
             result.put(c, c.isMarked());
@@ -460,12 +454,12 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         int branchInc = 0;
         if (branchTrace.canProgress()) {
             StepRef stepRef = branchTrace.getCurrent();
-            step = this.getStep(stepRef);
+            step = getStep(editor, stepRef);
             setReverse(editor, stepRef);
             branchInc = 1;
         } else if (mainTrace.canProgress()) {
             StepRef stepRef = mainTrace.getCurrent();
-            step = this.getStep(stepRef);
+            step = getStep(editor, stepRef);
             setReverse(editor, stepRef);
             mainInc = 1;
         }
@@ -478,7 +472,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
             setErrNum(step, isRev);
             mainTrace.incPosition(mainInc);
             branchTrace.incPosition(branchInc);
-            setDecoration(simuAlg.getEnabledNodes(sync, phases, isRev));
+            setDecoration(editor, simuAlg.getEnabledNodes(sync, phases, isRev));
             result = true;
         }
 
@@ -505,12 +499,12 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         int branchDec = 0;
         if (branchTrace.getPosition() > 0) {
             StepRef stepRef = branchTrace.get(branchTrace.getPosition() - 1);
-            step = getStep(stepRef);
+            step = getStep(editor, stepRef);
             setReverse(editor, stepRef);
             branchDec = 1;
         } else if (mainTrace.getPosition() > 0) {
             StepRef stepRef = mainTrace.get(mainTrace.getPosition() - 1);
-            step = getStep(stepRef);
+            step = getStep(editor, stepRef);
             setReverse(editor, stepRef);
             mainDec = 1;
         }
@@ -526,7 +520,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
             if ((branchTrace.getPosition() == 0) && !mainTrace.isEmpty()) {
                 branchTrace.clear();
             }
-            setDecoration(simuAlg.getEnabledNodes(sync, phases, isRev));
+            setDecoration(editor, simuAlg.getEnabledNodes(sync, phases, isRev));
             result = true;
             this.setErrNum(step, !isRev);
         }
@@ -613,19 +607,19 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         if (SONSettings.isErrorTracing()) {
             Collection<TransitionNode> upperEvents = new ArrayList<>();
 
-            //get high level events
+            // Get high level events
             for (TransitionNode node : step) {
                 if (bsonAlg.isUpperEvent(node)) {
                     upperEvents.add(node);
                 }
             }
-            //get low level events
+            // Get low level events
             step.removeAll(upperEvents);
 
             if (!isRev) {
-                //set error number for upper events
+                // Set error number for upper events
                 errAlg.setErrNum(upperEvents, sync, phases, false);
-                //set error number for lower events
+                // Set error number for lower events
                 errAlg.setErrNum(step, sync, phases, true);
             } else {
                 errAlg.setRevErrNum(upperEvents, sync, phases, false);
@@ -641,14 +635,16 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
     }
 
     protected void autoSimulator(final GraphEditor editor) {
-        if (!acyclicChecker()) {
+        if (!acyclicChecker(editor)) {
             autoSimuButton.setSelected(false);
         } else {
             autoSimulationTask(editor);
         }
     }
 
-    protected boolean acyclicChecker() {
+    protected boolean acyclicChecker(final GraphEditor editor) {
+        final VisualSON visualNet = (VisualSON) editor.getModel();
+        final SON net = visualNet.getMathModel();
         SONCycleAlg cycle = new SONCycleAlg(net, phases);
         if (!cycle.cycleTask(net.getComponents()).isEmpty()) {
             return false;
@@ -659,12 +655,13 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
 
     protected void autoSimulationTask(final GraphEditor editor) {
         Step step = simuAlg.getEnabledNodes(sync, phases, isRev);
-
         if (step.isEmpty()) {
             autoSimuButton.setSelected(false);
             return;
         }
-        step = conflictfilter(step);
+        final VisualSON visualNet = (VisualSON) editor.getModel();
+        final SON net = visualNet.getMathModel();
+        step = conflictFilter(net, step);
         if (!step.isEmpty()) {
             step = simuAlg.getMinFire(step.iterator().next(), sync, step, isRev);
             executeEvents(editor, step);
@@ -672,11 +669,11 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         }
     }
 
-    protected Step conflictfilter(Step step) {
+    protected Step conflictFilter(final SON net, Step step) {
         Step result = new Step();
         result.addAll(step);
 
-        for (PlaceNode c : readSONMarking().keySet()) {
+        for (PlaceNode c : readSONMarking(net).keySet()) {
             Collection<TransitionNode> conflict = new ArrayList<>();
             if (c.isMarked()) {
                 if (!isRev) {
@@ -696,7 +693,11 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         return result;
     }
 
-    public Map<PlaceNode, Boolean> reachabilitySimulator(final GraphEditor editor, Collection<String> causalPredecessorRefs, Collection<String> markingRefs) {
+    public Map<PlaceNode, Boolean> reachabilitySimulator(final GraphEditor editor,
+            Collection<String> causalPredecessorRefs, Collection<String> markingRefs) {
+
+        final VisualSON visualNet = (VisualSON) editor.getModel();
+        final SON net = visualNet.getMathModel();
         Collection<TransitionNode> causalPredecessors = new ArrayList<>();
         for (String ref : causalPredecessorRefs) {
             Node node = net.getNodeByReference(ref);
@@ -710,8 +711,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
     private Map<PlaceNode, Boolean> reachabilitySimulationTask(final GraphEditor editor,
             Collection<TransitionNode> causalPredecessors, Collection<String> markingRefs) {
 
-        Step enabled = null;
-        enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
+        Step enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
 
         Step step = new Step();
         for (Node node : relationAlg.getCommonElements(enabled, causalPredecessors)) {
@@ -725,6 +725,8 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
             reachabilitySimulationTask(editor, causalPredecessors, markingRefs);
         }
 
+        final VisualSON visualNet = (VisualSON) editor.getModel();
+        final SON net = visualNet.getMathModel();
         for (String ref : markingRefs) {
             Node node = net.getNodeByReference(ref);
             if (node instanceof PlaceNode) {
@@ -733,21 +735,21 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
             }
         }
 
-        return readSONMarking();
+        return readSONMarking(net);
     }
 
     public void executeEvents(final GraphEditor editor, Step step) {
         if (step.isEmpty()) return;
         Step traceList = new Step();
-        // if clicked on the trace event, do the step forward
+        // If clicked on the trace event, do the step forward
         if (branchTrace.isEmpty() && !mainTrace.isEmpty() && (mainTrace.getPosition() < mainTrace.size())) {
             StepRef stepRef = mainTrace.get(mainTrace.getPosition());
-            traceList = getStep(stepRef);
+            traceList = getStep(editor, stepRef);
         }
-        // otherwise form/use the branch trace
+        // Otherwise form/use the branch trace
         if (!branchTrace.isEmpty() && (branchTrace.getPosition() < branchTrace.size())) {
             StepRef stepRef = branchTrace.get(branchTrace.getPosition());
-            traceList = getStep(stepRef);
+            traceList = getStep(editor, stepRef);
         }
         if (!traceList.isEmpty() && traceList.containsAll(step) && step.containsAll(traceList)) {
             step(editor);
@@ -763,6 +765,9 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         } else {
             newStep.add("<");
         }
+
+        final VisualSON visualNet = (VisualSON) editor.getModel();
+        final SON net = visualNet.getMathModel();
         for (TransitionNode e : step) {
             newStep.add(net.getNodeReference(e));
         }
@@ -771,8 +776,10 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         step(editor);
     }
 
-    protected Step getStep(StepRef stepRef) {
+    protected Step getStep(final GraphEditor editor, StepRef stepRef) {
         Step result = new Step();
+        final VisualSON visualNet = (VisualSON) editor.getModel();
+        final SON net = visualNet.getMathModel();
         for (int i = 0; i < stepRef.size(); i++) {
             final Node node = net.getNodeByReference(stepRef.get(i));
             if (node instanceof TransitionNode) {
@@ -824,7 +831,9 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         }
     }
 
-    protected void setDecoration(Step enabled) {
+    protected void setDecoration(final GraphEditor editor, Step enabled) {
+        final VisualSON visualNet = (VisualSON) editor.getModel();
+        final SON net = visualNet.getMathModel();
         net.refreshAllColor();
 
         for (TransitionNode e : enabled) {
@@ -893,19 +902,22 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
 
             minFire.remove(select);
 
+            GraphEditor editor = e.getEditor();
             if (possibleFire.isEmpty()) {
-                executeEvents(e.getEditor(), step);
+                executeEvents(editor, step);
             } else {
-                e.getEditor().requestFocus();
+                editor.requestFocus();
+                final VisualSON visualNet = (VisualSON) editor.getModel();
+                final SON net = visualNet.getMathModel();
                 ParallelSimDialog dialog = new ParallelSimDialog(mainWindow,
                         net, possibleFire, minFire, select, isRev, sync);
                 dialog.setVisible(true);
                 if (dialog.getModalResult() == 1) {
                     step.addAll(dialog.getSelectedEvent());
-                    executeEvents(e.getEditor(), step);
+                    executeEvents(editor, step);
                 }
                 if (dialog.getModalResult() == 2) {
-                    setDecoration(enabled);
+                    setDecoration(editor, enabled);
                     return;
                 }
             }
@@ -986,10 +998,6 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
                 return null;
             }
         };
-    }
-
-    public GraphEditor getGraphEditor() {
-        return editor;
     }
 
     @Override

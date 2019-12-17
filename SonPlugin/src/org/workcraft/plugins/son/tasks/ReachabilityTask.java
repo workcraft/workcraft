@@ -1,23 +1,13 @@
 package org.workcraft.plugins.son.tasks;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
+import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.plugins.son.SON;
-import org.workcraft.plugins.son.algorithm.BSONAlg;
-import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
-import org.workcraft.plugins.son.algorithm.Path;
-import org.workcraft.plugins.son.algorithm.ReachabilityAlg;
-import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
+import org.workcraft.plugins.son.algorithm.*;
 import org.workcraft.plugins.son.commands.ToolManager;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
@@ -26,14 +16,19 @@ import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.tools.SONSimulationTool;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Task;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.tasks.Task;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
 
 public class ReachabilityTask implements Task<VerificationResult> {
 
-    private SON net;
     private final WorkspaceEntry we;
     private final BSONAlg bsonAlg;
     private final ReachabilityAlg reachAlg;
@@ -44,7 +39,7 @@ public class ReachabilityTask implements Task<VerificationResult> {
 
     public ReachabilityTask(WorkspaceEntry we) {
         this.we = we;
-        net = WorkspaceUtils.getAs(we, SON.class);
+        final SON net = WorkspaceUtils.getAs(we, SON.class);
 
         bsonAlg = new BSONAlg(net);
         reachAlg = new ReachabilityAlg(net);
@@ -53,7 +48,7 @@ public class ReachabilityTask implements Task<VerificationResult> {
         causalPredecessors = new HashSet<>();
         causalPredecessorRefs = new HashSet<>();
 
-        if (hasConflict()) {
+        if (hasConflict(net)) {
             JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
                     "Model has alternative behaviours",
                     "Fail to run reachability task", JOptionPane.ERROR_MESSAGE);
@@ -67,7 +62,7 @@ public class ReachabilityTask implements Task<VerificationResult> {
         }
     }
 
-    private boolean hasConflict() {
+    private boolean hasConflict(final SON net) {
         RelationAlgorithm alg = new RelationAlgorithm(net);
         for (Condition c : net.getConditions()) {
             if (alg.hasPostConflictEvents(c)) {
@@ -94,8 +89,8 @@ public class ReachabilityTask implements Task<VerificationResult> {
             return new Result<>(Outcome.SUCCESS);
         }
 
-        if (reachabilityTask()) {
-            net = WorkspaceUtils.getAs(we, SON.class);
+        final SON net = WorkspaceUtils.getAs(we, SON.class);
+        if (reachabilityTask(net)) {
             int result = JOptionPane.showConfirmDialog(mainWindow,
                     "The selected marking is REACHABLE from the initial states. \n" +
                     "Select OK to analyze the trace leading to the marking in the simulation tool.",
@@ -123,15 +118,17 @@ public class ReachabilityTask implements Task<VerificationResult> {
         final Toolbox toolbox = ToolManager.getToolboxPanel(we);
         final SONSimulationTool tool = toolbox.getToolInstance(SONSimulationTool.class);
         toolbox.selectTool(tool);
-        result = tool.reachabilitySimulator(tool.getGraphEditor(), causalPredecessorRefs, markingRefs);
-        tool.mergeTrace(tool.getGraphEditor());
+        final MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        final GraphEditorPanel editor = mainWindow.getEditor(we);
+        result = tool.reachabilitySimulator(editor, causalPredecessorRefs, markingRefs);
+        tool.mergeTrace(editor);
         return result;
     }
 
-    private boolean reachabilityTask() {
+    private boolean reachabilityTask(final SON net) {
         //Collection<Node> initial = new HashSet<>();
         Collection<Node> sync = new HashSet<>();
-        for (Path path : getSyncCycles()) {
+        for (Path path : getSyncCycles(net)) {
             sync.addAll(path);
         }
 
@@ -144,14 +141,6 @@ public class ReachabilityTask implements Task<VerificationResult> {
                 }
             }
         }
-//        SimulationAlg simuAlg = new SimulationAlg(net);
-//        Map<PlaceNode, Boolean> initialMarking = simuAlg.getInitialMarking();
-
-//        for (Node c : initialMarking.keySet()) {
-//            if (initialMarking.get(c)) {
-//                initial.add(c);
-//            }
-//        }
         causalPredecessors = new HashSet<>();
 
         //get causalPredecessors for each marking
@@ -189,7 +178,7 @@ public class ReachabilityTask implements Task<VerificationResult> {
         return true;
     }
 
-    private Collection<Path> getSyncCycles() {
+    private Collection<Path> getSyncCycles(final SON net) {
         HashSet<Node> nodes = new HashSet<>();
         nodes.addAll(net.getTransitionNodes());
         nodes.addAll(net.getChannelPlaces());

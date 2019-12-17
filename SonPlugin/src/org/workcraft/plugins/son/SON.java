@@ -301,13 +301,13 @@ public class SON extends AbstractMathModel {
         ScenarioSaveList result = new ScenarioSaveList();
         ArrayList<Scenario> removeList = new ArrayList<>();
 
-        for (Scenario s : getScenarios()) {
+        for (Scenario scenario : getScenarios()) {
             ScenarioRef ref = new ScenarioRef();
             try {
-                ref.fromString(s.getScenario(), this);
+                ref.fromString(scenario.getScenario(), this);
             } catch (IncompatibleScenarioException e) {
                 ref = null;
-                removeList.add(s);
+                removeList.add(scenario);
             }
             if (ref != null) {
                 result.add(ref);

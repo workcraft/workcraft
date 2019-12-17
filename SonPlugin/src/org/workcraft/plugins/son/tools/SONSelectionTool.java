@@ -40,7 +40,7 @@ public class SONSelectionTool extends SelectionTool {
 
     @Override
     public void updateControlsToolbar(JToolBar toolbar, final GraphEditor editor) {
-        //Create groupButton
+        // Create groupButton
         final JButton groupButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/son-selection-group.svg"),
                 "Group selection (" + DesktopApi.getMenuKeyName() + "-G)");

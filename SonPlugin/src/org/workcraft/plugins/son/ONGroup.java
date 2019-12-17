@@ -150,7 +150,7 @@ public class ONGroup extends PageNode {
 
     public void setLabel(String value) {
         if (value == null) value = "";
-        if (!label.equals(label)) {
+        if (!value.equals(label)) {
             label = value;
             sendNotification(new PropertyChangedEvent(this, "label"));
         }
