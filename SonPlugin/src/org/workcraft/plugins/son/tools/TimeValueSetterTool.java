@@ -1,24 +1,5 @@
 package org.workcraft.plugins.son.tools;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.geom.Point2D;
-
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.text.AbstractDocument;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -27,11 +8,11 @@ import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.gui.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditor;
-import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.TimeEstimatorSettings;
@@ -40,16 +21,8 @@ import org.workcraft.plugins.son.algorithm.TimeAlg;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
-import org.workcraft.plugins.son.elements.Block;
-import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
-import org.workcraft.plugins.son.elements.PlaceNode;
-import org.workcraft.plugins.son.elements.Time;
-import org.workcraft.plugins.son.elements.VisualBlock;
-import org.workcraft.plugins.son.elements.VisualChannelPlace;
-import org.workcraft.plugins.son.elements.VisualCondition;
-import org.workcraft.plugins.son.elements.VisualEvent;
-import org.workcraft.plugins.son.elements.VisualPlaceNode;
+import org.workcraft.plugins.son.elements.*;
 import org.workcraft.plugins.son.exception.TimeOutOfBoundsException;
 import org.workcraft.plugins.son.granularity.HourMins;
 import org.workcraft.plugins.son.gui.GranularityPanel;
@@ -60,10 +33,16 @@ import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class TimeValueSetterTool extends AbstractGraphEditorTool {
+import javax.swing.*;
+import javax.swing.text.AbstractDocument;
+import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.geom.Point2D;
 
-    protected SON net;
-    protected VisualSON visualNet;
+public class TimeValueSetterTool extends AbstractGraphEditorTool {
 
     private JPanel timeInputPanel;
     private JPanel timePropertyPanel;
@@ -73,7 +52,7 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
 
     private static final int labelheight = 20;
     private static final int labelwidth = 40;
-    protected Dimension buttonSize = new Dimension(100, 25);
+    protected Dimension buttonSize = new Dimension(110, 25);
     private TimeEstimatorSettings settings;
 
     private Node selection = null;
@@ -94,10 +73,8 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
 
         granularityPanel = new GranularityPanel(SizeHelper.getTitledBorder("Time Granularity"));
 
-        timePropertyPanel = new JPanel();
+        timePropertyPanel = new JPanel(new WrapLayout());
         timePropertyPanel.setBorder(SizeHelper.getTitledBorder("Time value"));
-        timePropertyPanel.setLayout(new WrapLayout());
-        timePropertyPanel.setPreferredSize(new Dimension(1, labelheight * 6));
 
         estimatorButton = new JButton("Estimate...");
         estimatorButton.setPreferredSize(buttonSize);
@@ -106,8 +83,7 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
         JButton clearButton = new JButton("Clear");
         clearButton.setPreferredSize(buttonSize);
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout());
+        JPanel buttonPanel = new JPanel(new WrapLayout());
         buttonPanel.add(estimatorButton);
         buttonPanel.add(clearButton);
 
@@ -115,6 +91,7 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
             editor.requestFocus();
             editor.getWorkspaceEntry().saveMemento();
             Granularity g = granularityPanel.getSelection();
+            final VisualSON visualNet = (VisualSON) editor.getModel();
             visualNet.setForegroundColor(selection, selectedColor);
             final Framework framework = Framework.getInstance();
             final MainWindow mainWindow = framework.getMainWindow();
@@ -303,7 +280,7 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
         Interval value;
         if (node instanceof VisualPlaceNode) {
             VisualPlaceNode vc = (VisualPlaceNode) node;
-            PlaceNode c = (PlaceNode) vc.getReferencedComponent();
+            PlaceNode c = vc.getReferencedComponent();
 
             value = c.getDuration();
             if (isMin) {
@@ -518,16 +495,16 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
     @Override
     public void activated(final GraphEditor editor) {
         super.activated(editor);
-        visualNet = (VisualSON) editor.getModel();
-        net = (SON) visualNet.getMathModel();
+        final VisualSON visualNet = (VisualSON) editor.getModel();
+        final SON net = visualNet.getMathModel();
         settings = new TimeEstimatorSettings();
         net.refreshAllColor();
         net.clearMarking();
 
-        // set property states for initial and final states
+        // Set property states for initial and final states
         TimeAlg.removeProperties(net);
         TimeAlg.setProperties(net);
-        // save visibility state
+        // Save visibility state
         visibility = SONSettings.getTimeVisibility();
         // set visibility to true
         SONSettings.setTimeVisibility(true);
@@ -537,6 +514,8 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
     @Override
     public void deactivated(final GraphEditor editor) {
         super.deactivated(editor);
+        final VisualSON visualNet = (VisualSON) editor.getModel();
+        final SON net = visualNet.getMathModel();
         if (!visibility) {
             TimeAlg.removeProperties(net);
         }
@@ -555,6 +534,8 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
 
     @Override
     public void mousePressed(GraphEditorMouseEvent e) {
+        final VisualSON visualNet = (VisualSON) e.getEditor().getModel();
+        final SON net = visualNet.getMathModel();
         net.refreshNodeColor();
         Point2D position = e.getPosition();
         Container root = e.getModel().getRoot();
@@ -631,4 +612,5 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
             }
         };
     }
+
 }
