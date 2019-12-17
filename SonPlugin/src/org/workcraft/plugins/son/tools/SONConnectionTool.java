@@ -37,7 +37,7 @@ public class SONConnectionTool extends ConnectionTool {
         VisualSON vson = (VisualSON) e.getModel();
 
         vson.forceConnectionSemantics(semantic);
-        //forbid to connect with collapsed block (bound).
+        // Forbid to connect with collapsed block (bound).
         if (currentNode instanceof VisualBlock) {
             JOptionPane.showMessageDialog(mainWindow,
                     "Connect with atomic block is not valid",

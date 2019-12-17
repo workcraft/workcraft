@@ -10,8 +10,8 @@ public class GranularityPanel extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
-    private JRadioButton yearYearButton;
-    private JRadioButton hourMinsButton;
+    private final JRadioButton yearYearButton;
+    private final JRadioButton hourMinsButton;
 
     public GranularityPanel(Border border) {
         setLayout(new WrapLayout());
@@ -56,4 +56,5 @@ public class GranularityPanel extends JPanel {
     public JRadioButton getHourMinsButton() {
         return hourMinsButton;
     }
+
 }

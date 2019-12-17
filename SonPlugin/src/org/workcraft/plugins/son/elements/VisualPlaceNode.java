@@ -89,15 +89,10 @@ public class VisualPlaceNode extends VisualComponent {
 
         if (token) {
             Graphics2D g = r.getGraphics();
-            double singleTokenSize = getSingleTokenSize();
             Color tokenColor = Coloriser.colorise(getTokenColor(), r.getDecoration().getColorisation());
 
-            Shape shape;
-            shape = new Ellipse2D.Double(
-                    -singleTokenSize / 2,
-                    -singleTokenSize / 2,
-                    singleTokenSize,
-                    singleTokenSize);
+            double s = getSingleTokenSize();
+            Shape shape = new Ellipse2D.Double(-s / 2, -s / 2, s, s);
             g.setColor(Coloriser.colorise(tokenColor, d.getColorisation()));
             g.fill(shape);
         }
@@ -144,7 +139,7 @@ public class VisualPlaceNode extends VisualComponent {
     }
 
     protected void drawDurationInLocalSpace(DrawRequest r) {
-        if (SONSettings.getTimeVisibility() && ((PlaceNode) getReferencedComponent()).getDuration().isSpecified()) {
+        if (SONSettings.getTimeVisibility() && getReferencedComponent().getDuration().isSpecified()) {
             cahceDurationRenderedText();
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
@@ -167,7 +162,7 @@ public class VisualPlaceNode extends VisualComponent {
         if (SONSettings.isErrorTracing()) {
             bb = BoundingBoxHelper.union(bb, errorRenderedText.getBoundingBox());
         }
-        if (SONSettings.getTimeVisibility() && ((PlaceNode) getReferencedComponent()).getDuration().isSpecified()) {
+        if (SONSettings.getTimeVisibility() && getReferencedComponent().getDuration().isSpecified()) {
             bb = BoundingBoxHelper.union(bb, durationRenderedText.getBoundingBox());
         }
 
@@ -187,59 +182,59 @@ public class VisualPlaceNode extends VisualComponent {
     }
 
     public boolean isMarked() {
-        return ((PlaceNode) getReferencedComponent()).isMarked();
+        return getReferencedComponent().isMarked();
     }
 
     public void setMarked(boolean b) {
-        ((PlaceNode) getReferencedComponent()).setMarked(b);
+        getReferencedComponent().setMarked(b);
     }
 
     public int getErrors() {
-        return ((PlaceNode) getReferencedComponent()).getErrors();
+        return getReferencedComponent().getErrors();
     }
 
     public void setErrors(int errors) {
-        ((PlaceNode) getReferencedComponent()).setErrors(errors);
+        getReferencedComponent().setErrors(errors);
     }
 
     public Color getTokenColor() {
-        return ((PlaceNode) getReferencedComponent()).getTokenColor();
+        return getReferencedComponent().getTokenColor();
     }
 
     public void setTokenColor(Color tokenColor) {
-        ((PlaceNode) getReferencedComponent()).setTokenColor(tokenColor);
+        getReferencedComponent().setTokenColor(tokenColor);
     }
 
     @Override
     public Color getForegroundColor() {
-        return ((PlaceNode) getReferencedComponent()).getForegroundColor();
+        return getReferencedComponent().getForegroundColor();
     }
 
     @Override
     public void setForegroundColor(Color foregroundColor) {
-        ((PlaceNode) getReferencedComponent()).setForegroundColor(foregroundColor);
+        getReferencedComponent().setForegroundColor(foregroundColor);
     }
 
     @Override
     public void setFillColor(Color fillColor) {
-        ((PlaceNode) getReferencedComponent()).setFillColor(fillColor);
+        getReferencedComponent().setFillColor(fillColor);
     }
 
     @Override
     public Color getFillColor() {
-        return ((PlaceNode) getReferencedComponent()).getFillColor();
+        return getReferencedComponent().getFillColor();
     }
 
     @Override
     public void setLabel(String label) {
         super.setLabel(label);
-        ((PlaceNode) getReferencedComponent()).setLabel(label);
+        getReferencedComponent().setLabel(label);
     }
 
     @Override
     public String getLabel() {
         super.getLabel();
-        return ((PlaceNode) getReferencedComponent()).getLabel();
+        return getReferencedComponent().getLabel();
     }
 
     public void setInterface(String value) {
@@ -260,38 +255,38 @@ public class VisualPlaceNode extends VisualComponent {
     }
 
     public String getDuration() {
-        return ((PlaceNode) getReferencedComponent()).getDuration().toString();
+        return getReferencedComponent().getDuration().toString();
     }
 
     public void setDuration(String time) {
         Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
-        ((PlaceNode) getReferencedComponent()).setDuration(input);
+        getReferencedComponent().setDuration(input);
     }
 
     public String getStartTime() {
-        return ((PlaceNode) getReferencedComponent()).getStartTime().toString();
+        return getReferencedComponent().getStartTime().toString();
     }
 
     public void setStartTime(String time) {
         Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
-        ((PlaceNode) getReferencedComponent()).setStartTime(input);
+        getReferencedComponent().setStartTime(input);
     }
 
     public String getEndTime() {
-        return ((PlaceNode) getReferencedComponent()).getEndTime().toString();
+        return getReferencedComponent().getEndTime().toString();
     }
 
     public void setEndTime(String time) {
         Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
-        ((PlaceNode) getReferencedComponent()).setEndTime(input);
+        getReferencedComponent().setEndTime(input);
     }
 
     public Color getDurationColor() {
-        return ((PlaceNode) getReferencedComponent()).getDurationColor();
+        return getReferencedComponent().getDurationColor();
     }
 
     public void setDurationColor(Color value) {
-        ((PlaceNode) getReferencedComponent()).setDurationColor(value);
+        getReferencedComponent().setDurationColor(value);
     }
 
     @Override
