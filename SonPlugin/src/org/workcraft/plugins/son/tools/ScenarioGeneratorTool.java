@@ -35,8 +35,6 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
     protected JButton saveButton;
     protected JButton removeButton;
     protected JButton resetButton;
-    protected JButton importButton;
-    protected JButton exportButton;
     protected JToggleButton startButton;
     protected ScenarioTable scenarioTable;
 
@@ -44,44 +42,20 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
     protected ScenarioSaveList saveList;
     private static final Color greyoutColor = Color.LIGHT_GRAY;
 
-    public class SaveList extends ArrayList<ScenarioRef> {
-        private static final long serialVersionUID = 1L;
-        private int position = 0;
-
-        public int getPosition() {
-            return position;
-        }
-
-        public void setPosition(int value) {
-            position = Math.min(Math.max(0, value), size());
-        }
-
-        public void incPosition(int value) {
-            setPosition(position + value);
-        }
-
-        public void decPosition(int value) {
-            setPosition(position - value);
-        }
-    }
-
     @Override
     public JPanel getControlsPanel(final GraphEditor editor) {
         if (panel != null) {
             return panel;
         }
 
-        // Workcraft invokes this method before activate method.
-        visualNet = (VisualSON) editor.getModel();
-        net = (SON) visualNet.getMathModel();
+        final VisualSON visualNet = (VisualSON) editor.getModel();
+        final SON net = visualNet.getMathModel();
         net.refreshAllColor();
 
         startButton = GuiUtils.createIconToggleButton(GuiUtils.createIconFromSVG("images/son-scenario-start.svg"), "Generate");
         resetButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG("images/son-scenario-reset.svg"), "Reset");
         saveButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG("images/son-scenario-save.svg"), "Save");
         removeButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG("images/son-scenario-delete.svg"), "Remove");
-        importButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG("images/son-scenario-import.svg"), "Import scenarios");
-        exportButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG("images/son-scenario-export.svg"), "Export scenarios");
 
         int buttonWidth = (int) Math.round(startButton.getPreferredSize().getWidth() + 5);
         int buttonHeight = (int) Math.round(startButton.getPreferredSize().getHeight() + 5);
@@ -95,30 +69,27 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
         controlPanel.add(resetButton);
         controlPanel.add(saveButton);
         controlPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-        //controlPanel.add(importButton);
-        //controlPanel.add(exportButton);
-        //controlPanel.add(Box.createRigidArea(new Dimension(5, 0)));
         controlPanel.add(removeButton);
 
         saveList = net.importScenarios();
         scenarioTable = new ScenarioTable(saveList, editor);
 
-        tabelPanel = new JScrollPane(scenarioTable);
-        tabelPanel.setPreferredSize(new Dimension(1, 1));
+        tablePanel = new JScrollPane(scenarioTable);
+        tablePanel.setPreferredSize(new Dimension(1, 1));
 
         startButton.addActionListener(event -> {
             if (startButton.isSelected()) {
-                start();
+                start(editor);
             } else {
                 Step step = simuAlg.getEnabledNodes(sync, phases, isRev);
-                setColors(step, greyoutColor);
+                setColors(net, step, greyoutColor);
                 net.clearMarking();
             }
         });
 
         resetButton.addActionListener(event -> {
             startButton.setSelected(true);
-            start();
+            start(editor);
         });
 
         saveButton.addActionListener(event -> {
@@ -147,7 +118,8 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
                     saveList.decPosition(1);
                 }
                 if (!saveList.isEmpty()) {
-                    scenarioRef.addAll(saveList.get(saveList.getPosition()).getNodeRefs(net));
+                    ScenarioRef savedScenarioRef = saveList.get(saveList.getPosition());
+                    scenarioRef.addAll(savedScenarioRef.getNodeRefs(net));
                 }
                 scenarioTable.runtimeUpdateColor();
                 updateState(editor);
@@ -194,13 +166,13 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
         panel = new JPanel();
         panel.setLayout(new BorderLayout());
         panel.add(controlPanel, BorderLayout.NORTH);
-        panel.add(tabelPanel, BorderLayout.CENTER);
+        panel.add(tablePanel, BorderLayout.CENTER);
         panel.setPreferredSize(new Dimension(0, 0));
         return panel;
     }
 
-    private void start() {
-        if (!acyclicChecker()) {
+    private void start(final GraphEditor editor) {
+        if (!acyclicChecker(editor)) {
             startButton.setSelected(false);
             startButton.repaint();
             try {
@@ -209,6 +181,8 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
                 errorMsg(e1.getMessage(), editor);
             }
         } else {
+            final VisualSON visualNet = (VisualSON) editor.getModel();
+            final SON net = visualNet.getMathModel();
             scenarioRef.clear();
             net.clearMarking();
             net.refreshAllColor();
@@ -222,18 +196,21 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
     @Override
     public void activated(final GraphEditor editor) {
         super.activated(editor);
-        this.editor = editor;
+        final VisualSON visualNet = (VisualSON) editor.getModel();
+        final SON net = visualNet.getMathModel();
         BlockConnector.blockBoundingConnector(visualNet);
         net.clearMarking();
-        initialise();
+        initialise(editor);
         editor.forceRedraw();
     }
 
     @Override
     public void deactivated(final GraphEditor editor) {
         super.deactivated(editor);
+        final VisualSON visualNet = (VisualSON) editor.getModel();
+        final SON net = visualNet.getMathModel();
         BlockConnector.blockInternalConnector(visualNet);
-        exportScenarios();
+        exportScenarios(net);
         scenarioRef.clear();
         net.refreshAllColor();
         net.clearMarking();
@@ -248,14 +225,14 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
     }
 
     @Override
-    protected void initialise() {
-        super.initialise();
+    protected void initialise(final GraphEditor editor) {
+        super.initialise(editor);
         saveList = scenarioTable.getSaveList();
         scenarioRef = scenarioTable.getScenarioRef();
         updateState(editor);
     }
 
-    private void exportScenarios() {
+    private void exportScenarios(final SON net) {
         saveList.setPosition(0);
         for (Scenario scenario: net.getScenarios()) {
             net.remove(scenario);
@@ -267,25 +244,29 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
     }
 
     protected void scenarioGenerator(final GraphEditor editor) {
+        final VisualSON visualNet = (VisualSON) editor.getModel();
+        final SON net = visualNet.getMathModel();
         writeModelState(initialMarking);
-
         MarkingRef markingRef = new MarkingRef();
-        markingRef.addAll(net.getNodeRefs(getCurrentMarking()));
+        ArrayList<PlaceNode> currentMarking = getCurrentMarking(net);
+        markingRef.addAll(net.getNodeRefs(currentMarking));
         scenarioRef.addAll(markingRef);
         updateState(editor);
 
         Step step = simuAlg.getEnabledNodes(sync, phases, false);
-        setDecoration(step);
+        setDecoration(editor, step);
         autoSimulator(editor);
     }
 
     @Override
     protected void autoSimulator(final GraphEditor editor) {
+        final VisualSON visualNet = (VisualSON) editor.getModel();
+        final SON net = visualNet.getMathModel();
         autoSimulationTask(editor);
         Collection<Node> nodes = new ArrayList<>();
         nodes.addAll(scenarioRef.getNodes(net));
         nodes.addAll(scenarioRef.getRuntimeConnections(net));
-        setColors(nodes, Color.BLACK);
+        setColors(net, nodes, Color.BLACK);
     }
 
     @Override
@@ -295,7 +276,9 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
         if (step.isEmpty()) {
             startButton.setSelected(false);
         }
-        step = conflictfilter(step);
+        final VisualSON visualNet = (VisualSON) editor.getModel();
+        final SON net = visualNet.getMathModel();
+        step = conflictFilter(net, step);
         if (!step.isEmpty()) {
             step = simuAlg.getMinFire(step.iterator().next(), sync, step, false);
             executeEvents(editor, step);
@@ -310,8 +293,11 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
 
     @Override
     public void executeEvents(final GraphEditor editor, Step step) {
+        final VisualSON visualNet = (VisualSON) editor.getModel();
+        final SON net = visualNet.getMathModel();
+
         ArrayList<PlaceNode> oldMarking = new ArrayList<>();
-        oldMarking.addAll(getCurrentMarking());
+        oldMarking.addAll(getCurrentMarking(net));
         scenarioTable.setIsCellColor(false);
         super.executeEvents(editor, step);
 
@@ -322,8 +308,8 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
         //add marking references
         MarkingRef markingRef = new MarkingRef();
         ArrayList<PlaceNode> marking = new ArrayList<>();
-        marking.addAll(getCurrentMarking());
-        marking.addAll(getSyncChannelPlaces(step));
+        marking.addAll(getCurrentMarking(net));
+        marking.addAll(getSyncChannelPlaces(net, step));
         markingRef.addAll(net.getNodeRefs(marking));
         for (String str : markingRef) {
             if (!scenarioRef.contains(str)) {
@@ -332,9 +318,9 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
         }
     }
 
-    private ArrayList<PlaceNode> getCurrentMarking() {
+    private ArrayList<PlaceNode> getCurrentMarking(final SON net) {
         ArrayList<PlaceNode> result = new ArrayList<>();
-        for (PlaceNode c : readSONMarking().keySet()) {
+        for (PlaceNode c : readSONMarking(net).keySet()) {
             if (c.isMarked()) {
                 result.add(c);
             }
@@ -343,7 +329,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
     }
 
     //get channel places in a synchronous step.
-    private Collection<ChannelPlace> getSyncChannelPlaces(Step step) {
+    private Collection<ChannelPlace> getSyncChannelPlaces(final SON net, Step step) {
         HashSet<ChannelPlace> result = new HashSet<>();
         for (TransitionNode e : step) {
             for (SONConnection con : net.getSONConnections((MathNode) e)) {
@@ -359,16 +345,18 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
         return result;
     }
 
-    private void setColors(Collection<? extends Node> nodes, Color color) {
+    private void setColors(final SON net, Collection<? extends Node> nodes, Color color) {
         for (Node node : nodes) {
             net.setForegroundColor(node, color);
         }
     }
 
     @Override
-    protected void setDecoration(Step enabled) {
+    protected void setDecoration(final GraphEditor editor, Step enabled) {
         if (startButton.isSelected()) {
-            setColors(net.getNodes(), greyoutColor);
+            final VisualSON visualNet = (VisualSON) editor.getModel();
+            final SON net = visualNet.getMathModel();
+            setColors(net, net.getNodes(), greyoutColor);
             for (TransitionNode e : enabled) {
                 e.setForegroundColor(SimulationDecorationSettings.getExcitedComponentColor());
             }
@@ -399,7 +387,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
     public void mousePressed(GraphEditorMouseEvent e) {
         if (startButton.isSelected()) {
             super.mousePressed(e);
-            autoSimulator(editor);
+            autoSimulator(e.getEditor());
         }
     }
 
@@ -413,4 +401,5 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
             }
         };
     }
+
 }

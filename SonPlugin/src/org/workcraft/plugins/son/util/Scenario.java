@@ -1,5 +1,6 @@
 package org.workcraft.plugins.son.util;
 
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathNode;
 
 public class Scenario extends MathNode {
@@ -10,7 +11,7 @@ public class Scenario extends MathNode {
     }
 
     public void setScenario(String elements) {
-        this.elements = elements;
+        this.elements = NamespaceHelper.convertLegacyHierarchySeparators(elements);
     }
 
 }
