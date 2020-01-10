@@ -22,27 +22,9 @@ import java.util.HashMap;
 public class PropertyEditorTable extends JTable {
 
     private final PropertyEditorTableModel model;
-    private final HashMap<Class<?>, PropertyClass> propertyClasses;
+    private static final HashMap<Class<?>, PropertyClass> propertyClasses = new HashMap<>();
 
-    private TableCellRenderer[] cellRenderers;
-    private TableCellEditor[] cellEditors;
-
-    public PropertyEditorTable() {
-        this("", "");
-    }
-
-    public PropertyEditorTable(String propertyHeader, String valueHeader) {
-        super();
-
-        model = new PropertyEditorTableModel(propertyHeader, valueHeader);
-        setModel(model);
-        super.setUI(new PropertyEditorTableUI(model));
-
-        getTableHeader().setDefaultRenderer(new FlatHeaderRenderer());
-        setFocusable(false);
-        setRowHeight(SizeHelper.getComponentHeightFromFont(getFont()));
-
-        propertyClasses = new HashMap<>();
+    static {
         propertyClasses.put(int.class, new IntegerProperty());
         propertyClasses.put(Integer.class, new IntegerProperty());
         propertyClasses.put(double.class, new DoubleProperty());
@@ -63,6 +45,30 @@ public class PropertyEditorTable extends JTable {
             PropertyClassProvider instance = plugin.newInstance();
             propertyClasses.put(instance.getPropertyType(), instance.getPropertyGui());
         }
+    }
+
+    private TableCellRenderer[] cellRenderers;
+    private TableCellEditor[] cellEditors;
+
+    public PropertyEditorTable() {
+        this("", "");
+    }
+
+    public PropertyEditorTable(String propertyHeader, String valueHeader) {
+        super();
+
+        model = new PropertyEditorTableModel(propertyHeader, valueHeader);
+        setModel(model);
+        super.setUI(new PropertyEditorTableUI(model));
+
+        getTableHeader().setDefaultRenderer(new FlatHeaderRenderer());
+        setFocusable(false);
+        setRowHeight(SizeHelper.getComponentHeightFromFont(getFont()));
+    }
+
+    @Override
+    public PropertyEditorTableModel getModel() {
+        return model;
     }
 
     @Override
