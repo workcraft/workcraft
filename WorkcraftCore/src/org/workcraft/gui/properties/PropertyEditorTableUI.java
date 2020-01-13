@@ -70,18 +70,28 @@ public class PropertyEditorTableUI extends BasicTableUI {
                         rect.width - horizontalMargin, rect.height - verticalMargin);
 
                 if (table.isEditing() && (row == table.getEditingRow()) && (column == table.getEditingColumn())) {
-                    Component component = table.getEditorComponent();
-                    component.setBounds(rect);
-                    component.validate();
+                    paintCellEditor(rect);
                 } else {
-                    TableCellRenderer renderer = table.getCellRenderer(row, column);
-                    Component component = table.prepareRenderer(renderer, row, column);
-                    if (component.getParent() == null) {
-                        rendererPane.add(component);
-                    }
-                    rendererPane.paintComponent(g, component, table, rect.x, rect.y, rect.width, rect.height, true);
+                    paintCellRenderer(g, row, column, rect);
                 }
             }
+        }
+    }
+
+    private void paintCellEditor(Rectangle rect) {
+        Component component = table.getEditorComponent();
+        if (component != null) {
+            component.setBounds(rect);
+            component.validate();
+        }
+    }
+
+    private void paintCellRenderer(Graphics g, int row, int column, Rectangle rect) {
+        TableCellRenderer renderer = table.getCellRenderer(row, column);
+        if (renderer != null) {
+            rendererPane.removeAll();
+            Component component = table.prepareRenderer(renderer, row, column);
+            rendererPane.paintComponent(g, component, table, rect.x, rect.y, rect.width, rect.height, true);
         }
     }
 

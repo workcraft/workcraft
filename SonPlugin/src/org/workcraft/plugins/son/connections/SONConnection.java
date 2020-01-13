@@ -85,4 +85,5 @@ public class SONConnection extends MathConnection {
     public void setTimeLabelColor(Color value) {
         timeColor = value;
     }
+
 }

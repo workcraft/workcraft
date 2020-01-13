@@ -22,20 +22,17 @@ public class PropertyEditorTableModel extends AbstractTableModel {
     public void assign(Properties properties) {
         if (properties == null) {
             clear();
-            return;
+        } else {
+            declarations = properties.getDescriptors().toArray(new PropertyDescriptor[0]);
+            rowClasses = new PropertyClass[declarations.length];
+            fireTableDataChanged();
+            fireTableStructureChanged();
         }
-
-        declarations = properties.getDescriptors().toArray(new PropertyDescriptor[0]);
-        rowClasses = new PropertyClass[declarations.length];
-
-        fireTableDataChanged();
-        fireTableStructureChanged();
     }
 
     public void clear() {
         declarations = null;
         rowClasses = null;
-
         fireTableDataChanged();
         fireTableStructureChanged();
     }
