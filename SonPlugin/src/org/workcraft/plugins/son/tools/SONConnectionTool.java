@@ -1,8 +1,6 @@
 package org.workcraft.plugins.son.tools;
 
-import javax.swing.JOptionPane;
-import javax.swing.JRadioButton;
-import javax.swing.JToolBar;
+import javax.swing.*;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
@@ -27,6 +25,9 @@ public class SONConnectionTool extends ConnectionTool {
         bhvButton.addActionListener(event -> semantic = Semantics.BHVLINE);
         toolbar.add(bhvButton);
 
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(polyButton);
+        buttonGroup.add(bhvButton);
         polyButton.setSelected(true);
     }
 

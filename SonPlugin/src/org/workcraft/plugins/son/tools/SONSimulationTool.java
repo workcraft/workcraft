@@ -922,7 +922,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
                 }
             }
 
-            if (autoSimuButton.isSelected()) {
+            if ((autoSimuButton != null) && autoSimuButton.isSelected()) {
                 autoSimulator(editor);
             }
         }

@@ -30,22 +30,8 @@ public class VisualSONConnection extends VisualConnection {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<>(String.class, "Semantic",
-                value -> { },
-                () -> {
-                    switch (getSemantics()) {
-                    case PNLINE:
-                        return "Petri-net connection";
-                    case SYNCLINE:
-                        return "Synchronous communication";
-                    case ASYNLINE:
-                        return "Asynchronous communication";
-                    case BHVLINE:
-                        return "Behavioural abstraction";
-                    default:
-                        return getSemantics().toString();
-                    }
-                }).setCombinable().setTemplatable());
+        addPropertyDeclaration(new PropertyDeclaration<>(Semantics.class, "Semantic",
+                this::setSemantics, this::getSemantics).setCombinable().setTemplatable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(Color.class, "Time color",
                 this::setTimeLabelColor, this::getTimeLabelColor).setCombinable().setTemplatable());
@@ -209,4 +195,5 @@ public class VisualSONConnection extends VisualConnection {
     public void setTimeLabelColor(Color value) {
         getReferencedSONConnection().setTimeLabelColor(value);
     }
+
 }
