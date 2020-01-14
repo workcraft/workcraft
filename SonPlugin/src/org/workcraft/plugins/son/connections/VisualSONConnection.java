@@ -8,6 +8,7 @@ import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.util.Interval;
+import org.workcraft.serialisation.NoAutoSerialisation;
 import org.workcraft.utils.Coloriser;
 import org.workcraft.utils.Geometry;
 
@@ -18,8 +19,15 @@ import java.awt.geom.Rectangle2D;
 
 public class VisualSONConnection extends VisualConnection {
 
-    public static final Font timeFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.35f);
-    private RenderedText timeRenderedText = new RenderedText("", timeFont, Positioning.CENTER, new Point2D.Double());
+    public static final Font TIME_FONT = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.35f);
+
+    public static final BasicStroke ASYNLINE_STROKE = new BasicStroke(0.15f, BasicStroke.CAP_BUTT,
+            BasicStroke.JOIN_ROUND, 1.5f, new float[]{0.1f, 0.075f}, 0f);
+
+    public static final BasicStroke BHVLINE_STROKE = new BasicStroke(0.02f, BasicStroke.CAP_BUTT,
+            BasicStroke.JOIN_ROUND, 2.0f, new float[]{0.24f, 0.15f}, 0f);
+
+    private RenderedText timeRenderedText = new RenderedText("", TIME_FONT, Positioning.CENTER, new Point2D.Double());
 
     public VisualSONConnection() {
         this(null, null, null);
@@ -30,8 +38,8 @@ public class VisualSONConnection extends VisualConnection {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<>(Semantics.class, "Semantic",
-                this::setSemantics, this::getSemantics).setCombinable().setTemplatable());
+//        addPropertyDeclaration(new PropertyDeclaration<>(Semantics.class, "Semantic",
+//                this::setSemantics, this::getSemantics).setReadonly());
 
         addPropertyDeclaration(new PropertyDeclaration<>(Color.class, "Time color",
                 this::setTimeLabelColor, this::getTimeLabelColor).setCombinable().setTemplatable());
@@ -49,10 +57,12 @@ public class VisualSONConnection extends VisualConnection {
         return (SONConnection) getReferencedConnection();
     }
 
+    @NoAutoSerialisation
     public Semantics getSemantics() {
         return getReferencedSONConnection().getSemantics();
     }
 
+    @NoAutoSerialisation
     public void setSemantics(Semantics semantics) {
         getReferencedSONConnection().setSemantics(semantics);
         invalidate();
@@ -63,9 +73,9 @@ public class VisualSONConnection extends VisualConnection {
         switch (getSemantics()) {
         case SYNCLINE:
         case ASYNLINE:
-            return new BasicStroke(0.15f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 1.5f, new float[]{0.1f, 0.075f}, 0f);
+            return ASYNLINE_STROKE;
         case BHVLINE:
-            return new BasicStroke(0.02f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 2.0f, new float[]{0.24f, 0.15f}, 0f);
+            return BHVLINE_STROKE;
         default:
             return super.getStroke();
         }
@@ -102,8 +112,8 @@ public class VisualSONConnection extends VisualConnection {
     protected void cacheLabelRenderedText(DrawRequest r) {
         String time = "T: " + getTime().toString();
 
-        if (timeRenderedText.isDifferent(time, timeFont, Positioning.CENTER, new Point2D.Double())) {
-            timeRenderedText = new RenderedText(time, timeFont, Positioning.CENTER, new Point2D.Double());
+        if (timeRenderedText.isDifferent(time, TIME_FONT, Positioning.CENTER, new Point2D.Double())) {
+            timeRenderedText = new RenderedText(time, TIME_FONT, Positioning.CENTER, new Point2D.Double());
         }
     }
 

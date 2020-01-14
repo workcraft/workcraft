@@ -5,14 +5,14 @@ import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.Toolbox;
+import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.gui.tools.SelectionTool;
+import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.VisualONGroup;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
@@ -21,6 +21,7 @@ import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.plugins.son.elements.VisualChannelPlace;
 import org.workcraft.plugins.son.elements.VisualCondition;
 import org.workcraft.plugins.son.elements.VisualEvent;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.utils.Hierarchy;
 
@@ -36,6 +37,14 @@ public class SONSelectionTool extends SelectionTool {
 
     public SONSelectionTool(GraphEditorTool channelPlaceTool) {
         this.channelPlaceTool = channelPlaceTool;
+    }
+
+    @Override
+    public void activated(final GraphEditor editor) {
+        super.activated(editor);
+        final SON net = (SON) editor.getModel().getMathModel();
+        net.clearMarking();
+        net.refreshAllColor();
     }
 
     @Override
@@ -112,12 +121,10 @@ public class SONSelectionTool extends SelectionTool {
         VisualSON model = (VisualSON) e.getEditor().getModel();
 
         if (e.getClickCount() > 1) {
-            VisualNode node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
             Collection<VisualNode> selection = e.getModel().getSelection();
 
             if (selection.size() == 1) {
-                VisualNode selectedNode = selection.iterator().next();
-                selectedNode = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
+                VisualNode selectedNode = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
 
                 if (selectedNode instanceof VisualBlock) {
                     if (!((VisualBlock) selectedNode).getIsCollapsed()) {
@@ -140,7 +147,7 @@ public class SONSelectionTool extends SelectionTool {
                 }
 
                 if (selectedNode instanceof VisualChannelPlace) {
-                    VisualChannelPlace cPlace = (VisualChannelPlace) node;
+                    VisualChannelPlace cPlace = (VisualChannelPlace) selectedNode;
                     for (VisualConnection con : model.getConnections(cPlace)) {
 
                         if (((VisualSONConnection) con).getSemantics() == Semantics.ASYNLINE) {

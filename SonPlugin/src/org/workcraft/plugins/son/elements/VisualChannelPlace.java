@@ -1,16 +1,14 @@
 package org.workcraft.plugins.son.elements;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Point2D;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.utils.Coloriser;
 import org.workcraft.gui.tools.Decoration;
+import org.workcraft.utils.Coloriser;
+
+import java.awt.*;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 
 @DisplayName("ChannelPlace")
 @SVGIcon("images/son-node-channel_place.svg")
