@@ -52,17 +52,19 @@ public class ModelProperties implements Properties {
         String propertyName = descriptor.getName();
         int spacePos = propertyName.indexOf(' ');
         String prefix = (spacePos < 0) ? propertyName : propertyName.substring(0, spacePos);
-        boolean found = false;
         int index = 0;
+        int lastIndex = -1;
         for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
-            if (propertyDescriptor.getName().startsWith(prefix)) {
-                found = true;
-            } else if (found) {
-                break;
-            }
             index++;
+            if (propertyDescriptor.getName().startsWith(prefix)) {
+                lastIndex = index;
+            }
         }
-        propertyDescriptors.add(index, descriptor);
+        if (lastIndex < 0) {
+            propertyDescriptors.add(descriptor);
+        } else {
+            propertyDescriptors.add(lastIndex, descriptor);
+        }
     }
 
     public void remove(final PropertyDescriptor descriptor) {

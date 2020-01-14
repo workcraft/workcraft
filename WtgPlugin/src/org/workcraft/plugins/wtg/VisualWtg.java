@@ -61,19 +61,19 @@ public class VisualWtg extends VisualDtd {
     public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
-            LinkedList<String> signalNames = new LinkedList<>(getMathModel().getSignalNames());
-            signalNames.sort(Comparator.comparing(String::toString));
+            List<String> signalNames = new LinkedList<>(getMathModel().getSignalNames());
+            Collections.sort(signalNames);
             Container container = getCurrentLevel();
             if (container instanceof VisualWaveform) {
                 VisualWaveform waveform = (VisualWaveform) container;
                 for (String signalName : signalNames) {
-                    properties.insertOrderedByFirstWord(WtgPropertyHelper.getSignalDeclarationProperty(this, waveform, signalName));
+                    properties.add(WtgPropertyHelper.getSignalDeclarationProperty(this, waveform, signalName));
                 }
                 properties.removeByName(AbstractVisualModel.PROPERTY_TITLE);
             } else {
                 for (String signalName : signalNames) {
-                    properties.insertOrderedByFirstWord(WtgPropertyHelper.getSignalNameProperty(this, signalName));
-                    properties.insertOrderedByFirstWord(WtgPropertyHelper.getSignalTypeProperty(this, signalName));
+                    properties.add(WtgPropertyHelper.getSignalNameProperty(this, signalName));
+                    properties.add(WtgPropertyHelper.getSignalTypeProperty(this, signalName));
                 }
             }
         }

@@ -423,13 +423,13 @@ public class VisualStg extends AbstractVisualModel {
         Stg stg = getMathModel();
         if (node == null) {
             properties.add(StgPropertyHelper.getRefinementProperty(stg));
-            for (Signal.Type type : Signal.Type.values()) {
-                Container container = NamespaceHelper.getMathContainer(this, getCurrentLevel());
-                for (final String signalName : stg.getSignalNames(type, container)) {
-                    if (stg.getSignalTransitions(signalName, container).isEmpty()) continue;
-                    properties.insertOrderedByFirstWord(StgPropertyHelper.getSignalNameModelProperty(this, signalName, container));
-                    properties.insertOrderedByFirstWord(StgPropertyHelper.getSignalTypeModelProperty(stg, signalName, container));
-                }
+            Container container = NamespaceHelper.getMathContainer(this, getCurrentLevel());
+            List<String> signalNames = new ArrayList<>(stg.getSignalNames(container));
+            Collections.sort(signalNames);
+            for (final String signalName : signalNames) {
+                if (stg.getSignalTransitions(signalName, container).isEmpty()) continue;
+                properties.add(StgPropertyHelper.getSignalNameModelProperty(this, signalName, container));
+                properties.add(StgPropertyHelper.getSignalTypeModelProperty(stg, signalName, container));
             }
         } else if (node instanceof VisualSignalTransition) {
             SignalTransition transition = ((VisualSignalTransition) node).getReferencedComponent();

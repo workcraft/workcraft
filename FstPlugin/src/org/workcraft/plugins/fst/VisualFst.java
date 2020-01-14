@@ -20,9 +20,7 @@ import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.plugins.fst.tools.FstSimulationTool;
 import org.workcraft.utils.Hierarchy;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @DisplayName("Finite State Transducer")
 public class VisualFst extends VisualFsm {
@@ -79,7 +77,9 @@ public class VisualFst extends VisualFsm {
     public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
-            for (final Signal signal: getMathModel().getSignals()) {
+            List<Signal> signals = new ArrayList<>(getMathModel().getSignals());
+            Collections.sort(signals, Comparator.comparing(getMathModel()::getNodeReference));
+            for (final Signal signal : signals) {
                 String description = getMathModel().getName(signal) + " type";
                 properties.insertOrderedByFirstWord(getSignalTypeProperty(signal, description));
             }

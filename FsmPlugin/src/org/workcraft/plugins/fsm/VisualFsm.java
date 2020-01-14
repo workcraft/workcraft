@@ -20,9 +20,7 @@ import org.workcraft.plugins.fsm.observers.FirstStateSupervisor;
 import org.workcraft.plugins.fsm.tools.FsmSimulationTool;
 import org.workcraft.utils.Hierarchy;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @DisplayName("Finite State Machine")
 public class VisualFsm extends AbstractVisualModel {
@@ -91,8 +89,10 @@ public class VisualFsm extends AbstractVisualModel {
     public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
-            for (final Symbol symbol: getMathModel().getSymbols()) {
-                properties.insertOrderedByFirstWord(getSymbolProperty(symbol));
+            List<Symbol> symbols = new ArrayList<>(getMathModel().getSymbols());
+            Collections.sort(symbols, Comparator.comparing(getMathModel()::getNodeReference));
+            for (final Symbol symbol : symbols) {
+                properties.add(getSymbolProperty(symbol));
             }
         } else if (node instanceof VisualEvent) {
             properties.add(getEventSymbolProperty((VisualEvent) node));
