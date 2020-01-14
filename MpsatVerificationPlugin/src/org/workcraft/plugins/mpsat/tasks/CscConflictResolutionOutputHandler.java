@@ -34,6 +34,7 @@ public class CscConflictResolutionOutputHandler implements Runnable {
             final String errorMessage = output.getErrorsHeadAndTail();
             DialogUtils.showWarning("Conflict resolution failed. MPSat output: \n" + errorMessage);
         } else {
+            model.setTitle(we.getModelTitle());
             MutexUtils.restoreMutexSignals(model, mutexes);
             MutexUtils.restoreMutexPlacesByName(model, mutexes);
             final ModelEntry me = new ModelEntry(new StgDescriptor(), model);

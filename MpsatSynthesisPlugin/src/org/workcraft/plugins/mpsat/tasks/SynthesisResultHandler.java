@@ -134,8 +134,7 @@ public class SynthesisResultHandler extends AbstractExtendedResultHandler<Synthe
                 if (visualModel instanceof VisualCircuit) {
                     VisualCircuit visualCircuit = (VisualCircuit) visualModel;
                     setComponentsRenderStyle(visualCircuit, renderType);
-                    String title = we.getModelEntry().getModel().getTitle();
-                    visualCircuit.setTitle(title);
+                    visualCircuit.setTitle(we.getModelTitle());
                     if (!we.getFile().exists()) {
                         DialogUtils.showError("Unsaved STG cannot be set as the circuit environment.");
                     } else {
