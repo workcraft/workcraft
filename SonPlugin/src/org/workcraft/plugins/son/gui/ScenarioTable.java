@@ -1,24 +1,19 @@
 package org.workcraft.plugins.son.gui;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.util.ArrayList;
-import java.util.Collection;
-
-import javax.swing.JLabel;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.TableModelEvent;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableModel;
-
 import org.workcraft.dom.Node;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.util.ScenarioRef;
 import org.workcraft.plugins.son.util.ScenarioSaveList;
+
+import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableModel;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class ScenarioTable extends JTable {
 
@@ -134,16 +129,7 @@ public class ScenarioTable extends JTable {
         tableChanged(new TableModelEvent(getModel()));
     }
 
-    public void updateColor() {
-        net.clearMarking();
-        setColors(net.getNodes(), greyoutColor);
-        Collection<Node> nodes = new ArrayList<>();
-        nodes.addAll(getScenarioRef().getNodes(net));
-        nodes.addAll(getScenarioRef().getConnections(net));
-        setColors(nodes, Color.BLACK);
-    }
-
-    public final void updateColor(Node exclude) {
+    public void updateColor(Node exclude) {
         net.clearMarking();
         setColors(net.getNodes(), exclude, greyoutColor);
         Collection<Node> nodes = new ArrayList<>();
