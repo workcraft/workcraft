@@ -55,6 +55,30 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
         return (Signal) super.getReferencedComponent();
     }
 
+    @Override
+    public boolean checkForegroundColor(Color value) {
+        if (!super.checkForegroundColor(value)) {
+            return false;
+        }
+
+        VisualEntryEvent entry = getVisualSignalEntry();
+        if ((entry != null) && !entry.checkForegroundColor(value)) {
+            return false;
+        }
+
+        VisualExitEvent exit = getVisualSignalExit();
+        if ((exit != null) && !exit.checkForegroundColor(value)) {
+            return false;
+        }
+
+        for (VisualTransitionEvent transition : getVisualTransitions()) {
+            if ((transition != null) && !transition.checkForegroundColor(value)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @NoAutoSerialisation
     public Signal.Type getType() {
         return getReferencedComponent().getType();

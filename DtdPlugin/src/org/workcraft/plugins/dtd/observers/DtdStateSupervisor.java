@@ -7,6 +7,7 @@ import org.workcraft.observation.*;
 import org.workcraft.plugins.dtd.*;
 import org.workcraft.plugins.dtd.utils.DtdUtils;
 
+import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -54,6 +55,8 @@ public final class DtdStateSupervisor extends StateSupervisor {
             } else if ((sender instanceof TransitionEvent) && (propertyName.equals(TransitionEvent.PROPERTY_DIRECTION))) {
                 VisualTransitionEvent transtition = dtd.getVisualComponent((TransitionEvent) sender, VisualTransitionEvent.class);
                 handleTransitionDirectionChange(transtition);
+            } else if ((sender instanceof VisualSignal) && (propertyName.equals(VisualSignal.PROPERTY_COLOR))) {
+                handleSignalColorChange((VisualSignal) sender);
             }
         }
     }
@@ -207,6 +210,25 @@ public final class DtdStateSupervisor extends StateSupervisor {
         }
         if (!prevDone) {
             DtdUtils.decorateVisualLevelConnection(dtd, prevEvent,  transition);
+        }
+    }
+
+    private void handleSignalColorChange(VisualSignal signal) {
+        Color color = signal.getForegroundColor();
+        setEventAndNextLevelColor(signal.getVisualSignalEntry(), color);
+        for (VisualTransitionEvent transition : signal.getVisualTransitions()) {
+            setEventAndNextLevelColor(transition, color);
+        }
+        setEventAndNextLevelColor(signal.getVisualSignalExit(), color);
+    }
+
+    private void setEventAndNextLevelColor(VisualEvent event, Color color) {
+        if (event != null) {
+            event.setForegroundColor(color);
+            VisualLevelConnection level = DtdUtils.getNextVisualLevel(dtd, event);
+            if (level != null) {
+                level.setColor(color);
+            }
         }
     }
 

@@ -159,12 +159,16 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         }
     }
 
+    public boolean checkForegroundColor(Color value) {
+        return getForegroundColor().equals(value);
+    }
+
     public Color getForegroundColor() {
         return foregroundColor;
     }
 
     public void setForegroundColor(Color value) {
-        if (!foregroundColor.equals(value)) {
+        if (!checkForegroundColor(value)) {
             foregroundColor = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_COLOR));
         }
