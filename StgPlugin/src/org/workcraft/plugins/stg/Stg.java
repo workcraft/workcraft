@@ -276,6 +276,15 @@ public class Stg extends AbstractMathModel implements StgModel {
         return getSignalTransitions(signalName, container);
     }
 
+    public Signal.Type getSignalType(String signalName, Container container) {
+        Signal.Type type = null;
+        Collection<SignalTransition> transitions = getSignalTransitions(signalName, container);
+        if (!transitions.isEmpty()) {
+            type = transitions.iterator().next().getSignalType();
+        }
+        return type;
+    }
+
     public Signal.Type getSignalType(String signalReference) {
         Signal.Type type = null;
         Collection<SignalTransition> transitions = getSignalTransitions(signalReference);
@@ -287,24 +296,6 @@ public class Stg extends AbstractMathModel implements StgModel {
 
     public void setSignalType(String signalReference, Signal.Type signalType) {
         for (SignalTransition transition: getSignalTransitions(signalReference)) {
-            transition.setSignalType(signalType);
-            // It is sufficient to change the type of a single transition
-            // - all the others will be notified.
-            break;
-        }
-    }
-
-    public Signal.Type getSignalType(String signalName, Container container) {
-        Signal.Type type = null;
-        Collection<SignalTransition> transitions = getSignalTransitions(signalName, container);
-        if (!transitions.isEmpty()) {
-            type = transitions.iterator().next().getSignalType();
-        }
-        return type;
-    }
-
-    public void setSignalType(String signalName, Signal.Type signalType, Container container) {
-        for (SignalTransition transition: getSignalTransitions(signalName, container)) {
             transition.setSignalType(signalType);
             // It is sufficient to change the type of a single transition
             // - all the others will be notified.

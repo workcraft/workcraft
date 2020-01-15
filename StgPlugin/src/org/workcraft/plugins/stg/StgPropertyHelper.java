@@ -5,11 +5,12 @@ import org.workcraft.dom.references.FileReference;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.gui.properties.TextAction;
+import org.workcraft.plugins.stg.utils.StgUtils;
+import org.workcraft.utils.ColorUtils;
 
 public class StgPropertyHelper {
-
-    private static final String SEARCH_SYMBOL = Character.toString((char) 0x26B2);
 
     public static PropertyDescriptor getSignalNameProperty(Stg stg, SignalTransition signalTransition) {
         return new PropertyDeclaration<>(String.class, "Signal name",
@@ -43,32 +44,27 @@ public class StgPropertyHelper {
     }
 
     public static PropertyDescriptor getSignalNameModelProperty(VisualStg visualStg, String signal, Container container) {
-        return new PropertyDeclaration<>(TextAction.class, signal + " name",
+        Stg mathStg = visualStg.getMathModel();
+        Signal.Type signalType = mathStg.getSignalType(signal, container);
+        String colorCode = ColorUtils.getHexRGB(StgUtils.getTypeColor(signalType));
+        return new PropertyDeclaration<>(TextAction.class,
+                "<html>Signal <span style='color: " + colorCode + "'>"  + signal + "</span></html>",
                 value -> {
                     String newName = value.getText();
                     if (!signal.equals(newName)) {
-                        Stg mathStg = visualStg.getMathModel();
                         for (SignalTransition transition : mathStg.getSignalTransitions(signal, container)) {
                             mathStg.setName(transition, newName);
                         }
                     }
                 },
-                () -> new TextAction(signal, new Action(SEARCH_SYMBOL,
+                () -> new TextAction(signal, new Action(PropertyHelper.SEARCH_SYMBOL,
                         () -> {
                             visualStg.selectNone();
-                            Stg mathStg = visualStg.getMathModel();
                             for (SignalTransition transition : mathStg.getSignalTransitions(signal, container)) {
-                                visualStg.getVisualComponent(transition, VisualSignalTransition.class);
                                 visualStg.addToSelection(visualStg.getVisualComponent(transition, VisualSignalTransition.class));
                             }
                         }, "Select all events of signal '" + signal + "'")
                 ));
-    }
-
-    public static PropertyDescriptor getSignalTypeModelProperty(Stg stg, String signal, Container container) {
-        return new PropertyDeclaration<>(Signal.Type.class, signal + " type",
-                value -> stg.setSignalType(signal, value, container),
-                () -> stg.getSignalType(signal, container));
     }
 
 }

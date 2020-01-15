@@ -27,6 +27,7 @@ public class PolicyToPetriConverter {
     public PolicyToPetriConverter(VisualPolicy policyNet) {
         this.policyNet = policyNet;
         this.petriNet = new VisualPetri(new Petri());
+        convertTitle();
         placeMap = convertPlaces();
         transitionMap = convertTransitions();
         bundleMap = convertBundles();
@@ -37,6 +38,10 @@ public class PolicyToPetriConverter {
         } catch (InvalidConnectionException e) {
             //throw new RuntimeException(e);
         }
+    }
+
+    private void convertTitle() {
+        petriNet.setTitle(policyNet.getTitle());
     }
 
     private Map<VisualPlace, VisualPlace> convertPlaces() {

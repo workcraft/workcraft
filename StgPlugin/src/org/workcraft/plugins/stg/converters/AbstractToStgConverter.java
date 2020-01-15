@@ -24,6 +24,7 @@ public abstract class AbstractToStgConverter {
     public AbstractToStgConverter(VisualModel src) {
         this.src = src;
         this.stg = new VisualStg(new Stg());
+        convertTitle();
         convert();
     }
 
@@ -33,6 +34,10 @@ public abstract class AbstractToStgConverter {
 
     public VisualStg getStgModel() {
         return stg;
+    }
+
+    private void convertTitle() {
+        stg.setTitle(src.getTitle());
     }
 
     public abstract void convert();

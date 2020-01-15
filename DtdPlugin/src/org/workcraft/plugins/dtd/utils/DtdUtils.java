@@ -11,9 +11,12 @@ import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.dtd.*;
+import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
+import org.workcraft.plugins.dtd.Event;
+import org.workcraft.plugins.dtd.*;
 
+import java.awt.*;
 import java.awt.geom.Point2D;
 
 public class DtdUtils {
@@ -23,41 +26,61 @@ public class DtdUtils {
 
     public static TransitionEvent.Direction getNextDirection(Signal.State state) {
         switch (state) {
-        case HIGH: return TransitionEvent.Direction.FALL;
-        case LOW: return TransitionEvent.Direction.RISE;
-        case UNSTABLE: return TransitionEvent.Direction.STABILISE;
-        case STABLE: return TransitionEvent.Direction.DESTABILISE;
-        default: return null;
+        case HIGH:
+            return TransitionEvent.Direction.FALL;
+        case LOW:
+            return TransitionEvent.Direction.RISE;
+        case UNSTABLE:
+            return TransitionEvent.Direction.STABILISE;
+        case STABLE:
+            return TransitionEvent.Direction.DESTABILISE;
+        default:
+            return null;
         }
     }
 
     public static TransitionEvent.Direction getPreviousDirection(Signal.State state) {
         switch (state) {
-        case HIGH: return TransitionEvent.Direction.RISE;
-        case LOW: return TransitionEvent.Direction.FALL;
-        case UNSTABLE: return TransitionEvent.Direction.DESTABILISE;
-        case STABLE: return TransitionEvent.Direction.STABILISE;
-        default: return null;
+        case HIGH:
+            return TransitionEvent.Direction.RISE;
+        case LOW:
+            return TransitionEvent.Direction.FALL;
+        case UNSTABLE:
+            return TransitionEvent.Direction.DESTABILISE;
+        case STABLE:
+            return TransitionEvent.Direction.STABILISE;
+        default:
+            return null;
         }
     }
 
     public static Signal.State getNextState(TransitionEvent.Direction direction) {
         switch (direction) {
-        case RISE: return Signal.State.HIGH;
-        case FALL: return Signal.State.LOW;
-        case DESTABILISE: return Signal.State.UNSTABLE;
-        case STABILISE: return Signal.State.STABLE;
-        default: return null;
+        case RISE:
+            return Signal.State.HIGH;
+        case FALL:
+            return Signal.State.LOW;
+        case DESTABILISE:
+            return Signal.State.UNSTABLE;
+        case STABILISE:
+            return Signal.State.STABLE;
+        default:
+            return null;
         }
     }
 
     public static Signal.State getPreviousState(TransitionEvent.Direction direction) {
         switch (direction) {
-        case RISE: return Signal.State.LOW;
-        case FALL: return Signal.State.HIGH;
-        case DESTABILISE: return Signal.State.STABLE;
-        case STABILISE: return Signal.State.UNSTABLE;
-        default: return null;
+        case RISE:
+            return Signal.State.LOW;
+        case FALL:
+            return Signal.State.HIGH;
+        case DESTABILISE:
+            return Signal.State.STABLE;
+        case STABILISE:
+            return Signal.State.UNSTABLE;
+        default:
+            return null;
         }
     }
 
@@ -250,6 +273,20 @@ public class DtdUtils {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public static Color getTypeColor(Signal.Type type) {
+        if (type != null) {
+            switch (type) {
+            case INPUT:
+                return SignalCommonSettings.getInputColor();
+            case OUTPUT:
+                return SignalCommonSettings.getOutputColor();
+            case INTERNAL:
+                return SignalCommonSettings.getInternalColor();
+            }
+        }
+        return SignalCommonSettings.getDummyColor();
     }
 
 }

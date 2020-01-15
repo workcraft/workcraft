@@ -22,6 +22,7 @@ public abstract class AbstractModelConverter<S extends VisualModel, T extends Vi
         this.srcModel = srcModel;
         this.dstModel = dstModel;
         preprocessing();
+        convertTitle();
         convertPages();
         convertComponents();
         convertReplicas();
@@ -39,6 +40,11 @@ public abstract class AbstractModelConverter<S extends VisualModel, T extends Vi
     @Override
     public T getDstModel() {
         return dstModel;
+    }
+
+    @Override
+    public String convertTitle(String title) {
+        return title;
     }
 
     private void putSrcToDstNode(VisualNode srcNode, VisualNode dstNode) {
@@ -61,6 +67,10 @@ public abstract class AbstractModelConverter<S extends VisualModel, T extends Vi
         VisualClass visualClassAnnotation = mathNodeClass.getAnnotation(VisualClass.class);
         Class<?> visualClass = visualClassAnnotation.value();
         return visualClass.asSubclass(VisualComponent.class);
+    }
+
+    private void convertTitle() {
+        dstModel.setTitle(convertTitle(srcModel.getTitle()));
     }
 
     private void convertPages() {

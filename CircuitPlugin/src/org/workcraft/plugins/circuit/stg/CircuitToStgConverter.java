@@ -50,6 +50,7 @@ public class CircuitToStgConverter {
     public CircuitToStgConverter(VisualCircuit circuit) {
         this.circuit = circuit;
         this.stg = new VisualStg(new Stg());
+        convertTitle();
         convertPages();
         HashSet<VisualContact> drivers = identifyDrivers();
         this.nodeToDriverMap = associateNodesToDrivers(drivers);
@@ -108,6 +109,10 @@ public class CircuitToStgConverter {
             result = new Pair<>(signal, isInverted);
         }
         return result;
+    }
+
+    private void convertTitle() {
+        stg.setTitle(circuit.getTitle());
     }
 
     private void convertPages() {

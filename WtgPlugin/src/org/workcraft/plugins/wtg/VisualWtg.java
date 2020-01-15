@@ -72,8 +72,7 @@ public class VisualWtg extends VisualDtd {
                 properties.removeByName(AbstractVisualModel.PROPERTY_TITLE);
             } else {
                 for (String signalName : signalNames) {
-                    properties.add(WtgPropertyHelper.getSignalNameProperty(this, signalName));
-                    properties.add(WtgPropertyHelper.getSignalTypeProperty(this, signalName));
+                    properties.add(WtgPropertyHelper.getSignalNameProperty(getMathModel(), signalName));
                 }
             }
         }

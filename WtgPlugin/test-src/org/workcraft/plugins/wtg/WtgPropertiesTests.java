@@ -51,7 +51,7 @@ public class WtgPropertiesTests {
         VisualTransitionEvent visualTransition = visualModel.createVisualTransition(visualSignal, TransitionEvent.Direction.RISE);
 
         visualModel.selectNone();
-        check(ModelPropertyUtils.getSelectionProperties(visualModel), 3);
+        check(ModelPropertyUtils.getSelectionProperties(visualModel), 2);
         visualModel.setCurrentLevel(visualWaveform);
         check(ModelPropertyUtils.getSelectionProperties(visualModel), 1);
 

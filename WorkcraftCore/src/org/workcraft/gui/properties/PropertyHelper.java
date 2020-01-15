@@ -14,6 +14,9 @@ public class PropertyHelper {
     public static final String BULLET_SYMBOL = Character.toString((char) 0x2022);
     public static final String BULLET_PREFIX = "  " + BULLET_SYMBOL + " ";
 
+    // Magnifying glass symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
+    public static final String SEARCH_SYMBOL = Character.toString((char) 0x26B2);
+
     public static final Insets BUTTON_INSETS =  new Insets(1, 1, 1, 1);
 
     public static PropertyDescriptor<String> createSeparatorProperty(String text) {

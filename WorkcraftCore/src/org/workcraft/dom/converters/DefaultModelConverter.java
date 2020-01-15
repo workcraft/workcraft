@@ -31,7 +31,7 @@ public class DefaultModelConverter<S extends VisualModel, T extends VisualModel>
 
     @Override
     public Map<Class<? extends VisualReplica>, Class<? extends VisualReplica>> getReplicaClassMap() {
-        return new HashMap<Class<? extends VisualReplica>, Class<? extends VisualReplica>>();
+        return new HashMap<>();
     }
 
     @Override

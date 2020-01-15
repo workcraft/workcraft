@@ -10,8 +10,10 @@ import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.dtd.DtdSettings;
 import org.workcraft.plugins.dtd.Signal;
 import org.workcraft.plugins.dtd.VisualSignal;
+import org.workcraft.plugins.dtd.utils.DtdUtils;
 import org.workcraft.plugins.wtg.tools.SignalGeneratorTool;
 import org.workcraft.plugins.wtg.utils.WtgUtils;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.geom.Point2D;
 import java.util.*;
@@ -20,33 +22,21 @@ import static org.workcraft.plugins.wtg.utils.WtgUtils.getFinalSignalStatesFromW
 
 public class WtgPropertyHelper {
 
-    public static PropertyDescriptor getSignalNameProperty(VisualWtg visualWtg, String signalName) {
-        return new PropertyDeclaration<>(String.class, signalName + " name",
-                value -> WtgUtils.renameSignal(visualWtg.getMathModel(), signalName, value),
+    public static PropertyDescriptor getSignalNameProperty(Wtg wtg, String signalName) {
+        Signal.Type signalType = wtg.getSignalType(signalName);
+        String colorCode = ColorUtils.getHexRGB(DtdUtils.getTypeColor(signalType));
+        return new PropertyDeclaration<>(String.class,
+                "<html>Signal <span style='color: " + colorCode + "'>" + signalName + "</span></html>",
+                value -> WtgUtils.renameSignal(wtg, signalName, value),
                 () -> signalName);
     }
 
-    public static PropertyDescriptor getSignalTypeProperty(VisualWtg visualWtg, String signalName) {
-        return new PropertyDeclaration<>(Signal.Type.class, signalName + " type",
-                value -> {
-                    Wtg wtg = visualWtg.getMathModel();
-                    for (Signal signal : wtg.getSignals()) {
-                        if (!signalName.equals(wtg.getName(signal))) continue;
-                        signal.setType(value);
-                    }
-                },
-                () -> {
-                    Wtg wtg = visualWtg.getMathModel();
-                    for (Signal signal : wtg.getSignals()) {
-                        if (!signalName.equals(wtg.getName(signal))) continue;
-                        return signal.getType();
-                    }
-                    return null;
-                });
-    }
-
     public static PropertyDescriptor getSignalDeclarationProperty(VisualWtg visualWtg, VisualWaveform visualWaveform, String signalName) {
-        return new PropertyDeclaration<>(Boolean.class, signalName + " declared",
+        Wtg wtg = visualWtg.getMathModel();
+        Signal.Type signalType = wtg.getSignalType(signalName);
+        String colorCode = ColorUtils.getHexRGB(DtdUtils.getTypeColor(signalType));
+        return new PropertyDeclaration<>(Boolean.class,
+                "<html>Declare <span style='color: " + colorCode + "'>" + signalName + "</span></html>",
                 value -> {
                     if (signalName != null) {
                         if (value) {
@@ -57,7 +47,6 @@ public class WtgPropertyHelper {
                     }
                 },
                 () -> {
-                    Wtg wtg = visualWtg.getMathModel();
                     for (Signal signal : wtg.getSignals(visualWaveform.getReferencedComponent())) {
                         if (wtg.getName(signal).equals(signalName)) {
                             return true;

@@ -427,9 +427,9 @@ public class VisualStg extends AbstractVisualModel {
             List<String> signalNames = new ArrayList<>(stg.getSignalNames(container));
             Collections.sort(signalNames);
             for (final String signalName : signalNames) {
-                if (stg.getSignalTransitions(signalName, container).isEmpty()) continue;
-                properties.add(StgPropertyHelper.getSignalNameModelProperty(this, signalName, container));
-                properties.add(StgPropertyHelper.getSignalTypeModelProperty(stg, signalName, container));
+                if (!stg.getSignalTransitions(signalName, container).isEmpty()) {
+                    properties.add(StgPropertyHelper.getSignalNameModelProperty(this, signalName, container));
+                }
             }
         } else if (node instanceof VisualSignalTransition) {
             SignalTransition transition = ((VisualSignalTransition) node).getReferencedComponent();
