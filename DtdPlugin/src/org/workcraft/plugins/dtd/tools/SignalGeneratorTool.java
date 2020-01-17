@@ -57,7 +57,6 @@ public class SignalGeneratorTool extends NodeGeneratorTool {
                     signal.setY(aboveSignal.getY() + dy);
                     if (belowSignal != null) {
                         double offset = belowSignal.getY() - signal.getY() - dy;
-                        System.out.println(offset);
                         for (VisualSignal otherSignal : belowSignals) {
                             otherSignal.setY(otherSignal.getY() - offset);
                         }

@@ -9,17 +9,13 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.properties.ModelProperties;
+import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.gui.tools.*;
-import org.workcraft.plugins.fsm.Event;
-import org.workcraft.plugins.fsm.State;
-import org.workcraft.plugins.fsm.VisualFsm;
-import org.workcraft.plugins.fsm.VisualState;
+import org.workcraft.plugins.fsm.*;
 import org.workcraft.plugins.fst.tools.FstSimulationTool;
 import org.workcraft.utils.Hierarchy;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @DisplayName("Finite State Transducer")
 public class VisualFst extends VisualFsm {
@@ -75,7 +71,14 @@ public class VisualFst extends VisualFsm {
     @Override
     public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
-        if (node instanceof VisualSignalEvent) {
+        if (node == null) {
+            properties.removeByName("Symbols");
+            for (final Symbol symbol : getMathModel().getSymbols()) {
+                properties.removeByName("Symbol " + getMathName(symbol));
+            }
+            properties.add(PropertyHelper.getSignalSectionProperty(this));
+            properties.addAll(FstPropertyHelper.getSignalProperties(this));
+        } else if (node instanceof VisualSignalEvent) {
             VisualSignalEvent signalEvent = (VisualSignalEvent) node;
             Signal signal = signalEvent.getReferencedConnection().getSignal();
             properties.add(FstPropertyHelper.getEventSignalProperty(getMathModel(), signalEvent.getReferencedConnection()));

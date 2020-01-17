@@ -368,12 +368,9 @@ public class StgUtils {
     public static Color getTypeColor(Signal.Type type) {
         if (type != null) {
             switch (type) {
-            case INPUT:
-                return SignalCommonSettings.getInputColor();
-            case OUTPUT:
-                return SignalCommonSettings.getOutputColor();
-            case INTERNAL:
-                return SignalCommonSettings.getInternalColor();
+            case INPUT: return SignalCommonSettings.getInputColor();
+            case OUTPUT: return SignalCommonSettings.getOutputColor();
+            case INTERNAL: return SignalCommonSettings.getInternalColor();
             }
         }
         return SignalCommonSettings.getDummyColor();

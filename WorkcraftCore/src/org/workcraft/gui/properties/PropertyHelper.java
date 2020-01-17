@@ -1,5 +1,9 @@
 package org.workcraft.gui.properties;
 
+import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.observation.ModelModifiedEvent;
+import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
+
 import java.awt.*;
 
 public class PropertyHelper {
@@ -22,6 +26,17 @@ public class PropertyHelper {
     public static PropertyDescriptor<String> createSeparatorProperty(String text) {
         return new PropertyDeclaration<>(String.class, "",
                 value -> { }, () -> text).setReadonly().setSpan();
+    }
+
+    public static PropertyDescriptor getSignalSectionProperty(VisualModel visualModel) {
+        boolean groupByType = SignalCommonSettings.getGroupByType();
+        return new ActionDeclaration(
+                "Signals " + (groupByType ? "(grouped)" : "(sorted)"),
+                groupByType ? "Sort alphabetically" : "Group by type",
+                () -> {
+                    SignalCommonSettings.setGroupByType(!groupByType);
+                    visualModel.sendNotification(new ModelModifiedEvent(visualModel));
+                });
     }
 
 }

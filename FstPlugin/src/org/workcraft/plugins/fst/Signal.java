@@ -25,6 +25,17 @@ public class Signal extends Symbol {
         public String toString() {
             return name;
         }
+
+
+        public Type toggle() {
+            switch (this) {
+            case INPUT: return OUTPUT;
+            case OUTPUT: return INTERNAL;
+            case INTERNAL: return DUMMY;
+            case DUMMY: return INPUT;
+            default: return this;
+            }
+        }
     }
 
     private Type type = Type.DUMMY;

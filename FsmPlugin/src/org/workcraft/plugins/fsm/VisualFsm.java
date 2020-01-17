@@ -10,6 +10,7 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.properties.ModelProperties;
+import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.gui.tools.*;
 import org.workcraft.plugins.fsm.observers.FirstStateSupervisor;
 import org.workcraft.plugins.fsm.tools.FsmSimulationTool;
@@ -89,6 +90,7 @@ public class VisualFsm extends AbstractVisualModel {
     public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
+            properties.add(PropertyHelper.createSeparatorProperty("Symbols"));
             List<Symbol> symbols = new ArrayList<>(getMathModel().getSymbols());
             Collections.sort(symbols, Comparator.comparing(getMathModel()::getNodeReference));
             for (final Symbol symbol : symbols) {

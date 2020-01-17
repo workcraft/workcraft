@@ -10,10 +10,8 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.gui.properties.ActionDeclaration;
 import org.workcraft.gui.properties.ModelProperties;
-import org.workcraft.gui.properties.PropertyDeclaration;
-import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.gui.tools.*;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.VisualFsm;
@@ -21,7 +19,8 @@ import org.workcraft.plugins.xbm.tool.XbmSimulationTool;
 import org.workcraft.plugins.xbm.utils.ConversionUtils;
 import org.workcraft.utils.Hierarchy;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @DisplayName("eXtended Burst-Mode Machine")
 @ShortName("XBM")
@@ -65,7 +64,8 @@ public class VisualXbm extends VisualFsm {
         XbmState mStateTo = vStateTo.getReferencedComponent();
 
         if (mConnection == null) {
-            mConnection = createBurstEvent(mStateFrom, mStateTo);
+            Burst burst = new Burst(mStateFrom, mStateTo);
+            mConnection = getMathModel().createBurstEvent(mStateFrom, mStateTo, burst);
         }
         VisualBurstEvent vBEvent = new VisualBurstEvent((BurstEvent) mConnection, vStateFrom, vStateTo);
 
@@ -88,91 +88,24 @@ public class VisualXbm extends VisualFsm {
     @Override
     public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
+        Xbm xbm = getMathModel();
         if (node == null) {
-            properties.addAll(getSignalNameAndTypeProperties());
-            properties.add(new ActionDeclaration("Create signal",
-                    () -> getMathModel().createSignal(null, XbmSignal.DEFAULT_SIGNAL_TYPE)));
+            properties.add(PropertyHelper.getSignalSectionProperty(this));
+            properties.addAll(XbmPropertyHelper.getSignalProperties(xbm));
+            properties.add(XbmPropertyHelper.getCreateSignalProperty(this));
 
         } else if (node instanceof VisualBurstEvent) {
-            final VisualBurstEvent visualBurstevent = (VisualBurstEvent) node;
-            final BurstEvent burstEvent = visualBurstevent.getReferencedConnection();
-            properties.add(getConditionalProperty(burstEvent));
-            properties.addAll(getSignalDirectionProperties(burstEvent));
+            final BurstEvent burstEvent = ((VisualBurstEvent) node).getReferencedConnection();
+            properties.add(XbmPropertyHelper.getConditionalProperty(burstEvent));
+            properties.addAll(XbmPropertyHelper.getSignalDirectionProperties(this, burstEvent));
             properties.removeByName(Event.PROPERTY_SYMBOL);
             //TODO Add VisualBurstTransition here
         } else if (node instanceof VisualXbmState) {
-            final VisualXbmState vXbmState = (VisualXbmState) node;
-            final XbmState xbmState = vXbmState.getReferencedComponent();
-            properties.addAll(getSignalValueProperties(xbmState));
+            final XbmState xbmState = ((VisualXbmState) node).getReferencedComponent();
+            properties.addAll(XbmPropertyHelper.getSignalValueProperties(this, xbmState));
             properties.removeByName(VisualComponent.PROPERTY_LABEL);
         }
         return properties;
-    }
-
-    public BurstEvent createBurstEvent(final XbmState from, final XbmState to) {
-        final Xbm xbm = getMathModel();
-        final Burst burst = new Burst(from, to);
-        return xbm.createBurstEvent(from, to, burst);
-    }
-
-    private List<PropertyDescriptor> getSignalNameAndTypeProperties() {
-        final Xbm xbm = getMathModel();
-        final List<PropertyDescriptor> list = new LinkedList<>();
-        for (final XbmSignal s: xbm.getSignals()) {
-            list.add(XbmPropertyHelper.getSignalNameProperty(xbm, s));
-            list.add(XbmPropertyHelper.getSignalTypeProperty(this, s));
-        }
-        return list;
-    }
-
-    private List<PropertyDescriptor> getSignalValueProperties(final XbmState state) {
-        final Xbm xbm = getMathModel();
-        final List<PropertyDescriptor> list = new LinkedList<>();
-        final Set<XbmSignal> inputs = new LinkedHashSet<>(xbm.getSignals(XbmSignal.Type.INPUT));
-        final Set<XbmSignal> outputs = new LinkedHashSet<>(xbm.getSignals(XbmSignal.Type.OUTPUT));
-        if (!inputs.isEmpty()) {
-            list.add(XbmPropertyHelper.getBurstProperty(state, "Input burst", XbmSignal.Type.INPUT));
-            for (XbmSignal i: inputs) {
-                list.add(XbmPropertyHelper.getSignalValueProperty(this, state, i));
-            }
-        }
-        if (!outputs.isEmpty()) {
-            list.add(XbmPropertyHelper.getBurstProperty(state, "Output burst", XbmSignal.Type.OUTPUT));
-            for (XbmSignal o: outputs) {
-                list.add(XbmPropertyHelper.getSignalValueProperty(this, state, o));
-            }
-        }
-        return list;
-    }
-
-    private List<PropertyDescriptor> getSignalDirectionProperties(final BurstEvent burstEvent) {
-        final Xbm xbm = getMathModel();
-        final List<PropertyDescriptor> list = new LinkedList<>();
-        final Set<XbmSignal> inputs = new LinkedHashSet<>(xbm.getSignals(XbmSignal.Type.INPUT));
-        final Set<XbmSignal> outputs = new LinkedHashSet<>(xbm.getSignals(XbmSignal.Type.OUTPUT));
-
-        list.add(XbmPropertyHelper.getBurstDirectionProperty(getMathModel(), burstEvent, "Input burst", XbmSignal.Type.INPUT));
-
-        if (!inputs.isEmpty()) {
-            for (XbmSignal i: inputs) {
-                list.add(XbmPropertyHelper.getSignalDirectionProperty(this, burstEvent, i));
-            }
-        }
-
-        list.add(XbmPropertyHelper.getBurstDirectionProperty(getMathModel(), burstEvent, "Output burst", XbmSignal.Type.OUTPUT));
-
-        if (!outputs.isEmpty()) {
-            for (XbmSignal o: outputs) {
-                list.add(XbmPropertyHelper.getSignalDirectionProperty(this, burstEvent, o));
-            }
-        }
-        return list;
-    }
-
-    private PropertyDescriptor getConditionalProperty(final BurstEvent event) {
-        return new PropertyDeclaration<>(String.class, BurstEvent.PROPERTY_CONDITIONAL,
-                event::setConditional, event::getConditional)
-                .setCombinable().setTemplatable();
     }
 
 }

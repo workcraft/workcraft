@@ -81,6 +81,15 @@ public class Signal extends MathNode implements ObservableHierarchy, Container {
         public String toString() {
             return name;
         }
+
+        public Type toggle() {
+            switch (this) {
+            case INPUT: return OUTPUT;
+            case OUTPUT: return INTERNAL;
+            case INTERNAL: return INPUT;
+            default: return this;
+            }
+        }
     }
 
     private final DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);

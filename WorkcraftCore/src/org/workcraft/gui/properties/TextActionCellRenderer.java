@@ -13,18 +13,25 @@ import java.awt.event.MouseEvent;
 public class TextActionCellRenderer extends JPanel implements TableCellRenderer {
 
     private final JTextField text = new JTextField();
-    private final JButton button = new JButton();
+    private final JButton leftButton = new JButton();
+    private final JButton rightButton = new JButton();
 
     public TextActionCellRenderer() {
+        leftButton.setFocusable(false);
+        leftButton.setVisible(false);
+        leftButton.setMargin(PropertyHelper.BUTTON_INSETS);
+
         text.setFocusable(true);
         text.setBorder(SizeHelper.getTableCellBorder());
 
-        button.setFocusable(false);
-        button.setMargin(PropertyHelper.BUTTON_INSETS);
+        rightButton.setFocusable(false);
+        rightButton.setVisible(false);
+        rightButton.setMargin(PropertyHelper.BUTTON_INSETS);
 
         setLayout(new BorderLayout());
+        add(leftButton, BorderLayout.WEST);
         add(text, BorderLayout.CENTER);
-        add(button, BorderLayout.EAST);
+        add(rightButton, BorderLayout.EAST);
         setFocusable(false);
     }
 
@@ -35,13 +42,31 @@ public class TextActionCellRenderer extends JPanel implements TableCellRenderer 
         if (value instanceof TextAction) {
             TextAction textAction = (TextAction) value;
 
+            Action leftAction = textAction.getLeftAction();
+            if (leftAction != null) {
+                leftButton.setVisible(true);
+                leftButton.setText(leftAction.getTitle());
+                leftButton.setToolTipText(ActionUtils.getActionTooltip(leftAction));
+            }
+
             text.setFont(table.getFont());
             text.setText(textAction.getText());
 
-            Action action = textAction.getAction();
-            if (action != null) {
-                button.setText(action.getTitle());
-                button.setToolTipText(ActionUtils.getActionTooltip(action));
+            Color foreground = textAction.getForeground();
+            if (foreground != null) {
+                text.setForeground(foreground);
+            }
+
+            Color background = textAction.getBackground();
+            if (background != null) {
+                text.setBackground(background);
+            }
+
+            Action rightAction = textAction.getRightAction();
+            if (rightAction != null) {
+                rightButton.setVisible(true);
+                rightButton.setText(rightAction.getTitle());
+                rightButton.setToolTipText(ActionUtils.getActionTooltip(rightAction));
             }
         }
         return this;
@@ -49,8 +74,14 @@ public class TextActionCellRenderer extends JPanel implements TableCellRenderer 
 
     @Override
     public String getToolTipText(MouseEvent event) {
-        if ((event != null) && (event.getX() > button.getX())) {
-            return button.getToolTipText(event);
+        if (event != null) {
+            int x = event.getX();
+            if (leftButton.isVisible() && (x >= leftButton.getX()) && (x < leftButton.getX() + leftButton.getWidth())) {
+                return leftButton.getToolTipText(event);
+            }
+            if (rightButton.isVisible() && (x >= rightButton.getX()) && (x < rightButton.getX() + rightButton.getWidth())) {
+                return rightButton.getToolTipText(event);
+            }
         }
         return super.getToolTipText(event);
     }

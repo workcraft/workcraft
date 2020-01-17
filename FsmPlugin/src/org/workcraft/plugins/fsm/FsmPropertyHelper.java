@@ -14,10 +14,14 @@ import java.util.Collection;
 public class FsmPropertyHelper {
 
     public static PropertyDescriptor getSymbolProperty(VisualFsm fsm, Symbol symbol) {
-        String className = symbol.getClass().getSimpleName();
         String symbolName = fsm.getMathName(symbol);
+        Action rightAction = new Action(PropertyHelper.SEARCH_SYMBOL,
+                () -> {
+                    fsm.selectNone();
+                    fsm.addToSelection(fsm.getVisualEvents(symbol));
+                }, "Select all events for symbol '" + symbolName + "'");
 
-        return new PropertyDeclaration<>(TextAction.class, className + " " + symbolName,
+        return new PropertyDeclaration<>(TextAction.class, "Symbol " + symbolName,
                 value -> {
                     String newName = value.getText();
                     Fsm mathFsm = fsm.getMathModel();
@@ -31,18 +35,14 @@ public class FsmPropertyHelper {
                             event.setSymbol(existingSymbol);
                         }
                     } else {
-                        throw new FormatException("Node '" + value + "' already exists and it is not a " + className + ".");
+                        throw new FormatException("Node '" + value + "' already exists and it is not a symbol.");
                     }
                     for (Event event : events) {
                         event.sendNotification(new PropertyChangedEvent(event, Event.PROPERTY_SYMBOL));
                     }
                 },
-                () -> new TextAction(symbolName, new Action(PropertyHelper.SEARCH_SYMBOL,
-                        () -> {
-                            fsm.selectNone();
-                            fsm.addToSelection(fsm.getVisualEvents(symbol));
-                        }, "Select all events of " + className + " '" + symbolName + "'")
-                ));
+                () -> new TextAction(symbolName).setRightAction(rightAction)
+        ).setSpan();
     }
 
     public static PropertyDescriptor getEventSymbolProperty(Fsm fsm, Event event) {

@@ -18,18 +18,21 @@ public class SignalCommonSettings extends AbstractCommonSettings {
     private static final String keyInternalColor = prefix + ".internalColor";
     private static final String keyDummyColor = prefix + ".dummyColor";
     private static final String keyShowToggle = prefix + ".showToggle";
+    private static final String keyGroupByType = prefix + ".groupByType";
 
     private static final Color defaultInputColor = Color.RED.darker();
     private static final Color defaultOutputColor = Color.BLUE.darker();
     private static final Color defaultInternalColor = Color.GREEN.darker();
     private static final Color defaultDummyColor = Color.BLACK.darker();
     private static final boolean defaultShowToggle = false;
+    private static final boolean defaultGroupByType = false;
 
     private static Color inputColor = defaultInputColor;
     private static Color outputColor = defaultOutputColor;
     private static Color internalColor = defaultInternalColor;
     private static Color dummyColor = defaultDummyColor;
     private static boolean showToggle = defaultShowToggle;
+    private static boolean groupByType = defaultGroupByType;
 
     static {
         properties.add(new PropertyDeclaration<>(Color.class,
@@ -56,6 +59,11 @@ public class SignalCommonSettings extends AbstractCommonSettings {
                 "Show signal toggle (~)",
                 SignalCommonSettings::setShowToggle,
                 SignalCommonSettings::getShowToggle));
+
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Show signal toggle",
+                SignalCommonSettings::setGroupByType,
+                SignalCommonSettings::getGroupByType));
     }
 
     @Override
@@ -70,6 +78,7 @@ public class SignalCommonSettings extends AbstractCommonSettings {
         setInternalColor(config.getColor(keyInternalColor, defaultInternalColor));
         setDummyColor(config.getColor(keyDummyColor, defaultDummyColor));
         setShowToggle(config.getBoolean(keyShowToggle, defaultShowToggle));
+        setGroupByType(config.getBoolean(keyGroupByType, defaultGroupByType));
     }
 
     @Override
@@ -79,6 +88,7 @@ public class SignalCommonSettings extends AbstractCommonSettings {
         config.setColor(keyInternalColor, getInternalColor());
         config.setColor(keyDummyColor, getDummyColor());
         config.setBoolean(keyShowToggle, getShowToggle());
+        config.setBoolean(keyGroupByType, getGroupByType());
     }
 
     @Override
@@ -124,6 +134,14 @@ public class SignalCommonSettings extends AbstractCommonSettings {
 
     public static boolean getShowToggle() {
         return showToggle;
+    }
+
+    public static void setGroupByType(boolean value) {
+        groupByType = value;
+    }
+
+    public static boolean getGroupByType() {
+        return groupByType;
     }
 
 }
