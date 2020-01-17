@@ -125,6 +125,25 @@ public class Wtg extends Dtd {
         return result;
     }
 
+    public Collection<String> getSignalNames(Signal.Type type) {
+        Set<String> result = new HashSet<>();
+        for (Signal signal : getSignals(type)) {
+            result.add(getName(signal));
+        }
+        return result;
+    }
+
+    public Signal.Type getSignalType(String signalName) {
+        if (getSignalNames(Signal.Type.INPUT).contains(signalName)) {
+            return Signal.Type.INPUT;
+        } else if (getSignalNames(Signal.Type.OUTPUT).contains(signalName)) {
+            return Signal.Type.OUTPUT;
+        } else if (getSignalNames(Signal.Type.INTERNAL).contains(signalName)) {
+            return Signal.Type.INTERNAL;
+        }
+        return null;
+    }
+
     public final State getInitialState() {
         for (State state: getStates()) {
             if (state.isInitial()) {

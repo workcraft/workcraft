@@ -15,6 +15,7 @@ import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.PluginManager;
+import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualReadArc;
@@ -31,11 +32,13 @@ import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
+import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.*;
+import java.util.List;
 
 public class StgUtils {
     public static final String SPEC_FILE_PREFIX = "net";
@@ -360,6 +363,17 @@ public class StgUtils {
             }
         }
         return result;
+    }
+
+    public static Color getTypeColor(Signal.Type type) {
+        if (type != null) {
+            switch (type) {
+            case INPUT: return SignalCommonSettings.getInputColor();
+            case OUTPUT: return SignalCommonSettings.getOutputColor();
+            case INTERNAL: return SignalCommonSettings.getInternalColor();
+            }
+        }
+        return SignalCommonSettings.getDummyColor();
     }
 
 }

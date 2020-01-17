@@ -58,9 +58,9 @@ public class Fst extends Fsm {
         return signal;
     }
 
-    public SignalEvent createSignalEvent(State first, State second, Signal symbol) {
+    public SignalEvent createSignalEvent(State first, State second, Signal signal) {
         Container container = Hierarchy.getNearestContainer(first, second);
-        SignalEvent event = new SignalEvent(first, second, symbol);
+        SignalEvent event = new SignalEvent(first, second, signal);
         container.add(event);
         return event;
     }
@@ -76,6 +76,10 @@ public class Fst extends Fsm {
 
     public final Collection<SignalEvent> getSignalEvents() {
         return Hierarchy.getDescendantsOfType(getRoot(), SignalEvent.class);
+    }
+
+    public final Collection<SignalEvent> getSignalEvents(Signal signal) {
+        return Hierarchy.getDescendantsOfType(getRoot(), SignalEvent.class, event -> event.getSignal() == signal);
     }
 
 }

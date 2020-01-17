@@ -10,8 +10,8 @@ import org.workcraft.dom.visual.*;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
-import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
+import org.workcraft.plugins.dtd.utils.DtdUtils;
 import org.workcraft.serialisation.NoAutoSerialisation;
 import org.workcraft.utils.Coloriser;
 import org.workcraft.utils.Hierarchy;
@@ -53,6 +53,30 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
     @Override
     public Signal getReferencedComponent() {
         return (Signal) super.getReferencedComponent();
+    }
+
+    @Override
+    public boolean checkForegroundColor(Color value) {
+        if (!super.checkForegroundColor(value)) {
+            return false;
+        }
+
+        VisualEntryEvent entry = getVisualSignalEntry();
+        if ((entry != null) && !entry.checkForegroundColor(value)) {
+            return false;
+        }
+
+        VisualExitEvent exit = getVisualSignalExit();
+        if ((exit != null) && !exit.checkForegroundColor(value)) {
+            return false;
+        }
+
+        for (VisualTransitionEvent transition : getVisualTransitions()) {
+            if ((transition != null) && !transition.checkForegroundColor(value)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @NoAutoSerialisation
@@ -129,12 +153,7 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
 
     @Override
     public Color getNameColor() {
-        switch (getType()) {
-        case INPUT:    return SignalCommonSettings.getInputColor();
-        case OUTPUT:   return SignalCommonSettings.getOutputColor();
-        case INTERNAL: return SignalCommonSettings.getInternalColor();
-        default:       return SignalCommonSettings.getDummyColor();
-        }
+        return DtdUtils.getTypeColor(getType());
     }
 
     @Override

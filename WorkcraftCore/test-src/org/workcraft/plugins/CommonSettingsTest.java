@@ -170,6 +170,9 @@ public class CommonSettingsTest {
 
         Assert.assertEquals(Config.toString(SignalCommonSettings.getShowToggle()),
                 framework.getConfigVar(prefix + ".showToggle", false));
+
+        Assert.assertEquals(Config.toString(SignalCommonSettings.getGroupByType()),
+                framework.getConfigVar(prefix + ".groupByType", false));
     }
 
     @Test

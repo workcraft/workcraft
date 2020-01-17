@@ -60,8 +60,7 @@ public class ScencoResultHandler extends BasicProgressMonitor<ScencoResult> {
                     final VisualModel visualModel = weCircuit.getModelEntry().getVisualModel();
                     if (visualModel instanceof VisualCircuit) {
                         final VisualCircuit visualCircuit = (VisualCircuit) visualModel;
-                        final String title = we.getModelEntry().getModel().getTitle();
-                        visualCircuit.setTitle(title);
+                        visualCircuit.setTitle(we.getModelTitle());
                         final GraphEditorPanel currentEditor = mainWindow.getCurrentEditor();
                         SwingUtilities.invokeLater(() -> currentEditor.updatePropertyView());
                     }

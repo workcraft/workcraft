@@ -3,50 +3,100 @@ package org.workcraft.plugins.wtg;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.exceptions.NodeCreationException;
+import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyHelper;
+import org.workcraft.gui.properties.TextAction;
 import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.dtd.DtdSettings;
 import org.workcraft.plugins.dtd.Signal;
 import org.workcraft.plugins.dtd.VisualSignal;
+import org.workcraft.plugins.dtd.utils.DtdUtils;
 import org.workcraft.plugins.wtg.tools.SignalGeneratorTool;
 import org.workcraft.plugins.wtg.utils.WtgUtils;
+import org.workcraft.utils.ColorUtils;
 
+import java.awt.*;
 import java.awt.geom.Point2D;
+import java.util.List;
+import java.util.Queue;
 import java.util.*;
 
 import static org.workcraft.plugins.wtg.utils.WtgUtils.getFinalSignalStatesFromWaveform;
 
 public class WtgPropertyHelper {
 
-    public static PropertyDescriptor getSignalNameProperty(VisualWtg visualWtg, String signalName) {
-        return new PropertyDeclaration<>(String.class, signalName + " name",
-                value -> WtgUtils.renameSignal(visualWtg.getMathModel(), signalName, value),
-                () -> signalName);
+    public static Collection<PropertyDescriptor> getSignalProperties(VisualWtg visualWtg) {
+        Collection<PropertyDescriptor> result = new ArrayList<>();
+        Wtg mathWtg = visualWtg.getMathModel();
+        if (SignalCommonSettings.getGroupByType()) {
+            for (Signal.Type type : Signal.Type.values()) {
+                List<String> signalNames = new LinkedList<>(mathWtg.getSignalNames(type));
+                Collections.sort(signalNames);
+                for (final String signalName : signalNames) {
+                    result.add(getSignalProperty(visualWtg, signalName));
+                }
+            }
+        } else {
+            List<String> signalNames = new LinkedList<>(mathWtg.getSignalNames());
+            Collections.sort(signalNames);
+            for (final String signalName : signalNames) {
+                result.add(getSignalProperty(visualWtg, signalName));
+            }
+        }
+        return result;
     }
 
-    public static PropertyDescriptor getSignalTypeProperty(VisualWtg visualWtg, String signalName) {
-        return new PropertyDeclaration<>(Signal.Type.class, signalName + " type",
-                value -> {
-                    Wtg wtg = visualWtg.getMathModel();
-                    for (Signal signal : wtg.getSignals()) {
-                        if (!signalName.equals(wtg.getName(signal))) continue;
-                        signal.setType(value);
-                    }
-                },
+    private static PropertyDescriptor getSignalProperty(VisualWtg visualWtg, String signalName) {
+        Wtg wtg = visualWtg.getMathModel();
+        Signal.Type signalType = wtg.getSignalType(signalName);
+        Color color = DtdUtils.getTypeColor(signalType);
+
+        Action leftAction = new Action(PropertyHelper.BULLET_SYMBOL,
                 () -> {
-                    Wtg wtg = visualWtg.getMathModel();
                     for (Signal signal : wtg.getSignals()) {
-                        if (!signalName.equals(wtg.getName(signal))) continue;
-                        return signal.getType();
+                        if (signalName.equals(wtg.getName(signal))) {
+                            signal.setType(signalType.toggle());
+                        }
                     }
-                    return null;
-                });
+                }, "Toggle type of signal '" + signalName + "'");
+
+        Action rightAction = new Action(PropertyHelper.CLEAR_SYMBOL,
+                () -> {
+                    for (VisualWaveform visualWaveform : visualWtg.getVisualWaveforms()) {
+                        for (VisualSignal visualSignal : visualWtg.getVisualSignals(visualWaveform)) {
+                            if (signalName.equals(visualWtg.getMathName(visualSignal))) {
+                                deleteAndSpaceVertically(visualWtg, visualWaveform, signalName);
+                            }
+                        }
+                    }
+                }, "Toggle type of signal '" + signalName + "'");
+
+        return new PropertyDeclaration<>(TextAction.class, null,
+                value -> WtgUtils.renameSignal(wtg, signalName, value.getText()),
+                () -> new TextAction(signalName).setLeftAction(leftAction).setRightAction(rightAction).setForeground(color)
+        ).setSpan();
+    }
+
+    public static Collection<PropertyDescriptor> getSignalDeclarationProperties(VisualWtg visualWtg, VisualWaveform waveform) {
+        Collection<PropertyDescriptor> result = new ArrayList<>();
+        List<String> signalNames = new LinkedList<>(visualWtg.getMathModel().getSignalNames());
+        Collections.sort(signalNames);
+        for (String signalName : signalNames) {
+            result.add(getSignalDeclarationProperty(visualWtg, waveform, signalName));
+        }
+        return result;
     }
 
     public static PropertyDescriptor getSignalDeclarationProperty(VisualWtg visualWtg, VisualWaveform visualWaveform, String signalName) {
-        return new PropertyDeclaration<>(Boolean.class, signalName + " declared",
+        Wtg wtg = visualWtg.getMathModel();
+        Signal.Type signalType = wtg.getSignalType(signalName);
+        String colorCode = ColorUtils.getHexRGB(DtdUtils.getTypeColor(signalType));
+        return new PropertyDeclaration<>(Boolean.class,
+                "<html>Declare <span style='color: " + colorCode + "'>" + signalName + "</span></html>",
                 value -> {
                     if (signalName != null) {
                         if (value) {
@@ -57,10 +107,11 @@ public class WtgPropertyHelper {
                     }
                 },
                 () -> {
-                    Wtg wtg = visualWtg.getMathModel();
-                    for (Signal signal : wtg.getSignals(visualWaveform.getReferencedComponent())) {
-                        if (wtg.getName(signal).equals(signalName)) {
-                            return true;
+                    if (signalName != null) {
+                        for (Signal signal : wtg.getSignals(visualWaveform.getReferencedComponent())) {
+                            if (signalName.equals(wtg.getName(signal))) {
+                                return true;
+                            }
                         }
                     }
                     return false;

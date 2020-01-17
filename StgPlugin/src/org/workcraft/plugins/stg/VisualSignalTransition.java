@@ -1,14 +1,15 @@
 package org.workcraft.plugins.stg;
 
-import java.awt.Color;
-import java.awt.event.KeyEvent;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.serialisation.NoAutoSerialisation;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
 
 @Hotkey(KeyEvent.VK_T)
 @DisplayName("Signal Transition")
@@ -44,12 +45,7 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
 
     @Override
     public Color getNameColor() {
-        switch (getSignalType()) {
-        case INPUT:    return SignalCommonSettings.getInputColor();
-        case OUTPUT:   return SignalCommonSettings.getOutputColor();
-        case INTERNAL: return SignalCommonSettings.getInternalColor();
-        default:       return SignalCommonSettings.getDummyColor();
-        }
+        return StgUtils.getTypeColor(getSignalType());
     }
 
     @NoAutoSerialisation

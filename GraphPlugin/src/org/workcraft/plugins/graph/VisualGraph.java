@@ -18,6 +18,8 @@ import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.graph.tools.GraphSimulationTool;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @DisplayName("Directed Graph")
@@ -53,8 +55,10 @@ public class VisualGraph extends AbstractVisualModel {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
             Container container = NamespaceHelper.getMathContainer(this, getCurrentLevel());
-            for (final Symbol symbol: getMathModel().getSymbols(container)) {
-                properties.insertOrderedByFirstWord(getSymbolProperty(symbol));
+            List<Symbol> symbols = new ArrayList<>(getMathModel().getSymbols(container));
+            Collections.sort(symbols, Comparator.comparing(getMathModel()::getNodeReference));
+            for (final Symbol symbol : symbols) {
+                properties.add(getSymbolProperty(symbol));
             }
         } else if (node instanceof VisualVertex) {
             properties.add(getVertexSymbolProperty((VisualVertex) node));

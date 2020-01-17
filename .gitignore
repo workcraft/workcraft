@@ -35,6 +35,8 @@
 /tutorial
 .DS_Store
 
+# Crash dumps
+/*.hprof
 
 # Private plugins
 /_*Plugin

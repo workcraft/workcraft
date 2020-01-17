@@ -11,6 +11,7 @@ import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.properties.ModelProperties;
+import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.gui.tools.CommentGeneratorTool;
 import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.plugins.petri.*;
@@ -423,14 +424,8 @@ public class VisualStg extends AbstractVisualModel {
         Stg stg = getMathModel();
         if (node == null) {
             properties.add(StgPropertyHelper.getRefinementProperty(stg));
-            for (Signal.Type type : Signal.Type.values()) {
-                Container container = NamespaceHelper.getMathContainer(this, getCurrentLevel());
-                for (final String signalName : stg.getSignalNames(type, container)) {
-                    if (stg.getSignalTransitions(signalName, container).isEmpty()) continue;
-                    properties.insertOrderedByFirstWord(StgPropertyHelper.getSignalNameModelProperty(this, signalName, container));
-                    properties.insertOrderedByFirstWord(StgPropertyHelper.getSignalTypeModelProperty(stg, signalName, container));
-                }
-            }
+            properties.add(PropertyHelper.getSignalSectionProperty(this));
+            properties.addAll(StgPropertyHelper.getSignalProperties(this));
         } else if (node instanceof VisualSignalTransition) {
             SignalTransition transition = ((VisualSignalTransition) node).getReferencedComponent();
             properties.removeByName(AbstractVisualModel.PROPERTY_NAME);

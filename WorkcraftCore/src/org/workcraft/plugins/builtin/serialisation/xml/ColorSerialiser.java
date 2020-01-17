@@ -2,6 +2,7 @@ package org.workcraft.plugins.builtin.serialisation.xml;
 
 import org.w3c.dom.Element;
 import org.workcraft.serialisation.BasicXMLSerialiser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 
@@ -13,12 +14,11 @@ public class ColorSerialiser implements BasicXMLSerialiser<Color> {
     }
 
     @Override
-    public void serialise(Element element, Color object) {
-        int value = object.getRGB();
-        if (object.getAlpha() == 0xff) {
-            element.setAttribute("rgb", String.format("#%06x",  value & 0xffffff));
+    public void serialise(Element element, Color color) {
+        if (color.getAlpha() == 0xff) {
+            element.setAttribute("rgb", ColorUtils.getHexRGB(color));
         } else {
-            element.setAttribute("argb", String.format("#%08x", value));
+            element.setAttribute("argb", ColorUtils.getHexARGB(color));
         }
     }
 

@@ -2,27 +2,21 @@ package org.workcraft.plugins.fsm;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.generators.DefaultNodeGenerator;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.properties.ModelProperties;
-import org.workcraft.gui.properties.PropertyDeclaration;
-import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.gui.tools.*;
-import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.fsm.observers.FirstStateSupervisor;
 import org.workcraft.plugins.fsm.tools.FsmSimulationTool;
 import org.workcraft.utils.Hierarchy;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @DisplayName("Finite State Machine")
 public class VisualFsm extends AbstractVisualModel {
@@ -83,62 +77,30 @@ public class VisualFsm extends AbstractVisualModel {
         return Hierarchy.getDescendantsOfType(getRoot(), VisualState.class);
     }
 
-    public Collection<VisualEvent> getVisualSymbols() {
+    public Collection<VisualEvent> getVisualEvents() {
         return Hierarchy.getDescendantsOfType(getRoot(), VisualEvent.class);
+    }
+
+    public Collection<VisualEvent> getVisualEvents(Symbol symbol) {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualEvent.class,
+                event -> event.getReferencedConnection().getSymbol().equals(symbol));
     }
 
     @Override
     public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
-            for (final Symbol symbol: getMathModel().getSymbols()) {
-                properties.insertOrderedByFirstWord(getSymbolProperty(symbol));
+            properties.add(PropertyHelper.createSeparatorProperty("Symbols"));
+            List<Symbol> symbols = new ArrayList<>(getMathModel().getSymbols());
+            Collections.sort(symbols, Comparator.comparing(getMathModel()::getNodeReference));
+            for (final Symbol symbol : symbols) {
+                properties.add(FsmPropertyHelper.getSymbolProperty(this, symbol));
             }
         } else if (node instanceof VisualEvent) {
-            properties.add(getEventSymbolProperty((VisualEvent) node));
+            Event event = ((VisualEvent) node).getReferencedConnection();
+            properties.add(FsmPropertyHelper.getEventSymbolProperty(getMathModel(), event));
         }
         return properties;
-    }
-
-    private PropertyDescriptor getSymbolProperty(Symbol symbol) {
-        return new PropertyDeclaration<>(String.class, getMathModel().getName(symbol) + " name",
-                value -> {
-                    Node node = getMathModel().getNodeByReference(value);
-                    if (node == null) {
-                        getMathModel().setName(symbol, value);
-                        for (Event event: getMathModel().getEvents(symbol)) {
-                            event.sendNotification(new PropertyChangedEvent(event, Event.PROPERTY_SYMBOL));
-                        }
-                    } else if (!(node instanceof Symbol)) {
-                        throw new FormatException("Node '" + value + "' already exists and it is not a symbol.");
-                    }
-                },
-                () -> getMathModel().getName(symbol));
-    }
-
-    private PropertyDescriptor getEventSymbolProperty(VisualEvent event) {
-        return new PropertyDeclaration<>(String.class, Event.PROPERTY_SYMBOL,
-                value -> {
-                    Symbol symbol = null;
-                    if (!value.isEmpty()) {
-                        Node node = getMathModel().getNodeByReference(value);
-                        if (node instanceof Symbol) {
-                            symbol = (Symbol) node;
-                        } else {
-                            symbol = getMathModel().createSymbol(value);
-                        }
-                    }
-                    event.getReferencedConnection().setSymbol(symbol);
-                },
-                () -> {
-                    Symbol symbol = event.getReferencedConnection().getSymbol();
-                    String symbolName = "";
-                    if (symbol != null) {
-                        symbolName = getMathModel().getName(symbol);
-                    }
-                    return symbolName;
-                })
-                .setCombinable().setTemplatable();
     }
 
 }

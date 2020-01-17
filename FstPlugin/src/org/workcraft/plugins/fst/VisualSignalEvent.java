@@ -8,6 +8,7 @@ import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.plugins.fst.SignalEvent.Direction;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
+import org.workcraft.plugins.fst.utils.FstUtils;
 
 public class VisualSignalEvent extends VisualEvent {
 
@@ -28,14 +29,9 @@ public class VisualSignalEvent extends VisualEvent {
     public Color getLabelColor() {
         Signal signal = getReferencedSignal();
         if (signal != null) {
-            switch (signal.getType()) {
-            case INPUT:    return SignalCommonSettings.getInputColor();
-            case OUTPUT:   return SignalCommonSettings.getOutputColor();
-            case INTERNAL: return SignalCommonSettings.getInternalColor();
-            default:       return SignalCommonSettings.getDummyColor();
-            }
+            return FstUtils.getTypeColor(signal.getType());
         }
-        return Color.BLACK;
+        return super.getLabelColor();
     }
 
     @Override

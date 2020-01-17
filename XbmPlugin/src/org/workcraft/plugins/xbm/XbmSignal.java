@@ -29,6 +29,15 @@ public class XbmSignal extends MathNode {
         public String toString() {
             return name;
         }
+
+        public Type toggle() {
+            switch (this) {
+            case INPUT: return CONDITIONAL;
+            case OUTPUT: return INPUT;
+            case CONDITIONAL: return OUTPUT;
+            default: return this;
+            }
+        }
     }
 
     private String name;

@@ -77,4 +77,12 @@ public class ColorUtils {
         return palette.toArray(new Color[palette.size()]);
     }
 
+    public static String getHexRGB(Color color) {
+        return String.format("#%06x",  color.getRGB() & 0xffffff);
+    }
+
+    public static String getHexARGB(Color color) {
+        return String.format("#%08x", color.getRGB());
+    }
+
 }

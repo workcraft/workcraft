@@ -111,6 +111,10 @@ public class WorkspaceEntry implements ObservableState {
         }
     }
 
+    public String getModelTitle() {
+        return getModelEntry().getModel().getTitle();
+    }
+
     public boolean isWork() {
         return (modelEntry != null) || (getWorkspacePath().getNode().endsWith(FileFilters.DOCUMENT_EXTENSION));
     }

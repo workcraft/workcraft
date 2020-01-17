@@ -30,6 +30,7 @@ public class FstToStgConverter {
     public FstToStgConverter(VisualFst srcModel, VisualStg dstModel) {
         this.srcModel = srcModel;
         this.dstModel = dstModel;
+        convertTitle();
         stateToPlaceMap = convertStates();
         eventToTransitionMap = convertEvents();
         refToEventLabelMap = cacheLabels();
@@ -38,6 +39,10 @@ public class FstToStgConverter {
         } catch (InvalidConnectionException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void convertTitle() {
+        dstModel.setTitle(srcModel.getTitle());
     }
 
     private Map<String, String> cacheLabels() {

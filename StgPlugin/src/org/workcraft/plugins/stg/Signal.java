@@ -28,9 +28,9 @@ public class Signal {
 
         public Type toggle() {
             switch (this) {
-            case INPUT: return INTERNAL;
-            case OUTPUT: return INPUT;
-            case INTERNAL: return OUTPUT;
+            case INPUT: return OUTPUT;
+            case OUTPUT: return INTERNAL;
+            case INTERNAL: return INPUT;
             default: return this;
             }
         }

@@ -7,6 +7,7 @@ import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.properties.ModelProperties;
+import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.gui.tools.CommentGeneratorTool;
 import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.gui.tools.NodeGeneratorTool;
@@ -18,7 +19,9 @@ import org.workcraft.plugins.wtg.tools.WtgSelectionTool;
 import org.workcraft.plugins.wtg.tools.WtgSimulationTool;
 import org.workcraft.utils.Hierarchy;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @DisplayName("Waveform Transition Graph")
 public class VisualWtg extends VisualDtd {
@@ -61,20 +64,14 @@ public class VisualWtg extends VisualDtd {
     public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
-            LinkedList<String> signalNames = new LinkedList<>(getMathModel().getSignalNames());
-            signalNames.sort(Comparator.comparing(String::toString));
             Container container = getCurrentLevel();
             if (container instanceof VisualWaveform) {
                 VisualWaveform waveform = (VisualWaveform) container;
-                for (String signalName : signalNames) {
-                    properties.insertOrderedByFirstWord(WtgPropertyHelper.getSignalDeclarationProperty(this, waveform, signalName));
-                }
+                properties.addAll(WtgPropertyHelper.getSignalDeclarationProperties(this, waveform));
                 properties.removeByName(AbstractVisualModel.PROPERTY_TITLE);
             } else {
-                for (String signalName : signalNames) {
-                    properties.insertOrderedByFirstWord(WtgPropertyHelper.getSignalNameProperty(this, signalName));
-                    properties.insertOrderedByFirstWord(WtgPropertyHelper.getSignalTypeProperty(this, signalName));
-                }
+                properties.add(PropertyHelper.getSignalSectionProperty(this));
+                properties.addAll(WtgPropertyHelper.getSignalProperties(this));
             }
         }
         return properties;

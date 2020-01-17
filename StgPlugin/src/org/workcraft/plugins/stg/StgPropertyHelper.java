@@ -1,15 +1,23 @@
 package org.workcraft.plugins.stg;
 
 import org.workcraft.dom.Container;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.references.FileReference;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.gui.properties.TextAction;
+import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
+import org.workcraft.plugins.stg.utils.StgUtils;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class StgPropertyHelper {
-
-    private static final String SEARCH_SYMBOL = Character.toString((char) 0x26B2);
 
     public static PropertyDescriptor getSignalNameProperty(Stg stg, SignalTransition signalTransition) {
         return new PropertyDeclaration<>(String.class, "Signal name",
@@ -42,33 +50,60 @@ public class StgPropertyHelper {
                 stg::setRefinement, stg::getRefinement);
     }
 
-    public static PropertyDescriptor getSignalNameModelProperty(VisualStg visualStg, String signal, Container container) {
-        return new PropertyDeclaration<>(TextAction.class, signal + " name",
+    public static Collection<PropertyDescriptor> getSignalProperties(VisualStg visualStg) {
+        Collection<PropertyDescriptor> result = new ArrayList<>();
+        Stg stg = visualStg.getMathModel();
+        Container container = NamespaceHelper.getMathContainer(visualStg, visualStg.getCurrentLevel());
+        if (SignalCommonSettings.getGroupByType()) {
+            for (Signal.Type type : Signal.Type.values()) {
+                java.util.List<String> signalNames = new ArrayList<>(stg.getSignalNames(type, container));
+                Collections.sort(signalNames);
+                for (final String signalName : signalNames) {
+                    if (!stg.getSignalTransitions(signalName, container).isEmpty()) {
+                        result.add(getSignalProperty(visualStg, signalName, container));
+                    }
+                }
+            }
+        } else {
+            List<String> signalNames = new ArrayList<>(stg.getSignalNames(container));
+            Collections.sort(signalNames);
+            for (final String signalName : signalNames) {
+                if (!stg.getSignalTransitions(signalName, container).isEmpty()) {
+                    result.add(getSignalProperty(visualStg, signalName, container));
+                }
+            }
+        }
+        return result;
+    }
+
+    private static PropertyDescriptor getSignalProperty(VisualStg visualStg, String signal, Container container) {
+        Stg mathStg = visualStg.getMathModel();
+        Signal.Type signalType = mathStg.getSignalType(signal, container);
+        Color color = StgUtils.getTypeColor(signalType);
+
+        Action leftAction = new Action(PropertyHelper.BULLET_SYMBOL,
+                () -> mathStg.setSignalType(signal, signalType.toggle(), container),
+                "Toggle type of signal '" + signal + "'");
+
+        Action rightAction = new Action(PropertyHelper.SEARCH_SYMBOL,
+                () -> {
+                    visualStg.selectNone();
+                    for (SignalTransition transition : mathStg.getSignalTransitions(signal, container)) {
+                        visualStg.addToSelection(visualStg.getVisualComponent(transition, VisualSignalTransition.class));
+                    }
+                }, "Select all events of signal '" + signal + "'");
+
+        return new PropertyDeclaration<>(TextAction.class, null,
                 value -> {
                     String newName = value.getText();
                     if (!signal.equals(newName)) {
-                        Stg mathStg = visualStg.getMathModel();
                         for (SignalTransition transition : mathStg.getSignalTransitions(signal, container)) {
                             mathStg.setName(transition, newName);
                         }
                     }
                 },
-                () -> new TextAction(signal, new Action(SEARCH_SYMBOL,
-                        () -> {
-                            visualStg.selectNone();
-                            Stg mathStg = visualStg.getMathModel();
-                            for (SignalTransition transition : mathStg.getSignalTransitions(signal, container)) {
-                                visualStg.getVisualComponent(transition, VisualSignalTransition.class);
-                                visualStg.addToSelection(visualStg.getVisualComponent(transition, VisualSignalTransition.class));
-                            }
-                        }, "Select all events of signal '" + signal + "'")
-                ));
-    }
-
-    public static PropertyDescriptor getSignalTypeModelProperty(Stg stg, String signal, Container container) {
-        return new PropertyDeclaration<>(Signal.Type.class, signal + " type",
-                value -> stg.setSignalType(signal, value, container),
-                () -> stg.getSignalType(signal, container));
+                () -> new TextAction(signal).setLeftAction(leftAction).setRightAction(rightAction).setForeground(color)
+            ).setSpan();
     }
 
 }

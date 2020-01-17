@@ -41,6 +41,7 @@ public class TransformationResultHandler extends AbstractExtendedResultHandler<T
             MutexUtils.restoreMutexPlacesByContext(stgModel, mutexes);
             PetriModel model = convertToPetriNet ? convertStgToPetriNet(stgModel) : stgModel;
             ModelDescriptor modelDescriptor = convertToPetriNet ? new PetriDescriptor() : new StgDescriptor();
+            model.setTitle(we.getModelTitle());
             ModelEntry me = new ModelEntry(modelDescriptor, model);
             Path<String> path = we.getWorkspacePath();
             Framework framework = Framework.getInstance();

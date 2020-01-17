@@ -4,9 +4,12 @@ import org.workcraft.dom.Node;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.properties.*;
+import org.workcraft.observation.ModelModifiedEvent;
+import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.awt.*;
+import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 
 public class XbmPropertyHelper {
@@ -69,12 +72,6 @@ public class XbmPropertyHelper {
         }
     }
 
-    public static PropertyDescriptor getSignalTypeProperty(final VisualXbm xbm, final XbmSignal xbmSignal) {
-        return new PropertyDeclaration<>(XbmSignal.Type.class,
-                xbm.getMathName(xbmSignal) + " type",
-                xbmSignal::setType, xbmSignal::getType);
-    }
-
     public static PropertyDescriptor getSignalValueProperty(final VisualXbm xbm, final XbmState xbmState, final XbmSignal xbmSignal) {
         return new PropertyDeclaration<>(SignalState.class,
                 PropertyHelper.BULLET_PREFIX + xbm.getMathName(xbmSignal) + " value",
@@ -100,8 +97,44 @@ public class XbmPropertyHelper {
 
     }
 
-    public static PropertyDescriptor getSignalNameProperty(final Xbm xbm, final XbmSignal xbmSignal) {
+    public static Collection<PropertyDescriptor> getSignalProperties(Xbm xbm) {
+        final Collection<PropertyDescriptor> result = new LinkedList<>();
+        if (SignalCommonSettings.getGroupByType()) {
+            for (XbmSignal.Type type : XbmSignal.Type.values()) {
+                java.util.List<XbmSignal> signals = new ArrayList<>(xbm.getSignals(type));
+                Collections.sort(signals, Comparator.comparing(XbmSignal::getName));
+                for (final XbmSignal signal : signals) {
+                    result.add(getSignalProperty(xbm, signal));
+                }
+            }
+        } else {
+            List<XbmSignal> signals = new ArrayList<>(xbm.getSignals());
+            Collections.sort(signals, Comparator.comparing(XbmSignal::getName));
+            for (final XbmSignal signal : signals) {
+                result.add(getSignalProperty(xbm, signal));
+            }
+        }
+        return result;
+    }
+
+    public static ActionDeclaration getCreateSignalProperty(VisualXbm visualXbm) {
+        return new ActionDeclaration("Create signal",
+                () -> {
+                    visualXbm.getMathModel().createSignal(null, XbmSignal.DEFAULT_SIGNAL_TYPE);
+                    visualXbm.sendNotification(new ModelModifiedEvent(visualXbm));
+                });
+    }
+
+
+    public static PropertyDescriptor getSignalProperty(final Xbm xbm, final XbmSignal xbmSignal) {
         String signalName = xbm.getName(xbmSignal);
+
+        Action leftAction = new Action(PropertyHelper.BULLET_SYMBOL,
+                () -> xbmSignal.setType(xbmSignal.getType().toggle()), "Toggle type of signal '" + signalName + "'");
+
+        Action rightAction = new Action(PropertyHelper.CLEAR_SYMBOL,
+                () -> xbm.removeSignal(xbmSignal), "Remove signal '" + signalName + "'");
+
         return new PropertyDeclaration<>(TextAction.class,
                 signalName + " name",
                 value -> {
@@ -128,9 +161,72 @@ public class XbmPropertyHelper {
                         throw new ArgumentException("Node " + value + " already exists.");
                     }
                 },
-                () -> new TextAction(signalName, new Action(PropertyHelper.CLEAR_SYMBOL,
-                        () -> xbm.removeSignal(xbmSignal), "Remove signal '" + signalName + "'")
-                ));
+                () -> new TextAction(signalName).setLeftAction(leftAction).setRightAction(rightAction)
+                        .setForeground(getSignalColor(xbmSignal))
+        ).setSpan();
+    }
+
+    private static Color getSignalColor(XbmSignal xbmSignal) {
+        switch (xbmSignal.getType()) {
+        case INPUT:
+            return SignalCommonSettings.getInputColor();
+        case OUTPUT:
+            return SignalCommonSettings.getOutputColor();
+        case CONDITIONAL:
+            return SignalCommonSettings.getInternalColor();
+        }
+        return SignalCommonSettings.getDummyColor();
+    }
+
+
+    public static List<PropertyDescriptor> getSignalValueProperties(final VisualXbm visualxbm, final XbmState state) {
+        final List<PropertyDescriptor> result = new LinkedList<>();
+        final Xbm mathXbm = visualxbm.getMathModel();
+        final Set<XbmSignal> inputs = new LinkedHashSet<>(mathXbm.getSignals(XbmSignal.Type.INPUT));
+        final Set<XbmSignal> outputs = new LinkedHashSet<>(mathXbm.getSignals(XbmSignal.Type.OUTPUT));
+        if (!inputs.isEmpty()) {
+            result.add(getBurstProperty(state, "Input burst", XbmSignal.Type.INPUT));
+            for (XbmSignal i: inputs) {
+                result.add(getSignalValueProperty(visualxbm, state, i));
+            }
+        }
+        if (!outputs.isEmpty()) {
+            result.add(getBurstProperty(state, "Output burst", XbmSignal.Type.OUTPUT));
+            for (XbmSignal o: outputs) {
+                result.add(getSignalValueProperty(visualxbm, state, o));
+            }
+        }
+        return result;
+    }
+
+    public static List<PropertyDescriptor> getSignalDirectionProperties(final VisualXbm visualxbm, final BurstEvent burstEvent) {
+        final List<PropertyDescriptor> result = new LinkedList<>();
+        final Xbm mathXbm = visualxbm.getMathModel();
+        final Set<XbmSignal> inputs = new LinkedHashSet<>(mathXbm.getSignals(XbmSignal.Type.INPUT));
+        final Set<XbmSignal> outputs = new LinkedHashSet<>(mathXbm.getSignals(XbmSignal.Type.OUTPUT));
+
+        result.add(getBurstDirectionProperty(mathXbm, burstEvent, "Input burst", XbmSignal.Type.INPUT));
+
+        if (!inputs.isEmpty()) {
+            for (XbmSignal i: inputs) {
+                result.add(getSignalDirectionProperty(visualxbm, burstEvent, i));
+            }
+        }
+
+        result.add(getBurstDirectionProperty(mathXbm, burstEvent, "Output burst", XbmSignal.Type.OUTPUT));
+
+        if (!outputs.isEmpty()) {
+            for (XbmSignal o: outputs) {
+                result.add(getSignalDirectionProperty(visualxbm, burstEvent, o));
+            }
+        }
+        return result;
+    }
+
+    public static PropertyDescriptor getConditionalProperty(final BurstEvent event) {
+        return new PropertyDeclaration<>(String.class, BurstEvent.PROPERTY_CONDITIONAL,
+                event::setConditional, event::getConditional)
+                .setCombinable().setTemplatable();
     }
 
 }
