@@ -1,23 +1,17 @@
 package org.workcraft.plugins.son;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.Collection;
-
-import org.workcraft.dom.visual.BoundingBoxHelper;
-import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.VisualComment;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualPage;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.dom.visual.*;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.plugins.son.elements.VisualCondition;
 import org.workcraft.plugins.son.elements.VisualEvent;
+import org.workcraft.utils.Coloriser;
 import org.workcraft.utils.Hierarchy;
+
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.Collection;
 
 public class VisualONGroup extends VisualPage {
     private static final float strokeWidth = 0.03f;
@@ -61,16 +55,18 @@ public class VisualONGroup extends VisualPage {
         Rectangle2D groupBB = getInternalBoundingBoxInLocalSpace();
         if ((groupBB != null) && (getParent() != null)) {
             // Draw label
-            Rectangle2D labelBB = getLabelBoundingBox();
-            if ((labelBB != null) && getLabelVisibility()) {
-                g.setColor(Coloriser.colorise(Color.WHITE, colorisation));
-                g.fill(labelBB);
-                g.setStroke(new BasicStroke(strokeWidth - 0.005f, BasicStroke.CAP_BUTT,
-                        BasicStroke.JOIN_ROUND, 3.0f, new float[]{0.1f, 0.05f}, 0f));
+            if (!getLabel().isEmpty() && getLabelVisibility()) {
+                Rectangle2D labelBB = getLabelBoundingBox();
+                if (labelBB != null) {
+                    g.setColor(Coloriser.colorise(Color.WHITE, colorisation));
+                    g.fill(labelBB);
+                    g.setStroke(new BasicStroke(strokeWidth - 0.005f, BasicStroke.CAP_BUTT,
+                            BasicStroke.JOIN_ROUND, 3.0f, new float[]{0.1f, 0.05f}, 0f));
 
-                g.setColor(Coloriser.colorise(getLabelColor(), colorisation));
-                g.draw(labelBB);
-                drawLabelInLocalSpace(r);
+                    g.setColor(Coloriser.colorise(getLabelColor(), colorisation));
+                    g.draw(labelBB);
+                    drawLabelInLocalSpace(r);
+                }
             }
             // Draw group
             g.setColor(Coloriser.colorise(this.getForegroundColor(), colorisation));
