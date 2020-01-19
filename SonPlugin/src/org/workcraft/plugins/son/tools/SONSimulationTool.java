@@ -52,8 +52,6 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
     protected Map<PlaceNode, Boolean> initialMarking;
 
     protected JPanel panel;
-    protected JPanel controlPanel;
-    protected JScrollPane tablePanel;
     protected JTable traceTable;
 
     protected JSlider speedSlider;
@@ -163,7 +161,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         traceControl.add(pasteStateButton);
         traceControl.add(mergeTraceButton);
 
-        controlPanel = new JPanel();
+        JPanel controlPanel = new JPanel();
         controlPanel.setLayout(new WrapLayout());
         controlPanel.add(simulationControl);
         controlPanel.add(speedControl);
@@ -172,7 +170,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         traceTable = new JTable(new TraceTableModel());
         traceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        tablePanel = new JScrollPane(traceTable);
+        JScrollPane tablePanel = new JScrollPane(traceTable);
         tablePanel.setPreferredSize(new Dimension(1, 1));
 
         speedSlider.addChangeListener(e -> {
@@ -344,8 +342,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
     }
 
     protected void initialise(final GraphEditor editor) {
-        final VisualSON visualNet = (VisualSON) editor.getModel();
-        final SON net = visualNet.getMathModel();
+        final SON net = (SON) editor.getModel().getMathModel();
         relationAlg = new RelationAlgorithm(net);
         bsonAlg = new BSONAlg(net);
         simuAlg = new SimulationAlg(net);

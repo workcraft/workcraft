@@ -142,8 +142,12 @@ public class TimeEstimatorDialog extends JDialog {
     }
 
     protected void createScenarioTable() {
+        scenarioTable = new ScenarioTable();
+        scenarioTable.setModel(new ScenarioListTableModel());
+        scenarioTable.setNet(net);
+        scenarioTable.updateColor(selection);
         ScenarioSaveList saveList = saveListFilter(net.importScenarios(), selection);
-        scenarioTable = new ScenarioTable(saveList, editor, new ScenarioListTableModel(), selection);
+        scenarioTable.setSaveList(saveList);
 
         tabelPanel = new JScrollPane(scenarioTable);
         tabelPanel.setPreferredSize(new Dimension(1, 100));
@@ -162,7 +166,7 @@ public class TimeEstimatorDialog extends JDialog {
                     if (obj instanceof ScenarioRef) {
                         scenarioTable.setScenarioRef((ScenarioRef) obj);
                         scenarioTable.setIsCellColor(true);
-                        scenarioTable.updateTable(editor);
+                        scenarioTable.updateTable();
                         scenarioTable.updateColor(selection);
                     }
                 }
@@ -306,8 +310,9 @@ public class TimeEstimatorDialog extends JDialog {
         @Override
         public Object getValueAt(int row, int column) {
             if (column == 0) {
-                if (!scenarioTable.getSaveList().isEmpty() && (row < scenarioTable.getSaveList().size())) {
-                    return scenarioTable.getSaveList().get(row);
+                ScenarioSaveList saveList = scenarioTable.getSaveList();
+                if (!saveList.isEmpty() && (row < saveList.size())) {
+                    return saveList.get(row);
                 }
             }
             return "";
