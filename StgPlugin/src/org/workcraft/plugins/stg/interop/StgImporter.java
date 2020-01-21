@@ -3,10 +3,10 @@ package org.workcraft.plugins.stg.interop;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.interop.Importer;
-import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
+import org.workcraft.plugins.petri.utils.PetriUtils;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgDescriptor;
-import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.jj.ParseException;
 import org.workcraft.plugins.stg.jj.StgParser;
 import org.workcraft.workspace.ModelEntry;
@@ -22,12 +22,12 @@ public class StgImporter implements Importer {
 
     @Override
     public ModelEntry importFrom(InputStream in) throws DeserialisationException {
-        StgModel stg = importStg(in);
+        Stg stg = importStg(in);
         PetriUtils.checkSoundness(stg, false);
         return new ModelEntry(new StgDescriptor(), stg);
     }
 
-    public StgModel importStg(InputStream in) throws DeserialisationException {
+    public Stg importStg(InputStream in) throws DeserialisationException {
         try {
             StgParser parser = new StgParser(in);
             if (DebugCommonSettings.getParserTracing()) {

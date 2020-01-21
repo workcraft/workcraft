@@ -4,10 +4,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
-import org.workcraft.plugins.stg.Signal;
-import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.StgPlace;
+import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.utils.Hierarchy;
 
@@ -30,7 +27,7 @@ public class TransformUtils {
     public static Set<String> generateShadows(Stg compStg, ComponentData componentData) {
         Set<String> result = new HashSet<>();
         File stgFile = new File(componentData.getFileName());
-        Stg stg = StgUtils.loadStg(stgFile);
+        Stg stg = StgUtils.importStg(stgFile);
         Set<String> dstPlaceRefs = componentData.getDstPlaces();
         Set<String> localSignals = new HashSet<>();
         localSignals.addAll(stg.getSignalReferences(Signal.Type.OUTPUT));

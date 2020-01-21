@@ -150,13 +150,19 @@ public class SizeHelper {
     }
 
     public static Border getEmptyBorder() {
+        return getEmptyBorder(true, true);
+    }
+
+    public static Border getEmptyBorder(boolean v, boolean h) {
         int gap = (int) Math.round(0.2 * getBaseSize());
-        return new EmptyBorder(gap, gap, gap, gap);
+        int vGap = v ? gap : 0;
+        int hGap = h ? gap : 0;
+        return new EmptyBorder(vGap, hGap, vGap, hGap);
     }
 
     public static Border getGapBorder() {
-        int hGap = getLayoutHGap();
         int vGap = getLayoutVGap();
+        int hGap = getLayoutHGap();
         return new EmptyBorder(vGap, hGap, vGap, hGap);
     }
 

@@ -121,7 +121,7 @@ public class ConformationNwayTask implements Task<VerificationChainOutput> {
 
             // Insert shadow transitions into the composed STG
             CompositionData compositionData = new CompositionData(detailFile);
-            Stg modSysStg = StgUtils.loadStg(sysStgFile);
+            Stg modSysStg = StgUtils.importStg(sysStgFile);
             Set<String> shadowTransitions = TransformUtils.generateShadows(modSysStg, compositionData);
             File modSysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + stgFileExtension);
             Result<? extends ExportOutput> modSysExportResult = StgUtils.exportStg(modSysStg, modSysStgFile, monitor);

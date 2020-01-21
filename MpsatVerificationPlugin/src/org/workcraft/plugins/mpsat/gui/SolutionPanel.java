@@ -10,6 +10,7 @@ import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionListener;
 
 @SuppressWarnings("serial")
@@ -19,12 +20,14 @@ public class SolutionPanel extends JPanel {
     private static final int MAX_COLUMN_COUNT = 60;
 
     public SolutionPanel(final WorkspaceEntry we, final Solution solution, final ActionListener closeAction) {
+        setBorder(SizeHelper.getEmptyBorder());
         setLayout(GuiUtils.createTableLayout(
                 new double[]{TableLayout.FILL, TableLayout.PREFERRED},
                 new double[]{TableLayout.PREFERRED, TableLayout.FILL}));
 
         JLabel commentLabel = new JLabel();
         if (solution.getComment() != null) {
+            commentLabel.setBorder(SizeHelper.getEmptyBorder(false, true));
             commentLabel.setText(solution.getComment());
         }
 
@@ -39,8 +42,9 @@ public class SolutionPanel extends JPanel {
             traceText.setEditable(false);
         }
 
-        final JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setViewportView(traceText);
+        JPanel tracePanel = new JPanel(new BorderLayout());
+        tracePanel.setBorder(SizeHelper.getEmptyBorder(false, true));
+        tracePanel.add(new JScrollPane(traceText), BorderLayout.CENTER);
 
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.Y_AXIS));
@@ -54,7 +58,7 @@ public class SolutionPanel extends JPanel {
         buttonsPanel.add(playButton);
 
         add(commentLabel, new TableLayoutConstraints(0, 0));
-        add(scrollPane, new TableLayoutConstraints(0, 1));
+        add(tracePanel, new TableLayoutConstraints(0, 1));
         add(buttonsPanel, new TableLayoutConstraints(1, 1));
     }
 
