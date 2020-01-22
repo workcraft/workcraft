@@ -144,8 +144,8 @@ public class TimeEstimatorDialog extends JDialog {
     protected void createScenarioTable() {
         scenarioTable = new ScenarioTable();
         scenarioTable.setModel(new ScenarioListTableModel());
-        scenarioTable.updateColor(selection);
         scenarioTable.setNet(net);
+        scenarioTable.updateColor(selection);
         ScenarioSaveList saveList = saveListFilter(net.importScenarios(), selection);
         scenarioTable.setSaveList(saveList);
 

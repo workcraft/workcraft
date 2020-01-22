@@ -539,6 +539,23 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
         net.refreshNodeColor();
         Point2D position = e.getPosition();
         Container root = e.getModel().getRoot();
+
+        Node node0 = HitMan.hitDeepest(position, root,
+                node -> (node instanceof VisualPlaceNode) || (node instanceof VisualEvent));
+
+        if ((node0 instanceof VisualPlaceNode) || (node0 instanceof VisualEvent)) {
+            if (!(node0 instanceof VisualChannelPlace)) {
+                estimatorButton.setEnabled(true);
+            }
+
+            selection = ((VisualComponent) node0).getReferencedComponent();
+            visualSelection = node0;
+            ((VisualComponent) node0).setForegroundColor(selectedColor);
+            updateTimePanel(e.getEditor(), node0);
+            net.setTimeColor(selection, Color.BLACK);
+            return;
+        }
+
         Node node1 = HitMan.hitDeepest(position, root, VisualSONConnection.class);
         if (node1 instanceof VisualSONConnection) {
             estimatorButton.setEnabled(false);
@@ -564,21 +581,6 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
                 net.setTimeColor(selection, Color.BLACK);
                 return;
             }
-        }
-
-        Node node3 = HitMan.hitDeepest(position, root,
-                node -> (node instanceof VisualPlaceNode) || (node instanceof VisualEvent));
-
-        if ((node3 instanceof VisualPlaceNode) || (node3 instanceof VisualEvent)) {
-            if (!(node3 instanceof VisualChannelPlace)) {
-                estimatorButton.setEnabled(true);
-            }
-
-            selection = ((VisualComponent) node3).getReferencedComponent();
-            visualSelection = node3;
-            ((VisualComponent) node3).setForegroundColor(selectedColor);
-            updateTimePanel(e.getEditor(), node3);
-            net.setTimeColor(selection, Color.BLACK);
         }
     }
 
