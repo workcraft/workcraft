@@ -104,7 +104,7 @@ public class Fsm extends AbstractMathModel {
         if (srcModel == null) {
             srcModel = this;
         }
-        HierarchyReferenceManager refManager = (HierarchyReferenceManager) getReferenceManager();
+        HierarchyReferenceManager refManager = getReferenceManager();
         NameManager nameManager = refManager.getNameManager(null);
         for (MathNode srcNode: srcChildren) {
             if (srcNode instanceof Event) {

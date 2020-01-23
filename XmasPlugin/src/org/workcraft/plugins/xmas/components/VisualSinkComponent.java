@@ -22,7 +22,7 @@ public class VisualSinkComponent extends VisualXmasComponent {
     public VisualSinkComponent(SinkComponent component) {
         super(component);
         if (component.getChildren().isEmpty()) {
-            this.addInput(Positioning.CENTER);
+            this.createInput(Positioning.CENTER);
         }
     }
 

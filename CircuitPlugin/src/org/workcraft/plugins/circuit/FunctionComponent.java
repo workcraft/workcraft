@@ -31,13 +31,13 @@ public class FunctionComponent extends CircuitComponent {
                 for (Node node: e.getAffectedNodes()) {
                     if (node instanceof Contact) {
                         final Contact contact = (Contact) node;
-                        removeContactfromFunctions(contact);
+                        removeContactFromFunctions(contact);
                     }
                 }
             }
         }
 
-        private void removeContactfromFunctions(final Contact contact) {
+        private void removeContactFromFunctions(final Contact contact) {
             for (FunctionContact fc: new ArrayList<>(getFunctionContacts())) {
                 fc.setSetFunction(FormulaUtils.replaceZero(fc.getSetFunction(), contact));
                 fc.setResetFunction(FormulaUtils.replaceZero(fc.getResetFunction(), contact));

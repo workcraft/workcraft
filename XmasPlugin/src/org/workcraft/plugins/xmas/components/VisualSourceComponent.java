@@ -21,12 +21,10 @@ import java.awt.geom.Path2D;
 @SVGIcon("images/xmas-node-source.svg")
 public class VisualSourceComponent extends VisualXmasComponent {
 
-    private VisualXmasContact oContact = null;
-
     public VisualSourceComponent(SourceComponent component) {
         super(component);
         if (component.getChildren().isEmpty()) {
-            oContact = addOutput(Positioning.CENTER);
+            this.createOutput(Positioning.CENTER);
         }
         addPropertyDeclarations();
     }
@@ -48,10 +46,6 @@ public class VisualSourceComponent extends VisualXmasComponent {
     @Override
     public SourceComponent getReferencedComponent() {
         return (SourceComponent) super.getReferencedComponent();
-    }
-
-    public VisualXmasContact getOContact() {
-        return oContact;
     }
 
     @Override
