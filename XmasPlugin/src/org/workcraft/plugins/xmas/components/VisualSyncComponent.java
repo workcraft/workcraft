@@ -16,8 +16,8 @@ public class VisualSyncComponent extends VisualXmasComponent {
     public VisualSyncComponent(SyncComponent component) {
         super(component);
         if (component.getChildren().isEmpty()) {
-            this.addInput(Positioning.LEFT);
-            this.addOutput(Positioning.RIGHT);
+            this.createInput(Positioning.LEFT);
+            this.createOutput(Positioning.RIGHT);
         } else {
             int numInputs = component.getInputs().size();
             int numOutputs = component.getOutputs().size();

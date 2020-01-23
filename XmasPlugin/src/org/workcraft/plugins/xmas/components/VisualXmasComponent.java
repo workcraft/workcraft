@@ -133,11 +133,10 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
         return result;
     }
 
-    public void addContact(VisualXmasContact vc, Positioning positioning) {
+    public void addContact(VisualXmasContact vc) {
         if (!getChildren().contains(vc)) {
             getReferencedComponent().add(vc.getReferencedComponent());
             add(vc);
-            setContactPosition(vc, positioning);
         }
     }
 
@@ -212,18 +211,18 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
     public void notify(StateEvent e) {
     }
 
-    public VisualXmasContact addInput(Positioning positioning) {
-        XmasContact c = new XmasContact(IOType.INPUT);
-        VisualXmasContact vc = new VisualXmasContact(c);
-        addContact(vc, positioning);
-        return vc;
+    public VisualXmasContact createInput(Positioning positioning) {
+        VisualXmasContact contact = new VisualXmasContact(new XmasContact(IOType.INPUT));
+        addContact(contact);
+        setContactPosition(contact, positioning);
+        return contact;
     }
 
-    public VisualXmasContact addOutput(Positioning positioning) {
-        XmasContact c = new XmasContact(IOType.OUTPUT);
-        VisualXmasContact vc = new VisualXmasContact(c);
-        addContact(vc, positioning);
-        return vc;
+    public VisualXmasContact createOutput(Positioning positioning) {
+        VisualXmasContact contact = new VisualXmasContact(new XmasContact(IOType.OUTPUT));
+        addContact(contact);
+        setContactPosition(contact, positioning);
+        return contact;
     }
 
     @Override

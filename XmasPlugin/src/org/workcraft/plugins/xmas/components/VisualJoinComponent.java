@@ -14,9 +14,9 @@ public class VisualJoinComponent extends VisualXmasComponent {
     public VisualJoinComponent(JoinComponent component) {
         super(component);
         if (component.getChildren().isEmpty()) {
-            this.addInput(Positioning.TOP_LEFT);
-            this.addInput(Positioning.BOTTOM_LEFT);
-            this.addOutput(Positioning.RIGHT);
+            this.createInput(Positioning.TOP_LEFT);
+            this.createInput(Positioning.BOTTOM_LEFT);
+            this.createOutput(Positioning.RIGHT);
         }
     }
 

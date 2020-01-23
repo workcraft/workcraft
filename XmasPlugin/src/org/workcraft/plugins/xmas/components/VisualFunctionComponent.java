@@ -19,8 +19,8 @@ public class VisualFunctionComponent extends VisualXmasComponent {
     public VisualFunctionComponent(FunctionComponent component) {
         super(component);
         if (component.getChildren().isEmpty()) {
-            this.addInput(Positioning.LEFT);
-            this.addOutput(Positioning.RIGHT);
+            this.createInput(Positioning.LEFT);
+            this.createOutput(Positioning.RIGHT);
         }
         addPropertyDeclarations();
     }

@@ -23,9 +23,9 @@ public class VisualSwitchComponent extends VisualXmasComponent {
     public VisualSwitchComponent(SwitchComponent component) {
         super(component);
         if (component.getChildren().isEmpty()) {
-            this.addInput(Positioning.LEFT);
-            this.addOutput(Positioning.TOP_RIGHT);
-            this.addOutput(Positioning.BOTTOM_RIGHT);
+            this.createInput(Positioning.LEFT);
+            this.createOutput(Positioning.TOP_RIGHT);
+            this.createOutput(Positioning.BOTTOM_RIGHT);
         }
         addPropertyDeclarations();
     }

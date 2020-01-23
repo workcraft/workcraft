@@ -32,7 +32,7 @@ public class VerilogSerialiser implements ModelSerialiser {
     private static final String KEYWORD_MODULE = "module";
     private static final String KEYWORD_ENDMODULE = "endmodule";
     private static final String KEYWORD_ASSIGN = "assign";
-    private static final String KEYWORD_ASSIGN_DELAY = "#1";
+    private static final String KEYWORD_ASSIGN_DELAY = "#";
 
     private final Queue<Pair<File, Circuit>> refinementCircuits = new LinkedList<>();
     private final Map<String, SubstitutionRule> substitutionRules = new HashMap<>();
@@ -181,12 +181,16 @@ public class VerilogSerialiser implements ModelSerialiser {
                 expr = resetExpr;
             }
             if ((expr != null) && !expr.isEmpty()) {
-                String assignStr = KEYWORD_ASSIGN  + " " + (CircuitSettings.getVerilogAssignDelay() ? KEYWORD_ASSIGN_DELAY : "");
-                writer.println("    " + assignStr + " " + signalName + " = " + expr + ";");
+                writer.println("    " + KEYWORD_ASSIGN + getDelayParameter() + " " + signalName + " = " + expr + ";");
                 result = true;
             }
         }
         return result;
+    }
+
+    private String getDelayParameter() {
+        int assignDelay = CircuitSettings.getVerilogAssignDelay();
+        return assignDelay > 0 ? " " + KEYWORD_ASSIGN_DELAY + assignDelay : "";
     }
 
     private void writeInstance(PrintWriter writer, CircuitSignalInfo circuitInfo, FunctionComponent component) {

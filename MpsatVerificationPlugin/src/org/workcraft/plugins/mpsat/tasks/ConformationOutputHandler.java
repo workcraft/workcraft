@@ -1,5 +1,6 @@
 package org.workcraft.plugins.mpsat.tasks;
 
+import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.gui.tools.Trace;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.utils.EnablednessUtils;
@@ -7,23 +8,52 @@ import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.utils.PetriUtils;
-import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.types.Triple;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class ConformationOutputHandler extends ReachabilityOutputHandler {
+
+    private static final Pattern DEAD_SIGNAL_PATTERN = Pattern.compile(
+            "Warning: signal (\\w+) is dead");
 
     ConformationOutputHandler(WorkspaceEntry we, ExportOutput exportOutput,
             PcompOutput pcompOutput, VerificationOutput mpsatOutput, VerificationParameters settings) {
 
         super(we, exportOutput, pcompOutput, mpsatOutput, settings);
+    }
+
+    @Override
+    public String getMessage(boolean isSatisfiable) {
+        String result = super.getMessage(isSatisfiable);
+        String stderr = getMpsatOutput().getStderrString();
+        Matcher matcher = DEAD_SIGNAL_PATTERN.matcher(stderr);
+        List<String> signals = new ArrayList<>();
+        while (matcher.find()) {
+            signals.add(matcher.group(1));
+        }
+        if (!signals.isEmpty()) {
+            boolean inversePredicate = getSettings().getInversePredicate();
+            if (isSatisfiable == inversePredicate) {
+                result += "<br>Also ";
+            } else {
+                result += "\nYet ";
+            }
+            result += ReferenceHelper.getTextWithReferences("composition has dead signal", signals);
+            if (isSatisfiable != inversePredicate) {
+                result += "\nWarning: dead signals may indicate design issues!";
+            }
+        }
+        return result;
     }
 
     @Override

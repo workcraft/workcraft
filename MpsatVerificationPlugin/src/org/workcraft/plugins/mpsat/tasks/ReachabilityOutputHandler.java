@@ -158,8 +158,8 @@ class ReachabilityOutputHandler implements Runnable {
 
     public String extendMessage(String message) {
         String traceCharacteristic = getSettings().getInversePredicate() ? "problematic" : "sought";
-        String traceInfo = "&#160;Trace(s) leading to the " + traceCharacteristic + " state(s):<br><br>";
-        return "<html><br>&#160;" + message + "<br><br>" + traceInfo + "</html>";
+        String traceInfo = "Trace(s) leading to the " + traceCharacteristic + " state(s):";
+        return "<html>" + message + "<br><br>" + traceInfo + "</html>";
     }
 
     @Override

@@ -6,6 +6,7 @@ import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.List;
@@ -16,17 +17,21 @@ public class ReachibilityDialog extends JDialog {
     public ReachibilityDialog(Window owner, WorkspaceEntry we, String title,
             String message, List<Solution> solutions) {
 
+        JLabel messageLabel = new JLabel(message);
+        messageLabel.setBorder(SizeHelper.getGapBorder());
+
         JPanel solutionsPanel = new JPanel(new GridLayout(solutions.size(), 1,
                 SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
 
         solutionsPanel.setBorder(SizeHelper.getEmptyBorder());
         for (Solution solution : solutions) {
-            SolutionPanel panel = new SolutionPanel(we, solution, event -> setVisible(false));
-
-            solutionsPanel.add(panel);
+            SolutionPanel solutionPanel = new SolutionPanel(we, solution, event -> setVisible(false));
+            solutionsPanel.add(solutionPanel);
         }
-        final JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setViewportView(solutionsPanel);
+
+        JPanel scrollPanel = new JPanel(new BorderLayout());
+        scrollPanel.setBorder(new EmptyBorder(0, SizeHelper.getLayoutHGap(), 0, SizeHelper.getLayoutHGap()));
+        scrollPanel.add(new JScrollPane(solutionsPanel), BorderLayout.CENTER);
 
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton closeButton = GuiUtils.createDialogButton("Close");
@@ -40,14 +45,14 @@ public class ReachibilityDialog extends JDialog {
 
         buttonsPanel.add(closeButton);
 
-        JPanel contents = new JPanel(new BorderLayout(SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
-        contents.add(new JLabel(message), BorderLayout.NORTH);
-        contents.add(scrollPane, BorderLayout.CENTER);
-        contents.add(buttonsPanel, BorderLayout.SOUTH);
+        JPanel contentPanel = new JPanel(new BorderLayout(SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
+        contentPanel.add(messageLabel, BorderLayout.NORTH);
+        contentPanel.add(scrollPanel, BorderLayout.CENTER);
+        contentPanel.add(buttonsPanel, BorderLayout.SOUTH);
 
         setTitle(title);
-        setContentPane(contents);
-        setMinimumSize(new Dimension(400, 200));
+        setContentPane(contentPanel);
+        setMinimumSize(new Dimension(400, 233));
         setModal(true);
         pack();
         setLocationRelativeTo(owner);

@@ -18,8 +18,8 @@ public class VisualCreditComponent extends VisualXmasComponent {
         super(component);
         addPropertyDeclarations();
         if (component.getChildren().isEmpty()) {
-            this.addInput(Positioning.LEFT);
-            this.addOutput(Positioning.RIGHT);
+            this.createInput(Positioning.LEFT);
+            this.createOutput(Positioning.RIGHT);
         }
     }
 

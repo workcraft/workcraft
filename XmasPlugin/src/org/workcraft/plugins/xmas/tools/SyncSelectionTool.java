@@ -34,8 +34,8 @@ public class SyncSelectionTool extends SelectionTool {
             JMenuItem addInputMenuItem = new JMenuItem("Add input-output pair");
             addInputMenuItem.addActionListener(event -> {
                 editor.getWorkspaceEntry().saveMemento();
-                component.addInput(Positioning.TOP);
-                component.addOutput(Positioning.BOTTOM);
+                component.createInput(Positioning.TOP);
+                component.createOutput(Positioning.BOTTOM);
             });
             popup.add(addInputMenuItem);
             return popup;

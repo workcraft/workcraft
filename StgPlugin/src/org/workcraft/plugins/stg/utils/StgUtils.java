@@ -37,8 +37,9 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.*;
 import java.util.List;
+import java.util.Queue;
+import java.util.*;
 
 public class StgUtils {
     public static final String SPEC_FILE_PREFIX = "net";
@@ -197,7 +198,7 @@ public class StgUtils {
             Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
             try {
                 ByteArrayInputStream dstStream = new ByteArrayInputStream(dstOutput);
-                StgModel dstStg = new StgImporter().importStg(dstStream);
+                Stg dstStg = new StgImporter().importStg(dstStream);
                 Set<String> newSignals = dstStg.getSignalReferences();
                 newSignals.removeAll(srcStg.getSignalReferences());
 
@@ -217,8 +218,8 @@ public class StgUtils {
         return dstWe;
     }
 
-    public static StgModel importStg(File file) {
-        StgModel result = null;
+    public static Stg importStg(File file) {
+        Stg result = null;
         if (file != null) {
             try {
                 FileInputStream is = new FileInputStream(file);

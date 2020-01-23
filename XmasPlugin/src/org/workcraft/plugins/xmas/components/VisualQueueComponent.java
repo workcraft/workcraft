@@ -33,8 +33,8 @@ public class VisualQueueComponent extends VisualXmasComponent {
     public VisualQueueComponent(QueueComponent component) {
         super(component);
         if (component.getChildren().isEmpty()) {
-            this.addInput(Positioning.LEFT);
-            this.addOutput(Positioning.RIGHT);
+            this.createInput(Positioning.LEFT);
+            this.createOutput(Positioning.RIGHT);
         }
         addPropertyDeclarations();
     }

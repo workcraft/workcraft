@@ -89,7 +89,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final boolean defaultInvertExportSubstitutionRules = false;
     private static final String defaultImportSubstitutionLibrary = "";
     private static final boolean defaultInvertImportSubstitutionRules = true;
-    private static final boolean defaultVerilogAssignDelay = false;
+    private static final int defaultVerilogAssignDelay = 0;
     private static final String defaultBusSuffix = "__$";
     private static final String defaultMutexData = "MUTEX ((r1, g1), (r2, g2))";
     // Reset
@@ -121,7 +121,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static boolean invertExportSubstitutionRules = defaultInvertExportSubstitutionRules;
     private static String importSubstitutionLibrary = defaultImportSubstitutionLibrary;
     private static boolean invertImportSubstitutionRules = defaultInvertImportSubstitutionRules;
-    private static boolean verilogAssignDelay = defaultVerilogAssignDelay;
+    private static int verilogAssignDelay = defaultVerilogAssignDelay;
     private static String busSuffix = defaultBusSuffix;
     private static String mutexData = defaultMutexData;
     // Reset
@@ -228,8 +228,8 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::setInvertImportSubstitutionRules,
                 CircuitSettings::getInvertImportSubstitutionRules));
 
-        properties.add(new PropertyDeclaration<>(Boolean.class,
-                PropertyHelper.BULLET_PREFIX + "Delay assign statements in Verilog export",
+        properties.add(new PropertyDeclaration<>(Integer.class,
+                PropertyHelper.BULLET_PREFIX + "Delay for assign statements in Verilog export (0 to suppress)",
                 CircuitSettings::setVerilogAssignDelay,
                 CircuitSettings::getVerilogAssignDelay));
 
@@ -339,7 +339,7 @@ public class CircuitSettings extends AbstractModelSettings {
         setInvertExportSubstitutionRules(config.getBoolean(keyInvertExportSubstitutionRules, defaultInvertExportSubstitutionRules));
         setImportSubstitutionLibrary(config.getString(keyImportSubstitutionLibrary, defaultImportSubstitutionLibrary));
         setInvertImportSubstitutionRules(config.getBoolean(keyInvertImportSubstitutionRules, defaultInvertImportSubstitutionRules));
-        setVerilogAssignDelay(config.getBoolean(keyVerilogAssignDelay, defaultVerilogAssignDelay));
+        setVerilogAssignDelay(config.getInt(keyVerilogAssignDelay, defaultVerilogAssignDelay));
         setBusSuffix(config.getString(keyBusSuffix, defaultBusSuffix));
         // Reset
         setResetActiveHighPort(config.getString(keyResetActiveHighPort, defaultResetActiveHighPort));
@@ -375,7 +375,7 @@ public class CircuitSettings extends AbstractModelSettings {
         config.setBoolean(keyInvertExportSubstitutionRules, getInvertExportSubstitutionRules());
         config.set(keyImportSubstitutionLibrary, getImportSubstitutionLibrary());
         config.setBoolean(keyInvertImportSubstitutionRules, getInvertImportSubstitutionRules());
-        config.setBoolean(keyVerilogAssignDelay, getVerilogAssignDelay());
+        config.setInt(keyVerilogAssignDelay, getVerilogAssignDelay());
         config.set(keyBusSuffix, getBusSuffix());
         // reset
         config.set(keyResetActiveHighPort, getResetActiveHighPort());
@@ -517,11 +517,11 @@ public class CircuitSettings extends AbstractModelSettings {
         invertImportSubstitutionRules = value;
     }
 
-    public static boolean getVerilogAssignDelay() {
+    public static int getVerilogAssignDelay() {
         return verilogAssignDelay;
     }
 
-    public static void setVerilogAssignDelay(boolean value) {
+    public static void setVerilogAssignDelay(int value) {
         verilogAssignDelay = value;
     }
 
