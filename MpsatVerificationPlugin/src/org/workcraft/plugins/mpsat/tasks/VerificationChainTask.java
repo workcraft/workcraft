@@ -89,7 +89,7 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
             boolean useLegacyMci = PunfSettings.getUseMciCsc() && (settings.getMode() == VerificationMode.RESOLVE_ENCODING_CONFLICTS);
             String unfoldingExtension = useLegacyMci ? PunfTask.MCI_FILE_EXTENSION : PunfTask.PNML_FILE_EXTENSION;
             File unfoldingFile = new File(directory, "unfolding" + unfoldingExtension);
-            PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory, useLegacyMci);
+            PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory, useLegacyMci ? PunfTask.Mode.MCI_UNFOLDING : PunfTask.Mode.UNFOLDING);
             Result<? extends PunfOutput> punfResult = manager.execute(punfTask, "Unfolding .g", subtaskMonitor);
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {

@@ -10,6 +10,12 @@ import java.util.ArrayList;
 
 public class PunfTask implements Task<PunfOutput> {
 
+    public enum Mode {
+        MCI_UNFOLDING,
+        UNFOLDING,
+        LTL_X
+    }
+
     public static final String PNML_FILE_EXTENSION = ".pnml";
     public static final String MCI_FILE_EXTENSION = ".mci";
     public static final String LEGACY_TOOL_SUFFIX = "-mci";
@@ -17,17 +23,17 @@ public class PunfTask implements Task<PunfOutput> {
     private final File inputFile;
     private final File outputFile;
     private final File workingDir;
-    private final boolean useLegacyMci;
+    private final Mode mode;
 
     public PunfTask(File inputFile, File outputFile, File workingDir) {
-        this(inputFile, outputFile, workingDir, false);
+        this(inputFile, outputFile, workingDir, Mode.UNFOLDING);
     }
 
-    public PunfTask(File inputFile, File outputFile, File workingDir, boolean useLegacyMci) {
+    public PunfTask(File inputFile, File outputFile, File workingDir, Mode mode) {
         this.inputFile = inputFile;
         this.outputFile = outputFile;
         this.workingDir = workingDir;
-        this.useLegacyMci = useLegacyMci;
+        this.mode = mode;
     }
 
     @Override
@@ -36,7 +42,7 @@ public class PunfTask implements Task<PunfOutput> {
 
         // Name of the executable
         String toolPrefix = PunfSettings.getCommand();
-        String toolSuffix = useLegacyMci ? LEGACY_TOOL_SUFFIX : "";
+        String toolSuffix = mode == Mode.MCI_UNFOLDING ? LEGACY_TOOL_SUFFIX : "";
         String toolName = ExecutableUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
         command.add(toolName);
 
@@ -48,8 +54,19 @@ public class PunfTask implements Task<PunfOutput> {
         }
 
         // Built-in arguments
-        command.add("-m=" + outputFile.getAbsolutePath());
-        command.add(inputFile.getAbsolutePath());
+        switch (mode) {
+        case UNFOLDING:
+        case MCI_UNFOLDING:
+            command.add("-m=" + outputFile.getAbsolutePath());
+            command.add(inputFile.getAbsolutePath());
+            break;
+        case LTL_X:
+            command.add("-L=" + outputFile.getAbsolutePath());
+            command.add("-m");
+            command.add("-c");
+            command.add(inputFile.getAbsolutePath());
+            break;
+        }
 
         boolean printStdout = PunfSettings.getPrintStdout();
         boolean printStderr = PunfSettings.getPrintStderr();

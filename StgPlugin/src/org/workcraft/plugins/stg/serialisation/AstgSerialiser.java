@@ -15,7 +15,7 @@ public class AstgSerialiser implements ModelSerialiser {
 
     @Override
     public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) {
-        SerialiserUtils.writeModel(model, out, Style.STG);
+        SerialiserUtils.writeModel(model, out, Style.STG, false);
         return refs;
     }
 
