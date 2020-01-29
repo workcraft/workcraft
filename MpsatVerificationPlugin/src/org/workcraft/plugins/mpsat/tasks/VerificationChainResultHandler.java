@@ -1,9 +1,10 @@
 package org.workcraft.plugins.mpsat.tasks;
 
+import org.workcraft.gui.simulation.SimulationUtils;
+import org.workcraft.gui.simulation.Solution;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.tasks.PunfOutputParser.Cause;
-import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.plugins.mpsat.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
@@ -155,7 +156,7 @@ public class VerificationChainResultHandler extends AbstractResultHandler<Verifi
                         message += comment + AFTER_THE_TRACE_SUFFIX;
                         message += solution + ASK_SIMULATE_SUFFIX;
                         if (DialogUtils.showConfirmError(message, TITLE, true)) {
-                            MpsatUtils.playSolution(we, solution);
+                            SimulationUtils.playSolution(we, solution);
                         }
                         break;
                     case NOT_SAFE:
@@ -163,7 +164,7 @@ public class VerificationChainResultHandler extends AbstractResultHandler<Verifi
                         message +=  comment + AFTER_THE_TRACE_SUFFIX;
                         message += solution + ASK_SIMULATE_SUFFIX;
                         if (DialogUtils.showConfirmError(message, TITLE, true)) {
-                            MpsatUtils.playSolution(we, solution);
+                            SimulationUtils.playSolution(we, solution);
                         }
                         break;
                     case EMPTY_PRESET:

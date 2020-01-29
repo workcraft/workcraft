@@ -1,10 +1,11 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.Framework;
-import org.workcraft.gui.tools.Trace;
+import org.workcraft.gui.simulation.ReachibilityDialog;
+import org.workcraft.gui.simulation.SimulationUtils;
+import org.workcraft.gui.simulation.Solution;
+import org.workcraft.gui.simulation.Trace;
 import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.gui.ReachibilityDialog;
-import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.petri.Place;
@@ -69,11 +70,11 @@ class DeadlockFreenessOutputHandler extends ReachabilityOutputHandler {
     @Override
     public void run() {
         List<Solution> solutions = getSolutions();
-        if (!MpsatUtils.hasTraces(solutions)) {
+        if (!SimulationUtils.hasTraces(solutions)) {
             DialogUtils.showInfo("The system is deadlock-free", TITLE);
         } else {
             List<Solution> processedSolutions = processSolutions(getWorkspaceEntry(), solutions);
-            if (!MpsatUtils.hasTraces(processedSolutions)) {
+            if (!SimulationUtils.hasTraces(processedSolutions)) {
                 DialogUtils.showWarning("Deadlock freeness cannot be reliably verified because of conformation violation", TITLE);
             } else {
                 String message = "The system has a deadlock";

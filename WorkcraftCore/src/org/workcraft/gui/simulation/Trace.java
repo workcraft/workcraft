@@ -1,4 +1,4 @@
-package org.workcraft.gui.tools;
+package org.workcraft.gui.simulation;
 
 import java.util.ArrayList;
 
@@ -61,19 +61,8 @@ public class Trace extends ArrayList<String> {
 
     @Override
     public String toString() {
-        StringBuffer result = new StringBuffer("");
-        // Position
-//        result.append(String.valueOf(getPosition()));
-        // Trace
-        boolean first = true;
-        for (String t : this) {
-            if (!first) {
-                result.append(", ");
-            }
-            result.append(t);
-            first = false;
-        }
-        return result.toString();
+        int position = getPosition();
+        return (position > 0 ? position + ": " : "") + String.join(", ", this);
     }
 
     public void fromString(String str) {

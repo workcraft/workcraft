@@ -4,7 +4,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.gui.tools.Trace;
+import org.workcraft.gui.simulation.Trace;
 import org.workcraft.plugins.dtd.*;
 import org.workcraft.plugins.dtd.VisualDtd.SignalEvent;
 import org.workcraft.plugins.dtd.utils.DtdUtils;

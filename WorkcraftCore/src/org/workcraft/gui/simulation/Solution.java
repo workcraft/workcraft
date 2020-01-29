@@ -1,8 +1,7 @@
-package org.workcraft.plugins.mpsat.tasks;
-
-import org.workcraft.gui.tools.Trace;
+package org.workcraft.gui.simulation;
 
 public class Solution {
+
     private final Trace mainTrace;
     private final Trace branchTrace;
     private String comment;

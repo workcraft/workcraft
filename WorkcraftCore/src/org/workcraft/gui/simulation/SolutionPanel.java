@@ -1,11 +1,8 @@
-package org.workcraft.plugins.mpsat.gui;
+package org.workcraft.gui.simulation;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.gui.tools.Trace;
-import org.workcraft.plugins.mpsat.tasks.Solution;
-import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -51,7 +48,7 @@ public class SolutionPanel extends JPanel {
 
         JButton playButton = new JButton("Play");
         playButton.addActionListener(event -> {
-            MpsatUtils.playSolution(we, solution);
+            SimulationUtils.playSolution(we, solution);
             closeAction.actionPerformed(null);
         });
 

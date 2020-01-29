@@ -1,7 +1,8 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.dom.references.ReferenceHelper;
-import org.workcraft.gui.tools.Trace;
+import org.workcraft.gui.simulation.Solution;
+import org.workcraft.gui.simulation.Trace;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.utils.EnablednessUtils;
 import org.workcraft.plugins.pcomp.ComponentData;

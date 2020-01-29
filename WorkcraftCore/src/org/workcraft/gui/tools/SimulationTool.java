@@ -10,6 +10,7 @@ import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.gui.properties.FlatHeaderRenderer;
+import org.workcraft.gui.simulation.Trace;
 import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
 import org.workcraft.types.Func;
 import org.workcraft.utils.GuiUtils;

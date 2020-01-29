@@ -8,7 +8,7 @@ import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.properties.*;
 import org.workcraft.gui.tools.GraphEditor;
-import org.workcraft.gui.tools.Trace;
+import org.workcraft.gui.simulation.Trace;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.dtd.DtdDescriptor;

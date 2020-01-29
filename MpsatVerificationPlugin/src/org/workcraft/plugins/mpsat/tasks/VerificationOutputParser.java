@@ -1,6 +1,8 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import org.workcraft.gui.tools.Trace;
+import org.workcraft.gui.simulation.SimulationUtils;
+import org.workcraft.gui.simulation.Solution;
+import org.workcraft.gui.simulation.Trace;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -52,14 +54,14 @@ public class VerificationOutputParser {
         }
         Matcher matcherReachability1 = patternReachability1.matcher(mpsatStdout);
         while (matcherReachability1.find()) {
-            Trace trace = getTrace(matcherReachability1.group(1));
+            Trace trace = SimulationUtils.getTrace(matcherReachability1.group(1));
             Solution solution = new Solution(trace, null);
             solutions.add(solution);
         }
         Matcher matcherRreachability2 = patternReachability2.matcher(mpsatStdout);
         while (matcherRreachability2.find()) {
-            Trace mainTrace = getTrace(matcherRreachability2.group(1));
-            Trace branchTrace = getTrace(matcherRreachability2.group(2));
+            Trace mainTrace = SimulationUtils.getTrace(matcherRreachability2.group(1));
+            Trace branchTrace = SimulationUtils.getTrace(matcherRreachability2.group(2));
             String signalName = matcherRreachability2.group(4);
             Solution solution = new Solution(mainTrace, branchTrace);
             solution.setComment(signalName);
@@ -67,25 +69,10 @@ public class VerificationOutputParser {
         }
         Matcher matcherNormalcy = patternNormalcy1.matcher(mpsatStdout);
         while (matcherNormalcy.find()) {
-            Trace trace = getTrace(matcherNormalcy.group(1));
+            Trace trace = SimulationUtils.getTrace(matcherNormalcy.group(1));
             Solution solution = new Solution(trace, null);
             solutions.add(solution);
         }
-    }
-
-    private Trace getTrace(String mpsatTrace) {
-        Trace trace = null;
-        if (mpsatTrace != null) {
-            trace = new Trace();
-            String[] mpsatTransitions = mpsatTrace.replaceAll("\\s", "").split(",");
-            for (String mpsatTransition: mpsatTransitions) {
-                String transition = mpsatTransition.substring(mpsatTransition.indexOf(':') + 1);
-                if (!transition.isEmpty()) {
-                    trace.add(transition);
-                }
-            }
-        }
-        return trace;
     }
 
     public List<Solution> getSolutions() {
