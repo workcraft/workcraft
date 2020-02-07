@@ -178,7 +178,7 @@ public class CombinedChainResultHandler extends AbstractResultHandler<CombinedCh
                         message += " for the inconsistent STG.\n\n";
                         message += comment + AFTER_THE_TRACE_SUFFIX;
                         message += solution + ASK_SIMULATE_SUFFIX;
-                        if (DialogUtils.showConfirmError(message, TITLE, true)) {
+                        if (DialogUtils.showConfirmError(message)) {
                             SimulationUtils.playSolution(we, solution);
                         }
                         break;
@@ -186,7 +186,7 @@ public class CombinedChainResultHandler extends AbstractResultHandler<CombinedCh
                         message += " for the unsafe net.\n\n";
                         message +=  comment + AFTER_THE_TRACE_SUFFIX;
                         message += solution + ASK_SIMULATE_SUFFIX;
-                        if (DialogUtils.showConfirmError(message, TITLE, true)) {
+                        if (DialogUtils.showConfirmError(message)) {
                             SimulationUtils.playSolution(we, solution);
                         }
                         break;

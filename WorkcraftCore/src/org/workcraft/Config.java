@@ -71,7 +71,6 @@ public class Config {
         try {
             return Integer.parseInt(s);
         } catch (NumberFormatException e) {
-            e.printStackTrace();
             return defaultValue;
         }
     }
@@ -94,7 +93,6 @@ public class Config {
         try {
             return Enum.valueOf(enumType, s);
         } catch (NumberFormatException e) {
-            e.printStackTrace();
             return defaultValue;
         }
     }
@@ -115,7 +113,6 @@ public class Config {
         try {
             return Double.parseDouble(s);
         } catch (NumberFormatException e) {
-            e.printStackTrace();
             return defaultValue;
         }
     }
@@ -138,7 +135,6 @@ public class Config {
         try {
             return new Color(Integer.parseInt(s.substring(1), 16), false);
         } catch (NumberFormatException e) {
-            e.printStackTrace();
             return defaultValue;
         }
     }

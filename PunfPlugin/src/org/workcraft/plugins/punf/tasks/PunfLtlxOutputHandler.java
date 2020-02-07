@@ -14,7 +14,12 @@ import java.util.regex.Pattern;
 
 public class PunfLtlxOutputHandler implements Runnable {
 
-    protected static final String TITLE = "Verification results";
+    private static final String TITLE = "Verification results";
+
+    private static final Pattern MISSING_STUTTER_INVARIANT_PATTERN = Pattern.compile(
+            "Warning: the automaton does not declare the `stutter-invariant' property, "
+            + "on which the verification relies");
+
     private static final Pattern SOLUTION_PATTERN = Pattern.compile(
             "The property is violated:\\s*\\R\\s*Prefix: (.+)\\R\\s*Loop: (.+)",
             Pattern.UNIX_LINES);
@@ -45,11 +50,18 @@ public class PunfLtlxOutputHandler implements Runnable {
     }
 
     public String getMessage(boolean isViolated) {
-        return "Temporal property " + (isViolated ? "is violated." : "holds.");
+        String result = "Temporal property ";
+        result += isViolated ? "is violated." : "holds.";
+        Matcher matcher = MISSING_STUTTER_INVARIANT_PATTERN.matcher(punfOutput.getStderrString());
+        if (matcher.find()) {
+            result += isViolated ? "<br>" : "\n";
+            result += "Warning: the automaton does not declare the `stutter-invariant' property.";
+        }
+        return result;
     }
 
     public String extendMessage(String message) {
-        String traceInfo = "Trace prefix and loop parts for counter-example:";
+        String traceInfo = "Trace prefix and loop for counter-example:";
         return "<html>" + message + "<br><br>" + traceInfo + "</html>";
     }
 
