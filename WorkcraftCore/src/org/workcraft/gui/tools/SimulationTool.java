@@ -11,6 +11,7 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.gui.properties.FlatHeaderRenderer;
 import org.workcraft.gui.simulation.SimulationUtils;
+import org.workcraft.gui.simulation.Solution;
 import org.workcraft.gui.simulation.Trace;
 import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
 import org.workcraft.types.Func;
@@ -510,48 +511,48 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
 
     private void copyState(final GraphEditor editor) {
         Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-        StringSelection stringSelection = new StringSelection(
-                mainTrace.toString() + "\n" + branchTrace.toString() + "\n");
+        Solution solution = new Solution(mainTrace, branchTrace);
+        solution.setLoopPosition(loopPosition);
+        StringSelection stringSelection = new StringSelection(SimulationUtils.serialiseSolution(solution));
         clip.setContents(stringSelection, this);
         updateState(editor);
     }
 
     private void pasteState(final GraphEditor editor) {
+        String str = getClipboardText();
+        writeModelState(initialState);
+        Solution solution = SimulationUtils.deserialiseSolution(str);
+        mainTrace.clear();
+        if (solution.getMainTrace() != null) {
+            mainTrace.addAll(solution.getMainTrace());
+            while (mainTrace.getPosition() < solution.getMainTrace().getPosition()) {
+                if (!quietStep()) break;
+            }
+        }
+        branchTrace.clear();
+        if (solution.getBranchTrace() != null) {
+            branchTrace.addAll(solution.getBranchTrace());
+            while (branchTrace.getPosition() < solution.getBranchTrace().getPosition()) {
+                if (!quietStep()) break;
+            }
+        }
+        loopPosition = solution.getLoopPosition();
+        updateState(editor);
+    }
+
+    private String getClipboardText() {
         Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
         Transferable contents = clip.getContents(null);
         boolean hasTransferableText = (contents != null) && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
-        String str = "";
+        String result = "";
         if (hasTransferableText) {
             try {
-                str = (String) contents.getTransferData(DataFlavor.stringFlavor);
+                result = (String) contents.getTransferData(DataFlavor.stringFlavor);
             } catch (UnsupportedFlavorException | IOException e) {
                 System.out.println(e);
             }
         }
-
-        writeModelState(initialState);
-        mainTrace.clear();
-        branchTrace.clear();
-        loopPosition = -1;
-        boolean first = true;
-        for (String traceString: str.split("\n")) {
-            Trace trace = SimulationUtils.getTrace(traceString);
-            int tracePosition = trace.getPosition();
-            if (first) {
-                mainTrace.addAll(trace);
-                while (mainTrace.getPosition() < tracePosition) {
-                    if (!quietStep()) break;
-                }
-            } else {
-                branchTrace.addAll(trace);
-                while (branchTrace.getPosition() < tracePosition) {
-                    if (!quietStep()) break;
-                }
-                break;
-            }
-            first = false;
-        }
-        updateState(editor);
+        return result;
     }
 
     public Trace getCombinedTrace() {

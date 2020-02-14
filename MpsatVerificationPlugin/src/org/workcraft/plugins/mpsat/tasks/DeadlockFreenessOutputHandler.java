@@ -46,7 +46,7 @@ class DeadlockFreenessOutputHandler extends ReachabilityOutputHandler {
             HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
             if (!PetriUtils.fireTrace(stg, trace)) {
                 PetriUtils.setMarking(stg, marking);
-                throw new RuntimeException("Cannot execute projected trace: " + trace.toText());
+                throw new RuntimeException("Cannot execute projected trace: " + trace.toString());
             }
             // Check if any output can be fired that is not enabled in the composition
             boolean isConformantTrace = true;

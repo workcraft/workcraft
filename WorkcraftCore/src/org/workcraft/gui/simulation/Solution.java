@@ -60,31 +60,14 @@ public class Solution {
         return value < mainTrace.size() ? value : -1;
     }
 
-    private boolean hasLoop() {
+    public boolean hasLoop() {
         return getLoopPosition() >= 0;
     }
 
     @Override
     public String toString() {
-        String result = "";
-        if (!hasLoop()) {
-            result += mainTrace.toString();
-        } else {
-            // Prefix
-            Trace prefixTrace = new Trace();
-            prefixTrace.addAll(mainTrace.subList(0, loopPosition));
-            result += prefixTrace.toString();
-            // Loop
-            Trace loopTrace = new Trace();
-            loopTrace.addAll(mainTrace.subList(loopPosition, mainTrace.size()));
-            if (!result.isEmpty()) result += ", ";
-            result += "(" + loopTrace.toString() + ")*";
-        }
-        if (branchTrace != null) {
-            result += "\n";
-            result += branchTrace.toString();
-        }
-        return result;
+        String result = SimulationUtils.serialiseSolution(this);
+        return result.isEmpty() ? SimulationUtils.EMPTY_TEXT : result;
     }
 
 }

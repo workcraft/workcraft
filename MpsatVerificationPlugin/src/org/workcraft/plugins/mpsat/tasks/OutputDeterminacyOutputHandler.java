@@ -40,11 +40,11 @@ class OutputDeterminacyOutputHandler extends ReachabilityOutputHandler {
 
         for (Solution solution: solutions) {
             Trace compTrace = solution.getMainTrace();
-            LogUtils.logMessage("Violation trace of the auto-composition: " + compTrace.toText());
+            LogUtils.logMessage("Violation trace of the auto-composition: " + compTrace.toString());
 
             Trace devTrace = getProjectedTrace(compTrace, devData, substitutions);
             Trace envTrace = getProjectedTrace(compTrace, envData, substitutions);
-            LogUtils.logMessage("Projected pair of traces:\n    " + devTrace.toText() + "\n    " + envTrace.toText());
+            LogUtils.logMessage("Projected pair of traces:\n    " + devTrace.toString() + "\n    " + envTrace.toString());
 
             Enabledness compEnabledness = EnablednessUtils.getOutputEnablednessAfterTrace(compStg, compTrace);
             Solution projectedSolution = new Solution(devTrace, envTrace);
@@ -62,7 +62,7 @@ class OutputDeterminacyOutputHandler extends ReachabilityOutputHandler {
         Trace trace = solution.getMainTrace();
         if (!PetriUtils.fireTrace(stg, trace)) {
             PetriUtils.setMarking(stg, marking);
-            throw new RuntimeException("Cannot execute projected trace: " + trace.toText());
+            throw new RuntimeException("Cannot execute projected trace: " + trace.toString());
         }
         // Check if any output can be fired that is not enabled in the composition
         HashSet<String> suspiciousSignals = EnablednessUtils.getEnabledSignals(stg, Signal.Type.OUTPUT);

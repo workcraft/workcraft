@@ -31,11 +31,10 @@ public class SolutionPanel extends JPanel {
         JTextArea traceText = new JTextArea(getRowCount(solution), getColumnCount(solution));
         traceText.setMargin(SizeHelper.getTextMargin());
         String solutionString = solution.toString();
-        if (solutionString.isEmpty()) {
-            traceText.setText(Trace.EMPTY_TRACE_TEXT);
+        traceText.setText(solutionString);
+        if (SimulationUtils.EMPTY_TEXT.equals(solutionString)) {
             traceText.setEnabled(false);
         } else {
-            traceText.setText(solutionString);
             traceText.setEditable(false);
         }
 

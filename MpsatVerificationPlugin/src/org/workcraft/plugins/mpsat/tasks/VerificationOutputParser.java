@@ -54,13 +54,13 @@ public class VerificationOutputParser {
         }
         Matcher matcherReachability1 = patternReachability1.matcher(mpsatStdout);
         while (matcherReachability1.find()) {
-            Solution solution = new Solution(SimulationUtils.getTrace(matcherReachability1.group(1)));
+            Solution solution = new Solution(SimulationUtils.deserialiseTrace(matcherReachability1.group(1)));
             solutions.add(solution);
         }
         Matcher matcherRreachability2 = patternReachability2.matcher(mpsatStdout);
         while (matcherRreachability2.find()) {
-            Trace mainTrace = SimulationUtils.getTrace(matcherRreachability2.group(1));
-            Trace branchTrace = SimulationUtils.getTrace(matcherRreachability2.group(2));
+            Trace mainTrace = SimulationUtils.deserialiseTrace(matcherRreachability2.group(1));
+            Trace branchTrace = SimulationUtils.deserialiseTrace(matcherRreachability2.group(2));
             String signalName = matcherRreachability2.group(4);
             Solution solution = new Solution(mainTrace, branchTrace);
             solution.setComment(signalName);
@@ -68,7 +68,7 @@ public class VerificationOutputParser {
         }
         Matcher matcherNormalcy = patternNormalcy1.matcher(mpsatStdout);
         while (matcherNormalcy.find()) {
-            Trace trace = SimulationUtils.getTrace(matcherNormalcy.group(1));
+            Trace trace = SimulationUtils.deserialiseTrace(matcherNormalcy.group(1));
             Solution solution = new Solution(trace);
             solutions.add(solution);
         }

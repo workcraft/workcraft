@@ -195,7 +195,7 @@ public class ConformationNwayOutputHandler extends ConformationOutputHandler {
             Trace projTrace = workToTraceMap.get(we);
             // Execute projected trace to a potentially problematic state
             if (!PetriUtils.fireTrace(stg, projTrace)) {
-                throw new RuntimeException("Cannot execute projected trace: " + projTrace.toText());
+                throw new RuntimeException("Cannot execute projected trace: " + projTrace.toString());
             }
             // Find enabled signals whose state is unknown (due to dummies) in the composition STG.
             // If there is only one such signal, then it is actually the one disabled in the composition STG.
