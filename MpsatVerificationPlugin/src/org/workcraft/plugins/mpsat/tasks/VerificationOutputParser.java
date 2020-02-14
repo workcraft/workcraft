@@ -49,13 +49,12 @@ public class VerificationOutputParser {
         solutions = new LinkedList<>();
         Matcher matcherReachability0 = patternReachability0.matcher(mpsatStdout);
         while (matcherReachability0.find()) {
-            Solution solution = new Solution(null, null);
+            Solution solution = new Solution();
             solutions.add(solution);
         }
         Matcher matcherReachability1 = patternReachability1.matcher(mpsatStdout);
         while (matcherReachability1.find()) {
-            Trace trace = SimulationUtils.getTrace(matcherReachability1.group(1));
-            Solution solution = new Solution(trace, null);
+            Solution solution = new Solution(SimulationUtils.getTrace(matcherReachability1.group(1)));
             solutions.add(solution);
         }
         Matcher matcherRreachability2 = patternReachability2.matcher(mpsatStdout);
@@ -70,7 +69,7 @@ public class VerificationOutputParser {
         Matcher matcherNormalcy = patternNormalcy1.matcher(mpsatStdout);
         while (matcherNormalcy.find()) {
             Trace trace = SimulationUtils.getTrace(matcherNormalcy.group(1));
-            Solution solution = new Solution(trace, null);
+            Solution solution = new Solution(trace);
             solutions.add(solution);
         }
     }

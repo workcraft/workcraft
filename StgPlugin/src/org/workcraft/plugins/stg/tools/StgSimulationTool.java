@@ -354,8 +354,10 @@ public class StgSimulationTool extends PetriSimulationTool {
             JLabel result = null;
             label.setBorder(SizeHelper.getTableCellBorder());
             if (isActivated() && (value instanceof String)) {
-                label.setText(value.toString());
-                final Node node = getUnderlyingStg().getNodeByReference(value.toString());
+                String text = value.toString();
+                label.setText(text);
+                String ref = text.trim();
+                final Node node = getUnderlyingStg().getNodeByReference(ref);
                 final Color color = getNodeColor(node);
                 label.setForeground(color);
                 if (isActive(row, column)) {

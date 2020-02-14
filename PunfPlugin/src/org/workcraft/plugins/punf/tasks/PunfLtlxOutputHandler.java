@@ -41,10 +41,12 @@ public class PunfLtlxOutputHandler implements Runnable {
         String punfStdout = punfOutput.getStdoutString();
         Matcher matcherLtlxSolution = SOLUTION_PATTERN.matcher(punfStdout);
         if (matcherLtlxSolution.find()) {
-            Trace prefixTrace = SimulationUtils.getTrace(matcherLtlxSolution.group(1));
-            prefixTrace.setPosition(prefixTrace.size() + 1);
-            Trace loopTrace = SimulationUtils.getTrace(matcherLtlxSolution.group(2));
-            return new Solution(prefixTrace, loopTrace);
+            Trace trace = SimulationUtils.getTrace(matcherLtlxSolution.group(1));
+            int loopPosition = trace.size();
+            trace.addAll(SimulationUtils.getTrace(matcherLtlxSolution.group(2)));
+            Solution solution = new Solution(trace);
+            solution.setLoopPosition(loopPosition);
+            return solution;
         }
         return null;
     }

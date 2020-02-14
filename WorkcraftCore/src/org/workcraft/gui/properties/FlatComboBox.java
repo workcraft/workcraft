@@ -1,19 +1,14 @@
 package org.workcraft.gui.properties;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Rectangle;
+import org.workcraft.dom.visual.SizeHelper;
 
-import javax.swing.AbstractButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.UIManager;
+import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.plaf.basic.ComboPopup;
+import java.awt.*;
 
 public class FlatComboBox extends JComboBox {
 
@@ -33,18 +28,33 @@ public class FlatComboBox extends JComboBox {
         }
     }
 
+    class FlatListCellRenderer implements ListCellRenderer {
+        private final Border insetBorder = SizeHelper.getTableCellBorder();
+        private final DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value,
+                int index, boolean isSelected, boolean cellHasFocus) {
+
+            JComponent renderer = (JComponent) defaultRenderer.getListCellRendererComponent(
+                    list, value, index, isSelected, cellHasFocus);
+
+            renderer.setBorder(insetBorder);
+            return renderer;
+        }
+    }
+
     public FlatComboBox() {
         setUI(new FlatComboBoxUI());
+        setRenderer(new FlatListCellRenderer());
         setFocusable(false);
         setMaximumRowCount(25);
-        EmptyBorder emptyBorder = new EmptyBorder(0, 0, 0, 0);
         for (int i = 0; i < getComponentCount(); i++) {
             Component component = getComponent(i);
-            if (component instanceof JComponent) {
-                ((JComponent) component).setBorder(emptyBorder);
-            }
             if (component instanceof AbstractButton) {
-                ((AbstractButton) component).setBorderPainted(false);
+                AbstractButton button = (AbstractButton) component;
+                button.setBorderPainted(false);
+                button.setBorder(new EmptyBorder(0, 0, 0, 0));
             }
         }
     }

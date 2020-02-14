@@ -15,30 +15,35 @@ public class Trace extends ArrayList<String> {
 
     public Trace(Trace trace) {
         super(trace);
+        setPosition(trace.getPosition());
     }
 
     public int getPosition() {
-        return position;
+        return adjustPosition(position);
     }
 
     public void setPosition(int value) {
-        position = Math.min(Math.max(0, value), size());
+        position = adjustPosition(value);
     }
 
-    public void incPosition(int value) {
-        setPosition(position + value);
+    private int adjustPosition(int value) {
+        return Math.min(Math.max(0, value), size());
     }
 
-    public void decPosition(int value) {
-        setPosition(position - value);
+    public void incPosition() {
+        setPosition(position + 1);
+    }
+
+    public void decPosition() {
+        setPosition(position - 1);
     }
 
     public boolean canProgress() {
-        return !isEmpty() && (position < size());
+        return !isEmpty() && (getPosition() < size());
     }
 
     public String getCurrent() {
-        return canProgress() ? get(position) : null;
+        return canProgress() ? get(getPosition()) : null;
     }
 
     public void removeCurrent() {
@@ -54,7 +59,7 @@ public class Trace extends ArrayList<String> {
     @Override
     public String remove(int index) {
         if (index < getPosition()) {
-            decPosition(1);
+            decPosition();
         }
         return super.remove(index);
     }
@@ -63,31 +68,6 @@ public class Trace extends ArrayList<String> {
     public String toString() {
         int position = getPosition();
         return (position > 0 ? position + ": " : "") + String.join(", ", this);
-    }
-
-    public void fromString(String str) {
-        clear();
-        int tmpPosition = 0;
-        boolean needToParsePosition = str.contains(":");
-        for (String s : str.split(":")) {
-            if (needToParsePosition) {
-                // Position
-                try {
-                    tmpPosition = Integer.valueOf(s.trim());
-                } catch (Exception e) {
-
-                }
-                needToParsePosition = false;
-            } else {
-                // Trace
-                for (String st : s.trim().split(",")) {
-                    String ref = st.trim();
-                    if (ref.isEmpty()) continue;
-                    add(ref);
-                }
-            }
-        }
-        setPosition(tmpPosition);
     }
 
     public String toText() {

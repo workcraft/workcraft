@@ -11,19 +11,25 @@ import java.util.List;
 
 public class SimulationUtils {
 
-    public static Trace getTrace(String text) {
-        Trace trace = null;
-        if (text != null) {
-            trace = new Trace();
-            String[] refs = text.replaceAll("\\s", "").split(",");
-            for (String ref : refs) {
-                String transition = ref.substring(ref.indexOf(':') + 1);
-                if (!transition.isEmpty()) {
-                    trace.add(transition);
-                }
+    public static Trace getTrace(String str) {
+        Trace result = new Trace();
+        String[] parts = str.replaceAll("\\s", "").split(":");
+        // Trace
+        String refs = parts.length > 0 ? parts[parts.length - 1] : "";
+        for (String ref : refs.split(",")) {
+            if (!ref.isEmpty()) {
+                result.add(ref);
             }
         }
-        return trace;
+        // Position
+        if (parts.length > 1) {
+            try {
+                int position = Integer.valueOf(parts[0]);
+                result.setPosition(position);
+            } catch (Exception e) {
+            }
+        }
+        return result;
     }
 
     public static boolean hasTraces(List<Solution> solutions) {
@@ -38,7 +44,7 @@ public class SimulationUtils {
     }
 
     public static boolean hasTraces(Solution solution) {
-        return (solution != null) && ((solution.getMainTrace() != null) || (solution.getBranchTrace() != null));
+        return (solution != null) && solution.hasTrace();
     }
 
     public static void playSolution(WorkspaceEntry we, Solution solution) {
@@ -48,7 +54,7 @@ public class SimulationUtils {
             final Toolbox toolbox = editor.getToolBox();
             final SimulationTool tool = toolbox.getToolInstance(SimulationTool.class);
             toolbox.selectTool(tool);
-            tool.setTrace(solution.getMainTrace(), solution.getBranchTrace(), editor);
+            tool.setTraces(solution.getMainTrace(), solution.getBranchTrace(), solution.getLoopPosition(), editor);
             String comment = solution.getComment();
             if ((comment != null) && !comment.isEmpty()) {
                 String traceText = solution.getMainTrace().toText();

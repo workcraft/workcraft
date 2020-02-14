@@ -60,7 +60,7 @@ class DeadlockFreenessOutputHandler extends ReachabilityOutputHandler {
                 }
             }
             if (isConformantTrace) {
-                result.add(new Solution(trace, null, null));
+                result.add(new Solution(trace));
             }
             PetriUtils.setMarking(stg, marking);
         }
