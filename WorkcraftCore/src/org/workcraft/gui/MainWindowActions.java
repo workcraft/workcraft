@@ -4,6 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.Info;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.actions.Action;
+import org.workcraft.gui.dialogs.AboutDialog;
 import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.builtin.settings.EditorCommonSettings;

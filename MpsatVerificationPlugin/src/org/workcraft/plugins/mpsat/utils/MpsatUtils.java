@@ -2,8 +2,8 @@ package org.workcraft.plugins.mpsat.utils;
 
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.gui.simulation.SimulationUtils;
-import org.workcraft.gui.simulation.Solution;
+import org.workcraft.utils.TraceUtils;
+import org.workcraft.traces.Solution;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.tasks.*;
@@ -120,7 +120,7 @@ public class MpsatUtils {
     public static Boolean getCombinedChainOutcome(Result<? extends CombinedChainOutput> combinedChainResult) {
         List<Solution> solutions = getCombinedChainSolutions(combinedChainResult);
         if (solutions != null) {
-            return !SimulationUtils.hasTraces(solutions);
+            return !TraceUtils.hasTraces(solutions);
         }
         return null;
     }
@@ -128,7 +128,7 @@ public class MpsatUtils {
     public static Boolean getChainOutcome(Result<? extends VerificationChainOutput> chainResult) {
         List<Solution> solutions = getChainSolutions(chainResult);
         if (solutions != null) {
-            return !SimulationUtils.hasTraces(solutions);
+            return !TraceUtils.hasTraces(solutions);
         }
         return null;
     }

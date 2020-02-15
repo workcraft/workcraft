@@ -1,7 +1,7 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import org.workcraft.gui.simulation.SimulationUtils;
-import org.workcraft.gui.simulation.Solution;
+import org.workcraft.utils.TraceUtils;
+import org.workcraft.traces.Solution;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.tasks.PunfOutputParser.Cause;
@@ -67,7 +67,7 @@ public class CombinedChainResultHandler extends AbstractResultHandler<CombinedCh
             if (mpsatResult != null) {
                 VerificationOutputParser mdp = new VerificationOutputParser(mpsatResult.getPayload());
                 List<Solution> solutions = mdp.getSolutions();
-                hasSolutions = SimulationUtils.hasTraces(solutions);
+                hasSolutions = TraceUtils.hasTraces(solutions);
             }
             if (!hasSolutions) {
                 verifiedMessageDetailes += "\n * " + mpsatSettings.getName();
@@ -179,7 +179,7 @@ public class CombinedChainResultHandler extends AbstractResultHandler<CombinedCh
                         message += comment + AFTER_THE_TRACE_SUFFIX;
                         message += solution + ASK_SIMULATE_SUFFIX;
                         if (DialogUtils.showConfirmError(message)) {
-                            SimulationUtils.playSolution(we, solution);
+                            TraceUtils.playSolution(we, solution);
                         }
                         break;
                     case NOT_SAFE:
@@ -187,7 +187,7 @@ public class CombinedChainResultHandler extends AbstractResultHandler<CombinedCh
                         message +=  comment + AFTER_THE_TRACE_SUFFIX;
                         message += solution + ASK_SIMULATE_SUFFIX;
                         if (DialogUtils.showConfirmError(message)) {
-                            SimulationUtils.playSolution(we, solution);
+                            TraceUtils.playSolution(we, solution);
                         }
                         break;
                     case EMPTY_PRESET:

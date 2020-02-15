@@ -25,6 +25,7 @@ import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.actions.ScriptedActionListener;
+import org.workcraft.gui.dialogs.CreateWorkDialog;
 import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.gui.layouts.MultiBorderLayout;
 import org.workcraft.gui.properties.SettingsEditorDialog;

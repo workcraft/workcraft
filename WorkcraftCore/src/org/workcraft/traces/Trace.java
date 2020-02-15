@@ -1,4 +1,6 @@
-package org.workcraft.gui.simulation;
+package org.workcraft.traces;
+
+import org.workcraft.utils.TraceUtils;
 
 import java.util.ArrayList;
 
@@ -64,7 +66,7 @@ public class Trace extends ArrayList<String> {
 
     @Override
     public String toString() {
-        return isEmpty() ? SimulationUtils.EMPTY_TEXT : SimulationUtils.serialiseTrace(this);
+        return isEmpty() ? TraceUtils.EMPTY_TEXT : TraceUtils.serialiseTrace(this);
     }
 
 }

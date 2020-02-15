@@ -1,8 +1,8 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import org.workcraft.gui.simulation.SimulationUtils;
-import org.workcraft.gui.simulation.Solution;
-import org.workcraft.gui.simulation.Trace;
+import org.workcraft.utils.TraceUtils;
+import org.workcraft.traces.Solution;
+import org.workcraft.traces.Trace;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -54,13 +54,13 @@ public class VerificationOutputParser {
         }
         Matcher matcherReachability1 = patternReachability1.matcher(mpsatStdout);
         while (matcherReachability1.find()) {
-            Solution solution = new Solution(SimulationUtils.deserialiseTrace(matcherReachability1.group(1)));
+            Solution solution = new Solution(TraceUtils.deserialiseTrace(matcherReachability1.group(1)));
             solutions.add(solution);
         }
         Matcher matcherRreachability2 = patternReachability2.matcher(mpsatStdout);
         while (matcherRreachability2.find()) {
-            Trace mainTrace = SimulationUtils.deserialiseTrace(matcherRreachability2.group(1));
-            Trace branchTrace = SimulationUtils.deserialiseTrace(matcherRreachability2.group(2));
+            Trace mainTrace = TraceUtils.deserialiseTrace(matcherRreachability2.group(1));
+            Trace branchTrace = TraceUtils.deserialiseTrace(matcherRreachability2.group(2));
             String signalName = matcherRreachability2.group(4);
             Solution solution = new Solution(mainTrace, branchTrace);
             solution.setComment(signalName);
@@ -68,7 +68,7 @@ public class VerificationOutputParser {
         }
         Matcher matcherNormalcy = patternNormalcy1.matcher(mpsatStdout);
         while (matcherNormalcy.find()) {
-            Trace trace = SimulationUtils.deserialiseTrace(matcherNormalcy.group(1));
+            Trace trace = TraceUtils.deserialiseTrace(matcherNormalcy.group(1));
             Solution solution = new Solution(trace);
             solutions.add(solution);
         }

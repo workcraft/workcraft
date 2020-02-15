@@ -1,7 +1,7 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import org.workcraft.gui.simulation.Solution;
-import org.workcraft.gui.simulation.Trace;
+import org.workcraft.traces.Solution;
+import org.workcraft.traces.Trace;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;

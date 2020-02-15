@@ -1,7 +1,7 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import org.workcraft.gui.simulation.Solution;
-import org.workcraft.gui.simulation.Trace;
+import org.workcraft.traces.Solution;
+import org.workcraft.traces.Trace;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.types.Pair;
 

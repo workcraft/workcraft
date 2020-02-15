@@ -10,9 +10,9 @@ import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.gui.properties.FlatHeaderRenderer;
-import org.workcraft.gui.simulation.SimulationUtils;
-import org.workcraft.gui.simulation.Solution;
-import org.workcraft.gui.simulation.Trace;
+import org.workcraft.utils.TraceUtils;
+import org.workcraft.traces.Solution;
+import org.workcraft.traces.Trace;
 import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
 import org.workcraft.types.Func;
 import org.workcraft.utils.GuiUtils;
@@ -513,7 +513,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
         Solution solution = new Solution(mainTrace, branchTrace);
         solution.setLoopPosition(loopPosition);
-        StringSelection stringSelection = new StringSelection(SimulationUtils.serialiseSolution(solution));
+        StringSelection stringSelection = new StringSelection(TraceUtils.serialiseSolution(solution));
         clip.setContents(stringSelection, this);
         updateState(editor);
     }
@@ -521,7 +521,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
     private void pasteState(final GraphEditor editor) {
         String str = getClipboardText();
         writeModelState(initialState);
-        Solution solution = SimulationUtils.deserialiseSolution(str);
+        Solution solution = TraceUtils.deserialiseSolution(str);
         mainTrace.clear();
         if (solution.getMainTrace() != null) {
             mainTrace.addAll(solution.getMainTrace());

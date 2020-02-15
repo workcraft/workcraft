@@ -1,10 +1,10 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.Framework;
-import org.workcraft.gui.simulation.ReachibilityDialog;
-import org.workcraft.gui.simulation.SimulationUtils;
-import org.workcraft.gui.simulation.Solution;
-import org.workcraft.gui.simulation.Trace;
+import org.workcraft.gui.dialogs.ReachibilityDialog;
+import org.workcraft.utils.TraceUtils;
+import org.workcraft.traces.Solution;
+import org.workcraft.traces.Trace;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
@@ -166,7 +166,7 @@ class ReachabilityOutputHandler implements Runnable {
     @Override
     public void run() {
         List<Solution> solutions = getSolutions();
-        boolean isSatisfiable = SimulationUtils.hasTraces(solutions);
+        boolean isSatisfiable = TraceUtils.hasTraces(solutions);
         String message = getMessage(isSatisfiable);
         if (!isSatisfiable) {
             if (getSettings().getInversePredicate()) {

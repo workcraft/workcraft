@@ -1,30 +1,34 @@
-package org.workcraft.gui.simulation;
+package org.workcraft.utils;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.gui.tools.SimulationTool;
-import org.workcraft.utils.LogUtils;
+import org.workcraft.traces.Solution;
+import org.workcraft.traces.Trace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.List;
 
-public class SimulationUtils {
+public class TraceUtils {
 
     public static final String EMPTY_TEXT = "[empty]";
 
     public static String serialiseSolution(Solution solution) {
-        String result = "";
+        String result = null;
         Trace mainTrace = solution.getMainTrace();
-        if (!solution.hasLoop()) {
-            result += serialiseTrace(mainTrace);
-        } else {
-            result += serialisePrefixAndLoop(mainTrace, solution.getLoopPosition());
-        }
-        Trace branchTrace = solution.getBranchTrace();
-        if (branchTrace != null) {
-            result += "\n";
-            result += serialiseTrace(branchTrace);
+        if (mainTrace != null) {
+            result = "";
+            if (!solution.hasLoop()) {
+                result += serialiseTrace(mainTrace);
+            } else {
+                result += serialisePrefixAndLoop(mainTrace, solution.getLoopPosition());
+            }
+            Trace branchTrace = solution.getBranchTrace();
+            if (branchTrace != null) {
+                result += "\n";
+                result += serialiseTrace(branchTrace);
+            }
         }
         return result;
     }

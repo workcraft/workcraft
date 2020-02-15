@@ -1,8 +1,11 @@
-package org.workcraft.gui.simulation;
+package org.workcraft.gui.dialogs;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.utils.TraceUtils;
+import org.workcraft.traces.Solution;
+import org.workcraft.traces.Trace;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -32,7 +35,7 @@ public class SolutionPanel extends JPanel {
         traceText.setMargin(SizeHelper.getTextMargin());
         String solutionString = solution.toString();
         traceText.setText(solutionString);
-        if (SimulationUtils.EMPTY_TEXT.equals(solutionString)) {
+        if (TraceUtils.EMPTY_TEXT.equals(solutionString)) {
             traceText.setEnabled(false);
         } else {
             traceText.setEditable(false);
@@ -47,7 +50,7 @@ public class SolutionPanel extends JPanel {
 
         JButton playButton = new JButton("Play");
         playButton.addActionListener(event -> {
-            SimulationUtils.playSolution(we, solution);
+            TraceUtils.playSolution(we, solution);
             closeAction.actionPerformed(null);
         });
 

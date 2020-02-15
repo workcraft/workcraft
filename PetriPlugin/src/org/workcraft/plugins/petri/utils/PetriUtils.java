@@ -2,7 +2,7 @@ package org.workcraft.plugins.petri.utils;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.ReferenceHelper;
-import org.workcraft.gui.simulation.Trace;
+import org.workcraft.traces.Trace;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;

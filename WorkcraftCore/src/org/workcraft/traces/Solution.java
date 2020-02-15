@@ -1,4 +1,6 @@
-package org.workcraft.gui.simulation;
+package org.workcraft.traces;
+
+import org.workcraft.utils.TraceUtils;
 
 public class Solution {
 
@@ -66,8 +68,8 @@ public class Solution {
 
     @Override
     public String toString() {
-        String result = SimulationUtils.serialiseSolution(this);
-        return result.isEmpty() ? SimulationUtils.EMPTY_TEXT : result;
+        String result = TraceUtils.serialiseSolution(this);
+        return (result != null) && result.isEmpty() ? TraceUtils.EMPTY_TEXT : result;
     }
 
 }

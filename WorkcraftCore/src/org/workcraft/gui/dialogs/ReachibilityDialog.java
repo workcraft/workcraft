@@ -1,6 +1,7 @@
-package org.workcraft.gui.simulation;
+package org.workcraft.gui.dialogs;
 
 import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.traces.Solution;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 

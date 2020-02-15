@@ -1,6 +1,4 @@
-package org.workcraft.gui;
-
-import org.workcraft.utils.DesktopApi;
+package org.workcraft.utils;
 
 import javax.swing.*;
 import javax.swing.text.DefaultEditorKit;

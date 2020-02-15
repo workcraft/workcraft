@@ -2,8 +2,8 @@ package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.Toolbox;
-import org.workcraft.gui.simulation.SimulationUtils;
-import org.workcraft.gui.simulation.Solution;
+import org.workcraft.utils.TraceUtils;
+import org.workcraft.traces.Solution;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.stg.tools.Core;
 import org.workcraft.plugins.stg.tools.EncodingConflictAnalyserTool;
@@ -37,7 +37,7 @@ final class EncodingConflictOutputHandler implements Runnable {
         VerificationOutputParser mdp = new VerificationOutputParser(output);
         List<Solution> solutions = mdp.getSolutions();
         final Framework framework = Framework.getInstance();
-        if (!SimulationUtils.hasTraces(solutions)) {
+        if (!TraceUtils.hasTraces(solutions)) {
             DialogUtils.showInfo("No encoding conflicts.", "Verification results");
         } else if (framework.isInGuiMode()) {
             ArrayList<Core> cores = new ArrayList<>(convertSolutionsToCores(solutions));

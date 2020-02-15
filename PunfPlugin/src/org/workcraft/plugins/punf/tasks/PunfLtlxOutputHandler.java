@@ -1,10 +1,10 @@
 package org.workcraft.plugins.punf.tasks;
 
 import org.workcraft.Framework;
-import org.workcraft.gui.simulation.ReachibilityDialog;
-import org.workcraft.gui.simulation.SimulationUtils;
-import org.workcraft.gui.simulation.Solution;
-import org.workcraft.gui.simulation.Trace;
+import org.workcraft.gui.dialogs.ReachibilityDialog;
+import org.workcraft.utils.TraceUtils;
+import org.workcraft.traces.Solution;
+import org.workcraft.traces.Trace;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -41,9 +41,9 @@ public class PunfLtlxOutputHandler implements Runnable {
         String punfStdout = punfOutput.getStdoutString();
         Matcher matcherLtlxSolution = SOLUTION_PATTERN.matcher(punfStdout);
         if (matcherLtlxSolution.find()) {
-            Trace trace = SimulationUtils.deserialiseTrace(matcherLtlxSolution.group(1));
+            Trace trace = TraceUtils.deserialiseTrace(matcherLtlxSolution.group(1));
             int loopPosition = trace.size();
-            trace.addAll(SimulationUtils.deserialiseTrace(matcherLtlxSolution.group(2)));
+            trace.addAll(TraceUtils.deserialiseTrace(matcherLtlxSolution.group(2)));
             Solution solution = new Solution(trace);
             solution.setLoopPosition(loopPosition);
             return solution;
@@ -70,7 +70,7 @@ public class PunfLtlxOutputHandler implements Runnable {
     @Override
     public void run() {
         Solution solution = parseLtlxSolution();
-        boolean isViolated = SimulationUtils.hasTraces(solution);
+        boolean isViolated = TraceUtils.hasTraces(solution);
         String message = getMessage(isViolated);
         if (!isViolated) {
             DialogUtils.showInfo(message, TITLE);
