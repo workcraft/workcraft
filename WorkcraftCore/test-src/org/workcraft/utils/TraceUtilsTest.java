@@ -4,11 +4,20 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
+import org.workcraft.types.Pair;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class TraceUtilsTest {
+
+    @Test
+    public void hasTraceTest() {
+        Assert.assertFalse(new Solution().hasTrace());
+        Assert.assertTrue(new Solution(null, new Trace()).hasTrace());
+        Assert.assertTrue(new Solution(new Trace()).hasTrace());
+        Assert.assertTrue(new Solution(new Trace(), new Trace()).hasTrace());
+    }
 
     @Test
     public void serialiseSolutionTest() {
@@ -104,6 +113,32 @@ public class TraceUtilsTest {
         Assert.assertFalse(trace.canProgress());
 
         Assert.assertEquals("[empty]", trace.toString());
+    }
+
+    @Test
+    public void processLoopEventTest() {
+        processLoopEventCheck(null, false, false);
+        processLoopEventCheck("a", false, false);
+        processLoopEventCheck("a+", false, true);
+        processLoopEventCheck("a-/2", true, false);
+        processLoopEventCheck("a~/2", true, true);
+    }
+
+    private void processLoopEventCheck(String ref, boolean isFirst, boolean isLast) {
+        String str = TraceUtils.addLoopPrefix(ref, isFirst, isLast);
+        if (ref == null) {
+            Assert.assertNull(str);
+        } else {
+            Assert.assertNotEquals(ref, str);
+        }
+
+        Pair<String, String> pair = TraceUtils.splitLoopPrefix(str);
+        Assert.assertEquals(ref, pair.getSecond());
+        if (ref == null) {
+            Assert.assertEquals("", pair.getFirst());
+        } else {
+            Assert.assertEquals(str, pair.getFirst() + pair.getSecond());
+        }
     }
 
 }

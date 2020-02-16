@@ -10,12 +10,12 @@ import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.gui.properties.FlatHeaderRenderer;
-import org.workcraft.utils.TraceUtils;
+import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
-import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
 import org.workcraft.types.Func;
 import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.TraceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
@@ -664,7 +664,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
 
             String result = getTraceLabelByReference(ref);
             if ((result != null) && (loopPosition >= 0) && (column == 0) && (row >= loopPosition)) {
-                result = "  " + result;
+                result = TraceUtils.addLoopPrefix(result, row == loopPosition, row == mainTrace.size() - 1);
             }
             return result;
         }

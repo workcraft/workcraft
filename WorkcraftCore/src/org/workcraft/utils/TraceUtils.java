@@ -6,6 +6,7 @@ import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.gui.tools.SimulationTool;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
+import org.workcraft.types.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.List;
@@ -13,6 +14,10 @@ import java.util.List;
 public class TraceUtils {
 
     public static final String EMPTY_TEXT = "[empty]";
+    private static final String SELF_LOOP_PREFIX = "" + (char) 0x2282 + " ";
+    private static final String TO_LOOP_PREFIX = "" + (char) 0x256D + " ";
+    private static final String THROUGH_LOOP_PREFIX = "" + (char) 0x254E + " ";
+    private static final String FROM_LOOP_PREFIX = "" + (char) 0x2570 + " ";
 
     public static String serialiseSolution(Solution solution) {
         String result = null;
@@ -122,10 +127,45 @@ public class TraceUtils {
             String comment = solution.getComment();
             if ((comment != null) && !comment.isEmpty()) {
                 String traceText = solution.getMainTrace().toString();
+                // Remove HTML tags before printing the message
                 String message = comment.replaceAll("\\<.*?>", "") + " after trace: " + traceText;
                 LogUtils.logWarning(message);
             }
         }
+    }
+
+    public static String addLoopPrefix(String ref, boolean isFirst, boolean isLast) {
+        if (ref == null) {
+            return null;
+        }
+        if (isFirst && isLast) {
+            return SELF_LOOP_PREFIX + ref;
+        }
+        if (isFirst) {
+            return TO_LOOP_PREFIX + ref;
+        }
+        if (isLast) {
+            return FROM_LOOP_PREFIX + ref;
+        }
+        return THROUGH_LOOP_PREFIX + ref;
+    }
+
+    public static Pair<String, String> splitLoopPrefix(String str) {
+        if (str != null) {
+            if (str.startsWith(SELF_LOOP_PREFIX)) {
+                return Pair.of(SELF_LOOP_PREFIX, str.substring(SELF_LOOP_PREFIX.length()));
+            }
+            if (str.startsWith(TO_LOOP_PREFIX)) {
+                return Pair.of(TO_LOOP_PREFIX, str.substring(TO_LOOP_PREFIX.length()));
+            }
+            if (str.startsWith(THROUGH_LOOP_PREFIX)) {
+                return Pair.of(THROUGH_LOOP_PREFIX, str.substring(THROUGH_LOOP_PREFIX.length()));
+            }
+            if (str.startsWith(FROM_LOOP_PREFIX)) {
+                return Pair.of(FROM_LOOP_PREFIX, str.substring(FROM_LOOP_PREFIX.length()));
+            }
+        }
+        return Pair.of("", str);
     }
 
 }
