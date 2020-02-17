@@ -1,11 +1,11 @@
-package org.workcraft.plugins.mpsat.gui;
+package org.workcraft.gui.dialogs;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.gui.tools.Trace;
-import org.workcraft.plugins.mpsat.tasks.Solution;
-import org.workcraft.plugins.mpsat.utils.MpsatUtils;
+import org.workcraft.utils.TraceUtils;
+import org.workcraft.traces.Solution;
+import org.workcraft.traces.Trace;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -34,11 +34,10 @@ public class SolutionPanel extends JPanel {
         JTextArea traceText = new JTextArea(getRowCount(solution), getColumnCount(solution));
         traceText.setMargin(SizeHelper.getTextMargin());
         String solutionString = solution.toString();
-        if (solutionString.isEmpty()) {
-            traceText.setText(Trace.EMPTY_TRACE_TEXT);
+        traceText.setText(solutionString);
+        if (TraceUtils.EMPTY_TEXT.equals(solutionString)) {
             traceText.setEnabled(false);
         } else {
-            traceText.setText(solutionString);
             traceText.setEditable(false);
         }
 
@@ -51,7 +50,7 @@ public class SolutionPanel extends JPanel {
 
         JButton playButton = new JButton("Play");
         playButton.addActionListener(event -> {
-            MpsatUtils.playSolution(we, solution);
+            TraceUtils.playSolution(we, solution);
             closeAction.actionPerformed(null);
         });
 

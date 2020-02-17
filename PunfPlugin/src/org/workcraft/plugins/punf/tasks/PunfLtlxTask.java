@@ -8,26 +8,16 @@ import org.workcraft.utils.ExecutableUtils;
 import java.io.File;
 import java.util.ArrayList;
 
-public class PunfTask implements Task<PunfOutput> {
-
-    public static final String PNML_FILE_EXTENSION = ".pnml";
-    public static final String MCI_FILE_EXTENSION = ".mci";
-    public static final String LEGACY_TOOL_SUFFIX = "-mci";
+public class PunfLtlxTask implements Task<PunfOutput> {
 
     private final File inputFile;
     private final File outputFile;
     private final File workingDir;
-    private final boolean useLegacyMci;
 
-    public PunfTask(File inputFile, File outputFile, File workingDir) {
-        this(inputFile, outputFile, workingDir, false);
-    }
-
-    public PunfTask(File inputFile, File outputFile, File workingDir,  boolean useLegacyMci) {
+    public PunfLtlxTask(File inputFile, File outputFile, File workingDir) {
         this.inputFile = inputFile;
         this.outputFile = outputFile;
         this.workingDir = workingDir;
-        this.useLegacyMci = useLegacyMci;
     }
 
     @Override
@@ -35,9 +25,7 @@ public class PunfTask implements Task<PunfOutput> {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
-        String toolPrefix = PunfSettings.getCommand();
-        String toolSuffix = useLegacyMci ? LEGACY_TOOL_SUFFIX : "";
-        String toolName = ExecutableUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
+        String toolName = ExecutableUtils.getAbsoluteCommandPath(PunfSettings.getCommand());
         command.add(toolName);
 
         // Extra arguments (should go before the file parameters)
@@ -48,7 +36,9 @@ public class PunfTask implements Task<PunfOutput> {
         }
 
         // Built-in arguments
-        command.add("-m=" + outputFile.getAbsolutePath());
+        command.add("-L=" + outputFile.getAbsolutePath());
+        command.add("-m");
+        command.add("-c");
         command.add(inputFile.getAbsolutePath());
 
         boolean printStdout = PunfSettings.getPrintStdout();

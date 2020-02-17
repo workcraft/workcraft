@@ -3,7 +3,7 @@ package org.workcraft.plugins.petrify.commands;
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.dom.math.MathModel;
-import org.workcraft.gui.ExceptionDialog;
+import org.workcraft.gui.dialogs.ExceptionDialog;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.FsmDescriptor;

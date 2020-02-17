@@ -1,6 +1,7 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import org.workcraft.gui.tools.Trace;
+import org.workcraft.traces.Solution;
+import org.workcraft.traces.Trace;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -39,14 +40,14 @@ class OutputPersistencyOutputHandler extends ReachabilityOutputHandler {
                 result.add(solution);
             }
             Trace trace = solution.getMainTrace();
-            LogUtils.logMessage("Violation trace: " + trace.toText());
+            LogUtils.logMessage("Violation trace: " + trace.toString());
             if (data != null) {
                 trace = getProjectedTrace(trace, data, substitutions);
-                LogUtils.logMessage("Projection trace: " + trace.toText());
+                LogUtils.logMessage("Projection trace: " + trace.toString());
             }
             if (!PetriUtils.fireTrace(stg, trace)) {
                 PetriUtils.setMarking(stg, marking);
-                throw new RuntimeException("Cannot execute trace: " + trace.toText());
+                throw new RuntimeException("Cannot execute trace: " + trace.toString());
             }
             // Check if any local signal gets disabled by firing other signal event
             HashSet<String> enabledLocalSignals = getEnabledLocalSignals(stg);

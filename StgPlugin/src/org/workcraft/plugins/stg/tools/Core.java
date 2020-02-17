@@ -3,7 +3,7 @@ package org.workcraft.plugins.stg.tools;
 import java.awt.Color;
 import java.util.HashSet;
 
-import org.workcraft.gui.tools.Trace;
+import org.workcraft.traces.Trace;
 import org.workcraft.types.MultiSet;
 
 @SuppressWarnings("serial")

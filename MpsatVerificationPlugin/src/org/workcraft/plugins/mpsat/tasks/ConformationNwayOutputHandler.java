@@ -3,10 +3,11 @@ package org.workcraft.plugins.mpsat.tasks;
 import org.workcraft.Framework;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.tools.Trace;
+import org.workcraft.traces.Solution;
+import org.workcraft.traces.Trace;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.gui.ReachibilityDialog;
+import org.workcraft.gui.dialogs.ReachibilityDialog;
 import org.workcraft.plugins.mpsat.utils.EnablednessUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -194,7 +195,7 @@ public class ConformationNwayOutputHandler extends ConformationOutputHandler {
             Trace projTrace = workToTraceMap.get(we);
             // Execute projected trace to a potentially problematic state
             if (!PetriUtils.fireTrace(stg, projTrace)) {
-                throw new RuntimeException("Cannot execute projected trace: " + projTrace.toText());
+                throw new RuntimeException("Cannot execute projected trace: " + projTrace.toString());
             }
             // Find enabled signals whose state is unknown (due to dummies) in the composition STG.
             // If there is only one such signal, then it is actually the one disabled in the composition STG.

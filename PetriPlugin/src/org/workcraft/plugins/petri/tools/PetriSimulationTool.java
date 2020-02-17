@@ -7,7 +7,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.gui.ExceptionDialog;
+import org.workcraft.gui.dialogs.ExceptionDialog;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.tools.SimulationTool;
 import org.workcraft.plugins.petri.*;

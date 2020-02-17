@@ -92,7 +92,7 @@ public class DialogUtils {
         return showConfirm(msg, TITLE_ERROR, JOptionPane.ERROR_MESSAGE, true);
     }
 
-    public static boolean showConfirmError(String msg, String title, boolean defaultChoice) {
+    public static boolean showConfirmError(String msg, boolean defaultChoice) {
         return showConfirm(msg, TITLE_ERROR, JOptionPane.ERROR_MESSAGE, defaultChoice);
     }
 

@@ -1,11 +1,12 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.workcraft.gui.tools.Trace;
+import org.workcraft.traces.Solution;
+import org.workcraft.traces.Trace;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.types.Pair;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PunfOutputParser {
 
@@ -53,18 +54,16 @@ public class PunfOutputParser {
         Matcher matcherNotSafe = patternNotSafe.matcher(stderr);
         Matcher matcherEmptyPreset = patternEmptyPreset.matcher(stderr);
         if (matcherInconsistent.find()) {
-            String comment = "Signal '" + matcherInconsistent.group(1) + "' is inconsistent";
-            Trace trace = getTrace(matcherInconsistent.group(2));
-            Solution solution = new Solution(trace, null, comment);
+            Solution solution = new Solution(getTrace(matcherInconsistent.group(2)));
+            solution.setComment("Signal '" + matcherInconsistent.group(1) + "' is inconsistent");
             outcome = Pair.of(solution, Cause.INCONSISTENT);
         } else if (matcherNotSafe.find()) {
-            String comment = "Place '" + matcherNotSafe.group(1) + "' is unsafe";
-            Trace trace = getTrace(matcherNotSafe.group(2));
-            Solution solution = new Solution(trace, null, comment);
+            Solution solution = new Solution(getTrace(matcherNotSafe.group(2)));
+            solution.setComment("Place '" + matcherNotSafe.group(1) + "' is unsafe");
             outcome = Pair.of(solution, Cause.NOT_SAFE);
         } else if (matcherEmptyPreset.find()) {
-            String comment = "Transition(s) with empty preset: " + matcherEmptyPreset.group(2);
-            Solution solution = new Solution(null, null, comment);
+            Solution solution = new Solution();
+            solution.setComment("Transition(s) with empty preset: " + matcherEmptyPreset.group(2));
             outcome = Pair.of(solution, Cause.EMPTY_PRESET);
         } else {
             outcome = null;

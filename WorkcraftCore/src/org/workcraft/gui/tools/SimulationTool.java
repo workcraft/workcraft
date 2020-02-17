@@ -11,8 +11,11 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.gui.properties.FlatHeaderRenderer;
 import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
+import org.workcraft.traces.Solution;
+import org.workcraft.traces.Trace;
 import org.workcraft.types.Func;
 import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.TraceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
@@ -80,6 +83,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
     // cache of "excited" containers (the ones containing the excited simulation elements)
     protected HashMap<Container, Boolean> excitedContainers = new HashMap<>();
 
+    private static final double MILLISECONDS_IN_SECOND = 1000.0;
     private static final double DEFAULT_SIMULATION_DELAY = 0.3;
     private static final double EDGE_SPEED_MULTIPLIER = 10;
 
@@ -87,6 +91,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
     public HashMap<? extends Node, Integer> savedState;
     protected final Trace mainTrace = new Trace();
     protected final Trace branchTrace = new Trace();
+    private  int loopPosition = -1;
 
     private Timer timer = null;
     private boolean random = false;
@@ -254,9 +259,9 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         traceTable.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                int column = traceTable.getSelectedColumn();
+                int col = traceTable.getSelectedColumn();
                 int row = traceTable.getSelectedRow();
-                if (column == 0) {
+                if (col == 0) {
                     if (row < mainTrace.size()) {
                         boolean work = true;
                         while (work && (branchTrace.getPosition() > 0)) {
@@ -406,18 +411,22 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
 
         boolean result = false;
         String ref = null;
-        int mainDec = 0;
-        int branchDec = 0;
+        boolean decMain = false;
+        boolean decBranch = false;
         if (branchTrace.getPosition() > 0) {
             ref = branchTrace.get(branchTrace.getPosition() - 1);
-            branchDec = 1;
+            decBranch = true;
         } else if (mainTrace.getPosition() > 0) {
             ref = mainTrace.get(mainTrace.getPosition() - 1);
-            mainDec = 1;
+            decMain = true;
         }
         if (unfire(ref)) {
-            mainTrace.decPosition(mainDec);
-            branchTrace.decPosition(branchDec);
+            if (decMain) {
+                mainTrace.decPosition();
+            }
+            if (decBranch) {
+                branchTrace.decPosition();
+            }
             if ((branchTrace.getPosition() == 0) && !mainTrace.isEmpty()) {
                 branchTrace.clear();
             }
@@ -437,19 +446,26 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
 
         boolean result = false;
         String ref = null;
-        int mainInc = 0;
-        int branchInc = 0;
+        boolean incMain = false;
+        boolean incBranch = false;
         if (branchTrace.canProgress()) {
             ref = branchTrace.getCurrent();
-            branchInc = 1;
+            incBranch = true;
         } else if (mainTrace.canProgress()) {
             ref = mainTrace.getCurrent();
-            mainInc = 1;
+            incMain = true;
         }
         if (fire(ref)) {
-            mainTrace.incPosition(mainInc);
-            branchTrace.incPosition(branchInc);
+            if (incMain) {
+                mainTrace.incPosition();
+            }
+            if (incBranch) {
+                branchTrace.incPosition();
+            }
             result = true;
+            if (!branchTrace.canProgress() && !mainTrace.canProgress() && (loopPosition >= 0)) {
+                mainTrace.setPosition(loopPosition);
+            }
         }
         return result;
     }
@@ -482,6 +498,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         writeModelState(initialState);
         mainTrace.clear();
         branchTrace.clear();
+        loopPosition = -1;
         if (timer != null) {
             timer.stop();
             timer = null;
@@ -494,52 +511,48 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
 
     private void copyState(final GraphEditor editor) {
         Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-        StringSelection stringSelection = new StringSelection(
-                mainTrace.toString() + "\n" + branchTrace.toString() + "\n");
+        Solution solution = new Solution(mainTrace, branchTrace);
+        solution.setLoopPosition(loopPosition);
+        StringSelection stringSelection = new StringSelection(TraceUtils.serialiseSolution(solution));
         clip.setContents(stringSelection, this);
         updateState(editor);
     }
 
     private void pasteState(final GraphEditor editor) {
+        String str = getClipboardText();
+        writeModelState(initialState);
+        Solution solution = TraceUtils.deserialiseSolution(str);
+        mainTrace.clear();
+        if (solution.getMainTrace() != null) {
+            mainTrace.addAll(solution.getMainTrace());
+            while (mainTrace.getPosition() < solution.getMainTrace().getPosition()) {
+                if (!quietStep()) break;
+            }
+        }
+        branchTrace.clear();
+        if (solution.getBranchTrace() != null) {
+            branchTrace.addAll(solution.getBranchTrace());
+            while (branchTrace.getPosition() < solution.getBranchTrace().getPosition()) {
+                if (!quietStep()) break;
+            }
+        }
+        loopPosition = solution.getLoopPosition();
+        updateState(editor);
+    }
+
+    private String getClipboardText() {
         Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
         Transferable contents = clip.getContents(null);
         boolean hasTransferableText = (contents != null) && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
-        String str = "";
+        String result = "";
         if (hasTransferableText) {
             try {
-                str = (String) contents.getTransferData(DataFlavor.stringFlavor);
+                result = (String) contents.getTransferData(DataFlavor.stringFlavor);
             } catch (UnsupportedFlavorException | IOException e) {
                 System.out.println(e);
-                e.printStackTrace();
             }
         }
-
-        writeModelState(initialState);
-        mainTrace.clear();
-        branchTrace.clear();
-        boolean first = true;
-        for (String traceString: str.split("\n")) {
-            if (first) {
-                mainTrace.fromString(traceString);
-                int mainTracePosition = mainTrace.getPosition();
-                mainTrace.setPosition(0);
-                boolean mainProgress = true;
-                while (mainProgress && (mainTrace.getPosition() < mainTracePosition)) {
-                    mainProgress = quietStep();
-                }
-            } else {
-                branchTrace.fromString(traceString);
-                int branchTracePosition = branchTrace.getPosition();
-                branchTrace.setPosition(0);
-                boolean branchProgress = true;
-                while (branchProgress && (branchTrace.getPosition() < branchTracePosition)) {
-                    branchProgress = quietStep();
-                }
-                break;
-            }
-            first = false;
-        }
-        updateState(editor);
+        return result;
     }
 
     public Trace getCombinedTrace() {
@@ -561,6 +574,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
             Trace combinedTrace = getCombinedTrace();
             mainTrace.clear();
             branchTrace.clear();
+            loopPosition = -1;
             mainTrace.addAll(combinedTrace);
             mainTrace.setPosition(combinedTrace.getPosition());
         }
@@ -568,7 +582,8 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
     }
 
     private int getAnimationDelay() {
-        return (int) (1000.0 * DEFAULT_SIMULATION_DELAY * Math.pow(EDGE_SPEED_MULTIPLIER, -speedSlider.getValue() / 1000.0));
+        return (int) (MILLISECONDS_IN_SECOND * DEFAULT_SIMULATION_DELAY
+                * Math.pow(EDGE_SPEED_MULTIPLIER, -speedSlider.getValue() / MILLISECONDS_IN_SECOND));
     }
 
     @SuppressWarnings("serial")
@@ -599,10 +614,11 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
+
             JLabel result = null;
             label.setBorder(SizeHelper.getTableCellBorder());
             if (isActivated() && (value instanceof String)) {
-                label.setText((String) value);
+                label.setText(value.toString());
                 if (isActive(row, column)) {
                     label.setForeground(table.getSelectionForeground());
                     label.setBackground(table.getSelectionBackground());
@@ -645,7 +661,12 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
                     ref = branchTrace.get(row - mainTrace.getPosition());
                 }
             }
-            return getTraceLabelByReference(ref);
+
+            String result = getTraceLabelByReference(ref);
+            if ((result != null) && (loopPosition >= 0) && (column == 0) && (row >= loopPosition)) {
+                result = TraceUtils.addLoopPrefix(result, row == loopPosition, row == mainTrace.size() - 1);
+            }
+            return result;
         }
     }
 
@@ -734,7 +755,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         return Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
     }
 
-    public void setTrace(Trace mainTrace, Trace branchTrace, GraphEditor editor) {
+    public void setTraces(Trace mainTrace, Trace branchTrace, int loopPosition, GraphEditor editor) {
         this.mainTrace.clear();
         if (mainTrace != null) {
             this.mainTrace.addAll(mainTrace);
@@ -743,6 +764,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         if (branchTrace != null) {
             this.branchTrace.addAll(branchTrace);
         }
+        this.loopPosition = loopPosition;
         updateState(editor);
     }
 
@@ -756,7 +778,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         MathNode result = null;
         MathModel mathModel = getUnderlyingModel().getMathModel();
         if ((mathModel != null) && (ref != null)) {
-            result = (MathNode) mathModel.getNodeByReference(ref);
+            result = mathModel.getNodeByReference(ref);
         }
         return result;
     }

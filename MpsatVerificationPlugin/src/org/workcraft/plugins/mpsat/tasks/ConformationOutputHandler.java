@@ -1,7 +1,8 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.dom.references.ReferenceHelper;
-import org.workcraft.gui.tools.Trace;
+import org.workcraft.traces.Solution;
+import org.workcraft.traces.Trace;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.utils.EnablednessUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
@@ -67,9 +68,9 @@ class ConformationOutputHandler extends ReachabilityOutputHandler {
             // FIXME: This is to rename toggle events from x to x~
             Trace compTrace = fixTraceToggleEvents(compStg, solution.getMainTrace());
             if (needsMultiLineMessage) {
-                LogUtils.logMessage("  " + compTrace.toText());
+                LogUtils.logMessage("  " + compTrace.toString());
             } else {
-                LogUtils.logMessage("Violation trace of the composition: " + compTrace.toText());
+                LogUtils.logMessage("Violation trace of the composition: " + compTrace.toString());
             }
         }
     }
@@ -93,7 +94,7 @@ class ConformationOutputHandler extends ReachabilityOutputHandler {
         for (Solution solution : solutions) {
             // Get unique projection trace
             Trace trace = getProjectedTrace(solution.getMainTrace(), data, substitutions);
-            String traceText = trace.toText();
+            String traceText = trace.toString();
             if (!visitedTraces.contains(traceText)) {
                 visitedTraces.add(traceText);
                 if (needsMultiLineMessage) {
@@ -139,7 +140,7 @@ class ConformationOutputHandler extends ReachabilityOutputHandler {
         HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
         if (!PetriUtils.fireTrace(stg, trace)) {
             PetriUtils.setMarking(stg, marking);
-            throw new RuntimeException("Cannot execute projected trace: " + trace.toText());
+            throw new RuntimeException("Cannot execute projected trace: " + trace.toString());
         }
         // Check if any output can be fired that is not enabled in the composition STG
 

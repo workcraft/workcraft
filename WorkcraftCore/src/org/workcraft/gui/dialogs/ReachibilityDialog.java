@@ -1,7 +1,7 @@
-package org.workcraft.plugins.mpsat.gui;
+package org.workcraft.gui.dialogs;
 
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.plugins.mpsat.tasks.Solution;
+import org.workcraft.traces.Solution;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -9,10 +9,16 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("serial")
 public class ReachibilityDialog extends JDialog {
+
+    public ReachibilityDialog(Window owner, WorkspaceEntry we, String title,
+            String message, Solution solution) {
+        this(owner, we, title, message, Collections.singletonList(solution));
+    }
 
     public ReachibilityDialog(Window owner, WorkspaceEntry we, String title,
             String message, List<Solution> solutions) {

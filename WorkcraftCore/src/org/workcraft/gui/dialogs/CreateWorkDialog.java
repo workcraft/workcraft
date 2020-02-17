@@ -1,9 +1,9 @@
-package org.workcraft.gui;
+package org.workcraft.gui.dialogs;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.gui.dialogs.ModalDialog;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.builtin.settings.FavoriteCommonSettings;

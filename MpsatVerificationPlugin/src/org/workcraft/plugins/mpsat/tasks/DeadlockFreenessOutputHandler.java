@@ -1,10 +1,11 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.Framework;
-import org.workcraft.gui.tools.Trace;
+import org.workcraft.gui.dialogs.ReachibilityDialog;
+import org.workcraft.utils.TraceUtils;
+import org.workcraft.traces.Solution;
+import org.workcraft.traces.Trace;
 import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.gui.ReachibilityDialog;
-import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.petri.Place;
@@ -45,7 +46,7 @@ class DeadlockFreenessOutputHandler extends ReachabilityOutputHandler {
             HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
             if (!PetriUtils.fireTrace(stg, trace)) {
                 PetriUtils.setMarking(stg, marking);
-                throw new RuntimeException("Cannot execute projected trace: " + trace.toText());
+                throw new RuntimeException("Cannot execute projected trace: " + trace.toString());
             }
             // Check if any output can be fired that is not enabled in the composition
             boolean isConformantTrace = true;
@@ -59,7 +60,7 @@ class DeadlockFreenessOutputHandler extends ReachabilityOutputHandler {
                 }
             }
             if (isConformantTrace) {
-                result.add(new Solution(trace, null, null));
+                result.add(new Solution(trace));
             }
             PetriUtils.setMarking(stg, marking);
         }
@@ -69,11 +70,11 @@ class DeadlockFreenessOutputHandler extends ReachabilityOutputHandler {
     @Override
     public void run() {
         List<Solution> solutions = getSolutions();
-        if (!MpsatUtils.hasTraces(solutions)) {
+        if (!TraceUtils.hasTraces(solutions)) {
             DialogUtils.showInfo("The system is deadlock-free", TITLE);
         } else {
             List<Solution> processedSolutions = processSolutions(getWorkspaceEntry(), solutions);
-            if (!MpsatUtils.hasTraces(processedSolutions)) {
+            if (!TraceUtils.hasTraces(processedSolutions)) {
                 DialogUtils.showWarning("Deadlock freeness cannot be reliably verified because of conformation violation", TITLE);
             } else {
                 String message = "The system has a deadlock";

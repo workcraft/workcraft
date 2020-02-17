@@ -19,18 +19,22 @@ public class PunfSettings extends AbstractToolSettings {
     private static final String keyPrintStdout = prefix + ".printStdout";
     private static final String keyPrintStderr = prefix + ".printStderr";
     private static final String keyUseMciCsc = prefix + ".useMciCsc";
+    private static final String keyLtl2tgbaCommand = prefix + ".ltl2tgbaCommand";
 
     private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\UnfoldingTools\\punf.exe" : "tools/UnfoldingTools/punf";
     private static final String defaultArgs = "-r";
     private static final Boolean defaultPrintStdout = true;
     private static final Boolean defaultPrintStderr = true;
     private static final Boolean defaultUseMciCsc = true;
+    private static final String defaultLtl2tgbaCommand = DesktopApi.getOs().isWindows() ? "tools\\Spot\\ltl2tgba.exe" : "tools/Spot/ltl2tgba";
+
 
     private static String command = defaultCommand;
     private static String args = defaultArgs;
     private static Boolean printStdout = defaultPrintStdout;
     private static Boolean printStderr = defaultPrintStderr;
     private static Boolean useMciCsc = defaultUseMciCsc;
+    private static String ltl2tgbaCommand = defaultLtl2tgbaCommand;
 
     static {
         properties.add(new PropertyDeclaration<>(String.class,
@@ -57,6 +61,11 @@ public class PunfSettings extends AbstractToolSettings {
                 "Use legacy MCI unfolding for CSC conflict resolution",
                 PunfSettings::setUseMciCsc,
                 PunfSettings::getUseMciCsc));
+
+        properties.add(new PropertyDeclaration<>(String.class,
+                "LTL to Buechi automaton conversion command",
+                PunfSettings::setLtl2tgbaCommand,
+                PunfSettings::getLtl2tgbaCommand));
     }
 
     @Override
@@ -71,6 +80,7 @@ public class PunfSettings extends AbstractToolSettings {
         setPrintStdout(config.getBoolean(keyPrintStdout, defaultPrintStdout));
         setPrintStderr(config.getBoolean(keyPrintStderr, defaultPrintStderr));
         setUseMciCsc(config.getBoolean(keyUseMciCsc, defaultUseMciCsc));
+        setLtl2tgbaCommand(config.getString(keyLtl2tgbaCommand, defaultLtl2tgbaCommand));
     }
 
     @Override
@@ -80,6 +90,7 @@ public class PunfSettings extends AbstractToolSettings {
         config.setBoolean(keyPrintStdout, getPrintStdout());
         config.setBoolean(keyPrintStderr, getPrintStderr());
         config.setBoolean(keyUseMciCsc, getUseMciCsc());
+        config.set(keyLtl2tgbaCommand, getLtl2tgbaCommand());
     }
 
     @Override
@@ -125,6 +136,14 @@ public class PunfSettings extends AbstractToolSettings {
 
     public static void setUseMciCsc(Boolean value) {
         useMciCsc = value;
+    }
+
+    public static String getLtl2tgbaCommand() {
+        return ltl2tgbaCommand;
+    }
+
+    public static void setLtl2tgbaCommand(String value) {
+        ltl2tgbaCommand = value;
     }
 
 }

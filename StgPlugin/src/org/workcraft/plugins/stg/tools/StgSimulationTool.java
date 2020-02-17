@@ -8,7 +8,6 @@ import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.properties.*;
 import org.workcraft.gui.tools.GraphEditor;
-import org.workcraft.gui.tools.Trace;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.dtd.DtdDescriptor;
@@ -22,9 +21,12 @@ import org.workcraft.plugins.stg.converters.StgToDtdConverter;
 import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.shared.ColorGenerator;
+import org.workcraft.traces.Trace;
 import org.workcraft.types.Pair;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.Coloriser;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.TraceUtils;
 import org.workcraft.workspace.ModelEntry;
 
 import javax.activation.ActivationDataFlavor;
@@ -45,10 +47,12 @@ import java.util.LinkedList;
 import java.util.Set;
 
 public class StgSimulationTool extends PetriSimulationTool {
+
     private static final int COLUMN_SIGNAL = 0;
     private static final int COLUMN_STATE = 1;
     private static final int COLUMN_VISIBLE = 2;
     private static final int COLUMN_COLOR = 3;
+    private static final String GRAY_CODE = ColorUtils.getHexRGB(Color.GRAY);
 
     protected HashMap<String, SignalData> signalDataMap = new HashMap<>();
     protected LinkedList<String> signals = new LinkedList<>();
@@ -354,10 +358,13 @@ public class StgSimulationTool extends PetriSimulationTool {
             JLabel result = null;
             label.setBorder(SizeHelper.getTableCellBorder());
             if (isActivated() && (value instanceof String)) {
-                label.setText(value.toString());
-                final Node node = getUnderlyingStg().getNodeByReference(value.toString());
-                final Color color = getNodeColor(node);
-                label.setForeground(color);
+                String text = value.toString();
+                Pair<String, String> pair = TraceUtils.splitLoopPrefix(text);
+                String prefix = pair.getFirst();
+                String ref = pair.getSecond();
+                final Node node = getUnderlyingStg().getNodeByReference(ref);
+                String colorCode = ColorUtils.getHexRGB(getNodeColor(node));
+                label.setText("<html><span style='color: " + GRAY_CODE + "'>" + prefix + "</span><span style='color: " + colorCode + "'>" + ref + "</span></html>");
                 if (isActive(row, column)) {
                     label.setBackground(table.getSelectionBackground());
                 } else {

@@ -2,7 +2,7 @@ package org.workcraft.plugins.petrify.tasks;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.gui.ExceptionDialog;
+import org.workcraft.gui.dialogs.ExceptionDialog;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.Petri;

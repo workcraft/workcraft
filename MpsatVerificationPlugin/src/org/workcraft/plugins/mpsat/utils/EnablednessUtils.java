@@ -1,7 +1,7 @@
 package org.workcraft.plugins.mpsat.utils;
 
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.gui.tools.Trace;
+import org.workcraft.traces.Trace;
 import org.workcraft.plugins.mpsat.tasks.Enabledness;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
@@ -20,7 +20,7 @@ public class EnablednessUtils {
         HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
         if (!PetriUtils.fireTrace(stg, trace)) {
             PetriUtils.setMarking(stg, marking);
-            throw new RuntimeException("Cannot execute trace: " + trace.toText());
+            throw new RuntimeException("Cannot execute trace: " + trace.toString());
         }
         Signal.Type type = Signal.Type.OUTPUT;
         HashSet<String> enabled = getEnabledSignals(stg, type);

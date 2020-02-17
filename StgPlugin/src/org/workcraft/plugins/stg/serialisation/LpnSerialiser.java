@@ -15,7 +15,7 @@ public class LpnSerialiser implements ModelSerialiser {
 
     @Override
     public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) {
-        SerialiserUtils.writeModel(model, out, Style.LPN);
+        SerialiserUtils.writeModel(model, out, Style.LPN, true);
         return refs;
     }
 

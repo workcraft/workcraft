@@ -1,7 +1,8 @@
-package org.workcraft.gui;
+package org.workcraft.gui.dialogs;
 
 import org.workcraft.Info;
 import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.GuiUtils;
 

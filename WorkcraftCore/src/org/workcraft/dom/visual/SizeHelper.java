@@ -104,6 +104,14 @@ public class SizeHelper {
         return (int) Math.round(0.5 * getBaseSize());
     }
 
+    public static int getCellHGap() {
+        return (int) Math.round(0.3 * getBaseSize());
+    }
+
+    public static int getCellVGap() {
+        return (int) Math.round(0.1 * getBaseSize());
+    }
+
     public static int getBorderThickness() {
         return (int) Math.round(0.15 * getBaseSize());
     }
@@ -167,7 +175,9 @@ public class SizeHelper {
     }
 
     public static Border getTableCellBorder() {
-        return new EmptyBorder(1, 3, 1, 1);
+        int vGap = getCellVGap();
+        int hGap = getCellHGap();
+        return new EmptyBorder(vGap, hGap, vGap, hGap);
     }
 
     public static Border getTableHeaderBorder() {

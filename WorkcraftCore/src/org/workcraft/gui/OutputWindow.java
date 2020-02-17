@@ -3,6 +3,7 @@ package org.workcraft.gui;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.builtin.settings.LogCommonSettings;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.PopupUtils;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;

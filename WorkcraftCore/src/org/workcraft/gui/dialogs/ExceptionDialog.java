@@ -1,4 +1,4 @@
-package org.workcraft.gui;
+package org.workcraft.gui.dialogs;
 
 import org.workcraft.utils.DialogUtils;
 

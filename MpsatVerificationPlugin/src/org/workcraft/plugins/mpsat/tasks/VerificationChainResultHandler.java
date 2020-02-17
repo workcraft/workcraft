@@ -1,9 +1,10 @@
 package org.workcraft.plugins.mpsat.tasks;
 
+import org.workcraft.utils.TraceUtils;
+import org.workcraft.traces.Solution;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.tasks.PunfOutputParser.Cause;
-import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.plugins.mpsat.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
@@ -154,16 +155,16 @@ public class VerificationChainResultHandler extends AbstractResultHandler<Verifi
                         message += " for the inconsistent STG.\n\n";
                         message += comment + AFTER_THE_TRACE_SUFFIX;
                         message += solution + ASK_SIMULATE_SUFFIX;
-                        if (DialogUtils.showConfirmError(message, TITLE, true)) {
-                            MpsatUtils.playSolution(we, solution);
+                        if (DialogUtils.showConfirmError(message)) {
+                            TraceUtils.playSolution(we, solution);
                         }
                         break;
                     case NOT_SAFE:
                         message += " for the unsafe net.\n\n";
                         message +=  comment + AFTER_THE_TRACE_SUFFIX;
                         message += solution + ASK_SIMULATE_SUFFIX;
-                        if (DialogUtils.showConfirmError(message, TITLE, true)) {
-                            MpsatUtils.playSolution(we, solution);
+                        if (DialogUtils.showConfirmError(message)) {
+                            TraceUtils.playSolution(we, solution);
                         }
                         break;
                     case EMPTY_PRESET:

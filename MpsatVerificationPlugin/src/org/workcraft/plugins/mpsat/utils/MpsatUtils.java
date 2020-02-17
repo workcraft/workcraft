@@ -1,11 +1,9 @@
 package org.workcraft.plugins.mpsat.utils;
 
-import org.workcraft.Framework;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.gui.Toolbox;
-import org.workcraft.gui.editor.GraphEditorPanel;
-import org.workcraft.gui.tools.SimulationTool;
+import org.workcraft.utils.TraceUtils;
+import org.workcraft.traces.Solution;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.tasks.*;
@@ -19,8 +17,6 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.LogUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -124,7 +120,7 @@ public class MpsatUtils {
     public static Boolean getCombinedChainOutcome(Result<? extends CombinedChainOutput> combinedChainResult) {
         List<Solution> solutions = getCombinedChainSolutions(combinedChainResult);
         if (solutions != null) {
-            return !hasTraces(solutions);
+            return !TraceUtils.hasTraces(solutions);
         }
         return null;
     }
@@ -132,20 +128,9 @@ public class MpsatUtils {
     public static Boolean getChainOutcome(Result<? extends VerificationChainOutput> chainResult) {
         List<Solution> solutions = getChainSolutions(chainResult);
         if (solutions != null) {
-            return !hasTraces(solutions);
+            return !TraceUtils.hasTraces(solutions);
         }
         return null;
-    }
-
-    public static boolean hasTraces(List<Solution> solutions) {
-        if (solutions != null) {
-            for (Solution solution : solutions) {
-                if ((solution.getMainTrace() != null) || (solution.getBranchTrace() != null)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     public static  String getToolchainDescription(String title) {
@@ -154,23 +139,6 @@ public class MpsatUtils {
             result += " (" + title + ")";
         }
         return result;
-    }
-
-    public static void playSolution(WorkspaceEntry we, Solution solution) {
-        final Framework framework = Framework.getInstance();
-        if (framework.isInGuiMode()) {
-            GraphEditorPanel editor = framework.getMainWindow().getEditor(we);
-            final Toolbox toolbox = editor.getToolBox();
-            final SimulationTool tool = toolbox.getToolInstance(SimulationTool.class);
-            toolbox.selectTool(tool);
-            tool.setTrace(solution.getMainTrace(), solution.getBranchTrace(), editor);
-            String comment = solution.getComment();
-            if ((comment != null) && !comment.isEmpty()) {
-                String traceText = solution.getMainTrace().toText();
-                String message = comment.replaceAll("\\<.*?>", "") + " after trace: " + traceText;
-                LogUtils.logWarning(message);
-            }
-        }
     }
 
     public static boolean mutexStructuralCheck(Stg stg, boolean allowEmptyMutexPlaces) {

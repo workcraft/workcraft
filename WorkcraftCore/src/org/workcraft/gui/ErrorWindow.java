@@ -1,6 +1,7 @@
 package org.workcraft.gui;
 
 import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.utils.PopupUtils;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
