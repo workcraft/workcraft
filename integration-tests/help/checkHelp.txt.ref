@@ -31,7 +31,3 @@ checkWtgInputProperness(work) - check the given WTG 'work' for input properness
 checkWtgReachability(work) - check the given WTG 'work' for reachability of nodes and transitions
 checkWtgSoundness(work) - check the given WTG 'work' for soundness and consistency
 checkWtgSynthesisGuidelines(work) - check the given WTG 'work' for compliance with the synthesis guidelines
-checkXbmDistinguishabilityConstraint(work) - check the XBM model for any conflicts of conditionals and instances of the same bursts
-checkXbmMaximalSetProperty(work) - check the XBM model for any input changes found in more than one burst
-checkXbmNonEmptyInputBursts(work) - check the XBM model for any empty input bursts
-checkXbmStateEncoding(work) - check the XBM model for any non-unique state encodings

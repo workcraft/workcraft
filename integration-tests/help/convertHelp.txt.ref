@@ -23,5 +23,3 @@ convertStgToPetri(work) - convert the given STG 'work' into a new Petri net work
 convertStgUntoggle(work) - convert the given STG 'work' into a new work where the selected (or all) transitions are untoggled
 convertSyncFsmMsfsm(work) - convert Petri net 'work' into multiple synchronised FSMs using MSFSM backend
 convertWtgToStg(work) - convert the given WTG 'work' into a new STG work
-convertXbmToPetri(work) - convert the given XBM 'work' into a new Petri net work
-convertXbmToStg(work) - convert the given XBM 'work' into a new STG work
