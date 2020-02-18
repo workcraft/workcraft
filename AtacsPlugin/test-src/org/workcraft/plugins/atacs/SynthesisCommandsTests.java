@@ -32,6 +32,12 @@ public class SynthesisCommandsTests {
     }
 
     @Test
+    public void busCtrlComplexGateSynthesis() {
+        String workName = PackageUtils.getPackagePath(getClass(), "bus_ctrl.stg.work");
+        testComplexGateSynthesisCommand(workName, 2);
+    }
+
+    @Test
     public void dlatchComplexGateSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "dlatch.stg.work");
         testComplexGateSynthesisCommand(workName, 1);
@@ -76,6 +82,12 @@ public class SynthesisCommandsTests {
     }
 
     @Test
+    public void busCtrlGeneralisedCelementSynthesis() {
+        String workName = PackageUtils.getPackagePath(getClass(), "bus_ctrl.stg.work");
+        testGeneralisedCelementSynthesisCommand(workName, 2);
+    }
+
+    @Test
     public void dlatchGeneralisedCelementSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "dlatch.stg.work");
         testGeneralisedCelementSynthesisCommand(workName, 1);
@@ -117,6 +129,12 @@ public class SynthesisCommandsTests {
     public void celementStandardCelementSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "celement.stg.work");
         testStandardCelementSynthesisCommand(workName, 3);
+    }
+
+    @Test
+    public void busCtrlStandardCelementSynthesis() {
+        String workName = PackageUtils.getPackagePath(getClass(), "bus_ctrl.stg.work");
+        testStandardCelementSynthesisCommand(workName, 8);
     }
 
     @Test
