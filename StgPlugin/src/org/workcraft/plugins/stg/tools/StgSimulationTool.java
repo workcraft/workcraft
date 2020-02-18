@@ -359,7 +359,7 @@ public class StgSimulationTool extends PetriSimulationTool {
             label.setBorder(SizeHelper.getTableCellBorder());
             if (isActivated() && (value instanceof String)) {
                 String text = value.toString();
-                Pair<String, String> pair = TraceUtils.splitLoopPrefix(text);
+                Pair<String, String> pair = TraceUtils.splitLoopDecoration(text);
                 String prefix = pair.getFirst();
                 String ref = pair.getSecond();
                 final Node node = getUnderlyingStg().getNodeByReference(ref);

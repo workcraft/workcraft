@@ -28,8 +28,8 @@ public class TraceUtilsTest {
         serialiseSolutionCheck(Arrays.asList("a", "b", "c"), 0, null, -1, -1, "a, b, c");
         serialiseSolutionCheck(Arrays.asList("a", "b", "c"), 0, Arrays.asList("d", "e", "f"), 0, -1, "a, b, c\nd, e, f");
         serialiseSolutionCheck(Arrays.asList("a", "b", "c"), 1, Arrays.asList("d", "e", "f"), 2, -1, "1: a, b, c\n2: d, e, f");
-        serialiseSolutionCheck(Arrays.asList("a", "b", "c"), 0, null, 2, 1, "a, (b, c)*");
-        serialiseSolutionCheck(Arrays.asList("a", "b", "c"), 2, Arrays.asList("d", "e", "f"), 2, 1, "2: a, (b, c)*\n2: d, e, f");
+        serialiseSolutionCheck(Arrays.asList("a", "b", "c"), 0, null, 2, 1, "a, {b, c}");
+        serialiseSolutionCheck(Arrays.asList("a", "b", "c"), 2, Arrays.asList("d", "e", "f"), 2, 1, "2: a, {b, c}\n2: d, e, f");
     }
 
     private void serialiseSolutionCheck(List<String> mainTraceList, int mainPosition,
@@ -58,8 +58,8 @@ public class TraceUtilsTest {
         deserialiseSolutionCheck("a, b, c", Arrays.asList("a", "b", "c"), 0, null, -1, -1);
         deserialiseSolutionCheck("a, b, c\nd, e, f", Arrays.asList("a", "b", "c"), 0, Arrays.asList("d", "e", "f"), 0, -1);
         deserialiseSolutionCheck("1: a, b, c\n2: d, e, f", Arrays.asList("a", "b", "c"), 1, Arrays.asList("d", "e", "f"), 2, -1);
-        deserialiseSolutionCheck("a, (b, c)*", Arrays.asList("a", "b", "c"), 0, null, 2, 1);
-        deserialiseSolutionCheck("2: a, (b, c)*\n2: d, e, f", Arrays.asList("a", "b", "c"), 2, Arrays.asList("d", "e", "f"), 2, 1);
+        deserialiseSolutionCheck("a, {b, c}", Arrays.asList("a", "b", "c"), 0, null, 2, 1);
+        deserialiseSolutionCheck("2: a, {b, c}\n2: d, e, f", Arrays.asList("a", "b", "c"), 2, Arrays.asList("d", "e", "f"), 2, 1);
     }
 
     private void deserialiseSolutionCheck(String str, List<String> mainTraceList, int mainPosition,
@@ -125,14 +125,14 @@ public class TraceUtilsTest {
     }
 
     private void processLoopEventCheck(String ref, boolean isFirst, boolean isLast) {
-        String str = TraceUtils.addLoopPrefix(ref, isFirst, isLast);
+        String str = TraceUtils.addLoopDecoration(ref, isFirst, isLast);
         if (ref == null) {
             Assert.assertNull(str);
         } else {
             Assert.assertNotEquals(ref, str);
         }
 
-        Pair<String, String> pair = TraceUtils.splitLoopPrefix(str);
+        Pair<String, String> pair = TraceUtils.splitLoopDecoration(str);
         Assert.assertEquals(ref, pair.getSecond());
         if (ref == null) {
             Assert.assertEquals("", pair.getFirst());

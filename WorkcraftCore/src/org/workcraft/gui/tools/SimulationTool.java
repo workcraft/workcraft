@@ -664,7 +664,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
 
             String result = getTraceLabelByReference(ref);
             if ((result != null) && (loopPosition >= 0) && (column == 0) && (row >= loopPosition)) {
-                result = TraceUtils.addLoopPrefix(result, row == loopPosition, row == mainTrace.size() - 1);
+                result = TraceUtils.addLoopDecoration(result, row == loopPosition, row == mainTrace.size() - 1);
             }
             return result;
         }

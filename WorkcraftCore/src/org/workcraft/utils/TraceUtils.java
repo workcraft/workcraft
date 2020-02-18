@@ -10,14 +10,24 @@ import org.workcraft.types.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class TraceUtils {
 
     public static final String EMPTY_TEXT = "[empty]";
-    private static final String SELF_LOOP_PREFIX = "" + (char) 0x2282 + " ";
-    private static final String TO_LOOP_PREFIX = "" + (char) 0x256D + " ";
-    private static final String THROUGH_LOOP_PREFIX = "" + (char) 0x254E + " ";
-    private static final String FROM_LOOP_PREFIX = "" + (char) 0x2570 + " ";
+
+    private static final String EMPTY = "";
+    private static final String SPACE = " ";
+    private static final String TRACE_SEPARATOR = "\n";
+    private static final String POSITION_SEPARATOR = ":";
+    private static final String ITEM_SEPARATOR = ",";
+    private static final String LOOP_PREFIX = "{";
+    private static final String LOOP_SUFFIX = "}";
+
+    private static final String SELF_LOOP_DECORATION = (char) 0x2282 + " ";
+    private static final String TO_LOOP_DECORATION = (char) 0x256D + " ";
+    private static final String THROUGH_LOOP_DECORATION = (char) 0x254E + " ";
+    private static final String FROM_LOOP_DECORATION = (char) 0x2570 + " ";
 
     public static String serialiseSolution(Solution solution) {
         String result = null;
@@ -31,7 +41,7 @@ public class TraceUtils {
             }
             Trace branchTrace = solution.getBranchTrace();
             if (branchTrace != null) {
-                result += "\n";
+                result += TRACE_SEPARATOR;
                 result += serialiseTrace(branchTrace);
             }
         }
@@ -39,7 +49,7 @@ public class TraceUtils {
     }
 
     public static String serialiseTrace(Trace trace) {
-        return serialisePosition(trace.getPosition()) + String.join(", ", trace);
+        return serialisePosition(trace.getPosition()) + String.join(ITEM_SEPARATOR + SPACE, trace);
     }
 
     public static String serialisePrefixAndLoop(Trace trace, int loopPosition) {
@@ -51,17 +61,17 @@ public class TraceUtils {
         // Loop
         Trace loopTrace = new Trace();
         loopTrace.addAll(trace.subList(loopPosition, trace.size()));
-        if (!result.isEmpty()) result += ", ";
-        result += "(" + serialiseTrace(loopTrace) + ")*";
+        if (!result.isEmpty()) result += ITEM_SEPARATOR + SPACE;
+        result += LOOP_PREFIX + serialiseTrace(loopTrace) + LOOP_SUFFIX;
         return result;
     }
 
     private static String serialisePosition(int position) {
-        return position > 0 ? position + ": " : "";
+        return position > 0 ? position + POSITION_SEPARATOR + SPACE : EMPTY;
     }
 
     public static Solution deserialiseSolution(String str) {
-        String[] parts = str.split("\n");
+        String[] parts = str.split(TRACE_SEPARATOR);
         Trace mainTrace = parts.length > 0 ? deserialiseTrace(parts[0]) : null;
         Trace branchTrace = parts.length > 1 ? deserialiseTrace(parts[1]) : null;
         Solution result = new Solution(mainTrace, branchTrace);
@@ -72,7 +82,7 @@ public class TraceUtils {
     }
 
     private static int extractLoopPosition(String str) {
-        String[] parts = str.split("\\(");
+        String[] parts = str.split(Pattern.quote(LOOP_PREFIX));
         if (parts.length > 1) {
             Trace trace = deserialiseTrace(parts[0]);
             return trace.size();
@@ -82,14 +92,19 @@ public class TraceUtils {
 
     public static Trace deserialiseTrace(String str) {
         Trace result = new Trace();
-        String[] parts = str.replaceAll("[\\s\\(\\)\\*]", "").split(":");
+        String[] parts = str.replaceAll("\\s", EMPTY)
+                .replaceAll(Pattern.quote(LOOP_PREFIX), EMPTY)
+                .replaceAll(Pattern.quote(LOOP_SUFFIX), EMPTY)
+                .split(Pattern.quote(POSITION_SEPARATOR));
+
         // Trace
-        String refs = parts.length > 0 ? parts[parts.length - 1] : "";
-        for (String ref : refs.split(",")) {
+        String refs = parts.length > 0 ? parts[parts.length - 1] : EMPTY;
+        for (String ref : refs.split(Pattern.quote(ITEM_SEPARATOR))) {
             if (!ref.isEmpty()) {
                 result.add(ref);
             }
         }
+
         // Position
         if (parts.length > 1) {
             try {
@@ -128,44 +143,44 @@ public class TraceUtils {
             if ((comment != null) && !comment.isEmpty()) {
                 String traceText = solution.getMainTrace().toString();
                 // Remove HTML tags before printing the message
-                String message = comment.replaceAll("\\<.*?>", "") + " after trace: " + traceText;
+                String message = comment.replaceAll("\\<.*?>", EMPTY) + " after trace: " + traceText;
                 LogUtils.logWarning(message);
             }
         }
     }
 
-    public static String addLoopPrefix(String ref, boolean isFirst, boolean isLast) {
+    public static String addLoopDecoration(String ref, boolean isFirst, boolean isLast) {
         if (ref == null) {
             return null;
         }
         if (isFirst && isLast) {
-            return SELF_LOOP_PREFIX + ref;
+            return SELF_LOOP_DECORATION + ref;
         }
         if (isFirst) {
-            return TO_LOOP_PREFIX + ref;
+            return TO_LOOP_DECORATION + ref;
         }
         if (isLast) {
-            return FROM_LOOP_PREFIX + ref;
+            return FROM_LOOP_DECORATION + ref;
         }
-        return THROUGH_LOOP_PREFIX + ref;
+        return THROUGH_LOOP_DECORATION + ref;
     }
 
-    public static Pair<String, String> splitLoopPrefix(String str) {
+    public static Pair<String, String> splitLoopDecoration(String str) {
         if (str != null) {
-            if (str.startsWith(SELF_LOOP_PREFIX)) {
-                return Pair.of(SELF_LOOP_PREFIX, str.substring(SELF_LOOP_PREFIX.length()));
+            if (str.startsWith(SELF_LOOP_DECORATION)) {
+                return Pair.of(SELF_LOOP_DECORATION, str.substring(SELF_LOOP_DECORATION.length()));
             }
-            if (str.startsWith(TO_LOOP_PREFIX)) {
-                return Pair.of(TO_LOOP_PREFIX, str.substring(TO_LOOP_PREFIX.length()));
+            if (str.startsWith(TO_LOOP_DECORATION)) {
+                return Pair.of(TO_LOOP_DECORATION, str.substring(TO_LOOP_DECORATION.length()));
             }
-            if (str.startsWith(THROUGH_LOOP_PREFIX)) {
-                return Pair.of(THROUGH_LOOP_PREFIX, str.substring(THROUGH_LOOP_PREFIX.length()));
+            if (str.startsWith(THROUGH_LOOP_DECORATION)) {
+                return Pair.of(THROUGH_LOOP_DECORATION, str.substring(THROUGH_LOOP_DECORATION.length()));
             }
-            if (str.startsWith(FROM_LOOP_PREFIX)) {
-                return Pair.of(FROM_LOOP_PREFIX, str.substring(FROM_LOOP_PREFIX.length()));
+            if (str.startsWith(FROM_LOOP_DECORATION)) {
+                return Pair.of(FROM_LOOP_DECORATION, str.substring(FROM_LOOP_DECORATION.length()));
             }
         }
-        return Pair.of("", str);
+        return Pair.of(EMPTY, str);
     }
 
 }
