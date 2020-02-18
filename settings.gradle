@@ -2,7 +2,7 @@ pluginManagement {
     plugins {
         id 'org.jetbrains.kotlin.jvm' version '1.3.61'
         id 'ca.coglinc.javacc' version '2.4.0'
-        id 'com.github.kt3k.coveralls' version '2.9.0'
+        id 'com.github.kt3k.coveralls' version '2.10.0'
         id 'de.aaschmid.cpd' version '3.1'
     }
 }
@@ -17,7 +17,7 @@ gradle.ext.javaVersion = '1.8'
 
 // Code quality and coverage tools (Checkstyle, PMD, Jacoco)
 gradle.ext.checkstyleVersion = '8.28'
-gradle.ext.pmdVersion = '6.20.0'
+gradle.ext.pmdVersion = '6.21.0'
 gradle.ext.jacocoVersion = '0.8.5'
 
 
