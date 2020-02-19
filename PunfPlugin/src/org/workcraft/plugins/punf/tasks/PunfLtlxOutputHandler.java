@@ -63,7 +63,7 @@ public class PunfLtlxOutputHandler implements Runnable {
     }
 
     public String extendMessage(String message) {
-        String traceInfo = "Trace prefix and loop for counter-example:";
+        String traceInfo = "Violation trace in <i>PREFIX</i>{<i>LOOP</i>} form:";
         return "<html>" + message + "<br><br>" + traceInfo + "</html>";
     }
 

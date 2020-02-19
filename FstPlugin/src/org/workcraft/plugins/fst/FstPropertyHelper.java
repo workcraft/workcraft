@@ -21,6 +21,7 @@ public class FstPropertyHelper {
         Fst mathFst = visualFst.getMathModel();
         if (SignalCommonSettings.getGroupByType()) {
             for (Signal.Type type : Signal.Type.values()) {
+                if (type == Signal.Type.DUMMY) continue;
                 List<Signal> signals = new LinkedList<>(mathFst.getSignals(type));
                 Collections.sort(signals, Comparator.comparing(visualFst::getMathName));
                 for (final Signal signal : signals) {
@@ -31,6 +32,7 @@ public class FstPropertyHelper {
             List<Signal> signals = new LinkedList<>(mathFst.getSignals());
             Collections.sort(signals, Comparator.comparing(visualFst::getMathName));
             for (final Signal signal : signals) {
+                if (signal.getType() == Signal.Type.DUMMY) continue;
                 result.add(getSignalProperty(visualFst, signal));
             }
         }

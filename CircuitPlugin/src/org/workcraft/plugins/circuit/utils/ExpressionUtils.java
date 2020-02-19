@@ -1,4 +1,4 @@
-package org.workcraft.plugins.circuit.expression;
+package org.workcraft.plugins.circuit.utils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -11,12 +11,10 @@ public class ExpressionUtils {
 
     // Extract SET term from an expression SET + seq * RESET'
     public static String extactSetExpression(String expression, String seqLiteral) {
-        String result = null;
-        for (String term: ExpressionUtils.getTerms(expression)) {
+        String result = "";
+        for (String term: getTerms(expression)) {
             if (!isResetTerm(term, seqLiteral)) {
-                if (result == null) {
-                    result = "";
-                } else {
+                if (!result.isEmpty()) {
                     result += TERM_DELIMITER;
                 }
                 result += term;
@@ -27,61 +25,54 @@ public class ExpressionUtils {
 
     // Extract RESET term from an expression SET + seq * RESET'
     public static String extactResetExpression(String expression, String seqLiteral) {
-        String result = null;
-        for (String term: ExpressionUtils.getTerms(expression)) {
+        String result = "";
+        for (String term: getTerms(expression)) {
             if (isResetTerm(term, seqLiteral)) {
-                if (result == null) {
-                    result = "";
-                } else {
+                if (!result.isEmpty()) {
                     result += TERM_DELIMITER;
                 }
                 result += removeTermLiteral(term, seqLiteral);
             }
         }
-        if (result == null) {
-            result = "";
-        } else {
-            result = ExpressionUtils.negateExpression(result);
-        }
-        return result;
+        return negateExpression(result);
     }
 
     private static List<String> getTerms(String expression) {
         List<String> result = new LinkedList<>();
-        int b = 0;
+        int bracketCount = 0;
         String term = "";
         for (int i = 0; i < expression.length(); i++) {
             char c = expression.charAt(i);
             if (c == ' ') continue;
-            if ((c == TERM_DELIMITER) && (b == 0)) {
+            if ((c == TERM_DELIMITER) && (bracketCount == 0)) {
                 result.add(term);
                 term = "";
             } else {
                 term += c;
-                if (c == '(') b++;
-                if (c == ')') b--;
+                if (c == '(') bracketCount++;
+                if (c == ')') bracketCount--;
             }
         }
-        if (b == 0) {
+        if (bracketCount == 0) {
             result.add(term);
         }
         return result;
     }
 
     private static String negateExpression(String expression) {
-        String result = null;
-        if (expression.contains("" + TERM_DELIMITER) || expression.contains("" + FACTOR_DELIMITER)) {
-            result = NEGATION_DELIMITER + "(" + expression + ")";
-        } else {
-            if (expression.startsWith("!")) {
-                result = expression.substring(1);
-            } else if (expression.endsWith("'")) {
-                result = expression.substring(0, expression.length() - 1);
-            } else {
-                result = "!" + expression;
-            }
+        if (expression.isEmpty()) {
+            return "";
         }
-        return result;
+        if (expression.contains("" + TERM_DELIMITER) || expression.contains("" + FACTOR_DELIMITER)) {
+            return NEGATION_DELIMITER + "(" + expression + ")";
+        }
+        if (expression.startsWith("!")) {
+            return expression.substring(1);
+        }
+        if (expression.endsWith("'")) {
+            return expression.substring(0, expression.length() - 1);
+        }
+        return "!" + expression;
     }
 
     private static boolean isResetTerm(String term, String literal) {
@@ -103,7 +94,7 @@ public class ExpressionUtils {
         }
         if (result.contains(FACTOR_DELIMITER + literal + FACTOR_DELIMITER)) {
             String pattern = Pattern.quote(FACTOR_DELIMITER + literal + FACTOR_DELIMITER);
-            result = result.replaceAll(pattern, "");
+            result = result.replaceAll(pattern, "" + FACTOR_DELIMITER);
         }
         if (result.equals(literal)) {
             result = "";

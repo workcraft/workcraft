@@ -18,7 +18,7 @@ import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.expression.Expression;
-import org.workcraft.plugins.circuit.expression.ExpressionUtils;
+import org.workcraft.plugins.circuit.utils.ExpressionUtils;
 import org.workcraft.plugins.circuit.expression.Literal;
 import org.workcraft.plugins.circuit.genlib.*;
 import org.workcraft.plugins.circuit.jj.expression.ExpressionParser;

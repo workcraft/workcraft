@@ -44,6 +44,12 @@ public class SynthesisCommandsTests {
     }
 
     @Test
+    public void busCtrlComplexGateSynthesis() {
+        String workName = PackageUtils.getPackagePath(getClass(), "bus_ctrl.stg.work");
+        testComplexGateSynthesisCommand(workName, 2);
+    }
+
+    @Test
     public void edcComplexGateSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "edc-csc.stg.work");
         testComplexGateSynthesisCommand(workName, 7);
@@ -70,6 +76,12 @@ public class SynthesisCommandsTests {
     }
 
     @Test
+    public void busCtrlGeneralisedCelementSynthesis() {
+        String workName = PackageUtils.getPackagePath(getClass(), "bus_ctrl.stg.work");
+        testGeneralisedCelementSynthesisCommand(workName, 2);
+    }
+
+    @Test
     public void edcGeneralisedCelementSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "edc-csc.stg.work");
         testGeneralisedCelementSynthesisCommand(workName, 7);
@@ -93,6 +105,12 @@ public class SynthesisCommandsTests {
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void busCtrlStandardCelementSynthesis() {
+        String workName = PackageUtils.getPackagePath(getClass(), "bus_ctrl.stg.work");
+        testStandardCelementSynthesisCommand(workName, 4);
     }
 
     @Test
@@ -137,6 +155,12 @@ public class SynthesisCommandsTests {
     public void constTechnologyMappingSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "const.stg.work");
         testTechnologyMappingSynthesisCommand(workName, 5);
+    }
+
+    @Test
+    public void busCtrlTechnologyMappingSynthesis() {
+        String workName = PackageUtils.getPackagePath(getClass(), "bus_ctrl.stg.work");
+        testTechnologyMappingSynthesisCommand(workName, 4);
     }
 
     @Test

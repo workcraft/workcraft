@@ -12,7 +12,7 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
-import org.workcraft.plugins.circuit.expression.ExpressionUtils;
+import org.workcraft.plugins.circuit.utils.ExpressionUtils;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.LogUtils;

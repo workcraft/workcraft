@@ -31,8 +31,8 @@ public class Signal extends Symbol {
             switch (this) {
             case INPUT: return OUTPUT;
             case OUTPUT: return INTERNAL;
-            case INTERNAL: return DUMMY;
-            case DUMMY: return INPUT;
+            case INTERNAL: return INPUT;
+            case DUMMY: return DUMMY;
             default: return this;
             }
         }
