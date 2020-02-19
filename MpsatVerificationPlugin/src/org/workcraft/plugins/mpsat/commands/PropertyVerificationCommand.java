@@ -3,8 +3,9 @@ package org.workcraft.plugins.mpsat.commands;
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.plugins.mpsat.MpsatDataSerialiser;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
-import org.workcraft.plugins.mpsat.MpsatSettingsSerialiser;
+import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.gui.PropertyDialog;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainTask;
@@ -20,7 +21,10 @@ import java.io.File;
 
 public class PropertyVerificationCommand extends AbstractVerificationCommand {
 
-    public static final String MPSAT_PROPERTY_PRESETS_FILE = "mpsat-property-presets.xml";
+    private static final File PRESET_FILE = new File(Framework.SETTINGS_DIRECTORY_PATH, "mpsat-property-presets.xml");
+    private static final MpsatDataSerialiser DATA_SERIALISER = new MpsatDataSerialiser();
+
+    private static VerificationParameters preservedData = null;
 
     @Override
     public String getDisplayName() {
@@ -41,13 +45,13 @@ public class PropertyVerificationCommand extends AbstractVerificationCommand {
     public void run(WorkspaceEntry we) {
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
-        File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, MPSAT_PROPERTY_PRESETS_FILE);
         boolean allowStgPresets = WorkspaceUtils.isApplicable(we, StgModel.class);
-        MpsatPresetManager pmgr = new MpsatPresetManager(presetFile, new MpsatSettingsSerialiser(), allowStgPresets);
+        MpsatPresetManager pmgr = new MpsatPresetManager(PRESET_FILE, DATA_SERIALISER, allowStgPresets, preservedData);
         PropertyDialog dialog = new PropertyDialog(mainWindow, pmgr);
         if (dialog.reveal()) {
             TaskManager manager = framework.getTaskManager();
-            VerificationChainTask task = new VerificationChainTask(we, dialog.getSettings());
+            preservedData = dialog.getSettings();
+            VerificationChainTask task = new VerificationChainTask(we, preservedData);
             String description = MpsatUtils.getToolchainDescription(we.getTitle());
             VerificationChainResultHandler monitor = new VerificationChainResultHandler(we);
             manager.queue(task, description, monitor);

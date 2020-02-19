@@ -14,18 +14,24 @@ import java.util.List;
 
 public class PresetManager<T> {
 
+    public static final String PRESETS_ELEMENT_NAME = "presets";
+    public static final String PRESET_ELEMENT_NAME = "preset";
+    public static final String DESCRIPTION_ATTRIBUTE_NAME = "description";
+
     private final ArrayList<Preset<T>> presets = new ArrayList<>();
     private final File presetFile;
-    private final SettingsSerialiser<T> serialiser;
+    private final DataSerialiser<T> serialiser;
 
-    public PresetManager(File presetFile, SettingsSerialiser<T> serialiser) {
+    public PresetManager(File presetFile, DataSerialiser<T> serialiser, T preservedData) {
         this.presetFile = presetFile;
         this.serialiser = serialiser;
-
+        if (preservedData != null) {
+            presets.add(new Preset<>("Auto-preserved", preservedData, true));
+        }
         try {
             if (presetFile.exists()) {
                 Document doc = XmlUtils.loadDocument(presetFile);
-                for (Element p : XmlUtils.getChildElements("preset", doc.getDocumentElement())) {
+                for (Element p : XmlUtils.getChildElements(PRESET_ELEMENT_NAME, doc.getDocumentElement())) {
                     presets.add(new Preset<>(p, serialiser));
                 }
             }
@@ -43,9 +49,9 @@ public class PresetManager<T> {
         savePresets();
     }
 
-    public void updatePreset(Preset<T> preset, T settings) {
+    public void updatePreset(Preset<T> preset, T data) {
         checkBuiltIn(preset);
-        preset.setSettings(settings);
+        preset.setData(data);
         savePresets();
     }
 
@@ -69,14 +75,14 @@ public class PresetManager<T> {
         try {
             Document doc = XmlUtils.createDocument();
 
-            Element root = doc.createElement("presets");
+            Element root = doc.createElement(PRESETS_ELEMENT_NAME);
             doc.appendChild(root);
 
             for (Preset<T> p : presets) {
                 if (!p.isBuiltIn()) {
-                    Element pe = doc.createElement("preset");
-                    pe.setAttribute("description", p.getDescription());
-                    serialiser.toXML(p.getSettings(), pe);
+                    Element pe = doc.createElement(PRESET_ELEMENT_NAME);
+                    pe.setAttribute(DESCRIPTION_ATTRIBUTE_NAME, p.getDescription());
+                    serialiser.toXML(p.getData(), pe);
                     root.appendChild(pe);
                 }
             }
@@ -92,4 +98,5 @@ public class PresetManager<T> {
             throw new RuntimeException("Invalid operation attempted on a built-in preset.");
         }
     }
+
 }

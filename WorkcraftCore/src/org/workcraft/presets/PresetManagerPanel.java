@@ -14,14 +14,16 @@ public class PresetManagerPanel<T> extends JPanel {
     private JComboBox presetCombo;
 
     private final PresetManager<T> presetManager;
-    private final SettingsToControlsMapper<T> guiMapper;
+    private final DataMapper<T> guiMapper;
 
-    public PresetManagerPanel(PresetManager<T> presetManager, List<Preset<T>> builtinPresets, SettingsToControlsMapper<T> guiMapper) {
+    public PresetManagerPanel(PresetManager<T> presetManager, List<Preset<T>> builtinPresets, DataMapper<T> guiMapper) {
         super();
 
         this.guiMapper = guiMapper;
         this.presetManager = presetManager;
-        presetManager.addFirst(builtinPresets);
+        if (builtinPresets != null) {
+            presetManager.addFirst(builtinPresets);
+        }
         initialise();
     }
 
@@ -63,8 +65,8 @@ public class PresetManagerPanel<T> extends JPanel {
     private void createPreset() {
         String description = DialogUtils.showInput("Enter preset description:", "");
         if ((description != null) && !description.isEmpty()) {
-            T settings = guiMapper.getSettingsFromControls();
-            Preset<T> preset = new Preset<>(description, settings, false);
+            T data = guiMapper.getDataFromControls();
+            Preset<T> preset = new Preset<>(description, data, false);
             presetManager.savePreset(preset);
             presetCombo.addItem(preset);
             presetCombo.setSelectedItem(preset);
@@ -73,7 +75,7 @@ public class PresetManagerPanel<T> extends JPanel {
 
     private void updatePreset() {
         Preset<T> selectedPreset = (Preset<T>) presetCombo.getSelectedItem();
-        presetManager.updatePreset(selectedPreset, guiMapper.getSettingsFromControls());
+        presetManager.updatePreset(selectedPreset, guiMapper.getDataFromControls());
     }
 
     private void renamePreset() {
@@ -116,7 +118,7 @@ public class PresetManagerPanel<T> extends JPanel {
                 deleteButton.setEnabled(true);
                 deleteButton.setToolTipText("Delete the currently selected preset");
             }
-            guiMapper.applySettingsToControls(selectedPreset.getSettings());
+            guiMapper.applyDataToControls(selectedPreset.getData());
         }
     }
 

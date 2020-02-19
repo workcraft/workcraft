@@ -10,9 +10,9 @@ import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.VerificationParameters.SolutionMode;
 import org.workcraft.plugins.mpsat.utils.ReachUtils;
+import org.workcraft.presets.DataMapper;
 import org.workcraft.presets.Preset;
 import org.workcraft.presets.PresetManagerPanel;
-import org.workcraft.presets.SettingsToControlsMapper;
 import org.workcraft.shared.IntDocument;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.GuiUtils;
@@ -28,8 +28,6 @@ import java.util.Collections;
 public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
 
     private static final int DEFAULT_ALL_SOLUTION_LIMIT = 10;
-
-    private static VerificationParameters autoPreservedParameters = null;
 
     private PresetManagerPanel<VerificationParameters> presetPanel;
     private JComboBox<VerificationMode> modeCombo;
@@ -69,11 +67,6 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
     private PresetManagerPanel<VerificationParameters> createPresetPanel() {
         ArrayList<Preset<VerificationParameters>> builtInPresets = new ArrayList<>();
 
-        if (autoPreservedParameters != null) {
-            builtInPresets.add(new Preset<>("Auto-preserved configuration",
-                    autoPreservedParameters, true));
-        }
-
         MpsatPresetManager presetManager = getUserData();
         if (presetManager.isAllowStgPresets()) {
             builtInPresets.add(new Preset<>("Consistency",
@@ -95,14 +88,14 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
         builtInPresets.add(new Preset<>("Deadlock freeness without maximal dummies",
                 ReachUtils.getDeadlockWithoutMaximalDummyReachSettings(), true));
 
-        SettingsToControlsMapper<VerificationParameters> guiMapper = new SettingsToControlsMapper<VerificationParameters>() {
+        DataMapper<VerificationParameters> guiMapper = new DataMapper<VerificationParameters>() {
             @Override
-            public void applySettingsToControls(VerificationParameters settings) {
+            public void applyDataToControls(VerificationParameters settings) {
                 PropertyDialog.this.applySettingsToControls(settings);
             }
 
             @Override
-            public VerificationParameters getSettingsFromControls() {
+            public VerificationParameters getDataFromControls() {
                 return PropertyDialog.this.getSettingsFromControls();
             }
         };
@@ -257,15 +250,6 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
 
         return new VerificationParameters(null, (VerificationMode) modeCombo.getSelectedItem(),
                 0, solutionMode, solutionLimin, propertyText.getText(), unsatisfiableRadioButton.isSelected());
-    }
-
-    @Override
-    public boolean okAction() {
-        if (super.okAction()) {
-            autoPreservedParameters = getSettings();
-            return true;
-        }
-        return false;
     }
 
 }

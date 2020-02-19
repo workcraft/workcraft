@@ -6,8 +6,9 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.tasks.CustomCheckTask;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
+import org.workcraft.plugins.mpsat.MpsatDataSerialiser;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
-import org.workcraft.plugins.mpsat.MpsatSettingsSerialiser;
+import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.gui.AssertionDialog;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
@@ -19,6 +20,11 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.io.File;
 
 public class AssertionVerificationCommand extends AbstractVerificationCommand {
+
+    private static final File PRESET_FILE = new File(Framework.SETTINGS_DIRECTORY_PATH, "mpsat-assertion-presets.xml");
+    private static final MpsatDataSerialiser DATA_SERIALISER = new MpsatDataSerialiser();
+
+    private static VerificationParameters preservedData = null;
 
     @Override
     public String getDisplayName() {
@@ -48,14 +54,12 @@ public class AssertionVerificationCommand extends AbstractVerificationCommand {
         }
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
-        File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH,
-                org.workcraft.plugins.mpsat.commands.AssertionVerificationCommand.MPSAT_ASSERTION_PRESETS_FILE);
-
-        MpsatPresetManager pmgr = new MpsatPresetManager(presetFile, new MpsatSettingsSerialiser(), true);
+        MpsatPresetManager pmgr = new MpsatPresetManager(PRESET_FILE, DATA_SERIALISER, true, preservedData);
         AssertionDialog dialog = new AssertionDialog(mainWindow, pmgr);
         if (dialog.reveal()) {
             TaskManager manager = framework.getTaskManager();
-            CustomCheckTask task = new CustomCheckTask(we, dialog.getSettings());
+            preservedData = dialog.getSettings();
+            CustomCheckTask task = new CustomCheckTask(we, preservedData);
             String description = MpsatUtils.getToolchainDescription(we.getTitle());
             VerificationChainResultHandler monitor = new VerificationChainResultHandler(we);
             manager.queue(task, description, monitor);

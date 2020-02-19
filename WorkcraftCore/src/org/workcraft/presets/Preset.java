@@ -1,23 +1,22 @@
 package org.workcraft.presets;
 
 import org.w3c.dom.Element;
-import org.workcraft.utils.XmlUtils;
 
 public class Preset<T> {
 
     private String description;
-    private T settings;
+    private T data;
     private final boolean builtIn;
 
-    public Preset(String description, T settings, boolean builtIn) {
+    public Preset(String description, T data, boolean builtIn) {
         this.description = description;
-        this.settings = settings;
+        this.data = data;
         this.builtIn = builtIn;
     }
 
-    public Preset(Element element, SettingsSerialiser<T> serialiser) {
-        this.description = element.getAttribute("description");
-        this.settings = serialiser.fromXML(XmlUtils.getChildElement("settings", element));
+    public Preset(Element element, DataSerialiser<T> serialiser) {
+        this.description = element.getAttribute(PresetManager.DESCRIPTION_ATTRIBUTE_NAME);
+        this.data = serialiser.fromXML(element);
         this.builtIn = false;
     }
 
@@ -25,16 +24,16 @@ public class Preset<T> {
         return description;
     }
 
-    public T getSettings() {
-        return settings;
+    public T getData() {
+        return data;
     }
 
     public void setDescription(String description) {
         this.description = description;
     }
 
-    public void setSettings(T settings) {
-        this.settings = settings;
+    public void setData(T data) {
+        this.data = data;
     }
 
     public boolean isBuiltIn() {

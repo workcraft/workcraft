@@ -7,9 +7,9 @@ import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.VerificationParameters.SolutionMode;
+import org.workcraft.presets.DataMapper;
 import org.workcraft.presets.Preset;
 import org.workcraft.presets.PresetManagerPanel;
-import org.workcraft.presets.SettingsToControlsMapper;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.GuiUtils;
 
@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class AssertionDialog extends ModalDialog<MpsatPresetManager> {
-
-    private static VerificationParameters autoPreservedParameters = null;
 
     private PresetManagerPanel<VerificationParameters> presetPanel;
     private JTextArea propertyText;
@@ -51,19 +49,14 @@ public class AssertionDialog extends ModalDialog<MpsatPresetManager> {
 
     private PresetManagerPanel<VerificationParameters> createPresetPanel() {
         ArrayList<Preset<VerificationParameters>> builtInPresets = new ArrayList<>();
-        if (autoPreservedParameters != null) {
-            builtInPresets.add(new Preset<>("Auto-preserved configuration",
-                    autoPreservedParameters, true));
-        }
-
-        SettingsToControlsMapper<VerificationParameters> guiMapper = new SettingsToControlsMapper<VerificationParameters>() {
+        DataMapper<VerificationParameters> guiMapper = new DataMapper<VerificationParameters>() {
             @Override
-            public void applySettingsToControls(VerificationParameters settings) {
+            public void applyDataToControls(VerificationParameters settings) {
                 AssertionDialog.this.applySettingsToControls(settings);
             }
 
             @Override
-            public VerificationParameters getSettingsFromControls() {
+            public VerificationParameters getDataFromControls() {
                 return AssertionDialog.this.getSettingsFromControls();
             }
         };
@@ -113,15 +106,6 @@ public class AssertionDialog extends ModalDialog<MpsatPresetManager> {
     private VerificationParameters getSettingsFromControls() {
         return new VerificationParameters(null, VerificationMode.ASSERTION,
                 0, SolutionMode.MINIMUM_COST, 0, propertyText.getText(), true);
-    }
-
-    @Override
-    public boolean okAction() {
-        if (super.okAction()) {
-            autoPreservedParameters = getSettings();
-            return true;
-        }
-        return false;
     }
 
 }
