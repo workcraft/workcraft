@@ -94,7 +94,7 @@ public class Console {
 
         if (framework.isInGuiMode()) {
             for (String arg: arglist) {
-                if (arg.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+                if (FileFilters.isWorkPath(arg)) {
                     MainWindow mainWindow = framework.getMainWindow();
                     File file = framework.getFileByAbsoluteOrRelativePath(arg);
                     mainWindow.openWork(file);

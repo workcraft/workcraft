@@ -5,7 +5,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.mozilla.javascript.*;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.workcraft.commands.AbstractLayoutCommand;
 import org.workcraft.commands.Command;
 import org.workcraft.commands.ScriptableCommand;
@@ -37,6 +36,7 @@ import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
 import org.workcraft.serialisation.DeserialisationResult;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
+import org.workcraft.serialisation.References;
 import org.workcraft.shared.DataAccumulator;
 import org.workcraft.tasks.ExtendedTaskManager;
 import org.workcraft.tasks.TaskManager;
@@ -79,6 +79,7 @@ public final class Framework {
     public static final String STATE_WORK_ENTRY = "state.xml";
     public static final String MATH_MODEL_WORK_ENTRY = "model.xml";
     public static final String VISUAL_MODEL_WORK_ENTRY = "visualModel.xml";
+    public static final String STORAGE_WORK_ENTRY = "storage/";
 
     public static final String META_WORK_ELEMENT = "workcraft-meta";
     public static final String META_DESCRIPTOR_WORK_ELEMENT = "descriptor";
@@ -709,23 +710,32 @@ public final class Framework {
         ModelEntry me = loadModel(file);
         if (me != null) {
             // Load (from *.work) or import (other extensions) work
-            if (file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+            if (FileFilters.isWorkFile(file)) {
                 if (path == null) {
                     path = getWorkspace().tempMountExternalFile(file);
                 }
             } else {
-                Path<String> parent;
-                if (path == null) {
-                    parent = Path.empty();
-                } else {
-                    parent = path.getParent();
-                }
                 String desiredName = FileUtils.getFileNameWithoutExtension(file);
+                Path<String> parent = path == null ? Path.empty() : path.getParent();
                 path = getWorkspace().createWorkPath(parent, desiredName);
             }
             we = createWork(me, path, false, false);
             if (we.getModelEntry().isVisual() && (mainWindow != null)) {
                 mainWindow.createEditorWindow(we);
+            }
+            if (FileFilters.isWorkFile(file)) {
+                // Load storage
+                try {
+//                    ZipFile zipFile = new ZipFile(file, StandardCharsets.UTF_8);
+//                    ZipEntry storageZipEntry = zipFile.getEntry(Framework.STORAGE_WORK_ENTRY);
+//                    InputStream is = zipFile.getInputStream(storageZipEntry);
+//                    InputStream is = compatibilityManager.process(file);
+                    InputStream is = new FileInputStream(file);
+                    Storage storage = loadStorage(is);
+                    we.setStorage(storage);
+                } catch (IOException e) {
+                    throw  new DeserialisationException(e);
+                }
             }
         }
         updateJavaScript(we);
@@ -733,7 +743,7 @@ public final class Framework {
     }
 
     public WorkspaceEntry mergeWork(WorkspaceEntry we, File file) throws DeserialisationException {
-        if ((we != null) && file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+        if ((we != null) && FileFilters.isWorkFile(file)) {
             ModelEntry me = loadModel(file);
             if (me != null) {
                 we.insert(me);
@@ -764,10 +774,10 @@ public final class Framework {
         ModelEntry me = null;
         if (FileUtils.checkAvailability(file, null, false)) {
             // Load (from *.work) or import (other extensions) work.
-            if (file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+            if (FileFilters.isWorkFile(file)) {
                 try {
-                    ByteArrayInputStream bis = compatibilityManager.process(file);
-                    me = loadModel(bis);
+                    InputStream is = compatibilityManager.process(file);
+                    me = loadModel(is);
                     FileReferenceUtils.makeAbsolute(me.getVisualModel(), FileUtils.getBasePath(file));
                 } catch (OperationCancelledException e) {
                 }
@@ -787,41 +797,58 @@ public final class Framework {
 
     public ModelEntry loadModel(InputStream is) throws DeserialisationException {
         try {
-            // load meta data
-            byte[] bi = DataAccumulator.loadStream(is);
-            Document metaDoc = FrameworkUtils.loadMetaDoc(bi);
-            ModelDescriptor descriptor = FrameworkUtils.loadMetaDescriptor(metaDoc);
+            // Buffer the whole stream in a byte array
+            byte[] bytes = DataAccumulator.loadStream(is);
 
-            // load math model
-            InputStream mathData = FrameworkUtils.getMathData(bi, metaDoc);
+            // Load meta data
+            Document metaDocument = FrameworkUtils.loadMetaDoc(bytes);
+            ModelDescriptor descriptor = FrameworkUtils.loadMetaDescriptor(metaDocument);
+
+            // Load math model
+            InputStream mathData = FrameworkUtils.getMathData(bytes, metaDocument);
             XMLModelDeserialiser mathDeserialiser = new XMLModelDeserialiser(getPluginManager());
             DeserialisationResult mathResult = mathDeserialiser.deserialise(mathData, null, null);
-            mathResult.model.afterDeserialisation();
+            Model mathModel = mathResult.model;
+            mathModel.afterDeserialisation();
             mathData.close();
 
-            // load visual model (if present)
-            InputStream visualData = FrameworkUtils.getVisualData(bi, metaDoc);
+            // Load visual model (if present)
+            InputStream visualData = FrameworkUtils.getVisualData(bytes, metaDocument);
             if (visualData == null) {
-                return new ModelEntry(descriptor, mathResult.model);
+                return new ModelEntry(descriptor, mathModel);
             }
             XMLModelDeserialiser visualDeserialiser = new XMLModelDeserialiser(getPluginManager());
-            DeserialisationResult visualResult = visualDeserialiser.deserialise(visualData,
-                    mathResult.references, mathResult.model);
-            visualResult.model.afterDeserialisation();
+            References mathRefs = mathResult.references;
+            DeserialisationResult visualResult = visualDeserialiser.deserialise(visualData, mathRefs, mathModel);
+            Model visualModel = visualResult.model;
+            visualModel.afterDeserialisation();
 
-            // load current level and selection
-            if (visualResult.model instanceof VisualModel) {
-                FrameworkUtils.loadVisualModelState(bi, (VisualModel) visualResult.model, visualResult.references);
+            // Load current level and selection
+            if (visualModel instanceof VisualModel) {
+                References visualRefs = visualResult.references;
+                FrameworkUtils.loadSelectionState(bytes, (VisualModel) visualModel, visualRefs);
             }
-            ModelEntry modelEntry = new ModelEntry(descriptor, visualResult.model);
+            ModelEntry me = new ModelEntry(descriptor, visualModel);
 
-            Version version = FrameworkUtils.loadMetaVersion(metaDoc);
-            Stamp stamp = FrameworkUtils.loadMetaStamp(metaDoc);
-            modelEntry.setVersion(version);
-            modelEntry.setStamp(stamp);
-            return modelEntry;
-        } catch (IOException | ParserConfigurationException | InstantiationException | IllegalAccessException
-                | SAXException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException e) {
+            // Load version and time stamp
+            Version version = FrameworkUtils.loadMetaVersion(metaDocument);
+            Stamp stamp = FrameworkUtils.loadMetaStamp(metaDocument);
+            me.setVersion(version);
+            me.setStamp(stamp);
+            return me;
+        } catch (IOException | ParserConfigurationException | SAXException | ClassNotFoundException
+                | NoSuchMethodException | IllegalAccessException | InvocationTargetException
+                | InstantiationException e) {
+
+            throw new DeserialisationException(e);
+        }
+    }
+
+    public Storage loadStorage(InputStream is) throws DeserialisationException {
+        try {
+            byte[] bytes = DataAccumulator.loadStream(is);
+            return FrameworkUtils.loadStorage(bytes);
+        } catch (IOException e) {
             throw new DeserialisationException(e);
         }
     }
@@ -881,20 +908,21 @@ public final class Framework {
                 LogUtils.logError(e.getMessage());
             }
         }
-        saveModel(we.getModelEntry(), file);
+        saveModel(we.getModelEntry(), we.getStorage(), file);
+
         we.setChanged(false);
         if (mainWindow != null) {
             mainWindow.refreshWorkspaceEntryTitle(we, true);
         }
     }
 
-    public void saveModel(ModelEntry me, File file) throws SerialisationException {
+    public void saveModel(ModelEntry me, Storage storage, File file) throws SerialisationException {
         if (me == null) return;
         try {
-            FileOutputStream stream = new FileOutputStream(file);
+            FileOutputStream os = new FileOutputStream(file);
             FileReferenceUtils.makeRelative(me.getVisualModel(), FileUtils.getBasePath(file));
-            saveModel(me, stream);
-            stream.close();
+            saveModel(me, storage, os);
+            os.close();
         } catch (IOException e) {
             throw new SerialisationException(e);
         } finally {
@@ -902,86 +930,64 @@ public final class Framework {
         }
     }
 
-    public void saveModel(ModelEntry modelEntry, OutputStream out) throws SerialisationException {
-        Model model = modelEntry.getModel();
-        VisualModel visualModel = (model instanceof VisualModel) ? (VisualModel) model : null;
-        Model mathModel = (visualModel == null) ? model : visualModel.getMathModel();
-        ZipOutputStream zos = new ZipOutputStream(out);
-        try {
-            ModelSerialiser mathSerialiser = new XMLModelSerialiser(getPluginManager());
-            // serialise math model
-            zos.putNextEntry(new ZipEntry(MATH_MODEL_WORK_ENTRY));
-            mathModel.beforeSerialisation();
-            ReferenceProducer refResolver = mathSerialiser.serialise(mathModel, zos, null);
-            zos.closeEntry();
-            // serialise visual model
-            ModelSerialiser visualSerialiser = null;
-            if (visualModel != null) {
-                visualSerialiser = new XMLModelSerialiser(getPluginManager());
+    public void saveModel(ModelEntry me, Storage storage, OutputStream os) throws SerialisationException {
+        try (ZipOutputStream zos = new ZipOutputStream(os)) {
+            ModelSerialiser serialiser = new XMLModelSerialiser(getPluginManager());
+            // Save math model
+            Model mathModel = me.getMathModel();
+            if (mathModel != null) {
+                zos.putNextEntry(new ZipEntry(MATH_MODEL_WORK_ENTRY));
+                mathModel.beforeSerialisation();
+                ReferenceProducer refResolver = serialiser.serialise(mathModel, zos, null);
+                zos.closeEntry();
 
-                zos.putNextEntry(new ZipEntry(VISUAL_MODEL_WORK_ENTRY));
-                visualModel.beforeSerialisation();
-                ReferenceProducer visualRefs = visualSerialiser.serialise(visualModel, zos, refResolver);
-                zos.closeEntry();
-                // serialise visual model selection state
-                zos.putNextEntry(new ZipEntry(STATE_WORK_ENTRY));
-                FrameworkUtils.saveSelectionState(visualModel, zos, visualRefs);
-                zos.closeEntry();
+                // Save visual model
+                VisualModel visualModel = me.getVisualModel();
+                if (visualModel != null) {
+                    zos.putNextEntry(new ZipEntry(VISUAL_MODEL_WORK_ENTRY));
+                    visualModel.beforeSerialisation();
+                    ReferenceProducer visualRefs = serialiser.serialise(visualModel, zos, refResolver);
+                    zos.closeEntry();
+                    // Serialise visual model selection state
+                    zos.putNextEntry(new ZipEntry(STATE_WORK_ENTRY));
+                    FrameworkUtils.saveSelectionState(visualModel, zos, visualRefs);
+                    zos.closeEntry();
+                }
             }
-            // serialise meta data
+
+            // Save meta data
             zos.putNextEntry(new ZipEntry(META_WORK_ENTRY));
-            Document metaDoc = XmlUtils.createDocument();
-            Element metaRoot = metaDoc.createElement(META_WORK_ELEMENT);
-            metaDoc.appendChild(metaRoot);
-
-            Element metaVersion = metaDoc.createElement(META_VERSION_WORK_ELEMENT);
-            metaVersion.setAttribute(META_VERSION_MAJOR_WORK_ATTRIBUTE, Info.getVersionMajor());
-            metaVersion.setAttribute(META_VERSION_MINOR_WORK_ATTRIBUTE, Info.getVersionMinor());
-            metaVersion.setAttribute(META_VERSION_REVISION_WORK_ATTRIBUTE, Info.getVersionRevision());
-            metaVersion.setAttribute(META_VERSION_STATUS_WORK_ATTRIBUTE, Info.getVersionStatus());
-            metaRoot.appendChild(metaVersion);
-
-            Element metaStamp = metaDoc.createElement(META_STAMP_WORK_ELEMENT);
-            Stamp stamp = modelEntry.getStamp();
-            metaStamp.setAttribute(META_STAMP_TIME_WORK_ATTRIBUTE, stamp.time);
-            metaStamp.setAttribute(META_STAMP_UUID_WORK_ATTRIBUTE, stamp.uuid);
-            metaRoot.appendChild(metaStamp);
-
-            Element metaDescriptor = metaDoc.createElement(META_DESCRIPTOR_WORK_ELEMENT);
-            metaDescriptor.setAttribute(META_DESCRIPTOR_CLASS_WORK_ATTRIBUTE, modelEntry.getDescriptor().getClass().getCanonicalName());
-            metaRoot.appendChild(metaDescriptor);
-
-            Element mathElement = metaDoc.createElement(META_MATH_MODEL_WORK_ELEMENT);
-            mathElement.setAttribute(META_MODEL_ENTRY_NAME_WORK_ATTRIBUTE, MATH_MODEL_WORK_ENTRY);
-            mathElement.setAttribute(META_MODEL_FORMAT_UUID_WORK_ATTRIBUTE, mathSerialiser.getFormatUUID().toString());
-            metaRoot.appendChild(mathElement);
-
-            if (visualModel != null) {
-                Element visualElement = metaDoc.createElement(META_VISUAL_MODEL_WORK_ELEMENT);
-                visualElement.setAttribute(META_MODEL_ENTRY_NAME_WORK_ATTRIBUTE, VISUAL_MODEL_WORK_ENTRY);
-                visualElement.setAttribute(META_MODEL_FORMAT_UUID_WORK_ATTRIBUTE, visualSerialiser.getFormatUUID().toString());
-                metaRoot.appendChild(visualElement);
-            }
-            XmlUtils.writeDocument(metaDoc, zos);
+            String uuid = serialiser.getFormatUUID().toString();
+            FrameworkUtils.saveMeta(me, zos, uuid);
             zos.closeEntry();
-            zos.close();
+
+            // Save storage
+            if (storage != null) {
+                zos.putNextEntry(new ZipEntry(STORAGE_WORK_ENTRY));
+                for (Map.Entry<String, RawData> entry : storage.entrySet()) {
+                    zos.putNextEntry(new ZipEntry(entry.getKey()));
+                    zos.write(entry.getValue().getData());
+                    zos.closeEntry();
+                }
+                zos.closeEntry();
+            }
         } catch (ParserConfigurationException | IOException e) {
             throw new SerialisationException(e);
         }
     }
 
-    public Memento saveModel(ModelEntry modelEntry) {
+    public Memento mementoModel(ModelEntry me) {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
-            saveModel(modelEntry, os);
+            saveModel(me, null, os);
         } catch (SerialisationException e) {
             throw new RuntimeException(e);
         }
         return new Memento(os.toByteArray());
     }
 
-    public ModelEntry cloneModel(ModelEntry modelEntry) {
-        Memento memento = saveModel(modelEntry);
+    public ModelEntry cloneModel(ModelEntry me) {
+        Memento memento = mementoModel(me);
         return loadModel(memento);
     }
 

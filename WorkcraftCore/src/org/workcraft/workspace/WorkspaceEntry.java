@@ -16,19 +16,16 @@ import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.ZipUtils;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.geom.Point2D;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class WorkspaceEntry implements ObservableState {
@@ -36,6 +33,7 @@ public class WorkspaceEntry implements ObservableState {
     private static final Point2D DEFAULT_PASTE_OFFSET = new Point2D.Double(1.0, 1.0);
 
     private ModelEntry modelEntry = null;
+    private Storage storage = new Storage();
     private boolean changed = true;
     private final Workspace workspace;
 
@@ -81,6 +79,14 @@ public class WorkspaceEntry implements ObservableState {
         return modelEntry;
     }
 
+    public void setStorage(Storage storage) {
+        this.storage = storage;
+    }
+
+    public Storage getStorage() {
+        return storage;
+    }
+
     private final StateObserver modelObserver = new StateObserver() {
         @Override
         public void notify(StateEvent e) {
@@ -116,7 +122,7 @@ public class WorkspaceEntry implements ObservableState {
     }
 
     public boolean isWork() {
-        return (modelEntry != null) || (getWorkspacePath().getNode().endsWith(FileFilters.DOCUMENT_EXTENSION));
+        return (modelEntry != null) || FileFilters.isWorkPath(getWorkspacePath().getNode());
     }
 
     public String getTitle() {
@@ -233,14 +239,14 @@ public class WorkspaceEntry implements ObservableState {
 
     public void captureMemento() {
         final Framework framework = Framework.getInstance();
-        capturedMemento = framework.saveModel(modelEntry);
+        capturedMemento = framework.mementoModel(modelEntry);
         if (!changed) {
             savedMemento = capturedMemento;
         }
 
         if (DebugCommonSettings.getCopyModelOnChange()) {
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            String str = unzipInputStream(new ZipInputStream(capturedMemento.getStream(), StandardCharsets.UTF_8));
+            String str = ZipUtils.unzipInputStream(new ZipInputStream(capturedMemento.getStream(), StandardCharsets.UTF_8));
             clipboard.setContents(new StringSelection(str), null);
         }
     }
@@ -263,7 +269,7 @@ public class WorkspaceEntry implements ObservableState {
         capturedMemento = null;
         if (currentMemento == null) {
             final Framework framework = Framework.getInstance();
-            currentMemento = framework.saveModel(modelEntry);
+            currentMemento = framework.mementoModel(modelEntry);
         }
         if (!changed) {
             savedMemento = currentMemento;
@@ -278,7 +284,7 @@ public class WorkspaceEntry implements ObservableState {
             Memento undoMemento = history.pullUndo();
             if (undoMemento != null) {
                 final Framework framework = Framework.getInstance();
-                Memento currentMemento = framework.saveModel(modelEntry);
+                Memento currentMemento = framework.mementoModel(modelEntry);
                 if (!changed) {
                     savedMemento = currentMemento;
                 }
@@ -295,7 +301,7 @@ public class WorkspaceEntry implements ObservableState {
             Memento redoMemento = history.pullRedo();
             if (redoMemento != null) {
                 final Framework framework = Framework.getInstance();
-                Memento currentMemento = framework.saveModel(modelEntry);
+                Memento currentMemento = framework.mementoModel(modelEntry);
                 if (!changed) {
                     savedMemento = currentMemento;
                 }
@@ -310,8 +316,8 @@ public class WorkspaceEntry implements ObservableState {
     public void insert(ModelEntry me) {
         final Framework framework = Framework.getInstance();
         try {
-            Memento currentMemento = framework.saveModel(modelEntry);
-            Memento insertMemento = framework.saveModel(me);
+            Memento currentMemento = framework.mementoModel(modelEntry);
+            Memento insertMemento = framework.mementoModel(me);
             ModelEntry result = framework.loadModel(currentMemento.getStream(), insertMemento.getStream());
             saveMemento();
             setModelEntry(result);
@@ -321,31 +327,9 @@ public class WorkspaceEntry implements ObservableState {
         }
     }
 
-    public String unzipInputStream(ZipInputStream zis) {
-        String result = "";
-        try {
-            ZipEntry ze;
-            while ((ze = zis.getNextEntry()) != null) {
-                StringBuilder isb = new StringBuilder();
-                BufferedReader br = new BufferedReader(new InputStreamReader(zis, StandardCharsets.UTF_8));
-                String line = "=== " + ze.getName() + " ===";
-                while (line != null) {
-                    isb.append(line);
-                    isb.append('\n');
-                    line = br.readLine();
-                }
-                result += isb.toString();
-                zis.closeEntry();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
     public String getClipboardAsString() {
         final Framework framework = Framework.getInstance();
-        return unzipInputStream(new ZipInputStream(framework.clipboard.getStream(), StandardCharsets.UTF_8));
+        return ZipUtils.unzipInputStream(new ZipInputStream(framework.clipboard.getStream(), StandardCharsets.UTF_8));
     }
 
     public void copy() {
@@ -372,7 +356,7 @@ public class WorkspaceEntry implements ObservableState {
             model.deleteSelection();
             // Save the remaining nodes to clipboard.
             final Framework framework = Framework.getInstance();
-            framework.clipboard = framework.saveModel(modelEntry);
+            framework.clipboard = framework.mementoModel(modelEntry);
             if (DebugCommonSettings.getCopyModelOnChange()) {
                 // Copy the memento clipboard into the system-wide clipboard as a string.
                 Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -391,7 +375,7 @@ public class WorkspaceEntry implements ObservableState {
         final Framework framework = Framework.getInstance();
         if (framework.clipboard != null) {
             try {
-                Memento memento = framework.saveModel(modelEntry);
+                Memento memento = framework.mementoModel(modelEntry);
                 ModelEntry me = framework.loadModel(memento.getStream(), framework.clipboard.getStream());
 
                 VisualModel model = me.getVisualModel();

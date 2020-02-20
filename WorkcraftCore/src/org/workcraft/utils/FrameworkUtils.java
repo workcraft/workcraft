@@ -3,6 +3,7 @@ package org.workcraft.utils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.Framework;
+import org.workcraft.Info;
 import org.workcraft.Version;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.ModelDescriptor;
@@ -12,7 +13,10 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.serialisation.References;
+import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.RawData;
 import org.workcraft.workspace.Stamp;
+import org.workcraft.workspace.Storage;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -29,63 +33,49 @@ import java.util.zip.ZipInputStream;
 
 public class FrameworkUtils {
 
-    public static InputStream getUncompressedEntry(String name, InputStream zippedData) throws IOException {
-        ZipInputStream zis = new ZipInputStream(zippedData, StandardCharsets.UTF_8);
-        ZipEntry ze;
-        while ((ze = zis.getNextEntry()) != null) {
-            if (ze.getName().equals(name)) {
-                return zis;
-            }
-            zis.closeEntry();
+    public static InputStream getMathData(byte[] bytes, Document document) throws IOException {
+        Element element = XmlUtils.getChildElement(Framework.META_MATH_MODEL_WORK_ELEMENT, document.getDocumentElement());
+        if (element != null) {
+            InputStream is = new ByteArrayInputStream(bytes);
+            return ZipUtils.getUncompressedEntry(element.getAttribute(Framework.META_MODEL_ENTRY_NAME_WORK_ATTRIBUTE), is);
         }
-        zis.close();
         return null;
     }
 
-    public static InputStream getMathData(byte[] bufferedInput, Document metaDoc) throws IOException {
-        Element mathElement = XmlUtils.getChildElement(Framework.META_MATH_MODEL_WORK_ELEMENT, metaDoc.getDocumentElement());
-        InputStream mathData = null;
-        if (mathElement != null) {
-            InputStream is = new ByteArrayInputStream(bufferedInput);
-            mathData = getUncompressedEntry(mathElement.getAttribute(Framework.META_MODEL_ENTRY_NAME_WORK_ATTRIBUTE), is);
+    public static InputStream getVisualData(byte[] bytes, Document document) throws IOException {
+        Element element = XmlUtils.getChildElement(Framework.META_VISUAL_MODEL_WORK_ELEMENT, document.getDocumentElement());
+        if (element  != null) {
+            InputStream is = new ByteArrayInputStream(bytes);
+            return ZipUtils.getUncompressedEntry(element.getAttribute(Framework.META_MODEL_ENTRY_NAME_WORK_ATTRIBUTE), is);
         }
-        return mathData;
+        return null;
     }
 
-    public static InputStream getVisualData(byte[] bufferedInput, Document metaDoc) throws IOException {
-        Element visualElement = XmlUtils.getChildElement(Framework.META_VISUAL_MODEL_WORK_ELEMENT, metaDoc.getDocumentElement());
-        InputStream visualData = null;
-        if (visualElement  != null) {
-            InputStream is = new ByteArrayInputStream(bufferedInput);
-            visualData = getUncompressedEntry(visualElement.getAttribute(Framework.META_MODEL_ENTRY_NAME_WORK_ATTRIBUTE), is);
-        }
-        return visualData;
-    }
-
-    public static ModelDescriptor loadMetaDescriptor(Document metaDoc)
+    public static ModelDescriptor loadMetaDescriptor(Document document)
             throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        Element descriptorElement = XmlUtils.getChildElement(Framework.META_DESCRIPTOR_WORK_ELEMENT, metaDoc.getDocumentElement());
-        String descriptorClass = descriptorElement.getAttribute(Framework.META_DESCRIPTOR_CLASS_WORK_ATTRIBUTE);
+
+        Element element = XmlUtils.getChildElement(Framework.META_DESCRIPTOR_WORK_ELEMENT, document.getDocumentElement());
+        String descriptorClass = element.getAttribute(Framework.META_DESCRIPTOR_CLASS_WORK_ATTRIBUTE);
         return (ModelDescriptor) Class.forName(descriptorClass).getDeclaredConstructor().newInstance();
     }
 
-    public static Version loadMetaVersion(Document metaDoc) {
-        Element versionElement = XmlUtils.getChildElement(Framework.META_VERSION_WORK_ELEMENT, metaDoc.getDocumentElement());
-        if (versionElement != null) {
-            String major = versionElement.getAttribute(Framework.META_VERSION_MAJOR_WORK_ATTRIBUTE);
-            String minor = versionElement.getAttribute(Framework.META_VERSION_MINOR_WORK_ATTRIBUTE);
-            String revision = versionElement.getAttribute(Framework.META_VERSION_REVISION_WORK_ATTRIBUTE);
-            String status = versionElement.getAttribute(Framework.META_VERSION_STATUS_WORK_ATTRIBUTE);
+    public static Version loadMetaVersion(Document document) {
+        Element element = XmlUtils.getChildElement(Framework.META_VERSION_WORK_ELEMENT, document.getDocumentElement());
+        if (element != null) {
+            String major = element.getAttribute(Framework.META_VERSION_MAJOR_WORK_ATTRIBUTE);
+            String minor = element.getAttribute(Framework.META_VERSION_MINOR_WORK_ATTRIBUTE);
+            String revision = element.getAttribute(Framework.META_VERSION_REVISION_WORK_ATTRIBUTE);
+            String status = element.getAttribute(Framework.META_VERSION_STATUS_WORK_ATTRIBUTE);
             return new Version(major, minor, revision, status);
         }
         return null;
     }
 
-    public static Stamp loadMetaStamp(Document metaDoc) {
-        Element stampElement = XmlUtils.getChildElement(Framework.META_STAMP_WORK_ELEMENT, metaDoc.getDocumentElement());
-        if (stampElement != null) {
-            String time = stampElement.getAttribute(Framework.META_STAMP_TIME_WORK_ATTRIBUTE);
-            String uuid = stampElement.getAttribute(Framework.META_STAMP_UUID_WORK_ATTRIBUTE);
+    public static Stamp loadMetaStamp(Document document) {
+        Element element = XmlUtils.getChildElement(Framework.META_STAMP_WORK_ELEMENT, document.getDocumentElement());
+        if (element != null) {
+            String time = element.getAttribute(Framework.META_STAMP_TIME_WORK_ATTRIBUTE);
+            String uuid = element.getAttribute(Framework.META_STAMP_UUID_WORK_ATTRIBUTE);
             if ((time != null) && (uuid != null)) {
                 return new Stamp(time, uuid);
             }
@@ -93,31 +83,33 @@ public class FrameworkUtils {
         return null;
     }
 
-    public static Document loadMetaDoc(byte[] bufferedInput)
+    public static Document loadMetaDoc(byte[] bytes)
             throws IOException, DeserialisationException, ParserConfigurationException, SAXException {
-        ByteArrayInputStream zippedData = new ByteArrayInputStream(bufferedInput);
-        InputStream metaData = getUncompressedEntry(Framework.META_WORK_ENTRY, zippedData);
+
+        InputStream zippedData = new ByteArrayInputStream(bytes);
+        InputStream metaData = ZipUtils.getUncompressedEntry(Framework.META_WORK_ENTRY, zippedData);
         if (metaData == null) {
             throw new DeserialisationException("meta entry is missing in the work file");
         }
-        Document metaDoc = XmlUtils.loadDocument(metaData);
+        Document result = XmlUtils.loadDocument(metaData);
         metaData.close();
-        return metaDoc;
+        return result;
     }
 
-    public static void loadVisualModelState(byte[] bi, VisualModel model, References references)
+    public static void loadSelectionState(byte[] bytes, VisualModel model, References references)
             throws IOException, ParserConfigurationException, SAXException {
-        InputStream stateData = getUncompressedEntry(Framework.STATE_WORK_ENTRY, new ByteArrayInputStream(bi));
+
+        InputStream stateData = ZipUtils.getUncompressedEntry(Framework.STATE_WORK_ENTRY, new ByteArrayInputStream(bytes));
         if (stateData != null) {
             Document stateDoc = XmlUtils.loadDocument(stateData);
             Element stateElement = stateDoc.getDocumentElement();
-            // level
+            // Load current level
             Element levelElement = XmlUtils.getChildElement(Framework.STATE_LEVEL_WORK_ELEMENT, stateElement);
             Object currentLevel = references.getObject(levelElement.getAttribute(Framework.COMMON_REF_WORK_ATTRIBUTE));
             if (currentLevel instanceof Container) {
                 model.setCurrentLevel((Container) currentLevel);
             }
-            // selection
+            // Load selection
             Element selectionElement = XmlUtils.getChildElement(Framework.STATE_SELECTION_WORK_ELEMENT, stateElement);
             Set<VisualNode> nodes = new HashSet<>();
             for (Element nodeElement: XmlUtils.getChildElements(Framework.COMMON_NODE_WORK_ATTRIBUTE, selectionElement)) {
@@ -130,24 +122,83 @@ public class FrameworkUtils {
         }
     }
 
+    public static Storage loadStorage(byte[] bytes) throws IOException {
+        Storage result = new Storage();
+        ByteArrayInputStream zippedData = new ByteArrayInputStream(bytes);
+        ZipInputStream zis = new ZipInputStream(zippedData, StandardCharsets.UTF_8);
+        ZipEntry ze;
+        while ((ze = zis.getNextEntry()) != null) {
+            String name = ze.getName();
+            if (name.startsWith(Framework.STORAGE_WORK_ENTRY) && !name.equals(Framework.STORAGE_WORK_ENTRY)) {
+                result.put(name, new RawData(zis));
+                System.out.println("=== " + name + " ===\n" + new String(result.get(name).getData()));
+            }
+            zis.closeEntry();
+        }
+        zis.close();
+
+        return result;
+    }
+
     public static void saveSelectionState(VisualModel visualModel, OutputStream os, ReferenceProducer visualRefs)
             throws ParserConfigurationException {
-        Document stateDoc = XmlUtils.createDocument();
-        Element stateRoot = stateDoc.createElement(Framework.STATE_WORK_ELEMENT);
-        stateDoc.appendChild(stateRoot);
+
+        Document stateDocument = XmlUtils.createDocument();
+        Element stateRoot = stateDocument.createElement(Framework.STATE_WORK_ELEMENT);
+        stateDocument.appendChild(stateRoot);
         // level
-        Element levelElement = stateDoc.createElement(Framework.STATE_LEVEL_WORK_ELEMENT);
-        levelElement.setAttribute(Framework.COMMON_REF_WORK_ATTRIBUTE, visualRefs.getReference(visualModel.getCurrentLevel()));
+        Element levelElement = stateDocument.createElement(Framework.STATE_LEVEL_WORK_ELEMENT);
+        String currentLevelRef = visualRefs.getReference(visualModel.getCurrentLevel());
+        levelElement.setAttribute(Framework.COMMON_REF_WORK_ATTRIBUTE, currentLevelRef);
         stateRoot.appendChild(levelElement);
         // selection
-        Element selectionElement = stateDoc.createElement(Framework.STATE_SELECTION_WORK_ELEMENT);
+        Element selectionElement = stateDocument.createElement(Framework.STATE_SELECTION_WORK_ELEMENT);
         for (Node node: visualModel.getSelection()) {
-            Element nodeElement = stateDoc.createElement(Framework.COMMON_NODE_WORK_ATTRIBUTE);
-            nodeElement.setAttribute(Framework.COMMON_REF_WORK_ATTRIBUTE, visualRefs.getReference(node));
+            Element nodeElement = stateDocument.createElement(Framework.COMMON_NODE_WORK_ATTRIBUTE);
+            String ref = visualRefs.getReference(node);
+            nodeElement.setAttribute(Framework.COMMON_REF_WORK_ATTRIBUTE, ref);
             selectionElement.appendChild(nodeElement);
         }
         stateRoot.appendChild(selectionElement);
-        XmlUtils.writeDocument(stateDoc, os);
+        XmlUtils.writeDocument(stateDocument, os);
+    }
+    public static void saveMeta(ModelEntry modelEntry, OutputStream os, String uuid)
+            throws ParserConfigurationException {
+
+        Document metaDocument = XmlUtils.createDocument();
+        Element metaRoot = metaDocument.createElement(Framework.META_WORK_ELEMENT);
+        metaDocument.appendChild(metaRoot);
+
+        Element metaVersion = metaDocument.createElement(Framework.META_VERSION_WORK_ELEMENT);
+        metaVersion.setAttribute(Framework.META_VERSION_MAJOR_WORK_ATTRIBUTE, Info.getVersionMajor());
+        metaVersion.setAttribute(Framework.META_VERSION_MINOR_WORK_ATTRIBUTE, Info.getVersionMinor());
+        metaVersion.setAttribute(Framework.META_VERSION_REVISION_WORK_ATTRIBUTE, Info.getVersionRevision());
+        metaVersion.setAttribute(Framework.META_VERSION_STATUS_WORK_ATTRIBUTE, Info.getVersionStatus());
+        metaRoot.appendChild(metaVersion);
+
+        Element metaStamp = metaDocument.createElement(Framework.META_STAMP_WORK_ELEMENT);
+        Stamp stamp = modelEntry.getStamp();
+        metaStamp.setAttribute(Framework.META_STAMP_TIME_WORK_ATTRIBUTE, stamp.time);
+        metaStamp.setAttribute(Framework.META_STAMP_UUID_WORK_ATTRIBUTE, stamp.uuid);
+        metaRoot.appendChild(metaStamp);
+
+        Element metaDescriptor = metaDocument.createElement(Framework.META_DESCRIPTOR_WORK_ELEMENT);
+        String descriptorClass = modelEntry.getDescriptor().getClass().getCanonicalName();
+        metaDescriptor.setAttribute(Framework.META_DESCRIPTOR_CLASS_WORK_ATTRIBUTE, descriptorClass);
+        metaRoot.appendChild(metaDescriptor);
+
+        Element mathElement = metaDocument.createElement(Framework.META_MATH_MODEL_WORK_ELEMENT);
+        mathElement.setAttribute(Framework.META_MODEL_ENTRY_NAME_WORK_ATTRIBUTE, Framework.MATH_MODEL_WORK_ENTRY);
+        mathElement.setAttribute(Framework.META_MODEL_FORMAT_UUID_WORK_ATTRIBUTE, uuid);
+        metaRoot.appendChild(mathElement);
+
+        if (modelEntry.getVisualModel() != null) {
+            Element visualElement = metaDocument.createElement(Framework.META_VISUAL_MODEL_WORK_ELEMENT);
+            visualElement.setAttribute(Framework.META_MODEL_ENTRY_NAME_WORK_ATTRIBUTE, Framework.VISUAL_MODEL_WORK_ENTRY);
+            visualElement.setAttribute(Framework.META_MODEL_FORMAT_UUID_WORK_ATTRIBUTE, uuid);
+            metaRoot.appendChild(visualElement);
+        }
+        XmlUtils.writeDocument(metaDocument, os);
     }
 
 }

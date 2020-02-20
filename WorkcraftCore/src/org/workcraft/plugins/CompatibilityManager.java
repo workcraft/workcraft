@@ -261,6 +261,7 @@ public class CompatibilityManager {
                 String className = null;
                 String line = null;
                 while ((line = reader.readLine()) != null) {
+                    line += "\n";
                     if (isMetaEntry) {
                         byte[] data = replaceMetaData(version, line).getBytes(StandardCharsets.UTF_8);
                         zos.write(data, 0, data.length);

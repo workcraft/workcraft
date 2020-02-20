@@ -9,15 +9,16 @@ import java.util.LinkedList;
 
 public class DataAccumulator extends OutputStream {
 
+    private static final int MAX_BUFFER_SIZE = 8192;
     private final LinkedList<byte[]> dataChunks = new LinkedList<>();
 
     public static byte[] loadStream(InputStream is) throws IOException {
-        DataAccumulator accum = new DataAccumulator();
+        DataAccumulator accumulator = new DataAccumulator();
 
         while (true) {
             int available = is.available();
             if (available == 0) {
-                available = 1024;
+                available = MAX_BUFFER_SIZE;
             }
             byte[] chunk = new byte[available];
             int read = is.read(chunk, 0, available);
@@ -30,10 +31,10 @@ public class DataAccumulator extends OutputStream {
             if (read != available) {
                 chunk = Arrays.copyOfRange(chunk, 0, read);
             }
-            accum.write(chunk);
+            accumulator.write(chunk);
         }
 
-        return accum.getData();
+        return accumulator.getData();
     }
 
     private void addDataChunk(byte[] data) {

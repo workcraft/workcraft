@@ -76,7 +76,7 @@ public class SaveLoadTests {
         pm.initPlugins();
 
         StringWriter writer = new StringWriter();
-        framework.saveModel(new ModelEntry(new PetriDescriptor(), model), new Base16Writer(writer));
+        framework.saveModel(new ModelEntry(new PetriDescriptor(), model), null, new Base16Writer(writer));
         String generatedValue = writer.toString();
         if (currentValue.equals(generatedValue)) {
             return;

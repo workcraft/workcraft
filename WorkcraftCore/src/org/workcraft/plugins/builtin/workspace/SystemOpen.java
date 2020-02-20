@@ -9,13 +9,13 @@ import java.io.File;
 public class SystemOpen implements FileHandler {
 
     @Override
-    public boolean accept(File f) {
-        return !f.getName().endsWith(FileFilters.DOCUMENT_EXTENSION);
+    public boolean accept(File file) {
+        return !FileFilters.isWorkFile(file);
     }
 
     @Override
-    public void execute(File f) {
-        DesktopApi.open(f);
+    public void execute(File file) {
+        DesktopApi.open(file);
     }
 
     @Override
