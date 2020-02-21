@@ -14,11 +14,9 @@ import org.workcraft.utils.ScriptableCommandUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.io.File;
-
 public class SpotVerificationCommand extends AbstractVerificationCommand {
 
-    private static final File PRESET_FILE = new File(Framework.SETTINGS_DIRECTORY_PATH, "spot-presets.xml");
+    private static final String PRESET_KEY = "spot-presets.xml";
     private static final TextDataSerialiser DATA_SERIALISER = new TextDataSerialiser();
 
     private static String preservedData = null;
@@ -48,7 +46,7 @@ public class SpotVerificationCommand extends AbstractVerificationCommand {
     public void run(WorkspaceEntry we) {
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
-        PresetManager<String> pmgr = new PresetManager<>(PRESET_FILE, DATA_SERIALISER, preservedData);
+        PresetManager<String> pmgr = new PresetManager<>(we, PRESET_KEY, DATA_SERIALISER, preservedData);
         TextPresetDialog dialog = new TextPresetDialog(mainWindow, "Custom Spot assertion", pmgr, null);
         if (dialog.reveal()) {
             preservedData = dialog.getData();

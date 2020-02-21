@@ -16,11 +16,9 @@ import org.workcraft.utils.ScriptableCommandUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.io.File;
-
 public class AssertionVerificationCommand extends AbstractVerificationCommand {
 
-    private static final File PRESET_FILE = new File(Framework.SETTINGS_DIRECTORY_PATH, "mpsat-assertion-presets.xml");
+    private static final String PRESET_KEY = "mpsat-assertion-presets.xml";
     private static final MpsatDataSerialiser DATA_SERIALISER = new MpsatDataSerialiser();
 
     private static VerificationParameters preservedData = null;
@@ -50,7 +48,7 @@ public class AssertionVerificationCommand extends AbstractVerificationCommand {
     public void run(WorkspaceEntry we) {
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
-        MpsatPresetManager pmgr = new MpsatPresetManager(PRESET_FILE, DATA_SERIALISER, true, preservedData);
+        MpsatPresetManager pmgr = new MpsatPresetManager(we, PRESET_KEY, DATA_SERIALISER, true, preservedData);
         AssertionDialog dialog = new AssertionDialog(mainWindow, pmgr);
         if (dialog.reveal()) {
             preservedData = dialog.getSettings();

@@ -3,10 +3,12 @@ package org.workcraft.presets;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.utils.XmlUtils;
+import org.workcraft.workspace.RawData;
+import org.workcraft.workspace.WorkspaceEntry;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,19 +20,22 @@ public class PresetManager<T> {
     public static final String PRESET_ELEMENT_NAME = "preset";
     public static final String DESCRIPTION_ATTRIBUTE_NAME = "description";
 
+    private final WorkspaceEntry we;
+    private final String key;
     private final ArrayList<Preset<T>> presets = new ArrayList<>();
-    private final File presetFile;
     private final DataSerialiser<T> serialiser;
 
-    public PresetManager(File presetFile, DataSerialiser<T> serialiser, T preservedData) {
-        this.presetFile = presetFile;
+    public PresetManager(WorkspaceEntry we, String key, DataSerialiser<T> serialiser, T preservedData) {
+        this.we = we;
+        this.key = key;
         this.serialiser = serialiser;
         if (preservedData != null) {
             presets.add(new Preset<>("Auto-preserved", preservedData, true));
         }
         try {
-            if (presetFile.exists()) {
-                Document doc = XmlUtils.loadDocument(presetFile);
+            RawData data = we.getStorage().get(key);
+            if (data != null) {
+                Document doc = XmlUtils.loadDocument(data.toStream());
                 for (Element p : XmlUtils.getChildElements(PRESET_ELEMENT_NAME, doc.getDocumentElement())) {
                     presets.add(new Preset<>(p, serialiser));
                 }
@@ -73,22 +78,27 @@ public class PresetManager<T> {
 
     private void savePresets() {
         try {
+            boolean isEmpty = true;
             Document doc = XmlUtils.createDocument();
-
             Element root = doc.createElement(PRESETS_ELEMENT_NAME);
             doc.appendChild(root);
-
             for (Preset<T> p : presets) {
                 if (!p.isBuiltIn()) {
                     Element pe = doc.createElement(PRESET_ELEMENT_NAME);
                     pe.setAttribute(DESCRIPTION_ATTRIBUTE_NAME, p.getDescription());
                     serialiser.toXML(p.getData(), pe);
                     root.appendChild(pe);
+                    isEmpty = false;
                 }
             }
-
-            XmlUtils.saveDocument(doc, presetFile);
-        } catch (ParserConfigurationException | IOException e) {
+            if (isEmpty) {
+                we.getStorage().remove(key);
+            } else {
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                XmlUtils.writeDocument(doc, os);
+                we.getStorage().put(key, new RawData(os));
+            }
+        } catch (ParserConfigurationException e) {
             throw new RuntimeException(e);
         }
     }

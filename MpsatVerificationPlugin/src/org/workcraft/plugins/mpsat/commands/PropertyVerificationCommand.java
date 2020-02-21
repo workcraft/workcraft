@@ -17,11 +17,9 @@ import org.workcraft.utils.ScriptableCommandUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.io.File;
-
 public class PropertyVerificationCommand extends AbstractVerificationCommand {
 
-    private static final File PRESET_FILE = new File(Framework.SETTINGS_DIRECTORY_PATH, "mpsat-property-presets.xml");
+    private static final String PRESET_KEY = "mpsat-reach-presets.xml";
     private static final MpsatDataSerialiser DATA_SERIALISER = new MpsatDataSerialiser();
 
     private static VerificationParameters preservedData = null;
@@ -46,7 +44,7 @@ public class PropertyVerificationCommand extends AbstractVerificationCommand {
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
         boolean allowStgPresets = WorkspaceUtils.isApplicable(we, StgModel.class);
-        MpsatPresetManager pmgr = new MpsatPresetManager(PRESET_FILE, DATA_SERIALISER, allowStgPresets, preservedData);
+        MpsatPresetManager pmgr = new MpsatPresetManager(we, PRESET_KEY, DATA_SERIALISER, allowStgPresets, preservedData);
         PropertyDialog dialog = new PropertyDialog(mainWindow, pmgr);
         if (dialog.reveal()) {
             TaskManager manager = framework.getTaskManager();

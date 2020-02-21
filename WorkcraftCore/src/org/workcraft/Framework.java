@@ -231,7 +231,7 @@ public final class Framework {
     private final ContextFactory contextFactory = new ContextFactory();
     private File workingDirectory = null;
     private MainWindow mainWindow;
-    public Memento clipboard;
+    public RawData clipboard;
     private final HashMap<String, JavascriptItem> javascriptHelp = new HashMap<>();
 
     private Framework() {
@@ -853,9 +853,9 @@ public final class Framework {
         }
     }
 
-    public ModelEntry loadModel(Memento memento) {
+    public ModelEntry loadModel(RawData memento) {
         try {
-            return loadModel(memento.getStream());
+            return loadModel(memento.toStream());
         } catch (DeserialisationException e) {
             throw new RuntimeException(e);
         }
@@ -963,32 +963,30 @@ public final class Framework {
 
             // Save storage
             if (storage != null) {
-                zos.putNextEntry(new ZipEntry(STORAGE_WORK_ENTRY));
                 for (Map.Entry<String, RawData> entry : storage.entrySet()) {
-                    zos.putNextEntry(new ZipEntry(entry.getKey()));
-                    zos.write(entry.getValue().getData());
+                    String name = STORAGE_WORK_ENTRY + entry.getKey();
+                    zos.putNextEntry(new ZipEntry(name));
+                    zos.write(entry.getValue().toByteArray());
                     zos.closeEntry();
                 }
-                zos.closeEntry();
             }
         } catch (ParserConfigurationException | IOException e) {
             throw new SerialisationException(e);
         }
     }
 
-    public Memento mementoModel(ModelEntry me) {
+    public RawData mementoModel(ModelEntry me) {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
             saveModel(me, null, os);
         } catch (SerialisationException e) {
             throw new RuntimeException(e);
         }
-        return new Memento(os.toByteArray());
+        return new RawData(os);
     }
 
     public ModelEntry cloneModel(ModelEntry me) {
-        Memento memento = mementoModel(me);
-        return loadModel(memento);
+        return loadModel(mementoModel(me));
     }
 
     /**

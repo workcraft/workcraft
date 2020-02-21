@@ -130,8 +130,9 @@ public class FrameworkUtils {
         while ((ze = zis.getNextEntry()) != null) {
             String name = ze.getName();
             if (name.startsWith(Framework.STORAGE_WORK_ENTRY) && !name.equals(Framework.STORAGE_WORK_ENTRY)) {
-                result.put(name, new RawData(zis));
-                System.out.println("=== " + name + " ===\n" + new String(result.get(name).getData()));
+                String key = name.substring(Framework.STORAGE_WORK_ENTRY.length());
+                result.put(key, new RawData(zis));
+                System.out.println("=== " + key + " ===\n" + new String(result.get(key).toByteArray()));
             }
             zis.closeEntry();
         }

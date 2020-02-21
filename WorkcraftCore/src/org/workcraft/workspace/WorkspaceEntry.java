@@ -42,8 +42,8 @@ public class WorkspaceEntry implements ObservableState {
     private boolean canCopy = true;
 
     private final MementoManager history = new MementoManager();
-    private Memento capturedMemento = null;
-    private Memento savedMemento = null;
+    private RawData capturedMemento = null;
+    private RawData savedMemento = null;
 
     private VisualNode templateNode = null;
     private VisualNode defaultNode = null;
@@ -246,7 +246,7 @@ public class WorkspaceEntry implements ObservableState {
 
         if (DebugCommonSettings.getCopyModelOnChange()) {
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            String str = ZipUtils.unzipInputStream(new ZipInputStream(capturedMemento.getStream(), StandardCharsets.UTF_8));
+            String str = ZipUtils.unzipInputStream(new ZipInputStream(capturedMemento.toStream(), StandardCharsets.UTF_8));
             clipboard.setContents(new StringSelection(str), null);
         }
     }
@@ -265,7 +265,7 @@ public class WorkspaceEntry implements ObservableState {
     }
 
     public void saveMemento() {
-        Memento currentMemento = capturedMemento;
+        RawData currentMemento = capturedMemento;
         capturedMemento = null;
         if (currentMemento == null) {
             final Framework framework = Framework.getInstance();
@@ -281,10 +281,10 @@ public class WorkspaceEntry implements ObservableState {
 
     public void undo() {
         if (history.canUndo()) {
-            Memento undoMemento = history.pullUndo();
+            RawData undoMemento = history.pullUndo();
             if (undoMemento != null) {
                 final Framework framework = Framework.getInstance();
-                Memento currentMemento = framework.mementoModel(modelEntry);
+                RawData currentMemento = framework.mementoModel(modelEntry);
                 if (!changed) {
                     savedMemento = currentMemento;
                 }
@@ -298,10 +298,10 @@ public class WorkspaceEntry implements ObservableState {
 
     public void redo() {
         if (history.canRedo()) {
-            Memento redoMemento = history.pullRedo();
+            RawData redoMemento = history.pullRedo();
             if (redoMemento != null) {
                 final Framework framework = Framework.getInstance();
-                Memento currentMemento = framework.mementoModel(modelEntry);
+                RawData currentMemento = framework.mementoModel(modelEntry);
                 if (!changed) {
                     savedMemento = currentMemento;
                 }
@@ -316,9 +316,9 @@ public class WorkspaceEntry implements ObservableState {
     public void insert(ModelEntry me) {
         final Framework framework = Framework.getInstance();
         try {
-            Memento currentMemento = framework.mementoModel(modelEntry);
-            Memento insertMemento = framework.mementoModel(me);
-            ModelEntry result = framework.loadModel(currentMemento.getStream(), insertMemento.getStream());
+            RawData currentMemento = framework.mementoModel(modelEntry);
+            RawData insertMemento = framework.mementoModel(me);
+            ModelEntry result = framework.loadModel(currentMemento.toStream(), insertMemento.toStream());
             saveMemento();
             setModelEntry(result);
             setChanged(true);
@@ -329,7 +329,7 @@ public class WorkspaceEntry implements ObservableState {
 
     public String getClipboardAsString() {
         final Framework framework = Framework.getInstance();
-        return ZipUtils.unzipInputStream(new ZipInputStream(framework.clipboard.getStream(), StandardCharsets.UTF_8));
+        return ZipUtils.unzipInputStream(new ZipInputStream(framework.clipboard.toStream(), StandardCharsets.UTF_8));
     }
 
     public void copy() {
@@ -375,8 +375,8 @@ public class WorkspaceEntry implements ObservableState {
         final Framework framework = Framework.getInstance();
         if (framework.clipboard != null) {
             try {
-                Memento memento = framework.mementoModel(modelEntry);
-                ModelEntry me = framework.loadModel(memento.getStream(), framework.clipboard.getStream());
+                RawData memento = framework.mementoModel(modelEntry);
+                ModelEntry me = framework.loadModel(memento.toStream(), framework.clipboard.toStream());
 
                 VisualModel model = me.getVisualModel();
                 Point2D offset = getPasteOffset(model);

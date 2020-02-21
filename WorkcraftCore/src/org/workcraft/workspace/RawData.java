@@ -12,10 +12,6 @@ public class RawData {
 
     private final byte[] data;
 
-    public RawData(byte[] data) {
-        this.data = data;
-    }
-
     public RawData(InputStream is) throws IOException {
         this.data = DataAccumulator.loadStream(is);
     }
@@ -24,11 +20,11 @@ public class RawData {
         this.data = os.toByteArray();
     }
 
-    public InputStream getStream() {
+    public InputStream toStream() {
         return new ByteArrayInputStream(data);
     }
 
-    public byte[] getData() {
+    public byte[] toByteArray() {
         return Arrays.copyOf(data, data.length);
     }
 
