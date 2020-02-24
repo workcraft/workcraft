@@ -1,7 +1,6 @@
 package org.workcraft.serialisation;
 
 import org.w3c.dom.Element;
-import org.workcraft.Framework;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.SerialisationException;
@@ -44,7 +43,7 @@ public class XMLSerialisationManager implements SerialiserFactory, NodeSerialise
 
     @Override
     public void serialise(Element element, Object object) throws SerialisationException {
-        element.setAttribute(Framework.COMMON_CLASS_WORK_ATTRIBUTE, object.getClass().getName());
+        element.setAttribute(XMLCommonAttributes.CLASS_ATTRIBUTE, object.getClass().getName());
 
         nodeSerialiser.serialise(element, object, state.internalReferences, state.externalReferences);
 
@@ -52,7 +51,7 @@ public class XMLSerialisationManager implements SerialiserFactory, NodeSerialise
             Container container = (Container) object;
             ArrayList<Node> children = new ArrayList<>(container.getChildren());
             for (Node child : children) {
-                Element childElement = XmlUtils.createChildElement(Framework.COMMON_NODE_WORK_ATTRIBUTE, element);
+                Element childElement = XmlUtils.createChildElement(XMLCommonAttributes.NODE_ATTRIBUTE, element);
                 serialise(childElement, child);
             }
         }

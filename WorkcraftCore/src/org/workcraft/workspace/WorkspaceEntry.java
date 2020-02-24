@@ -16,16 +16,20 @@ import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.Hierarchy;
-import org.workcraft.utils.ZipUtils;
+import org.workcraft.utils.WorkUtils;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.geom.Point2D;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class WorkspaceEntry implements ObservableState {
@@ -237,18 +241,39 @@ public class WorkspaceEntry implements ObservableState {
         updateActionState();
     }
 
+    private void clipboardMemento(RawData memento) {
+        if (DebugCommonSettings.getCopyModelOnChange()) {
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            ZipInputStream zis = new ZipInputStream(memento.toStream(), StandardCharsets.UTF_8);
+            String str = "";
+            try {
+                ZipEntry ze;
+                while ((ze = zis.getNextEntry()) != null) {
+                    StringBuilder isb = new StringBuilder();
+                    BufferedReader br = new BufferedReader(new InputStreamReader(zis, StandardCharsets.UTF_8));
+                    String line = "=== " + ze.getName() + " ===";
+                    while (line != null) {
+                        isb.append(line);
+                        isb.append('\n');
+                        line = br.readLine();
+                    }
+                    str += isb.toString();
+                    zis.closeEntry();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            StringSelection contents = new StringSelection(str);
+            clipboard.setContents(contents, null);
+        }
+    }
+
     public void captureMemento() {
-        final Framework framework = Framework.getInstance();
-        capturedMemento = framework.mementoModel(modelEntry);
+        capturedMemento = WorkUtils.mementoModel(modelEntry);
         if (!changed) {
             savedMemento = capturedMemento;
         }
-
-        if (DebugCommonSettings.getCopyModelOnChange()) {
-            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            String str = ZipUtils.unzipInputStream(new ZipInputStream(capturedMemento.toStream(), StandardCharsets.UTF_8));
-            clipboard.setContents(new StringSelection(str), null);
-        }
+        clipboardMemento(capturedMemento);
     }
 
     public void uncaptureMemento() {
@@ -256,9 +281,8 @@ public class WorkspaceEntry implements ObservableState {
     }
 
     public void cancelMemento() {
-        final Framework framework = Framework.getInstance();
         if (capturedMemento != null) {
-            setModelEntry(framework.loadModel(capturedMemento));
+            setModelEntry(WorkUtils.loadModel(capturedMemento));
             setChanged(savedMemento != capturedMemento);
             capturedMemento = null;
         }
@@ -268,8 +292,7 @@ public class WorkspaceEntry implements ObservableState {
         RawData currentMemento = capturedMemento;
         capturedMemento = null;
         if (currentMemento == null) {
-            final Framework framework = Framework.getInstance();
-            currentMemento = framework.mementoModel(modelEntry);
+            currentMemento = WorkUtils.mementoModel(modelEntry);
         }
         if (!changed) {
             savedMemento = currentMemento;
@@ -283,13 +306,12 @@ public class WorkspaceEntry implements ObservableState {
         if (history.canUndo()) {
             RawData undoMemento = history.pullUndo();
             if (undoMemento != null) {
-                final Framework framework = Framework.getInstance();
-                RawData currentMemento = framework.mementoModel(modelEntry);
+                RawData currentMemento = WorkUtils.mementoModel(modelEntry);
                 if (!changed) {
                     savedMemento = currentMemento;
                 }
                 history.pushRedo(currentMemento);
-                setModelEntry(framework.loadModel(undoMemento));
+                setModelEntry(WorkUtils.loadModel(undoMemento));
                 setChanged(undoMemento != savedMemento);
             }
         }
@@ -300,13 +322,12 @@ public class WorkspaceEntry implements ObservableState {
         if (history.canRedo()) {
             RawData redoMemento = history.pullRedo();
             if (redoMemento != null) {
-                final Framework framework = Framework.getInstance();
-                RawData currentMemento = framework.mementoModel(modelEntry);
+                RawData currentMemento = WorkUtils.mementoModel(modelEntry);
                 if (!changed) {
                     savedMemento = currentMemento;
                 }
                 history.pushUndo(currentMemento);
-                setModelEntry(framework.loadModel(redoMemento));
+                setModelEntry(WorkUtils.loadModel(redoMemento));
                 setChanged(redoMemento != savedMemento);
             }
         }
@@ -314,22 +335,16 @@ public class WorkspaceEntry implements ObservableState {
     }
 
     public void insert(ModelEntry me) {
-        final Framework framework = Framework.getInstance();
         try {
-            RawData currentMemento = framework.mementoModel(modelEntry);
-            RawData insertMemento = framework.mementoModel(me);
-            ModelEntry result = framework.loadModel(currentMemento.toStream(), insertMemento.toStream());
+            RawData currentMemento = WorkUtils.mementoModel(modelEntry);
+            RawData insertMemento = WorkUtils.mementoModel(me);
+            ModelEntry result = WorkUtils.loadModel(currentMemento.toStream(), insertMemento.toStream());
             saveMemento();
             setModelEntry(result);
             setChanged(true);
         } catch (DeserialisationException e) {
             DialogUtils.showError(e.getMessage());
         }
-    }
-
-    public String getClipboardAsString() {
-        final Framework framework = Framework.getInstance();
-        return ZipUtils.unzipInputStream(new ZipInputStream(framework.clipboard.toStream(), StandardCharsets.UTF_8));
     }
 
     public void copy() {
@@ -356,12 +371,8 @@ public class WorkspaceEntry implements ObservableState {
             model.deleteSelection();
             // Save the remaining nodes to clipboard.
             final Framework framework = Framework.getInstance();
-            framework.clipboard = framework.mementoModel(modelEntry);
-            if (DebugCommonSettings.getCopyModelOnChange()) {
-                // Copy the memento clipboard into the system-wide clipboard as a string.
-                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                clipboard.setContents(new StringSelection(getClipboardAsString()), null);
-            }
+            framework.clipboard = WorkUtils.mementoModel(modelEntry);
+            clipboardMemento(framework.clipboard);
             cancelMemento();
         }
     }
@@ -375,8 +386,8 @@ public class WorkspaceEntry implements ObservableState {
         final Framework framework = Framework.getInstance();
         if (framework.clipboard != null) {
             try {
-                RawData memento = framework.mementoModel(modelEntry);
-                ModelEntry me = framework.loadModel(memento.toStream(), framework.clipboard.toStream());
+                RawData memento = WorkUtils.mementoModel(modelEntry);
+                ModelEntry me = WorkUtils.loadModel(memento.toStream(), framework.clipboard.toStream());
 
                 VisualModel model = me.getVisualModel();
                 Point2D offset = getPasteOffset(model);

@@ -1,6 +1,7 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.Framework;
+import org.workcraft.utils.WorkUtils;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat.VerificationMode;
@@ -79,7 +80,7 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
                 VerificationMode.UNDEFINED, 0, null, 0);
         try {
             // Clone STG before converting its internal signals to outputs
-            ModelEntry me = framework.cloneModel(we.getModelEntry());
+            ModelEntry me = WorkUtils.cloneModel(we.getModelEntry());
             Stg stg = WorkspaceUtils.getAs(me, Stg.class);
             StgUtils.convertInternalSignalsToOutputs(stg);
 
