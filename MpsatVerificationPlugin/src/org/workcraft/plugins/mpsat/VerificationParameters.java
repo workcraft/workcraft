@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class VerificationParameters {
 
-    private static final String PROPERTY_FILE_PREFIX = "property";
+    private static final String PROPERTY_FILE_PREFIX = "assertion";
     private static final String PROPERTY_FILE_EXTENTION = ".re";
 
     public enum SolutionMode {

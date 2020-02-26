@@ -4,6 +4,7 @@ import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.dialogs.ModalDialog;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
+import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.VerificationParameters.SolutionMode;
@@ -49,6 +50,8 @@ public class SignalAssertionDialog extends ModalDialog<MpsatPresetManager> {
 
     private PresetManagerPanel<VerificationParameters> createPresetPanel() {
         ArrayList<Preset<VerificationParameters>> builtInPresets = new ArrayList<>();
+        builtInPresets.add(getMutexSignalsPreset());
+
         DataMapper<VerificationParameters> guiMapper = new DataMapper<VerificationParameters>() {
             @Override
             public void applyDataToControls(VerificationParameters settings) {
@@ -62,6 +65,20 @@ public class SignalAssertionDialog extends ModalDialog<MpsatPresetManager> {
         };
 
         return new PresetManagerPanel<>(getUserData(), builtInPresets, guiMapper);
+    }
+
+    private Preset<VerificationParameters> getMutexSignalsPreset() {
+        String title = "Mutual exclusion of signals";
+        String expression = "// Signals u and v are mutually exclusive\n"
+                + "!u || !v";
+
+        VerificationParameters settings = new VerificationParameters(title,
+                VerificationMode.ASSERTION, 0,
+                MpsatVerificationSettings.getSolutionMode(),
+                MpsatVerificationSettings.getSolutionCount(),
+                expression, true);
+
+        return new Preset<>("Example: " + title, settings, true);
     }
 
     private JPanel createAssertionPanel() {

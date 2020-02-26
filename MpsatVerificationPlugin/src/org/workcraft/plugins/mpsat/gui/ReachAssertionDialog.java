@@ -6,6 +6,7 @@ import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.dialogs.ModalDialog;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
+import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.VerificationParameters.SolutionMode;
@@ -67,6 +68,14 @@ public class ReachAssertionDialog extends ModalDialog<MpsatPresetManager> {
         MpsatPresetManager presetManager = getUserData();
         ArrayList<Preset<VerificationParameters>> builtInPresets = new ArrayList<>();
 
+        if (presetManager.isAllowStgPresets()) {
+            builtInPresets.add(getMutexSignalsPreset());
+            builtInPresets.add(getMutexGrantsPreset());
+        } else {
+            builtInPresets.add(getDeadlockFreenessPreset());
+            builtInPresets.add(getMutexPlacesPreset());
+        }
+
         DataMapper<VerificationParameters> guiMapper = new DataMapper<VerificationParameters>() {
             @Override
             public void applyDataToControls(VerificationParameters settings) {
@@ -80,6 +89,53 @@ public class ReachAssertionDialog extends ModalDialog<MpsatPresetManager> {
         };
 
         return new PresetManagerPanel<>(presetManager, builtInPresets, guiMapper);
+    }
+
+    private Preset<VerificationParameters> getDeadlockFreenessPreset() {
+        String title = "Deadlock freeness";
+        String expression = "// All transitions are not enabled\n"
+                + "forall t in TRANSITIONS { ~@t }";
+
+        VerificationParameters settings = getSettings(title, expression, VerificationMode.REACHABILITY);
+
+        return new Preset<>("Example: " + title, settings, true);
+    }
+
+    private Preset<VerificationParameters> getMutexPlacesPreset() {
+        String title = "Mutual exclusion of places";
+        String expression = "// Places p and q are mutually exclusive\n"
+                + "$P\"p\" & $P\"q\"";
+
+        VerificationParameters settings = getSettings(title, expression, VerificationMode.REACHABILITY);
+        return new Preset<>("Example: " + title, settings, true);
+    }
+
+    private Preset<VerificationParameters> getMutexSignalsPreset() {
+        String title = "Mutual exclusion of signals";
+        String expression = "// Signals u and v are mutually exclusive\n"
+                + "$S\"u\" & $S\"v\"";
+
+        VerificationParameters settings = getSettings(title, expression, VerificationMode.STG_REACHABILITY);
+        return new Preset<>("Example: " + title, settings, true);
+    }
+
+    private Preset<VerificationParameters> getMutexGrantsPreset() {
+        String title = "Mutual exclusion of arbiter grants";
+        String expression = "// Arbiter grants are mutually exclusive\n"
+                + "// (assuming all arbiter grants are numbered\n"
+                + "// gN, where N is some number, one can use\n"
+                + "// a regular expression to find the grants)\n"
+                + "threshold[2] g in SS \"g[0-9]\\\\+\" { $g }";
+
+        VerificationParameters settings = getSettings(title, expression, VerificationMode.STG_REACHABILITY);
+        return new Preset<>("Example: " + title, settings, true);
+    }
+
+    private VerificationParameters getSettings(String title, String expression, VerificationMode mode) {
+        return new VerificationParameters(title, mode, 0,
+                MpsatVerificationSettings.getSolutionMode(),
+                MpsatVerificationSettings.getSolutionCount(),
+                expression, true);
     }
 
     private JPanel createOptionsPanel() {

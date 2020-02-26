@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class Ltl2tgbaTask implements Task<Ltl2tgbaOutput> {
 
-    private static final String OUTPUT_FILE_NAME = "property.hoa";
+    private static final String OUTPUT_FILE_NAME = "assertion.hoa";
 
     private final File inputFile;
     private final File directory;

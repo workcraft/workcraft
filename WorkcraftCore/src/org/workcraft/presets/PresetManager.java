@@ -45,8 +45,8 @@ public class PresetManager<T> {
         }
     }
 
-    public void addFirst(List<Preset<T>> otherPresets) {
-        presets.addAll(0, otherPresets);
+    public void add(Preset<T> preset) {
+        presets.add(preset);
     }
 
     public void savePreset(Preset<T> preset) {

@@ -21,9 +21,7 @@ public class PresetManagerPanel<T> extends JPanel {
 
         this.guiMapper = guiMapper;
         this.presetManager = presetManager;
-        if (builtinPresets != null) {
-            presetManager.addFirst(builtinPresets);
-        }
+        builtinPresets.forEach(presetManager::add);
         initialise();
     }
 

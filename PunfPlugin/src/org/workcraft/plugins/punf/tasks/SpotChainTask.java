@@ -35,7 +35,7 @@ public class SpotChainTask implements Task<SpotChainOutput> {
 
         try {
             // Convert SPOT assertion to Buechi automaton
-            File spotFile = new File(directory, "property.spot");
+            File spotFile = new File(directory, "assertion.spot");
             spotFile.deleteOnExit();
             try {
                 FileUtils.dumpString(spotFile, getData());
