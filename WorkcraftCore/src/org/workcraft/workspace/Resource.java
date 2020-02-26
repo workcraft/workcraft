@@ -8,16 +8,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-public class RawData {
+public class Resource {
 
+    private final String name;
     private final byte[] data;
 
-    public RawData(InputStream is) throws IOException {
+    public Resource(String name, InputStream is) throws IOException {
+        this.name = name;
         this.data = DataAccumulator.loadStream(is);
     }
 
-    public RawData(ByteArrayOutputStream os) {
+    public Resource(String name, ByteArrayOutputStream os) {
+        this.name = name;
         this.data = os.toByteArray();
+    }
+
+    public String getName() {
+        return name;
     }
 
     public InputStream toStream() {
@@ -27,5 +34,4 @@ public class RawData {
     public byte[] toByteArray() {
         return Arrays.copyOf(data, data.length);
     }
-
 }

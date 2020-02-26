@@ -22,16 +22,19 @@ import org.workcraft.plugins.builtin.serialisation.XMLModelDeserialiser;
 import org.workcraft.plugins.builtin.serialisation.XMLModelSerialiser;
 import org.workcraft.serialisation.*;
 import org.workcraft.shared.DataAccumulator;
-import org.workcraft.workspace.*;
+import org.workcraft.workspace.FileFilters;
+import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.Resource;
+import org.workcraft.workspace.Stamp;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,7 +49,7 @@ public final class WorkUtils {
     private static final String STATE_WORK_ENTRY = "state.xml";
     private static final String MATH_MODEL_WORK_ENTRY = "model.xml";
     private static final String VISUAL_MODEL_WORK_ENTRY = "visualModel.xml";
-    private static final String STORAGE_WORK_ENTRY = "resources/";
+    private static final String RESOURCES_WORK_ENTRY = "resources/";
 
     private static final String META_WORK_ELEMENT = "workcraft-meta";
     private static final String META_DESCRIPTOR_WORK_ELEMENT = "descriptor";
@@ -84,17 +87,17 @@ public final class WorkUtils {
         return loadModel(mementoModel(me));
     }
 
-    public static RawData mementoModel(ModelEntry me) {
+    public static Resource mementoModel(ModelEntry me) {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
             saveModel(me, null, os);
         } catch (SerialisationException e) {
             throw new RuntimeException(e);
         }
-        return new RawData(os);
+        return new Resource("memento", os);
     }
 
-    public static ModelEntry loadModel(RawData memento) {
+    public static ModelEntry loadModel(Resource memento) {
         try {
             return loadModel(memento.toStream());
         } catch (DeserialisationException e) {
@@ -310,17 +313,17 @@ public final class WorkUtils {
         return null;
     }
 
-    public static Storage loadStorage(InputStream is) throws IOException {
+    public static Collection<Resource> loadResources(InputStream is) throws IOException {
         byte[] bytes = DataAccumulator.loadStream(is);
-        Storage result = new Storage();
+        Collection<Resource> result = new ArrayList<>();
         ByteArrayInputStream zippedData = new ByteArrayInputStream(bytes);
         ZipInputStream zis = new ZipInputStream(zippedData, StandardCharsets.UTF_8);
         ZipEntry ze;
         while ((ze = zis.getNextEntry()) != null) {
             String name = ze.getName();
-            if (name.startsWith(STORAGE_WORK_ENTRY) && !name.equals(STORAGE_WORK_ENTRY)) {
-                String key = name.substring(STORAGE_WORK_ENTRY.length());
-                result.put(key, new RawData(zis));
+            if (name.startsWith(RESOURCES_WORK_ENTRY) && !name.equals(RESOURCES_WORK_ENTRY)) {
+                String key = name.substring(RESOURCES_WORK_ENTRY.length());
+                result.add(new Resource(key, zis));
             }
             zis.closeEntry();
         }
@@ -328,12 +331,13 @@ public final class WorkUtils {
         return result;
     }
 
-    public static void saveModel(ModelEntry me, Storage storage, File file) throws SerialisationException {
-        if (me == null) return;
+    public static void saveModel(ModelEntry me, Collection<Resource> resources, File file)
+            throws SerialisationException {
+
         try {
             FileOutputStream os = new FileOutputStream(file);
             FileReferenceUtils.makeRelative(me.getVisualModel(), FileUtils.getBasePath(file));
-            saveModel(me, storage, os);
+            saveModel(me, resources, os);
             os.close();
         } catch (IOException e) {
             throw new SerialisationException(e);
@@ -342,7 +346,9 @@ public final class WorkUtils {
         }
     }
 
-    public static void saveModel(ModelEntry me, Storage storage, OutputStream os) throws SerialisationException {
+    public static void saveModel(ModelEntry me, Collection<Resource> resources, OutputStream os)
+            throws SerialisationException {
+
         try (ZipOutputStream zos = new ZipOutputStream(os)) {
             final PluginManager pm = Framework.getInstance().getPluginManager();
             ModelSerialiser serialiser = new XMLModelSerialiser(pm);
@@ -374,12 +380,12 @@ public final class WorkUtils {
             saveMeta(me, zos, uuid);
             zos.closeEntry();
 
-            // Save storage
-            if (storage != null) {
-                for (Entry<String, RawData> entry : storage.entrySet()) {
-                    String name = STORAGE_WORK_ENTRY + entry.getKey();
+            // Save resources
+            if (resources != null) {
+                for (Resource resource : resources) {
+                    String name = RESOURCES_WORK_ENTRY + resource.getName();
                     zos.putNextEntry(new ZipEntry(name));
-                    zos.write(entry.getValue().toByteArray());
+                    zos.write(resource.toByteArray());
                     zos.closeEntry();
                 }
             }

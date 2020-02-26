@@ -7,7 +7,7 @@ import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.LogUtils;
-import org.workcraft.utils.ResourceUtils;
+import org.workcraft.utils.JarUtils;
 import org.workcraft.workspace.FileFilters;
 
 import java.io.BufferedReader;
@@ -77,7 +77,7 @@ public class Console {
         framework.init();
         // NOTE: Scripts should run after JavaScript, plugins, config (and possibly before GUI).
         try {
-            for (String scriptName : ResourceUtils.getResources("scripts/")) {
+            for (String scriptName : JarUtils.getResourcePaths("scripts/")) {
                 LogUtils.logMessage("  Executing script: " + scriptName);
                 framework.execJavaScriptResource(scriptName);
             }

@@ -11,9 +11,11 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-public class ResourceUtils {
+public class JarUtils {
 
-    public static Set<String> getResources(String path) throws URISyntaxException, IOException {
+    public static Set<String> getResourcePaths(String path)
+            throws URISyntaxException, IOException {
+
         HashMap<String, URL> resourceToDirMap = new HashMap<>();
         if (!path.endsWith("/")) {
             path += "/";
@@ -22,7 +24,7 @@ public class ResourceUtils {
         Enumeration<URL> dirUrls = classLoader.getResources(path);
         while (dirUrls.hasMoreElements()) {
             URL dirUrl = dirUrls.nextElement();
-            for (String resource: getResources(path, dirUrl)) {
+            for (String resource: getResourcePaths(path, dirUrl)) {
                 if (resourceToDirMap.containsKey(resource)) {
                     LogUtils.logError("Skipping resource '" + resource + "' from '" + dirUrl
                             + "' as it is already present in '" + resourceToDirMap.get(resource) + "'");
@@ -33,16 +35,18 @@ public class ResourceUtils {
         return new HashSet<>(resourceToDirMap.keySet());
     }
 
-    private static Set<String> getResources(String path, URL url) throws URISyntaxException, IOException {
+    private static Set<String> getResourcePaths(String path, URL dirUrl)
+            throws URISyntaxException, IOException {
+
         HashSet<String> result = new HashSet<>();
-        String protocol = url.getProtocol();
+        String protocol = dirUrl.getProtocol();
         if ("file".equals(protocol)) {
-            File dir = new File(url.toURI());
+            File dir = new File(dirUrl.toURI());
             for (String fileName: dir.list()) {
                 result.add(path + fileName);
             }
         } else if ("jar".equals(protocol)) {
-            String dirPath = url.getPath();
+            String dirPath = dirUrl.getPath();
             String jarPath = dirPath.substring(5, dirPath.indexOf("!"));
             JarFile jarFile = new JarFile(jarPath);
             Enumeration<JarEntry> entries = jarFile.entries();

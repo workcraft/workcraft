@@ -3,7 +3,7 @@ package org.workcraft.presets;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.utils.XmlUtils;
-import org.workcraft.workspace.RawData;
+import org.workcraft.workspace.Resource;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.xml.sax.SAXException;
 
@@ -33,7 +33,7 @@ public class PresetManager<T> {
             presets.add(new Preset<>("Auto-preserved", preservedData, true));
         }
         try {
-            RawData data = we.getStorage().get(key);
+            Resource data = we.getResource(key);
             if (data != null) {
                 Document doc = XmlUtils.loadDocument(data.toStream());
                 for (Element p : XmlUtils.getChildElements(PRESET_ELEMENT_NAME, doc.getDocumentElement())) {
@@ -92,12 +92,13 @@ public class PresetManager<T> {
                 }
             }
             if (isEmpty) {
-                we.getStorage().remove(key);
+                we.removeResource(key);
             } else {
                 ByteArrayOutputStream os = new ByteArrayOutputStream();
                 XmlUtils.writeDocument(doc, os);
-                we.getStorage().put(key, new RawData(os));
+                we.addResource(new Resource(key, os));
             }
+            we.setChanged(true);
         } catch (ParserConfigurationException e) {
             throw new RuntimeException(e);
         }

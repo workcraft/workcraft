@@ -185,7 +185,7 @@ public final class Framework {
     private final ContextFactory contextFactory = new ContextFactory();
     private File workingDirectory = null;
     private MainWindow mainWindow;
-    public RawData clipboard;
+    public Resource clipboard;
     private final HashMap<String, JavascriptItem> javascriptHelp = new HashMap<>();
 
     private Framework() {
@@ -664,7 +664,8 @@ public final class Framework {
         ModelEntry me = WorkUtils.loadModel(file);
         if (me != null) {
             // Load (from *.work) or import (other extensions) work
-            if (FileFilters.isWorkFile(file)) {
+            boolean isWorkFile = FileFilters.isWorkFile(file);
+            if (isWorkFile) {
                 if (path == null) {
                     path = getWorkspace().tempMountExternalFile(file);
                 }
@@ -677,14 +678,12 @@ public final class Framework {
             if (we.getModelEntry().isVisual() && (mainWindow != null)) {
                 mainWindow.createEditorWindow(we);
             }
-            if (FileFilters.isWorkFile(file)) {
-                // Load storage
-                try {
-                    InputStream is = new FileInputStream(file);
-                    Storage storage = WorkUtils.loadStorage(is);
-                    we.setStorage(storage);
+            if (isWorkFile) {
+                // Load resources
+                try (InputStream is = new FileInputStream(file)) {
+                    WorkUtils.loadResources(is).forEach(we::addResource);
                 } catch (IOException e) {
-                    throw  new DeserialisationException(e);
+                    throw new DeserialisationException(e);
                 }
             }
         }
@@ -744,7 +743,7 @@ public final class Framework {
                 LogUtils.logError(e.getMessage());
             }
         }
-        WorkUtils.saveModel(we.getModelEntry(), we.getStorage(), file);
+        WorkUtils.saveModel(we.getModelEntry(), we.getResources(), file);
 
         we.setChanged(false);
         if (mainWindow != null) {

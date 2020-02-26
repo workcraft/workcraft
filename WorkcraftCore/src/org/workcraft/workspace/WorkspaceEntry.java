@@ -19,15 +19,14 @@ import org.workcraft.utils.WorkUtils;
 
 import java.awt.geom.Point2D;
 import java.io.File;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.*;
 
 public class WorkspaceEntry implements ObservableState {
 
     private static final Point2D DEFAULT_PASTE_OFFSET = new Point2D.Double(1.0, 1.0);
 
+    private final Map<String, Resource> resources = new HashMap<>();
     private ModelEntry modelEntry = null;
-    private Storage storage = new Storage();
     private boolean changed = true;
     private final Workspace workspace;
 
@@ -36,8 +35,8 @@ public class WorkspaceEntry implements ObservableState {
     private boolean canCopy = true;
 
     private final MementoManager history = new MementoManager();
-    private RawData capturedMemento = null;
-    private RawData savedMemento = null;
+    private Resource capturedMemento = null;
+    private Resource savedMemento = null;
 
     private VisualNode templateNode = null;
     private VisualNode defaultNode = null;
@@ -73,12 +72,20 @@ public class WorkspaceEntry implements ObservableState {
         return modelEntry;
     }
 
-    public void setStorage(Storage storage) {
-        this.storage = storage;
+    public Collection<Resource> getResources() {
+        return new ArrayList<>(resources.values());
     }
 
-    public Storage getStorage() {
-        return storage;
+    public Resource addResource(Resource resource) {
+        return resources.put(resource.getName(), resource);
+    }
+
+    public Resource getResource(String name) {
+        return resources.get(name);
+    }
+
+    public Resource removeResource(String name) {
+        return resources.remove(name);
     }
 
     private final StateObserver modelObserver = new StateObserver() {
@@ -251,7 +258,7 @@ public class WorkspaceEntry implements ObservableState {
     }
 
     public void saveMemento() {
-        RawData currentMemento = capturedMemento;
+        Resource currentMemento = capturedMemento;
         capturedMemento = null;
         if (currentMemento == null) {
             currentMemento = WorkUtils.mementoModel(modelEntry);
@@ -266,9 +273,9 @@ public class WorkspaceEntry implements ObservableState {
 
     public void undo() {
         if (history.canUndo()) {
-            RawData undoMemento = history.pullUndo();
+            Resource undoMemento = history.pullUndo();
             if (undoMemento != null) {
-                RawData currentMemento = WorkUtils.mementoModel(modelEntry);
+                Resource currentMemento = WorkUtils.mementoModel(modelEntry);
                 if (!changed) {
                     savedMemento = currentMemento;
                 }
@@ -282,9 +289,9 @@ public class WorkspaceEntry implements ObservableState {
 
     public void redo() {
         if (history.canRedo()) {
-            RawData redoMemento = history.pullRedo();
+            Resource redoMemento = history.pullRedo();
             if (redoMemento != null) {
-                RawData currentMemento = WorkUtils.mementoModel(modelEntry);
+                Resource currentMemento = WorkUtils.mementoModel(modelEntry);
                 if (!changed) {
                     savedMemento = currentMemento;
                 }
@@ -298,8 +305,8 @@ public class WorkspaceEntry implements ObservableState {
 
     public void insert(ModelEntry me) {
         try {
-            RawData currentMemento = WorkUtils.mementoModel(modelEntry);
-            RawData insertMemento = WorkUtils.mementoModel(me);
+            Resource currentMemento = WorkUtils.mementoModel(modelEntry);
+            Resource insertMemento = WorkUtils.mementoModel(me);
             ModelEntry result = WorkUtils.loadModel(currentMemento.toStream(), insertMemento.toStream());
             saveMemento();
             setModelEntry(result);
@@ -347,7 +354,7 @@ public class WorkspaceEntry implements ObservableState {
         final Framework framework = Framework.getInstance();
         if (framework.clipboard != null) {
             try {
-                RawData memento = WorkUtils.mementoModel(modelEntry);
+                Resource memento = WorkUtils.mementoModel(modelEntry);
                 ModelEntry me = WorkUtils.loadModel(memento.toStream(), framework.clipboard.toStream());
 
                 VisualModel model = me.getVisualModel();
