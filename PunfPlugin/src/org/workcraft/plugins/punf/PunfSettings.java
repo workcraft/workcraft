@@ -71,7 +71,7 @@ public class PunfSettings extends AbstractToolSettings {
                 PunfSettings::getLtl2tgbaCommand));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                "Enable Spot input (experimental) - requires restart",
+                "Enable SPOT input (experimental)",
                 PunfSettings::setShowSpotInMenu,
                 PunfSettings::getShowSpotInMenu));
     }

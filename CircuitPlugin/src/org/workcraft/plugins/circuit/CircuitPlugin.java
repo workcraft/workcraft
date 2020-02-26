@@ -89,8 +89,8 @@ public class CircuitPlugin implements Plugin {
         ScriptableCommandUtils.register(BinateImplementationVerificationCommand.class, "checkCircuitBinateImplementation",
                 "check the Circuit 'work' for correct implementation of its binate functions");
 
-        pm.registerCommand(PropertyVerificationCommand.class);
-        pm.registerCommand(AssertionVerificationCommand.class);
+        pm.registerCommand(ReachAssertionVerificationCommand.class);
+        pm.registerCommand(SignalAssertionVerificationCommand.class);
 
         // Force init attributes and Reset insertion
         ScriptableCommandUtils.register(ForceInitInputPortsTagCommand.class, "tagCircuitForceInitInputPorts",

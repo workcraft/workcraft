@@ -26,12 +26,12 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.io.File;
 import java.util.Set;
 
-public class CustomCheckTask implements Task<VerificationChainOutput> {
+public class AssertionCheckTask implements Task<VerificationChainOutput> {
 
     private final WorkspaceEntry we;
     private final VerificationParameters settings;
 
-    public CustomCheckTask(WorkspaceEntry we, VerificationParameters settings) {
+    public AssertionCheckTask(WorkspaceEntry we, VerificationParameters settings) {
         this.we = we;
         this.settings = settings;
     }
@@ -141,14 +141,14 @@ public class CustomCheckTask implements Task<VerificationChainOutput> {
             if (!mpsatParser.getSolutions().isEmpty()) {
                 return new Result<>(Outcome.SUCCESS,
                         new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, settings,
-                                "Custom property is violated after the following trace(s):"));
+                                "Property is violated after the following trace(s):"));
             }
             monitor.progressUpdate(1.00);
 
             // Success
             return new Result<>(Outcome.SUCCESS,
                     new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, settings,
-                            "Custom property holds"));
+                            "Property holds"));
 
         } catch (Throwable e) {
             return new Result<>(e);

@@ -53,8 +53,8 @@ public class MpsatVerificationPlugin implements Plugin {
         pm.registerCommand(PlaceRedundancyVerificationCommand.class);
         // TODO: Need a way to pass the environment file from the JavaScript wrapper
         pm.registerCommand(ConformationVerificationCommand.class);
-        pm.registerCommand(PropertyVerificationCommand.class);
-        pm.registerCommand(AssertionVerificationCommand.class);
+        pm.registerCommand(ReachAssertionVerificationCommand.class);
+        pm.registerCommand(SignalAssertionVerificationCommand.class);
         pm.registerCommand(HandshakeVerificationCommand.class);
     }
 

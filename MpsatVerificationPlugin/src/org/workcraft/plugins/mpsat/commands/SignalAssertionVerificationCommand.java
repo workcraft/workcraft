@@ -1,37 +1,36 @@
-package org.workcraft.plugins.circuit.commands;
+package org.workcraft.plugins.mpsat.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.tasks.CustomCheckTask;
-import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.plugins.mpsat.MpsatDataSerialiser;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.gui.PropertyDialog;
+import org.workcraft.plugins.mpsat.gui.SignalAssertionDialog;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
+import org.workcraft.plugins.mpsat.tasks.VerificationChainTask;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
+import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.ScriptableCommandUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PropertyVerificationCommand extends AbstractVerificationCommand {
+public class SignalAssertionVerificationCommand extends AbstractVerificationCommand {
 
-    private static final String PRESET_KEY = "mpsat-reach-presets.xml";
+    private static final String PRESET_KEY = "signal-assertions.xml";
     private static final MpsatDataSerialiser DATA_SERIALISER = new MpsatDataSerialiser();
 
     private static VerificationParameters preservedData = null;
 
     @Override
     public String getDisplayName() {
-        return "Custom properties [MPSat]...";
+        return "Signal assertion [MPSat]...";
     }
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, Circuit.class);
+        return WorkspaceUtils.isApplicable(we, StgModel.class);
     }
 
     @Override
@@ -47,28 +46,18 @@ public class PropertyVerificationCommand extends AbstractVerificationCommand {
 
     @Override
     public void run(WorkspaceEntry we) {
-        if (!checkPrerequisites(we)) {
-            return;
-        }
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
         MpsatPresetManager pmgr = new MpsatPresetManager(we, PRESET_KEY, DATA_SERIALISER, true, preservedData);
-        PropertyDialog dialog = new PropertyDialog(mainWindow, pmgr);
+        SignalAssertionDialog dialog = new SignalAssertionDialog(mainWindow, pmgr);
         if (dialog.reveal()) {
-            TaskManager manager = framework.getTaskManager();
             preservedData = dialog.getSettings();
-            CustomCheckTask task = new CustomCheckTask(we, preservedData);
+            TaskManager manager = framework.getTaskManager();
+            VerificationChainTask task = new VerificationChainTask(we, preservedData);
             String description = MpsatUtils.getToolchainDescription(we.getTitle());
             VerificationChainResultHandler monitor = new VerificationChainResultHandler(we);
             manager.queue(task, description, monitor);
         }
-    }
-
-    private boolean checkPrerequisites(WorkspaceEntry we) {
-        return isApplicableTo(we)
-            && VerificationUtils.checkCircuitHasComponents(we)
-            && VerificationUtils.checkInterfaceInitialState(we)
-            && VerificationUtils.checkInterfaceConstrains(we);
     }
 
 }

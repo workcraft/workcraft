@@ -104,7 +104,7 @@ public class VerificationParameters {
                 String reachExpression = getExpression();
                 FileUtils.dumpString(reachFile, reachExpression);
                 if (MpsatVerificationSettings.getDebugReach()) {
-                    LogUtils.logInfo("Reach expression to check");
+                    LogUtils.logInfo("REACH expression to check");
                     LogUtils.logMessage(reachExpression);
                 }
 

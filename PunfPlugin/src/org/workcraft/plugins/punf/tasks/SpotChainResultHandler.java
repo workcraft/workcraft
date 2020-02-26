@@ -35,7 +35,7 @@ public class SpotChainResultHandler extends AbstractResultHandler<SpotChainOutpu
     }
 
     private void handleFailure(final Result<? extends SpotChainOutput> chainResult) {
-        String errorMessage = "Spot verification failed.";
+        String errorMessage = "SPOT verification failed.";
         Throwable genericCause = chainResult.getCause();
         if (genericCause != null) {
             // Exception was thrown somewhere in the chain task run() method (not in any of the subtasks)
@@ -57,7 +57,7 @@ public class SpotChainResultHandler extends AbstractResultHandler<SpotChainOutpu
                     errorMessage += ERROR_CAUSE_PREFIX + punfCause.toString();
                 }
             } else {
-                errorMessage += "\n\nSpot chain task returned failure status without further explanation.";
+                errorMessage += "\n\nSPOT chain task returned failure status without further explanation.";
             }
         }
         DialogUtils.showError(errorMessage);

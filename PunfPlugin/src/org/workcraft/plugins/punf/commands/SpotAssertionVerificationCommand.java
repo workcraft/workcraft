@@ -3,6 +3,7 @@ package org.workcraft.plugins.punf.commands;
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.SpotChainResultHandler;
 import org.workcraft.plugins.punf.tasks.SpotChainTask;
 import org.workcraft.plugins.stg.Stg;
@@ -14,21 +15,26 @@ import org.workcraft.utils.ScriptableCommandUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class SpotVerificationCommand extends AbstractVerificationCommand {
+public class SpotAssertionVerificationCommand extends AbstractVerificationCommand {
 
-    private static final String PRESET_KEY = "spot-presets.xml";
+    private static final String PRESET_KEY = "spot-assertions.xml";
     private static final TextDataSerialiser DATA_SERIALISER = new TextDataSerialiser();
 
     private static String preservedData = null;
 
     @Override
     public String getDisplayName() {
-        return "Custom Spot property [Spot]...";
+        return "SPOT assertion [LTL2TGBA]...";
     }
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.isApplicable(we, Stg.class);
+    }
+
+    @Override
+    public boolean isVisibleInMenu() {
+        return PunfSettings.getShowSpotInMenu();
     }
 
     @Override
@@ -47,13 +53,13 @@ public class SpotVerificationCommand extends AbstractVerificationCommand {
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
         PresetManager<String> pmgr = new PresetManager<>(we, PRESET_KEY, DATA_SERIALISER, preservedData);
-        TextPresetDialog dialog = new TextPresetDialog(mainWindow, "Custom Spot assertion", pmgr, null);
+        TextPresetDialog dialog = new TextPresetDialog(mainWindow, "SPOT assertion", pmgr, null);
         if (dialog.reveal()) {
             preservedData = dialog.getData();
             TaskManager manager = framework.getTaskManager();
             SpotChainTask task = new SpotChainTask(we, preservedData);
             SpotChainResultHandler monitor = new SpotChainResultHandler(we);
-            manager.queue(task, "Running Spot assertion [Spot]", monitor);
+            manager.queue(task, "Running SPOT assertion [LTL2TGBA]", monitor);
         }
     }
 

@@ -46,7 +46,7 @@ public final class WorkUtils {
     private static final String STATE_WORK_ENTRY = "state.xml";
     private static final String MATH_MODEL_WORK_ENTRY = "model.xml";
     private static final String VISUAL_MODEL_WORK_ENTRY = "visualModel.xml";
-    private static final String STORAGE_WORK_ENTRY = "storage/";
+    private static final String STORAGE_WORK_ENTRY = "resources/";
 
     private static final String META_WORK_ELEMENT = "workcraft-meta";
     private static final String META_DESCRIPTOR_WORK_ELEMENT = "descriptor";

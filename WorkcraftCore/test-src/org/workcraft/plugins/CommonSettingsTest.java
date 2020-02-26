@@ -48,9 +48,6 @@ public class CommonSettingsTest {
         final Framework framework = Framework.getInstance();
         String prefix = "CommonDebugSettings";
 
-        Assert.assertEquals(Config.toString(DebugCommonSettings.getCopyModelOnChange()),
-                framework.getConfigVar(prefix + ".copyModelOnChange", false));
-
         Assert.assertEquals(Config.toString(DebugCommonSettings.getVerboseImport()),
                 framework.getConfigVar(prefix + ".verboseImport", false));
 

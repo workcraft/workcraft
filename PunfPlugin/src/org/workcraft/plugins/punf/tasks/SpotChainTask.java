@@ -34,7 +34,7 @@ public class SpotChainTask implements Task<SpotChainOutput> {
         SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
 
         try {
-            // Convert Spot property to Buechi automaton
+            // Convert SPOT assertion to Buechi automaton
             File spotFile = new File(directory, "property.spot");
             spotFile.deleteOnExit();
             try {
@@ -44,7 +44,7 @@ public class SpotChainTask implements Task<SpotChainOutput> {
             }
             Ltl2tgbaTask ltl2tgbaTask = new Ltl2tgbaTask(spotFile);
             Result<? extends Ltl2tgbaOutput> ltl2tgbaResult = manager.execute(
-                    ltl2tgbaTask, "Converting Spot property to B\u00FCchi automaton", subtaskMonitor);
+                    ltl2tgbaTask, "Converting SPOT assertion to B\u00FCchi automaton", subtaskMonitor);
 
             if (ltl2tgbaResult.getOutcome() != Result.Outcome.SUCCESS) {
                 if (ltl2tgbaResult.getOutcome() == Result.Outcome.CANCEL) {

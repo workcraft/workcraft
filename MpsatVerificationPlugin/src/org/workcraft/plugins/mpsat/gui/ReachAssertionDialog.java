@@ -9,7 +9,6 @@ import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.VerificationParameters.SolutionMode;
-import org.workcraft.plugins.mpsat.utils.ReachUtils;
 import org.workcraft.presets.DataMapper;
 import org.workcraft.presets.Preset;
 import org.workcraft.presets.PresetManagerPanel;
@@ -25,7 +24,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
+public class ReachAssertionDialog extends ModalDialog<MpsatPresetManager> {
 
     private static final int DEFAULT_ALL_SOLUTION_LIMIT = 10;
 
@@ -39,8 +38,8 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
     private JRadioButton satisfiableRadioButton;
     private JRadioButton unsatisfiableRadioButton;
 
-    public PropertyDialog(Window owner, MpsatPresetManager presetManager) {
-        super(owner, "Custom property", presetManager);
+    public ReachAssertionDialog(Window owner, MpsatPresetManager presetManager) {
+        super(owner, "REACH assertion", presetManager);
         initialise();
     }
 
@@ -65,38 +64,18 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
     }
 
     private PresetManagerPanel<VerificationParameters> createPresetPanel() {
-        ArrayList<Preset<VerificationParameters>> builtInPresets = new ArrayList<>();
-
         MpsatPresetManager presetManager = getUserData();
-        if (presetManager.isAllowStgPresets()) {
-            builtInPresets.add(new Preset<>("Consistency",
-                    ReachUtils.getConsistencySettings(), true));
-
-            builtInPresets.add(new Preset<>("Delay insensitive interface",
-                    ReachUtils.getDiInterfaceSettings(), true));
-
-            builtInPresets.add(new Preset<>("Input properness",
-                    ReachUtils.getInputPropernessSettings(), true));
-
-            builtInPresets.add(new Preset<>("Output persistency (without dummies)",
-                    ReachUtils.getOutputPersistencySettings(), true));
-        }
-
-        builtInPresets.add(new Preset<>("Deadlock freeness",
-                ReachUtils.getDeadlockReachSettings(), true));
-
-        builtInPresets.add(new Preset<>("Deadlock freeness without maximal dummies",
-                ReachUtils.getDeadlockWithoutMaximalDummyReachSettings(), true));
+        ArrayList<Preset<VerificationParameters>> builtInPresets = new ArrayList<>();
 
         DataMapper<VerificationParameters> guiMapper = new DataMapper<VerificationParameters>() {
             @Override
             public void applyDataToControls(VerificationParameters settings) {
-                PropertyDialog.this.applySettingsToControls(settings);
+                ReachAssertionDialog.this.applySettingsToControls(settings);
             }
 
             @Override
             public VerificationParameters getDataFromControls() {
-                return PropertyDialog.this.getSettingsFromControls();
+                return ReachAssertionDialog.this.getSettingsFromControls();
             }
         };
 
@@ -147,7 +126,7 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
 
     public JPanel createPropertyPanel() {
         JPanel resutl = new JPanel(new BorderLayout());
-        String title = "Reach predicate (use '" + NamespaceHelper.getHierarchySeparator() + "' as hierarchy separator)";
+        String title = "REACH predicate (use '" + NamespaceHelper.getHierarchySeparator() + "' as hierarchy separator)";
         resutl.setBorder(SizeHelper.getTitledBorder(title));
 
         propertyText = new JTextArea();

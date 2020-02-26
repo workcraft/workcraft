@@ -21,13 +21,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class AssertionDialog extends ModalDialog<MpsatPresetManager> {
+public class SignalAssertionDialog extends ModalDialog<MpsatPresetManager> {
 
     private PresetManagerPanel<VerificationParameters> presetPanel;
     private JTextArea propertyText;
 
-    public AssertionDialog(Window owner, MpsatPresetManager presetManager) {
-        super(owner, "Custom assertion", presetManager);
+    public SignalAssertionDialog(Window owner, MpsatPresetManager presetManager) {
+        super(owner, "Signal assertion", presetManager);
         initialise();
     }
 
@@ -52,12 +52,12 @@ public class AssertionDialog extends ModalDialog<MpsatPresetManager> {
         DataMapper<VerificationParameters> guiMapper = new DataMapper<VerificationParameters>() {
             @Override
             public void applyDataToControls(VerificationParameters settings) {
-                AssertionDialog.this.applySettingsToControls(settings);
+                SignalAssertionDialog.this.applySettingsToControls(settings);
             }
 
             @Override
             public VerificationParameters getDataFromControls() {
-                return AssertionDialog.this.getSettingsFromControls();
+                return SignalAssertionDialog.this.getSettingsFromControls();
             }
         };
 

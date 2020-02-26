@@ -1141,6 +1141,7 @@ public class MainWindow extends JFrame {
     public void editSettings() {
         SettingsEditorDialog dialog = new SettingsEditorDialog(this);
         if (dialog.reveal()) {
+            mainMenu.setMenuForWorkspaceEntry(editorInFocus.getWorkspaceEntry());
             for (WorkspaceEntry we: editorWindows.keySet()) {
                 refreshWorkspaceEntryTitle(we, false);
             }

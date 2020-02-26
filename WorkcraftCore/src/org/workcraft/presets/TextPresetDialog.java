@@ -20,10 +20,6 @@ public class TextPresetDialog extends ModalDialog<PresetManager<String>> impleme
     private PresetManagerPanel<String> presetPanel;
     private JTextArea textArea;
 
-    public TextPresetDialog(Window owner, String title, PresetManager<String> presetManager) {
-        this(owner, title, presetManager, null);
-    }
-
     public TextPresetDialog(Window owner, String title, PresetManager<String> presetManager, File helpFile) {
         super(owner, title, presetManager);
         this.helpFile = helpFile;

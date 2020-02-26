@@ -3,7 +3,7 @@ package org.workcraft.plugins.mpsat.commands;
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.plugins.mpsat.gui.HandshakeDialog;
+import org.workcraft.plugins.mpsat.gui.HandshakeWizardDialog;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainTask;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
@@ -36,7 +36,7 @@ public class HandshakeVerificationCommand extends AbstractVerificationCommand {
         MainWindow mainWindow = framework.getMainWindow();
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
 
-        HandshakeDialog dialog = new HandshakeDialog(mainWindow, stg);
+        HandshakeWizardDialog dialog = new HandshakeWizardDialog(mainWindow, stg);
         if (dialog.reveal()) {
             TaskManager manager = framework.getTaskManager();
             VerificationChainTask task = new VerificationChainTask(we, dialog.getSettings());

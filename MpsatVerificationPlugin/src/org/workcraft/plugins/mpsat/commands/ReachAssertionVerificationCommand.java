@@ -6,7 +6,7 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.MpsatDataSerialiser;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.gui.PropertyDialog;
+import org.workcraft.plugins.mpsat.gui.ReachAssertionDialog;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainTask;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
@@ -17,16 +17,16 @@ import org.workcraft.utils.ScriptableCommandUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PropertyVerificationCommand extends AbstractVerificationCommand {
+public class ReachAssertionVerificationCommand extends AbstractVerificationCommand {
 
-    private static final String PRESET_KEY = "mpsat-reach-presets.xml";
+    private static final String PRESET_KEY = "reach-assertions.xml";
     private static final MpsatDataSerialiser DATA_SERIALISER = new MpsatDataSerialiser();
 
     private static VerificationParameters preservedData = null;
 
     @Override
     public String getDisplayName() {
-        return "Custom property [MPSat]...";
+        return "REACH assertion [MPSat]...";
     }
 
     @Override
@@ -45,7 +45,7 @@ public class PropertyVerificationCommand extends AbstractVerificationCommand {
         MainWindow mainWindow = framework.getMainWindow();
         boolean allowStgPresets = WorkspaceUtils.isApplicable(we, StgModel.class);
         MpsatPresetManager pmgr = new MpsatPresetManager(we, PRESET_KEY, DATA_SERIALISER, allowStgPresets, preservedData);
-        PropertyDialog dialog = new PropertyDialog(mainWindow, pmgr);
+        ReachAssertionDialog dialog = new ReachAssertionDialog(mainWindow, pmgr);
         if (dialog.reveal()) {
             TaskManager manager = framework.getTaskManager();
             preservedData = dialog.getSettings();

@@ -14,11 +14,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Set;
 
-public class NwayDialog extends ModalDialog<Void> {
+public class NwayConformationDialog extends ModalDialog<Void> {
 
     private WorkspaceChooser chooser;
 
-    public NwayDialog(Window owner) {
+    public NwayConformationDialog(Window owner) {
         super(owner, "N-way conformation", null);
 
         // Check all works in the workspace

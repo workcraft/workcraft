@@ -494,8 +494,11 @@ public class MainMenu extends JMenuBar {
     }
 
     public void setMenuForWorkspaceEntry(final WorkspaceEntry we) {
-        we.updateActionState();
-        createCommandsMenu(we);
-        setExportMenu(we);
+        if (we != null) {
+            we.updateActionState();
+            createCommandsMenu(we);
+            setExportMenu(we);
+        }
     }
+
 }
