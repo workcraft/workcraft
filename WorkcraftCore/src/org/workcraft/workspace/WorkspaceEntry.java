@@ -12,25 +12,15 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.MainWindowActions;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.observation.*;
-import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.WorkUtils;
 
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.awt.geom.Point2D;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 public class WorkspaceEntry implements ObservableState {
 
@@ -241,39 +231,11 @@ public class WorkspaceEntry implements ObservableState {
         updateActionState();
     }
 
-    private void clipboardMemento(RawData memento) {
-        if (DebugCommonSettings.getCopyModelOnChange()) {
-            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            ZipInputStream zis = new ZipInputStream(memento.toStream(), StandardCharsets.UTF_8);
-            String str = "";
-            try {
-                ZipEntry ze;
-                while ((ze = zis.getNextEntry()) != null) {
-                    StringBuilder isb = new StringBuilder();
-                    BufferedReader br = new BufferedReader(new InputStreamReader(zis, StandardCharsets.UTF_8));
-                    String line = "=== " + ze.getName() + " ===";
-                    while (line != null) {
-                        isb.append(line);
-                        isb.append('\n');
-                        line = br.readLine();
-                    }
-                    str += isb.toString();
-                    zis.closeEntry();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            StringSelection contents = new StringSelection(str);
-            clipboard.setContents(contents, null);
-        }
-    }
-
     public void captureMemento() {
         capturedMemento = WorkUtils.mementoModel(modelEntry);
         if (!changed) {
             savedMemento = capturedMemento;
         }
-        clipboardMemento(capturedMemento);
     }
 
     public void uncaptureMemento() {
@@ -372,7 +334,6 @@ public class WorkspaceEntry implements ObservableState {
             // Save the remaining nodes to clipboard.
             final Framework framework = Framework.getInstance();
             framework.clipboard = WorkUtils.mementoModel(modelEntry);
-            clipboardMemento(framework.clipboard);
             cancelMemento();
         }
     }
