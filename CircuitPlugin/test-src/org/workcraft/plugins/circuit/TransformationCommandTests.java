@@ -41,9 +41,10 @@ public class TransformationCommandTests {
         VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
 
         Set<VisualFunctionComponent> optZeroDelays = getZeroDelayGates(circuit);
-        new OptimiseZeroDelayTransformationCommand().execute(we);
         VisualFunctionComponent bubble25 = circuit.getVisualComponentByMathReference("IN_BUBBLE25",
                 VisualFunctionComponent.class);
+
+        new OptimiseZeroDelayTransformationCommand().execute(we);
 
         optZeroDelays.removeAll(getZeroDelayGates(circuit));
         Assert.assertEquals(new HashSet<>(Arrays.asList(bubble25)), optZeroDelays);

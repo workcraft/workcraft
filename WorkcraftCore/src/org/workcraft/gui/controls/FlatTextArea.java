@@ -1,6 +1,5 @@
 package org.workcraft.gui.controls;
 
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.utils.DesktopApi;
 
 import javax.swing.*;
@@ -15,7 +14,6 @@ public class FlatTextArea extends JTextArea {
 
     public FlatTextArea() {
         super();
-        setBorder(SizeHelper.getGapBorder());
 
         // Add undo to te action map and bind it to the input map
         getActionMap().put(UNDO_KEY, new AbstractAction(UNDO_KEY) {
