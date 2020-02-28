@@ -2,6 +2,7 @@ package org.workcraft.utils;
 
 import org.workcraft.interop.ExternalProcess;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
@@ -212,6 +213,14 @@ public class DesktopApi {
             return KeyEvent.VK_META;
         }
         return KeyEvent.VK_CONTROL;
+    }
+
+    public static KeyStroke getUndoKeyStroke() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_Z, getMenuKeyMask());
+    }
+
+    public static KeyStroke getRedoKeyStroke() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_Z, getMenuKeyMask() | ActionEvent.SHIFT_MASK);
     }
 
 }

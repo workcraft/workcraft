@@ -1,7 +1,7 @@
 package org.workcraft.presets;
 
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.gui.dialogs.ModalDialog;
+import org.workcraft.gui.controls.FlatTextArea;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.GuiUtils;
 
@@ -12,19 +12,26 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Collections;
 
-public class TextPresetDialog extends ModalDialog<PresetManager<String>> implements PresetDialog<String> {
-
-    private final File helpFile;
+public class TextPresetDialog extends PresetDialog<String> {
 
     private PresetManagerPanel<String> presetPanel;
-    private JTextArea textArea;
+    private FlatTextArea textArea;
+    private JPanel buttonsPanel;
+
+    public TextPresetDialog(Window owner, String title, PresetManager<String> presetManager) {
+        this(owner, title, presetManager, null);
+    }
 
     public TextPresetDialog(Window owner, String title, PresetManager<String> presetManager, File helpFile) {
         super(owner, title, presetManager);
-        this.helpFile = helpFile;
         presetPanel.selectFirst();
         textArea.setCaretPosition(0);
         textArea.requestFocus();
+        if (helpFile != null) {
+            JButton helpButton = GuiUtils.createDialogButton("Help");
+            helpButton.addActionListener(event -> DesktopApi.open(helpFile));
+            buttonsPanel.add(helpButton);
+        }
     }
 
     @Override
@@ -39,12 +46,26 @@ public class TextPresetDialog extends ModalDialog<PresetManager<String>> impleme
     }
 
     private PresetManagerPanel<String> createPresetPanel() {
-        DataMapper<String> guiMapper = new TextDataMapper(textArea);
+        DataMapper<String> guiMapper = new DataMapper<String>() {
+            @Override
+            public void applyDataToControls(String settings) {
+                textArea.setText(settings);
+                textArea.setCaretPosition(0);
+                textArea.requestFocus();
+                textArea.discardEditHistory();
+            }
+
+            @Override
+            public String getDataFromControls() {
+                return textArea.getText();
+            }
+        };
+
         return new PresetManagerPanel<>(getUserData(), guiMapper);
     }
 
     private JPanel createTextPanel() {
-        textArea = new JTextArea();
+        textArea = new FlatTextArea();
         textArea.setMargin(SizeHelper.getTextMargin());
         textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
         textArea.setText(String.join("", Collections.nCopies(4, "\n")));
@@ -63,19 +84,14 @@ public class TextPresetDialog extends ModalDialog<PresetManager<String>> impleme
     }
 
     @Override
-    public String getData() {
+    public String getPresetData() {
         return textArea.getText();
     }
 
     @Override
     public JPanel createButtonsPanel() {
-        JPanel result = super.createButtonsPanel();
-        if (helpFile != null) {
-            JButton helpButton = GuiUtils.createDialogButton("Help");
-            helpButton.addActionListener(event -> DesktopApi.open(helpFile));
-            result.add(helpButton);
-        }
-        return result;
+        buttonsPanel = super.createButtonsPanel();
+        return buttonsPanel;
     }
 
 }

@@ -56,7 +56,7 @@ public class ReachAssertionVerificationCommand extends AbstractVerificationComma
         ReachAssertionDialog dialog = new ReachAssertionDialog(mainWindow, pmgr);
         if (dialog.reveal()) {
             TaskManager manager = framework.getTaskManager();
-            preservedData = dialog.getSettings();
+            preservedData = dialog.getPresetData();
             AssertionCheckTask task = new AssertionCheckTask(we, preservedData);
             String description = MpsatUtils.getToolchainDescription(we.getTitle());
             VerificationChainResultHandler monitor = new VerificationChainResultHandler(we);

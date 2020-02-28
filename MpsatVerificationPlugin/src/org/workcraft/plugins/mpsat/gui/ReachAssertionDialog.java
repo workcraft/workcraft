@@ -4,13 +4,14 @@ import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.gui.dialogs.ModalDialog;
+import org.workcraft.gui.controls.FlatTextArea;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.VerificationParameters.SolutionMode;
 import org.workcraft.presets.DataMapper;
+import org.workcraft.presets.PresetDialog;
 import org.workcraft.presets.PresetManagerPanel;
 import org.workcraft.shared.IntDocument;
 import org.workcraft.utils.DesktopApi;
@@ -23,14 +24,14 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Collections;
 
-public class ReachAssertionDialog extends ModalDialog<MpsatPresetManager> {
+public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
 
     private static final int DEFAULT_ALL_SOLUTION_LIMIT = 10;
 
     private PresetManagerPanel<VerificationParameters> presetPanel;
     private JComboBox<VerificationMode> modeCombo;
     private JTextField solutionLimitText;
-    private JTextArea propertyText;
+    private FlatTextArea propertyText;
     private JRadioButton allSolutionsRadioButton;
     private JRadioButton firstSolutionRadioButton;
     private JRadioButton cheapestSolutionRadioButton;
@@ -57,6 +58,11 @@ public class ReachAssertionDialog extends ModalDialog<MpsatPresetManager> {
         presetPanel = createPresetPanel();
         result.add(presetPanel, new TableLayoutConstraints(0, 0));
         return result;
+    }
+
+    @Override
+    public MpsatPresetManager getUserData() {
+        return (MpsatPresetManager) super.getUserData();
     }
 
     private PresetManagerPanel<VerificationParameters> createPresetPanel() {
@@ -89,12 +95,42 @@ public class ReachAssertionDialog extends ModalDialog<MpsatPresetManager> {
         DataMapper<VerificationParameters> guiMapper = new DataMapper<VerificationParameters>() {
             @Override
             public void applyDataToControls(VerificationParameters settings) {
-                ReachAssertionDialog.this.applySettingsToControls(settings);
+                modeCombo.setSelectedItem(settings.getMode());
+
+                switch (settings.getSolutionMode()) {
+                case MINIMUM_COST:
+                    cheapestSolutionRadioButton.setSelected(true);
+                    solutionLimitText.setText(Integer.toString(DEFAULT_ALL_SOLUTION_LIMIT));
+                    solutionLimitText.setEnabled(false);
+                    break;
+                case FIRST:
+                    firstSolutionRadioButton.setSelected(true);
+                    solutionLimitText.setText(Integer.toString(DEFAULT_ALL_SOLUTION_LIMIT));
+                    solutionLimitText.setEnabled(false);
+                    break;
+                case ALL:
+                    allSolutionsRadioButton.setSelected(true);
+                    int n = settings.getSolutionNumberLimit();
+                    solutionLimitText.setText((n > 0) ? Integer.toString(n) : "");
+                    solutionLimitText.setEnabled(true);
+                    break;
+                }
+
+                if (settings.getInversePredicate()) {
+                    unsatisfiableRadioButton.setSelected(true);
+                } else {
+                    satisfiableRadioButton.setSelected(true);
+                }
+
+                propertyText.setText(settings.getExpression());
+                propertyText.setCaretPosition(0);
+                propertyText.requestFocus();
+                propertyText.discardEditHistory();
             }
 
             @Override
             public VerificationParameters getDataFromControls() {
-                return ReachAssertionDialog.this.getSettingsFromControls();
+                return ReachAssertionDialog.this.getPresetData();
             }
         };
 
@@ -158,7 +194,7 @@ public class ReachAssertionDialog extends ModalDialog<MpsatPresetManager> {
         String title = "REACH predicate (use '" + NamespaceHelper.getHierarchySeparator() + "' as hierarchy separator)";
         resutl.setBorder(SizeHelper.getTitledBorder(title));
 
-        propertyText = new JTextArea();
+        propertyText = new FlatTextArea();
         propertyText.setMargin(SizeHelper.getTextMargin());
         propertyText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
         propertyText.setText(String.join("", Collections.nCopies(6, "\n")));
@@ -199,44 +235,8 @@ public class ReachAssertionDialog extends ModalDialog<MpsatPresetManager> {
         return result;
     }
 
-    public VerificationParameters getSettings() {
-        return getSettingsFromControls();
-    }
-
-    private void applySettingsToControls(VerificationParameters settings) {
-        modeCombo.setSelectedItem(settings.getMode());
-
-        switch (settings.getSolutionMode()) {
-        case MINIMUM_COST:
-            cheapestSolutionRadioButton.setSelected(true);
-            solutionLimitText.setText(Integer.toString(DEFAULT_ALL_SOLUTION_LIMIT));
-            solutionLimitText.setEnabled(false);
-            break;
-        case FIRST:
-            firstSolutionRadioButton.setSelected(true);
-            solutionLimitText.setText(Integer.toString(DEFAULT_ALL_SOLUTION_LIMIT));
-            solutionLimitText.setEnabled(false);
-            break;
-        case ALL:
-            allSolutionsRadioButton.setSelected(true);
-            int n = settings.getSolutionNumberLimit();
-            solutionLimitText.setText((n > 0) ? Integer.toString(n) : "");
-            solutionLimitText.setEnabled(true);
-            break;
-        }
-
-        if (settings.getInversePredicate()) {
-            unsatisfiableRadioButton.setSelected(true);
-        } else {
-            satisfiableRadioButton.setSelected(true);
-        }
-
-        propertyText.setText(settings.getExpression());
-        propertyText.setCaretPosition(0);
-        propertyText.requestFocus();
-    }
-
-    private VerificationParameters getSettingsFromControls() {
+    @Override
+    public VerificationParameters getPresetData() {
         SolutionMode solutionMode;
         if (firstSolutionRadioButton.isSelected()) {
             solutionMode = SolutionMode.FIRST;

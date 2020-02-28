@@ -1,5 +1,7 @@
 package org.workcraft.gui.properties;
 
+import org.workcraft.gui.controls.FlatCellRenderer;
+
 import java.util.IllegalFormatException;
 
 import javax.swing.table.TableCellEditor;

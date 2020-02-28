@@ -1,4 +1,4 @@
-package org.workcraft.gui.properties;
+package org.workcraft.gui.controls;
 
 import org.workcraft.dom.visual.SizeHelper;
 

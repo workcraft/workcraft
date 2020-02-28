@@ -1,5 +1,7 @@
 package org.workcraft.gui.properties;
 
+import org.workcraft.gui.controls.FlatComboBox;
+
 import java.awt.Component;
 
 import javax.swing.JTable;

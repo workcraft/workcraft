@@ -44,11 +44,11 @@ public class ReachAssertionVerificationCommand extends AbstractVerificationComma
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
         boolean allowStgPresets = WorkspaceUtils.isApplicable(we, StgModel.class);
-        MpsatPresetManager pmgr = new MpsatPresetManager(we, PRESET_KEY, DATA_SERIALISER, allowStgPresets, preservedData);
-        ReachAssertionDialog dialog = new ReachAssertionDialog(mainWindow, pmgr);
+        MpsatPresetManager presetManager = new MpsatPresetManager(we, PRESET_KEY, DATA_SERIALISER, allowStgPresets, preservedData);
+        ReachAssertionDialog dialog = new ReachAssertionDialog(mainWindow, presetManager);
         if (dialog.reveal()) {
             TaskManager manager = framework.getTaskManager();
-            preservedData = dialog.getSettings();
+            preservedData = dialog.getPresetData();
             VerificationChainTask task = new VerificationChainTask(we, preservedData);
             String description = MpsatUtils.getToolchainDescription(we.getTitle());
             VerificationChainResultHandler monitor = new VerificationChainResultHandler(we);

@@ -1,5 +1,7 @@
 package org.workcraft.gui.properties;
 
+import org.workcraft.gui.controls.FlatCellRenderer;
+
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
