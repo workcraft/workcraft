@@ -2,10 +2,10 @@ package org.workcraft.plugins.mpsat;
 
 import org.w3c.dom.Element;
 import org.workcraft.plugins.mpsat.VerificationParameters.SolutionMode;
-import org.workcraft.presets.SettingsSerialiser;
+import org.workcraft.presets.DataSerialiser;
 import org.workcraft.utils.XmlUtils;
 
-public class MpsatSettingsSerialiser implements SettingsSerialiser<VerificationParameters> {
+public class MpsatDataSerialiser implements DataSerialiser<VerificationParameters> {
 
     public static final String SETTINGS_ELEMENT = "settings";
     public static final String SETTINGS_NAME_ATTRIBUTE = "name";
@@ -17,7 +17,8 @@ public class MpsatSettingsSerialiser implements SettingsSerialiser<VerificationP
     public static final String SETTINGS_INVERSE_PREDICATE_ATTRIBUTE = "inversePredicate";
 
     @Override
-    public VerificationParameters fromXML(Element element) {
+    public VerificationParameters fromXML(Element parent) {
+        Element element = XmlUtils.getChildElement(SETTINGS_ELEMENT, parent);
         String name = element.getAttribute(SETTINGS_NAME_ATTRIBUTE);
         VerificationMode mode = VerificationMode.getModeByArgument(element.getAttribute(SETTINGS_MODE_ATTRIBUTE));
         int verbosity = readIntAttr(element, SETTINGS_VERBOSITY_ATTRIBUTE, 0);

@@ -6,6 +6,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.gui.controls.FlatHeaderRenderer;
 import org.workcraft.gui.properties.*;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.workspace.Path;

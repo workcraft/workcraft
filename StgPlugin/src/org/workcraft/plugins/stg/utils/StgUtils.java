@@ -1,6 +1,7 @@
 package org.workcraft.plugins.stg.utils;
 
 import org.workcraft.Framework;
+import org.workcraft.utils.WorkUtils;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -139,10 +140,9 @@ public class StgUtils {
     public static Stg loadStg(File file) {
         Stg result = null;
         if (file != null) {
-            Framework framework = Framework.getInstance();
             String filePath = FileUtils.getFullPath(file);
             try {
-                ModelEntry me = framework.loadModel(file);
+                ModelEntry me = WorkUtils.loadModel(file);
                 if (me != null) {
                     MathModel model = me.getMathModel();
                     if (model instanceof Stg) {

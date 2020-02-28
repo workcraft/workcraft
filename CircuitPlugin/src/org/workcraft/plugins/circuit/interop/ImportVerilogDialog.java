@@ -40,7 +40,7 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
                             if ((value == null) || value.isEmpty() || FileFilters.DOCUMENT_EXTENSION.equals(value)) {
                                 DialogUtils.showError("File name cannot be empty.");
                             } else {
-                                if (!value.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+                                if (!FileFilters.isWorkPath(value)) {
                                     value += FileFilters.DOCUMENT_EXTENSION;
                                 }
                                 moduleToFileMap.put(module, value);

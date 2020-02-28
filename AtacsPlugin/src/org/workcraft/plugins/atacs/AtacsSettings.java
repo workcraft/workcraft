@@ -37,7 +37,7 @@ public class AtacsSettings extends AbstractToolSettings {
 
     static {
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                "Activate ATACS synthesis (experimental) - requires restart",
+                "Activate ATACS synthesis (experimental)",
                 AtacsSettings::setShowInMenu,
                 AtacsSettings::getShowInMenu));
 

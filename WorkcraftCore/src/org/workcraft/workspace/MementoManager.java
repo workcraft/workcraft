@@ -3,14 +3,14 @@ package org.workcraft.workspace;
 import java.util.Stack;
 
 public class MementoManager {
-    private final Stack<Memento> undoStack = new Stack<>();
-    private final Stack<Memento> redoStack = new Stack<>();
+    private final Stack<Resource> undoStack = new Stack<>();
+    private final Stack<Resource> redoStack = new Stack<>();
 
-    public void pushUndo(Memento memento) {
+    public void pushUndo(Resource memento) {
         this.undoStack.push(memento);
     }
 
-    public Memento pullUndo() {
+    public Resource pullUndo() {
         return undoStack.pop();
     }
 
@@ -18,11 +18,11 @@ public class MementoManager {
         return !undoStack.empty();
     }
 
-    public void pushRedo(Memento memento) {
+    public void pushRedo(Resource memento) {
         this.redoStack.push(memento);
     }
 
-    public Memento pullRedo() {
+    public Resource pullRedo() {
         return redoStack.pop();
     }
 
@@ -30,8 +30,8 @@ public class MementoManager {
         return !redoStack.empty();
     }
 
-    public Memento undo(Memento memento) {
-        Memento result = null;
+    public Resource undo(Resource memento) {
+        Resource result = null;
         if (canUndo()) {
             result = pullUndo();
             pushRedo(memento);
@@ -39,8 +39,8 @@ public class MementoManager {
         return result;
     }
 
-    public Memento redo(Memento memento) {
-        Memento result = null;
+    public Resource redo(Resource memento) {
+        Resource result = null;
         if (canRedo()) {
             result = pullRedo();
             pushUndo(memento);

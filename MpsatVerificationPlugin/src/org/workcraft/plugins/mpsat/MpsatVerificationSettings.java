@@ -78,7 +78,7 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
                 MpsatVerificationSettings::getPrintStderr));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                "Output Reach expressions",
+                "Output REACH expressions",
                 MpsatVerificationSettings::setDebugReach,
                 MpsatVerificationSettings::getDebugReach));
 

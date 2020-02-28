@@ -50,7 +50,7 @@ public class VerificationTask implements Task<VerificationOutput> {
             "|" +
             "normalcy is violated" +
             "|" +
-            /* Reach expression */
+            /* REACH expression */
             "no reachable state satisfies the predicate" +
             "|" +
             "there is a reachable state satisfying the predicate" +

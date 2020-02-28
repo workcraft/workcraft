@@ -1,13 +1,12 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.Framework;
+import org.workcraft.utils.WorkUtils;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.traces.Solution;
-import org.workcraft.traces.Trace;
+import org.workcraft.gui.dialogs.ReachibilityDialog;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.gui.dialogs.ReachibilityDialog;
 import org.workcraft.plugins.mpsat.utils.EnablednessUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -19,6 +18,8 @@ import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.tasks.ExportOutput;
+import org.workcraft.traces.Solution;
+import org.workcraft.traces.Trace;
 import org.workcraft.types.Triple;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
@@ -80,8 +81,7 @@ public class ConformationNwayOutputHandler extends ConformationOutputHandler {
 
     @Override
     public StgModel getSrcStg(WorkspaceEntry we) {
-        Framework framework = Framework.getInstance();
-        ModelEntry me = framework.cloneModel(we.getModelEntry());
+        ModelEntry me = WorkUtils.cloneModel(we.getModelEntry());
         return WorkspaceUtils.getAs(me, StgModel.class);
     }
 

@@ -1,16 +1,17 @@
 package org.workcraft.plugins.mpsat;
 
-import java.io.File;
-
+import org.workcraft.presets.DataSerialiser;
 import org.workcraft.presets.PresetManager;
-import org.workcraft.presets.SettingsSerialiser;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatPresetManager extends PresetManager<VerificationParameters> {
 
     private boolean allowStgPresets;
 
-    public MpsatPresetManager(File presetFile, SettingsSerialiser<VerificationParameters> serialiser, boolean allowStgPresets) {
-        super(presetFile, serialiser);
+    public MpsatPresetManager(WorkspaceEntry we, String key, DataSerialiser<VerificationParameters> serialiser,
+            boolean allowStgPresets, VerificationParameters preservedData) {
+
+        super(we, key, serialiser, preservedData);
         this.setAllowStgPresets(allowStgPresets);
     }
 

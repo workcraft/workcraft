@@ -107,11 +107,11 @@ public class MainWindowActions {
 
     public static final Action EDIT_UNDO_ACTION = new Action("Undo",
             () -> Framework.getInstance().getMainWindow().undo(),
-            KeyStroke.getKeyStroke(KeyEvent.VK_Z, DesktopApi.getMenuKeyMask()));
+            DesktopApi.getUndoKeyStroke());
 
     public static final Action EDIT_REDO_ACTION = new Action("Redo",
             () -> Framework.getInstance().getMainWindow().redo(),
-            KeyStroke.getKeyStroke(KeyEvent.VK_Z, DesktopApi.getMenuKeyMask() | ActionEvent.SHIFT_MASK));
+            DesktopApi.getRedoKeyStroke());
 
     public static final Action EDIT_CUT_ACTION = new Action("Cut",
             () -> Framework.getInstance().getMainWindow().cut(),

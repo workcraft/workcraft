@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.workcraft.Framework;
+import org.workcraft.utils.WorkUtils;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
@@ -36,7 +37,7 @@ public class SaveLoadTests {
 
         final CompatibilityManager compatibilityManager = framework.getCompatibilityManager();
         ByteArrayInputStream bis = compatibilityManager.process(new Base16Reader(testDataMathModel), null);
-        ModelEntry modelEntry = framework.loadModel(bis);
+        ModelEntry modelEntry = WorkUtils.loadModel(bis);
         Petri petri = (Petri) modelEntry.getModel();
 
         Assert.assertNotNull(petri);
@@ -51,7 +52,7 @@ public class SaveLoadTests {
 
         final CompatibilityManager compatibilityManager = framework.getCompatibilityManager();
         ByteArrayInputStream bis = compatibilityManager.process(new Base16Reader(testDataVisualModel), null);
-        ModelEntry modelEntry = framework.loadModel(bis);
+        ModelEntry modelEntry = WorkUtils.loadModel(bis);
 
         VisualPetri petriVisual = (VisualPetri) modelEntry.getModel();
         Assert.assertNotNull(petriVisual);
@@ -76,7 +77,7 @@ public class SaveLoadTests {
         pm.initPlugins();
 
         StringWriter writer = new StringWriter();
-        framework.saveModel(new ModelEntry(new PetriDescriptor(), model), new Base16Writer(writer));
+        WorkUtils.saveModel(new ModelEntry(new PetriDescriptor(), model), null, new Base16Writer(writer));
         String generatedValue = writer.toString();
         if (currentValue.equals(generatedValue)) {
             return;

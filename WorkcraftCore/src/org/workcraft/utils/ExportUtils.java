@@ -87,7 +87,7 @@ public class ExportUtils {
             if (fc.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
                 path = fc.getSelectedFile().getPath();
                 if (format == null) {
-                    if (!path.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+                    if (!FileFilters.isWorkPath(path)) {
                         path += FileFilters.DOCUMENT_EXTENSION;
                     }
                 } else {

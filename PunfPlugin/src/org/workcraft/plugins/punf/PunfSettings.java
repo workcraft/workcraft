@@ -20,6 +20,7 @@ public class PunfSettings extends AbstractToolSettings {
     private static final String keyPrintStderr = prefix + ".printStderr";
     private static final String keyUseMciCsc = prefix + ".useMciCsc";
     private static final String keyLtl2tgbaCommand = prefix + ".ltl2tgbaCommand";
+    private static final String keyShowSpotInMenu = prefix + ".showSpotInMenu";
 
     private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\UnfoldingTools\\punf.exe" : "tools/UnfoldingTools/punf";
     private static final String defaultArgs = "-r";
@@ -27,6 +28,7 @@ public class PunfSettings extends AbstractToolSettings {
     private static final Boolean defaultPrintStderr = true;
     private static final Boolean defaultUseMciCsc = true;
     private static final String defaultLtl2tgbaCommand = DesktopApi.getOs().isWindows() ? "tools\\Spot\\ltl2tgba.exe" : "tools/Spot/ltl2tgba";
+    private static final Boolean defaultShowSpotInMenu = false;
 
 
     private static String command = defaultCommand;
@@ -35,6 +37,7 @@ public class PunfSettings extends AbstractToolSettings {
     private static Boolean printStderr = defaultPrintStderr;
     private static Boolean useMciCsc = defaultUseMciCsc;
     private static String ltl2tgbaCommand = defaultLtl2tgbaCommand;
+    private static Boolean showSpotInMenu = defaultShowSpotInMenu;
 
     static {
         properties.add(new PropertyDeclaration<>(String.class,
@@ -63,9 +66,14 @@ public class PunfSettings extends AbstractToolSettings {
                 PunfSettings::getUseMciCsc));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                "LTL to Buechi automaton conversion command",
+                "Building B\u00FCchi automaton command",
                 PunfSettings::setLtl2tgbaCommand,
                 PunfSettings::getLtl2tgbaCommand));
+
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Enable SPOT input (experimental)",
+                PunfSettings::setShowSpotInMenu,
+                PunfSettings::getShowSpotInMenu));
     }
 
     @Override
@@ -81,6 +89,7 @@ public class PunfSettings extends AbstractToolSettings {
         setPrintStderr(config.getBoolean(keyPrintStderr, defaultPrintStderr));
         setUseMciCsc(config.getBoolean(keyUseMciCsc, defaultUseMciCsc));
         setLtl2tgbaCommand(config.getString(keyLtl2tgbaCommand, defaultLtl2tgbaCommand));
+        setShowSpotInMenu(config.getBoolean(keyShowSpotInMenu, defaultShowSpotInMenu));
     }
 
     @Override
@@ -91,6 +100,7 @@ public class PunfSettings extends AbstractToolSettings {
         config.setBoolean(keyPrintStderr, getPrintStderr());
         config.setBoolean(keyUseMciCsc, getUseMciCsc());
         config.set(keyLtl2tgbaCommand, getLtl2tgbaCommand());
+        config.setBoolean(keyShowSpotInMenu, getShowSpotInMenu());
     }
 
     @Override
@@ -144,6 +154,14 @@ public class PunfSettings extends AbstractToolSettings {
 
     public static void setLtl2tgbaCommand(String value) {
         ltl2tgbaCommand = value;
+    }
+
+    public static boolean getShowSpotInMenu() {
+        return showSpotInMenu;
+    }
+
+    public static void setShowSpotInMenu(boolean value) {
+        showSpotInMenu = value;
     }
 
 }

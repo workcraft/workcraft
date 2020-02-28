@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class VerificationParameters {
 
-    private static final String PROPERTY_FILE_PREFIX = "property";
+    private static final String PROPERTY_FILE_PREFIX = "assertion";
     private static final String PROPERTY_FILE_EXTENTION = ".re";
 
     public enum SolutionMode {
@@ -104,7 +104,7 @@ public class VerificationParameters {
                 String reachExpression = getExpression();
                 FileUtils.dumpString(reachFile, reachExpression);
                 if (MpsatVerificationSettings.getDebugReach()) {
-                    LogUtils.logInfo("Reach expression to check");
+                    LogUtils.logInfo("REACH expression to check");
                     LogUtils.logMessage(reachExpression);
                 }
 

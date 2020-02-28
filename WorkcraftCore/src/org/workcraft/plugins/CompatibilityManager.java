@@ -1,8 +1,8 @@
 package org.workcraft.plugins;
 
-import org.workcraft.Framework;
 import org.workcraft.Info;
 import org.workcraft.Version;
+import org.workcraft.utils.WorkUtils;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
@@ -12,24 +12,12 @@ import org.workcraft.utils.LogUtils;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class CompatibilityManager {
-
-    private static final Pattern versionPattern = Pattern.compile("<" + Framework.META_VERSION_WORK_ELEMENT + " " +
-            Framework.META_VERSION_MAJOR_WORK_ATTRIBUTE + "=\"([0-9]+)\" " +
-            Framework.META_VERSION_MINOR_WORK_ATTRIBUTE + "=\"([0-9]+)\" " +
-            Framework.META_VERSION_REVISION_WORK_ATTRIBUTE + "=\"([0-9]+)\" " +
-            Framework.META_VERSION_STATUS_WORK_ATTRIBUTE + "=\"(.*)\"/>");
-
-    private static final Pattern modelNamePattern = Pattern.compile("<model class=\"(.+?)\" ref=\"\">");
-
-    private static final Pattern classNamePattern = Pattern.compile("<([A-Z]\\S*).*>");
 
     @SuppressWarnings("serial")
     private class Replacement extends HashMap<String, String> {
@@ -178,56 +166,11 @@ public class CompatibilityManager {
         return line;
     }
 
-    private Version extractVersion(String line) {
-        Version result = null;
-        Matcher matcher = versionPattern.matcher(line);
-        if (matcher.find()) {
-            String major = matcher.group(1);
-            String minor = matcher.group(2);
-            String revision = matcher.group(3);
-            String status = matcher.group(4);
-            result = new Version(major, minor, revision, status);
-        }
-        return result;
-    }
-
-    private Version extractVersion(InputStream is) throws IOException {
-        Version result = null;
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-        String line = null;
-        while ((result == null) && (line = reader.readLine()) != null) {
-            result = extractVersion(line);
-        }
-        return result;
-    }
-
-    private String extractModelName(String line) {
-        String result = null;
-        Matcher matcher = modelNamePattern.matcher(line);
-        if (matcher.find()) {
-            result = matcher.group(1);
-        }
-        return result;
-    }
-
-    private String extractClassName(String line) {
-        String result = null;
-        Matcher matcher = classNamePattern.matcher(line);
-        if (matcher.find()) {
-            result = matcher.group(1);
-        }
-        return result;
-    }
-
     public ByteArrayInputStream process(File file) throws DeserialisationException, OperationCancelledException {
         ByteArrayInputStream result = null;
         try {
             ZipFile zipFile = new ZipFile(file, StandardCharsets.UTF_8);
-            Version workVersion = null;
-            ZipEntry metaZipEntry = zipFile.getEntry(Framework.META_WORK_ENTRY);
-            if (metaZipEntry != null) {
-                workVersion = extractVersion(zipFile.getInputStream(metaZipEntry));
-            }
+            Version workVersion = WorkUtils.extractVersion(zipFile);
             Version currentVersion = Info.getVersion();
             if ((workVersion != null) && (currentVersion != null) && (currentVersion.compareTo(workVersion) < 0)) {
                 String msg = "Workcraft v" + currentVersion + " may incorrectly read a file produced by newer Workcraft v" + workVersion;
@@ -255,22 +198,22 @@ public class CompatibilityManager {
         try {
             while ((zei = zis.getNextEntry()) != null) {
                 ZipEntry zeo = new ZipEntry(zei.getName());
-                boolean isMetaEntry = Framework.META_WORK_ENTRY.equals(zei.getName());
                 zos.putNextEntry(zeo);
                 String modelName = null;
                 String className = null;
                 String line = null;
                 while ((line = reader.readLine()) != null) {
-                    if (isMetaEntry) {
+                    line += "\n";
+                    if (WorkUtils.isMetaEntry(zei)) {
                         byte[] data = replaceMetaData(version, line).getBytes(StandardCharsets.UTF_8);
                         zos.write(data, 0, data.length);
                     } else if (modelName == null) {
                         String processedLine = replaceModelName(version, line);
                         byte[] data = processedLine.getBytes(StandardCharsets.UTF_8);
                         zos.write(data, 0, data.length);
-                        modelName = extractModelName(processedLine);
+                        modelName = WorkUtils.extractModelName(processedLine);
                     } else {
-                        String s = extractClassName(line);
+                        String s = WorkUtils.extractClassName(line);
                         if (s != null) {
                             className = s;
                         }

@@ -20,8 +20,8 @@ public class XMLModelSerialiser implements ModelSerialiser {
 
     private final XMLSerialisationManager serialisation = new XMLSerialisationManager();
 
-    public XMLModelSerialiser(PluginProvider mock) {
-        serialisation.processPlugins(mock);
+    public XMLModelSerialiser(PluginProvider pp) {
+        serialisation.processPlugins(pp);
     }
 
     @Override
@@ -37,6 +37,7 @@ public class XMLModelSerialiser implements ModelSerialiser {
     @Override
     public ReferenceProducer serialise(final Model model, OutputStream out, ReferenceProducer refs)
             throws SerialisationException {
+
         try {
             ReferenceProducer internalRefs = obj -> {
                 if (obj instanceof Node) {

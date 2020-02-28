@@ -37,7 +37,7 @@ public class MsfsmSettings extends AbstractToolSettings {
 
     static {
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                "Activate MSFSM backend (experimental) - requires restart",
+                "Activate MSFSM backend (experimental)",
                 MsfsmSettings::setShowInMenu,
                 MsfsmSettings::getShowInMenu));
 

@@ -4,7 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.plugins.mpsat.gui.NwayDialog;
+import org.workcraft.plugins.mpsat.gui.NwayConformationDialog;
 import org.workcraft.plugins.mpsat.tasks.ConformationNwayTask;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
@@ -71,7 +71,7 @@ public class ConformationNwayVerificationCommand extends AbstractVerificationCom
             }
         } else {
             MainWindow mainWindow = framework.getMainWindow();
-            NwayDialog dialog = new NwayDialog(mainWindow);
+            NwayConformationDialog dialog = new NwayConformationDialog(mainWindow);
             if (!dialog.reveal()) {
                 return null;
             }

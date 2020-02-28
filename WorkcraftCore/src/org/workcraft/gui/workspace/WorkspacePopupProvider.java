@@ -84,7 +84,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
             final WorkspaceEntry we = workspace.getWork(path);
             if (we == null) {
                 if (file.exists()) {
-                    if (file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+                    if (FileFilters.isWorkFile(file)) {
                         final JMenuItem miOpen = new JMenuItem("Open");
                         miOpen.addActionListener(event -> mainWindow.openWork(file));
                         popup.add(miOpen);

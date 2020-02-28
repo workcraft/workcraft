@@ -1,22 +1,22 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import org.workcraft.Framework;
-import org.workcraft.traces.Solution;
-import org.workcraft.traces.Trace;
+import org.workcraft.utils.WorkUtils;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.utils.EnablednessUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.utils.PetriUtils;
-import org.workcraft.tasks.ExportOutput;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.tasks.ExportOutput;
+import org.workcraft.traces.Solution;
+import org.workcraft.traces.Trace;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 import java.util.*;
 
@@ -95,8 +95,7 @@ class OutputDeterminacyOutputHandler extends ReachabilityOutputHandler {
 
     @Override
     public StgModel getSrcStg(WorkspaceEntry we) {
-        Framework framework = Framework.getInstance();
-        ModelEntry me = framework.cloneModel(we.getModelEntry());
+        ModelEntry me = WorkUtils.cloneModel(we.getModelEntry());
         return WorkspaceUtils.getAs(me, StgModel.class);
     }
 

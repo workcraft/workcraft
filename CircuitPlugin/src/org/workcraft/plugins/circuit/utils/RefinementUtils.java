@@ -1,6 +1,7 @@
 package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.Framework;
+import org.workcraft.utils.WorkUtils;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.references.ReferenceHelper;
@@ -110,9 +111,8 @@ public final class RefinementUtils {
     }
 
     public static Pair<File, Stg> getRefinementStg(File file) {
-        Framework framework = Framework.getInstance();
         try {
-            ModelEntry me = framework.loadModel(file);
+            ModelEntry me = WorkUtils.loadModel(file);
             MathModel model = me.getMathModel();
             if (model instanceof Stg) {
                 return Pair.of(file, (Stg) model);
@@ -132,9 +132,8 @@ public final class RefinementUtils {
     }
 
     public static Pair<File, Circuit> getRefinementCircuit(File file) {
-        Framework framework = Framework.getInstance();
         try {
-            ModelEntry me = framework.loadModel(file);
+            ModelEntry me = WorkUtils.loadModel(file);
             if (me != null) {
                 MathModel model = me.getMathModel();
                 if (model instanceof Circuit) {

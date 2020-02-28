@@ -9,7 +9,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
-import org.workcraft.gui.properties.FlatHeaderRenderer;
+import org.workcraft.gui.controls.FlatHeaderRenderer;
 import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;

@@ -4,6 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.actions.Action;
+import org.workcraft.gui.controls.FlatHeaderRenderer;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.utils.DialogUtils;

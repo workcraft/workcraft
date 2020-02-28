@@ -225,7 +225,7 @@ public class ReachUtils {
                 REACH_INPUT_PROPERNESS, true);
     }
 
-    // Reach expression for checking conformation (this is a template, the list of places needs to be updated)
+    // REACH expression for checking conformation (this is a template, the list of places needs to be updated)
     private static final String REPLACEMENT_CONFORMATION_DEV_PLACES =
             "/* insert device place names here */"; // For example: "p0", "<a-,b+>"
 
@@ -291,7 +291,7 @@ public class ReachUtils {
                 reachConformation, true);
     }
 
-    // Reach expression for checking if these two pairs of signals can be implemented by a mutex
+    // REACH expression for checking if these two pairs of signals can be implemented by a mutex
     private static final String REPLACEMENT_MUTEX_R1 = "/* insert r1 name here */";
     private static final String REPLACEMENT_MUTEX_G1 = "/* insert g1 name here */";
     private static final String REPLACEMENT_MUTEX_R2 = "/* insert r2 name here */";

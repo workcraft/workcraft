@@ -1,6 +1,7 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.Framework;
+import org.workcraft.utils.WorkUtils;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
@@ -80,7 +81,7 @@ public class ConformationNwayTask implements Task<VerificationChainOutput> {
             List<Map<String, String>> substitutes = new ArrayList<>();
             for (WorkspaceEntry we: wes) {
                 // Clone STG before converting its internal signals to dummies
-                ModelEntry me = framework.cloneModel(we.getModelEntry());
+                ModelEntry me = WorkUtils.cloneModel(we.getModelEntry());
                 Stg stg = WorkspaceUtils.getAs(me, Stg.class);
                 Map<String, String> dummy2InternalRefs = StgUtils.convertInternalSignalsToDummies(stg);
                 substitutes.add(dummy2InternalRefs);

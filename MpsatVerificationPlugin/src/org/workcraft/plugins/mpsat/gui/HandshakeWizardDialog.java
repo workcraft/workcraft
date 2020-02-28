@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class HandshakeDialog extends ModalDialog<Stg> {
+public class HandshakeWizardDialog extends ModalDialog<Stg> {
 
     private static final String REQ_NAMES_REPLACEMENT =
             "/* insert request signal names here */"; // For example: "req1", "req2"
@@ -192,7 +192,7 @@ public class HandshakeDialog extends ModalDialog<Stg> {
         }
     }
 
-    public HandshakeDialog(Window owner, Stg stg) {
+    public HandshakeWizardDialog(Window owner, Stg stg) {
         super(owner, "Handshake wizard", stg);
         addWindowListener(new WindowAdapter() {
             @Override

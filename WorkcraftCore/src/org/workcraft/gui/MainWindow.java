@@ -783,7 +783,7 @@ public class MainWindow extends JFrame {
             for (File file : fc.getSelectedFiles()) {
                 File workFile = file;
                 String path = file.getPath();
-                if (!path.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+                if (!FileFilters.isWorkPath(path)) {
                     workFile = new File(path + FileFilters.DOCUMENT_EXTENSION);
                 }
                 WorkspaceEntry we = openWork(workFile);
@@ -831,7 +831,7 @@ public class MainWindow extends JFrame {
             for (File file: fc.getSelectedFiles()) {
                 File workFile = file;
                 String path = file.getPath();
-                if (!path.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+                if (!FileFilters.isWorkPath(path)) {
                     workFile = new File(path + FileFilters.DOCUMENT_EXTENSION);
                 }
                 mergeWork(workFile);
@@ -1141,6 +1141,7 @@ public class MainWindow extends JFrame {
     public void editSettings() {
         SettingsEditorDialog dialog = new SettingsEditorDialog(this);
         if (dialog.reveal()) {
+            mainMenu.setMenuForWorkspaceEntry(editorInFocus.getWorkspaceEntry());
             for (WorkspaceEntry we: editorWindows.keySet()) {
                 refreshWorkspaceEntryTitle(we, false);
             }

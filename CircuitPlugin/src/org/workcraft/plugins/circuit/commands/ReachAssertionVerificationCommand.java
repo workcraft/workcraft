@@ -4,11 +4,12 @@ import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.tasks.CustomCheckTask;
+import org.workcraft.plugins.circuit.tasks.AssertionCheckTask;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
+import org.workcraft.plugins.mpsat.MpsatDataSerialiser;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
-import org.workcraft.plugins.mpsat.MpsatSettingsSerialiser;
-import org.workcraft.plugins.mpsat.gui.PropertyDialog;
+import org.workcraft.plugins.mpsat.VerificationParameters;
+import org.workcraft.plugins.mpsat.gui.ReachAssertionDialog;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.tasks.TaskManager;
@@ -16,13 +17,16 @@ import org.workcraft.utils.ScriptableCommandUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.io.File;
+public class ReachAssertionVerificationCommand extends AbstractVerificationCommand {
 
-public class PropertyVerificationCommand extends AbstractVerificationCommand {
+    private static final String PRESET_KEY = "reach-assertions.xml";
+    private static final MpsatDataSerialiser DATA_SERIALISER = new MpsatDataSerialiser();
+
+    private static VerificationParameters preservedData = null;
 
     @Override
     public String getDisplayName() {
-        return "Custom properties [MPSat]...";
+        return "REACH assertion [MPSat]...";
     }
 
     @Override
@@ -48,14 +52,12 @@ public class PropertyVerificationCommand extends AbstractVerificationCommand {
         }
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
-        File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH,
-                org.workcraft.plugins.mpsat.commands.PropertyVerificationCommand.MPSAT_PROPERTY_PRESETS_FILE);
-
-        MpsatPresetManager pmgr = new MpsatPresetManager(presetFile, new MpsatSettingsSerialiser(), true);
-        PropertyDialog dialog = new PropertyDialog(mainWindow, pmgr);
+        MpsatPresetManager pmgr = new MpsatPresetManager(we, PRESET_KEY, DATA_SERIALISER, true, preservedData);
+        ReachAssertionDialog dialog = new ReachAssertionDialog(mainWindow, pmgr);
         if (dialog.reveal()) {
             TaskManager manager = framework.getTaskManager();
-            CustomCheckTask task = new CustomCheckTask(we, dialog.getSettings());
+            preservedData = dialog.getPresetData();
+            AssertionCheckTask task = new AssertionCheckTask(we, preservedData);
             String description = MpsatUtils.getToolchainDescription(we.getTitle());
             VerificationChainResultHandler monitor = new VerificationChainResultHandler(we);
             manager.queue(task, description, monitor);

@@ -4,15 +4,15 @@ import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.gui.dialogs.ModalDialog;
+import org.workcraft.gui.controls.FlatTextArea;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
+import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.VerificationParameters.SolutionMode;
-import org.workcraft.plugins.mpsat.utils.ReachUtils;
-import org.workcraft.presets.Preset;
+import org.workcraft.presets.DataMapper;
+import org.workcraft.presets.PresetDialog;
 import org.workcraft.presets.PresetManagerPanel;
-import org.workcraft.presets.SettingsToControlsMapper;
 import org.workcraft.shared.IntDocument;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.GuiUtils;
@@ -22,31 +22,24 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 
-public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
+public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
 
     private static final int DEFAULT_ALL_SOLUTION_LIMIT = 10;
-
-    private static VerificationParameters autoPreservedParameters = null;
 
     private PresetManagerPanel<VerificationParameters> presetPanel;
     private JComboBox<VerificationMode> modeCombo;
     private JTextField solutionLimitText;
-    private JTextArea propertyText;
+    private FlatTextArea propertyText;
     private JRadioButton allSolutionsRadioButton;
     private JRadioButton firstSolutionRadioButton;
     private JRadioButton cheapestSolutionRadioButton;
     private JRadioButton satisfiableRadioButton;
     private JRadioButton unsatisfiableRadioButton;
 
-    public PropertyDialog(Window owner, MpsatPresetManager presetManager) {
-        super(owner, "Custom property", presetManager);
-        initialise();
-    }
-
-    private void initialise() {
+    public ReachAssertionDialog(Window owner, MpsatPresetManager presetManager) {
+        super(owner, "REACH assertion", presetManager);
         presetPanel.selectFirst();
         propertyText.setCaretPosition(0);
         propertyText.requestFocus();
@@ -59,55 +52,99 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
                 new double[]{TableLayout.FILL},
                 new double[]{TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL}));
 
-        presetPanel = createPresetPanel();
-        result.add(presetPanel, new TableLayoutConstraints(0, 0));
         result.add(createOptionsPanel(), new TableLayoutConstraints(0, 1));
         result.add(createPropertyPanel(), new TableLayoutConstraints(0, 2));
+        // Preset panel has to be created the last as its guiMapper refers to other controls
+        presetPanel = createPresetPanel();
+        result.add(presetPanel, new TableLayoutConstraints(0, 0));
         return result;
     }
 
+    @Override
+    public MpsatPresetManager getUserData() {
+        return (MpsatPresetManager) super.getUserData();
+    }
+
     private PresetManagerPanel<VerificationParameters> createPresetPanel() {
-        ArrayList<Preset<VerificationParameters>> builtInPresets = new ArrayList<>();
-
-        if (autoPreservedParameters != null) {
-            builtInPresets.add(new Preset<>("Auto-preserved configuration",
-                    autoPreservedParameters, true));
-        }
-
         MpsatPresetManager presetManager = getUserData();
         if (presetManager.isAllowStgPresets()) {
-            builtInPresets.add(new Preset<>("Consistency",
-                    ReachUtils.getConsistencySettings(), true));
+            addExample(presetManager, "Deadlock freeness",
+                    VerificationMode.REACHABILITY,
+                    "// All transitions are not enabled\n" +
+                            "forall t in TRANSITIONS { ~@t }");
 
-            builtInPresets.add(new Preset<>("Delay insensitive interface",
-                    ReachUtils.getDiInterfaceSettings(), true));
+            addExample(presetManager, "Mutual exclusion of places",
+                    VerificationMode.REACHABILITY,
+                    "// Places p and q are mutually exclusive\n"
+                            + "$P\"p\" & $P\"q\"");
+        } else {
+            addExample(presetManager, "Mutual exclusion of arbiter grants",
+                    VerificationMode.STG_REACHABILITY,
+                    "// Arbiter grants are mutually exclusive\n"
+                            + "// (assuming all arbiter grants are numbered\n"
+                            + "// gN, where N is some number, one can use\n"
+                            + "// a regular expression to find the grants)\n"
+                            + "threshold[2] g in SS \"g[0-9]\\\\+\" { $g }");
 
-            builtInPresets.add(new Preset<>("Input properness",
-                    ReachUtils.getInputPropernessSettings(), true));
-
-            builtInPresets.add(new Preset<>("Output persistency (without dummies)",
-                    ReachUtils.getOutputPersistencySettings(), true));
+            addExample(presetManager, "Mutual exclusion of signals",
+                    VerificationMode.STG_REACHABILITY,
+                    "// Signals u and v are mutually exclusive\n"
+                            + "$S\"u\" & $S\"v\"");
         }
 
-        builtInPresets.add(new Preset<>("Deadlock freeness",
-                ReachUtils.getDeadlockReachSettings(), true));
-
-        builtInPresets.add(new Preset<>("Deadlock freeness without maximal dummies",
-                ReachUtils.getDeadlockWithoutMaximalDummyReachSettings(), true));
-
-        SettingsToControlsMapper<VerificationParameters> guiMapper = new SettingsToControlsMapper<VerificationParameters>() {
+        DataMapper<VerificationParameters> guiMapper = new DataMapper<VerificationParameters>() {
             @Override
-            public void applySettingsToControls(VerificationParameters settings) {
-                PropertyDialog.this.applySettingsToControls(settings);
+            public void applyDataToControls(VerificationParameters settings) {
+                modeCombo.setSelectedItem(settings.getMode());
+
+                switch (settings.getSolutionMode()) {
+                case MINIMUM_COST:
+                    cheapestSolutionRadioButton.setSelected(true);
+                    solutionLimitText.setText(Integer.toString(DEFAULT_ALL_SOLUTION_LIMIT));
+                    solutionLimitText.setEnabled(false);
+                    break;
+                case FIRST:
+                    firstSolutionRadioButton.setSelected(true);
+                    solutionLimitText.setText(Integer.toString(DEFAULT_ALL_SOLUTION_LIMIT));
+                    solutionLimitText.setEnabled(false);
+                    break;
+                case ALL:
+                    allSolutionsRadioButton.setSelected(true);
+                    int n = settings.getSolutionNumberLimit();
+                    solutionLimitText.setText((n > 0) ? Integer.toString(n) : "");
+                    solutionLimitText.setEnabled(true);
+                    break;
+                }
+
+                if (settings.getInversePredicate()) {
+                    unsatisfiableRadioButton.setSelected(true);
+                } else {
+                    satisfiableRadioButton.setSelected(true);
+                }
+
+                propertyText.setText(settings.getExpression());
+                propertyText.setCaretPosition(0);
+                propertyText.requestFocus();
+                propertyText.discardEditHistory();
             }
 
             @Override
-            public VerificationParameters getSettingsFromControls() {
-                return PropertyDialog.this.getSettingsFromControls();
+            public VerificationParameters getDataFromControls() {
+                return ReachAssertionDialog.this.getPresetData();
             }
         };
 
-        return new PresetManagerPanel<>(presetManager, builtInPresets, guiMapper);
+        return new PresetManagerPanel<>(presetManager, guiMapper);
+    }
+
+    private void addExample(MpsatPresetManager presetManager, String title, VerificationMode mode, String expression) {
+        VerificationParameters settings = new VerificationParameters(title, mode, 0,
+                MpsatVerificationSettings.getSolutionMode(),
+                MpsatVerificationSettings.getSolutionCount(),
+                expression, true);
+
+        presetManager.addExample(title, settings);
+
     }
 
     private JPanel createOptionsPanel() {
@@ -154,10 +191,10 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
 
     public JPanel createPropertyPanel() {
         JPanel resutl = new JPanel(new BorderLayout());
-        String title = "Reach predicate (use '" + NamespaceHelper.getHierarchySeparator() + "' as hierarchy separator)";
+        String title = "REACH predicate (use '" + NamespaceHelper.getHierarchySeparator() + "' as hierarchy separator)";
         resutl.setBorder(SizeHelper.getTitledBorder(title));
 
-        propertyText = new JTextArea();
+        propertyText = new FlatTextArea();
         propertyText.setMargin(SizeHelper.getTextMargin());
         propertyText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
         propertyText.setText(String.join("", Collections.nCopies(6, "\n")));
@@ -198,44 +235,8 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
         return result;
     }
 
-    public VerificationParameters getSettings() {
-        return getSettingsFromControls();
-    }
-
-    private void applySettingsToControls(VerificationParameters settings) {
-        modeCombo.setSelectedItem(settings.getMode());
-
-        switch (settings.getSolutionMode()) {
-        case MINIMUM_COST:
-            cheapestSolutionRadioButton.setSelected(true);
-            solutionLimitText.setText(Integer.toString(DEFAULT_ALL_SOLUTION_LIMIT));
-            solutionLimitText.setEnabled(false);
-            break;
-        case FIRST:
-            firstSolutionRadioButton.setSelected(true);
-            solutionLimitText.setText(Integer.toString(DEFAULT_ALL_SOLUTION_LIMIT));
-            solutionLimitText.setEnabled(false);
-            break;
-        case ALL:
-            allSolutionsRadioButton.setSelected(true);
-            int n = settings.getSolutionNumberLimit();
-            solutionLimitText.setText((n > 0) ? Integer.toString(n) : "");
-            solutionLimitText.setEnabled(true);
-            break;
-        }
-
-        if (settings.getInversePredicate()) {
-            unsatisfiableRadioButton.setSelected(true);
-        } else {
-            satisfiableRadioButton.setSelected(true);
-        }
-
-        propertyText.setText(settings.getExpression());
-        propertyText.setCaretPosition(0);
-        propertyText.requestFocus();
-    }
-
-    private VerificationParameters getSettingsFromControls() {
+    @Override
+    public VerificationParameters getPresetData() {
         SolutionMode solutionMode;
         if (firstSolutionRadioButton.isSelected()) {
             solutionMode = SolutionMode.FIRST;
@@ -257,15 +258,6 @@ public class PropertyDialog extends ModalDialog<MpsatPresetManager> {
 
         return new VerificationParameters(null, (VerificationMode) modeCombo.getSelectedItem(),
                 0, solutionMode, solutionLimin, propertyText.getText(), unsatisfiableRadioButton.isSelected());
-    }
-
-    @Override
-    public boolean okAction() {
-        if (super.okAction()) {
-            autoPreservedParameters = getSettings();
-            return true;
-        }
-        return false;
     }
 
 }

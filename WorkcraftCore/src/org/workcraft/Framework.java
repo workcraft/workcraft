@@ -4,26 +4,20 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.mozilla.javascript.*;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.workcraft.commands.AbstractLayoutCommand;
 import org.workcraft.commands.Command;
 import org.workcraft.commands.ScriptableCommand;
-import org.workcraft.dom.Model;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
-import org.workcraft.dom.visual.NodeHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.*;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.properties.Settings;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Format;
-import org.workcraft.interop.Importer;
 import org.workcraft.observation.ModelModifiedEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.CompatibilityManager;
@@ -31,29 +25,19 @@ import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.builtin.commands.DotLayoutCommand;
 import org.workcraft.plugins.builtin.commands.RandomLayoutCommand;
-import org.workcraft.plugins.builtin.serialisation.XMLModelDeserialiser;
-import org.workcraft.plugins.builtin.serialisation.XMLModelSerialiser;
 import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
-import org.workcraft.serialisation.DeserialisationResult;
-import org.workcraft.serialisation.ModelSerialiser;
-import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.shared.DataAccumulator;
 import org.workcraft.tasks.ExtendedTaskManager;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.*;
 import org.workcraft.workspace.*;
-import org.xml.sax.SAXException;
 
 import javax.swing.*;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 public final class Framework {
 
@@ -74,35 +58,6 @@ public final class Framework {
 
     private static final String CONFIG_RECENT_LAST_DIRECTORY = "recent.lastDirectory";
     private static final String CONFIG_RECENT_FILE = "recent.file";
-
-    public static final String META_WORK_ENTRY = "meta";
-    public static final String STATE_WORK_ENTRY = "state.xml";
-    public static final String MATH_MODEL_WORK_ENTRY = "model.xml";
-    public static final String VISUAL_MODEL_WORK_ENTRY = "visualModel.xml";
-
-    public static final String META_WORK_ELEMENT = "workcraft-meta";
-    public static final String META_DESCRIPTOR_WORK_ELEMENT = "descriptor";
-    public static final String META_DESCRIPTOR_CLASS_WORK_ATTRIBUTE = "class";
-    public static final String META_VERSION_WORK_ELEMENT = "version";
-    public static final String META_VERSION_MAJOR_WORK_ATTRIBUTE = "major";
-    public static final String META_VERSION_MINOR_WORK_ATTRIBUTE = "minor";
-    public static final String META_VERSION_REVISION_WORK_ATTRIBUTE = "revision";
-    public static final String META_VERSION_STATUS_WORK_ATTRIBUTE = "status";
-    public static final String META_STAMP_WORK_ELEMENT = "stamp";
-    public static final String META_STAMP_TIME_WORK_ATTRIBUTE = "time";
-    public static final String META_STAMP_UUID_WORK_ATTRIBUTE = "uuid";
-    public static final String META_MATH_MODEL_WORK_ELEMENT = "math";
-    public static final String META_VISUAL_MODEL_WORK_ELEMENT = "visual";
-    public static final String META_MODEL_ENTRY_NAME_WORK_ATTRIBUTE = "entry-name";
-    public static final String META_MODEL_FORMAT_UUID_WORK_ATTRIBUTE = "format-uuid";
-
-    public static final String STATE_WORK_ELEMENT = "workcraft-state";
-    public static final String STATE_LEVEL_WORK_ELEMENT = "level";
-    public static final String STATE_SELECTION_WORK_ELEMENT = "selection";
-
-    public static final String COMMON_CLASS_WORK_ATTRIBUTE = "class";
-    public static final String COMMON_NODE_WORK_ATTRIBUTE = "node";
-    public static final String COMMON_REF_WORK_ATTRIBUTE = "ref";
 
     private static final Pattern JAVASCRIPT_FUNCTION_PATTERN =
             Pattern.compile("\\s*function\\s+(\\w+)\\s*\\((.*)\\).*");
@@ -230,7 +185,7 @@ public final class Framework {
     private final ContextFactory contextFactory = new ContextFactory();
     private File workingDirectory = null;
     private MainWindow mainWindow;
-    public Memento clipboard;
+    public Resource clipboard;
     private final HashMap<String, JavascriptItem> javascriptHelp = new HashMap<>();
 
     private Framework() {
@@ -706,26 +661,30 @@ public final class Framework {
             }
         }
         WorkspaceEntry we = null;
-        ModelEntry me = loadModel(file);
+        ModelEntry me = WorkUtils.loadModel(file);
         if (me != null) {
             // Load (from *.work) or import (other extensions) work
-            if (file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+            boolean isWorkFile = FileFilters.isWorkFile(file);
+            if (isWorkFile) {
                 if (path == null) {
                     path = getWorkspace().tempMountExternalFile(file);
                 }
             } else {
-                Path<String> parent;
-                if (path == null) {
-                    parent = Path.empty();
-                } else {
-                    parent = path.getParent();
-                }
                 String desiredName = FileUtils.getFileNameWithoutExtension(file);
+                Path<String> parent = path == null ? Path.empty() : path.getParent();
                 path = getWorkspace().createWorkPath(parent, desiredName);
             }
             we = createWork(me, path, false, false);
             if (we.getModelEntry().isVisual() && (mainWindow != null)) {
                 mainWindow.createEditorWindow(we);
+            }
+            if (isWorkFile) {
+                // Load resources
+                try (InputStream is = new FileInputStream(file)) {
+                    WorkUtils.loadResources(is).forEach(we::addResource);
+                } catch (IOException e) {
+                    throw new DeserialisationException(e);
+                }
             }
         }
         updateJavaScript(we);
@@ -733,8 +692,8 @@ public final class Framework {
     }
 
     public WorkspaceEntry mergeWork(WorkspaceEntry we, File file) throws DeserialisationException {
-        if ((we != null) && file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
-            ModelEntry me = loadModel(file);
+        if ((we != null) && FileFilters.isWorkFile(file)) {
+            ModelEntry me = WorkUtils.loadModel(file);
             if (me != null) {
                 we.insert(me);
             }
@@ -758,103 +717,6 @@ public final class Framework {
         for (WorkspaceEntry we : getWorkspace().getWorks()) {
             closeWork(we);
         }
-    }
-
-    public ModelEntry loadModel(File file) throws DeserialisationException {
-        ModelEntry me = null;
-        if (FileUtils.checkAvailability(file, null, false)) {
-            // Load (from *.work) or import (other extensions) work.
-            if (file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
-                try {
-                    ByteArrayInputStream bis = compatibilityManager.process(file);
-                    me = loadModel(bis);
-                    FileReferenceUtils.makeAbsolute(me.getVisualModel(), FileUtils.getBasePath(file));
-                } catch (OperationCancelledException e) {
-                }
-            } else {
-                try {
-                    final PluginManager pm = getPluginManager();
-                    final Importer importer = ImportUtils.chooseBestImporter(pm, file);
-                    me = ImportUtils.importFromFile(importer, file);
-                } catch (IOException e) {
-                    throw new DeserialisationException(e);
-                } catch (OperationCancelledException e) {
-                }
-            }
-        }
-        return me;
-    }
-
-    public ModelEntry loadModel(InputStream is) throws DeserialisationException {
-        try {
-            // load meta data
-            byte[] bi = DataAccumulator.loadStream(is);
-            Document metaDoc = FrameworkUtils.loadMetaDoc(bi);
-            ModelDescriptor descriptor = FrameworkUtils.loadMetaDescriptor(metaDoc);
-
-            // load math model
-            InputStream mathData = FrameworkUtils.getMathData(bi, metaDoc);
-            XMLModelDeserialiser mathDeserialiser = new XMLModelDeserialiser(getPluginManager());
-            DeserialisationResult mathResult = mathDeserialiser.deserialise(mathData, null, null);
-            mathResult.model.afterDeserialisation();
-            mathData.close();
-
-            // load visual model (if present)
-            InputStream visualData = FrameworkUtils.getVisualData(bi, metaDoc);
-            if (visualData == null) {
-                return new ModelEntry(descriptor, mathResult.model);
-            }
-            XMLModelDeserialiser visualDeserialiser = new XMLModelDeserialiser(getPluginManager());
-            DeserialisationResult visualResult = visualDeserialiser.deserialise(visualData,
-                    mathResult.references, mathResult.model);
-            visualResult.model.afterDeserialisation();
-
-            // load current level and selection
-            if (visualResult.model instanceof VisualModel) {
-                FrameworkUtils.loadVisualModelState(bi, (VisualModel) visualResult.model, visualResult.references);
-            }
-            ModelEntry modelEntry = new ModelEntry(descriptor, visualResult.model);
-
-            Version version = FrameworkUtils.loadMetaVersion(metaDoc);
-            Stamp stamp = FrameworkUtils.loadMetaStamp(metaDoc);
-            modelEntry.setVersion(version);
-            modelEntry.setStamp(stamp);
-            return modelEntry;
-        } catch (IOException | ParserConfigurationException | InstantiationException | IllegalAccessException
-                | SAXException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException e) {
-            throw new DeserialisationException(e);
-        }
-    }
-
-    public ModelEntry loadModel(Memento memento) {
-        try {
-            return loadModel(memento.getStream());
-        } catch (DeserialisationException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public ModelEntry loadModel(InputStream is1, InputStream is2) throws DeserialisationException {
-        ModelEntry me1 = loadModel(is1);
-        ModelEntry me2 = loadModel(is2);
-
-        String displayName1 = me1.getDescriptor().getDisplayName();
-        String displayName2 = me2.getDescriptor().getDisplayName();
-        if (!displayName1.equals(displayName2)) {
-            throw new DeserialisationException(
-                    "Incompatible " + displayName1 + " and " + displayName2 + " model cannot be merged.");
-        }
-
-        VisualModel vmodel1 = me1.getVisualModel();
-        VisualModel vmodel2 = me2.getVisualModel();
-        Collection<VisualNode> children = NodeHelper.filterByType(vmodel2.getRoot().getChildren(), VisualNode.class);
-
-        vmodel1.selectNone();
-        if (vmodel1.reparent(vmodel1.getCurrentLevel(), vmodel2, vmodel2.getRoot(), null)) {
-            vmodel1.select(children);
-        }
-        // FIXME: Dirty hack to avoid any hanging observers (serialise and deserialise the model).
-        return cloneModel(me1);
     }
 
     /**
@@ -881,108 +743,12 @@ public final class Framework {
                 LogUtils.logError(e.getMessage());
             }
         }
-        saveModel(we.getModelEntry(), file);
+        WorkUtils.saveModel(we.getModelEntry(), we.getResources(), file);
+
         we.setChanged(false);
         if (mainWindow != null) {
             mainWindow.refreshWorkspaceEntryTitle(we, true);
         }
-    }
-
-    public void saveModel(ModelEntry me, File file) throws SerialisationException {
-        if (me == null) return;
-        try {
-            FileOutputStream stream = new FileOutputStream(file);
-            FileReferenceUtils.makeRelative(me.getVisualModel(), FileUtils.getBasePath(file));
-            saveModel(me, stream);
-            stream.close();
-        } catch (IOException e) {
-            throw new SerialisationException(e);
-        } finally {
-            FileReferenceUtils.makeAbsolute(me.getVisualModel());
-        }
-    }
-
-    public void saveModel(ModelEntry modelEntry, OutputStream out) throws SerialisationException {
-        Model model = modelEntry.getModel();
-        VisualModel visualModel = (model instanceof VisualModel) ? (VisualModel) model : null;
-        Model mathModel = (visualModel == null) ? model : visualModel.getMathModel();
-        ZipOutputStream zos = new ZipOutputStream(out);
-        try {
-            ModelSerialiser mathSerialiser = new XMLModelSerialiser(getPluginManager());
-            // serialise math model
-            zos.putNextEntry(new ZipEntry(MATH_MODEL_WORK_ENTRY));
-            mathModel.beforeSerialisation();
-            ReferenceProducer refResolver = mathSerialiser.serialise(mathModel, zos, null);
-            zos.closeEntry();
-            // serialise visual model
-            ModelSerialiser visualSerialiser = null;
-            if (visualModel != null) {
-                visualSerialiser = new XMLModelSerialiser(getPluginManager());
-
-                zos.putNextEntry(new ZipEntry(VISUAL_MODEL_WORK_ENTRY));
-                visualModel.beforeSerialisation();
-                ReferenceProducer visualRefs = visualSerialiser.serialise(visualModel, zos, refResolver);
-                zos.closeEntry();
-                // serialise visual model selection state
-                zos.putNextEntry(new ZipEntry(STATE_WORK_ENTRY));
-                FrameworkUtils.saveSelectionState(visualModel, zos, visualRefs);
-                zos.closeEntry();
-            }
-            // serialise meta data
-            zos.putNextEntry(new ZipEntry(META_WORK_ENTRY));
-            Document metaDoc = XmlUtils.createDocument();
-            Element metaRoot = metaDoc.createElement(META_WORK_ELEMENT);
-            metaDoc.appendChild(metaRoot);
-
-            Element metaVersion = metaDoc.createElement(META_VERSION_WORK_ELEMENT);
-            metaVersion.setAttribute(META_VERSION_MAJOR_WORK_ATTRIBUTE, Info.getVersionMajor());
-            metaVersion.setAttribute(META_VERSION_MINOR_WORK_ATTRIBUTE, Info.getVersionMinor());
-            metaVersion.setAttribute(META_VERSION_REVISION_WORK_ATTRIBUTE, Info.getVersionRevision());
-            metaVersion.setAttribute(META_VERSION_STATUS_WORK_ATTRIBUTE, Info.getVersionStatus());
-            metaRoot.appendChild(metaVersion);
-
-            Element metaStamp = metaDoc.createElement(META_STAMP_WORK_ELEMENT);
-            Stamp stamp = modelEntry.getStamp();
-            metaStamp.setAttribute(META_STAMP_TIME_WORK_ATTRIBUTE, stamp.time);
-            metaStamp.setAttribute(META_STAMP_UUID_WORK_ATTRIBUTE, stamp.uuid);
-            metaRoot.appendChild(metaStamp);
-
-            Element metaDescriptor = metaDoc.createElement(META_DESCRIPTOR_WORK_ELEMENT);
-            metaDescriptor.setAttribute(META_DESCRIPTOR_CLASS_WORK_ATTRIBUTE, modelEntry.getDescriptor().getClass().getCanonicalName());
-            metaRoot.appendChild(metaDescriptor);
-
-            Element mathElement = metaDoc.createElement(META_MATH_MODEL_WORK_ELEMENT);
-            mathElement.setAttribute(META_MODEL_ENTRY_NAME_WORK_ATTRIBUTE, MATH_MODEL_WORK_ENTRY);
-            mathElement.setAttribute(META_MODEL_FORMAT_UUID_WORK_ATTRIBUTE, mathSerialiser.getFormatUUID().toString());
-            metaRoot.appendChild(mathElement);
-
-            if (visualModel != null) {
-                Element visualElement = metaDoc.createElement(META_VISUAL_MODEL_WORK_ELEMENT);
-                visualElement.setAttribute(META_MODEL_ENTRY_NAME_WORK_ATTRIBUTE, VISUAL_MODEL_WORK_ENTRY);
-                visualElement.setAttribute(META_MODEL_FORMAT_UUID_WORK_ATTRIBUTE, visualSerialiser.getFormatUUID().toString());
-                metaRoot.appendChild(visualElement);
-            }
-            XmlUtils.writeDocument(metaDoc, zos);
-            zos.closeEntry();
-            zos.close();
-        } catch (ParserConfigurationException | IOException e) {
-            throw new SerialisationException(e);
-        }
-    }
-
-    public Memento saveModel(ModelEntry modelEntry) {
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        try {
-            saveModel(modelEntry, os);
-        } catch (SerialisationException e) {
-            throw new RuntimeException(e);
-        }
-        return new Memento(os.toByteArray());
-    }
-
-    public ModelEntry cloneModel(ModelEntry modelEntry) {
-        Memento memento = saveModel(modelEntry);
-        return loadModel(memento);
     }
 
     /**
