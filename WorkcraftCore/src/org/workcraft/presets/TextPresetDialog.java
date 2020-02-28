@@ -10,7 +10,6 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 
 public class TextPresetDialog extends ModalDialog<PresetManager<String>> implements PresetDialog<String> {
@@ -23,10 +22,6 @@ public class TextPresetDialog extends ModalDialog<PresetManager<String>> impleme
     public TextPresetDialog(Window owner, String title, PresetManager<String> presetManager, File helpFile) {
         super(owner, title, presetManager);
         this.helpFile = helpFile;
-        initialise();
-    }
-
-    private void initialise() {
         presetPanel.selectFirst();
         textArea.setCaretPosition(0);
         textArea.requestFocus();
@@ -37,15 +32,15 @@ public class TextPresetDialog extends ModalDialog<PresetManager<String>> impleme
         JPanel result = super.createControlsPanel();
         result.setLayout(GuiUtils.createBorderLayout());
         result.add(createTextPanel(), BorderLayout.CENTER);
+        // Preset panel has to be created the last as its guiMapper refers to other controls
         presetPanel = createPresetPanel();
         result.add(presetPanel, BorderLayout.NORTH);
         return result;
     }
 
     private PresetManagerPanel<String> createPresetPanel() {
-        ArrayList<Preset<String>> builtInPresets = new ArrayList<>();
         DataMapper<String> guiMapper = new TextDataMapper(textArea);
-        return new PresetManagerPanel<>(getUserData(), builtInPresets, guiMapper);
+        return new PresetManagerPanel<>(getUserData(), guiMapper);
     }
 
     private JPanel createTextPanel() {

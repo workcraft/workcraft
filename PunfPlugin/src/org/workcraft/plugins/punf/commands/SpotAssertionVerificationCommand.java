@@ -7,7 +7,6 @@ import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.SpotChainResultHandler;
 import org.workcraft.plugins.punf.tasks.SpotChainTask;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.presets.Preset;
 import org.workcraft.presets.PresetManager;
 import org.workcraft.presets.TextDataSerialiser;
 import org.workcraft.presets.TextPresetDialog;
@@ -53,11 +52,11 @@ public class SpotAssertionVerificationCommand extends AbstractVerificationComman
     public void run(WorkspaceEntry we) {
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
-        PresetManager<String> pmgr = new PresetManager<>(we, PRESET_KEY, DATA_SERIALISER, preservedData);
-        pmgr.add(getMutexSignalsPreset());
-        pmgr.add(getAcknowledgedRequestPreset());
+        PresetManager<String> presetManager = new PresetManager<>(we, PRESET_KEY, DATA_SERIALISER, preservedData);
+        presetManager.addExample("Every request is acknowledged", "G(\"req\" -> (\"ack\" M \"req\"))");
+        presetManager.addExample("Mutual exclusion of signals", "G((!\"u\") | (!\"v\"))");
 
-        TextPresetDialog dialog = new TextPresetDialog(mainWindow, "SPOT assertion", pmgr, null);
+        TextPresetDialog dialog = new TextPresetDialog(mainWindow, "SPOT assertion", presetManager, null);
         if (dialog.reveal()) {
             preservedData = dialog.getData();
             TaskManager manager = framework.getTaskManager();
@@ -65,18 +64,6 @@ public class SpotAssertionVerificationCommand extends AbstractVerificationComman
             SpotChainResultHandler monitor = new SpotChainResultHandler(we);
             manager.queue(task, "Running SPOT assertion [LTL2TGBA]", monitor);
         }
-    }
-
-    private Preset<String> getMutexSignalsPreset() {
-        String title = "Mutual exclusion of signals";
-        String expression = "G((!\"u\") | (!\"v\"))";
-        return new Preset<>("Example: " + title, expression, true);
-    }
-
-    private Preset<String> getAcknowledgedRequestPreset() {
-        String title = "Acknowledged request";
-        String expression = "G(\"req\" -> (\"ack\" M \"req\"))";
-        return new Preset<>("Example: " + title, expression, true);
     }
 
 }

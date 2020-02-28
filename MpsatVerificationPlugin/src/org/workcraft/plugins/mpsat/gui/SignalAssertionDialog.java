@@ -9,7 +9,6 @@ import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.VerificationParameters.SolutionMode;
 import org.workcraft.presets.DataMapper;
-import org.workcraft.presets.Preset;
 import org.workcraft.presets.PresetManagerPanel;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.GuiUtils;
@@ -19,7 +18,6 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 
 public class SignalAssertionDialog extends ModalDialog<MpsatPresetManager> {
@@ -29,10 +27,6 @@ public class SignalAssertionDialog extends ModalDialog<MpsatPresetManager> {
 
     public SignalAssertionDialog(Window owner, MpsatPresetManager presetManager) {
         super(owner, "Signal assertion", presetManager);
-        initialise();
-    }
-
-    private void initialise() {
         presetPanel.selectFirst();
         propertyText.setCaretPosition(0);
         propertyText.requestFocus();
@@ -42,15 +36,18 @@ public class SignalAssertionDialog extends ModalDialog<MpsatPresetManager> {
     public JPanel createControlsPanel() {
         JPanel result = super.createControlsPanel();
         result.setLayout(GuiUtils.createBorderLayout());
+        result.add(createAssertionPanel(), BorderLayout.CENTER);
+        // Preset panel has to be created the last as its guiMapper refers to other controls
         presetPanel = createPresetPanel();
         result.add(presetPanel, BorderLayout.NORTH);
-        result.add(createAssertionPanel(), BorderLayout.CENTER);
         return result;
     }
 
     private PresetManagerPanel<VerificationParameters> createPresetPanel() {
-        ArrayList<Preset<VerificationParameters>> builtInPresets = new ArrayList<>();
-        builtInPresets.add(getMutexSignalsPreset());
+        MpsatPresetManager presetManager = getUserData();
+        addExample(presetManager, "Mutual exclusion of signals",
+                "// Signals u and v are mutually exclusive\n"
+                + "!u || !v");
 
         DataMapper<VerificationParameters> guiMapper = new DataMapper<VerificationParameters>() {
             @Override
@@ -64,21 +61,17 @@ public class SignalAssertionDialog extends ModalDialog<MpsatPresetManager> {
             }
         };
 
-        return new PresetManagerPanel<>(getUserData(), builtInPresets, guiMapper);
+        return new PresetManagerPanel<>(presetManager, guiMapper);
     }
 
-    private Preset<VerificationParameters> getMutexSignalsPreset() {
-        String title = "Mutual exclusion of signals";
-        String expression = "// Signals u and v are mutually exclusive\n"
-                + "!u || !v";
-
+    private void addExample(MpsatPresetManager presetManager, String title, String expression) {
         VerificationParameters settings = new VerificationParameters(title,
                 VerificationMode.ASSERTION, 0,
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount(),
                 expression, true);
 
-        return new Preset<>("Example: " + title, settings, true);
+        presetManager.addExample(title, settings);
     }
 
     private JPanel createAssertionPanel() {

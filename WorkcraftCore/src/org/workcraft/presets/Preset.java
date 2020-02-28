@@ -1,7 +1,5 @@
 package org.workcraft.presets;
 
-import org.w3c.dom.Element;
-
 public class Preset<T> {
 
     private String description;
@@ -12,12 +10,6 @@ public class Preset<T> {
         this.description = description;
         this.data = data;
         this.builtIn = builtIn;
-    }
-
-    public Preset(Element element, DataSerialiser<T> serialiser) {
-        this.description = element.getAttribute(PresetManager.DESCRIPTION_ATTRIBUTE_NAME);
-        this.data = serialiser.fromXML(element);
-        this.builtIn = false;
     }
 
     public String getDescription() {
@@ -42,7 +34,7 @@ public class Preset<T> {
 
     @Override
     public String toString() {
-        return description.trim() + (builtIn ? " [built-in]" : "");
+        return getDescription();
     }
 
 }
