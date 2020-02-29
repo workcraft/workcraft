@@ -2,12 +2,14 @@ package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractTransformationCommand;
+import org.workcraft.dom.hierarchy.NamespaceProvider;
+import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.references.HierarchyReferenceManager;
+import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.VisualContact;
-import org.workcraft.plugins.circuit.VisualFunctionComponent;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.tasks.CheckTask;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
@@ -19,6 +21,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -62,7 +65,8 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
         }
         boolean checkConformation = true;
         boolean checkPersistency = true;
-        File envFile = circuit.getMathModel().getEnvironmentFile();
+        Circuit mathCircuit = circuit.getMathModel();
+        File envFile = mathCircuit.getEnvironmentFile();
         Stg envStg = StgUtils.loadStg(envFile);
         if (envStg == null) {
             String msg = "Environment STG is missing, so conformation cannot be checked during optimisation.\n\n" +
@@ -123,10 +127,33 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
                 DialogUtils.showInfo("All zero delay assumptions for the selected components are necessary.");
             }
         } else {
+            String infoString = ReferenceHelper.getTextWithReferences(
+                    "Zero delay assumption is removed for component", refs);
+
+            String questionString = refs.size() > 1
+                    ? "Update these components names to default values?"
+                    : "Update the component name to default value?";
+
+            if (DialogUtils.showConfirmInfo(infoString + "\n\n" + questionString)) {
+                renameOptimisedComponents(mathCircuit, refs);
+            }
             we.saveMemento();
-            DialogUtils.showInfo(ReferenceHelper.getTextWithReferences("Zero delay assumption is removed for component", refs));
         }
         return null;
+    }
+
+    private void renameOptimisedComponents(Circuit mathModel, Collection<String> refs) {
+        HierarchyReferenceManager refManager = mathModel.getReferenceManager();
+        for (String ref : refs) {
+            MathNode node = mathModel.getNodeByReference(ref);
+            if (node instanceof CircuitComponent) {
+                NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(node);
+                NameManager nameManager = refManager.getNameManager(namespaceProvider);
+                nameManager.setDefaultName(node);
+                String newRef = mathModel.getNodeReference(node);
+                LogUtils.logInfo("Component '" + ref + "' was renamed to '" + newRef + "'.");
+            }
+        }
     }
 
     private boolean checkPrerequisites(WorkspaceEntry we) {
