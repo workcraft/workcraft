@@ -1,7 +1,6 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.Framework;
-import org.workcraft.utils.WorkUtils;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat.VerificationMode;
@@ -12,15 +11,18 @@ import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
+import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
-import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
+import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.types.Pair;
 import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.WorkUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -201,14 +203,14 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
         if (!stg.getDummyTransitions().isEmpty()) {
             return false;
         }
-        for (String signal : stg.getSignalReferences()) {
-            HashSet<MathNode> places = new HashSet<>();
-            for (SignalTransition t : stg.getSignalTransitions(signal)) {
-                Set<MathNode> preset = stg.getPreset(t);
-                if (!Collections.disjoint(places, preset)) {
+        for (Place place : stg.getPlaces()) {
+            Set<String> postsetEvents = new HashSet<>();
+            for (MathNode node : stg.getPostset(place)) {
+                String ref = stg.getNodeReference(node);
+                Pair<String, Integer> pair = LabelParser.parseInstancedTransition(ref);
+                if ((pair != null) && !postsetEvents.add(pair.getFirst())) {
                     return false;
                 }
-                places.addAll(preset);
             }
         }
         return true;

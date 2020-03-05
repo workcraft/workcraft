@@ -30,21 +30,23 @@ public class PGMinerTask implements Task<ExternalProcessOutput> {
             command.add("-s");
         }
 
-        //Call PGMiner
+        // Call PGMiner
         ExternalProcessTask task = new ExternalProcessTask(command, new File("."));
         SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(mon);
 
-        if (result.getOutcome() != Outcome.SUCCESS) {
-            return result;
+        if (result.getOutcome() == Outcome.CANCEL) {
+            return Result.cancelation();
+        } else if (result.getOutcome() == Outcome.SUCCESS) {
+            ExternalProcessOutput output = result.getPayload();
+            if (output != null) {
+                if (output.getReturnCode() == 0) {
+                    return Result.success(output);
+                }
+                return Result.failure(output);
+            }
         }
-
-        ExternalProcessOutput output = result.getPayload();
-        if (output.getReturnCode() == 0) {
-            return Result.success(output);
-        } else {
-            return Result.failure(output);
-        }
+        return Result.exception(result.getCause());
     }
 
 }

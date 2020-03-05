@@ -57,17 +57,23 @@ public class PunfTask implements Task<PunfOutput> {
         SubtaskMonitor<? super ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
 
-        if (result.getOutcome() == Outcome.CANCEL) {
-            return Result.cancelation();
-        } else {
+        if (result.getOutcome() == Outcome.SUCCESS) {
             ExternalProcessOutput output = result.getPayload();
-            int returnCode = output.getReturnCode();
-            if ((result.getOutcome() == Outcome.SUCCESS) && ((returnCode == 0) || (returnCode == 1))) {
-                return Result.success(new PunfOutput(output));
-            } else {
-                return Result.failure(new PunfOutput(output));
+            if (output != null) {
+                PunfOutput punfOutput = new PunfOutput(output);
+                int returnCode = output.getReturnCode();
+                if ((returnCode == 0) || (returnCode == 1)) {
+                    return Result.success(punfOutput);
+                }
+                return Result.failure(punfOutput);
             }
         }
+
+        if (result.getOutcome() == Outcome.CANCEL) {
+            return Result.cancelation();
+        }
+
+        return Result.exception(result.getCause());
     }
 
 }

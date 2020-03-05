@@ -12,9 +12,9 @@ import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.petrify.PetrifyUtils;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
@@ -130,19 +130,24 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
         try {
             if (result.getOutcome() == Outcome.SUCCESS) {
                 ExternalProcessOutput output = result.getPayload();
-                String log = getFileContent(logFile);
-                String equations = getFileContent(eqnFile);
-                String verilog = getFileContent(verilogFile);
-                String stgOutput = getFileContent(outFile);
-                if (output.getReturnCode() != 0) {
-                    return Result.failure(new SynthesisOutput(output, log, equations, verilog, stgOutput));
+                if (output != null) {
+                    String log = getFileContent(logFile);
+                    String equations = getFileContent(eqnFile);
+                    String verilog = getFileContent(verilogFile);
+                    String stgOutput = getFileContent(outFile);
+                    SynthesisOutput synthesisOutput = new SynthesisOutput(output, log, equations, verilog, stgOutput);
+                    if (output.getReturnCode() == 0) {
+                        return Result.success(synthesisOutput);
+                    }
+                    return Result.failure(synthesisOutput);
                 }
-                return Result.success(new SynthesisOutput(output, log, equations, verilog, stgOutput));
             }
+
             if (result.getOutcome() == Outcome.CANCEL) {
                 return Result.cancelation();
             }
-            return Result.failure();
+
+            return Result.exception(result.getCause());
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {

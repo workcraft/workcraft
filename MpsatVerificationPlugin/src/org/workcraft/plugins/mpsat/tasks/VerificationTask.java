@@ -3,18 +3,13 @@ package org.workcraft.plugins.mpsat.tasks;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
-import org.workcraft.tasks.ExternalProcessOutput;
-import org.workcraft.tasks.ExternalProcessTask;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgImporter;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.Result;
+import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.tasks.SubtaskMonitor;
-import org.workcraft.tasks.Task;
 import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.ExecutableUtils;
+import org.workcraft.utils.FileUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -124,19 +119,20 @@ public class VerificationTask implements Task<VerificationOutput> {
 
         if (result.getOutcome() == Outcome.SUCCESS) {
             ExternalProcessOutput output = result.getPayload();
-            int returnCode = output.getReturnCode();
-            // Even if the return code is 0 or 1, still test MPSat output to make sure it has completed successfully.
-            boolean success = false;
-            if ((returnCode == 0) || (returnCode == 1)) {
-                Matcher matcherSuccess = patternSuccess.matcher(output.getStdoutString());
-                success = matcherSuccess.find();
-            }
-            if (!success) {
+            if (output != null) {
+                int returnCode = output.getReturnCode();
+                // Even if the return code is 0 or 1, still test MPSat output to make sure it has completed successfully.
+                boolean success = false;
+                if ((returnCode == 0) || (returnCode == 1)) {
+                    Matcher matcherSuccess = patternSuccess.matcher(output.getStdoutString());
+                    success = matcherSuccess.find();
+                }
+                if (success) {
+                    StgModel inputStg = readStg(netFile);
+                    StgModel outputStg = readStg(new File(directory, STG_FILE_NAME));
+                    return Result.success(new VerificationOutput(output, inputStg, outputStg));
+                }
                 return Result.failure(new VerificationOutput(output));
-            } else {
-                StgModel inputStg = readStg(netFile);
-                StgModel outputStg = readStg(new File(directory, STG_FILE_NAME));
-                return Result.success(new VerificationOutput(output, inputStg, outputStg));
             }
         }
 
@@ -144,7 +140,7 @@ public class VerificationTask implements Task<VerificationOutput> {
             return Result.cancelation();
         }
 
-        return Result.failure();
+        return Result.exception(result.getCause());
     }
 
     private StgModel readStg(File file) {

@@ -97,31 +97,31 @@ public class SynthesisTask implements Task<SynthesisOutput> {
 
         if (result.getOutcome() == Outcome.SUCCESS) {
             ExternalProcessOutput output = result.getPayload();
-            int returnCode = output.getReturnCode();
-            // Even if the return code is 0 or 1, still test MPSat output to make sure it has completed successfully.
-            boolean success = false;
-            if ((returnCode == 0) || (returnCode == 1)) {
-                Matcher matcherSuccess = patternSuccess.matcher(output.getStdoutString());
-                success = matcherSuccess.find();
-            }
-            if (!success) {
-                return Result.failure(new SynthesisOutput(output));
-            } else {
-                byte[] verilogOutput = null;
-                byte[] stgOutput = null;
-                try {
-                    File stgFile = new File(directory, STG_FILE_NAME);
-                    if (stgFile.exists()) {
-                        stgOutput = FileUtils.readAllBytes(stgFile);
-                    }
-                    if (verilogFile.exists()) {
-                        verilogOutput = FileUtils.readAllBytes(verilogFile);
-                    }
-                } catch (IOException e) {
-                    return Result.exception(e);
+            if (output != null) {
+                int returnCode = output.getReturnCode();
+                // Even if the return code is 0 or 1, still test MPSat output to make sure it has completed successfully.
+                boolean success = false;
+                if ((returnCode == 0) || (returnCode == 1)) {
+                    Matcher matcherSuccess = patternSuccess.matcher(output.getStdoutString());
+                    success = matcherSuccess.find();
                 }
-
-                return Result.success(new SynthesisOutput(output, stgOutput, verilogOutput));
+                if (success) {
+                    byte[] verilogOutput = null;
+                    byte[] stgOutput = null;
+                    try {
+                        File stgFile = new File(directory, STG_FILE_NAME);
+                        if (stgFile.exists()) {
+                            stgOutput = FileUtils.readAllBytes(stgFile);
+                        }
+                        if (verilogFile.exists()) {
+                            verilogOutput = FileUtils.readAllBytes(verilogFile);
+                        }
+                    } catch (IOException e) {
+                        return Result.exception(e);
+                    }
+                    return Result.success(new SynthesisOutput(output, stgOutput, verilogOutput));
+                }
+                return Result.failure(new SynthesisOutput(output));
             }
         }
 
@@ -129,7 +129,7 @@ public class SynthesisTask implements Task<SynthesisOutput> {
             return Result.cancelation();
         }
 
-        return Result.failure();
+        return Result.exception(result.getCause());
     }
 
 }
