@@ -62,7 +62,7 @@ public class PunfOutputParser {
             solution.setComment("Place '" + matcherNotSafe.group(1) + "' is unsafe");
             outcome = Pair.of(solution, Cause.NOT_SAFE);
         } else if (matcherEmptyPreset.find()) {
-            Solution solution = new Solution();
+            Solution solution = new Solution(new Trace());
             solution.setComment("Transition(s) with empty preset: " + matcherEmptyPreset.group(2));
             outcome = Pair.of(solution, Cause.EMPTY_PRESET);
         } else {

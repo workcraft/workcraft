@@ -16,7 +16,7 @@ public class VerificationOutputParser {
 
     /*
      * \R -- any Unicode linebreak sequence introduced in Java 8.
-     * It is equivalent to \u000D\u000A\u000A\u000B\u000C\u000D\u0085\u2028\u2029].
+     * It is equivalent to [\u000D\u000A\u000A\u000B\u000C\u000D\u0085\u2028\u2029].
      */
 
     private static final Pattern patternReachability0 = Pattern.compile(
@@ -49,7 +49,7 @@ public class VerificationOutputParser {
         solutions = new LinkedList<>();
         Matcher matcherReachability0 = patternReachability0.matcher(mpsatStdout);
         while (matcherReachability0.find()) {
-            Solution solution = new Solution();
+            Solution solution = new Solution(new Trace());
             solutions.add(solution);
         }
         Matcher matcherReachability1 = patternReachability1.matcher(mpsatStdout);

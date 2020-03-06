@@ -9,10 +9,6 @@ public class Solution {
     private String comment;
     private int loopPosition = -1;
 
-    public Solution() {
-        this(null, null);
-    }
-
     public Solution(Trace mainTrace) {
         this(mainTrace, null);
     }
