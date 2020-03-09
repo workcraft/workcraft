@@ -276,13 +276,15 @@ public class VerilogImporter implements Importer {
             Gate gate = createPrimitiveGate(verilogInstance);
             if (gate == null) {
                 Library library = LibraryManager.getLibrary();
-                if (substitutionRules == null) {
-                    substitutionRules = SubstitutionUtils.readImportSubstitutionRules();
+                if (library != null) {
+                    if (substitutionRules == null) {
+                        substitutionRules = SubstitutionUtils.readImportSubstitutionRules();
+                    }
+                    substitutionRule = substitutionRules.get(verilogInstance.moduleName);
+                    String msg = "Processing instance '" + verilogInstance.name + "' in module '" + verilogModule.name + "': ";
+                    String gateName = SubstitutionUtils.getModuleSubstitutionName(verilogInstance.moduleName, substitutionRule, msg);
+                    gate = library.get(gateName);
                 }
-                substitutionRule = substitutionRules.get(verilogInstance.moduleName);
-                String msg = "Processing instance '" + verilogInstance.name + "' in module '" + verilogModule.name + "': ";
-                String gateName = SubstitutionUtils.getModuleSubstitutionName(verilogInstance.moduleName, substitutionRule,  msg);
-                gate = library.get(gateName);
             }
             FunctionComponent component = null;
             if (gate != null) {

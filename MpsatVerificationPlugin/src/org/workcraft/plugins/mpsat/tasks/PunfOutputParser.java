@@ -49,7 +49,7 @@ public class PunfOutputParser {
             Pattern.UNIX_LINES);
 
     public PunfOutputParser(PunfOutput output) {
-        String stderr = output.getStderrString();
+        String stderr = output == null ? "" : output.getStderrString();
         Matcher matcherInconsistent = patternInconsistent.matcher(stderr);
         Matcher matcherNotSafe = patternNotSafe.matcher(stderr);
         Matcher matcherEmptyPreset = patternEmptyPreset.matcher(stderr);
