@@ -48,16 +48,12 @@ public class Result<T> {
         return payload;
     }
 
-    public static <T> Result<T> exception(Throwable e) {
-        return new Result<>(e);
+    public static <T> Result<T> success(T payload) {
+        return new Result<>(Outcome.SUCCESS, payload);
     }
 
     public static <T> Result<T> cancelation() {
         return new Result<>(Outcome.CANCEL);
-    }
-
-    public static <T> Result<T> success(T payload) {
-        return new Result<>(Outcome.SUCCESS, payload);
     }
 
     public static <T> Result<T> failure() {
@@ -66,6 +62,10 @@ public class Result<T> {
 
     public static <T> Result<T> failure(T payload) {
         return new Result<>(Outcome.FAILURE, payload);
+    }
+
+    public static <T> Result<T> exception(Throwable e) {
+        return new Result<>(e);
     }
 
 }

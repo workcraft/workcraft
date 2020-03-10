@@ -85,7 +85,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionOutput> {
                 if (petriExportResult.getOutcome() == Outcome.CANCEL) {
                     return Result.cancelation();
                 }
-                return Result.failure();
+                return Result.exception(petriExportResult.getCause());
             }
             monitor.progressUpdate(0.20);
 

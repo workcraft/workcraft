@@ -1,13 +1,13 @@
 package org.workcraft.plugins.petrify.commands;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class GeneralisedCelementSynthesisCommand extends AbstractSynthesisCommand {
 
     @Override
     public List<String> getSynthesisParameter() {
-        return Arrays.asList("-gc");
+        return Collections.singletonList("-gc");
     }
 
     @Override

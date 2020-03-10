@@ -75,7 +75,6 @@ public class LabelParser {
         }
         return result;
     }
-            // FIXME: This is to rename toggle events from x to x~
 
     public static Pair<String, Integer> parseInstancedTransition(String s) {
         Pair<String, Integer> result = null;

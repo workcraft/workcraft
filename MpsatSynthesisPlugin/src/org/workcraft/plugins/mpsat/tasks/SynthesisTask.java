@@ -7,7 +7,6 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.ExecutableUtils;
 import org.workcraft.utils.FileUtils;
-import org.workcraft.utils.LogUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,14 +56,18 @@ public class SynthesisTask implements Task<SynthesisOutput> {
 
         // Technology mapping library (if needed and accepted)
         String gateLibrary = ExecutableUtils.getAbsoluteCommandPath(CircuitSettings.getGateLibrary());
-        if (needsGateLibrary && (gateLibrary != null) && !gateLibrary.isEmpty()) {
-            File gateLibraryFile = new File(gateLibrary);
-            if (gateLibraryFile.exists()) {
-                command.add("-d");
-                command.add(gateLibraryFile.getAbsolutePath());
-            } else {
-                LogUtils.logWarning("Cannot find gate library file '" + gateLibrary + "'. Using built-in gate library of MPSat.");
+        if (needsGateLibrary) {
+            if ((gateLibrary == null) || gateLibrary.isEmpty()) {
+                return Result.exception(new IOException("Gate library is not specified.\n" +
+                        "Check '" + CircuitSettings.GATE_LIBRARY_TITLE + "' item in Digital Circuit preferences."));
             }
+            File gateLibraryFile = new File(gateLibrary);
+            if (!FileUtils.checkAvailability(gateLibraryFile, "Gate library access error", false)) {
+                return Result.exception(new IOException("Cannot find gate library file '" + gateLibrary + "'.\n" +
+                        "Check '" + CircuitSettings.GATE_LIBRARY_TITLE + "' item in Digital Circuit preferences."));
+            }
+            command.add("-d");
+            command.add(gateLibraryFile.getAbsolutePath());
         }
 
         // Extra arguments (should go before the file parameters)
@@ -97,31 +100,31 @@ public class SynthesisTask implements Task<SynthesisOutput> {
 
         if (result.getOutcome() == Outcome.SUCCESS) {
             ExternalProcessOutput output = result.getPayload();
-            int returnCode = output.getReturnCode();
-            // Even if the return code is 0 or 1, still test MPSat output to make sure it has completed successfully.
-            boolean success = false;
-            if ((returnCode == 0) || (returnCode == 1)) {
-                Matcher matcherSuccess = patternSuccess.matcher(output.getStdoutString());
-                success = matcherSuccess.find();
-            }
-            if (!success) {
-                return Result.failure(new SynthesisOutput(output));
-            } else {
-                byte[] verilogOutput = null;
-                byte[] stgOutput = null;
-                try {
-                    File stgFile = new File(directory, STG_FILE_NAME);
-                    if (stgFile.exists()) {
-                        stgOutput = FileUtils.readAllBytes(stgFile);
-                    }
-                    if (verilogFile.exists()) {
-                        verilogOutput = FileUtils.readAllBytes(verilogFile);
-                    }
-                } catch (IOException e) {
-                    return Result.exception(e);
+            if (output != null) {
+                int returnCode = output.getReturnCode();
+                // Even if the return code is 0 or 1, still test MPSat output to make sure it has completed successfully.
+                boolean success = false;
+                if ((returnCode == 0) || (returnCode == 1)) {
+                    Matcher matcherSuccess = patternSuccess.matcher(output.getStdoutString());
+                    success = matcherSuccess.find();
                 }
-
-                return Result.success(new SynthesisOutput(output, stgOutput, verilogOutput));
+                if (success) {
+                    byte[] verilogOutput = null;
+                    byte[] stgOutput = null;
+                    try {
+                        File stgFile = new File(directory, STG_FILE_NAME);
+                        if (stgFile.exists()) {
+                            stgOutput = FileUtils.readAllBytes(stgFile);
+                        }
+                        if (verilogFile.exists()) {
+                            verilogOutput = FileUtils.readAllBytes(verilogFile);
+                        }
+                    } catch (IOException e) {
+                        return Result.exception(e);
+                    }
+                    return Result.success(new SynthesisOutput(output, stgOutput, verilogOutput));
+                }
+                return Result.failure(new SynthesisOutput(output));
             }
         }
 
@@ -129,7 +132,7 @@ public class SynthesisTask implements Task<SynthesisOutput> {
             return Result.cancelation();
         }
 
-        return Result.failure();
+        return Result.exception(result.getCause());
     }
 
 }

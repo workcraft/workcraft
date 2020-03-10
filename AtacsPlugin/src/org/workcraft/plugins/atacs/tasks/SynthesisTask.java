@@ -6,9 +6,9 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.atacs.AtacsSettings;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.LpnFormat;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
@@ -81,21 +81,25 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
         try {
             if (result.getOutcome() == Outcome.SUCCESS) {
                 ExternalProcessOutput output = result.getPayload();
-                String verilog = getFileContent(verilogFile);
-                if (output.getReturnCode() != 0) {
-                    return Result.failure(new SynthesisOutput(output, verilog));
+                if (output != null) {
+                    String verilog = getFileContent(verilogFile);
+                    SynthesisOutput synthesisOutput = new SynthesisOutput(output, verilog);
+                    if (output.getReturnCode() == 0) {
+                        return Result.success(synthesisOutput);
+                    }
+                    return Result.failure(synthesisOutput);
                 }
-                return Result.success(new SynthesisOutput(output, verilog));
             }
+
             if (result.getOutcome() == Outcome.CANCEL) {
                 return Result.cancelation();
             }
-            return Result.failure();
+
+            return Result.exception(result.getCause());
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
-            we.cancelMemento();
         }
     }
 

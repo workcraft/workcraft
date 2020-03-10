@@ -76,17 +76,21 @@ public class ConversionTask implements Task<ConversionOutput>, ExternalProcessLi
         try {
             if (result.getOutcome() == Outcome.SUCCESS) {
                 ExternalProcessOutput output = result.getPayload();
-                if (output.getReturnCode() != 0) {
+                if (output != null) {
+                    if (output.getReturnCode() == 0) {
+                        String ext = SgFormat.getInstance().getExtension();
+                        File[] files = directory.listFiles(file -> file.getName().endsWith(ext));
+                        return Result.success(new ConversionOutput(output, files));
+                    }
                     return Result.failure(new ConversionOutput(output, null));
                 }
-                String ext = SgFormat.getInstance().getExtension();
-                File[] files = directory.listFiles(file -> file.getName().endsWith(ext));
-                return Result.success(new ConversionOutput(output, files));
             }
+
             if (result.getOutcome() == Outcome.CANCEL) {
                 return Result.cancelation();
             }
-            return Result.failure();
+
+            return Result.exception(result.getCause());
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
             we.cancelMemento();

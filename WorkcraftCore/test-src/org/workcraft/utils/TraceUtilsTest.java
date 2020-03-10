@@ -13,15 +13,15 @@ public class TraceUtilsTest {
 
     @Test
     public void hasTraceTest() {
-        Assert.assertFalse(new Solution().hasTrace());
-        Assert.assertTrue(new Solution(null, new Trace()).hasTrace());
+        Assert.assertFalse(new Solution(null, null).hasTrace());
         Assert.assertTrue(new Solution(new Trace()).hasTrace());
         Assert.assertTrue(new Solution(new Trace(), new Trace()).hasTrace());
+        Assert.assertTrue(new Solution(null, new Trace()).hasTrace());
     }
 
     @Test
     public void serialiseSolutionTest() {
-        Assert.assertNull(new Solution().toString());
+        Assert.assertNull(new Solution(null).toString());
         Assert.assertEquals("[empty]", new Solution(new Trace()).toString());
         serialiseSolutionCheck(null, -1, null, -1, -1, null);
         serialiseSolutionCheck(Arrays.asList(""), 0, null, -1, -1, "");

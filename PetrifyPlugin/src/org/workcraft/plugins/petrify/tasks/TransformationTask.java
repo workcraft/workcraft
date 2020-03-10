@@ -18,11 +18,11 @@ import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.petrify.PetrifyUtils;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.interop.StgImporter;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
@@ -149,7 +149,7 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
             if (result.getOutcome() == Outcome.CANCEL) {
                 return Result.cancelation();
             }
-            return Result.failure();
+            return Result.exception(result.getCause());
         } catch (Throwable e) {
             throw new RuntimeException(e);
         } finally {

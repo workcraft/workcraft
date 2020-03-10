@@ -7,14 +7,15 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.ExternalProcessListener;
+import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.petrify.PetrifyUtils;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
@@ -32,11 +33,13 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
     private final WorkspaceEntry we;
     private final List<String> args;
     private final Collection<Mutex> mutexes;
+    private final boolean needsGateLibrary;
 
-    public SynthesisTask(WorkspaceEntry we, List<String> args, Collection<Mutex> mutexes) {
+    public SynthesisTask(WorkspaceEntry we, List<String> args, Collection<Mutex> mutexes, boolean needsGateLibrary) {
         this.we = we;
         this.args = args;
         this.mutexes = mutexes;
+        this.needsGateLibrary = needsGateLibrary;
     }
 
     @Override
@@ -49,6 +52,22 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
 
         // Built-in arguments
         command.addAll(args);
+
+        // Technology mapping library (if needed and accepted)
+        String gateLibrary = ExecutableUtils.getAbsoluteCommandPath(CircuitSettings.getGateLibrary());
+        if (needsGateLibrary) {
+            if ((gateLibrary == null) || gateLibrary.isEmpty()) {
+                return Result.exception(new IOException("Gate library is not specified.\n" +
+                        "Check '" + CircuitSettings.GATE_LIBRARY_TITLE + "' item in Digital Circuit preferences."));
+            }
+            File gateLibraryFile = new File(gateLibrary);
+            if (!FileUtils.checkAvailability(gateLibraryFile, "Gate library access error", false)) {
+                return Result.exception(new IOException("Cannot find gate library file '" + gateLibrary + "'.\n" +
+                        "Check '" + CircuitSettings.GATE_LIBRARY_TITLE + "' item in Digital Circuit preferences."));
+            }
+            command.add("-lib");
+            command.add(gateLibraryFile.getAbsolutePath());
+        }
 
         // Extra arguments (should go before the file parameters)
         String extraArgs = PetrifySettings.getArgs();
@@ -130,19 +149,24 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
         try {
             if (result.getOutcome() == Outcome.SUCCESS) {
                 ExternalProcessOutput output = result.getPayload();
-                String log = getFileContent(logFile);
-                String equations = getFileContent(eqnFile);
-                String verilog = getFileContent(verilogFile);
-                String stgOutput = getFileContent(outFile);
-                if (output.getReturnCode() != 0) {
-                    return Result.failure(new SynthesisOutput(output, log, equations, verilog, stgOutput));
+                if (output != null) {
+                    String log = getFileContent(logFile);
+                    String equations = getFileContent(eqnFile);
+                    String verilog = getFileContent(verilogFile);
+                    String stgOutput = getFileContent(outFile);
+                    SynthesisOutput synthesisOutput = new SynthesisOutput(output, log, equations, verilog, stgOutput);
+                    if (output.getReturnCode() == 0) {
+                        return Result.success(synthesisOutput);
+                    }
+                    return Result.failure(synthesisOutput);
                 }
-                return Result.success(new SynthesisOutput(output, log, equations, verilog, stgOutput));
             }
+
             if (result.getOutcome() == Outcome.CANCEL) {
                 return Result.cancelation();
             }
-            return Result.failure();
+
+            return Result.exception(result.getCause());
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {

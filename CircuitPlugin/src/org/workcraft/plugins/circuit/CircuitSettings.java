@@ -24,6 +24,8 @@ import java.util.regex.Pattern;
 
 public class CircuitSettings extends AbstractModelSettings {
 
+    public static final String GATE_LIBRARY_TITLE = "Gate library for technology mapping";
+
     private static final Pattern MUTEX_DATA_PATTERN = Pattern.compile(
             "(\\w+)\\(\\((\\w+),(\\w+)\\),\\((\\w+),(\\w+)\\)\\)");
 
@@ -186,7 +188,7 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::getSimplifyStg));
 
         properties.add(new PropertyDeclaration<>(File.class,
-                "Gate library for technology mapping",
+                GATE_LIBRARY_TITLE,
                 value -> setGateLibrary(ExecutableUtils.getBaseRelativePath(value)),
                 () -> ExecutableUtils.getBaseRelativeFile(getGateLibrary())));
 

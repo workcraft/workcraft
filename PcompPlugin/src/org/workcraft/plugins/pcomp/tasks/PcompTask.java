@@ -1,17 +1,12 @@
 package org.workcraft.plugins.pcomp.tasks;
 
+import org.workcraft.plugins.pcomp.PcompSettings;
+import org.workcraft.tasks.*;
+import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.utils.ExecutableUtils;
+
 import java.io.File;
 import java.util.ArrayList;
-
-import org.workcraft.plugins.pcomp.PcompSettings;
-import org.workcraft.tasks.ExternalProcessOutput;
-import org.workcraft.tasks.ExternalProcessTask;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.tasks.SubtaskMonitor;
-import org.workcraft.tasks.Task;
-import org.workcraft.utils.ExecutableUtils;
 
 public class PcompTask implements Task<PcompOutput> {
 
@@ -94,17 +89,23 @@ public class PcompTask implements Task<PcompOutput> {
         SubtaskMonitor<? super ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
 
-        if (result.getOutcome() == Outcome.CANCEL) {
-            return Result.cancelation();
-        } else {
-            int returnCode = result.getPayload().getReturnCode();
-            PcompOutput output = new PcompOutput(result.getPayload(), inputFiles, outputFile, detailFile);
-            if ((result.getOutcome() == Outcome.SUCCESS) && ((returnCode == 0) || (returnCode == 1))) {
-                return Result.success(output);
-            } else {
-                return Result.failure(output);
+        if (result.getOutcome() == Outcome.SUCCESS) {
+            ExternalProcessOutput output = result.getPayload();
+            if (output != null) {
+                int returnCode = output.getReturnCode();
+                PcompOutput pcompOutput = new PcompOutput(output, inputFiles, outputFile, detailFile);
+                if ((returnCode == 0) || (returnCode == 1)) {
+                    return Result.success(pcompOutput);
+                }
+                return Result.failure(pcompOutput);
             }
         }
+
+        if (result.getOutcome() == Outcome.CANCEL) {
+            return Result.cancelation();
+        }
+
+        return Result.exception(result.getCause());
     }
 
 }
