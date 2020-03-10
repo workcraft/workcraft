@@ -94,9 +94,9 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
             monitor.progressUpdate(0.66);
 
             // Run MPSat on the generated unfolding
-            boolean needLib = settings.getMode().needLib();
+            boolean needsGateLibrary = settings.getMode().needLib();
             SynthesisTask mpsatTask = new SynthesisTask(settings.getMpsatArguments(directory),
-                    unfoldingFile.getAbsolutePath(), directory, needLib);
+                    unfoldingFile.getAbsolutePath(), directory, needsGateLibrary);
             Result<? extends SynthesisOutput> mpsatResult = framework.getTaskManager().execute(
                     mpsatTask, "Running synthesis [MPSat]", subtaskMonitor);
 

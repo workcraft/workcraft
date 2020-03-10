@@ -1,21 +1,13 @@
 package org.workcraft.plugins.petrify.commands;
 
-import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.utils.ExecutableUtils;
-
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class TechnologyMappingSynthesisCommand extends AbstractSynthesisCommand {
 
     @Override
     public List<String> getSynthesisParameter() {
-        String gateLibrary = ExecutableUtils.getAbsoluteCommandPath(CircuitSettings.getGateLibrary());
-        if ((gateLibrary == null) || gateLibrary.isEmpty()) {
-            return Arrays.asList("-tm");
-        } else {
-            return Arrays.asList("-tm", "-lib", gateLibrary);
-        }
+        return Collections.singletonList("-tm");
     }
 
     @Override

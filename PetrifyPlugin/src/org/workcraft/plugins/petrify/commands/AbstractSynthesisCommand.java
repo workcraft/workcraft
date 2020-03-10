@@ -45,10 +45,10 @@ public abstract class AbstractSynthesisCommand extends  org.workcraft.commands.A
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
         Framework framework = Framework.getInstance();
         TaskManager taskManager = framework.getTaskManager();
-        SynthesisTask task = new SynthesisTask(we, getSynthesisParameter(), mutexes);
-        SynthesisResultHandler monitor = new SynthesisResultHandler(we,
+        SynthesisTask task = new SynthesisTask(we, getSynthesisParameter(), mutexes, technologyMapping());
+        SynthesisResultHandler monitor = new SynthesisResultHandler(we, mutexes,
                 boxSequentialComponents(), boxCombinationalComponents(), sequentialAssign(),
-                technologyMapping(), mutexes);
+                technologyMapping());
 
         taskManager.queue(task, "Petrify logic synthesis", monitor);
         return monitor;

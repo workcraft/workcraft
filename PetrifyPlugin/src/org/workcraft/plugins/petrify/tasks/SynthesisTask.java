@@ -7,6 +7,7 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.ExternalProcessListener;
+import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.plugins.petrify.PetrifySettings;
@@ -32,11 +33,13 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
     private final WorkspaceEntry we;
     private final List<String> args;
     private final Collection<Mutex> mutexes;
+    private final boolean needsGateLibrary;
 
-    public SynthesisTask(WorkspaceEntry we, List<String> args, Collection<Mutex> mutexes) {
+    public SynthesisTask(WorkspaceEntry we, List<String> args, Collection<Mutex> mutexes, boolean needsGateLibrary) {
         this.we = we;
         this.args = args;
         this.mutexes = mutexes;
+        this.needsGateLibrary = needsGateLibrary;
     }
 
     @Override
@@ -49,6 +52,22 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
 
         // Built-in arguments
         command.addAll(args);
+
+        // Technology mapping library (if needed and accepted)
+        String gateLibrary = ExecutableUtils.getAbsoluteCommandPath(CircuitSettings.getGateLibrary());
+        if (needsGateLibrary) {
+            if ((gateLibrary == null) || gateLibrary.isEmpty()) {
+                return Result.exception(new IOException("Gate library is not specified.\n" +
+                        "Check '" + CircuitSettings.GATE_LIBRARY_TITLE + "' item in Digital Circuit preferences."));
+            }
+            File gateLibraryFile = new File(gateLibrary);
+            if (!FileUtils.checkAvailability(gateLibraryFile, "Gate library access error", false)) {
+                return Result.exception(new IOException("Cannot find gate library file '" + gateLibrary + "'.\n" +
+                        "Check '" + CircuitSettings.GATE_LIBRARY_TITLE + "' item in Digital Circuit preferences."));
+            }
+            command.add("-lib");
+            command.add(gateLibraryFile.getAbsolutePath());
+        }
 
         // Extra arguments (should go before the file parameters)
         String extraArgs = PetrifySettings.getArgs();

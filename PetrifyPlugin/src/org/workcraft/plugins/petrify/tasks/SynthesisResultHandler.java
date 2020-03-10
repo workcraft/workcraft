@@ -42,56 +42,56 @@ public class SynthesisResultHandler extends AbstractExtendedResultHandler<Synthe
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
 
     private final WorkspaceEntry we;
+    private final Collection<Mutex> mutexes;
     private final boolean boxSequentialComponents;
     private final boolean boxCombinationalComponents;
     private final boolean sequentialAssign;
     private final boolean technologyMapping;
-    private final Collection<Mutex> mutexes;
 
-    public SynthesisResultHandler(WorkspaceEntry we,
+    public SynthesisResultHandler(WorkspaceEntry we, Collection<Mutex> mutexes,
             boolean boxSequentialComponents, boolean boxCombinationalComponents,
-            boolean sequentialAssign, boolean technologyMapping, Collection<Mutex> mutexes) {
+            boolean sequentialAssign, boolean technologyMapping) {
 
         this.we = we;
+        this.mutexes = mutexes;
         this.boxSequentialComponents = boxSequentialComponents;
         this.boxCombinationalComponents = boxCombinationalComponents;
         this.sequentialAssign = sequentialAssign;
         this.technologyMapping = technologyMapping;
-        this.mutexes = mutexes;
     }
 
     @Override
-    public WorkspaceEntry handleResult(Result<? extends SynthesisOutput> result) {
+    public WorkspaceEntry handleResult(Result<? extends SynthesisOutput> synthResult) {
         WorkspaceEntry weResult = null;
-        SynthesisOutput petrifyResult = result.getPayload();
-        if (result.getOutcome() == Outcome.SUCCESS) {
-            weResult = handleSuccess(petrifyResult);
-        } else if (result.getOutcome() == Outcome.FAILURE) {
-            handleFailure(petrifyResult);
+        if (synthResult.getOutcome() == Outcome.SUCCESS) {
+            weResult = handleSuccess(synthResult);
+        } else if (synthResult.getOutcome() == Outcome.FAILURE) {
+            handleFailure(synthResult);
         }
         return weResult;
     }
 
-    private WorkspaceEntry handleSuccess(SynthesisOutput petrifyOutput) {
-        String log = petrifyOutput.getLog();
+    private WorkspaceEntry handleSuccess(Result<? extends SynthesisOutput> synthResult) {
+        SynthesisOutput synthOutput = synthResult.getPayload();
+        String log = synthOutput.getLog();
         if ((log != null) && !log.isEmpty()) {
             LogUtils.logInfo("Petrify synthesis log:");
             System.out.println(log);
         }
 
-        String equations = petrifyOutput.getEquation();
+        String equations = synthOutput.getEquation();
         if ((equations != null) && !equations.isEmpty()) {
             LogUtils.logInfo("Petrify synthesis result in EQN format:");
             System.out.println(equations);
         }
 
         // Open STG if new signals are inserted BEFORE importing the Verilog.
-        handleStgSynthesisOutput(petrifyOutput);
+        handleStgSynthesisOutput(synthOutput);
 
-        WorkspaceEntry result = handleVerilogSynthesisOutput(petrifyOutput);
+        WorkspaceEntry result = handleVerilogSynthesisOutput(synthOutput);
 
         // Report inserted CSC signals and unmapped signals AFTER importing the Verilog, so the circuit is visible.
-        checkNewSignals(petrifyOutput);
+        checkNewSignals(synthOutput);
         if (technologyMapping) {
             CircuitUtils.mapUnmappedBuffers(result);
             CircuitUtils.checkUnmappedSignals(result);
@@ -100,8 +100,8 @@ public class SynthesisResultHandler extends AbstractExtendedResultHandler<Synthe
         return result;
     }
 
-    private void checkNewSignals(SynthesisOutput petrifyOutput) {
-        String errorMessage = petrifyOutput.getStderrString();
+    private void checkNewSignals(SynthesisOutput synthOutput) {
+        String errorMessage = synthOutput.getStderrString();
         List<String> stateSignals = getMatchedSignals(errorMessage, patternAddingStateSignal);
         if (!stateSignals.isEmpty()) {
             String msg = ReferenceHelper.getTextWithReferences(
@@ -119,16 +119,16 @@ public class SynthesisResultHandler extends AbstractExtendedResultHandler<Synthe
         return result;
     }
 
-    private WorkspaceEntry handleStgSynthesisOutput(SynthesisOutput petrifyOutput) {
+    private WorkspaceEntry handleStgSynthesisOutput(SynthesisOutput synthOutput) {
         if (PetrifySettings.getOpenSynthesisStg()) {
-            return StgUtils.createStgIfNewSignals(we, petrifyOutput.getStg().getBytes());
+            return StgUtils.createStgIfNewSignals(we, synthOutput.getStg().getBytes());
         }
         return null;
     }
 
-    private WorkspaceEntry handleVerilogSynthesisOutput(SynthesisOutput petrifyOutput) {
-        WorkspaceEntry dstWe = null;
-        String verilogOutput = petrifyOutput.getVerilog();
+    private WorkspaceEntry handleVerilogSynthesisOutput(SynthesisOutput synthOutput) {
+        WorkspaceEntry result = null;
+        String verilogOutput = synthOutput.getVerilog();
         if ((verilogOutput != null) && !verilogOutput.isEmpty()) {
             LogUtils.logInfo("Petrify synthesis result in Verilog format:");
             System.out.println(verilogOutput);
@@ -142,9 +142,9 @@ public class SynthesisResultHandler extends AbstractExtendedResultHandler<Synthe
                 Path<String> path = we.getWorkspacePath();
                 ModelEntry dstMe = new ModelEntry(new CircuitDescriptor(), circuit);
                 Framework framework = Framework.getInstance();
-                dstWe = framework.createWork(dstMe, path);
+                result = framework.createWork(dstMe, path);
 
-                VisualModel visualModel = dstWe.getModelEntry().getVisualModel();
+                VisualModel visualModel = result.getModelEntry().getVisualModel();
                 if (visualModel instanceof VisualCircuit) {
                     final VisualCircuit visualCircuit = (VisualCircuit) visualModel;
                     setComponentsRenderStyle(visualCircuit);
@@ -166,7 +166,7 @@ public class SynthesisResultHandler extends AbstractExtendedResultHandler<Synthe
                 throw new RuntimeException(e);
             }
         }
-        return dstWe;
+        return result;
     }
 
     private void setComponentsRenderStyle(final VisualCircuit visualCircuit) {
@@ -195,10 +195,19 @@ public class SynthesisResultHandler extends AbstractExtendedResultHandler<Synthe
         }
     }
 
-    private void handleFailure(SynthesisOutput petrifyOutput) {
-        String errorMessage = "Error: Petrify synthesis failed.";
-        if (petrifyOutput != null) {
-            errorMessage += ERROR_CAUSE_PREFIX + petrifyOutput.getStderrString();
+    private void handleFailure(Result<? extends SynthesisOutput> synthResult) {
+        String errorMessage = "Petrify synthesis failed.";
+        final Throwable genericCause = synthResult.getCause();
+        if (genericCause != null) {
+            // Exception was thrown somewhere in the chain task run() method (not in any of the subtasks)
+            errorMessage += ERROR_CAUSE_PREFIX + genericCause.toString();
+        } else {
+            final SynthesisOutput synthOutput = synthResult.getPayload();
+            if (synthOutput != null) {
+                errorMessage += ERROR_CAUSE_PREFIX + synthOutput.getErrorsHeadAndTail();
+            } else {
+                errorMessage += "\n\nPetrify task returned failure status without further explanation.";
+            }
         }
         DialogUtils.showError(errorMessage);
     }

@@ -7,7 +7,6 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.ExecutableUtils;
 import org.workcraft.utils.FileUtils;
-import org.workcraft.utils.LogUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,14 +56,18 @@ public class SynthesisTask implements Task<SynthesisOutput> {
 
         // Technology mapping library (if needed and accepted)
         String gateLibrary = ExecutableUtils.getAbsoluteCommandPath(CircuitSettings.getGateLibrary());
-        if (needsGateLibrary && (gateLibrary != null) && !gateLibrary.isEmpty()) {
-            File gateLibraryFile = new File(gateLibrary);
-            if (gateLibraryFile.exists()) {
-                command.add("-d");
-                command.add(gateLibraryFile.getAbsolutePath());
-            } else {
-                LogUtils.logWarning("Cannot find gate library file '" + gateLibrary + "'. Using built-in gate library of MPSat.");
+        if (needsGateLibrary) {
+            if ((gateLibrary == null) || gateLibrary.isEmpty()) {
+                return Result.exception(new IOException("Gate library is not specified.\n" +
+                        "Check '" + CircuitSettings.GATE_LIBRARY_TITLE + "' item in Digital Circuit preferences."));
             }
+            File gateLibraryFile = new File(gateLibrary);
+            if (!FileUtils.checkAvailability(gateLibraryFile, "Gate library access error", false)) {
+                return Result.exception(new IOException("Cannot find gate library file '" + gateLibrary + "'.\n" +
+                        "Check '" + CircuitSettings.GATE_LIBRARY_TITLE + "' item in Digital Circuit preferences."));
+            }
+            command.add("-d");
+            command.add(gateLibraryFile.getAbsolutePath());
         }
 
         // Extra arguments (should go before the file parameters)

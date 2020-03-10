@@ -7,7 +7,6 @@ import org.workcraft.utils.LogUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 public class ExternalProcessTask implements Task<ExternalProcessOutput>, ExternalProcessListener {
@@ -74,8 +73,7 @@ public class ExternalProcessTask implements Task<ExternalProcessOutput>, Externa
         }
 
         ExternalProcessOutput output = new ExternalProcessOutput(
-                returnCode, stdoutAccum.getData(), stderrAccum.getData(),
-                Collections.emptyMap());
+                returnCode, stdoutAccum.getData(), stderrAccum.getData());
 
         return Result.success(output);
     }

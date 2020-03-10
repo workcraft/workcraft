@@ -38,6 +38,14 @@ public class MissingToolTests {
         testMissingTool();
     }
 
+    @Test
+    public void testMissingGenlibVerification() throws DeserialisationException {
+        PunfSettings.setCommand(TestUtils.getToolPath("UnfoldingTools", "punf"));
+        MpsatSynthesisSettings.setCommand(TestUtils.getToolPath("UnfoldingTools", "mpsat"));
+        CircuitSettings.setGateLibrary(TestUtils.getLibraryPath("workcraft.lib-missing"));
+        testMissingTool();
+    }
+
     private void testMissingTool() throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
