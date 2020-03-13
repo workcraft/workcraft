@@ -4,10 +4,9 @@ plugin_dirs="*Plugin/"
 core_dir="WorkcraftCore"
 dist_dir="dist"
 
-allplatforms="windows linux osx"
-platforms="all"
 bname="$(basename $0)"
-tag="$(git describe --tags)"
+allplatforms="windows linux osx"
+
 
 usage() {
     cat <<EOF
@@ -16,8 +15,9 @@ $bname: create a distribution for Workcraft as workcraft-tag-platform archive
 Usage: $bname [platforms] [-t TAG] [-h]
 
   platforms:     distribution platforms to build
-                 $allplatforms all (default: all)
+                 $allplatforms all (all by default)
   -t, --tag TAG: user-defined tag (git tag is used by default)
+  -p, --private: include private plugins
   -f, --force:   force removal of output dir
   -h, --help:    print this help
 EOF
@@ -28,19 +28,27 @@ err() {
     exit 1
 }
 
-# Process parameters
+# Defaults
+platforms="all"
+tag="$(git describe --tags)"
+private=false
 force=false
+
+# Process parameters
 for param in "$@"; do
     case "$param" in
         -h | --help)
             usage
             exit 0 ;;
-        -f | --force)
-            force=true
-            shift ;;
         -t | --tag)
             tag="$2"
             shift 2 ;;
+        -p | --private)
+            private=true
+            shift ;;
+        -f | --force)
+            force=true
+            shift ;;
     esac
 done
 
@@ -98,10 +106,14 @@ for platform in $platforms; do
     cp $core_dir/build/libs/*.jar $dist_path/bin/
 
     for d in $plugin_dirs; do
-        # Skip private plugins (their name strart with underscore)
+        # Chaecking if private plugins should be inkluded (their name strart with underscore)
         case "$d" in
             _*)
-                echo "  - skipping private plugin $d"
+                if $private; then
+                    cp $d/build/libs/*.jar $dist_path/bin/
+                else
+                    echo "  - skipping private plugin $d"
+                fi
                 ;;
             *)
                 cp $d/build/libs/*.jar $dist_path/bin/

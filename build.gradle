@@ -3,6 +3,7 @@ plugins {
     id 'ca.coglinc.javacc'
     id 'com.github.kt3k.coveralls'
     id 'de.aaschmid.cpd'
+    id 'com.github.jk1.dependency-license-report'
 }
 
 repositories {
@@ -66,6 +67,7 @@ subprojects {
     }
 
     jar {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         from {
             configurations.libs.collect {
                 it.isDirectory() ? it : zipTree(it)
@@ -162,7 +164,18 @@ subprojects {
             html.enabled = false
         }
     }
+
 }
+
+
+apply plugin: 'com.github.jk1.dependency-license-report'
+
+import com.github.jk1.license.render.*
+
+licenseReport {
+    renderers = [new InventoryHtmlReportRenderer()]
+}
+
 
 cpdCheck {
     source = sourceSets.main.allJava
