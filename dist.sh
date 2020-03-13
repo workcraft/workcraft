@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 plugin_dirs="*Plugin/"
-core_dir="WorkcraftCore"
+core_dir="WorkcraftCore/"
 dist_dir="dist"
 
 bname="$(basename $0)"
@@ -26,6 +26,21 @@ EOF
 err() {
     echo "Error: $@" >&2
     exit 1
+}
+
+copy_jars() {
+    bin_from_path="$1/build/libs/"
+    bin_to_path="$2/bin/"
+    if [ -e "$bin_from_path" ]; then
+        mkdir -p $bin_to_path
+        cp -f $bin_from_path/*.jar $bin_to_path
+    fi
+    lib_from_path="$1/build/lib"
+    lib_to_path="$2/lib"
+    if [ -e "$lib_from_path" ]; then
+        mkdir -p $lib_to_path
+        cp -f $lib_from_path/*.jar $lib_to_path
+    fi
 }
 
 # Defaults
@@ -82,14 +97,13 @@ for platform in $platforms; do
 
     if [ -e "$dist_path" ]; then
         if $force; then
-            rm -rf "$dist_path"
+            rm -rf $dist_path
         else
             err "Distribution directory already exists: $dist_path"
         fi
     fi
 
     mkdir -p $dist_path
-
     cp -r $template_dir/* $dist_path/
 
     # Set Resources as the distribution path on OS X
@@ -101,22 +115,23 @@ for platform in $platforms; do
         dist_path=$dist_path/Contents/Resources
     fi
 
-    mkdir -p $dist_path/bin
+    echo "  - adding $core_dir"
+    copy_jars "$core_dir" "$dist_path"
 
-    cp $core_dir/build/libs/*.jar $dist_path/bin/
-
-    for d in $plugin_dirs; do
-        # Chaecking if private plugins should be inkluded (their name strart with underscore)
-        case "$d" in
+    for plugin_dir in $plugin_dirs; do
+        # Checking if private plugins should be inkluded (their name strart with underscore)
+        case "$plugin_dir" in
             _*)
                 if $private; then
-                    cp $d/build/libs/*.jar $dist_path/bin/
+                    echo "  - adding $plugin_dir"
+                    copy_jars "$plugin_dir" "$dist_path"
                 else
-                    echo "  - skipping private plugin $d"
+                    echo "  - skipping $plugin_dir"
                 fi
                 ;;
             *)
-                cp $d/build/libs/*.jar $dist_path/bin/
+                echo "  - adding $plugin_dir"
+                copy_jars "$plugin_dir" "$dist_path"
                 ;;
         esac
     done
