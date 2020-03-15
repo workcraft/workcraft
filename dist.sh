@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
-plugin_dirs="*Plugin/"
 core_dir="WorkcraftCore/"
+plugin_pattern="*Plugin/"
 dist_dir="dist"
 
 bname="$(basename $0)"
@@ -14,12 +14,12 @@ $bname: create a distribution for Workcraft as workcraft-tag-platform archive
 
 Usage: $bname [platforms] [-t TAG] [-h]
 
-  platforms:     distribution platforms to build
-                 $allplatforms all (all by default)
-  -t, --tag TAG: user-defined tag (git tag is used by default)
-  -p, --private: include private plugins
-  -f, --force:   force removal of output dir
-  -h, --help:    print this help
+  platforms:         distribution platforms to build
+                     $allplatforms all ('all' by default)
+  -p, --plugins DIR: additional plugins directory (only 'plugins' by deafault)
+  -t, --tag TAG:     user-defined tag (git tag is used by default)
+  -f, --force:       force removal of output dir
+  -h, --help:        print this help
 EOF
 }
 
@@ -45,6 +45,7 @@ copy_jars() {
 
 # Defaults
 platforms="all"
+plugins="plugins"
 tag="$(git describe --tags)"
 private=false
 force=false
@@ -55,12 +56,12 @@ for param in "$@"; do
         -h | --help)
             usage
             exit 0 ;;
+        -p | --private)
+            plugins="$plugins $2"
+            shift 2 ;;
         -t | --tag)
             tag="$2"
             shift 2 ;;
-        -p | --private)
-            private=true
-            shift ;;
         -f | --force)
             force=true
             shift ;;
@@ -118,22 +119,11 @@ for platform in $platforms; do
     echo "  - adding $core_dir"
     copy_jars "$core_dir" "$dist_path"
 
-    for plugin_dir in $plugin_dirs; do
-        # Checking if private plugins should be inkluded (their name strart with underscore)
-        case "$plugin_dir" in
-            _*)
-                if $private; then
-                    echo "  - adding $plugin_dir"
-                    copy_jars "$plugin_dir" "$dist_path"
-                else
-                    echo "  - skipping $plugin_dir"
-                fi
-                ;;
-            *)
-                echo "  - adding $plugin_dir"
-                copy_jars "$plugin_dir" "$dist_path"
-                ;;
-        esac
+    for plugin in $plugins; do
+        for plugin_dir in $plugin/$plugin_pattern; do
+            echo "  - adding $plugin_dir"
+            copy_jars "$plugin_dir" "$dist_path"
+        done
     done
 
     for d in doc/*; do

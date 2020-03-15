@@ -1,12 +1,14 @@
+# Private plugins
+/plugins-*/
+
 # Gradle
 /.gradle/
 /*/build/
 /build/
+/plugins/*/build/
 
 # Distribution
 /dist/
-*.zip
-*.tar.*
 
 # Eclipse
 /.metadata
@@ -15,6 +17,10 @@
 /*/.project
 /*/.settings
 /*/bin/
+/plugins/*/.classpath
+/plugins/*/.project
+/plugins/*/.settings
+/plugins/*/bin/
 
 # InteliJ IDEA
 /.idea
@@ -22,21 +28,20 @@
 /workcraft.ipr
 /workcraft.iws
 /*/*.iml
+/plugins/*/*.iml
 
 # Generated source files
 /*/src-gen/
+/plugins/*/src-gen/
 
-# Platform-specific execution environment (usually symlinks to
-# dist-template/ and doc/ subdirectories)
+# Platform-specific execution environment, e.g. tools and docs
+# (usually symlinks to dist-template/ and doc/ subdirectories)
 /help
 /libraries
 /overview
 /tools
 /tutorial
-.DS_Store
 
-# Crash dumps
+# Crash dumps and temporary files
 /*.hprof
-
-# Private plugins
-/_*Plugin
+.DS_Store

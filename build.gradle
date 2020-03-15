@@ -98,7 +98,7 @@ subprojects {
     task cleanAll(dependsOn: ['clean', 'cleanEclipse', 'cleanIdea', 'cleanJavacc'])
 
     test {
-        workingDir = "../"
+        workingDir = rootDir
         testLogging {
             events "failed"
             exceptionFormat "full"

@@ -66,18 +66,22 @@ gradle.ext.libDirectoryName = 'lib'
 /*
  * Subprojects
  */
-
 // Include core subprojects
 include "WorkcraftRunner"
 include "WorkcraftCore"
 
 // Include plugin subprojects
 rootDir.listFiles().findAll {
-    it.isDirectory() && it =~ ".*Plugin"
+    it.isDirectory() && it =~ "plugins.*"
 }.collect {
-    include it.getName()
+    file(it.getPath()).listFiles().findAll {
+        it.isDirectory() && it =~ ".*Plugin"
+    }.collect {
+        def projectName = it.getName()
+        include projectName
+        project(":" + projectName).projectDir = new File(it.getPath())
+    }
 }
-
 
 /*
  * Subprojects for coverage
