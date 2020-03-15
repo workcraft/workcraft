@@ -17,12 +17,13 @@ if [ -z "$@" ]; then
 else
     TEST_DIR_PATTERN="$@"
 fi
-DIR="integration-tests"
+DIR="ci"
 REF_FILE_PATTERN="*.ref"
 SCRIPT_FILE="test.sh"
 LOG_FILE="workcraft.log"
 
-[[ $(basename $PWD) == $DIR ]] && cd ..
+# Change to Workcraft root directory
+cd "$(dirname "$0")/.."
 
 # Symbolic links to libraries and tools directories
 if [[ $OSTYPE == darwin* ]]; then
