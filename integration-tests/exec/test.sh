@@ -7,11 +7,11 @@ SPECIAL_LINE=" == expected js line"
 
 # Release version
 if [[ $OSTYPE == darwin* ]]; then
-    ./dist.sh --force osx >/dev/null || error "dist.sh did not succeed"
-    WORKCRAFT="dist/osx/Workcraft.app/Contents/MacOS/Workcraft"
+    dist/run.sh --force osx >/dev/null || error "dist/run.sh did not succeed"
+    WORKCRAFT="dist/result/osx/Workcraft.app/Contents/MacOS/Workcraft"
 else
-    ./dist.sh --force linux >/dev/null || error "dist.sh did not succeed"
-    WORKCRAFT="dist/linux/workcraft/workcraft"
+    dist/run.sh --force linux >/dev/null || error "dist/run.sh did not succeed"
+    WORKCRAFT="dist/result/linux/workcraft/workcraft"
 fi
 
 $WORKCRAFT -exec:"print('$SPECIAL_LINE'); exit();" \

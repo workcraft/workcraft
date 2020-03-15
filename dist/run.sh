@@ -1,25 +1,27 @@
 #!/bin/bash -e
 
-core_dir="WorkcraftCore/"
-plugin_pattern="*Plugin/"
-dist_dir="dist"
-
-bname="$(basename $0)"
-allplatforms="windows linux osx"
-
+DIR="dist"
+DOC_DIR="doc"
+TEMPLATE_DIR="template"
+RESULT_DIR="result"
+CORE_DIR="WorkcraftCore"
+PLUGINS_DIR="plugins"
+PLUGIN_PATTERN="*Plugin"
+ALL_PLATFORMS="windows linux osx"
+DEFAULT_PLATFORM="all"
 
 usage() {
+    script_name="$(basename $0)"
     cat <<EOF
-$bname: create a distribution for Workcraft as workcraft-tag-platform archive
+$script_name: create a distribution for Workcraft as workcraft-TAG-PLATFORM archive
 
-Usage: $bname [platforms] [-t TAG] [-h]
+Usage: $script_name [PLATFORMS] [-p DIR] [-t TAG] [f] [-h]
 
-  platforms:         distribution platforms to build
-                     $allplatforms all ('all' by default)
-  -p, --plugins DIR: additional plugins directory (only 'plugins' by deafault)
-  -t, --tag TAG:     user-defined tag (git tag is used by default)
-  -f, --force:       force removal of output dir
-  -h, --help:        print this help
+  PLATFORMS          distribution platforms [$ALL_PLATFORMS $DEFAULT_PLATFORM] ('$DEFAULT_PLATFORM' by default)
+  -p, --plugins DIR  additional plugins directory (only '$PLUGINS_DIR' by deafault)
+  -t, --tag TAG      user-defined tag (git tag is used by default)
+  -f, --force        force removal of output dir
+  -h, --help         print this help
 EOF
 }
 
@@ -43,9 +45,12 @@ copy_jars() {
     fi
 }
 
+# Change to Workcraft root directory
+cd "$(dirname "$0")/.."
+
 # Defaults
-platforms="all"
-plugins="plugins"
+platforms="$DEFAULT_PLATFORM"
+plugins="$PLUGINS_DIR"
 tag="$(git describe --tags)"
 private=false
 force=false
@@ -68,7 +73,7 @@ for param in "$@"; do
     esac
 done
 
-if [ ! -e "$core_dir/build" ]; then
+if [ ! -e "$CORE_DIR/build" ]; then
     err "You need to run './gradlew assemble' first"
 fi
 
@@ -80,22 +85,21 @@ fi
 
 for platform in $platforms; do
 
+    dist_name="workcraft-${tag}-${platform}"
+    echo "Building ${dist_name}..."
+
+    template_path="$DIR/$TEMPLATE_DIR/$platform"
+    if [ ! -d "$template_path" ]; then
+        err "Template directory not found: $template_path"
+    fi
+
     if [ "$platform" = "osx" ]; then
         dist_rootdir="Workcraft.app"
     else
         dist_rootdir="workcraft"
     fi
-
-    dist_name="workcraft-${tag}-${platform}"
-    dist_path="$dist_dir/$platform/$dist_rootdir"
-    template_dir="dist-template/$platform"
-
-    echo "Building ${dist_name}..."
-
-    if [ ! -d "$template_dir" ]; then
-        err "Template directory not found: $template_dir"
-    fi
-
+    platform_path="$DIR/$RESULT_DIR/$platform"
+    dist_path="$platform_path/$dist_rootdir"
     if [ -e "$dist_path" ]; then
         if $force; then
             rm -rf $dist_path
@@ -105,7 +109,7 @@ for platform in $platforms; do
     fi
 
     mkdir -p $dist_path
-    cp -r $template_dir/* $dist_path/
+    cp -r $template_path/* $dist_path/
 
     # Set Resources as the distribution path on OS X
     if [ "$platform" = "osx" ]; then
@@ -116,23 +120,26 @@ for platform in $platforms; do
         dist_path=$dist_path/Contents/Resources
     fi
 
-    echo "  - adding $core_dir"
-    copy_jars "$core_dir" "$dist_path"
+    echo "  - adding $CORE_DIR"
+    copy_jars "$CORE_DIR" "$dist_path"
 
     for plugin in $plugins; do
-        for plugin_dir in $plugin/$plugin_pattern; do
-            echo "  - adding $plugin_dir"
-            copy_jars "$plugin_dir" "$dist_path"
+        for plugin_path in $plugin/$PLUGIN_PATTERN; do
+            if [ -d "$plugin_path" ]; then
+                echo "  - adding $plugin_path"
+                copy_jars "$plugin_path" "$dist_path"
+            fi
         done
     done
 
-    for d in doc/*; do
-        if [ "$d" != "doc/README.md" ]; then
+    doc_path="$DIR/$DOC_DIR"
+    for d in $doc_path/*; do
+        if [ "$d" != "$doc_path/README.md" ]; then
             cp -r $d $dist_path/
         fi
     done
 
-    cd $dist_dir/$platform
+    cd $platform_path
 
     case $platform in
         windows)

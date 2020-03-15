@@ -7,8 +7,8 @@
 /build/
 /plugins/*/build/
 
-# Distribution
-/dist/
+# Distribution result
+/dist/result/
 
 # Eclipse
 /.metadata
@@ -35,7 +35,7 @@
 /plugins/*/src-gen/
 
 # Platform-specific execution environment, e.g. tools and docs
-# (usually symlinks to dist-template/ and doc/ subdirectories)
+# (usually symlinks to dist/template/*/ and dist/doc/)
 /help
 /libraries
 /overview

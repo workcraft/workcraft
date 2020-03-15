@@ -26,11 +26,11 @@ LOG_FILE="workcraft.log"
 
 # Symbolic links to libraries and tools directories
 if [[ $OSTYPE == darwin* ]]; then
-   [[ -e libraries ]] || ln -s dist-template/osx/Contents/Resources/libraries
-   [[ -e tools ]] || ln -s dist-template/osx/Contents/Resources/tools
+   [[ -e libraries ]] || ln -s dist/template/osx/Contents/Resources/libraries
+   [[ -e tools ]] || ln -s dist/template/osx/Contents/Resources/tools
 else
-   [[ -e libraries ]] || ln -s dist-template/linux/libraries
-   [[ -e tools ]] || ln -s dist-template/linux/tools
+   [[ -e libraries ]] || ln -s dist/template/linux/libraries
+   [[ -e tools ]] || ln -s dist/template/linux/tools
 fi
 
 echo "Running integration tests:"
