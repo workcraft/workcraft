@@ -1,14 +1,9 @@
 dependencies {
     implementation project(':WorkcraftCore')
 
-    // Implement all plugins
-    rootDir.listFiles().findAll {
-        it.isDirectory() && it =~ "plugins.*"
-    }.collect {
-        file(it.getPath()).listFiles().findAll {
-            it.isDirectory() && it =~ ".*Plugin"
-        }.collect {
-            implementation project(":" + it.getName())
+    rootProject.subprojects {
+        if (it.name != this.name) {
+            implementation it
         }
     }
 }

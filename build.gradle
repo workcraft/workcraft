@@ -167,7 +167,7 @@ subprojects {
             dependsOn copyLibs
             manifest {
                 attributes 'Class-Path': configurations.libs.collect {
-                    "../$gradle.ext.libDirectoryName/" + it.getName()
+                    "../$gradle.ext.libDirectoryName/" + it.name
                 }.join(' ')
             }
         }
