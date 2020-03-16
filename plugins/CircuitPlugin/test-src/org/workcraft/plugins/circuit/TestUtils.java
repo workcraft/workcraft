@@ -23,11 +23,11 @@ public class TestUtils {
     public static String getLibraryPath(String fileName) {
         switch (DesktopApi.getOs()) {
         case LINUX:
-            return "dist-template/linux/libraries/" + fileName;
+            return "dist/template/linux/libraries/" + fileName;
         case MACOS:
-            return "dist-template/osx/Contents/Resources/libraries/" + fileName;
+            return "dist/template/osx/Contents/Resources/libraries/" + fileName;
         case WINDOWS:
-            return "dist-template\\windows\\libraries\\" + fileName;
+            return "dist\\template\\windows\\libraries\\" + fileName;
         }
         return fileName;
     }
@@ -35,11 +35,11 @@ public class TestUtils {
     public static String getToolPath(String dirName, String fileName) {
         switch (DesktopApi.getOs()) {
         case LINUX:
-            return "dist-template/linux/tools/" + dirName + "/" + fileName;
+            return "dist/template/linux/tools/" + dirName + "/" + fileName;
         case MACOS:
-            return "dist-template/osx/Contents/Resources/tools/" + dirName + "/" + fileName;
+            return "dist/template/osx/Contents/Resources/tools/" + dirName + "/" + fileName;
         case WINDOWS:
-            return "dist-template\\windows\\tools\\" + dirName + "\\" + fileName;
+            return "dist\\template\\windows\\tools\\" + dirName + "\\" + fileName;
         }
         return dirName + "/" + fileName;
     }

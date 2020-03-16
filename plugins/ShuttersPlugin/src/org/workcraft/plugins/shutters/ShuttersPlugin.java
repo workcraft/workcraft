@@ -1,10 +1,9 @@
-package org.workcraft.plugins.fst;
+package org.workcraft.plugins.shutters;
 
 import org.workcraft.Framework;
 import org.workcraft.plugins.Plugin;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.shutters.commands.ExtractWindowsCommand;
-import org.workcraft.plugins.shutters.ShuttersSettings;
 
 @SuppressWarnings("unused")
 public class ShuttersPlugin implements Plugin {

@@ -7,11 +7,11 @@ public class TestUtils {
     public static String getUnfoldingToolsPath(String fileName) {
         switch (DesktopApi.getOs()) {
         case LINUX:
-            return "dist-template/linux/tools/UnfoldingTools/" + fileName;
+            return "dist/template/linux/tools/UnfoldingTools/" + fileName;
         case MACOS:
-            return "dist-template/osx/Contents/Resources/tools/UnfoldingTools/" + fileName;
+            return "dist/template/osx/Contents/Resources/tools/UnfoldingTools/" + fileName;
         case WINDOWS:
-            return "dist-template\\windows\\tools\\UnfoldingTools\\" + fileName;
+            return "dist\\template\\windows\\tools\\UnfoldingTools\\" + fileName;
         }
         return fileName;
     }

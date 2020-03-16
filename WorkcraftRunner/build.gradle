@@ -6,10 +6,9 @@ dependencies {
         it.isDirectory() && it =~ "plugins.*"
     }.collect {
         file(it.getPath()).listFiles().findAll {
-             it.isDirectory() && it =~ ".*Plugin"
+            it.isDirectory() && it =~ ".*Plugin"
         }.collect {
             implementation project(":" + it.getName())
         }
-
     }
 }
