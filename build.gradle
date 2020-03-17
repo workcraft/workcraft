@@ -263,5 +263,9 @@ tasks.cleanIdea.doLast {
 task cleanAll(dependsOn: 'cleanIdea')
 
 allprojects {
-    javadoc.group = null
+    javadoc.group = null  // Exclude javadoc from the list of tasks
+}
+
+tasks.cleanAll.doLast {
+    project.delete 'build/'  // Remove root build directory (left untouched by other clean tasks)
 }

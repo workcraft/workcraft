@@ -66,12 +66,7 @@ gradle.ext.libDirectoryName = 'lib'
 /*
  * Subprojects
  */
-// Include core subprojects
-include "WorkcraftRunner"
-include "WorkcraftCore"
-
-// Include plugin subprojects
-rootDir.eachDirMatch(~/plugins.*/) {
+rootDir.eachDirMatch(~/workcraft.*/) {
     file(it).eachDir {
         if (file(it.path + '/build.gradle').exists()) {
             include it.name

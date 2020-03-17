@@ -1,11 +1,10 @@
 # Private plugins
-/plugins-*/
+/workcraft-*/
 
 # Gradle
 /.gradle/
-/*/build/
 /build/
-/plugins/*/build/
+/workcraft/*/build/
 
 # Distribution result
 /dist/result/
@@ -13,29 +12,22 @@
 # Eclipse
 /.metadata
 /.recommenders
-/*/.classpath
-/*/.project
-/*/.settings
-/*/bin/
-/plugins/*/.classpath
-/plugins/*/.project
-/plugins/*/.settings
-/plugins/*/bin/
+/workcraft/*/.classpath
+/workcraft/*/.project
+/workcraft/*/.settings
+/workcraft/*/bin/
 
 # InteliJ IDEA
-/.idea
 /workcraft.iml
 /workcraft.ipr
 /workcraft.iws
-/*/*.iml
-/plugins/*/*.iml
+/workcraft/*/*.iml
 
 # Generated source files
-/*/src-gen/
-/plugins/*/src-gen/
+/workcraft/*/src-gen/
 
 # Platform-specific execution environment, e.g. tools and docs
-# (usually symlinks to dist/template/*/ and dist/doc/)
+# (usually symlinks to ./dist/template/*/ and ./dist/doc/)
 /help
 /libraries
 /overview

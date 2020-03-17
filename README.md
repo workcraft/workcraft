@@ -1,4 +1,4 @@
-# ![Workcraft logo](logo.png)
+# ![Workcraft logo](workcraft/WorkcraftCore/res/images/logo.png)
 
 [![Build status](https://travis-ci.org/workcraft/workcraft.svg)](https://travis-ci.org/workcraft/workcraft)
 [![Code maintainability](https://codeclimate.com/github/workcraft/workcraft/badges/gpa.svg)](https://codeclimate.com/github/workcraft/workcraft)
