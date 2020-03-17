@@ -199,7 +199,7 @@ def coverallsProjects = subprojects.findAll {
     it.name ==~ ~(gradle.ext.coverageProjects.join('|'))
 }
 
-task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
+task jacocoRootReport(type: JacocoReport) {
     dependsOn(coverallsProjects.test)
 
     sourceDirectories.from = coverallsProjects.sourceSets.main.allSource.srcDirs
@@ -229,7 +229,8 @@ coveralls {
 }
 
 tasks.coveralls {
-    group = 'Coverage reports'
+    group = 'Verification'
+    description = 'Generate coverage report for all subprojects with tests.'
     dependsOn jacocoRootReport
 }
 

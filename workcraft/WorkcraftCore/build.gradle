@@ -1,10 +1,10 @@
 dependencies {
-    lib gradle.ext.kotlinLib
-    lib gradle.ext.rhinoLib
-    lib gradle.ext.jafLib
-    lib gradle.ext.log4jLib
-    lib gradle.ext.jgaLib
-    lib gradle.ext.tableLayoutLib
+    lib 'org.jetbrains.kotlin:kotlin-stdlib:1.3.70' // for Kotlin support
+    lib 'org.mozilla:rhino:1.7.12'  // for JavaScript execution
+    lib 'com.sun.activation:javax.activation:1.2.0'  // for JavaBeans Activation Framework (JAF)
+    lib 'log4j:log4j:1.2.17'  // for configuration of log in FOP
+    lib 'net.sf.jga:jga:0.8.3'  // for UnaryFunctor class
+    lib 'info.clearthought:table-layout:4.3.0'  // for TableLayout
 }
 
 jar {
