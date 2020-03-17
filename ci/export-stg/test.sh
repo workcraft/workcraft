@@ -1,4 +1,4 @@
-./workcraft -nogui -noconfig -dir:${test_dir} -exec:vme.stg.js >${log_file}
+./gradlew run --args="-nogui -noconfig -dir:${test_dir} -exec:vme.stg.js" >${log_file}
 
 # Post-processing
 result_file=${test_dir}/vme.stg.txt

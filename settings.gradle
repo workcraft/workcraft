@@ -73,8 +73,10 @@ include "WorkcraftCore"
 // Include plugin subprojects
 rootDir.eachDirMatch(~/plugins.*/) {
     file(it).eachDir {
-        include it.name
-        project(":" + it.name).projectDir = it
+        if (file(it.path + '/build.gradle').exists()) {
+            include it.name
+            project(":" + it.name).projectDir = it
+        }
     }
 }
 

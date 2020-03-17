@@ -349,11 +349,11 @@ public final class Framework {
             Matcher nameMatcher = pattern.matcher(name);
             Matcher descriptionMatcher = pattern.matcher(item.description);
             if (nameMatcher.find() || (searchDescription && descriptionMatcher.find())) {
-                result.add(item.toString());
+                result.add(item.toString() + "\n");
             }
         }
         Collections.sort(result);
-        return String.join("\n", result);
+        return String.join("",  result);
     }
 
     public void setJavaScriptProperty(final String name, final Object object,

@@ -174,7 +174,6 @@ subprojects {
     }
 }
 
-
 apply plugin: 'com.github.jk1.dependency-license-report'
 
 import com.github.jk1.license.render.*
@@ -182,6 +181,9 @@ import com.github.jk1.license.render.*
 licenseReport {
     renderers = [new InventoryHtmlReportRenderer()]
 }
+checkLicense.group = 'License'
+checkLicensePreparation.group = 'License'
+generateLicenseReport.group = 'License'
 
 
 cpdCheck {
@@ -259,3 +261,7 @@ tasks.cleanIdea.doLast {
 }
 
 task cleanAll(dependsOn: 'cleanIdea')
+
+allprojects {
+    javadoc.group = null
+}
