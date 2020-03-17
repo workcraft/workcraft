@@ -61,7 +61,7 @@ gradle.ext.tableLayoutLib = 'info.clearthought:table-layout:4.3.0'
  */
 
 rootProject.name = 'workcraft'
-gradle.ext.libDirectoryName = 'lib'
+gradle.ext.libDir = 'lib'
 
 /*
  * Subprojects

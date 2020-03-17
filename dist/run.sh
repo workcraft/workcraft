@@ -4,9 +4,7 @@ DIR="dist"
 DOC_DIR="doc"
 TEMPLATE_DIR="template"
 RESULT_DIR="result"
-CORE_DIR="WorkcraftCore"
-PLUGINS_DIR="plugins"
-PLUGIN_PATTERN="*Plugin"
+PLUGINS_DIR="workcraft"
 ALL_PLATFORMS="windows linux osx"
 DEFAULT_PLATFORM="all"
 
@@ -31,17 +29,19 @@ err() {
 }
 
 copy_jars() {
-    bin_from_path="$1/build/libs/"
+    bin_from_path="$1/build/bin/"
     bin_to_path="$2/bin/"
     if [ -e "$bin_from_path" ]; then
+        echo "  - adding $plugin_path"
         mkdir -p $bin_to_path
         cp -f $bin_from_path/*.jar $bin_to_path
-    fi
-    lib_from_path="$1/build/lib"
-    lib_to_path="$2/lib"
-    if [ -e "$lib_from_path" ]; then
-        mkdir -p $lib_to_path
-        cp -f $lib_from_path/*.jar $lib_to_path
+        # Third-party libraries
+        lib_from_path="$1/build/lib"
+        lib_to_path="$2/lib"
+        if [ -e "$lib_from_path" ]; then
+            mkdir -p $lib_to_path
+            cp -f $lib_from_path/*.jar $lib_to_path
+        fi
     fi
 }
 
@@ -72,10 +72,6 @@ for param in "$@"; do
             shift ;;
     esac
 done
-
-if [ ! -e "$CORE_DIR/build" ]; then
-    err "You need to run './gradlew assemble' first"
-fi
 
 if [ -z "$@" ] || [ "$@" = "all" ]; then
     platforms="$allplatforms"
@@ -120,13 +116,9 @@ for platform in $platforms; do
         dist_path=$dist_path/Contents/Resources
     fi
 
-    echo "  - adding $CORE_DIR"
-    copy_jars "$CORE_DIR" "$dist_path"
-
     for plugin in $plugins; do
-        for plugin_path in $plugin/$PLUGIN_PATTERN; do
+        for plugin_path in $plugin/*; do
             if [ -d "$plugin_path" ]; then
-                echo "  - adding $plugin_path"
                 copy_jars "$plugin_path" "$dist_path"
             fi
         done

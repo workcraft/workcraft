@@ -15,3 +15,5 @@ task(run, dependsOn: 'classes', type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     workingDir = rootDir
 }
+
+jar.onlyIf { false }

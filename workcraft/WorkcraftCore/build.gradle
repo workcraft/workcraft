@@ -1,10 +1,10 @@
 dependencies {
-    libs gradle.ext.kotlinLib
-    libs gradle.ext.rhinoLib
-    libs gradle.ext.jafLib
-    libs gradle.ext.log4jLib
-    libs gradle.ext.jgaLib
-    libs gradle.ext.tableLayoutLib
+    lib gradle.ext.kotlinLib
+    lib gradle.ext.rhinoLib
+    lib gradle.ext.jafLib
+    lib gradle.ext.log4jLib
+    lib gradle.ext.jgaLib
+    lib gradle.ext.tableLayoutLib
 }
 
 jar {
