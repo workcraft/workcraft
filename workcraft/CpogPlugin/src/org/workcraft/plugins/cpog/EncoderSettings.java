@@ -24,25 +24,20 @@ public class EncoderSettings {
         }
     }
 
-    private int solutionNumber = 10;
-    private int numPO;
-    private int bits;
-    private int circuitSize;
-    private GenerationMode genMode = GenerationMode.OPTIMAL_ENCODING;
+    private int solutionNumber;
+    private GenerationMode genMode;
     private boolean verboseMode;
     private boolean customEncMode;
-    private boolean effort;
-    private boolean contMode;
-    private boolean cpogSize;
-    private boolean costFunc;
-    private boolean abcFlag;
-    private String[] customEnc;
-    private String espressoPath;
-    private String abcPath;
-    private String libPath;
 
-    public EncoderSettings(int solutionNumber, GenerationMode genMode, boolean verboseMode,
-            boolean customEncMode) {
+    private int bits;
+    private int circuitSize;
+    private boolean effort;
+    private boolean cpogSize = false;
+    private boolean costFunc = false;
+    private boolean abcFlag = false;
+    private String[] customEnc = {};
+
+    public EncoderSettings(int solutionNumber, GenerationMode genMode, boolean verboseMode, boolean customEncMode) {
         this.solutionNumber = solutionNumber;
         this.genMode = genMode;
         this.verboseMode = verboseMode;
@@ -81,14 +76,6 @@ public class EncoderSettings {
         this.costFunc = costFunc;
     }
 
-    public boolean isContMode() {
-        return contMode;
-    }
-
-    public void setContMode(boolean contMode) {
-        this.contMode = contMode;
-    }
-
     public boolean isEffort() {
         return effort;
     }
@@ -96,28 +83,13 @@ public class EncoderSettings {
     public void setEffort(boolean effort) {
         this.effort = effort;
     }
+
     public int getBits() {
         return bits;
     }
 
     public void setBits(int bits) {
         this.bits = bits;
-    }
-
-    public String getEspressoPath() {
-        return espressoPath;
-    }
-
-    public void setEspressoPath(String espressoPath) {
-        this.espressoPath = espressoPath;
-    }
-
-    public String getAbcPath() {
-        return abcPath;
-    }
-
-    public void setAbcPath(String abcPath) {
-        this.abcPath = abcPath;
     }
 
     public int getSolutionNumber() {
@@ -154,20 +126,8 @@ public class EncoderSettings {
         }
     }
 
-    public int getNumPO() {
-        return numPO;
-    }
-
-    public void setNumPO(int numPO) {
-        this.numPO = numPO;
-    }
-
     public GenerationMode getGenMode() {
         return genMode;
-    }
-
-    public void setGenMode(GenerationMode genMode) {
-        this.genMode = genMode;
     }
 
     public boolean isVerboseMode() {
@@ -192,14 +152,6 @@ public class EncoderSettings {
 
     public void setCustomEnc(String[] customEnc) {
         this.customEnc = customEnc;
-    }
-
-    public String getLibPath() {
-        return libPath;
-    }
-
-    public void setLibPath(String libPath) {
-        this.libPath = libPath;
     }
 
 }

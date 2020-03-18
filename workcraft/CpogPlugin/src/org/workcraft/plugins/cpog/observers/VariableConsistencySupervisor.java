@@ -1,11 +1,7 @@
 package org.workcraft.plugins.cpog.observers;
 
 import org.workcraft.dom.Node;
-import org.workcraft.observation.HierarchyEvent;
-import org.workcraft.observation.HierarchySupervisor;
-import org.workcraft.observation.NodesAddedEvent;
-import org.workcraft.observation.NodesDeletedEvent;
-import org.workcraft.observation.NodesReparentedEvent;
+import org.workcraft.observation.*;
 import org.workcraft.plugins.cpog.*;
 
 public class VariableConsistencySupervisor extends HierarchySupervisor {
@@ -46,14 +42,14 @@ public class VariableConsistencySupervisor extends HierarchySupervisor {
     }
 
     private void updateEncoding() {
-        for (VisualScenario group : cpog.getGroups()) {
-            Encoding oldEncoding = group.getEncoding();
+        for (VisualScenario scenario : cpog.getScenarios()) {
+            Encoding oldEncoding = scenario.getEncoding();
             Encoding newEncoding = new Encoding();
             for (VisualVariable var : cpog.getVariables()) {
                 Variable mathVariable = var.getReferencedComponent();
                 newEncoding.setState(mathVariable, oldEncoding.getState(mathVariable));
             }
-            group.setEncoding(newEncoding);
+            scenario.setEncoding(newEncoding);
         }
     }
 

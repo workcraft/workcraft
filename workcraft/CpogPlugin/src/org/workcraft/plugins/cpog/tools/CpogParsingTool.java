@@ -42,7 +42,7 @@ public class CpogParsingTool {
 
     private BooleanVariable labelToVar(String label, final VisualCpog visualCpog) {
         if (variableMap.containsKey(label)) {
-            HashSet<VisualVariable> vars = new HashSet<>(visualCpog.getVariables(visualCpog.getRoot()));
+            HashSet<VisualVariable> vars = new HashSet<>(visualCpog.getVariables());
             if (!vars.contains(variableMap.get(label))) {
                 if (variableMap.get(label).getParent() != null) {
                     return variableMap.get(label);

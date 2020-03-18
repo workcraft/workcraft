@@ -1,17 +1,5 @@
 package org.workcraft.plugins.cpog.tasks;
 
-import java.awt.geom.Point2D;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualTransformableNode;
@@ -19,26 +7,25 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
+import org.workcraft.formula.jj.BooleanFormulaParser;
+import org.workcraft.formula.jj.ParseException;
+import org.workcraft.formula.visitors.StringGenerator;
+import org.workcraft.plugins.cpog.*;
+import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
 import org.workcraft.plugins.cpog.encoding.Encoding;
 import org.workcraft.plugins.cpog.encoding.onehot.OneHotIntBooleanFormula;
 import org.workcraft.plugins.cpog.encoding.onehot.OneHotNumberProvider;
-import org.workcraft.formula.jj.BooleanFormulaParser;
-import org.workcraft.formula.jj.ParseException;
 import org.workcraft.plugins.cpog.sat.CleverCnfGenerator;
 import org.workcraft.plugins.cpog.sat.DefaultSolver;
 import org.workcraft.plugins.cpog.sat.Optimiser;
-import org.workcraft.formula.visitors.StringGenerator;
-import org.workcraft.plugins.cpog.EncoderSettings;
-import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
-import org.workcraft.plugins.cpog.Variable;
-import org.workcraft.plugins.cpog.VariableState;
-import org.workcraft.plugins.cpog.VisualArc;
-import org.workcraft.plugins.cpog.VisualCpog;
-import org.workcraft.plugins.cpog.VisualScenario;
-import org.workcraft.plugins.cpog.VisualScenarioPage;
-import org.workcraft.plugins.cpog.VisualVertex;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.Geometry;
+
+import java.awt.geom.Point2D;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ScencoExecutionSupport {
 
@@ -445,7 +432,6 @@ public class ScencoExecutionSupport {
                     VisualScenarioPage scenario = (VisualScenarioPage) scenarios.get(k);
                     scenario.getEncoding().setState(vars[i], VariableState.fromBoolean(encoding[k][i]));
                 }
-                //scenario.getEncoding().setState(vars[i], VariableState.fromBoolean(encoding[k][i]));
             }
             for (int i = freeVariables; i < freeVariables + pr; i++) {
                 if (scenarios.get(k) instanceof  VisualScenario) {
@@ -455,7 +441,6 @@ public class ScencoExecutionSupport {
                     VisualScenarioPage scenario = (VisualScenarioPage) scenarios.get(k);
                     scenario.getEncoding().setState(vars[i], VariableState.fromBoolean(encoding[k][i]));
                 }
-                //scenarios.get(k).getEncoding().setState(vars[i], VariableState.fromBoolean(encoding[k][i]));
             }
         }
 

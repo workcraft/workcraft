@@ -124,7 +124,6 @@ public class SingleSequentialScencoDialog extends AbstractScencoDialog {
         settings.setGenerationModeInt(string.matches("Single-literal encoding") ? 4 : 5);
 
         // custom encodings
-        settings.setNumPO(m);
         if (settings.getGenMode() == GenerationMode.SEQUENTIAL) {
             settings.setCustomEncMode(true);
             String[] encodings = new String[m];

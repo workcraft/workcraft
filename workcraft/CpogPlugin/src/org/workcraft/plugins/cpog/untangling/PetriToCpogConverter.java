@@ -183,7 +183,7 @@ public class PetriToCpogConverter {
             }
 
             // removing the duplicates
-            for (VisualVertex v : visualCpog.getVertices()) {
+            for (VisualVertex v : visualCpog.getVertices(visualCpog.getRoot())) {
                 if (visualCpog.getConnections(v).isEmpty()) {
                     visualCpog.removeWithoutNotify(v);
                 }
@@ -191,7 +191,7 @@ public class PetriToCpogConverter {
 
             //rearrange vertices
             VisualVertex first = null;
-            for (VisualVertex v : visualCpog.getVertices()) {
+            for (VisualVertex v : visualCpog.getVertices(visualCpog.getRoot())) {
                 if (visualCpog.getPreset(v).isEmpty()) {
                     first = v;
                     break;

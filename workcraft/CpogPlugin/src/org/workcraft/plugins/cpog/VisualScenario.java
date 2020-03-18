@@ -107,13 +107,10 @@ public class VisualScenario extends VisualGroup {
     public void draw(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         Color colorisation = r.getDecoration().getColorisation();
-//        Color background = r.getDecoration().getBackground();
 
         Rectangle2D bb = getContentsBoundingBox();
 
         if (bb != null && getParent() != null) {
-//            g.setColor(Coloriser.colorise(Color.WHITE, background));
-//            g.fill(bb);
             g.setColor(Coloriser.colorise(Color.BLACK, colorisation));
             g.setStroke(new BasicStroke(strokeWidth));
             g.draw(bb);
@@ -230,15 +227,6 @@ public class VisualScenario extends VisualGroup {
                 right = left;
             }
         }
-    }
-
-    public Variable getVariableAt(Point2D p) {
-        Point2D q = new Point2D.Double();
-        getParentToLocalTransform().transform(p, q);
-        for (Rectangle2D rect : variableBBs.keySet()) {
-            if (rect.contains(q)) return variableBBs.get(rect);
-        }
-        return null;
     }
 
     @Override

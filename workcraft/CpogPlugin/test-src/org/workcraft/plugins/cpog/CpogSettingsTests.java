@@ -20,6 +20,15 @@ public class CpogSettingsTests {
         final Framework framework = Framework.getInstance();
         String prefix = "CpogSettings";
 
+        Assert.assertEquals(Config.toString(CpogSettings.getScencoCommand()),
+                framework.getConfigVar(prefix + ".scencoCommand", false));
+
+        Assert.assertEquals(Config.toString(CpogSettings.getEspressoCommand()),
+                framework.getConfigVar(prefix + ".espressoCommand", false));
+
+        Assert.assertEquals(Config.toString(CpogSettings.getAbcTool()),
+                framework.getConfigVar(prefix + ".abcTool", false));
+
         Assert.assertEquals(Config.toString(CpogSettings.getSatSolver()),
                 framework.getConfigVar(prefix + ".satSolver", false));
 

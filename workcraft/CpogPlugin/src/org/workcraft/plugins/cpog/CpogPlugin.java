@@ -1,10 +1,10 @@
 package org.workcraft.plugins.cpog;
 
-import org.workcraft.plugins.CompatibilityManager;
 import org.workcraft.Framework;
+import org.workcraft.Version;
+import org.workcraft.plugins.CompatibilityManager;
 import org.workcraft.plugins.Plugin;
 import org.workcraft.plugins.PluginManager;
-import org.workcraft.Version;
 import org.workcraft.plugins.cpog.commands.*;
 import org.workcraft.plugins.cpog.scenco.*;
 import org.workcraft.plugins.cpog.serialisation.*;
@@ -48,7 +48,7 @@ public class CpogPlugin implements Plugin {
         pm.registerCommand(SequentialScencoCommand.class);
         pm.registerCommand(ExhaustiveSearchScencoCommand.class);
         pm.registerCommand(RandomSearchScencoCommand.class);
-        pm.registerCommand(GraphStatisticsCommand.class);
+        pm.registerCommand(CpogStatisticsCommand.class);
         pm.registerCommand(CpogToGraphConversionCommand.class);
         pm.registerCommand(GraphToCpogConversionCommand.class);
         pm.registerCommand(ImportEventLogPGMinerCommand.class);

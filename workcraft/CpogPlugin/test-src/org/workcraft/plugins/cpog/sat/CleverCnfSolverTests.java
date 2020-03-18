@@ -16,7 +16,7 @@ public class CleverCnfSolverTests extends SolverTests {
 
     @Override
     protected LegacySolver<BooleanFormula> createSolver() {
-        return new LegacySolver<BooleanFormula>(
+        return new LegacySolver<>(
                 new CnfGeneratingOptimiser(),
                 new CleverCnfGenerator());
     }

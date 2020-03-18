@@ -16,7 +16,7 @@ public class CnfSolverTests extends SolverTests {
 
     @Override
     protected LegacySolver<Cnf> createSolver() {
-        return new LegacySolver<Cnf>(
+        return new LegacySolver<>(
                 new CnfGeneratingOptimiser(),
                 new SimpleCnfTaskProvider());
     }

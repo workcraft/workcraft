@@ -135,28 +135,28 @@ public class VisualCpog extends AbstractVisualModel {
         return scenario;
     }
 
-    public Collection<VisualScenario> getGroups() {
+    public Collection<VisualScenario> getScenarios() {
         return Hierarchy.getChildrenOfType(getRoot(), VisualScenario.class);
     }
 
+    public Collection<VisualScenarioPage> getScenarioPages() {
+        return Hierarchy.getChildrenOfType(getRoot(), VisualScenarioPage.class);
+    }
+
     public Collection<VisualVariable> getVariables() {
-        return Hierarchy.getChildrenOfType(getRoot(), VisualVariable.class);
+        return getVariables(getRoot());
     }
 
-    public Collection<VisualVertex> getVertices() {
-        return Hierarchy.getChildrenOfType(getRoot(), VisualVertex.class);
+    public Collection<VisualVariable> getVariables(Container container) {
+        return Hierarchy.getChildrenOfType(container, VisualVariable.class);
     }
 
-    public Collection<VisualVertex> getVertices(Container root) {
-        return Hierarchy.getChildrenOfType(root, VisualVertex.class);
+    public Collection<VisualArc> getArcs(Container container) {
+        return Hierarchy.getChildrenOfType(container, VisualArc.class);
     }
 
-    public Collection<VisualVariable> getVariables(Container root) {
-        return Hierarchy.getChildrenOfType(root, VisualVariable.class);
-    }
-
-    public Collection<VisualArc> getArcs(Container root) {
-        return Hierarchy.getChildrenOfType(root, VisualArc.class);
+    public Collection<VisualVertex> getVertices(Container container) {
+        return Hierarchy.getChildrenOfType(container, VisualVertex.class);
     }
 
     public VisualVertex createVisualVertex(Container container) {

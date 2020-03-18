@@ -1,7 +1,6 @@
 package org.workcraft.plugins.cpog.scenco;
 
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.layouts.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.VisualCpog;
@@ -12,7 +11,6 @@ import org.workcraft.utils.GuiUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 
 @SuppressWarnings("serial")
 public class SatBasedScencoDialog extends AbstractScencoDialog {
@@ -25,7 +23,6 @@ public class SatBasedScencoDialog extends AbstractScencoDialog {
     private JPanel standardPanel;
     private JTextField bitsText;
     private JTextField circuitSizeText;
-    private int m;
     private int bits;
 
     public SatBasedScencoDialog(Window owner, String title, EncoderSettings settings, VisualCpog model) {
@@ -86,18 +83,13 @@ public class SatBasedScencoDialog extends AbstractScencoDialog {
     }
 
     private void createGenerationPanel() {
-        ArrayList<VisualTransformableNode> scenarios = CpogParsingTool.getScenarios(getModel());
-        m = scenarios.size();
-
         generationPanel = new JPanel(new SimpleFlowLayout());
         generationPanel.setBorder(SizeHelper.getTitledBorder("Encoding parameters"));
 
         JLabel bitsLabel = new JLabel(ScencoHelper.textEncodingBitWidth);
-        //bitsLabel.setPreferredSize(ScencoDialogSupport.dimensionBitEncodingWidthLabel);
         JLabel circuitSizeLabel = new JLabel(ScencoHelper.textCircuitSizeLabel);
-        //circuitSizeLabel.setPreferredSize(ScencoDialogSupport.dimensionCircuitSizeLabel);
         int value = 2;
-        while (value < m) {
+        while (value < CpogParsingTool.getScenarios(getModel()).size()) {
             value *= 2;
             bits++;
         }
@@ -167,7 +159,6 @@ public class SatBasedScencoDialog extends AbstractScencoDialog {
         settings.setGenerationModeInt(3);
 
         // custom encodings
-        settings.setNumPO(m);
         settings.setCustomEncMode(true);
     }
 

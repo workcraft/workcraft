@@ -330,7 +330,6 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
         settings.setGenerationModeInt(mode);
 
         // custom encodings
-        settings.setNumPO(m);
         if (customEncodings.isSelected()) {
             // number of bits selection
             settings.setBits(Integer.parseInt(bitsText.getText()));

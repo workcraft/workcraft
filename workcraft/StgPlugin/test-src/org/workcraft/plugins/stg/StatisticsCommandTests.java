@@ -139,11 +139,11 @@ public class StgStatisticsCommandTests {
 
         BasicStatisticsCommand basicStatisticsCommand = new BasicStatisticsCommand();
         String basicStatistics = basicStatisticsCommand.execute(we);
-        Assert.assertEquals(basicStatistics, expectedBasicStatistics);
+        Assert.assertEquals(expectedBasicStatistics, basicStatistics);
 
         StgStatisticsCommand advancedStatisticsCommand = new StgStatisticsCommand();
         String advancedStatistics = advancedStatisticsCommand.execute(we);
-        Assert.assertEquals(advancedStatistics, expectedAdvancedStatistics);
+        Assert.assertEquals(expectedAdvancedStatistics, advancedStatistics);
 
         framework.closeWork(we);
     }
