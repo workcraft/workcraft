@@ -29,17 +29,17 @@ err() {
 }
 
 copy_jars() {
-    bin_from_path="$1/build/bin/"
-    bin_to_path="$2/bin/"
+    bin_from_path="$1/build/bin"
+    bin_to_path="$2/bin"
     if [ -e "$bin_from_path" ]; then
         echo "  - adding $plugin_path"
         mkdir -p $bin_to_path
-        cp -f $bin_from_path/*.jar $bin_to_path
+        cp -i $bin_from_path/*.jar $bin_to_path
         # Third-party libraries
         lib_from_path="$1/build/lib"
         lib_to_path="$2/lib"
         if [ -e "$lib_from_path" ]; then
-            mkdir -p $lib_to_path
+            mkdir -p "$lib_to_path"
             cp -f $lib_from_path/*.jar $lib_to_path
         fi
     fi

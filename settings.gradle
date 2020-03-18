@@ -47,6 +47,12 @@ gradle.ext.coverageProjects = []
 rootDir.eachDirMatch(~/workcraft.*/) {
     file(it).eachDir {
         if (file(it.path + '/build.gradle').exists()) {
+            def project1 = findProject(':' + it.name)
+            if (project1 != null) {
+                throw new GradleException('Project ' + it.name + ' already exists!\n' +
+                    'Old path: ' + it + '\n' +
+                    'New path: ' + project1.projectDir)
+            }
             include it.name
             project(":" + it.name).projectDir = it
             if (file(it.path + '/test-src/').exists()) {
