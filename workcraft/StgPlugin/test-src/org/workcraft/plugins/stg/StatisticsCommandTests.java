@@ -12,7 +12,7 @@ import org.workcraft.plugins.stg.commands.StgStatisticsCommand;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class StgStatisticsCommandTests {
+public class StatisticsCommandTests {
 
     @BeforeClass
     public static void init() {

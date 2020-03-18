@@ -16,7 +16,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
 
-public class FstTests {
+public class ConversionCommandTests {
 
     @BeforeClass
     public static void init() {
@@ -26,12 +26,12 @@ public class FstTests {
     }
 
     @Test
-    public void testVmePetriConversionCommands() throws DeserialisationException {
+    public void testVmeConversionCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme.fst.work");
-        testStgConversionCommand(workName);
+        testConversionCommands(workName);
     }
 
-    private void testStgConversionCommand(String workName) throws DeserialisationException {
+    private void testConversionCommands(String workName) throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         URL url = classLoader.getResource(workName);

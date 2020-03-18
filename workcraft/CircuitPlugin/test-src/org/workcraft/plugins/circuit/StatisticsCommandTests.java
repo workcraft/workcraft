@@ -93,11 +93,11 @@ public class StatisticsCommandTests {
 
         BasicStatisticsCommand basicStatisticsCommand = new BasicStatisticsCommand();
         String basicStatistics = basicStatisticsCommand.execute(we);
-        Assert.assertEquals(basicStatistics, expectedBasicStatistics);
+        Assert.assertEquals(expectedBasicStatistics, basicStatistics);
 
         StatisticsCommand advancedStatisticsCommand = new StatisticsCommand();
         String advancedStatistics = advancedStatisticsCommand.execute(we);
-        Assert.assertEquals(advancedStatistics, expectedAdvancedStatistics);
+        Assert.assertEquals(expectedAdvancedStatistics, advancedStatistics);
 
         framework.closeWork(we);
     }
