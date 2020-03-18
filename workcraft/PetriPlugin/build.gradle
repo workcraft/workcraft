@@ -1,3 +1,7 @@
 dependencies {
     implementation project(':WorkcraftCore')
 }
+
+ext.excludeFromCoverage = [
+    'org/workcraft/plugins/petri/tools/'
+]

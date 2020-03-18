@@ -10,3 +10,7 @@ dependencies {
     implementation project(':PunfPlugin')
     implementation project(':MpsatVerificationPlugin')
 }
+
+ext.excludeFromCoverage = [
+    'org/workcraft/plugins/circuit/tools/'
+]

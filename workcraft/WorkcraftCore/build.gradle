@@ -7,6 +7,11 @@ dependencies {
     lib 'info.clearthought:table-layout:4.3.0'  // for TableLayout
 }
 
+ext.excludeFromCoverage = [
+    'org/workcraft/gui/',
+    'org/workcraft/tools/'
+]
+
 jar {
     manifest {
         attributes 'Main-Class': 'org.workcraft.Console'

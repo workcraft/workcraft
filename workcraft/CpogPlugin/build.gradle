@@ -7,3 +7,10 @@ dependencies {
 
     testImplementation project(path: ':CircuitPlugin', configuration: 'testArchives')
 }
+
+ext.excludeFromCoverage = [
+    'org/workcraft/plugins/cpog/gui/',
+    'org/workcraft/plugins/cpog/scenco/*Dialog.class',
+    'org/workcraft/plugins/cpog/scenco/*Dialog$*.class',
+    'org/workcraft/plugins/cpog/tools/'
+]

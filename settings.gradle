@@ -32,6 +32,7 @@ gradle.ext.junit = 'junit:junit:4.13'
 
 // JavaCC parser generator
 gradle.ext.javacc = 'net.java.dev.javacc:javacc:7.0.5'
+gradle.ext.javaccExclude = '**/jj/**'
 
 
 /*

@@ -7,6 +7,6 @@ dependencies {
 }
 
 cpdCheck {
-    exclude "**/VisualPopRegister.java"
-    exclude "**/VisualPushRegister.java"
+    exclude "org/workcraft/plugins/dfs/VisualPopRegister.java"
+    exclude "org/workcraft/plugins/dfs/VisualPushRegister.java"
 }

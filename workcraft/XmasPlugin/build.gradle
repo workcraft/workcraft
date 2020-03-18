@@ -6,7 +6,7 @@ dependencies {
 }
 
 cpdCheck {
-    exclude '**/XmasQueryTool.java'
-    exclude '**/XmasAnalysisTool.java'
-    exclude '**/XmasToStgConverter.java'
+    exclude 'org/workcraft/plugins/xmas/stg/XmasToStgConverter.java'
+    exclude 'org/workcraft/plugins/xmas/tools/XmasQueryTool.java'
+    exclude 'org/workcraft/plugins/xmas/tools/XmasAnalysisTool.java'
 }

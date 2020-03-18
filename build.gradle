@@ -112,7 +112,7 @@ subprojects {
         configFile = file("${project.rootDir}/config/checkstyle/checkstyle.xml")
     }
 
-    checkstyleMain.exclude '**/jj/**'
+    checkstyleMain.exclude gradle.ext.javaccExclude
 
     task checkstyle(dependsOn: tasks.withType(Checkstyle)*.name)
 
@@ -126,7 +126,7 @@ subprojects {
         ruleSets = []
     }
 
-    pmdMain.exclude '**/jj/**'
+    pmdMain.exclude gradle.ext.javaccExclude
 
     task pmd(dependsOn: tasks.withType(Pmd)*.name)
 
@@ -139,7 +139,7 @@ subprojects {
 
     cpdCheck {
         source = sourceSets.main.allJava
-        exclude '**/jj/**'
+        exclude gradle.ext.javaccExclude
     }
 
 
@@ -189,23 +189,28 @@ generateLicenseReport.group = 'License'
 
 cpdCheck {
     source = sourceSets.main.allJava
-    exclude '**/jj/**'
+    exclude gradle.ext.javaccExclude
 }
 
 
 apply plugin: 'jacoco'
 
-def coverallsProjects = subprojects.findAll {
+jacoco {
+    toolVersion = gradle.ext.jacocoVersion
+}
+
+def coverageProjects = subprojects.findAll {
     it.name ==~ ~(gradle.ext.coverageProjects.join('|'))
 }
 
 task jacocoRootReport(type: JacocoReport) {
-    dependsOn(coverallsProjects.test)
+    dependsOn(coverageProjects.test)
+    evaluationDependsOnChildren()
 
-    sourceDirectories.from = coverallsProjects.sourceSets.main.allSource.srcDirs
-    additionalSourceDirs.from = coverallsProjects.sourceSets.main.allSource.srcDirs
-    classDirectories.from = coverallsProjects.sourceSets.main.output
-    executionData.from = coverallsProjects.jacocoTestReport.executionData
+    sourceDirectories.from = coverageProjects.sourceSets.main.allSource.srcDirs
+    additionalSourceDirs.from = coverageProjects.sourceSets.main.allSource.srcDirs
+    classDirectories.from = coverageProjects.sourceSets.main.output
+    executionData.from = coverageProjects.jacocoTestReport.executionData
 
     reports {
         html.enabled = true // human readable
@@ -213,18 +218,21 @@ task jacocoRootReport(type: JacocoReport) {
     }
 
     afterEvaluate {
+        def excludeFromCoverage = [gradle.ext.javaccExclude]
+        subprojects {
+            if (it.hasProperty('excludeFromCoverage')) {
+                excludeFromCoverage += it.excludeFromCoverage
+            }
+        }
+        println 'Excluding from coverage: ' + excludeFromCoverage
         classDirectories.from = classDirectories.files.collect {
-            fileTree(dir: it, exclude: '**/jj/**')
+            fileTree(dir: it, exclude: excludeFromCoverage)
         }
     }
 }
 
-jacoco {
-    toolVersion = gradle.ext.jacocoVersion
-}
-
 coveralls {
-    sourceDirs = coverallsProjects.sourceSets.main.allSource.srcDirs.flatten()
+    sourceDirs = coverageProjects.sourceSets.main.allSource.srcDirs.flatten()
     jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
 }
 
