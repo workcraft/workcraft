@@ -75,6 +75,14 @@ subprojects {
         }
         classpath {
             containers 'org.jetbrains.kotlin.core.KOTLIN_CONTAINER'
+            defaultOutputDir = file('build/eclipse/bin/')
+            file.whenMerged {
+                entries.each {
+                    if (it.kind == 'src' && it.hasProperty('output')) {
+                        it.output = it.output.replace('bin/', 'build/eclipse/')
+                    }
+                }
+            }
         }
     }
 
@@ -90,7 +98,7 @@ subprojects {
         testResourceDirs = [file('test-res')]
         excludeDirs = [file('.gradle'), file('.settings'), file('bin'), file('build'), file('gradle')]
         inheritOutputDirs = false
-        outputDir = file('build')
+        outputDir = file('build/idea/')
     }
 
     ideaModule.dependsOn compileJavacc
@@ -165,7 +173,7 @@ subprojects {
 
         jar {
             dependsOn copyLibs
-            destinationDir = file("$buildDir/bin")
+            destinationDirectory = file("$buildDir/bin")
             manifest {
                 attributes 'Class-Path': configurations.lib.collect {
                     "../$gradle.ext.libDir/" + it.name
@@ -224,7 +232,8 @@ task jacocoRootReport(type: JacocoReport) {
                 excludeFromCoverage += it.excludeFromCoverage
             }
         }
-        println 'Excluding from coverage: ' + excludeFromCoverage
+        println 'Excluding from coverage:'
+        excludeFromCoverage.each { println "  - " + it }
         classDirectories.from = classDirectories.files.collect {
             fileTree(dir: it, exclude: excludeFromCoverage)
         }
@@ -246,7 +255,7 @@ apply plugin: 'idea'
 
 idea.module {
     excludeDirs = [file('.gradle'), file('config'), file('dist-template'), file('doc'), file('gradle')]
-    outputDir = file('build')
+    outputDir = file('build/idea/')
 }
 
 def workcraftRunConfiguration = '''

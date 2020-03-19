@@ -15,7 +15,6 @@
 /workcraft/*/.classpath
 /workcraft/*/.project
 /workcraft/*/.settings
-/workcraft/*/bin/
 
 # InteliJ IDEA
 /workcraft.iml
