@@ -1,4 +1,4 @@
-# ![Workcraft logo](logo.png)
+# ![Workcraft logo](workcraft/WorkcraftCore/res/images/logo.png)
 
 [![Build status](https://travis-ci.org/workcraft/workcraft.svg)](https://travis-ci.org/workcraft/workcraft)
 [![Code maintainability](https://codeclimate.com/github/workcraft/workcraft/badges/gpa.svg)](https://codeclimate.com/github/workcraft/workcraft)
@@ -43,14 +43,14 @@ Use the `assemble` task to build the core and all the plugins:
 
 You can run Workcraft directly after building it:
 
-    ./workcraft
+    ./gradlew run
 
 Note that Workcraft relies on backend tools for some of its functionality
 and expects them in `tools` directory by default. Therefore create a
 symbolic link pointing to the location of the backend tools for your
 platform. E.g. for Linux:
 
-    ln -s dist-template/linux/tools
+    ln -s dist/template/linux/tools
 
 ---
 If you would like to contribute to Workcraft development, then read

@@ -1,42 +1,38 @@
+# Private plugins
+/workcraft-*/
+
 # Gradle
 /.gradle/
-/*/build/
 /build/
+/workcraft/*/build/
 
-# Distribution
-/dist/
-*.zip
-*.tar.*
+# Distribution result
+/dist/result/
 
 # Eclipse
 /.metadata
 /.recommenders
-/*/.classpath
-/*/.project
-/*/.settings
-/*/bin/
+/workcraft/*/.classpath
+/workcraft/*/.project
+/workcraft/*/.settings
 
 # InteliJ IDEA
-/.idea
 /workcraft.iml
 /workcraft.ipr
 /workcraft.iws
-/*/*.iml
+/workcraft/*/*.iml
 
 # Generated source files
-/*/src-gen/
+/workcraft/*/src-gen/
 
-# Platform-specific execution environment (usually symlinks to
-# dist-template/ and doc/ subdirectories)
+# Platform-specific execution environment, e.g. tools and docs
+# (usually symlinks to ./dist/template/*/ and ./dist/doc/)
 /help
 /libraries
 /overview
 /tools
 /tutorial
-.DS_Store
 
-# Crash dumps
+# Crash dumps and temporary files
 /*.hprof
-
-# Private plugins
-/_*Plugin
+.DS_Store

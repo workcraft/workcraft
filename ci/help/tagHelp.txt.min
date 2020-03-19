@@ -1,0 +1,10 @@
+tagCircuitForceInitAutoAppend(work) - auto-append force init pins as necessary to complete initialisation of the Circuit 'work'
+tagCircuitForceInitAutoDiscard(work) - auto-discard force init pins that are redundant for initialisation of the Circuit 'work'
+tagCircuitForceInitClearAll(work) - clear all force init input ports and output pins in the Circuit 'work'
+tagCircuitForceInitInputPorts(work) - force init all input ports in the Circuit 'work'  (environment must initialise them)
+tagCircuitForceInitProblematicPins(work) - force init output pins with problematic initial state in the Circuit 'work'
+tagCircuitForceInitSequentialPins(work) - force init output pins of sequential gates in the Circuit 'work'
+tagCircuitPathBreakerAutoAppend(work) - auto-append path breaker pins as necessary to complete cycle breaking in the Circuit 'work'
+tagCircuitPathBreakerAutoDiscard(work) - auto-discard path breaker pins that are redundant for cycle breaking in the Circuit 'work'
+tagCircuitPathBreakerClearAll(work) - clear all path breaker pins in the Circuit 'work'
+tagCircuitPathBreakerSelfloopPins(work) - path breaker output pins within self-loops in the Circuit 'work'

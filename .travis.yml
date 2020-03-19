@@ -31,7 +31,7 @@ install:
 
 script:
   - ./gradlew $TARGET
-  - if [ $TARGET = test ]; then ./integration-tests/run.sh; fi
+  - if [ $TARGET = test ]; then ./ci/run.sh; fi
 
 after_success:
   - if [ $TARGET = test -a $TRAVIS_JDK_VERSION = openjdk8 ]; then ./gradlew coveralls; fi

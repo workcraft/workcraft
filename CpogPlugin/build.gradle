@@ -1,7 +1,0 @@
-dependencies {
-    implementation project(':WorkcraftCore')
-    implementation project(':GraphPlugin')
-    implementation project(':PetriPlugin')
-    implementation project(':StgPlugin')
-    implementation project(':CircuitPlugin')
-}

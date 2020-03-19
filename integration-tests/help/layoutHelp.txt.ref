@@ -1,5 +1,0 @@
-layoutCircuit(work) - place components and route wires of the Circuit 'work'
-layoutCircuitPlacement(work) - place components of the Circuit 'work'
-layoutCircuitRouting(work) - route wires of the Circuit 'work'
-layoutModelDot(work) - position nodes and shape the arcs using of the model ''work'' using //Graphviz// backend
-layoutModelRandom(work) - randomly position graph nodes of the model ''work'' and connect them by straight arcs

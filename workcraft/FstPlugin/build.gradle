@@ -1,0 +1,10 @@
+dependencies {
+    implementation project(':WorkcraftCore')
+    implementation project(':FsmPlugin')
+    implementation project(':PetriPlugin')
+    implementation project(':StgPlugin')
+}
+
+ext.excludeFromCoverage = [
+    'org/workcraft/plugins/fst/tools/'
+]

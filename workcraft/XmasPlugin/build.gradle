@@ -1,0 +1,12 @@
+dependencies {
+    implementation project(':WorkcraftCore')
+    implementation project(':PetriPlugin')
+    implementation project(':StgPlugin')
+    lib 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'  // for file exchange in xMAS
+}
+
+cpdCheck {
+    exclude 'org/workcraft/plugins/xmas/stg/XmasToStgConverter.java'
+    exclude 'org/workcraft/plugins/xmas/tools/XmasQueryTool.java'
+    exclude 'org/workcraft/plugins/xmas/tools/XmasAnalysisTool.java'
+}

@@ -1,0 +1,12 @@
+dependencies {
+    implementation project(':WorkcraftCore')
+    implementation project(':PetriPlugin')
+    implementation project(':StgPlugin')
+    implementation project(':PunfPlugin')
+    implementation project(':MpsatVerificationPlugin')
+}
+
+cpdCheck {
+    exclude "org/workcraft/plugins/dfs/VisualPopRegister.java"
+    exclude "org/workcraft/plugins/dfs/VisualPushRegister.java"
+}

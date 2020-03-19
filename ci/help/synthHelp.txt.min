@@ -1,0 +1,11 @@
+synthComplexGateAtacs(work) - logic synthesis of the STG 'work' into a complex gate Circuit work using ATACS backend
+synthComplexGateMpsat(work) - logic synthesis of the STG 'work' into a complex gate Circuit work using MPSat backend
+synthComplexGatePetrify(work) - logic synthesis of the STG 'work' into a complex gate Circuit work using Petrify backend
+synthGeneralisedCelementAtacs(work) - synthesis of the STG 'work' into a generalised C-element Circuit work using ATACS
+synthGeneralisedCelementMpsat(work) - synthesis of the STG 'work' into a generalised C-element Circuit work using MPSat backend
+synthGeneralisedCelementPetrify(work) - synthesis of the STG 'work' into a generalised C-element Circuit work using Petrify
+synthStandardCelementAtacs(work) - synthesis of the STG 'work' into a standard C-element Circuit work using ATACS backend
+synthStandardCelementMpsat(work) - synthesis of the STG 'work' into a standard C-element Circuit work using MPSat backend
+synthStandardCelementPetrify(work) - synthesis of the STG 'work' into a standard C-element Circuit work using Petrify backend
+synthTechnologyMappingMpsat(work) - technology mapping of the STG 'work' into a Circuit work using MPSat backend
+synthTechnologyMappingPetrify(work) - technology mapping of the STG 'work' into a Circuit work using Petrify backend

@@ -1,0 +1,4 @@
+insertCircuitResetActiveHigh(work) - insert active-high reset into the Circuit 'work'
+insertCircuitResetActiveLow(work) - insert active-low reset into the Circuit 'work'
+insertCircuitScan(work) - insert scan for path breaker components into the Circuit 'work'
+insertCircuitTestableGates(work) - insert testable buffers/inverters for path breaker components in the Circuit 'work'

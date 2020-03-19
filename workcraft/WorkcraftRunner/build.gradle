@@ -1,0 +1,17 @@
+dependencies {
+    rootProject.subprojects {
+        if (it.name != this.name) {
+            implementation it
+        }
+    }
+}
+
+task(run, dependsOn: 'classes', type: JavaExec) {
+    group = 'Build'
+    description = 'Run Workcraft with all available plugins'
+    main = 'org.workcraft.Console'
+    classpath = sourceSets.main.runtimeClasspath
+    workingDir = rootDir
+}
+
+jar.onlyIf { false }

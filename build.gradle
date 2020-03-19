@@ -56,23 +56,14 @@ subprojects {
     }
 
     configurations {
-        libs
+        lib
     }
 
     dependencies {
-        libs fileTree(dir: 'libs', include: ['**/*.jar'])
-        configurations.compile.extendsFrom(configurations.libs)
+        lib fileTree(dir: gradle.ext.libDir, include: ['**/*.jar'])
+        configurations.compile.extendsFrom(configurations.lib)
         testImplementation gradle.ext.junit
         javacc gradle.ext.javacc
-    }
-
-    jar {
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        from {
-            configurations.libs.collect {
-                it.isDirectory() ? it : zipTree(it)
-            }
-        }
     }
 
     apply plugin: 'eclipse'
@@ -84,6 +75,14 @@ subprojects {
         }
         classpath {
             containers 'org.jetbrains.kotlin.core.KOTLIN_CONTAINER'
+            defaultOutputDir = file('build/eclipse/bin/')
+            file.whenMerged {
+                entries.each {
+                    if (it.kind == 'src' && it.hasProperty('output')) {
+                        it.output = it.output.replace('bin/', 'build/eclipse/')
+                    }
+                }
+            }
         }
     }
 
@@ -99,7 +98,7 @@ subprojects {
         testResourceDirs = [file('test-res')]
         excludeDirs = [file('.gradle'), file('.settings'), file('bin'), file('build'), file('gradle')]
         inheritOutputDirs = false
-        outputDir = file('build')
+        outputDir = file('build/idea/')
     }
 
     ideaModule.dependsOn compileJavacc
@@ -107,7 +106,7 @@ subprojects {
     task cleanAll(dependsOn: ['clean', 'cleanEclipse', 'cleanIdea', 'cleanJavacc'])
 
     test {
-        workingDir = "../"
+        workingDir = rootDir
         testLogging {
             events "failed"
             exceptionFormat "full"
@@ -121,7 +120,7 @@ subprojects {
         configFile = file("${project.rootDir}/config/checkstyle/checkstyle.xml")
     }
 
-    checkstyleMain.exclude '**/jj/**'
+    checkstyleMain.exclude gradle.ext.javaccExclude
 
     task checkstyle(dependsOn: tasks.withType(Checkstyle)*.name)
 
@@ -135,7 +134,7 @@ subprojects {
         ruleSets = []
     }
 
-    pmdMain.exclude '**/jj/**'
+    pmdMain.exclude gradle.ext.javaccExclude
 
     task pmd(dependsOn: tasks.withType(Pmd)*.name)
 
@@ -148,7 +147,7 @@ subprojects {
 
     cpdCheck {
         source = sourceSets.main.allJava
-        exclude '**/jj/**'
+        exclude gradle.ext.javaccExclude
     }
 
 
@@ -165,8 +164,24 @@ subprojects {
         }
     }
 
-}
+    afterEvaluate {project ->
+        task copyLibs(type: Copy) {
+            from configurations.lib
+            into "$buildDir/$gradle.ext.libDir"
+            include '*.jar'
+        }
 
+        jar {
+            dependsOn copyLibs
+            destinationDirectory = file("$buildDir/bin")
+            manifest {
+                attributes 'Class-Path': configurations.lib.collect {
+                    "../$gradle.ext.libDir/" + it.name
+                }.join(' ')
+            }
+        }
+    }
+}
 
 apply plugin: 'com.github.jk1.dependency-license-report'
 
@@ -175,27 +190,35 @@ import com.github.jk1.license.render.*
 licenseReport {
     renderers = [new InventoryHtmlReportRenderer()]
 }
+checkLicense.group = 'License'
+checkLicensePreparation.group = 'License'
+generateLicenseReport.group = 'License'
 
 
 cpdCheck {
     source = sourceSets.main.allJava
-    exclude '**/jj/**'
+    exclude gradle.ext.javaccExclude
 }
 
 
 apply plugin: 'jacoco'
 
-def coverallsProjects = subprojects.findAll {
+jacoco {
+    toolVersion = gradle.ext.jacocoVersion
+}
+
+def coverageProjects = subprojects.findAll {
     it.name ==~ ~(gradle.ext.coverageProjects.join('|'))
 }
 
-task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
-    dependsOn(coverallsProjects.test)
+task jacocoRootReport(type: JacocoReport) {
+    dependsOn(coverageProjects.test)
+    evaluationDependsOnChildren()
 
-    sourceDirectories.from = coverallsProjects.sourceSets.main.allSource.srcDirs
-    additionalSourceDirs.from = coverallsProjects.sourceSets.main.allSource.srcDirs
-    classDirectories.from = coverallsProjects.sourceSets.main.output
-    executionData.from = coverallsProjects.jacocoTestReport.executionData
+    sourceDirectories.from = coverageProjects.sourceSets.main.allSource.srcDirs
+    additionalSourceDirs.from = coverageProjects.sourceSets.main.allSource.srcDirs
+    classDirectories.from = coverageProjects.sourceSets.main.output
+    executionData.from = coverageProjects.jacocoTestReport.executionData
 
     reports {
         html.enabled = true // human readable
@@ -203,23 +226,28 @@ task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
     }
 
     afterEvaluate {
+        def excludeFromCoverage = [gradle.ext.javaccExclude]
+        subprojects {
+            if (it.hasProperty('excludeFromCoverage')) {
+                excludeFromCoverage += it.excludeFromCoverage
+            }
+        }
+        println 'Excluding from coverage:'
+        excludeFromCoverage.each { println "  - " + it }
         classDirectories.from = classDirectories.files.collect {
-            fileTree(dir: it, exclude: '**/jj/**')
+            fileTree(dir: it, exclude: excludeFromCoverage)
         }
     }
 }
 
-jacoco {
-    toolVersion = gradle.ext.jacocoVersion
-}
-
 coveralls {
-    sourceDirs = coverallsProjects.sourceSets.main.allSource.srcDirs.flatten()
+    sourceDirs = coverageProjects.sourceSets.main.allSource.srcDirs.flatten()
     jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
 }
 
 tasks.coveralls {
-    group = 'Coverage reports'
+    group = 'Verification'
+    description = 'Generate coverage report for all subprojects with tests.'
     dependsOn jacocoRootReport
 }
 
@@ -227,7 +255,7 @@ apply plugin: 'idea'
 
 idea.module {
     excludeDirs = [file('.gradle'), file('config'), file('dist-template'), file('doc'), file('gradle')]
-    outputDir = file('build')
+    outputDir = file('build/idea/')
 }
 
 def workcraftRunConfiguration = '''
@@ -252,3 +280,11 @@ tasks.cleanIdea.doLast {
 }
 
 task cleanAll(dependsOn: 'cleanIdea')
+
+allprojects {
+    javadoc.group = null  // Exclude javadoc from the list of tasks
+}
+
+tasks.cleanAll.doLast {
+    project.delete 'build/'  // Remove root build directory (left untouched by other clean tasks)
+}

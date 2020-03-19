@@ -1,0 +1,10 @@
+dependencies {
+    implementation project(':WorkcraftCore')
+    implementation project(':DtdPlugin')
+    implementation project(':PetriPlugin')
+    implementation project(':StgPlugin')
+}
+
+ext.excludeFromCoverage = [
+    'org/workcraft/plugins/wtg/tools/'
+]
