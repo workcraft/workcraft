@@ -9,6 +9,7 @@ import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.gui.properties.TextAction;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.fst.utils.FstUtils;
+import org.workcraft.utils.SortUtils;
 
 import java.awt.*;
 import java.util.List;
@@ -23,14 +24,18 @@ public class FstPropertyHelper {
             for (Signal.Type type : Signal.Type.values()) {
                 if (type == Signal.Type.DUMMY) continue;
                 List<Signal> signals = new LinkedList<>(mathFst.getSignals(type));
-                Collections.sort(signals, Comparator.comparing(visualFst::getMathName));
+                Collections.sort(signals, (s1, s2) -> SortUtils.compareNatural(
+                        visualFst.getMathName(s1), visualFst.getMathName(s2)));
+
                 for (final Signal signal : signals) {
                     result.add(getSignalProperty(visualFst, signal));
                 }
             }
         } else {
             List<Signal> signals = new LinkedList<>(mathFst.getSignals());
-            Collections.sort(signals, Comparator.comparing(visualFst::getMathName));
+            Collections.sort(signals, (s1, s2) -> SortUtils.compareNatural(
+                    visualFst.getMathName(s1), visualFst.getMathName(s2)));
+
             for (final Signal signal : signals) {
                 if (signal.getType() == Signal.Type.DUMMY) continue;
                 result.add(getSignalProperty(visualFst, signal));

@@ -15,6 +15,7 @@ import org.workcraft.gui.tools.*;
 import org.workcraft.plugins.fsm.observers.FirstStateSupervisor;
 import org.workcraft.plugins.fsm.tools.FsmSimulationTool;
 import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.SortUtils;
 
 import java.util.*;
 
@@ -89,16 +90,19 @@ public class VisualFsm extends AbstractVisualModel {
     @Override
     public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
+        Fsm mathFsm = getMathModel();
         if (node == null) {
             properties.add(PropertyHelper.createSeparatorProperty("Symbols"));
-            List<Symbol> symbols = new ArrayList<>(getMathModel().getSymbols());
-            Collections.sort(symbols, Comparator.comparing(getMathModel()::getNodeReference));
+            List<Symbol> symbols = new ArrayList<>(mathFsm.getSymbols());
+            Collections.sort(symbols, (s1, s2) -> SortUtils.compareNatural(
+                    mathFsm.getNodeReference(s1), mathFsm.getNodeReference(s1)));
+
             for (final Symbol symbol : symbols) {
                 properties.add(FsmPropertyHelper.getSymbolProperty(this, symbol));
             }
         } else if (node instanceof VisualEvent) {
             Event event = ((VisualEvent) node).getReferencedConnection();
-            properties.add(FsmPropertyHelper.getEventSymbolProperty(getMathModel(), event));
+            properties.add(FsmPropertyHelper.getEventSymbolProperty(mathFsm, event));
         }
         return properties;
     }

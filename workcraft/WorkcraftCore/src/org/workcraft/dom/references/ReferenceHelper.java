@@ -3,10 +3,10 @@ package org.workcraft.dom.references;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.utils.SortUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
 public class ReferenceHelper {
 
@@ -16,7 +16,7 @@ public class ReferenceHelper {
 
     public static String getNodesAsString(final Model model, Collection<? extends Node> nodes) {
         ArrayList<String> refs = getReferenceList(model, nodes);
-        Collections.sort(refs);
+        SortUtils.sortNatural(refs);
         return String.join(", ", refs);
     }
 
