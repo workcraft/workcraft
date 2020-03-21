@@ -18,6 +18,7 @@ import org.workcraft.plugins.dtd.utils.DtdUtils;
 import org.workcraft.plugins.wtg.tools.SignalGeneratorTool;
 import org.workcraft.plugins.wtg.utils.WtgUtils;
 import org.workcraft.utils.ColorUtils;
+import org.workcraft.utils.SortUtils;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -35,14 +36,14 @@ public class WtgPropertyHelper {
         if (SignalCommonSettings.getGroupByType()) {
             for (Signal.Type type : Signal.Type.values()) {
                 List<String> signalNames = new LinkedList<>(mathWtg.getSignalNames(type));
-                Collections.sort(signalNames);
+                SortUtils.sortNatural(signalNames);
                 for (final String signalName : signalNames) {
                     result.add(getSignalProperty(visualWtg, signalName));
                 }
             }
         } else {
             List<String> signalNames = new LinkedList<>(mathWtg.getSignalNames());
-            Collections.sort(signalNames);
+            SortUtils.sortNatural(signalNames);
             for (final String signalName : signalNames) {
                 result.add(getSignalProperty(visualWtg, signalName));
             }
@@ -84,7 +85,7 @@ public class WtgPropertyHelper {
     public static Collection<PropertyDescriptor> getSignalDeclarationProperties(VisualWtg visualWtg, VisualWaveform waveform) {
         Collection<PropertyDescriptor> result = new ArrayList<>();
         List<String> signalNames = new LinkedList<>(visualWtg.getMathModel().getSignalNames());
-        Collections.sort(signalNames);
+        SortUtils.sortNatural(signalNames);
         for (String signalName : signalNames) {
             result.add(getSignalDeclarationProperty(visualWtg, waveform, signalName));
         }

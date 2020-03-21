@@ -10,6 +10,7 @@ import org.workcraft.plugins.mpsat.utils.ReachUtils;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.SortUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,7 +18,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -224,12 +224,12 @@ public class HandshakeWizardDialog extends ModalDialog<Stg> {
         Stg stg = getUserData();
 
         List<String> inputSignals = new ArrayList<>(stg.getSignalReferences(Signal.Type.INPUT));
-        Collections.sort(inputSignals);
+        SortUtils.sortNatural(inputSignals);
         inputList = new SignalList(inputSignals, SignalCommonSettings.getInputColor());
         inputList.addListSelectionListener(l -> updateOkEnableness());
 
         List<String> outputSignals = new ArrayList<>(stg.getSignalReferences(Signal.Type.OUTPUT));
-        Collections.sort(outputSignals);
+        SortUtils.sortNatural(outputSignals);
         outputList = new SignalList(outputSignals, SignalCommonSettings.getOutputColor());
         outputList.addListSelectionListener(l -> updateOkEnableness());
 

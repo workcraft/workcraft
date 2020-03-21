@@ -10,11 +10,11 @@ import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.gui.properties.TextAction;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.stg.utils.StgUtils;
+import org.workcraft.utils.SortUtils;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class StgPropertyHelper {
@@ -57,7 +57,7 @@ public class StgPropertyHelper {
         if (SignalCommonSettings.getGroupByType()) {
             for (Signal.Type type : Signal.Type.values()) {
                 java.util.List<String> signalNames = new ArrayList<>(stg.getSignalNames(type, container));
-                Collections.sort(signalNames);
+                SortUtils.sortNatural(signalNames);
                 for (final String signalName : signalNames) {
                     if (!stg.getSignalTransitions(signalName, container).isEmpty()) {
                         result.add(getSignalProperty(visualStg, signalName, container));
@@ -66,7 +66,7 @@ public class StgPropertyHelper {
             }
         } else {
             List<String> signalNames = new ArrayList<>(stg.getSignalNames(container));
-            Collections.sort(signalNames);
+            SortUtils.sortNatural(signalNames);
             for (final String signalName : signalNames) {
                 if (!stg.getSignalTransitions(signalName, container).isEmpty()) {
                     result.add(getSignalProperty(visualStg, signalName, container));
