@@ -1,0 +1,32 @@
+{
+  "allowedLicenses": [
+        {
+            "moduleLicense": "Apache License, Version 2.0"
+        },
+        {
+            "moduleLicense": "The Apache License, Version 2.0"
+        },
+        {
+            "moduleLicense": "The Apache Software License, Version 2.0"
+        },
+        {
+            "moduleLicense": "MIT License"
+        },
+        {
+            "moduleLicense": "Mozilla Public License, Version 2.0",
+            "moduleName": "org.mozilla:rhino"
+        },
+        {
+            "moduleLicense": "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0",
+            "moduleName": "com.sun.activation:javax.activation"
+        },
+        {
+            "moduleLicense": "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0",
+            "moduleName": "net.sf.jga:jga"
+        },
+        {
+            "moduleLicense": "The Clearthought Software License, Version 2.0",
+            "moduleName": "info.clearthought:table-layout"
+        }
+    ]
+}
