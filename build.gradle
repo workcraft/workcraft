@@ -183,16 +183,20 @@ subprojects {
     }
 }
 
+
 apply plugin: 'com.github.jk1.dependency-license-report'
 
-import com.github.jk1.license.render.*
-
 licenseReport {
-    renderers = [new InventoryHtmlReportRenderer()]
+    configurations = ['runtimeClasspath', 'compileClasspath']
+    renderers = [new com.github.jk1.license.render.InventoryHtmlReportRenderer()]
+    allowedLicensesFile = new File("${project.rootDir}/config/license/allowed.json")
 }
-checkLicense.group = 'License'
-checkLicensePreparation.group = 'License'
-generateLicenseReport.group = 'License'
+
+checkLicense.group = 'Verification'
+generateLicenseReport.group = 'Verification'
+checkLicensePreparation.group = null
+
+check.dependsOn checkLicense
 
 
 cpdCheck {
@@ -250,6 +254,7 @@ tasks.coveralls {
     description = 'Generate coverage report for all subprojects with tests.'
     dependsOn jacocoRootReport
 }
+
 
 apply plugin: 'idea'
 
