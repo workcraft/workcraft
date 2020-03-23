@@ -115,6 +115,10 @@ public class CommandUtils {
         command.run(we);
     }
 
+    public static <T> T execute(WorkspaceEntry we, ScriptableCommand<T> command, String data) {
+        return execute(we, command);
+    }
+
     public static <T> T execute(WorkspaceEntry we, ScriptableCommand<T> command) {
         checkCommandApplicability(we, command);
         return command.execute(we);

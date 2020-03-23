@@ -549,29 +549,20 @@ public final class Framework {
     public <T> T executeCommand(WorkspaceEntry we, String className) {
         if ((className == null) || className.isEmpty()) {
             LogUtils.logError("Undefined command name.");
-        } else {
-            boolean found = false;
-            boolean scriptable = false;
-            for (Command command : CommandUtils.getCommands()) {
-                Class<? extends Command> cls = command.getClass();
-                if (className.equals(cls.getSimpleName()) || className.endsWith(cls.getName())) {
-                    found = true;
-                    if (command instanceof ScriptableCommand) {
-                        scriptable = true;
-                        ScriptableCommand<T> scriptableCommand = (ScriptableCommand<T>) command;
-                        return CommandUtils.execute(we, scriptableCommand);
-                    }
+            return null;
+        }
+        for (Command command : CommandUtils.getCommands()) {
+            Class<? extends Command> cls = command.getClass();
+            if (className.equals(cls.getSimpleName()) || className.endsWith(cls.getName())) {
+                if (!(command instanceof ScriptableCommand)) {
+                    LogUtils.logError("Command '" + className + "' cannot be used in scripts.");
+                    return null;
                 }
-            }
-            if (!found) {
-                LogUtils.logError("Command '" + className + "' is not found.");
-            } else if (!scriptable) {
-                LogUtils.logError("Command '" + className + "' cannot be used in scripts.");
-            } else {
-                LogUtils.logError("Command '" + className + "' is incompatible"
-                        + " with workspace entry '" + we.getWorkspacePath() + "'.");
+                ScriptableCommand<T> scriptableCommand = (ScriptableCommand<T>) command;
+                return CommandUtils.execute(we, scriptableCommand);
             }
         }
+        LogUtils.logError("Command '" + className + "' is not found.");
         return null;
     }
 

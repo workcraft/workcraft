@@ -44,7 +44,7 @@ public class SpotAssertionVerificationCommand extends AbstractVerificationComman
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        ScriptableCommandUtils.showErrorRequiresGui(getClass().getSimpleName());
+        ScriptableCommandUtils.showErrorRequiresGui(getClass());
         return null;
     }
 

@@ -11,10 +11,10 @@ import org.workcraft.plugins.pcomp.gui.ParallelCompositionDialog;
 import org.workcraft.plugins.pcomp.tasks.PcompResultHandler;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.*;
 import org.workcraft.workspace.Workspace;
@@ -51,7 +51,7 @@ public class ParallelCompositionCommand implements Command {
     public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         if (!framework.isInGuiMode()) {
-            LogUtils.logError("Command '" + getClass().getSimpleName() + "' only works in GUI mode.");
+            ScriptableCommandUtils.showErrorRequiresGui(getClass());
             return;
         }
         MainWindow mainWindow = framework.getMainWindow();

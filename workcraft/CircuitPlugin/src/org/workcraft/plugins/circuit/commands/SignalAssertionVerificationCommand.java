@@ -44,7 +44,7 @@ public class SignalAssertionVerificationCommand extends AbstractVerificationComm
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        ScriptableCommandUtils.showErrorRequiresGui(getClass().getSimpleName());
+        ScriptableCommandUtils.showErrorRequiresGui(getClass());
         return null;
     }
 
