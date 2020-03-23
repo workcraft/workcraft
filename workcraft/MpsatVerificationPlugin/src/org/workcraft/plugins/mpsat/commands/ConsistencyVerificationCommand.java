@@ -29,7 +29,7 @@ public class ConsistencyVerificationCommand extends AbstractVerificationCommand 
     }
 
     @Override
-    public VerificationParameters getSettings(WorkspaceEntry we) {
+    public VerificationParameters getVerificationParameters(WorkspaceEntry we) {
         return ReachUtils.getConsistencySettings();
     }
 

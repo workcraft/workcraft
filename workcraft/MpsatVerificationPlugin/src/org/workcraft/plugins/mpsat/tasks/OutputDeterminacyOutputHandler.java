@@ -23,9 +23,9 @@ import java.util.*;
 class OutputDeterminacyOutputHandler extends ReachabilityOutputHandler {
 
     OutputDeterminacyOutputHandler(WorkspaceEntry we, ExportOutput exportOutput,
-            PcompOutput pcompOutput, VerificationOutput mpsatOutput, VerificationParameters settings) {
+            PcompOutput pcompOutput, VerificationOutput mpsatOutput, VerificationParameters verificationParameters) {
 
-        super(we, exportOutput, pcompOutput, mpsatOutput, settings);
+        super(we, exportOutput, pcompOutput, mpsatOutput, verificationParameters);
     }
 
     @Override

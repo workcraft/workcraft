@@ -51,7 +51,7 @@ public class OutputPersistencyVerificationCommand extends AbstractVerificationCo
     }
 
     @Override
-    public VerificationParameters getSettings(WorkspaceEntry we) {
+    public VerificationParameters getVerificationParameters(WorkspaceEntry we) {
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         LinkedList<Pair<String, String>> exceptions = MutexUtils.getMutexGrantPairs(stg);
         return ReachUtils.getOutputPersistencySettings(exceptions);

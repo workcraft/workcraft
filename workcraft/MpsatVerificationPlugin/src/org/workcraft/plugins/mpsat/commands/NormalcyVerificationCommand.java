@@ -25,7 +25,7 @@ public class NormalcyVerificationCommand extends AbstractVerificationCommand {
     }
 
     @Override
-    public VerificationParameters getSettings(WorkspaceEntry we) {
+    public VerificationParameters getVerificationParameters(WorkspaceEntry we) {
         return new VerificationParameters("Normalcy",
                 VerificationMode.NORMALCY, 0,
                 MpsatVerificationSettings.getSolutionMode(),

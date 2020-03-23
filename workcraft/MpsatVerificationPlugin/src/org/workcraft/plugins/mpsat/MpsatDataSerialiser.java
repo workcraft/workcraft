@@ -44,19 +44,19 @@ public class MpsatDataSerialiser implements DataSerialiser<VerificationParameter
 
 
     @Override
-    public void toXML(VerificationParameters settings, Element parent) {
+    public void toXML(VerificationParameters verificationParameters, Element parent) {
         Element element = parent.getOwnerDocument().createElement(SETTINGS_ELEMENT);
-        element.setAttribute(SETTINGS_NAME_ATTRIBUTE, settings.getName());
-        element.setAttribute(SETTINGS_MODE_ATTRIBUTE, settings.getMode().getArgument());
-        element.setAttribute(SETTINGS_VERBOSITY_ATTRIBUTE, Integer.toString(settings.getVerbosity()));
-        element.setAttribute(SETTINGS_SOLUTION_LIMIT_ATTRIBUTE, Integer.toString(settings.getSolutionNumberLimit()));
-        element.setAttribute(SETTINGS_SOLUTION_MODE_ATTRIBUTE, settings.getSolutionMode().name());
+        element.setAttribute(SETTINGS_NAME_ATTRIBUTE, verificationParameters.getName());
+        element.setAttribute(SETTINGS_MODE_ATTRIBUTE, verificationParameters.getMode().getArgument());
+        element.setAttribute(SETTINGS_VERBOSITY_ATTRIBUTE, Integer.toString(verificationParameters.getVerbosity()));
+        element.setAttribute(SETTINGS_SOLUTION_LIMIT_ATTRIBUTE, Integer.toString(verificationParameters.getSolutionNumberLimit()));
+        element.setAttribute(SETTINGS_SOLUTION_MODE_ATTRIBUTE, verificationParameters.getSolutionMode().name());
 
         Element reach = parent.getOwnerDocument().createElement(SETTINGS_REACH_ELEMENT);
-        reach.setTextContent(settings.getExpression());
+        reach.setTextContent(verificationParameters.getExpression());
         element.appendChild(reach);
 
-        element.setAttribute(SETTINGS_INVERSE_PREDICATE_ATTRIBUTE, Boolean.toString(settings.getInversePredicate()));
+        element.setAttribute(SETTINGS_INVERSE_PREDICATE_ATTRIBUTE, Boolean.toString(verificationParameters.getInversePredicate()));
 
         parent.appendChild(element);
     }

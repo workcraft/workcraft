@@ -63,11 +63,11 @@ public class SignalAssertionVerificationCommand extends AbstractVerificationComm
         if (dialog.reveal()) {
             preservedData = dialog.getPresetData();
             TaskManager manager = framework.getTaskManager();
-            VerificationParameters settings = new VerificationParameters(null, VerificationMode.ASSERTION,
-                    0, VerificationParameters.SolutionMode.MINIMUM_COST,
+            VerificationParameters verificationParameters = new VerificationParameters(null,
+                    VerificationMode.ASSERTION, 0, VerificationParameters.SolutionMode.MINIMUM_COST,
                     0, preservedData, true);
 
-            VerificationChainTask task = new VerificationChainTask(we, settings);
+            VerificationChainTask task = new VerificationChainTask(we, verificationParameters);
             String description = MpsatUtils.getToolchainDescription(we.getTitle());
             VerificationChainResultHandler monitor = new VerificationChainResultHandler(we);
             manager.queue(task, description, monitor);

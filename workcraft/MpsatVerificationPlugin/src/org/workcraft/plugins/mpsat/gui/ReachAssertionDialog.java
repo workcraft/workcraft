@@ -94,10 +94,10 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
 
         DataMapper<VerificationParameters> guiMapper = new DataMapper<VerificationParameters>() {
             @Override
-            public void applyDataToControls(VerificationParameters settings) {
-                modeCombo.setSelectedItem(settings.getMode());
+            public void applyDataToControls(VerificationParameters data) {
+                modeCombo.setSelectedItem(data.getMode());
 
-                switch (settings.getSolutionMode()) {
+                switch (data.getSolutionMode()) {
                 case MINIMUM_COST:
                     cheapestSolutionRadioButton.setSelected(true);
                     solutionLimitText.setText(Integer.toString(DEFAULT_ALL_SOLUTION_LIMIT));
@@ -110,19 +110,19 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
                     break;
                 case ALL:
                     allSolutionsRadioButton.setSelected(true);
-                    int n = settings.getSolutionNumberLimit();
+                    int n = data.getSolutionNumberLimit();
                     solutionLimitText.setText((n > 0) ? Integer.toString(n) : "");
                     solutionLimitText.setEnabled(true);
                     break;
                 }
 
-                if (settings.getInversePredicate()) {
+                if (data.getInversePredicate()) {
                     unsatisfiableRadioButton.setSelected(true);
                 } else {
                     satisfiableRadioButton.setSelected(true);
                 }
 
-                propertyText.setText(settings.getExpression());
+                propertyText.setText(data.getExpression());
                 propertyText.setCaretPosition(0);
                 propertyText.requestFocus();
                 propertyText.discardEditHistory();
@@ -138,12 +138,12 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
     }
 
     private void addExample(MpsatPresetManager presetManager, String title, VerificationMode mode, String expression) {
-        VerificationParameters settings = new VerificationParameters(title, mode, 0,
+        VerificationParameters verificationParameters = new VerificationParameters(title, mode, 0,
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount(),
                 expression, true);
 
-        presetManager.addExample(title, settings);
+        presetManager.addExample(title, verificationParameters);
 
     }
 

@@ -27,16 +27,18 @@ import java.util.Collection;
 public class VerificationChainTask implements Task<VerificationChainOutput> {
 
     private final WorkspaceEntry we;
-    private final VerificationParameters settings;
+    private final VerificationParameters verificationParameters;
     private final Collection<Mutex> mutexes;
 
-    public VerificationChainTask(WorkspaceEntry we, VerificationParameters settings) {
-        this(we, settings, null);
+    public VerificationChainTask(WorkspaceEntry we, VerificationParameters verificationParameters) {
+        this(we, verificationParameters, null);
     }
 
-    public VerificationChainTask(WorkspaceEntry we, VerificationParameters settings, Collection<Mutex> mutexes) {
+    public VerificationChainTask(WorkspaceEntry we, VerificationParameters verificationParameters,
+            Collection<Mutex> mutexes) {
+
         this.we = we;
-        this.settings = settings;
+        this.verificationParameters = verificationParameters;
         this.mutexes = mutexes;
     }
 
@@ -66,7 +68,7 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(exportResult, null, null, null, settings));
+                        new VerificationChainOutput(exportResult, null, null, null, verificationParameters));
             }
             if ((mutexes != null) && !mutexes.isEmpty()) {
                 Stg stg = StgUtils.loadStg(netFile);
@@ -80,13 +82,13 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
                         return new Result<>(Outcome.CANCEL);
                     }
                     return new Result<>(Outcome.FAILURE,
-                            new VerificationChainOutput(exportResult, null, null, null, settings));
+                            new VerificationChainOutput(exportResult, null, null, null, verificationParameters));
                 }
             }
             monitor.progressUpdate(0.33);
 
             // Generate unfolding
-            boolean useLegacyMci = PunfSettings.getUseMciCsc() && (settings.getMode() == VerificationMode.RESOLVE_ENCODING_CONFLICTS);
+            boolean useLegacyMci = PunfSettings.getUseMciCsc() && (verificationParameters.getMode() == VerificationMode.RESOLVE_ENCODING_CONFLICTS);
             String unfoldingExtension = useLegacyMci ? PunfTask.MCI_FILE_EXTENSION : PunfTask.PNML_FILE_EXTENSION;
             File unfoldingFile = new File(directory, "unfolding" + unfoldingExtension);
             PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory, useLegacyMci);
@@ -97,12 +99,12 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(exportResult, null, punfResult, null, settings));
+                        new VerificationChainOutput(exportResult, null, punfResult, null, verificationParameters));
             }
             monitor.progressUpdate(0.66);
 
             // Run MPSat on the generated unfolding
-            VerificationTask verificationTask = new VerificationTask(settings.getMpsatArguments(directory),
+            VerificationTask verificationTask = new VerificationTask(verificationParameters.getMpsatArguments(directory),
                     unfoldingFile, directory, netFile);
             Result<? extends VerificationOutput> mpsatResult = manager.execute(
                     verificationTask, "Running verification [MPSat]", subtaskMonitor);
@@ -112,12 +114,12 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(exportResult, null, punfResult, mpsatResult, settings));
+                        new VerificationChainOutput(exportResult, null, punfResult, mpsatResult, verificationParameters));
             }
             monitor.progressUpdate(1.0);
 
             return new Result<>(Outcome.SUCCESS,
-                    new VerificationChainOutput(exportResult, null, punfResult, mpsatResult, settings));
+                    new VerificationChainOutput(exportResult, null, punfResult, mpsatResult, verificationParameters));
         } catch (Throwable e) {
             return new Result<>(e);
         } finally {
@@ -125,8 +127,8 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
         }
     }
 
-    public VerificationParameters getSettings() {
-        return settings;
+    public VerificationParameters getVerificationParameters() {
+        return verificationParameters;
     }
 
     public WorkspaceEntry getWorkspaceEntry() {

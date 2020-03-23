@@ -27,12 +27,14 @@ import java.util.List;
 public class CombinedChainTask implements Task<CombinedChainOutput> {
 
     private final WorkspaceEntry we;
-    private final List<VerificationParameters> settingsList;
+    private final List<VerificationParameters> verificationParametersList;
     private final Task<VerificationChainOutput> extraTask;
 
-    public CombinedChainTask(WorkspaceEntry we, List<VerificationParameters> settingsList, Task<VerificationChainOutput> extraTask) {
+    public CombinedChainTask(WorkspaceEntry we, List<VerificationParameters> verificationParametersList,
+            Task<VerificationChainOutput> extraTask) {
+
         this.we = we;
-        this.settingsList = settingsList;
+        this.verificationParametersList = verificationParametersList;
         this.extraTask = extraTask;
     }
 
@@ -55,10 +57,10 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
             Result<? extends PunfOutput> punfResult = payload.getPunfResult();
             List<Result<? extends VerificationOutput>> mpsatResultList = result.getPayload().getMpsatResultList();
             mpsatResultList.add(payload.getMpsatResult());
-            settingsList.add(payload.getMpsatSettings());
+            verificationParametersList.add(payload.getMpsatSettings());
 
             result = new Result<>(taskResult.getOutcome(),
-                    new CombinedChainOutput(exportResult, pcompResult, punfResult, mpsatResultList, settingsList));
+                    new CombinedChainOutput(exportResult, pcompResult, punfResult, mpsatResultList, verificationParametersList));
         }
         return result;
     }
@@ -89,7 +91,7 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new CombinedChainOutput(exportResult, null, null, null, settingsList));
+                        new CombinedChainOutput(exportResult, null, null, null, verificationParametersList));
             }
             monitor.progressUpdate(0.33);
 
@@ -97,8 +99,8 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
             boolean useMci = false;
             if (PunfSettings.getUseMciCsc()) {
                 useMci = true;
-                for (VerificationParameters settings: settingsList) {
-                    useMci &= settings.getMode() == VerificationMode.RESOLVE_ENCODING_CONFLICTS;
+                for (VerificationParameters verificationParameters: verificationParametersList) {
+                    useMci &= verificationParameters.getMode() == VerificationMode.RESOLVE_ENCODING_CONFLICTS;
                 }
             }
             String unfoldingExtension = useMci ? PunfTask.MCI_FILE_EXTENSION : PunfTask.PNML_FILE_EXTENSION;
@@ -112,14 +114,14 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new CombinedChainOutput(exportResult, null, punfResult, null, settingsList));
+                        new CombinedChainOutput(exportResult, null, punfResult, null, verificationParametersList));
             }
             monitor.progressUpdate(0.66);
 
             // Run MPSat on the generated unfolding
-            ArrayList<Result<? extends VerificationOutput>> mpsatResultList = new ArrayList<>(settingsList.size());
-            for (VerificationParameters settings: settingsList) {
-                VerificationTask verificationTask = new VerificationTask(settings.getMpsatArguments(directory), unfoldingFile, directory, netFile);
+            ArrayList<Result<? extends VerificationOutput>> mpsatResultList = new ArrayList<>(verificationParametersList.size());
+            for (VerificationParameters verificationParameters: verificationParametersList) {
+                VerificationTask verificationTask = new VerificationTask(verificationParameters.getMpsatArguments(directory), unfoldingFile, directory, netFile);
                 Result<? extends VerificationOutput> mpsatResult = taskManager.execute(
                         verificationTask, "Running verification [MPSat]", subtaskMonitor);
                 mpsatResultList.add(mpsatResult);
@@ -128,13 +130,13 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
                         return new Result<>(Outcome.CANCEL);
                     }
                     return new Result<>(Outcome.FAILURE,
-                            new CombinedChainOutput(exportResult, null, punfResult, mpsatResultList, settingsList));
+                            new CombinedChainOutput(exportResult, null, punfResult, mpsatResultList, verificationParametersList));
                 }
             }
             monitor.progressUpdate(1.0);
 
             return new Result<>(Outcome.SUCCESS,
-                    new CombinedChainOutput(exportResult, null, punfResult, mpsatResultList, settingsList));
+                    new CombinedChainOutput(exportResult, null, punfResult, mpsatResultList, verificationParametersList));
         } catch (Throwable e) {
             return new Result<>(e);
         } finally {

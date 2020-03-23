@@ -76,7 +76,7 @@ public class PlaceRedundancyVerificationCommand extends AbstractVerificationComm
     }
 
     @Override
-    public VerificationParameters getSettings(WorkspaceEntry we) {
+    public VerificationParameters getVerificationParameters(WorkspaceEntry we) {
         HashSet<String> placeNames = getSelectedPlaces(we);
         String str = placeNames.stream().map(ref -> "\"" + ref + "\", ").collect(Collectors.joining());
         String reachPlaceRedundancy = REACH_PLACE_REDUNDANCY.replace(REACH_PLACE_REDUNDANCY_NAMES, str);

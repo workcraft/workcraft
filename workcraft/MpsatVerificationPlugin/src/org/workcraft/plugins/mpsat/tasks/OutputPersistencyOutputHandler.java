@@ -20,10 +20,10 @@ import java.util.*;
 
 class OutputPersistencyOutputHandler extends ReachabilityOutputHandler {
 
-    OutputPersistencyOutputHandler(WorkspaceEntry we,
-            ExportOutput exportOutput, PcompOutput pcompOutput, VerificationOutput mpsatOutput, VerificationParameters settings) {
+    OutputPersistencyOutputHandler(WorkspaceEntry we, ExportOutput exportOutput, PcompOutput pcompOutput,
+            VerificationOutput mpsatOutput, VerificationParameters verificationParameters) {
 
-        super(we, exportOutput, pcompOutput, mpsatOutput, settings);
+        super(we, exportOutput, pcompOutput, mpsatOutput, verificationParameters);
     }
 
     @Override

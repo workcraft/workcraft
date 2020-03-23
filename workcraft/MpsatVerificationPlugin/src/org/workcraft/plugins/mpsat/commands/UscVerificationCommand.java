@@ -25,7 +25,7 @@ public class UscVerificationCommand extends AbstractVerificationCommand implemen
     }
 
     @Override
-    public VerificationParameters getSettings(WorkspaceEntry we) {
+    public VerificationParameters getVerificationParameters(WorkspaceEntry we) {
         return new VerificationParameters("Unique state coding",
                 VerificationMode.USC_CONFLICT_DETECTION, 0,
                 VerificationParameters.SolutionMode.ALL,

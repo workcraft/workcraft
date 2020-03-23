@@ -18,10 +18,10 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 class ConsistencyOutputHandler extends ReachabilityOutputHandler {
 
-    ConsistencyOutputHandler(WorkspaceEntry we,
-            ExportOutput exportOutput, PcompOutput pcompOutput, VerificationOutput mpsatOutput, VerificationParameters settings) {
+    ConsistencyOutputHandler(WorkspaceEntry we, ExportOutput exportOutput, PcompOutput pcompOutput,
+            VerificationOutput mpsatOutput, VerificationParameters verificationParameters) {
 
-        super(we, exportOutput, pcompOutput, mpsatOutput, settings);
+        super(we, exportOutput, pcompOutput, mpsatOutput, verificationParameters);
     }
 
     @Override

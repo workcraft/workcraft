@@ -61,12 +61,12 @@ public class CscConflictResolutionCommand implements ScriptableCommand<Workspace
     }
 
     private VerificationChainResultHandler queueCscConflictResolution(WorkspaceEntry we) {
-        VerificationParameters settings = new VerificationParameters(TITLE,
+        VerificationParameters verificationParameters = new VerificationParameters(TITLE,
                 VerificationMode.RESOLVE_ENCODING_CONFLICTS, 4, SolutionMode.MINIMUM_COST, 1);
 
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
-        VerificationChainTask task = new VerificationChainTask(we, settings, mutexes);
+        VerificationChainTask task = new VerificationChainTask(we, verificationParameters, mutexes);
 
         TaskManager taskManager = Framework.getInstance().getTaskManager();
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);

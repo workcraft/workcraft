@@ -61,9 +61,9 @@ public class ConformationNwayOutputHandler extends ConformationOutputHandler {
     private final List<WorkspaceEntry> wes;
 
     ConformationNwayOutputHandler(ArrayList<WorkspaceEntry> wes, ExportOutput exportOutput,
-            PcompOutput pcompOutput, VerificationOutput mpsatOutput, VerificationParameters settings) {
+            PcompOutput pcompOutput, VerificationOutput mpsatOutput, VerificationParameters verificationParameters) {
 
-        super(wes.get(0), exportOutput, pcompOutput, mpsatOutput, settings);
+        super(wes.get(0), exportOutput, pcompOutput, mpsatOutput, verificationParameters);
         this.wes = wes;
     }
 

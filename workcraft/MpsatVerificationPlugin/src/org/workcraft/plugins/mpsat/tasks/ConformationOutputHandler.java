@@ -27,10 +27,10 @@ class ConformationOutputHandler extends ReachabilityOutputHandler {
     private static final Pattern DEAD_SIGNAL_PATTERN = Pattern.compile(
             "Warning: signal (\\w+) is dead");
 
-    ConformationOutputHandler(WorkspaceEntry we, ExportOutput exportOutput,
-            PcompOutput pcompOutput, VerificationOutput mpsatOutput, VerificationParameters settings) {
+    ConformationOutputHandler(WorkspaceEntry we, ExportOutput exportOutput, PcompOutput pcompOutput,
+            VerificationOutput mpsatOutput, VerificationParameters verificationParameters) {
 
-        super(we, exportOutput, pcompOutput, mpsatOutput, settings);
+        super(we, exportOutput, pcompOutput, mpsatOutput, verificationParameters);
     }
 
     @Override
@@ -43,7 +43,7 @@ class ConformationOutputHandler extends ReachabilityOutputHandler {
             signals.add(matcher.group(1));
         }
         if (!signals.isEmpty()) {
-            boolean inversePredicate = getSettings().getInversePredicate();
+            boolean inversePredicate = getVerificationParameters().getInversePredicate();
             if (isSatisfiable == inversePredicate) {
                 result += "<br>Also ";
             } else {

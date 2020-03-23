@@ -4,7 +4,6 @@ import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.plugins.cpog.tools.CpogSelectionTool;
-import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.ScriptableCommandUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 

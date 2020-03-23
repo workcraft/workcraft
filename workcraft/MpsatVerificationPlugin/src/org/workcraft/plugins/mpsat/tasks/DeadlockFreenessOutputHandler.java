@@ -26,9 +26,10 @@ import java.util.Map;
 class DeadlockFreenessOutputHandler extends ReachabilityOutputHandler {
 
     DeadlockFreenessOutputHandler(WorkspaceEntry we,
-            ExportOutput exportOutput, PcompOutput pcompOutput, VerificationOutput mpsatOutput, VerificationParameters settings) {
+            ExportOutput exportOutput, PcompOutput pcompOutput, VerificationOutput mpsatOutput,
+            VerificationParameters verificationParameters) {
 
-        super(we, exportOutput, pcompOutput, mpsatOutput, settings);
+        super(we, exportOutput, pcompOutput, mpsatOutput, verificationParameters);
     }
 
     @Override

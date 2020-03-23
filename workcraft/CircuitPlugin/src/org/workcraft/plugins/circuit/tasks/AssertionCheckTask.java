@@ -29,11 +29,11 @@ import java.util.Set;
 public class AssertionCheckTask implements Task<VerificationChainOutput> {
 
     private final WorkspaceEntry we;
-    private final VerificationParameters settings;
+    private final VerificationParameters verificationParameters;
 
-    public AssertionCheckTask(WorkspaceEntry we, VerificationParameters settings) {
+    public AssertionCheckTask(WorkspaceEntry we, VerificationParameters verificationParameters) {
         this.we = we;
-        this.settings = settings;
+        this.verificationParameters = verificationParameters;
     }
 
     @Override
@@ -122,7 +122,7 @@ public class AssertionCheckTask implements Task<VerificationChainOutput> {
             monitor.progressUpdate(0.40);
 
             // Check custom property (if requested)
-            VerificationTask verificationTask = new VerificationTask(settings.getMpsatArguments(directory),
+            VerificationTask verificationTask = new VerificationTask(verificationParameters.getMpsatArguments(directory),
                     unfoldingFile, directory, sysStgFile);
             SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
             Result<? extends VerificationOutput> mpsatResult = manager.execute(
@@ -133,21 +133,21 @@ public class AssertionCheckTask implements Task<VerificationChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, settings));
+                        new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters));
             }
             monitor.progressUpdate(0.50);
 
             VerificationOutputParser mpsatParser = new VerificationOutputParser(mpsatResult.getPayload());
             if (!mpsatParser.getSolutions().isEmpty()) {
                 return new Result<>(Outcome.SUCCESS,
-                        new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, settings,
+                        new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,
                                 "Property is violated after the following trace(s):"));
             }
             monitor.progressUpdate(1.00);
 
             // Success
             return new Result<>(Outcome.SUCCESS,
-                    new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, settings,
+                    new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,
                             "Property holds"));
 
         } catch (Throwable e) {

@@ -38,7 +38,7 @@ public class DeadlockFreenessTask implements Task<VerificationChainOutput> {
         final Framework framework = Framework.getInstance();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
-        VerificationParameters settings = new VerificationParameters("Deadlock freeness",
+        VerificationParameters verificationParameters = new VerificationParameters("Deadlock freeness",
                 VerificationMode.DEADLOCK, 0,
                 MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount());
         try {
@@ -63,7 +63,7 @@ public class DeadlockFreenessTask implements Task<VerificationChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(exportResult, null, null, null, settings));
+                        new VerificationChainOutput(exportResult, null, null, null, verificationParameters));
             }
             monitor.progressUpdate(0.20);
 
@@ -77,11 +77,11 @@ public class DeadlockFreenessTask implements Task<VerificationChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(exportResult, null, punfResult, null, settings));
+                        new VerificationChainOutput(exportResult, null, punfResult, null, verificationParameters));
             }
             monitor.progressUpdate(0.70);
 
-            VerificationTask verificationTask = new VerificationTask(settings.getMpsatArguments(directory),
+            VerificationTask verificationTask = new VerificationTask(verificationParameters.getMpsatArguments(directory),
                     unfoldingFile, directory, netFile);
             Result<? extends VerificationOutput> mpsatResult = framework.getTaskManager().execute(
                     verificationTask, "Running deadlock checking [MPSat]", mon);
@@ -92,19 +92,19 @@ public class DeadlockFreenessTask implements Task<VerificationChainOutput> {
                 }
                 String errorMessage = mpsatResult.getPayload().getErrorsHeadAndTail();
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(exportResult, null, punfResult, mpsatResult, settings, errorMessage));
+                        new VerificationChainOutput(exportResult, null, punfResult, mpsatResult, verificationParameters, errorMessage));
             }
             monitor.progressUpdate(0.90);
 
             VerificationOutputParser mdp = new VerificationOutputParser(mpsatResult.getPayload());
             if (!mdp.getSolutions().isEmpty()) {
                 return new Result<>(Outcome.SUCCESS,
-                        new VerificationChainOutput(exportResult, null, punfResult, mpsatResult, settings, "Policy net has a deadlock"));
+                        new VerificationChainOutput(exportResult, null, punfResult, mpsatResult, verificationParameters, "Policy net has a deadlock"));
             }
             monitor.progressUpdate(1.0);
 
             return new Result<>(Outcome.SUCCESS,
-                    new VerificationChainOutput(exportResult, null, punfResult, mpsatResult, settings, "Policy net is deadlock-free"));
+                    new VerificationChainOutput(exportResult, null, punfResult, mpsatResult, verificationParameters, "Policy net is deadlock-free"));
 
         } catch (Throwable e) {
             return new Result<>(e);

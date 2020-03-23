@@ -48,8 +48,8 @@ public class TextPresetDialog extends PresetDialog<String> {
     private PresetManagerPanel<String> createPresetPanel() {
         DataMapper<String> guiMapper = new DataMapper<String>() {
             @Override
-            public void applyDataToControls(String settings) {
-                textArea.setText(settings);
+            public void applyDataToControls(String data) {
+                textArea.setText(data);
                 textArea.setCaretPosition(0);
                 textArea.requestFocus();
                 textArea.discardEditHistory();

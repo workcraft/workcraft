@@ -5,8 +5,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 class RedundancyOutputHandler extends ReachabilityOutputHandler {
 
-    RedundancyOutputHandler(WorkspaceEntry we, VerificationOutput mpsatOutput, VerificationParameters settings) {
-        super(we, mpsatOutput, settings);
+    RedundancyOutputHandler(WorkspaceEntry we, VerificationOutput mpsatOutput, VerificationParameters verificationParameters) {
+        super(we, mpsatOutput, verificationParameters);
     }
 
     @Override

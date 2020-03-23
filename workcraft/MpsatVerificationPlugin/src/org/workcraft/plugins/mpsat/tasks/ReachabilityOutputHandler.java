@@ -31,20 +31,24 @@ class ReachabilityOutputHandler implements Runnable {
     private ExportOutput exportOutput;
     private final PcompOutput pcompOutput;
     private final VerificationOutput mpsatOutput;
-    private final VerificationParameters settings;
+    private final VerificationParameters verificationParameters;
 
     private CompositionData compositionData = null;
 
-    ReachabilityOutputHandler(WorkspaceEntry we, VerificationOutput mpsatOutput, VerificationParameters settings) {
-        this(we, null, null, mpsatOutput, settings);
+    ReachabilityOutputHandler(WorkspaceEntry we, VerificationOutput mpsatOutput,
+            VerificationParameters verificationParameters) {
+
+        this(we, null, null, mpsatOutput, verificationParameters);
     }
 
-    ReachabilityOutputHandler(WorkspaceEntry we, ExportOutput exportOutput, PcompOutput pcompOutput, VerificationOutput mpsatOutput, VerificationParameters settings) {
+    ReachabilityOutputHandler(WorkspaceEntry we, ExportOutput exportOutput, PcompOutput pcompOutput,
+            VerificationOutput mpsatOutput, VerificationParameters verificationParameters) {
+
         this.we = we;
         this.exportOutput = exportOutput;
         this.pcompOutput = pcompOutput;
         this.mpsatOutput = mpsatOutput;
-        this.settings = settings;
+        this.verificationParameters = verificationParameters;
     }
 
     public WorkspaceEntry getWorkspaceEntry() {
@@ -63,8 +67,8 @@ class ReachabilityOutputHandler implements Runnable {
         return mpsatOutput;
     }
 
-    public VerificationParameters getSettings() {
-        return settings;
+    public VerificationParameters getVerificationParameters() {
+        return verificationParameters;
     }
 
     public List<Solution> getSolutions() {
@@ -149,16 +153,16 @@ class ReachabilityOutputHandler implements Runnable {
 
     public String getMessage(boolean isSatisfiable) {
         String propertyName = "Property";
-        if ((getSettings().getName() != null) && !getSettings().getName().isEmpty()) {
-            propertyName = getSettings().getName();
+        if ((getVerificationParameters().getName() != null) && !getVerificationParameters().getName().isEmpty()) {
+            propertyName = getVerificationParameters().getName();
         }
-        boolean inversePredicate = getSettings().getInversePredicate();
+        boolean inversePredicate = getVerificationParameters().getInversePredicate();
         String propertyStatus = isSatisfiable == inversePredicate ? " is violated." : " holds.";
         return propertyName + propertyStatus;
     }
 
     public String extendMessage(String message) {
-        String traceCharacteristic = getSettings().getInversePredicate() ? "problematic" : "sought";
+        String traceCharacteristic = getVerificationParameters().getInversePredicate() ? "problematic" : "sought";
         String traceInfo = "Trace(s) leading to the " + traceCharacteristic + " state(s):";
         return "<html>" + message + "<br><br>" + traceInfo + "</html>";
     }
@@ -169,7 +173,7 @@ class ReachabilityOutputHandler implements Runnable {
         boolean isSatisfiable = TraceUtils.hasTraces(solutions);
         String message = getMessage(isSatisfiable);
         if (!isSatisfiable) {
-            if (getSettings().getInversePredicate()) {
+            if (getVerificationParameters().getInversePredicate()) {
                 DialogUtils.showInfo(message, TITLE);
             } else {
                 DialogUtils.showWarning(message, TITLE);

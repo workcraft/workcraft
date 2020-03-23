@@ -41,8 +41,8 @@ public abstract class AbstractVerificationCommand extends org.workcraft.commands
         }
         Framework framework = Framework.getInstance();
         TaskManager manager = framework.getTaskManager();
-        VerificationParameters settings = getSettings(we);
-        VerificationChainTask task = new VerificationChainTask(we, settings);
+        VerificationParameters verificationParameters = getVerificationParameters(we);
+        VerificationChainTask task = new VerificationChainTask(we, verificationParameters);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         VerificationChainResultHandler monitor = new VerificationChainResultHandler(we);
         manager.queue(task, description, monitor);
@@ -59,6 +59,6 @@ public abstract class AbstractVerificationCommand extends org.workcraft.commands
         return false;
     }
 
-    public abstract VerificationParameters getSettings(WorkspaceEntry we);
+    public abstract VerificationParameters getVerificationParameters(WorkspaceEntry we);
 
 }

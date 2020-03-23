@@ -24,7 +24,7 @@ public class CscVerificationCommand extends AbstractVerificationCommand {
     }
 
     @Override
-    public VerificationParameters getSettings(WorkspaceEntry we) {
+    public VerificationParameters getVerificationParameters(WorkspaceEntry we) {
         return new VerificationParameters("Complete state coding",
                 VerificationMode.CSC_CONFLICT_DETECTION, 0,
                 VerificationParameters.SolutionMode.ALL,
