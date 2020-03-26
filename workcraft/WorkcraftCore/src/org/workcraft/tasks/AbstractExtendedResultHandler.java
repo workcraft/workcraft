@@ -1,11 +1,12 @@
 package org.workcraft.tasks;
 
-public abstract class AbstractExtendedResultHandler<T, R> extends BasicProgressMonitor<T> {
+public abstract class AbstractExtendedResultHandler<T, R> extends BasicProgressMonitor<T> implements ResultHandler<T, R> {
+
     private R handledResult = null;
 
     @Override
     public final void isFinished(Result<? extends T> result) {
-        handledResult = handleResult(result);
+        handledResult = handle(result);
         super.isFinished(result);
     }
 
@@ -13,7 +14,5 @@ public abstract class AbstractExtendedResultHandler<T, R> extends BasicProgressM
         waitResult();
         return handledResult;
     }
-
-    public abstract R handleResult(Result<? extends T> result);
 
 }

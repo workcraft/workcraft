@@ -1,7 +1,7 @@
 package org.workcraft.plugins.mpsat.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.commands.AbstractVerificationCommand;
+import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.tasks.CombinedChainOutput;
 import org.workcraft.plugins.mpsat.tasks.CombinedChainResultHandler;
@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
-public class CombinedVerificationCommand extends AbstractVerificationCommand {
+public class CombinedVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand implements ScriptableCommand<Boolean> {
 
     @Override
     public String getDisplayName() {

@@ -27,4 +27,10 @@ public abstract class AbstractInsertionCommand implements ScriptableCommand<Void
         return WorkspaceUtils.isApplicable(we, VisualCircuit.class);
     }
 
+    @Override
+    public Void execute(WorkspaceEntry we) {
+        run(we);
+        return null;
+    }
+
 }

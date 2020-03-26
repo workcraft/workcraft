@@ -2,6 +2,7 @@ package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
+import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
@@ -27,7 +28,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class StrictImplementationVerificationCommand extends AbstractVerificationCommand {
+public class StrictImplementationVerificationCommand extends AbstractVerificationCommand
+        implements ScriptableCommand<Boolean> {
 
     @Override
     public String getDisplayName() {

@@ -53,8 +53,11 @@ public class MpsatVerificationPlugin implements Plugin {
         pm.registerCommand(PlaceRedundancyVerificationCommand.class);
         // TODO: Need a way to pass the environment file from the JavaScript wrapper
         pm.registerCommand(ConformationVerificationCommand.class);
-        pm.registerCommand(ReachAssertionVerificationCommand.class);
-        pm.registerCommand(SignalAssertionVerificationCommand.class);
+        ScriptableCommandUtils.registerDataCommand(ReachAssertionVerificationCommand.class, "checkStgReachAssertion",
+                "check STG 'work' for REACH assertion 'data'");
+        ScriptableCommandUtils.registerDataCommand(SignalAssertionVerificationCommand.class, "checkStgSignalAssertion",
+                "check STG 'work' for signal assertion 'data'");
+
         pm.registerCommand(HandshakeVerificationCommand.class);
     }
 

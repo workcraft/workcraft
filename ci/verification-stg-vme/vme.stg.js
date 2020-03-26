@@ -10,6 +10,9 @@ write(
     "USC: " + checkStgUsc(work) + "\n" +
     "DI interface: " + checkStgDiInterface(work) + "\n" +
     "Normalcy: " + checkStgNormalcy(work) + "\n" +
-    "Mutex implementability: " + checkStgMutexImplementability(work) + "\n",
+    "Mutex implementability: " + checkStgMutexImplementability(work) + "\n" +
+    "Mutual exclusion of dsr and dsw (Signal assertion): " + checkStgSignalAssertion(work, "!dsr || !dsw") + "\n" +
+    "Mutual exclusion of dsr and dsw (REACH assertion): " + checkStgReachAssertion(work, "$S\"dsr\" & $S\"dsw\"") + "\n" +
+    "Mutual exclusion of dsr and dsw (SPOT assertion): " + checkStgSpotAssertion(work, "G((!\"dsr\") | (!\"dsw\"))") + "\n",
     "vme.stg.result");
 exit();

@@ -10,6 +10,7 @@ import org.workcraft.plugins.circuit.commands.CircuitToStgWithEnvironmentConvers
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
+import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -25,7 +26,7 @@ public class ConversionCommandTests {
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
-        PcompSettings.setCommand(TestUtils.getToolPath("UnfoldingTools", "pcomp"));
+        PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp"));
     }
 
     @Test

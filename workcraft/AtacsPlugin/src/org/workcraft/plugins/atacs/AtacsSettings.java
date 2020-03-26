@@ -4,7 +4,7 @@ import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.builtin.settings.AbstractToolSettings;
-import org.workcraft.utils.DesktopApi;
+import org.workcraft.utils.BackendUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -22,7 +22,7 @@ public class AtacsSettings extends AbstractToolSettings {
     private static final String keyPrintStderr = prefix + ".printStderr";
 
     private static final Boolean defaultShowInMenu = false;
-    private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\ATACS\\atacs.exe" : "tools/ATACS/atacs";
+    private static final String defaultCommand = BackendUtils.getToolPath("ATACS", "atacs");
     private static final String defaultArgs = "";
     private static final Boolean defaultAdvancedMode = false;
     private static final Boolean defaultPrintStdout = true;

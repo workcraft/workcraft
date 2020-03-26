@@ -10,7 +10,6 @@ import org.workcraft.tasks.AbstractResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -81,11 +80,7 @@ public class LtscatResultHandler extends AbstractResultHandler<LtscatResult>  {
     }
 
     private String getWindowName(int window) {
-        return tmpDir.getAbsolutePath()
-                + (DesktopApi.getOs().isWindows() ? "\\" : "/")
-                + we.getTitle()
-                + window
-                + ShuttersSettings.getWindowsExtension();
+        return tmpDir.getAbsolutePath() + File.separator + we.getTitle() + window + ShuttersSettings.getWindowsExtension();
     }
 
 }

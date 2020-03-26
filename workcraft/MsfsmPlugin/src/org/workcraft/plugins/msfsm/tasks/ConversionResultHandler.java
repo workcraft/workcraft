@@ -39,7 +39,7 @@ public class ConversionResultHandler extends AbstractExtendedResultHandler<Conve
     }
 
     @Override
-    public Collection<WorkspaceEntry> handleResult(Result<? extends ConversionOutput> result) {
+    public Collection<WorkspaceEntry> handle(Result<? extends ConversionOutput> result) {
         Collection<WorkspaceEntry> wes = null;
         ConversionOutput msfsmResult = result.getPayload();
         if (result.getOutcome() == Outcome.SUCCESS) {

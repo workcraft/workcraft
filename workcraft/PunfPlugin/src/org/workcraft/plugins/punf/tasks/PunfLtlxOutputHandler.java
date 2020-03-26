@@ -2,17 +2,19 @@ package org.workcraft.plugins.punf.tasks;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.dialogs.ReachibilityDialog;
-import org.workcraft.utils.TraceUtils;
+import org.workcraft.tasks.Result;
+import org.workcraft.tasks.ResultHandler;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.TraceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PunfLtlxOutputHandler implements Runnable {
+public class PunfLtlxOutputHandler implements ResultHandler<PunfOutput, Boolean> {
 
     private static final String TITLE = "Verification results";
 
@@ -25,20 +27,19 @@ public class PunfLtlxOutputHandler implements Runnable {
             Pattern.UNIX_LINES);
 
     private final WorkspaceEntry we;
-    private final PunfOutput punfOutput;
+    private final boolean interactive;
 
 
-    public PunfLtlxOutputHandler(WorkspaceEntry we, PunfOutput punfOutput) {
+    public PunfLtlxOutputHandler(WorkspaceEntry we, boolean interactive) {
         this.we = we;
-        this.punfOutput = punfOutput;
+        this.interactive = interactive;
     }
 
     public WorkspaceEntry getWorkspaceEntry() {
         return we;
     }
 
-    private Solution parseLtlxSolution() {
-        String punfStdout = punfOutput.getStdoutString();
+    private Solution parseLtlxSolution(String punfStdout) {
         Matcher matcherLtlxSolution = SOLUTION_PATTERN.matcher(punfStdout);
         if (matcherLtlxSolution.find()) {
             Trace trace = TraceUtils.deserialiseTrace(matcherLtlxSolution.group(1));
@@ -51,10 +52,10 @@ public class PunfLtlxOutputHandler implements Runnable {
         return null;
     }
 
-    public String getMessage(boolean isViolated) {
+    public String getMessage(boolean isViolated, String punfStderr) {
         String result = "Temporal property ";
         result += isViolated ? "is violated." : "holds.";
-        Matcher matcher = MISSING_STUTTER_INVARIANT_PATTERN.matcher(punfOutput.getStderrString());
+        Matcher matcher = MISSING_STUTTER_INVARIANT_PATTERN.matcher(punfStderr);
         if (matcher.find()) {
             result += isViolated ? "<br>" : "\n";
             result += "Warning: the automaton does not declare the `stutter-invariant' property.";
@@ -68,16 +69,24 @@ public class PunfLtlxOutputHandler implements Runnable {
     }
 
     @Override
-    public void run() {
-        Solution solution = parseLtlxSolution();
+    public Boolean handle(Result<? extends PunfOutput> punfResult) {
+        PunfOutput punfOutput = (punfResult == null) ? null : punfResult.getPayload();
+        if (punfOutput == null) {
+            return null;
+        }
+        Solution solution = parseLtlxSolution(punfOutput.getStdoutString());
         boolean isViolated = TraceUtils.hasTraces(solution);
-        String message = getMessage(isViolated);
+        String message = getMessage(isViolated, punfOutput.getStderrString());
         if (!isViolated) {
-            DialogUtils.showInfo(message, TITLE);
+            if (interactive) {
+                DialogUtils.showInfo(message, TITLE);
+            } else {
+                LogUtils.logInfo(message);
+            }
         } else {
             LogUtils.logWarning(message);
             Framework framework = Framework.getInstance();
-            if (framework.isInGuiMode()) {
+            if (framework.isInGuiMode() && interactive) {
                 message = extendMessage(message);
                 ReachibilityDialog solutionsDialog = new ReachibilityDialog(
                         framework.getMainWindow(), getWorkspaceEntry(), TITLE, message, solution);
@@ -85,6 +94,7 @@ public class PunfLtlxOutputHandler implements Runnable {
                 solutionsDialog.reveal();
             }
         }
+        return !isViolated;
     }
 
 }

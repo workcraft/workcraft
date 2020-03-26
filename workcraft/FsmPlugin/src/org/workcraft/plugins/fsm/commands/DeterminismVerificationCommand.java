@@ -5,6 +5,7 @@ import java.util.HashSet;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
+import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.SizeHelper;
@@ -20,7 +21,7 @@ import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
 
-public class DeterminismVerificationCommand extends AbstractVerificationCommand {
+public class DeterminismVerificationCommand extends AbstractVerificationCommand implements ScriptableCommand<Boolean> {
 
     private static final String TITLE = "Verification result";
 
@@ -32,6 +33,11 @@ public class DeterminismVerificationCommand extends AbstractVerificationCommand 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.isApplicable(we, Fsm.class);
+    }
+
+    @Override
+    public void run(WorkspaceEntry we) {
+        execute(we);
     }
 
     @Override

@@ -4,7 +4,6 @@ import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.shutters.ShuttersSettings;
 import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.ExecutableUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.LogUtils;
@@ -90,10 +89,7 @@ public class ShuttersTask implements Task<ShuttersResult>, ExternalProcessListen
         File f = null;
 
         args.add(ExecutableUtils.getAbsoluteCommandPath(ShuttersSettings.getShuttersCommand()));
-        args.add(tmpDir.getAbsolutePath()
-                + (DesktopApi.getOs().isWindows() ? "\\" : "/")
-                + we.getTitle()
-                + ShuttersSettings.getMarkingsExtension());
+        args.add(tmpDir.getAbsolutePath() + File.separator + we.getTitle() + ShuttersSettings.getMarkingsExtension());
 
         // Espresso related arguments
         f = new File(ExecutableUtils.getAbsoluteCommandPath(ShuttersSettings.getEspressoCommand()));

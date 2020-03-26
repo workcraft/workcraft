@@ -2,6 +2,7 @@ package org.workcraft.plugins.punf.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
+import org.workcraft.commands.ScriptableDataCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.SpotChainResultHandler;
@@ -10,12 +11,13 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.presets.PresetManager;
 import org.workcraft.presets.TextDataSerialiser;
 import org.workcraft.presets.TextPresetDialog;
+import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.utils.ScriptableCommandUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class SpotAssertionVerificationCommand extends AbstractVerificationCommand {
+public class SpotAssertionVerificationCommand extends AbstractVerificationCommand
+        implements ScriptableDataCommand<Boolean, String> {
 
     private static final String PRESET_KEY = "spot-assertions.xml";
     private static final TextDataSerialiser DATA_SERIALISER = new TextDataSerialiser();
@@ -43,12 +45,6 @@ public class SpotAssertionVerificationCommand extends AbstractVerificationComman
     }
 
     @Override
-    public Boolean execute(WorkspaceEntry we) {
-        ScriptableCommandUtils.showErrorRequiresGui(getClass());
-        return null;
-    }
-
-    @Override
     public void run(WorkspaceEntry we) {
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
@@ -59,11 +55,29 @@ public class SpotAssertionVerificationCommand extends AbstractVerificationComman
         TextPresetDialog dialog = new TextPresetDialog(mainWindow, "SPOT assertion", presetManager);
         if (dialog.reveal()) {
             preservedData = dialog.getPresetData();
-            TaskManager manager = framework.getTaskManager();
-            SpotChainTask task = new SpotChainTask(we, preservedData);
-            SpotChainResultHandler monitor = new SpotChainResultHandler(we);
-            manager.queue(task, "Running SPOT assertion [LTL2TGBA]", monitor);
+            SpotChainResultHandler monitor = new SpotChainResultHandler(we, true);
+            run(we, preservedData, monitor);
         }
+    }
+
+    @Override
+    public void run(WorkspaceEntry we, String data, ProgressMonitor monitor) {
+        Framework framework = Framework.getInstance();
+        TaskManager manager = framework.getTaskManager();
+        SpotChainTask task = new SpotChainTask(we, data);
+        manager.queue(task, "Running SPOT assertion [LTL2TGBA]", monitor);
+    }
+
+    @Override
+    public String deserialiseData(String str) {
+        return str;
+    }
+
+    @Override
+    public Boolean execute(WorkspaceEntry we, String data) {
+        SpotChainResultHandler monitor = new SpotChainResultHandler(we, false);
+        run(we, data, monitor);
+        return monitor.waitForHandledResult();
     }
 
 }

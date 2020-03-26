@@ -125,6 +125,14 @@ public class MpsatUtils {
         return null;
     }
 
+    public static Boolean getChainOutcome(VerificationChainResultHandler monitor) {
+        Result<? extends VerificationChainOutput> result = null;
+        if (monitor != null) {
+            result = monitor.waitResult();
+        }
+        return getChainOutcome(result);
+    }
+
     public static Boolean getChainOutcome(Result<? extends VerificationChainOutput> chainResult) {
         List<Solution> solutions = getChainSolutions(chainResult);
         if (solutions != null) {

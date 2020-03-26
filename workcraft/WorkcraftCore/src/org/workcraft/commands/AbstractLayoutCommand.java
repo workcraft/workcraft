@@ -9,7 +9,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public abstract class AbstractLayoutCommand implements ScriptableCommand<Void> {
 
-    public static final String SECTION_TITLE = "Graph layout";
+    private static final String SECTION_TITLE = "Graph layout";
 
     @Override
     public final String getSection() {
@@ -22,7 +22,7 @@ public abstract class AbstractLayoutCommand implements ScriptableCommand<Void> {
     }
 
     @Override
-    public final Void execute(WorkspaceEntry we) {
+    public final void run(WorkspaceEntry we) {
         we.saveMemento();
         VisualModel model = WorkspaceUtils.getAs(we, VisualModel.class);
         layout(model);
@@ -32,6 +32,11 @@ public abstract class AbstractLayoutCommand implements ScriptableCommand<Void> {
             final GraphEditorPanel editor = mainWindow.getCurrentEditor();
             editor.zoomFit();
         }
+    }
+
+    @Override
+    public final Void execute(WorkspaceEntry we) {
+        run(we);
         return null;
     }
 

@@ -7,7 +7,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public abstract class AbstractStatisticsCommand implements ScriptableCommand<String> {
 
-    public static final String SECTION_TITLE = "Statistics";
+    private static final String SECTION_TITLE = "Statistics";
 
     @Override
     public final String getSection() {
@@ -17,6 +17,11 @@ public abstract class AbstractStatisticsCommand implements ScriptableCommand<Str
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.isApplicable(we, AbstractMathModel.class);
+    }
+
+    @Override
+    public final void run(WorkspaceEntry we) {
+        execute(we);
     }
 
     @Override

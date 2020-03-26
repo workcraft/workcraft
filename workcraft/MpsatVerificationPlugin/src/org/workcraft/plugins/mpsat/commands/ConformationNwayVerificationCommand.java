@@ -1,7 +1,7 @@
 package org.workcraft.plugins.mpsat.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.commands.AbstractVerificationCommand;
+import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.mpsat.gui.NwayConformationDialog;
@@ -22,7 +22,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ConformationNwayVerificationCommand extends AbstractVerificationCommand {
+public class ConformationNwayVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand
+        implements ScriptableCommand<Boolean> {
 
     @Override
     public String getDisplayName() {

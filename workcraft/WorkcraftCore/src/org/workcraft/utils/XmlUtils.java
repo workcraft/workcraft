@@ -22,6 +22,24 @@ import java.util.List;
 
 public class XmlUtils {
 
+    public static int readIntAttribute(Element element, String attributeName, int defaultValue) {
+        String value = element.getAttribute(attributeName);
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
+    public static boolean readBooleanAttribute(Element element, String attributeName, boolean defaultValue) {
+        String value = element.getAttribute(attributeName);
+        if (value.isEmpty()) {
+            return defaultValue;
+        } else {
+            return Boolean.parseBoolean(value);
+        }
+    }
+
     public static List<Element> getChildElements(String tagName, Element element) {
         LinkedList<Element> result = new LinkedList<>();
         NodeList nl = element.getChildNodes();

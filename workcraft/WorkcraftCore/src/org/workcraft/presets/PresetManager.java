@@ -18,9 +18,9 @@ import java.util.List;
 
 public class PresetManager<T> {
 
-    private static final String PRESETS_ELEMENT_NAME = "presets";
-    private static final String PRESET_ELEMENT_NAME = "preset";
-    private static final String DESCRIPTION_ATTRIBUTE_NAME = "description";
+    public static final String PRESETS_ELEMENT_NAME = "presets";
+    public static final String PRESET_ELEMENT_NAME = "preset";
+    public static final String DESCRIPTION_ATTRIBUTE_NAME = "description";
 
     private static final String AUTO_PRESERVE_PREFIX = "\u2713 ";
     private static final String EXAMPLE_PRESET_PREFIX = "\u00BB ";

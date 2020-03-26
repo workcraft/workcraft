@@ -8,6 +8,7 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.mpsat.commands.CombinedVerificationCommand;
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.punf.PunfSettings;
+import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -23,25 +24,25 @@ public class MissingToolTests {
 
     @Test
     public void testMissingPcompVerification() throws DeserialisationException {
-        PcompSettings.setCommand(TestUtils.getUnfoldingToolsPath("pcomp-missing"));
-        PunfSettings.setCommand(TestUtils.getUnfoldingToolsPath("punf"));
-        MpsatVerificationSettings.setCommand(TestUtils.getUnfoldingToolsPath("mpsat"));
+        PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp-missing"));
+        PunfSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "punf"));
+        MpsatVerificationSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
         testMissingTool();
     }
 
     @Test
     public void testMissingPunfVerification() throws DeserialisationException {
-        PcompSettings.setCommand(TestUtils.getUnfoldingToolsPath("pcomp"));
-        PunfSettings.setCommand(TestUtils.getUnfoldingToolsPath("punf-missing"));
-        MpsatVerificationSettings.setCommand(TestUtils.getUnfoldingToolsPath("mpsat"));
+        PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp"));
+        PunfSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "punf-missing"));
+        MpsatVerificationSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
         testMissingTool();
     }
 
     @Test
     public void testMissingMpsatVerification() throws DeserialisationException {
-        PcompSettings.setCommand(TestUtils.getUnfoldingToolsPath("pcomp"));
-        PunfSettings.setCommand(TestUtils.getUnfoldingToolsPath("punf"));
-        MpsatVerificationSettings.setCommand(TestUtils.getUnfoldingToolsPath("mpsat-missing"));
+        PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp"));
+        PunfSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "punf"));
+        MpsatVerificationSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat-missing"));
         testMissingTool();
     }
 

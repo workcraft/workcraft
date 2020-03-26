@@ -26,6 +26,9 @@ checkStgNormalcy(work) - check the STG 'work' for normalcy
 checkStgNwayConformation(work) - check all the open STG works for N-way conformation ('null' should be passed as the parameter)
 checkStgOutputDeterminacy(work) - check the STG 'work' for output determinacy
 checkStgOutputPersistency(work) - check the STG 'work' for output persistency
+checkStgReachAssertion(work, data) - check STG 'work' for REACH assertion 'data'
+checkStgSignalAssertion(work, data) - check STG 'work' for signal assertion 'data'
+checkStgSpotAssertion(work, data) - check STG 'work' for SPOT assertion 'data'
 checkStgUsc(work) - check the STG 'work' for unique state coding
 checkWtgInputProperness(work) - check the given WTG 'work' for input properness
 checkWtgReachability(work) - check the given WTG 'work' for reachability of nodes and transitions

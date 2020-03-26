@@ -2,6 +2,7 @@ package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
+import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.tasks.AssertionCheckTask;
@@ -17,7 +18,8 @@ import org.workcraft.utils.ScriptableCommandUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class ReachAssertionVerificationCommand extends AbstractVerificationCommand {
+public class ReachAssertionVerificationCommand extends AbstractVerificationCommand
+        implements ScriptableCommand<Boolean> {
 
     private static final String PRESET_KEY = "reach-assertions.xml";
     private static final MpsatDataSerialiser DATA_SERIALISER = new MpsatDataSerialiser();

@@ -4,7 +4,7 @@ import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.builtin.settings.AbstractToolSettings;
-import org.workcraft.utils.DesktopApi;
+import org.workcraft.utils.BackendUtils;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -17,7 +17,7 @@ public class PlatoSettings extends AbstractToolSettings {
     private static final String keyPlatoFolderLocation = prefix + ".platoFolderLocation";
     private static final String keyPlatoIncludesList = prefix + ".platoIncludesList";
 
-    private static final String defaultPlatoFolderLocation = DesktopApi.getOs().isWindows() ? "tools\\plato\\" : "tools/plato/";
+    private static final String defaultPlatoFolderLocation = BackendUtils.getToolDirectory("plato");
     private static final String defaultPlatoIncludesList = "";
 
     private static String conceptsFolderLocation = defaultPlatoFolderLocation;

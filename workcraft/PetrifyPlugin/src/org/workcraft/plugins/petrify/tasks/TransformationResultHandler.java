@@ -32,7 +32,7 @@ public class TransformationResultHandler extends AbstractExtendedResultHandler<T
     }
 
     @Override
-    public WorkspaceEntry handleResult(final Result<? extends TransformationOutput> result) {
+    public WorkspaceEntry handle(final Result<? extends TransformationOutput> result) {
         WorkspaceEntry weResult = null;
         TransformationOutput output = result.getPayload();
         if (result.getOutcome() == Outcome.SUCCESS) {

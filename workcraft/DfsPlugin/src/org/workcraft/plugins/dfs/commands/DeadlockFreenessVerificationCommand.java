@@ -2,6 +2,7 @@ package org.workcraft.plugins.dfs.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
+import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.plugins.dfs.Dfs;
 import org.workcraft.plugins.dfs.tasks.DeadlockFreenessCheckTask;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
@@ -12,7 +13,8 @@ import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
 
-public class DeadlockFreenessVerificationCommand extends AbstractVerificationCommand {
+public class DeadlockFreenessVerificationCommand extends AbstractVerificationCommand
+        implements ScriptableCommand<Boolean> {
 
     @Override
     public int getPriority() {

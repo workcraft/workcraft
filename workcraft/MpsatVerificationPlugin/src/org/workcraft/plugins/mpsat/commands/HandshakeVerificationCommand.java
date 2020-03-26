@@ -1,7 +1,7 @@
 package org.workcraft.plugins.mpsat.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.commands.AbstractVerificationCommand;
+import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.gui.HandshakeWizardDialog;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
@@ -13,7 +13,8 @@ import org.workcraft.utils.ScriptableCommandUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class HandshakeVerificationCommand extends AbstractVerificationCommand {
+public class HandshakeVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand
+        implements ScriptableCommand<Boolean> {
 
     @Override
     public String getDisplayName() {

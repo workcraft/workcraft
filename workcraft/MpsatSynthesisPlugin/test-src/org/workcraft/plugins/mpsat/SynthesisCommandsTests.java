@@ -11,6 +11,7 @@ import org.workcraft.plugins.mpsat.commands.GeneralisedCelementSynthesisCommand;
 import org.workcraft.plugins.mpsat.commands.StandardCelementSynthesisCommand;
 import org.workcraft.plugins.mpsat.commands.TechnologyMappingSynthesisCommand;
 import org.workcraft.plugins.punf.PunfSettings;
+import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.PackageUtils;
 
 public class SynthesisCommandsTests {
@@ -19,10 +20,10 @@ public class SynthesisCommandsTests {
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
-        PunfSettings.setCommand(TestUtils.getToolPath("UnfoldingTools", "punf"));
-        MpsatSynthesisSettings.setCommand(TestUtils.getToolPath("UnfoldingTools", "mpsat"));
+        PunfSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "punf"));
+        MpsatSynthesisSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
         MpsatSynthesisSettings.setOpenSynthesisStg(true);
-        CircuitSettings.setGateLibrary(TestUtils.getLibraryPath("workcraft.lib"));
+        CircuitSettings.setGateLibrary(BackendUtils.getTemplateLibraryPath("workcraft.lib"));
     }
 
     @Test

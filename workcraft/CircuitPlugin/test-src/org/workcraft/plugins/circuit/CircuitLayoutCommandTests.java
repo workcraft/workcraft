@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
+import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -20,7 +21,7 @@ public class CircuitLayoutCommandTests {
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
-        CircuitSettings.setGateLibrary(TestUtils.getLibraryPath("workcraft.lib"));
+        CircuitSettings.setGateLibrary(BackendUtils.getTemplateLibraryPath("workcraft.lib"));
     }
 
     @Test

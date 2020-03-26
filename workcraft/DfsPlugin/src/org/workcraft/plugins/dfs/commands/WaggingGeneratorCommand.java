@@ -34,7 +34,7 @@ public class WaggingGeneratorCommand implements ScriptableCommand<Void> {
     }
 
     @Override
-    public final Void execute(WorkspaceEntry we) {
+    public final void run(WorkspaceEntry we) {
         if (checkPrerequisites(we)) {
             VisualDfs dfs = WorkspaceUtils.getAs(we, VisualDfs.class);
             int count = getWayCount();
@@ -46,6 +46,11 @@ public class WaggingGeneratorCommand implements ScriptableCommand<Void> {
                 generator.run();
             }
         }
+    }
+
+    @Override
+    public final Void execute(WorkspaceEntry we) {
+        run(we);
         return null;
     }
 

@@ -85,35 +85,45 @@ public class VerificationChainResultHandler extends AbstractResultHandler<Verifi
         case STG_REACHABILITY:
         case NORMALCY:
         case ASSERTION:
-            SwingUtilities.invokeLater(new ReachabilityOutputHandler(we, mpsatOutput, mpsatSettings));
+//            SwingUtilities.invokeLater(new ReachabilityOutputHandler(we, mpsatOutput, mpsatSettings));
+            new ReachabilityOutputHandler(we, mpsatOutput, mpsatSettings).run();
             break;
         case REACHABILITY_REDUNDANCY:
-            SwingUtilities.invokeLater(new RedundancyOutputHandler(we, mpsatOutput, mpsatSettings));
+//            SwingUtilities.invokeLater(new RedundancyOutputHandler(we, mpsatOutput, mpsatSettings));
+            new RedundancyOutputHandler(we, mpsatOutput, mpsatSettings).run();
             break;
         case DEADLOCK:
-            SwingUtilities.invokeLater(new DeadlockFreenessOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
+//            SwingUtilities.invokeLater(new DeadlockFreenessOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
+            new DeadlockFreenessOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings).run();
             break;
         case STG_REACHABILITY_CONSISTENCY:
-            SwingUtilities.invokeLater(new ConsistencyOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
+//            SwingUtilities.invokeLater(new ConsistencyOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
+            new ConsistencyOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings).run();
             break;
         case STG_REACHABILITY_OUTPUT_PERSISTENCY:
-            SwingUtilities.invokeLater(new OutputPersistencyOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
+//            SwingUtilities.invokeLater(new OutputPersistencyOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
+            new OutputPersistencyOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings).run();
             break;
         case STG_REACHABILITY_OUTPUT_DETERMINACY:
-            SwingUtilities.invokeLater(new OutputDeterminacyOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
+//            SwingUtilities.invokeLater(new OutputDeterminacyOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
+            new OutputDeterminacyOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings).run();
             break;
         case STG_REACHABILITY_CONFORMATION:
-            SwingUtilities.invokeLater(new ConformationOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
+//            SwingUtilities.invokeLater(new ConformationOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
+            new ConformationOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings).run();
             break;
         case STG_REACHABILITY_CONFORMATION_NWAY:
-            SwingUtilities.invokeLater(new ConformationNwayOutputHandler(wes, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
+//            SwingUtilities.invokeLater(new ConformationNwayOutputHandler(wes, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
+            new ConformationNwayOutputHandler(wes, exportOutput, pcompOutput, mpsatOutput, mpsatSettings).run();
             break;
         case CSC_CONFLICT_DETECTION:
         case USC_CONFLICT_DETECTION:
-            SwingUtilities.invokeLater(new EncodingConflictOutputHandler(we, mpsatOutput));
+//            SwingUtilities.invokeLater(new EncodingConflictOutputHandler(we, mpsatOutput));
+            new EncodingConflictOutputHandler(we, mpsatOutput).run();
             break;
         case RESOLVE_ENCODING_CONFLICTS:
-            SwingUtilities.invokeLater(new CscConflictResolutionOutputHandler(we, mpsatOutput, mutexes));
+//            SwingUtilities.invokeLater(new CscConflictResolutionOutputHandler(we, mpsatOutput, mutexes));
+            new CscConflictResolutionOutputHandler(we, mpsatOutput, mutexes).run();
             break;
         default:
             DialogUtils.showError(mpsatSettings.getMode() + " is not (yet) supported.");

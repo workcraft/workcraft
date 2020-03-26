@@ -5,11 +5,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.plugins.circuit.TestUtils;
 import org.workcraft.plugins.cpog.tasks.ScencoExternalToolTask;
 import org.workcraft.plugins.cpog.tasks.ScencoResultHandler;
 import org.workcraft.plugins.cpog.tasks.ScencoSolver;
 import org.workcraft.tasks.TaskManager;
+import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -23,7 +23,7 @@ public class ScencoCommandTests {
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
-        CpogSettings.setScencoCommand(TestUtils.getToolPath("ScEnco", "scenco"));
+        CpogSettings.setScencoCommand(BackendUtils.getTemplateToolPath("ScEnco", "scenco"));
     }
 
     @Test

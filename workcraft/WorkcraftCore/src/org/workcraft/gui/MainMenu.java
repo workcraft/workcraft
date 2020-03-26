@@ -444,7 +444,7 @@ public class MainMenu extends JMenuBar {
                     }
                     needSeparator = true;
                     isFirstItem = false;
-                    Action action = new Action(command.getDisplayName().trim(), () -> CommandUtils.run(command));
+                    Action action = new Action(command.getDisplayName().trim(), () -> CommandUtils.run(mainWindow, command));
                     ActionMenuItem miCommand = new ActionMenuItem(action);
                     miCommand.addScriptedActionListener(mainWindow.getDefaultActionListener());
                     mnSection.add(miCommand);

@@ -2,6 +2,7 @@ package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
+import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.plugins.circuit.Circuit;
@@ -16,7 +17,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.util.Collection;
 import java.util.List;
 
-public class CycleFreenessVerificationCommand extends AbstractVerificationCommand {
+public class CycleFreenessVerificationCommand extends AbstractVerificationCommand
+        implements ScriptableCommand<Boolean> {
 
     @Override
     public String getDisplayName() {
@@ -31,6 +33,11 @@ public class CycleFreenessVerificationCommand extends AbstractVerificationComman
     @Override
     public Position getPosition() {
         return Position.BOTTOM_MIDDLE;
+    }
+
+    @Override
+    public void run(WorkspaceEntry we) {
+        execute(we);
     }
 
     @Override

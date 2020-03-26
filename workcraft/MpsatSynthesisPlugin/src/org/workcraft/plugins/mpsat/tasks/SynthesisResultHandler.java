@@ -45,7 +45,7 @@ public class SynthesisResultHandler extends AbstractExtendedResultHandler<Synthe
     }
 
     @Override
-    public WorkspaceEntry handleResult(final Result<? extends SynthesisChainOutput> chainResult) {
+    public WorkspaceEntry handle(final Result<? extends SynthesisChainOutput> chainResult) {
         WorkspaceEntry result = null;
         if (chainResult.getOutcome() == Outcome.SUCCESS) {
             result = handleSuccess(chainResult);

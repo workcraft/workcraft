@@ -2,6 +2,7 @@ package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
+import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.tasks.CheckTask;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
@@ -18,7 +19,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 
-public class CombinedVerificationCommand extends AbstractVerificationCommand {
+public class CombinedVerificationCommand extends AbstractVerificationCommand
+        implements ScriptableCommand<Boolean> {
 
     @Override
     public String getDisplayName() {

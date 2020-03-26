@@ -4,7 +4,7 @@ import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.builtin.settings.AbstractToolSettings;
-import org.workcraft.utils.DesktopApi;
+import org.workcraft.utils.BackendUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -19,7 +19,7 @@ public class PcompSettings extends AbstractToolSettings {
     private static final String keyPrintStdout = prefix + ".printStdout";
     private static final String keyPrintStderr = prefix + ".printStderr";
 
-    private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\UnfoldingTools\\pcomp.exe" : "tools/UnfoldingTools/pcomp";
+    private static final String defaultCommand = BackendUtils.getToolPath("UnfoldingTools", "pcomp");
     private static final String defaultArgs = "";
     private static final Boolean defaultPrintStdout = true;
     private static final Boolean defaultPrintStderr = true;

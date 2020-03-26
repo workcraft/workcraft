@@ -1,40 +1,47 @@
 package org.workcraft.plugins.punf.tasks;
 
-import org.workcraft.tasks.AbstractResultHandler;
+import org.workcraft.tasks.AbstractExtendedResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import javax.swing.*;
-
-public class SpotChainResultHandler extends AbstractResultHandler<SpotChainOutput> {
+public class SpotChainResultHandler extends AbstractExtendedResultHandler<SpotChainOutput, Boolean> {
 
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
 
     private final WorkspaceEntry we;
+    private final boolean interactive;
 
-    public SpotChainResultHandler(WorkspaceEntry we) {
+    public SpotChainResultHandler(WorkspaceEntry we,  boolean interactive) {
         this.we = we;
+        this.interactive = interactive;
     }
 
     @Override
-    public void handleResult(final Result<? extends SpotChainOutput> result) {
-        if (result.getOutcome() == Outcome.SUCCESS) {
-            handleSuccess(result);
-        } else if (result.getOutcome() == Outcome.FAILURE) {
-            handleFailure(result);
+    public Boolean handle(final Result<? extends SpotChainOutput> chainResult) {
+        if (chainResult.getOutcome() == Outcome.SUCCESS) {
+            SpotChainOutput chainOutput = chainResult.getPayload();
+            Result<? extends PunfOutput> punfResult = (chainOutput == null) ? null : chainOutput.getPunfResult();
+            return new PunfLtlxOutputHandler(we, interactive).handle(punfResult);
         }
+
+        if (chainResult.getOutcome() == Outcome.FAILURE) {
+            String message = buildFailureMessage(chainResult);
+            if (message != null) {
+                if (interactive) {
+                    DialogUtils.showError(message);
+                } else {
+                    LogUtils.logError(message);
+                }
+            }
+        }
+
+        return null;
     }
 
-    private void handleSuccess(final Result<? extends SpotChainOutput> chainResult) {
-        SpotChainOutput chainOutput = chainResult.getPayload();
-        Result<? extends PunfOutput> punfResult = (chainOutput == null) ? null : chainOutput.getPunfResult();
-        PunfOutput punfOutput = (punfResult == null) ? null : punfResult.getPayload();
-        SwingUtilities.invokeLater(new PunfLtlxOutputHandler(we, punfOutput));
-    }
-
-    private void handleFailure(final Result<? extends SpotChainOutput> chainResult) {
+    private String buildFailureMessage(final Result<? extends SpotChainOutput> chainResult) {
         String errorMessage = "SPOT verification failed.";
         Throwable genericCause = chainResult.getCause();
         if (genericCause != null) {
@@ -60,7 +67,7 @@ public class SpotChainResultHandler extends AbstractResultHandler<SpotChainOutpu
                 errorMessage += "\n\nSPOT chain task returned failure status without further explanation.";
             }
         }
-        DialogUtils.showError(errorMessage);
+        return errorMessage;
     }
 
 }

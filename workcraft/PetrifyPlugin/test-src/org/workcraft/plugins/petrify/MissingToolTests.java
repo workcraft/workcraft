@@ -6,8 +6,8 @@ import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.plugins.circuit.TestUtils;
 import org.workcraft.plugins.petrify.commands.TechnologyMappingSynthesisCommand;
+import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -23,15 +23,15 @@ public class MissingToolTests {
 
     @Test
     public void testMissingPetrifyVerification() throws DeserialisationException {
-        PetrifySettings.setCommand(TestUtils.getToolPath("PetrifyTools", "petrify-missing"));
-        CircuitSettings.setGateLibrary(TestUtils.getLibraryPath("workcraft.lib"));
+        PetrifySettings.setCommand(BackendUtils.getTemplateToolPath("PetrifyTools", "petrify-missing"));
+        CircuitSettings.setGateLibrary(BackendUtils.getTemplateLibraryPath("workcraft.lib"));
         testMissingTool();
     }
 
     @Test
     public void testMissingGenlibVerification() throws DeserialisationException {
-        PetrifySettings.setCommand(TestUtils.getToolPath("PetrifyTools", "petrify"));
-        CircuitSettings.setGateLibrary(TestUtils.getLibraryPath("workcraft.lib-missing"));
+        PetrifySettings.setCommand(BackendUtils.getTemplateToolPath("PetrifyTools", "petrify"));
+        CircuitSettings.setGateLibrary(BackendUtils.getTemplateLibraryPath("workcraft.lib-missing"));
         testMissingTool();
     }
 

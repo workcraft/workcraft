@@ -1,13 +1,12 @@
 package org.workcraft.plugins.mpsat.commands;
 
-import org.workcraft.commands.Command;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class UscVerificationCommand extends AbstractVerificationCommand implements Command {
+public class UscVerificationCommand extends AbstractVerificationCommand {
 
     @Override
     public String getDisplayName() {

@@ -14,7 +14,7 @@ public class ScanInsertionCommand extends AbstractInsertionCommand {
     }
 
     @Override
-    public Void execute(WorkspaceEntry we) {
+    public void run(WorkspaceEntry we) {
         we.saveMemento();
         VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
         try {
@@ -22,7 +22,6 @@ public class ScanInsertionCommand extends AbstractInsertionCommand {
         } catch (InvalidConnectionException e) {
             throw new RuntimeException(e);
         }
-        return null;
     }
 
 }

@@ -5,8 +5,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.mozilla.javascript.*;
 import org.workcraft.commands.AbstractLayoutCommand;
-import org.workcraft.commands.Command;
-import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
@@ -531,39 +529,23 @@ public final class Framework {
      */
     @SuppressWarnings("unused")
     public void runCommand(WorkspaceEntry we, String className) {
-        if (className != null) {
-            for (Command command : CommandUtils.getApplicableCommands(we)) {
-                String commandClassName = command.getClass().getSimpleName();
-                if (className.equals(commandClassName)) {
-                    CommandUtils.run(we, command);
-                    break;
-                }
-            }
-        }
+        CommandUtils.run(we, className);
     }
 
     /**
      * Used in core-exec.js JavaScript wrapper.
      */
     @SuppressWarnings("unused")
-    public <T> T executeCommand(WorkspaceEntry we, String className) {
-        if ((className == null) || className.isEmpty()) {
-            LogUtils.logError("Undefined command name.");
-            return null;
-        }
-        for (Command command : CommandUtils.getCommands()) {
-            Class<? extends Command> cls = command.getClass();
-            if (className.equals(cls.getSimpleName()) || className.endsWith(cls.getName())) {
-                if (!(command instanceof ScriptableCommand)) {
-                    LogUtils.logError("Command '" + className + "' cannot be used in scripts.");
-                    return null;
-                }
-                ScriptableCommand<T> scriptableCommand = (ScriptableCommand<T>) command;
-                return CommandUtils.execute(we, scriptableCommand);
-            }
-        }
-        LogUtils.logError("Command '" + className + "' is not found.");
-        return null;
+    public <R> R executeCommand(WorkspaceEntry we, String className) {
+        return CommandUtils.execute(we, className);
+    }
+
+    /**
+     * Used in core-exec.js JavaScript wrapper.
+     */
+    @SuppressWarnings("unused")
+    public <R, D> R executeCommand(WorkspaceEntry we, String className, String serialisedData) {
+        return CommandUtils.execute(we, className, serialisedData);
     }
 
     public WorkspaceEntry createWork(ModelEntry me, Path<String> desiredPath) {

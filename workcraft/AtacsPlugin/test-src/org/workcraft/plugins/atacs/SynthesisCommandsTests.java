@@ -8,6 +8,7 @@ import org.workcraft.plugins.atacs.commands.ComplexGateSynthesisCommand;
 import org.workcraft.plugins.atacs.commands.GeneralisedCelementSynthesisCommand;
 import org.workcraft.plugins.atacs.commands.StandardCelementSynthesisCommand;
 import org.workcraft.plugins.circuit.TestUtils;
+import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.PackageUtils;
 
 public class SynthesisCommandsTests {
@@ -16,7 +17,7 @@ public class SynthesisCommandsTests {
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
-        AtacsSettings.setCommand(TestUtils.getToolPath("ATACS", "atacs"));
+        AtacsSettings.setCommand(BackendUtils.getTemplateToolPath("ATACS", "atacs"));
     }
 
     @Test

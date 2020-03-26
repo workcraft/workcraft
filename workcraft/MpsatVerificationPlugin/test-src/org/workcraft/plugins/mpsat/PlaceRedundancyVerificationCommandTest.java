@@ -8,6 +8,7 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.mpsat.commands.PlaceRedundancyVerificationCommand;
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.punf.PunfSettings;
+import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -21,9 +22,9 @@ public class PlaceRedundancyVerificationCommandTest {
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
-        PcompSettings.setCommand(TestUtils.getUnfoldingToolsPath("pcomp"));
-        PunfSettings.setCommand(TestUtils.getUnfoldingToolsPath("punf"));
-        MpsatVerificationSettings.setCommand(TestUtils.getUnfoldingToolsPath("mpsat"));
+        PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp"));
+        PunfSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "punf"));
+        MpsatVerificationSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
     }
 
     @Test

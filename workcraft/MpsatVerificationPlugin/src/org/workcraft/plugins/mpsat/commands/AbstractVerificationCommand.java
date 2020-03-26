@@ -1,6 +1,7 @@
 package org.workcraft.plugins.mpsat.commands;
 
 import org.workcraft.Framework;
+import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
@@ -13,7 +14,7 @@ import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
 
-public abstract class AbstractVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand {
+public abstract class AbstractVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand implements ScriptableCommand<Boolean> {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {

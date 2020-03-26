@@ -13,11 +13,10 @@ public class TestableGateInsertionCommand extends AbstractInsertionCommand {
     }
 
     @Override
-    public Void execute(WorkspaceEntry we) {
+    public void run(WorkspaceEntry we) {
         we.saveMemento();
         VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
         ScanUtils.insertTestableGates(circuit);
-        return null;
     }
 
 }

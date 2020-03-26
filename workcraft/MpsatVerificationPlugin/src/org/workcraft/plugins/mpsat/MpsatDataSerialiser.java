@@ -19,29 +19,31 @@ public class MpsatDataSerialiser implements DataSerialiser<VerificationParameter
     @Override
     public VerificationParameters fromXML(Element parent) {
         Element element = XmlUtils.getChildElement(SETTINGS_ELEMENT, parent);
-        String name = element.getAttribute(SETTINGS_NAME_ATTRIBUTE);
-        VerificationMode mode = VerificationMode.getModeByArgument(element.getAttribute(SETTINGS_MODE_ATTRIBUTE));
-        int verbosity = readIntAttr(element, SETTINGS_VERBOSITY_ATTRIBUTE, 0);
-        int solutionNumberLimit = readIntAttr(element, SETTINGS_SOLUTION_LIMIT_ATTRIBUTE, -1);
-        SolutionMode solutionMode = SolutionMode.valueOf(element.getAttribute(SETTINGS_SOLUTION_MODE_ATTRIBUTE));
 
-        Element re = XmlUtils.getChildElement(SETTINGS_REACH_ELEMENT, element);
-        String reach = re.getTextContent();
-        boolean inversePredicate = Boolean.parseBoolean(element.getAttribute(SETTINGS_INVERSE_PREDICATE_ATTRIBUTE));
+        String name = element.getAttribute(SETTINGS_NAME_ATTRIBUTE);
+
+        String modeAttribute = element.getAttribute(SETTINGS_MODE_ATTRIBUTE);
+        VerificationMode mode = modeAttribute.isEmpty()
+                ? VerificationMode.STG_REACHABILITY
+                : VerificationMode.getModeByArgument(modeAttribute);
+
+        int verbosity = XmlUtils.readIntAttribute(element, SETTINGS_VERBOSITY_ATTRIBUTE, 0);
+
+        int solutionNumberLimit = XmlUtils.readIntAttribute(element, SETTINGS_SOLUTION_LIMIT_ATTRIBUTE,
+                MpsatVerificationSettings.getSolutionCount());
+
+        String solutionModeAttribute = element.getAttribute(SETTINGS_SOLUTION_MODE_ATTRIBUTE);
+        SolutionMode solutionMode = solutionModeAttribute.isEmpty()
+                ? MpsatVerificationSettings.getSolutionMode()
+                : SolutionMode.valueOf(solutionModeAttribute);
+
+        Element reachElement = XmlUtils.getChildElement(SETTINGS_REACH_ELEMENT, element);
+        String reach = reachElement == null ? "" : reachElement.getTextContent();
+
+        boolean inversePredicate = XmlUtils.readBooleanAttribute(element, SETTINGS_INVERSE_PREDICATE_ATTRIBUTE, true);
 
         return new VerificationParameters(name, mode, verbosity, solutionMode, solutionNumberLimit, reach, inversePredicate);
     }
-
-
-    private int readIntAttr(Element element, String name, int defaultValue) {
-        String value = element.getAttribute(name);
-        try {
-            return Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-            return defaultValue;
-        }
-    }
-
 
     @Override
     public void toXML(VerificationParameters verificationParameters, Element parent) {

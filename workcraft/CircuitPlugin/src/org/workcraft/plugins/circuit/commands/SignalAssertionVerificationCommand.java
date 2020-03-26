@@ -2,6 +2,7 @@ package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
+import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.tasks.AssertionCheckTask;
@@ -20,7 +21,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 
-public class SignalAssertionVerificationCommand extends AbstractVerificationCommand {
+public class SignalAssertionVerificationCommand extends AbstractVerificationCommand
+        implements ScriptableCommand<Boolean> {
 
     private static final String PRESET_KEY = "signal-assertions.xml";
     private static final TextDataSerialiser DATA_SERIALISER = new TextDataSerialiser();

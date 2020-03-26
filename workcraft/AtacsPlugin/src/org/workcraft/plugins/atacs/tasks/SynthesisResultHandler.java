@@ -51,7 +51,7 @@ public class SynthesisResultHandler extends AbstractExtendedResultHandler<Synthe
     }
 
     @Override
-    public WorkspaceEntry handleResult(Result<? extends SynthesisOutput> result) {
+    public WorkspaceEntry handle(Result<? extends SynthesisOutput> result) {
         WorkspaceEntry weResult = null;
         SynthesisOutput atacsResult = result.getPayload();
         if (result.getOutcome() == Outcome.SUCCESS) {

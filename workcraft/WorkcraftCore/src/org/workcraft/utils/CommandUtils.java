@@ -5,6 +5,7 @@ import org.workcraft.commands.Command;
 import org.workcraft.commands.MenuOrdering;
 import org.workcraft.commands.MenuOrdering.Position;
 import org.workcraft.commands.ScriptableCommand;
+import org.workcraft.commands.ScriptableDataCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.gui.workspace.Path;
@@ -26,7 +27,7 @@ public class CommandUtils {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
         Collection<PluginInfo<? extends Command>> commandPlugins = pm.getCommandPlugins();
-        for (PluginInfo<? extends Command> info: commandPlugins) {
+        for (PluginInfo<? extends Command> info : commandPlugins) {
             Command command = info.getSingleton();
             result.add(command);
         }
@@ -35,9 +36,20 @@ public class CommandUtils {
 
     public static List<Command> getCommands(Function<Command, Boolean> filter) {
         ArrayList<Command> result = new ArrayList<>();
-        for (Command command: getCommands()) {
+        for (Command command : getCommands()) {
             if (filter.apply(command)) {
                 result.add(command);
+            }
+        }
+        return result;
+    }
+
+    public static <T extends Command> List<T> getCommands(Class<T> type) {
+        ArrayList<T> result = new ArrayList<>();
+        for (Command command : getCommands()) {
+            try {
+                result.add(type.cast(command));
+            } catch (ClassCastException e) {
             }
         }
         return result;
@@ -100,28 +112,35 @@ public class CommandUtils {
         return result;
     }
 
-    public static void run(Command command) {
-        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+    public static void run(MainWindow mainWindow, Command command) {
         if (mainWindow != null) {
             GraphEditorPanel currentEditor = mainWindow.getCurrentEditor();
             if (currentEditor != null) {
-                run(currentEditor.getWorkspaceEntry(), command);
+                WorkspaceEntry we = currentEditor.getWorkspaceEntry();
+                checkCommandApplicability(we, command);
+                command.run(we);
             }
         }
     }
 
-    public static void run(WorkspaceEntry we, Command command) {
+    public static void run(WorkspaceEntry we, String className) {
+        Command command = findMatchingCommand(className, Command.class);
         checkCommandApplicability(we, command);
         command.run(we);
     }
 
-    public static <T> T execute(WorkspaceEntry we, ScriptableCommand<T> command, String data) {
-        return execute(we, command);
-    }
 
-    public static <T> T execute(WorkspaceEntry we, ScriptableCommand<T> command) {
+    public static <R> R execute(WorkspaceEntry we, String className) {
+        ScriptableCommand<R> command = findMatchingCommand(className, ScriptableCommand.class);
         checkCommandApplicability(we, command);
         return command.execute(we);
+    }
+
+    public static <R, D> R execute(WorkspaceEntry we, String className, String serialisedData) {
+        ScriptableDataCommand<R, D> command = CommandUtils.findMatchingCommand(className, ScriptableDataCommand.class);
+        checkCommandApplicability(we, command);
+        D data = command.deserialiseData(serialisedData);
+        return command.execute(we, data);
     }
 
     private static void checkCommandApplicability(WorkspaceEntry we, Command command) {
@@ -132,6 +151,19 @@ public class CommandUtils {
             throw new RuntimeException("Command '" + commandName + "' is incompatible with "
                     + displayName + " (workspace entry '" + workspacePath + "').");
         }
+    }
+
+    public static <T extends Command> T findMatchingCommand(String className, Class<T> type) {
+        if ((className == null) || className.isEmpty()) {
+            throw new RuntimeException("Undefined command name.");
+        }
+        for (Command command : getCommands(type)) {
+            Class<? extends Command> cls = command.getClass();
+            if (className.equals(cls.getSimpleName()) || className.endsWith(cls.getName())) {
+                return type.cast(command);
+            }
+        }
+        throw new RuntimeException("Command '" + className + "' is not found.");
     }
 
 }

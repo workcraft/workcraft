@@ -7,9 +7,10 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.mpsat.commands.CscConflictResolutionCommand;
 import org.workcraft.plugins.punf.PunfSettings;
-import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.utils.MutexUtils;
+import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.utils.WorkspaceUtils;
@@ -25,8 +26,8 @@ public class CscConflictResolutionCommandTests {
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
-        PunfSettings.setCommand(TestUtils.getUnfoldingToolsPath("punf"));
-        MpsatVerificationSettings.setCommand(TestUtils.getUnfoldingToolsPath("mpsat"));
+        PunfSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "punf"));
+        MpsatVerificationSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
     }
 
     @Test

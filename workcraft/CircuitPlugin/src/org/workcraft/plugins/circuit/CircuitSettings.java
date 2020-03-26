@@ -10,7 +10,7 @@ import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.types.Pair;
-import org.workcraft.utils.DesktopApi;
+import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.ExecutableUtils;
 
@@ -85,7 +85,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final Color defaultActiveWireColor = new Color(1.0f, 0.0f, 0.0f);
     private static final Color defaultInactiveWireColor = new Color(0.0f, 0.0f, 1.0f);
     private static final boolean defaultSimplifyStg = true;
-    private static final String defaultGateLibrary = DesktopApi.getOs().isWindows() ? "libraries\\workcraft.lib" : "libraries/workcraft.lib";
+    private static final String defaultGateLibrary = BackendUtils.getLibraryPath("workcraft.lib");
     // Import/export
     private static final String defaultExportSubstitutionLibrary = "";
     private static final boolean defaultInvertExportSubstitutionRules = false;

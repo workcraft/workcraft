@@ -6,9 +6,9 @@ import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.plugins.circuit.TestUtils;
 import org.workcraft.plugins.mpsat.commands.TechnologyMappingSynthesisCommand;
 import org.workcraft.plugins.punf.PunfSettings;
+import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -24,25 +24,25 @@ public class MissingToolTests {
 
     @Test
     public void testMissingPunfVerification() throws DeserialisationException {
-        PunfSettings.setCommand(TestUtils.getToolPath("UnfoldingTools", "punf-missing"));
-        MpsatSynthesisSettings.setCommand(TestUtils.getToolPath("UnfoldingTools", "mpsat"));
-        CircuitSettings.setGateLibrary(TestUtils.getLibraryPath("workcraft.lib"));
+        PunfSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "punf-missing"));
+        MpsatSynthesisSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
+        CircuitSettings.setGateLibrary(BackendUtils.getTemplateLibraryPath("workcraft.lib"));
         testMissingTool();
     }
 
     @Test
     public void testMissingMpsatVerification() throws DeserialisationException {
-        PunfSettings.setCommand(TestUtils.getToolPath("UnfoldingTools", "punf"));
-        MpsatSynthesisSettings.setCommand(TestUtils.getToolPath("UnfoldingTools", "mpsat-missing"));
-        CircuitSettings.setGateLibrary(TestUtils.getLibraryPath("workcraft.lib"));
+        PunfSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "punf"));
+        MpsatSynthesisSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat-missing"));
+        CircuitSettings.setGateLibrary(BackendUtils.getTemplateLibraryPath("workcraft.lib"));
         testMissingTool();
     }
 
     @Test
     public void testMissingGenlibVerification() throws DeserialisationException {
-        PunfSettings.setCommand(TestUtils.getToolPath("UnfoldingTools", "punf"));
-        MpsatSynthesisSettings.setCommand(TestUtils.getToolPath("UnfoldingTools", "mpsat"));
-        CircuitSettings.setGateLibrary(TestUtils.getLibraryPath("workcraft.lib-missing"));
+        PunfSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "punf"));
+        MpsatSynthesisSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
+        CircuitSettings.setGateLibrary(BackendUtils.getTemplateLibraryPath("workcraft.lib-missing"));
         testMissingTool();
     }
 

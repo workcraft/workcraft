@@ -2,6 +2,7 @@ package org.workcraft.plugins.mpsat.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
+import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.tasks.CombinedChainOutput;
 import org.workcraft.plugins.mpsat.tasks.CombinedChainResultHandler;
@@ -20,7 +21,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class MutexImplementabilityVerificationCommand extends AbstractVerificationCommand {
+public class MutexImplementabilityVerificationCommand extends AbstractVerificationCommand implements ScriptableCommand<Boolean> {
 
     @Override
     public String getDisplayName() {

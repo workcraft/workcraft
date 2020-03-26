@@ -162,7 +162,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                                 isFirstItem = false;
                                 JMenuItem item = new JMenuItem(command.getDisplayName().trim());
                                 commands.put(item, command);
-                                item.addActionListener(event -> CommandUtils.run(we, commands.get(event.getSource())));
+                                item.addActionListener(event -> commands.get(event.getSource()).run(we));
                                 sectionMenu.add(item);
                             }
                         }

@@ -1,7 +1,7 @@
 package org.workcraft.plugins.mpsat.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.commands.AbstractVerificationCommand;
+import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.interop.Format;
 import org.workcraft.plugins.mpsat.tasks.ConformationTask;
@@ -23,7 +23,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 import javax.swing.*;
 import java.io.File;
 
-public class ConformationVerificationCommand extends AbstractVerificationCommand {
+public class ConformationVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand
+        implements ScriptableCommand<Boolean> {
 
     private File envFile;
 
