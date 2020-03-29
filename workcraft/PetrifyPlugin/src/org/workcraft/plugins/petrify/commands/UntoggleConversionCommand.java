@@ -1,7 +1,7 @@
 package org.workcraft.plugins.petrify.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.plugins.petrify.tasks.TransformationResultHandler;
+import org.workcraft.plugins.petrify.tasks.TransformationResultHandlingMonitor;
 import org.workcraft.plugins.petrify.tasks.TransformationTask;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.StgModel;
@@ -35,7 +35,7 @@ public class UntoggleConversionCommand extends AbstractConversionCommand {
         TransformationTask task = new TransformationTask(we, Arrays.asList("-untog"), mutexes);
 
         boolean hasSignals = hasSignals(we);
-        TransformationResultHandler monitor = new TransformationResultHandler(we, !hasSignals, mutexes);
+        TransformationResultHandlingMonitor monitor = new TransformationResultHandlingMonitor(we, !hasSignals, mutexes);
 
         TaskManager taskManager = Framework.getInstance().getTaskManager();
         taskManager.execute(task, "Petrify signal transition untoggle", monitor);

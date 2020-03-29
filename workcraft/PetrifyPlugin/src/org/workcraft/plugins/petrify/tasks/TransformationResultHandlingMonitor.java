@@ -11,7 +11,7 @@ import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.converters.StgToPetriConverter;
 import org.workcraft.plugins.stg.utils.MutexUtils;
-import org.workcraft.tasks.AbstractExtendedResultHandler;
+import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
@@ -20,12 +20,12 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.Collection;
 
-public class TransformationResultHandler extends AbstractExtendedResultHandler<TransformationOutput, WorkspaceEntry> {
+public class TransformationResultHandlingMonitor extends AbstractResultHandlingMonitor<TransformationOutput, WorkspaceEntry> {
     private final WorkspaceEntry we;
     private final boolean convertToPetriNet;
     private final Collection<Mutex> mutexes;
 
-    public TransformationResultHandler(WorkspaceEntry we, boolean convertToPetriNet, Collection<Mutex> mutexes) {
+    public TransformationResultHandlingMonitor(WorkspaceEntry we, boolean convertToPetriNet, Collection<Mutex> mutexes) {
         this.we = we;
         this.convertToPetriNet = convertToPetriNet;
         this.mutexes = mutexes;

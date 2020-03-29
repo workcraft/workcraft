@@ -6,7 +6,7 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
+import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainTask;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.plugins.stg.StgModel;
@@ -56,7 +56,7 @@ public class SignalAssertionVerificationCommand extends org.workcraft.commands.A
 
         if (dialog.reveal()) {
             preservedData = dialog.getPresetData();
-            VerificationChainResultHandler monitor = new VerificationChainResultHandler(we);
+            VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
             run(we, preservedData, monitor);
         }
     }
@@ -82,9 +82,9 @@ public class SignalAssertionVerificationCommand extends org.workcraft.commands.A
 
     @Override
     public Boolean execute(WorkspaceEntry we, String data) {
-        VerificationChainResultHandler monitor = new VerificationChainResultHandler(we);
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
         run(we, data, monitor);
-        return MpsatUtils.getChainOutcome(monitor);
+        return monitor.waitForHandledResult();
     }
 
 }

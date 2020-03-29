@@ -9,7 +9,7 @@ import org.workcraft.plugins.circuit.tasks.AssertionCheckTask;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
+import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.presets.PresetManager;
 import org.workcraft.presets.TextDataSerialiser;
@@ -75,7 +75,7 @@ public class SignalAssertionVerificationCommand extends AbstractVerificationComm
 
             AssertionCheckTask task = new AssertionCheckTask(we, verificationParameters);
             String description = MpsatUtils.getToolchainDescription(we.getTitle());
-            VerificationChainResultHandler monitor = new VerificationChainResultHandler(we);
+            VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
             manager.queue(task, description, monitor);
         }
     }

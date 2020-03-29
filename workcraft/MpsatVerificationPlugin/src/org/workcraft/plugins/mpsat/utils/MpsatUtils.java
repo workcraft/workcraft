@@ -2,8 +2,6 @@ package org.workcraft.plugins.mpsat.utils;
 
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.utils.TraceUtils;
-import org.workcraft.traces.Solution;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.tasks.*;
@@ -15,8 +13,10 @@ import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.traces.Solution;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.TraceUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,8 +48,8 @@ public class MpsatUtils {
                             Cause cause = punfOutcome.getSecond();
                             boolean isConsistencyCheck = false;
                             if (cause == Cause.INCONSISTENT) {
-                                for (VerificationParameters mpsatSettings: combinedChainOutput.getMpsatSettingsList()) {
-                                    if (mpsatSettings.getMode() == VerificationMode.STG_REACHABILITY_CONSISTENCY) {
+                                for (VerificationParameters verificationParameters : combinedChainOutput.getVerificationParametersList()) {
+                                    if (verificationParameters.getMode() == VerificationMode.STG_REACHABILITY_CONSISTENCY) {
                                         isConsistencyCheck = true;
                                         break;
                                     }
@@ -85,9 +85,9 @@ public class MpsatUtils {
                         Pair<Solution, PunfOutputParser.Cause> punfOutcome = prp.getOutcome();
                         if (punfOutcome != null) {
                             Cause cause = punfOutcome.getSecond();
-                            VerificationParameters mpsatSettings = chainOutput.getMpsatSettings();
+                            VerificationParameters verificationParameters = chainOutput.getVerificationParameters();
                             boolean isConsistencyCheck = (cause == Cause.INCONSISTENT)
-                                    && (mpsatSettings.getMode() == VerificationMode.STG_REACHABILITY_CONSISTENCY);
+                                    && (verificationParameters.getMode() == VerificationMode.STG_REACHABILITY_CONSISTENCY);
                             if (isConsistencyCheck) {
                                 solutions = new LinkedList<>();
                                 solutions.add(punfOutcome.getFirst());
@@ -113,7 +113,8 @@ public class MpsatUtils {
     }
 
     public static List<Solution> getSolutions(VerificationOutput output) {
-        VerificationOutputParser mdp = new VerificationOutputParser(output);
+        String stdout = output.getStdoutString();
+        VerificationOutputParser mdp = new VerificationOutputParser(stdout);
         return mdp.getSolutions();
     }
 
@@ -125,7 +126,7 @@ public class MpsatUtils {
         return null;
     }
 
-    public static Boolean getChainOutcome(VerificationChainResultHandler monitor) {
+    public static Boolean getChainOutcome(VerificationChainResultHandlingMonitor monitor) {
         Result<? extends VerificationChainOutput> result = null;
         if (monitor != null) {
             result = monitor.waitResult();

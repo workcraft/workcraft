@@ -35,7 +35,7 @@ public class OutputPersistencyCheckTask implements Task<VerificationChainOutput>
     @Override
     public Result<? extends VerificationChainOutput> run(ProgressMonitor<? super VerificationChainOutput> monitor) {
         final Framework framework = Framework.getInstance();
-        VerificationParameters verificationParameters = ReachUtils.getOutputPersistencySettings();
+        VerificationParameters verificationParameters = ReachUtils.getOutputPersistencyParameters();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         StgFormat format = StgFormat.getInstance();
@@ -79,8 +79,7 @@ public class OutputPersistencyCheckTask implements Task<VerificationChainOutput>
             }
             monitor.progressUpdate(0.40);
 
-            VerificationTask verificationTask = new VerificationTask(verificationParameters.getMpsatArguments(directory),
-                    unfoldingFile, directory, netFile);
+            VerificationTask verificationTask = new VerificationTask(unfoldingFile, netFile, verificationParameters, directory);
             Result<? extends VerificationOutput> mpsatResult = framework.getTaskManager().execute(
                     verificationTask, "Running semimodularity checking [MPSat]", mon);
 
@@ -93,7 +92,8 @@ public class OutputPersistencyCheckTask implements Task<VerificationChainOutput>
             }
             monitor.progressUpdate(0.90);
 
-            VerificationOutputParser mdp = new VerificationOutputParser(mpsatResult.getPayload());
+            String mpsatStdout = mpsatResult.getPayload().getStdoutString();
+            VerificationOutputParser mdp = new VerificationOutputParser(mpsatStdout);
             if (!mdp.getSolutions().isEmpty()) {
                 return new Result<>(Outcome.SUCCESS,
                         new VerificationChainOutput(exportResult, null, punfResult, mpsatResult, verificationParameters, "Dataflow is not output-persistent"));

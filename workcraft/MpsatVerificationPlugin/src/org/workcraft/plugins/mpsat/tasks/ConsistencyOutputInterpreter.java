@@ -1,27 +1,26 @@
 package org.workcraft.plugins.mpsat.tasks;
 
+import org.workcraft.plugins.pcomp.ComponentData;
+import org.workcraft.plugins.pcomp.tasks.PcompOutput;
+import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.plugins.stg.utils.LabelParser;
+import org.workcraft.tasks.ExportOutput;
+import org.workcraft.traces.Solution;
+import org.workcraft.traces.Trace;
+import org.workcraft.types.Triple;
+import org.workcraft.utils.LogUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.workcraft.traces.Solution;
-import org.workcraft.traces.Trace;
-import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.pcomp.ComponentData;
-import org.workcraft.plugins.pcomp.tasks.PcompOutput;
-import org.workcraft.tasks.ExportOutput;
-import org.workcraft.plugins.stg.utils.LabelParser;
-import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.utils.LogUtils;
-import org.workcraft.types.Triple;
-import org.workcraft.workspace.WorkspaceEntry;
+class ConsistencyOutputInterpreter extends ReachabilityOutputInterpreter {
 
-class ConsistencyOutputHandler extends ReachabilityOutputHandler {
+    ConsistencyOutputInterpreter(WorkspaceEntry we, ExportOutput exportOutput,
+            PcompOutput pcompOutput, VerificationOutput mpsatOutput, boolean interactive) {
 
-    ConsistencyOutputHandler(WorkspaceEntry we, ExportOutput exportOutput, PcompOutput pcompOutput,
-            VerificationOutput mpsatOutput, VerificationParameters verificationParameters) {
-
-        super(we, exportOutput, pcompOutput, mpsatOutput, verificationParameters);
+        super(we, exportOutput, pcompOutput, mpsatOutput, interactive);
     }
 
     @Override

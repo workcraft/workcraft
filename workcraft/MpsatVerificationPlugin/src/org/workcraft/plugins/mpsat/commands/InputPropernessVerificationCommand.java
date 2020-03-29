@@ -44,7 +44,7 @@ public class InputPropernessVerificationCommand extends AbstractVerificationComm
 
     @Override
     public VerificationParameters getVerificationParameters(WorkspaceEntry we) {
-        return ReachUtils.getInputPropernessSettings();
+        return ReachUtils.getInputPropernessParameters();
     }
 
 }

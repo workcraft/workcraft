@@ -4,7 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.gui.HandshakeWizardDialog;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
+import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainTask;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.plugins.stg.Stg;
@@ -42,7 +42,7 @@ public class HandshakeVerificationCommand extends org.workcraft.commands.Abstrac
             TaskManager manager = framework.getTaskManager();
             VerificationChainTask task = new VerificationChainTask(we, dialog.getSettings());
             String description = MpsatUtils.getToolchainDescription(we.getTitle());
-            VerificationChainResultHandler monitor = new VerificationChainResultHandler(we);
+            VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
             manager.queue(task, description, monitor);
         }
     }

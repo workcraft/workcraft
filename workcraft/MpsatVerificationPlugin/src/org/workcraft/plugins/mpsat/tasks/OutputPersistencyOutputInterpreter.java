@@ -1,29 +1,28 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import org.workcraft.traces.Solution;
-import org.workcraft.traces.Trace;
-import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.utils.PetriUtils;
-import org.workcraft.tasks.ExportOutput;
 import org.workcraft.plugins.stg.DummyTransition;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.tasks.ExportOutput;
+import org.workcraft.traces.Solution;
+import org.workcraft.traces.Trace;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.*;
 
-class OutputPersistencyOutputHandler extends ReachabilityOutputHandler {
+class OutputPersistencyOutputInterpreter extends ReachabilityOutputInterpreter {
 
-    OutputPersistencyOutputHandler(WorkspaceEntry we, ExportOutput exportOutput, PcompOutput pcompOutput,
-            VerificationOutput mpsatOutput, VerificationParameters verificationParameters) {
+    OutputPersistencyOutputInterpreter(WorkspaceEntry we, ExportOutput exportOutput,
+            PcompOutput pcompOutput, VerificationOutput mpsatOutput, boolean interactive) {
 
-        super(we, exportOutput, pcompOutput, mpsatOutput, verificationParameters);
+        super(we, exportOutput, pcompOutput, mpsatOutput, interactive);
     }
 
     @Override

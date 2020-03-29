@@ -12,7 +12,7 @@ import org.workcraft.plugins.fst.FstDescriptor;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.fst.converters.FstToFsmConverter;
 import org.workcraft.plugins.fst.interop.SgImporter;
-import org.workcraft.tasks.AbstractExtendedResultHandler;
+import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
@@ -26,14 +26,14 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class ConversionResultHandler extends AbstractExtendedResultHandler<ConversionOutput, Collection<WorkspaceEntry>> {
+public class ConversionResultHandlingMonitor extends AbstractResultHandlingMonitor<ConversionOutput, Collection<WorkspaceEntry>> {
 
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
 
     private final WorkspaceEntry we;
     private final boolean convertToFsm;
 
-    public ConversionResultHandler(WorkspaceEntry we, boolean convertToFsm) {
+    public ConversionResultHandlingMonitor(WorkspaceEntry we, boolean convertToFsm) {
         this.we = we;
         this.convertToFsm = convertToFsm;
     }

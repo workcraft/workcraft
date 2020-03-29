@@ -1,25 +1,21 @@
 package org.workcraft.plugins.mpsat.commands;
 
-import java.util.Collection;
-
 import org.workcraft.Framework;
 import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.VerificationParameters.SolutionMode;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainTask;
-import org.workcraft.plugins.mpsat.tasks.CscConflictResolutionOutputHandler;
-import org.workcraft.plugins.mpsat.tasks.VerificationOutput;
+import org.workcraft.plugins.mpsat.tasks.*;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
+import java.util.Collection;
 
 public class CscConflictResolutionCommand implements ScriptableCommand<WorkspaceEntry> {
 
@@ -42,12 +38,15 @@ public class CscConflictResolutionCommand implements ScriptableCommand<Workspace
 
     @Override
     public void run(WorkspaceEntry we) {
-        queueCscConflictResolution(we);
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
+        queueCscConflictResolution(we, monitor);
     }
 
     @Override
     public WorkspaceEntry execute(WorkspaceEntry we) {
-        VerificationChainResultHandler monitor = queueCscConflictResolution(we);
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
+        queueCscConflictResolution(we, monitor);
+
         Collection<Mutex> mutexes = monitor.getMutexes();
         Result<? extends VerificationChainOutput> chainResult = monitor.waitResult();
         VerificationChainOutput chainOutput = chainResult.getPayload();
@@ -60,19 +59,18 @@ public class CscConflictResolutionCommand implements ScriptableCommand<Workspace
         return resultHandler.getResult();
     }
 
-    private VerificationChainResultHandler queueCscConflictResolution(WorkspaceEntry we) {
+    private void queueCscConflictResolution(WorkspaceEntry we, VerificationChainResultHandlingMonitor monitor) {
         VerificationParameters verificationParameters = new VerificationParameters(TITLE,
                 VerificationMode.RESOLVE_ENCODING_CONFLICTS, 4, SolutionMode.MINIMUM_COST, 1);
 
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
+        monitor.setMutexes(mutexes);
         VerificationChainTask task = new VerificationChainTask(we, verificationParameters, mutexes);
 
         TaskManager taskManager = Framework.getInstance().getTaskManager();
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-        VerificationChainResultHandler monitor = new VerificationChainResultHandler(we, mutexes);
         taskManager.queue(task, TITLE, monitor);
-        return monitor;
     }
 
 }

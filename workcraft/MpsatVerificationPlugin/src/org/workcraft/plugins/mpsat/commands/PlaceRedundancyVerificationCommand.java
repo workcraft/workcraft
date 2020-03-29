@@ -43,7 +43,7 @@ public class PlaceRedundancyVerificationCommand extends AbstractVerificationComm
 
     @Override
     public String getPopupName() {
-        return "Check place redundnacy";
+        return "Check place redundancy";
     }
 
     @Override

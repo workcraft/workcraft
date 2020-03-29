@@ -30,7 +30,7 @@ import java.util.Set;
 
 public class ConformationTask implements Task<VerificationChainOutput> {
 
-    private final VerificationParameters toolchainPreparationSettings = new VerificationParameters("Toolchain preparation of data",
+    private final VerificationParameters toolchainPreparationParameters = new VerificationParameters("Toolchain preparation of data",
             VerificationMode.UNDEFINED, 0, null, 0);
 
     private final WorkspaceEntry we;
@@ -69,7 +69,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(devExportResult, null, null, null, toolchainPreparationSettings));
+                        new VerificationChainOutput(devExportResult, null, null, null, toolchainPreparationParameters));
             }
             monitor.progressUpdate(0.30);
 
@@ -77,7 +77,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             Stg envStg = StgUtils.loadStg(envFile);
             if (envStg == null) {
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(null, null, null, null, toolchainPreparationSettings));
+                        new VerificationChainOutput(null, null, null, null, toolchainPreparationParameters));
             }
 
             // Make sure that input signals of the device STG are also inputs in the environment STG
@@ -95,7 +95,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(envExportResult, null, null, null, toolchainPreparationSettings));
+                        new VerificationChainOutput(envExportResult, null, null, null, toolchainPreparationParameters));
             }
             monitor.progressUpdate(0.40);
 
@@ -113,7 +113,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(devExportResult, pcompResult, null, null, toolchainPreparationSettings));
+                        new VerificationChainOutput(devExportResult, pcompResult, null, null, toolchainPreparationParameters));
             }
             monitor.progressUpdate(0.50);
 
@@ -128,7 +128,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(devExportResult, pcompResult, punfResult, null, toolchainPreparationSettings));
+                        new VerificationChainOutput(devExportResult, pcompResult, punfResult, null, toolchainPreparationParameters));
             }
             monitor.progressUpdate(0.60);
 
@@ -136,9 +136,8 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             CompositionData compositionData = new CompositionData(detailFile);
             ComponentData devComponentData = compositionData.getComponentData(devStgFile);
             Set<String> devPlaceNames = devComponentData.getDstPlaces();
-            VerificationParameters mpsatSettings = ReachUtils.getConformationSettings(devPlaceNames);
-            VerificationTask verificationTask = new VerificationTask(mpsatSettings.getMpsatArguments(directory),
-                    unfoldingFile, directory, sysStgFile);
+            VerificationParameters verificationParameters = ReachUtils.getConformationParameters(devPlaceNames);
+            VerificationTask verificationTask = new VerificationTask(unfoldingFile, sysStgFile, verificationParameters, directory);
             Result<? extends VerificationOutput>  mpsatResult = taskManager.execute(
                     verificationTask, "Running conformation check [MPSat]", subtaskMonitor);
 
@@ -147,14 +146,15 @@ public class ConformationTask implements Task<VerificationChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, mpsatSettings));
+                        new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters));
             }
             monitor.progressUpdate(0.80);
 
-            VerificationOutputParser mpsatConformationParser = new VerificationOutputParser(mpsatResult.getPayload());
-            if (!mpsatConformationParser.getSolutions().isEmpty()) {
+            String mpsatStdout = mpsatResult.getPayload().getStdoutString();
+            VerificationOutputParser verificationOutputParser = new VerificationOutputParser(mpsatStdout);
+            if (!verificationOutputParser.getSolutions().isEmpty()) {
                 return new Result<>(Outcome.SUCCESS,
-                        new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, mpsatSettings,
+                        new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,
                                 "This model does not conform to the environment."));
             }
             monitor.progressUpdate(1.0);
@@ -162,7 +162,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             // Success
             String message = "The model conforms to its environment (" + envFile.getName() + ").";
             return new Result<>(Outcome.SUCCESS,
-                    new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, mpsatSettings, message));
+                    new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters, message));
 
         } catch (Throwable e) {
             return new Result<>(e);

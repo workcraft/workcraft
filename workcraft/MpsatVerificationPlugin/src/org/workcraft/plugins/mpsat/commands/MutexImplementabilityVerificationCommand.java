@@ -4,8 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.tasks.CombinedChainOutput;
-import org.workcraft.plugins.mpsat.tasks.CombinedChainResultHandler;
+import org.workcraft.plugins.mpsat.tasks.CombinedChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat.tasks.CombinedChainTask;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.plugins.mpsat.utils.ReachUtils;
@@ -45,36 +44,36 @@ public class MutexImplementabilityVerificationCommand extends AbstractVerificati
 
     @Override
     public void run(WorkspaceEntry we) {
-        queueVerification(we);
+        CombinedChainResultHandlingMonitor monitor = new CombinedChainResultHandlingMonitor(we, true);
+        queueVerification(we, monitor);
     }
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        CombinedChainResultHandler monitor = queueVerification(we);
-        Result<? extends CombinedChainOutput> result = null;
-        if (monitor != null) {
-            result = monitor.waitResult();
-        }
-        return MpsatUtils.getCombinedChainOutcome(result);
+        CombinedChainResultHandlingMonitor monitor = new CombinedChainResultHandlingMonitor(we, false);
+        queueVerification(we, monitor);
+        return monitor.waitForHandledResult();
     }
 
-    private CombinedChainResultHandler queueVerification(WorkspaceEntry we) {
-        CombinedChainResultHandler monitor = null;
-        if (isApplicableTo(we)) {
-            Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-            if (MpsatUtils.mutexStructuralCheck(stg, false)) {
-                Framework framework = Framework.getInstance();
-                TaskManager manager = framework.getTaskManager();
-                Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
-                MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-                ArrayList<VerificationParameters> settingsList = ReachUtils.getMutexImplementabilitySettings(mutexes);
-                CombinedChainTask task = new CombinedChainTask(we, settingsList, null);
-                String description = MpsatUtils.getToolchainDescription(we.getTitle());
-                monitor = new CombinedChainResultHandler(we, mutexes);
-                manager.queue(task, description, monitor);
-            }
+    private void queueVerification(WorkspaceEntry we, CombinedChainResultHandlingMonitor monitor) {
+        if (!isApplicableTo(we)) {
+            monitor.isFinished(Result.failure());
+            return;
         }
-        return monitor;
+        Stg stg = WorkspaceUtils.getAs(we, Stg.class);
+        if (!MpsatUtils.mutexStructuralCheck(stg, false)) {
+            monitor.isFinished(Result.failure());
+            return;
+        }
+        Framework framework = Framework.getInstance();
+        TaskManager manager = framework.getTaskManager();
+        Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
+        MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
+        ArrayList<VerificationParameters> settingsList = ReachUtils.getMutexImplementabilityParameters(mutexes);
+        CombinedChainTask task = new CombinedChainTask(we, settingsList, null);
+        String description = MpsatUtils.getToolchainDescription(we.getTitle());
+        monitor.setMutexes(mutexes);
+        manager.queue(task, description, monitor);
     }
 
 }

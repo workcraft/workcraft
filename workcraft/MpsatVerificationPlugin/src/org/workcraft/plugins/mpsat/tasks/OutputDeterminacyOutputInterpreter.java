@@ -1,7 +1,5 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import org.workcraft.utils.WorkUtils;
-import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.utils.EnablednessUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -14,25 +12,26 @@ import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.WorkUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.*;
 
-class OutputDeterminacyOutputHandler extends ReachabilityOutputHandler {
+class OutputDeterminacyOutputInterpreter extends ReachabilityOutputInterpreter {
 
-    OutputDeterminacyOutputHandler(WorkspaceEntry we, ExportOutput exportOutput,
-            PcompOutput pcompOutput, VerificationOutput mpsatOutput, VerificationParameters verificationParameters) {
+    OutputDeterminacyOutputInterpreter(WorkspaceEntry we, ExportOutput exportOutput,
+            PcompOutput pcompOutput, VerificationOutput mpsatOutput, boolean interactive) {
 
-        super(we, exportOutput, pcompOutput, mpsatOutput, verificationParameters);
+        super(we, exportOutput, pcompOutput, mpsatOutput, interactive);
     }
 
     @Override
     public List<Solution> processSolutions(WorkspaceEntry we, List<Solution> solutions) {
         List<Solution> result = new LinkedList<>();
 
-        StgModel compStg = getMpsatOutput().getInputStg();
+        StgModel compStg = getOutput().getInputStg();
         StgModel stg = getSrcStg(we);
         ComponentData devData = getCompositionData(0);
         ComponentData envData = getCompositionData(1);

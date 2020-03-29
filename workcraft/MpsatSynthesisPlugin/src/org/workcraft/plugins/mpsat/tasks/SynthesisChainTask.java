@@ -23,12 +23,12 @@ import java.util.Collection;
 
 public class SynthesisChainTask implements Task<SynthesisChainOutput> {
     private final WorkspaceEntry we;
-    private final SynthesisParameters settings;
+    private final SynthesisParameters synthesisParameters;
     private final Collection<Mutex> mutexes;
 
-    public SynthesisChainTask(WorkspaceEntry we, SynthesisParameters settings, Collection<Mutex> mutexes) {
+    public SynthesisChainTask(WorkspaceEntry we, SynthesisParameters synthesisParameters, Collection<Mutex> mutexes) {
         this.we = we;
-        this.settings = settings;
+        this.synthesisParameters = synthesisParameters;
         this.mutexes = mutexes;
     }
 
@@ -59,7 +59,7 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new SynthesisChainOutput(exportResult, null, null, settings));
+                        new SynthesisChainOutput(exportResult, null, null, synthesisParameters));
             }
             if ((mutexes != null) && !mutexes.isEmpty()) {
                 model = StgUtils.loadStg(netFile);
@@ -74,7 +74,7 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
                         return new Result<>(Outcome.CANCEL);
                     }
                     return new Result<>(Outcome.FAILURE,
-                            new SynthesisChainOutput(exportResult, null, null, settings));
+                            new SynthesisChainOutput(exportResult, null, null, synthesisParameters));
                 }
             }
             monitor.progressUpdate(0.33);
@@ -89,13 +89,13 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new SynthesisChainOutput(exportResult, punfResult, null, settings));
+                        new SynthesisChainOutput(exportResult, punfResult, null, synthesisParameters));
             }
             monitor.progressUpdate(0.66);
 
             // Run MPSat on the generated unfolding
-            boolean needsGateLibrary = settings.getMode().needLib();
-            SynthesisTask mpsatTask = new SynthesisTask(settings.getMpsatArguments(directory),
+            boolean needsGateLibrary = synthesisParameters.getMode().needLib();
+            SynthesisTask mpsatTask = new SynthesisTask(synthesisParameters.getMpsatArguments(directory),
                     unfoldingFile.getAbsolutePath(), directory, needsGateLibrary);
             Result<? extends SynthesisOutput> mpsatResult = framework.getTaskManager().execute(
                     mpsatTask, "Running synthesis [MPSat]", subtaskMonitor);
@@ -105,12 +105,12 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new SynthesisChainOutput(exportResult, punfResult, mpsatResult, settings));
+                        new SynthesisChainOutput(exportResult, punfResult, mpsatResult, synthesisParameters));
             }
             monitor.progressUpdate(1.0);
 
             return new Result<>(Outcome.SUCCESS,
-                    new SynthesisChainOutput(exportResult, punfResult, mpsatResult, settings));
+                    new SynthesisChainOutput(exportResult, punfResult, mpsatResult, synthesisParameters));
         } catch (Throwable e) {
             return new Result<>(e);
         } finally {

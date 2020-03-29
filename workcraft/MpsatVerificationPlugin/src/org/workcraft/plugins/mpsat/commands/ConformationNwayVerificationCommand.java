@@ -6,8 +6,7 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.mpsat.gui.NwayConformationDialog;
 import org.workcraft.plugins.mpsat.tasks.ConformationNwayTask;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
+import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.Result;
@@ -47,56 +46,52 @@ public class ConformationNwayVerificationCommand extends org.workcraft.commands.
 
     @Override
     public void run(WorkspaceEntry we) {
-        queueVerification();
-    }
-
-    @Override
-    public Boolean execute(WorkspaceEntry we) {
-        VerificationChainResultHandler monitor = queueVerification();
-        Result<? extends VerificationChainOutput> result = null;
-        if (monitor != null) {
-            result = monitor.waitResult();
-        }
-        return MpsatUtils.getChainOutcome(result);
-    }
-
-    private VerificationChainResultHandler queueVerification() {
+        List<WorkspaceEntry> wes = new ArrayList<>();
         Framework framework = Framework.getInstance();
         Workspace workspace = framework.getWorkspace();
-        List<WorkspaceEntry> wes = new ArrayList<>();
-        if (!framework.isInGuiMode()) {
-            for (WorkspaceEntry work: workspace.getWorks()) {
-                if (WorkspaceUtils.isApplicable(work, StgModel.class)) {
-                    wes.add(work);
-                }
-            }
-        } else {
-            MainWindow mainWindow = framework.getMainWindow();
-            NwayConformationDialog dialog = new NwayConformationDialog(mainWindow);
-            if (!dialog.reveal()) {
-                return null;
-            }
 
+        MainWindow mainWindow = framework.getMainWindow();
+        NwayConformationDialog dialog = new NwayConformationDialog(mainWindow);
+        if (dialog.reveal()) {
             Set<Path<String>> paths = dialog.getSourcePaths();
             if (paths != null) {
                 for (Path<String> path : paths) {
                     wes.add(workspace.getWork(path));
                 }
             }
+
+            VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(wes);
+            queueVerification(wes, monitor);
+        }
+    }
+
+    @Override
+    public Boolean execute(WorkspaceEntry we) {
+        List<WorkspaceEntry> wes = new ArrayList<>();
+        Workspace workspace = Framework.getInstance().getWorkspace();
+        for (WorkspaceEntry work: workspace.getWorks()) {
+            if (WorkspaceUtils.isApplicable(work, StgModel.class)) {
+                wes.add(work);
+            }
         }
 
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(wes);
+        queueVerification(wes, monitor);
+        return MpsatUtils.getChainOutcome(monitor.waitResult());
+    }
+
+    private void queueVerification(List<WorkspaceEntry> wes, VerificationChainResultHandlingMonitor monitor) {
         if (wes.size() < 2) {
             DialogUtils.showWarning("At least two STGs are required for N-way conformation.");
-            return null;
+            monitor.isFinished(Result.failure());
+            return;
         }
 
         ConformationNwayTask task = new ConformationNwayTask(wes);
-        TaskManager manager = framework.getTaskManager();
+        TaskManager manager = Framework.getInstance().getTaskManager();
         String titles = wes.stream().map(w -> w.getTitle()).collect(Collectors.joining(", "));
         String description = MpsatUtils.getToolchainDescription(titles);
-        VerificationChainResultHandler monitor = new VerificationChainResultHandler(wes);
         manager.queue(task, description, monitor);
-        return monitor;
     }
 
 }

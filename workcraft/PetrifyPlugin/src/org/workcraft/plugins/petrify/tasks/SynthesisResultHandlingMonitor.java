@@ -17,7 +17,7 @@ import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.utils.StgUtils;
-import org.workcraft.tasks.AbstractExtendedResultHandler;
+import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SynthesisResultHandler extends AbstractExtendedResultHandler<SynthesisOutput, WorkspaceEntry> {
+public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonitor<SynthesisOutput, WorkspaceEntry> {
 
     private static final Pattern patternAddingStateSignal = Pattern.compile(
             "Adding state signal: (.*)\\R", Pattern.UNIX_LINES);
@@ -48,7 +48,7 @@ public class SynthesisResultHandler extends AbstractExtendedResultHandler<Synthe
     private final boolean sequentialAssign;
     private final boolean technologyMapping;
 
-    public SynthesisResultHandler(WorkspaceEntry we, Collection<Mutex> mutexes,
+    public SynthesisResultHandlingMonitor(WorkspaceEntry we, Collection<Mutex> mutexes,
             boolean boxSequentialComponents, boolean boxCombinationalComponents,
             boolean sequentialAssign, boolean technologyMapping) {
 

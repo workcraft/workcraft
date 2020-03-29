@@ -18,7 +18,7 @@ import org.workcraft.plugins.mpsat.SynthesisMode;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.utils.StgUtils;
-import org.workcraft.tasks.AbstractExtendedResultHandler;
+import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -32,14 +32,14 @@ import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class SynthesisResultHandler extends AbstractExtendedResultHandler<SynthesisChainOutput, WorkspaceEntry> {
+public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonitor<SynthesisChainOutput, WorkspaceEntry> {
 
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
 
     private final WorkspaceEntry we;
     private final Collection<Mutex> mutexes;
 
-    public SynthesisResultHandler(WorkspaceEntry we, Collection<Mutex> mutexes) {
+    public SynthesisResultHandlingMonitor(WorkspaceEntry we, Collection<Mutex> mutexes) {
         this.we = we;
         this.mutexes = mutexes;
     }
@@ -57,7 +57,7 @@ public class SynthesisResultHandler extends AbstractExtendedResultHandler<Synthe
 
     private WorkspaceEntry handleSuccess(final Result<? extends SynthesisChainOutput> chainResult) {
         SynthesisChainOutput chainOutput = chainResult.getPayload();
-        SynthesisMode mpsatMode = chainOutput.getMpsatSettings().getMode();
+        SynthesisMode mpsatMode = chainOutput.getSynthesisParameters().getMode();
         SynthesisOutput mpsatOutput = chainOutput.getMpsatResult().getPayload();
         WorkspaceEntry synthResult = null;
         switch (mpsatMode) {

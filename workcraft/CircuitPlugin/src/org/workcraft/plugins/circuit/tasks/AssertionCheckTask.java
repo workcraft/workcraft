@@ -43,7 +43,7 @@ public class AssertionCheckTask implements Task<VerificationChainOutput> {
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         String stgFileExtension = StgFormat.getInstance().getExtension();
-        VerificationParameters preparationSettings = ReachUtils.getToolchainPreparationSettings();
+        VerificationParameters preparationParameters = ReachUtils.getToolchainPreparationParameters();
         try {
             // Common variables
             VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
@@ -71,7 +71,7 @@ public class AssertionCheckTask implements Task<VerificationChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(devExportResult, null, null, null, preparationSettings));
+                        new VerificationChainOutput(devExportResult, null, null, null, preparationParameters));
             }
             monitor.progressUpdate(0.10);
 
@@ -89,7 +89,7 @@ public class AssertionCheckTask implements Task<VerificationChainOutput> {
                         return new Result<>(Outcome.CANCEL);
                     }
                     return new Result<>(Outcome.FAILURE,
-                            new VerificationChainOutput(envExportResult, null, null, null, preparationSettings));
+                            new VerificationChainOutput(envExportResult, null, null, null, preparationParameters));
                 }
 
                 // Generating .g for the whole system (circuit and environment)
@@ -101,7 +101,7 @@ public class AssertionCheckTask implements Task<VerificationChainOutput> {
                         return new Result<>(Outcome.CANCEL);
                     }
                     return new Result<>(Outcome.FAILURE,
-                            new VerificationChainOutput(devExportResult, pcompResult, null, null, preparationSettings));
+                            new VerificationChainOutput(devExportResult, pcompResult, null, null, preparationParameters));
                 }
             }
             monitor.progressUpdate(0.20);
@@ -117,13 +117,12 @@ public class AssertionCheckTask implements Task<VerificationChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(devExportResult, pcompResult, punfResult, null, preparationSettings));
+                        new VerificationChainOutput(devExportResult, pcompResult, punfResult, null, preparationParameters));
             }
             monitor.progressUpdate(0.40);
 
             // Check custom property (if requested)
-            VerificationTask verificationTask = new VerificationTask(verificationParameters.getMpsatArguments(directory),
-                    unfoldingFile, directory, sysStgFile);
+            VerificationTask verificationTask = new VerificationTask(unfoldingFile, sysStgFile, verificationParameters, directory);
             SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
             Result<? extends VerificationOutput> mpsatResult = manager.execute(
                     verificationTask, "Running custom property check [MPSat]", mpsatMonitor);
@@ -137,7 +136,8 @@ public class AssertionCheckTask implements Task<VerificationChainOutput> {
             }
             monitor.progressUpdate(0.50);
 
-            VerificationOutputParser mpsatParser = new VerificationOutputParser(mpsatResult.getPayload());
+            String mpsatStdout = mpsatResult.getPayload().getStdoutString();
+            VerificationOutputParser mpsatParser = new VerificationOutputParser(mpsatStdout);
             if (!mpsatParser.getSolutions().isEmpty()) {
                 return new Result<>(Outcome.SUCCESS,
                         new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,

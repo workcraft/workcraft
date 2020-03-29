@@ -3,8 +3,7 @@ package org.workcraft.plugins.mpsat.commands;
 import org.workcraft.Framework;
 import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.tasks.CombinedChainOutput;
-import org.workcraft.plugins.mpsat.tasks.CombinedChainResultHandler;
+import org.workcraft.plugins.mpsat.tasks.CombinedChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat.tasks.CombinedChainTask;
 import org.workcraft.plugins.mpsat.tasks.OutputDeterminacyTask;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
@@ -48,23 +47,21 @@ public class CombinedVerificationCommand extends org.workcraft.commands.Abstract
 
     @Override
     public void run(WorkspaceEntry we) {
-        queueVerification(we);
+        CombinedChainResultHandlingMonitor monitor = new CombinedChainResultHandlingMonitor(we, true);
+        queueVerification(we, monitor);
     }
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        CombinedChainResultHandler monitor = queueVerification(we);
-        Result<? extends CombinedChainOutput> result = null;
-        if (monitor != null) {
-            result = monitor.waitResult();
-        }
-        return MpsatUtils.getCombinedChainOutcome(result);
+        CombinedChainResultHandlingMonitor monitor = new CombinedChainResultHandlingMonitor(we, false);
+        queueVerification(we, monitor);
+        return monitor.waitForHandledResult();
     }
 
-    private CombinedChainResultHandler queueVerification(WorkspaceEntry we) {
-
+    private void queueVerification(WorkspaceEntry we, CombinedChainResultHandlingMonitor monitor) {
         if (!checkPrerequisites(we)) {
-            return null;
+            monitor.isFinished(Result.failure());
+            return;
         }
 
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
@@ -75,26 +72,28 @@ public class CombinedVerificationCommand extends org.workcraft.commands.Abstract
                     "can currently be checked only for STGs without dummies.\n\n" +
                     "Proceed with verification of other properties?";
             if (!DialogUtils.showConfirmWarning(msg, "Verification", true)) {
-                return null;
+                monitor.isFinished(Result.failure());
+                return;
             }
         }
 
         if (!MpsatUtils.mutexStructuralCheck(stg, true)) {
-            return null;
+            monitor.isFinished(Result.failure());
+            return;
+        }
+
+        ArrayList<VerificationParameters> settingsList = new ArrayList<>();
+        settingsList.add(ReachUtils.getConsistencyParameters());
+        settingsList.add(ReachUtils.getDeadlockParameters());
+        if (noDummies) {
+            settingsList.add(ReachUtils.getInputPropernessParameters());
         }
 
         Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
-        ArrayList<VerificationParameters> settingsList = new ArrayList<>();
-        settingsList.add(ReachUtils.getConsistencySettings());
-        settingsList.add(ReachUtils.getDeadlockSettings());
-        if (noDummies) {
-            settingsList.add(ReachUtils.getInputPropernessSettings());
-        }
-
-        settingsList.addAll(ReachUtils.getMutexImplementabilitySettings(mutexes));
+        settingsList.addAll(ReachUtils.getMutexImplementabilityParameters(mutexes));
         if (noDummies) {
             LinkedList<Pair<String, String>> exceptions = MutexUtils.getMutexGrantPairs(stg);
-            settingsList.add(ReachUtils.getOutputPersistencySettings(exceptions));
+            settingsList.add(ReachUtils.getOutputPersistencyParameters(exceptions));
         }
 
         OutputDeterminacyTask extraTask = new OutputDeterminacyTask(we);
@@ -102,10 +101,10 @@ public class CombinedVerificationCommand extends org.workcraft.commands.Abstract
         TaskManager manager = Framework.getInstance().getTaskManager();
         CombinedChainTask task = new CombinedChainTask(we, settingsList, extraTask);
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
+        monitor.setMutexes(mutexes);
+
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
-        CombinedChainResultHandler monitor = new CombinedChainResultHandler(we, mutexes);
         manager.queue(task, description, monitor);
-        return monitor;
     }
 
     private boolean checkPrerequisites(WorkspaceEntry we) {

@@ -3,8 +3,7 @@ package org.workcraft.plugins.policy.commands;
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.commands.ScriptableCommand;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
+import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.plugins.policy.Policy;
 import org.workcraft.plugins.policy.tasks.DeadlockFreenessTask;
@@ -28,30 +27,27 @@ public class DeadlockFreenessVerificationCommand extends AbstractVerificationCom
 
     @Override
     public void run(WorkspaceEntry we) {
-        queueVerification(we);
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
+        queueVerification(we, monitor);
     }
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        VerificationChainResultHandler monitor = queueVerification(we);
-        Result<? extends VerificationChainOutput> result = null;
-        if (monitor != null) {
-            result = monitor.waitResult();
-        }
-        return MpsatUtils.getChainOutcome(result);
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
+        queueVerification(we, monitor);
+        return MpsatUtils.getChainOutcome(monitor.waitResult());
     }
 
-    private VerificationChainResultHandler queueVerification(WorkspaceEntry we) {
+    private void queueVerification(WorkspaceEntry we, VerificationChainResultHandlingMonitor monitor) {
         if (!isApplicableTo(we)) {
-            return null;
+            monitor.isFinished(Result.failure());
+        } else {
+            Framework framework = Framework.getInstance();
+            TaskManager manager = framework.getTaskManager();
+            DeadlockFreenessTask task = new DeadlockFreenessTask(we);
+            String description = MpsatUtils.getToolchainDescription(we.getTitle());
+            manager.queue(task, description, monitor);
         }
-        Framework framework = Framework.getInstance();
-        TaskManager manager = framework.getTaskManager();
-        DeadlockFreenessTask task = new DeadlockFreenessTask(we);
-        String description = MpsatUtils.getToolchainDescription(we.getTitle());
-        VerificationChainResultHandler monitor = new VerificationChainResultHandler(we);
-        manager.queue(task, description, monitor);
-        return monitor;
     }
 
 }

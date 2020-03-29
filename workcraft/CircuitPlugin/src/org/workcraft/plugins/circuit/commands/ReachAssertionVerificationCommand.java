@@ -11,7 +11,7 @@ import org.workcraft.plugins.mpsat.MpsatDataSerialiser;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.gui.ReachAssertionDialog;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
+import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.ScriptableCommandUtils;
@@ -61,7 +61,7 @@ public class ReachAssertionVerificationCommand extends AbstractVerificationComma
             preservedData = dialog.getPresetData();
             AssertionCheckTask task = new AssertionCheckTask(we, preservedData);
             String description = MpsatUtils.getToolchainDescription(we.getTitle());
-            VerificationChainResultHandler monitor = new VerificationChainResultHandler(we);
+            VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
             manager.queue(task, description, monitor);
         }
     }

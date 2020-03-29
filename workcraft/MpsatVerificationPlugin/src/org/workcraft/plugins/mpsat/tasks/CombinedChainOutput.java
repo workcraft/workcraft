@@ -13,7 +13,7 @@ public class CombinedChainOutput {
     private Result<? extends PcompOutput> pcompResult;
     private Result<? extends PunfOutput> punfResult;
     private List<Result<? extends VerificationOutput>> mpsatResultList;
-    private List<VerificationParameters> mpsatSettingsList;
+    private List<VerificationParameters> verificationParametersList;
     private String message;
 
     public CombinedChainOutput(
@@ -21,13 +21,13 @@ public class CombinedChainOutput {
             Result<? extends PcompOutput> pcompResult,
             Result<? extends PunfOutput> punfResult,
             List<Result<? extends VerificationOutput>> mpsatResultList,
-            List<VerificationParameters> mpsatSettingsList, String message) {
+            List<VerificationParameters> verificationParametersList, String message) {
 
         this.exportResult = exportResult;
         this.pcompResult = pcompResult;
         this.punfResult = punfResult;
         this.mpsatResultList = mpsatResultList;
-        this.mpsatSettingsList = mpsatSettingsList;
+        this.verificationParametersList = verificationParametersList;
         this.message = message;
     }
 
@@ -36,13 +36,13 @@ public class CombinedChainOutput {
             Result<? extends PcompOutput> pcompResult,
             Result<? extends PunfOutput> punfResult,
             List<Result<? extends VerificationOutput>> mpsatResultList,
-            List<VerificationParameters> mpsatSettingsList) {
+            List<VerificationParameters> verificationParametersList) {
 
-        this(exportResult, pcompResult, punfResult, mpsatResultList, mpsatSettingsList, null);
+        this(exportResult, pcompResult, punfResult, mpsatResultList, verificationParametersList, null);
     }
 
-    public List<VerificationParameters> getMpsatSettingsList() {
-        return mpsatSettingsList;
+    public List<VerificationParameters> getVerificationParametersList() {
+        return verificationParametersList;
     }
 
     public Result<? extends ExportOutput> getExportResult() {

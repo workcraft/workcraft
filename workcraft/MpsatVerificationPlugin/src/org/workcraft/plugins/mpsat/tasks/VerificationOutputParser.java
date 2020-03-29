@@ -1,8 +1,8 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import org.workcraft.utils.TraceUtils;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
+import org.workcraft.utils.TraceUtils;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -44,8 +44,7 @@ public class VerificationOutputParser {
             "triggers: .+\\R",
             Pattern.UNIX_LINES);
 
-    public VerificationOutputParser(VerificationOutput mpsatOutput) {
-        String mpsatStdout = mpsatOutput.getStdoutString();
+    public VerificationOutputParser(String mpsatStdout) {
         solutions = new LinkedList<>();
         Matcher matcherReachability0 = patternReachability0.matcher(mpsatStdout);
         while (matcherReachability0.find()) {

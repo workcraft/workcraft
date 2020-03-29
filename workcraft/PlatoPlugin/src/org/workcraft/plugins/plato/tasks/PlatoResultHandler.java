@@ -16,7 +16,7 @@ import org.workcraft.plugins.fst.VisualFstDescriptor;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.VerificationParameters.SolutionMode;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
+import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainTask;
 import org.workcraft.plugins.plato.commands.FstConversionCommand;
 import org.workcraft.plugins.plato.commands.StgConversionCommand;
@@ -245,7 +245,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
             VerificationParameters param = new VerificationParameters(null, VerificationMode.STG_REACHABILITY, 0, SolutionMode.MINIMUM_COST, 10, fullExpression, true);
             final VerificationChainTask mpsatTask = new VerificationChainTask(we, param);
             final TaskManager taskManager = Framework.getInstance().getTaskManager();
-            final VerificationChainResultHandler monitor = new VerificationChainResultHandler(we);
+            final VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
             taskManager.queue(mpsatTask, "Verify invariant of translated concepts", monitor);
         }
     }

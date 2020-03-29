@@ -6,7 +6,7 @@ import org.workcraft.commands.ScriptableDataCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.*;
 import org.workcraft.plugins.mpsat.gui.ReachAssertionDialog;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
+import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainTask;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.plugins.petri.PetriModel;
@@ -57,7 +57,7 @@ public class ReachAssertionVerificationCommand extends org.workcraft.commands.Ab
         ReachAssertionDialog dialog = new ReachAssertionDialog(mainWindow, presetManager);
         if (dialog.reveal()) {
             preservedData = dialog.getPresetData();
-            VerificationChainResultHandler monitor = new VerificationChainResultHandler(we);
+            VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
             run(we, preservedData, monitor);
         }
     }
@@ -97,9 +97,9 @@ public class ReachAssertionVerificationCommand extends org.workcraft.commands.Ab
 
     @Override
     public Boolean execute(WorkspaceEntry we, VerificationParameters data) {
-        VerificationChainResultHandler monitor = new VerificationChainResultHandler(we);
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
         run(we, data, monitor);
-        return MpsatUtils.getChainOutcome(monitor);
+        return monitor.waitForHandledResult();
     }
 
 }

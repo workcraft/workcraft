@@ -57,7 +57,7 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
             Result<? extends PunfOutput> punfResult = payload.getPunfResult();
             List<Result<? extends VerificationOutput>> mpsatResultList = result.getPayload().getMpsatResultList();
             mpsatResultList.add(payload.getMpsatResult());
-            verificationParametersList.add(payload.getMpsatSettings());
+            verificationParametersList.add(payload.getVerificationParameters());
 
             result = new Result<>(taskResult.getOutcome(),
                     new CombinedChainOutput(exportResult, pcompResult, punfResult, mpsatResultList, verificationParametersList));
@@ -121,7 +121,7 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
             // Run MPSat on the generated unfolding
             ArrayList<Result<? extends VerificationOutput>> mpsatResultList = new ArrayList<>(verificationParametersList.size());
             for (VerificationParameters verificationParameters: verificationParametersList) {
-                VerificationTask verificationTask = new VerificationTask(verificationParameters.getMpsatArguments(directory), unfoldingFile, directory, netFile);
+                VerificationTask verificationTask = new VerificationTask(unfoldingFile, netFile, verificationParameters, directory);
                 Result<? extends VerificationOutput> mpsatResult = taskManager.execute(
                         verificationTask, "Running verification [MPSat]", subtaskMonitor);
                 mpsatResultList.add(mpsatResult);

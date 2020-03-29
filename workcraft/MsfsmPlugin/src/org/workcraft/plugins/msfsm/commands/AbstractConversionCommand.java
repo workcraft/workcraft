@@ -5,7 +5,7 @@ import org.workcraft.commands.MenuOrdering;
 import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.msfsm.MsfsmSettings;
-import org.workcraft.plugins.msfsm.tasks.ConversionResultHandler;
+import org.workcraft.plugins.msfsm.tasks.ConversionResultHandlingMonitor;
 import org.workcraft.plugins.msfsm.tasks.ConversionTask;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.stg.Stg;
@@ -50,19 +50,19 @@ public abstract class AbstractConversionCommand implements ScriptableCommand<Col
     @Override
     public Collection<WorkspaceEntry> execute(WorkspaceEntry we) {
         Collection<WorkspaceEntry> result = null;
-        ConversionResultHandler monitor = queueConversion(we);
+        ConversionResultHandlingMonitor monitor = queueConversion(we);
         if (monitor != null) {
             result = monitor.waitForHandledResult();
         }
         return result;
     }
 
-    private ConversionResultHandler queueConversion(WorkspaceEntry we) {
+    private ConversionResultHandlingMonitor queueConversion(WorkspaceEntry we) {
         Framework framework = Framework.getInstance();
         TaskManager taskManager = framework.getTaskManager();
         ConversionTask task = new ConversionTask(we, getFileName(), getConversionCommands());
         boolean hasSignals = hasSignals(we);
-        ConversionResultHandler monitor = new ConversionResultHandler(we, !hasSignals);
+        ConversionResultHandlingMonitor monitor = new ConversionResultHandlingMonitor(we, !hasSignals);
         taskManager.queue(task, "MSFSM conversion", monitor);
         return monitor;
     }

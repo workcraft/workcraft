@@ -86,7 +86,7 @@ public class StrictImplementationCheckTask implements Task<VerificationChainOutp
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         String stgFileExtension = StgFormat.getInstance().getExtension();
-        VerificationParameters preparationSettings = ReachUtils.getToolchainPreparationSettings();
+        VerificationParameters preparationParameters = ReachUtils.getToolchainPreparationParameters();
         try {
             // Common variables
             Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
@@ -107,7 +107,7 @@ public class StrictImplementationCheckTask implements Task<VerificationChainOutp
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(envExportResult, null, null, null, preparationSettings));
+                        new VerificationChainOutput(envExportResult, null, null, null, preparationParameters));
             }
             monitor.progressUpdate(0.20);
 
@@ -124,7 +124,7 @@ public class StrictImplementationCheckTask implements Task<VerificationChainOutp
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(envExportResult, null, punfResult, null, preparationSettings));
+                        new VerificationChainOutput(envExportResult, null, punfResult, null, preparationParameters));
             }
             monitor.progressUpdate(0.50);
 
@@ -142,9 +142,8 @@ public class StrictImplementationCheckTask implements Task<VerificationChainOutp
                     }
                 }
             }
-            VerificationParameters mpsatSettings = getSettings(signalInfos);
-            VerificationTask verificationTask = new VerificationTask(mpsatSettings.getMpsatArguments(directory),
-                    unfoldingFile, directory, envStgFile);
+            VerificationParameters verificationParameters = getVerificationParameters(signalInfos);
+            VerificationTask verificationTask = new VerificationTask(unfoldingFile, envStgFile, verificationParameters, directory);
             SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
             Result<? extends VerificationOutput>  mpsatResult = taskManager.execute(
                     verificationTask, "Running strict implementation check [MPSat]", mpsatMonitor);
@@ -154,21 +153,22 @@ public class StrictImplementationCheckTask implements Task<VerificationChainOutp
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(envExportResult, null, punfResult, mpsatResult, mpsatSettings));
+                        new VerificationChainOutput(envExportResult, null, punfResult, mpsatResult, verificationParameters));
             }
             monitor.progressUpdate(0.80);
 
-            VerificationOutputParser mpsatParser = new VerificationOutputParser(mpsatResult.getPayload());
+            String mpsatStdout = mpsatResult.getPayload().getStdoutString();
+            VerificationOutputParser mpsatParser = new VerificationOutputParser(mpsatStdout);
             if (!mpsatParser.getSolutions().isEmpty()) {
                 return new Result<>(Outcome.SUCCESS,
-                        new VerificationChainOutput(envExportResult, null, punfResult, mpsatResult, mpsatSettings,
+                        new VerificationChainOutput(envExportResult, null, punfResult, mpsatResult, verificationParameters,
                                 "Circuit does not strictly implement the environment after the following trace(s):"));
             }
             monitor.progressUpdate(1.00);
 
             // Success
             return new Result<>(Outcome.SUCCESS,
-                    new VerificationChainOutput(envExportResult, null, punfResult, mpsatResult, mpsatSettings,
+                    new VerificationChainOutput(envExportResult, null, punfResult, mpsatResult, verificationParameters,
                             "The circuit strictly implements its environment."));
 
         } catch (Throwable e) {
@@ -178,7 +178,7 @@ public class StrictImplementationCheckTask implements Task<VerificationChainOutp
         }
     }
 
-    private VerificationParameters getSettings(Collection<SignalInfo> signalInfos) {
+    private VerificationParameters getVerificationParameters(Collection<SignalInfo> signalInfos) {
         String reachStrictImplementation = REACH_STRICT_IMPLEMENTATION;
         boolean isFirstSignal = true;
         for (SignalInfo signalInfo: signalInfos) {

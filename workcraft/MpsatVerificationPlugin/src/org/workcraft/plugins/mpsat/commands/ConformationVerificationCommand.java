@@ -5,8 +5,7 @@ import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.interop.Format;
 import org.workcraft.plugins.mpsat.tasks.ConformationTask;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
+import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.Stg;
@@ -58,54 +57,54 @@ public class ConformationVerificationCommand extends org.workcraft.commands.Abst
 
     @Override
     public void run(WorkspaceEntry we) {
-        queueVerification(we, true);
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
+        queueVerification(we, monitor);
     }
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        VerificationChainResultHandler monitor = queueVerification(we, false);
-        Result<? extends VerificationChainOutput> result = null;
-        if (monitor != null) {
-            result = monitor.waitResult();
-        }
-        return MpsatUtils.getChainOutcome(result);
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
+        queueVerification(we, monitor);
+        return monitor.waitForHandledResult();
     }
 
-    private VerificationChainResultHandler queueVerification(WorkspaceEntry we, boolean interactive) {
+    private void queueVerification(WorkspaceEntry we, VerificationChainResultHandlingMonitor monitor) {
         if (!isApplicableTo(we)) {
-            return null;
+            monitor.isFinished(Result.failure());
+            return;
         }
-        VerificationChainResultHandler monitor = null;
+
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        if (check(stg)) {
-            Framework framework = Framework.getInstance();
+        if (!check(stg)) {
+            monitor.isFinished(Result.failure());
+            return;
+        }
+
+        Framework framework = Framework.getInstance();
+        boolean proceed = true;
+        if (monitor.isInteractive()) {
             MainWindow mainWindow = framework.getMainWindow();
-            boolean proceed = true;
-            if (interactive) {
-                Format[] formats = {StgFormat.getInstance()};
-                JFileChooser fc = mainWindow.createOpenDialog("Open environment file", false, true, formats);
-                if (fc.showDialog(mainWindow, "Open") == JFileChooser.APPROVE_OPTION) {
-                    setEnvironment(fc.getSelectedFile());
-                } else {
-                    proceed = false;
-                }
-            }
-            if (proceed && FileUtils.checkAvailability(getEnvironment(), null, true)) {
-                Stg envStg = StgUtils.loadStg(getEnvironment());
-                if (envStg == null) {
-                    DialogUtils.showError("Cannot read an STG model from the file:\n"
-                            + getEnvironment().getAbsolutePath() + "\n\n"
-                            + "Conformation cannot be checked without environment STG.");
-                } else {
-                    TaskManager manager = framework.getTaskManager();
-                    ConformationTask task = new ConformationTask(we, getEnvironment());
-                    String description = MpsatUtils.getToolchainDescription(we.getTitle());
-                    monitor = new VerificationChainResultHandler(we);
-                    manager.queue(task, description, monitor);
-                }
+            Format[] formats = {StgFormat.getInstance()};
+            JFileChooser fc = mainWindow.createOpenDialog("Open environment file", false, true, formats);
+            if (fc.showDialog(mainWindow, "Open") == JFileChooser.APPROVE_OPTION) {
+                setEnvironment(fc.getSelectedFile());
+            } else {
+                proceed = false;
             }
         }
-        return monitor;
+        if (proceed && FileUtils.checkAvailability(getEnvironment(), null, true)) {
+            Stg envStg = StgUtils.loadStg(getEnvironment());
+            if (envStg == null) {
+                DialogUtils.showError("Cannot read an STG model from the file:\n"
+                        + getEnvironment().getAbsolutePath() + "\n\n"
+                        + "Conformation cannot be checked without environment STG.");
+            } else {
+                TaskManager manager = framework.getTaskManager();
+                ConformationTask task = new ConformationTask(we, getEnvironment());
+                String description = MpsatUtils.getToolchainDescription(we.getTitle());
+                manager.queue(task, description, monitor);
+            }
+        }
     }
 
     private boolean check(Stg stg) {

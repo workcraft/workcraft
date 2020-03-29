@@ -5,7 +5,7 @@ import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.commands.ScriptableDataCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.punf.PunfSettings;
-import org.workcraft.plugins.punf.tasks.SpotChainResultHandler;
+import org.workcraft.plugins.punf.tasks.SpotChainResultHandlingMonitor;
 import org.workcraft.plugins.punf.tasks.SpotChainTask;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.presets.PresetManager;
@@ -55,7 +55,7 @@ public class SpotAssertionVerificationCommand extends AbstractVerificationComman
         TextPresetDialog dialog = new TextPresetDialog(mainWindow, "SPOT assertion", presetManager);
         if (dialog.reveal()) {
             preservedData = dialog.getPresetData();
-            SpotChainResultHandler monitor = new SpotChainResultHandler(we, true);
+            SpotChainResultHandlingMonitor monitor = new SpotChainResultHandlingMonitor(we, true);
             run(we, preservedData, monitor);
         }
     }
@@ -75,7 +75,7 @@ public class SpotAssertionVerificationCommand extends AbstractVerificationComman
 
     @Override
     public Boolean execute(WorkspaceEntry we, String data) {
-        SpotChainResultHandler monitor = new SpotChainResultHandler(we, false);
+        SpotChainResultHandlingMonitor monitor = new SpotChainResultHandlingMonitor(we, false);
         run(we, data, monitor);
         return monitor.waitForHandledResult();
     }

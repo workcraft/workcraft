@@ -1,12 +1,10 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.Framework;
-import org.workcraft.utils.WorkUtils;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.dialogs.ReachibilityDialog;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
-import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.utils.EnablednessUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -23,13 +21,14 @@ import org.workcraft.traces.Trace;
 import org.workcraft.types.Triple;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.WorkUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.*;
 
-public class ConformationNwayOutputHandler extends ConformationOutputHandler {
+public class ConformationNwayOutputInterpreter extends ConformationOutputInterpreter {
 
     // Right arrow symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
     public static final String RIGHT_ARROW_SYMBOL = Character.toString((char) 0x2192);
@@ -60,10 +59,10 @@ public class ConformationNwayOutputHandler extends ConformationOutputHandler {
 
     private final List<WorkspaceEntry> wes;
 
-    ConformationNwayOutputHandler(ArrayList<WorkspaceEntry> wes, ExportOutput exportOutput,
-            PcompOutput pcompOutput, VerificationOutput mpsatOutput, VerificationParameters verificationParameters) {
+    ConformationNwayOutputInterpreter(ArrayList<WorkspaceEntry> wes, ExportOutput exportOutput,
+            PcompOutput pcompOutput, VerificationOutput mpsatOutput,  boolean interactive) {
 
-        super(wes.get(0), exportOutput, pcompOutput, mpsatOutput, verificationParameters);
+        super(wes.get(0), exportOutput, pcompOutput, mpsatOutput, interactive);
         this.wes = wes;
     }
 
@@ -86,31 +85,38 @@ public class ConformationNwayOutputHandler extends ConformationOutputHandler {
     }
 
     @Override
-    public void run() {
+    public Boolean interpret() {
+        if (getOutput() == null) {
+            return null;
+        }
         List<Solution> solutions = getSolutions();
-        boolean isConformant = solutions.isEmpty();
-        String message = getMessage(!isConformant);
-        if (isConformant) {
+        boolean propertyHolds = solutions.isEmpty();
+        String message = getMessage(propertyHolds);
+        if (propertyHolds) {
             DialogUtils.showInfo(message, TITLE);
         } else {
             LogUtils.logWarning(message);
             reportSolutions(solutions);
             Framework framework = Framework.getInstance();
-            MainWindow mainWindow = framework.getMainWindow();
-            for (WorkspaceEntry we : wes) {
-                List<Solution> processedSolutions = processSolutions(we, solutions);
-                if (!processedSolutions.isEmpty() && framework.isInGuiMode()) {
-                    mainWindow.requestFocus(we);
-                    String title = TITLE + " for model '" + we.getTitle() + "'";
-                    String extendedMessage = extendMessage(message);
-                    ReachibilityDialog solutionsDialog = new ReachibilityDialog(
-                            mainWindow, we, title, extendedMessage, processedSolutions);
+            if (isInteractive() && framework.isInGuiMode()) {
+                MainWindow mainWindow = framework.getMainWindow();
+                for (WorkspaceEntry we : wes) {
+                    List<Solution> processedSolutions = processSolutions(we, solutions);
+                    if (!processedSolutions.isEmpty() && framework.isInGuiMode()) {
+                        mainWindow.requestFocus(we);
+                        String title = TITLE + " for model '" + we.getTitle() + "'";
+                        String extendedMessage = extendMessage(message);
+                        ReachibilityDialog solutionsDialog = new ReachibilityDialog(
+                                mainWindow, we, title, extendedMessage, processedSolutions);
 
-                    solutionsDialog.reveal();
+                        solutionsDialog.reveal();
+                    }
                 }
             }
         }
+        return propertyHolds;
     }
+
     @Override
     public void reportSolutions(List<Solution> solutions) {
         if (MpsatVerificationSettings.getConformationReportStyle() == ConformationReportStyle.BRIEF) {
@@ -188,7 +194,7 @@ public class ConformationNwayOutputHandler extends ConformationOutputHandler {
 
     private String findUnexpectedOutputAfterTrace(Trace compTrace, Map<WorkspaceEntry, Trace> workToTraceMap) {
         // Find output enabled in component STG that is not enabled in the composition STG
-        StgModel compStg = getMpsatOutput().getInputStg();
+        StgModel compStg = getOutput().getInputStg();
         Enabledness compEnabledness = EnablednessUtils.getOutputEnablednessAfterTrace(compStg, compTrace);
         for (WorkspaceEntry we : wes) {
             StgModel stg = getSrcStg(we);
@@ -246,13 +252,13 @@ public class ConformationNwayOutputHandler extends ConformationOutputHandler {
         Map<WorkspaceEntry, Trace> workToTagsMap = new HashMap<>();
         for (WorkspaceEntry we : wes) {
             Trace projTrace = workToTraceMap.get(we);
-            Trace tags = getTraceTags(projTrace, unexpectedEvent, we);
+            Trace tags = getTraceTags(we, projTrace, unexpectedEvent);
             workToTagsMap.put(we, tags);
         }
         return workToTagsMap;
     }
 
-    private Trace getTraceTags(Trace projTrace, String unexpectedEvent, WorkspaceEntry we) {
+    private Trace getTraceTags(WorkspaceEntry we, Trace projTrace, String unexpectedEvent) {
         Trace result = new Trace();
         StgModel stg = getSrcStg(we);
         for (String ref : projTrace) {

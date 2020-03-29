@@ -6,8 +6,7 @@ import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.tasks.CheckTask;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
+import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.utils.StgUtils;
@@ -39,22 +38,21 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand
 
     @Override
     public void run(WorkspaceEntry we) {
-        queueVerification(we);
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
+        queueVerification(we, monitor);
     }
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        VerificationChainResultHandler monitor = queueVerification(we);
-        Result<? extends VerificationChainOutput> result = null;
-        if (monitor != null) {
-            result = monitor.waitResult();
-        }
-        return MpsatUtils.getChainOutcome(result);
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
+        queueVerification(we, monitor);
+        return MpsatUtils.getChainOutcome(monitor.waitResult());
     }
 
-    private VerificationChainResultHandler queueVerification(WorkspaceEntry we) {
+    private void queueVerification(WorkspaceEntry we, VerificationChainResultHandlingMonitor monitor) {
         if (!checkPrerequisites(we)) {
-            return null;
+            monitor.isFinished(Result.failure());
+            return;
         }
         // Adjust the set of checked properties depending on availability of environment STG
         boolean checkConformation = checkConformation();
@@ -69,12 +67,14 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand
             if (!noDummies && checkPersistency) {
                 if (!checkConformation && !checkDeadlock) {
                     DialogUtils.showError("Output persistency can currently be checked only for environment STGs without dummies.");
-                    return null;
+                    monitor.isFinished(Result.failure());
+                    return;
                 } else {
                     String msg = "Output persistency can currently be checked only for environment STGs without dummies.\n\n" +
                             "Proceed with verification of other properties?";
                     if (!DialogUtils.showConfirmWarning(msg, "Verification", true)) {
-                        return null;
+                        monitor.isFinished(Result.failure());
+                        return;
                     }
                     checkPersistency = false;
                 }
@@ -98,15 +98,14 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand
             }
         }
         if (!checkConformation && !checkDeadlock && !checkPersistency) {
-            return null;
+            monitor.isFinished(Result.failure());
+            return;
         }
         Framework framework = Framework.getInstance();
         TaskManager manager = framework.getTaskManager();
         CheckTask task = new CheckTask(we, checkConformation, checkDeadlock, checkPersistency);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
-        VerificationChainResultHandler monitor = new VerificationChainResultHandler(we);
         manager.queue(task, description, monitor);
-        return monitor;
     }
 
     private boolean checkPrerequisites(WorkspaceEntry we) {

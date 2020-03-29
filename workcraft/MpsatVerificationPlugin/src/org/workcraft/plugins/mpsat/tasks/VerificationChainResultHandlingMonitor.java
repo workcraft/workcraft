@@ -1,7 +1,6 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import org.workcraft.utils.TraceUtils;
-import org.workcraft.traces.Solution;
+import org.workcraft.Framework;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.tasks.PunfOutputParser.Cause;
@@ -9,21 +8,23 @@ import org.workcraft.plugins.mpsat.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.tasks.AbstractResultHandler;
+import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.traces.Solution;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.TraceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class VerificationChainResultHandler extends AbstractResultHandler<VerificationChainOutput> {
+public class VerificationChainResultHandlingMonitor extends AbstractResultHandlingMonitor<VerificationChainOutput, Boolean> {
 
     private static final String TITLE = "Verification results";
     private static final String CANNOT_VERIFY_PREFIX = "Cannot build unfolding prefix";
@@ -33,38 +34,47 @@ public class VerificationChainResultHandler extends AbstractResultHandler<Verifi
 
     private final ArrayList<WorkspaceEntry> wes = new ArrayList<>();
     private final WorkspaceEntry we;
-    private final Collection<Mutex> mutexes;
+    private final boolean interactive;
 
-    public VerificationChainResultHandler(List<WorkspaceEntry> wes) {
-        this(wes.get(0), null);
+    private Collection<Mutex> mutexes;
+
+    public VerificationChainResultHandlingMonitor(List<WorkspaceEntry> wes) {
+        this(wes.get(0), true);
         this.wes.addAll(wes);
     }
 
-    public VerificationChainResultHandler(WorkspaceEntry we) {
-        this(we, null);
+    public VerificationChainResultHandlingMonitor(WorkspaceEntry we, boolean interactive) {
+        this.we = we;
+        this.interactive = interactive;
     }
 
-    public VerificationChainResultHandler(WorkspaceEntry we, Collection<Mutex> mutexes) {
-        this.we = we;
-        this.mutexes = mutexes;
+    public boolean isInteractive() {
+        return interactive && Framework.getInstance().isInGuiMode();
     }
 
     public Collection<Mutex> getMutexes() {
         return mutexes;
     }
 
+    public void setMutexes(Collection<Mutex> mutexes) {
+        this.mutexes = mutexes;
+    }
+
     @Override
-    public void handleResult(final Result<? extends VerificationChainOutput> result) {
+    public Boolean handle(final Result<? extends VerificationChainOutput> result) {
         if (result.getOutcome() == Outcome.SUCCESS) {
-            handleSuccess(result);
-        } else if (result.getOutcome() == Outcome.FAILURE) {
+            return handleSuccess(result);
+        }
+
+        if (result.getOutcome() == Outcome.FAILURE) {
             if (!handlePartialFailure(result)) {
                 handleFailure(result);
             }
         }
+        return null;
     }
 
-    private void handleSuccess(final Result<? extends VerificationChainOutput> chainResult) {
+    private Boolean handleSuccess(final Result<? extends VerificationChainOutput> chainResult) {
         VerificationChainOutput chainOutput = chainResult.getPayload();
         Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
         ExportOutput exportOutput = (exportResult == null) ? null : exportResult.getPayload();
@@ -72,62 +82,67 @@ public class VerificationChainResultHandler extends AbstractResultHandler<Verifi
         PcompOutput pcompOutput = (pcompResult == null) ? null : pcompResult.getPayload();
         Result<? extends VerificationOutput> mpsatResult = (chainOutput == null) ? null : chainOutput.getMpsatResult();
         VerificationOutput mpsatOutput = (mpsatResult == null) ? null : mpsatResult.getPayload();
-        VerificationParameters mpsatSettings = chainOutput.getMpsatSettings();
-        switch (mpsatSettings.getMode()) {
+        VerificationParameters verificationParameters = chainOutput.getVerificationParameters();
+
+        switch (verificationParameters.getMode()) {
         case UNDEFINED:
             String undefinedMessage = chainOutput.getMessage();
-            if ((undefinedMessage == null) && (mpsatSettings != null) && (mpsatSettings.getName() != null)) {
-                undefinedMessage = mpsatSettings.getName();
+            if ((undefinedMessage == null) && (verificationParameters.getName() != null)) {
+                undefinedMessage = verificationParameters.getName();
             }
-            SwingUtilities.invokeLater(new UndefinedResultHandler(undefinedMessage));
-            break;
+            if (isInteractive()) {
+                DialogUtils.showInfo(undefinedMessage, "Verification results");
+            } else {
+                LogUtils.logInfo(undefinedMessage);
+            }
+            return true;
+
         case REACHABILITY:
         case STG_REACHABILITY:
         case NORMALCY:
         case ASSERTION:
-//            SwingUtilities.invokeLater(new ReachabilityOutputHandler(we, mpsatOutput, mpsatSettings));
-            new ReachabilityOutputHandler(we, mpsatOutput, mpsatSettings).run();
-            break;
+            return new ReachabilityOutputInterpreter(we, exportOutput, pcompOutput, mpsatOutput, isInteractive())
+                    .interpret();
+
         case REACHABILITY_REDUNDANCY:
-//            SwingUtilities.invokeLater(new RedundancyOutputHandler(we, mpsatOutput, mpsatSettings));
-            new RedundancyOutputHandler(we, mpsatOutput, mpsatSettings).run();
-            break;
+            return new RedundancyOutputInterpreter(we, exportOutput, pcompOutput, mpsatOutput, isInteractive())
+                    .interpret();
+
         case DEADLOCK:
-//            SwingUtilities.invokeLater(new DeadlockFreenessOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
-            new DeadlockFreenessOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings).run();
-            break;
+            return new DeadlockFreenessOutputInterpreter(we, exportOutput, pcompOutput, mpsatOutput, isInteractive())
+                    .interpret();
+
         case STG_REACHABILITY_CONSISTENCY:
-//            SwingUtilities.invokeLater(new ConsistencyOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
-            new ConsistencyOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings).run();
-            break;
+            return new ConsistencyOutputInterpreter(we, exportOutput, pcompOutput, mpsatOutput, isInteractive())
+                    .interpret();
+
         case STG_REACHABILITY_OUTPUT_PERSISTENCY:
-//            SwingUtilities.invokeLater(new OutputPersistencyOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
-            new OutputPersistencyOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings).run();
-            break;
+            return new OutputPersistencyOutputInterpreter(we, exportOutput, pcompOutput, mpsatOutput, isInteractive())
+                    .interpret();
+
         case STG_REACHABILITY_OUTPUT_DETERMINACY:
-//            SwingUtilities.invokeLater(new OutputDeterminacyOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
-            new OutputDeterminacyOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings).run();
-            break;
+            return new OutputDeterminacyOutputInterpreter(we, exportOutput, pcompOutput, mpsatOutput, isInteractive())
+                    .interpret();
+
         case STG_REACHABILITY_CONFORMATION:
-//            SwingUtilities.invokeLater(new ConformationOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
-            new ConformationOutputHandler(we, exportOutput, pcompOutput, mpsatOutput, mpsatSettings).run();
-            break;
+            return new ConformationOutputInterpreter(we, exportOutput, pcompOutput, mpsatOutput, isInteractive())
+                    .interpret();
+
         case STG_REACHABILITY_CONFORMATION_NWAY:
-//            SwingUtilities.invokeLater(new ConformationNwayOutputHandler(wes, exportOutput, pcompOutput, mpsatOutput, mpsatSettings));
-            new ConformationNwayOutputHandler(wes, exportOutput, pcompOutput, mpsatOutput, mpsatSettings).run();
-            break;
+            return new ConformationNwayOutputInterpreter(wes, exportOutput, pcompOutput, mpsatOutput, isInteractive())
+                    .interpret();
+
         case CSC_CONFLICT_DETECTION:
         case USC_CONFLICT_DETECTION:
-//            SwingUtilities.invokeLater(new EncodingConflictOutputHandler(we, mpsatOutput));
-            new EncodingConflictOutputHandler(we, mpsatOutput).run();
-            break;
+            return new EncodingConflictOutputHandler(we, mpsatOutput, isInteractive()).interpret();
+
         case RESOLVE_ENCODING_CONFLICTS:
-//            SwingUtilities.invokeLater(new CscConflictResolutionOutputHandler(we, mpsatOutput, mutexes));
             new CscConflictResolutionOutputHandler(we, mpsatOutput, mutexes).run();
-            break;
+            return null;
+
         default:
-            DialogUtils.showError(mpsatSettings.getMode() + " is not (yet) supported.");
-            break;
+            DialogUtils.showError(verificationParameters.getMode() + " is not supported in verification.");
+            return null;
         }
     }
 
@@ -144,19 +159,21 @@ public class VerificationChainResultHandler extends AbstractResultHandler<Verifi
             if (punfOutcome != null) {
                 Solution solution = punfOutcome.getFirst();
                 Cause cause = punfOutcome.getSecond();
-                VerificationParameters mpsatSettings = chainOutput.getMpsatSettings();
+                VerificationParameters verificationParameters = chainOutput.getVerificationParameters();
                 boolean isConsistencyCheck = (cause == Cause.INCONSISTENT)
-                        && (mpsatSettings.getMode() == VerificationMode.STG_REACHABILITY_CONSISTENCY);
+                        && (verificationParameters.getMode() == VerificationMode.STG_REACHABILITY_CONSISTENCY);
 
                 if (isConsistencyCheck) {
                     PcompOutput pcompOutput = (pcompResult == null) ? null : pcompResult.getPayload();
                     int cost = solution.getMainTrace().size();
                     String mpsatFakeStdout = "SOLUTION 0\n" + solution + "\npath cost: " + cost + "\n";
-                    VerificationOutput mpsatFakeOutput = new VerificationOutput(new ExternalProcessOutput(0, mpsatFakeStdout.getBytes(), new byte[0]));
+                    VerificationOutput mpsatFakeOutput = new VerificationOutput(
+                            new ExternalProcessOutput(0, mpsatFakeStdout.getBytes(), new byte[0]),
+                            null, null, ReachUtils.getConsistencyParameters());
+
                     Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
                     ExportOutput exportOutput = (exportResult == null) ? null : exportResult.getPayload();
-                    SwingUtilities.invokeLater(new ConsistencyOutputHandler(
-                            we, exportOutput, pcompOutput, mpsatFakeOutput, ReachUtils.getConsistencySettings()));
+                    new ConsistencyOutputInterpreter(we, exportOutput, pcompOutput, mpsatFakeOutput, interactive).interpret();
                 } else {
                     String comment = solution.getComment();
                     String message = CANNOT_VERIFY_PREFIX;
@@ -171,7 +188,7 @@ public class VerificationChainResultHandler extends AbstractResultHandler<Verifi
                         break;
                     case NOT_SAFE:
                         message += " for the unsafe net.\n\n";
-                        message +=  comment + AFTER_THE_TRACE_SUFFIX;
+                        message += comment + AFTER_THE_TRACE_SUFFIX;
                         message += solution + ASK_SIMULATE_SUFFIX;
                         if (DialogUtils.showConfirmError(message)) {
                             TraceUtils.playSolution(we, solution);

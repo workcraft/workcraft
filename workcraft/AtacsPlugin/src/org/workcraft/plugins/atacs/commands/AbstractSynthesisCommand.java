@@ -2,7 +2,7 @@ package org.workcraft.plugins.atacs.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.plugins.atacs.AtacsSettings;
-import org.workcraft.plugins.atacs.tasks.SynthesisResultHandler;
+import org.workcraft.plugins.atacs.tasks.SynthesisResultHandlingMonitor;
 import org.workcraft.plugins.atacs.tasks.SynthesisTask;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.SignalTransition;
@@ -38,14 +38,14 @@ public abstract class AbstractSynthesisCommand extends org.workcraft.commands.Ab
     @Override
     public WorkspaceEntry execute(WorkspaceEntry we) {
         WorkspaceEntry result = null;
-        SynthesisResultHandler monitor = queueSynthesis(we);
+        SynthesisResultHandlingMonitor monitor = queueSynthesis(we);
         if (monitor != null) {
             result = monitor.waitForHandledResult();
         }
         return result;
     }
 
-    private SynthesisResultHandler queueSynthesis(WorkspaceEntry we) {
+    private SynthesisResultHandlingMonitor queueSynthesis(WorkspaceEntry we) {
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         HashSet<String> signalRefs = getSignalsWithToggleTransitions(stg);
         if (!signalRefs.isEmpty()) {
@@ -61,7 +61,7 @@ public abstract class AbstractSynthesisCommand extends org.workcraft.commands.Ab
         Framework framework = Framework.getInstance();
         TaskManager taskManager = framework.getTaskManager();
         SynthesisTask task = new SynthesisTask(we, getSynthesisParameter(), mutexes);
-        SynthesisResultHandler monitor = new SynthesisResultHandler(we,
+        SynthesisResultHandlingMonitor monitor = new SynthesisResultHandlingMonitor(we,
                 boxSequentialComponents(), boxCombinationalComponents(), sequentialAssign(),
                 mutexes);
 

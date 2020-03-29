@@ -1,20 +1,20 @@
 package org.workcraft.plugins.punf.tasks;
 
-import org.workcraft.tasks.AbstractExtendedResultHandler;
+import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class SpotChainResultHandler extends AbstractExtendedResultHandler<SpotChainOutput, Boolean> {
+public class SpotChainResultHandlingMonitor extends AbstractResultHandlingMonitor<SpotChainOutput, Boolean> {
 
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
 
     private final WorkspaceEntry we;
     private final boolean interactive;
 
-    public SpotChainResultHandler(WorkspaceEntry we,  boolean interactive) {
+    public SpotChainResultHandlingMonitor(WorkspaceEntry we,  boolean interactive) {
         this.we = we;
         this.interactive = interactive;
     }
@@ -24,7 +24,8 @@ public class SpotChainResultHandler extends AbstractExtendedResultHandler<SpotCh
         if (chainResult.getOutcome() == Outcome.SUCCESS) {
             SpotChainOutput chainOutput = chainResult.getPayload();
             Result<? extends PunfOutput> punfResult = (chainOutput == null) ? null : chainOutput.getPunfResult();
-            return new PunfLtlxOutputHandler(we, interactive).handle(punfResult);
+            PunfOutput punfOutput = (punfResult == null) ? null : punfResult.getPayload();
+            return new PunfLtlxOutputInterpreter(we, punfOutput, interactive).interpret();
         }
 
         if (chainResult.getOutcome() == Outcome.FAILURE) {

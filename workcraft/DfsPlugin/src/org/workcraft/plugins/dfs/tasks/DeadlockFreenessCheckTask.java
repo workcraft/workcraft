@@ -82,8 +82,7 @@ public class DeadlockFreenessCheckTask implements Task<VerificationChainOutput> 
             }
             monitor.progressUpdate(0.70);
 
-            VerificationTask verificationTask = new VerificationTask(verificationParameters.getMpsatArguments(directory),
-                    unfoldingFile, directory, netFile);
+            VerificationTask verificationTask = new VerificationTask(unfoldingFile, netFile, verificationParameters, directory);
             Result<? extends VerificationOutput> mpsatResult = framework.getTaskManager().execute(
                     verificationTask, "Running deadlock checking [MPSat]", mon);
 
@@ -97,7 +96,8 @@ public class DeadlockFreenessCheckTask implements Task<VerificationChainOutput> 
             }
             monitor.progressUpdate(0.90);
 
-            VerificationOutputParser mdp = new VerificationOutputParser(mpsatResult.getPayload());
+            String mpsatStdout = mpsatResult.getPayload().getStdoutString();
+            VerificationOutputParser mdp = new VerificationOutputParser(mpsatStdout);
             if (!mdp.getSolutions().isEmpty()) {
                 return new Result<>(Outcome.SUCCESS,
                         new VerificationChainOutput(exportResult, null, punfResult, mpsatResult, verificationParameters, "Dataflow has a deadlock"));

@@ -52,7 +52,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         String stgFileExtension = StgFormat.getInstance().getExtension();
-        VerificationParameters preparationSettings = ReachUtils.getToolchainPreparationSettings();
+        VerificationParameters preparationParameters = ReachUtils.getToolchainPreparationParameters();
         try {
             // Common variables
             VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
@@ -91,7 +91,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(devExportResult, null, null, null, preparationSettings));
+                        new VerificationChainOutput(devExportResult, null, null, null, preparationParameters));
             }
             monitor.progressUpdate(0.1);
 
@@ -110,7 +110,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                             return new Result<>(Outcome.CANCEL);
                         }
                         return new Result<>(Outcome.FAILURE,
-                                new VerificationChainOutput(envExportResult, null, null, null, preparationSettings));
+                                new VerificationChainOutput(envExportResult, null, null, null, preparationParameters));
                     }
 
                     // Generating .g for the whole system (circuit and environment)
@@ -122,7 +122,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                             return new Result<>(Outcome.CANCEL);
                         }
                         return new Result<>(Outcome.FAILURE,
-                                new VerificationChainOutput(devExportResult, pcompResult, null, null, preparationSettings));
+                                new VerificationChainOutput(devExportResult, pcompResult, null, null, preparationParameters));
                     }
                 }
                 // Restore the original types of mutex grant in system STG
@@ -159,7 +159,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                             return new Result<>(Outcome.CANCEL);
                         }
                         return new Result<>(Outcome.FAILURE,
-                                new VerificationChainOutput(envModExportResult, null, null, null, preparationSettings));
+                                new VerificationChainOutput(envModExportResult, null, null, null, preparationParameters));
                     }
 
                     // Generating .g for the whole system (circuit and environment) without internal signals
@@ -171,7 +171,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                             return new Result<>(Outcome.CANCEL);
                         }
                         return new Result<>(Outcome.FAILURE,
-                                new VerificationChainOutput(devExportResult, pcompModResult, null, null, preparationSettings));
+                                new VerificationChainOutput(devExportResult, pcompModResult, null, null, preparationParameters));
                     }
                     // Restore the original types of mutex grant in modified system STG
                     Stg sysModStg = StgUtils.loadStg(sysModStgFile);
@@ -201,7 +201,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                         return new Result<>(Outcome.CANCEL);
                     }
                     return new Result<>(Outcome.FAILURE,
-                            new VerificationChainOutput(devExportResult, pcompResult, punfResult, null, preparationSettings));
+                            new VerificationChainOutput(devExportResult, pcompResult, punfResult, null, preparationParameters));
                 }
             }
 
@@ -221,7 +221,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                             return new Result<>(Outcome.CANCEL);
                         }
                         return new Result<>(Outcome.FAILURE,
-                                new VerificationChainOutput(devExportResult, pcompModResult, punfModResult, null, preparationSettings));
+                                new VerificationChainOutput(devExportResult, pcompModResult, punfModResult, null, preparationParameters));
                     }
                 }
             }
@@ -232,9 +232,8 @@ public class CheckTask implements Task<VerificationChainOutput> {
                 CompositionData compositionData = new CompositionData(detailModFile);
                 ComponentData devComponentData = compositionData.getComponentData(devStgFile);
                 Set<String> devPlaceNames = devComponentData.getDstPlaces();
-                VerificationParameters conformationSettings = ReachUtils.getConformationSettings(devPlaceNames);
-                VerificationTask mpsatConformationTask = new VerificationTask(conformationSettings.getMpsatArguments(directory),
-                        unfoldingModFile, directory, sysModStgFile);
+                VerificationParameters conformationParameters = ReachUtils.getConformationParameters(devPlaceNames);
+                VerificationTask mpsatConformationTask = new VerificationTask(unfoldingModFile, sysModStgFile, conformationParameters, directory);
                 SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
                 Result<? extends VerificationOutput>  mpsatConformationResult = manager.execute(
                         mpsatConformationTask, "Running conformation check [MPSat]", mpsatMonitor);
@@ -244,14 +243,15 @@ public class CheckTask implements Task<VerificationChainOutput> {
                         return new Result<>(Outcome.CANCEL);
                     }
                     return new Result<>(Outcome.FAILURE,
-                            new VerificationChainOutput(devExportResult, pcompModResult, punfModResult, mpsatConformationResult, conformationSettings));
+                            new VerificationChainOutput(devExportResult, pcompModResult, punfModResult, mpsatConformationResult, conformationParameters));
                 }
                 monitor.progressUpdate(0.5);
 
-                VerificationOutputParser mpsatConformationParser = new VerificationOutputParser(mpsatConformationResult.getPayload());
+                String mpsatConformationStdout = mpsatConformationResult.getPayload().getStdoutString();
+                VerificationOutputParser mpsatConformationParser = new VerificationOutputParser(mpsatConformationStdout);
                 if (!mpsatConformationParser.getSolutions().isEmpty()) {
                     return new Result<>(Outcome.SUCCESS,
-                            new VerificationChainOutput(devExportResult, pcompModResult, punfModResult, mpsatConformationResult, conformationSettings,
+                            new VerificationChainOutput(devExportResult, pcompModResult, punfModResult, mpsatConformationResult, conformationParameters,
                                     "Circuit does not conform to the environment after the following trace(s):"));
                 }
             }
@@ -259,9 +259,8 @@ public class CheckTask implements Task<VerificationChainOutput> {
 
             // Check for deadlock (if requested)
             if (checkDeadlock) {
-                VerificationParameters deadlockSettings = ReachUtils.getDeadlockSettings();
-                VerificationTask mpsatDeadlockTask = new VerificationTask(deadlockSettings.getMpsatArguments(directory),
-                        unfoldingFile, directory, sysStgFile);
+                VerificationParameters deadlockParameters = ReachUtils.getDeadlockParameters();
+                VerificationTask mpsatDeadlockTask = new VerificationTask(unfoldingFile, sysStgFile, deadlockParameters, directory);
                 SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
                 Result<? extends VerificationOutput> mpsatDeadlockResult = manager.execute(
                         mpsatDeadlockTask, "Running deadlock check [MPSat]", mpsatMonitor);
@@ -271,14 +270,15 @@ public class CheckTask implements Task<VerificationChainOutput> {
                         return new Result<>(Outcome.CANCEL);
                     }
                     return new Result<>(Outcome.FAILURE,
-                            new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatDeadlockResult, deadlockSettings));
+                            new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatDeadlockResult, deadlockParameters));
                 }
                 monitor.progressUpdate(0.7);
 
-                VerificationOutputParser mpsatDeadlockParser = new VerificationOutputParser(mpsatDeadlockResult.getPayload());
+                String mpsatDeadlockStdout = mpsatDeadlockResult.getPayload().getStdoutString();
+                VerificationOutputParser mpsatDeadlockParser = new VerificationOutputParser(mpsatDeadlockStdout);
                 if (!mpsatDeadlockParser.getSolutions().isEmpty()) {
                     return new Result<>(Outcome.SUCCESS,
-                            new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatDeadlockResult, deadlockSettings,
+                            new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatDeadlockResult, deadlockParameters,
                                     "Circuit has a deadlock after the following trace(s):"));
                 }
             }
@@ -286,9 +286,8 @@ public class CheckTask implements Task<VerificationChainOutput> {
 
             // Check for persistency (if requested)
             if (checkPersistency) {
-                VerificationParameters persistencySettings = ReachUtils.getOutputPersistencySettings(grantPairs);
-                VerificationTask mpsatPersistencyTask = new VerificationTask(persistencySettings.getMpsatArguments(directory),
-                        unfoldingFile, directory, sysStgFile);
+                VerificationParameters persistencyParameters = ReachUtils.getOutputPersistencyParameters(grantPairs);
+                VerificationTask mpsatPersistencyTask = new VerificationTask(unfoldingFile, sysStgFile, persistencyParameters, directory);
                 SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
                 Result<? extends VerificationOutput>  mpsatPersistencyResult = manager.execute(
                         mpsatPersistencyTask, "Running output persistency check [MPSat]", mpsatMonitor);
@@ -298,14 +297,15 @@ public class CheckTask implements Task<VerificationChainOutput> {
                         return new Result<>(Outcome.CANCEL);
                     }
                     return new Result<>(Outcome.FAILURE,
-                            new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatPersistencyResult, persistencySettings));
+                            new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatPersistencyResult, persistencyParameters));
                 }
                 monitor.progressUpdate(0.9);
 
-                VerificationOutputParser mpsatPersistencyParser = new VerificationOutputParser(mpsatPersistencyResult.getPayload());
+                String mpsatPersistencyStdout = mpsatPersistencyResult.getPayload().getStdoutString();
+                VerificationOutputParser mpsatPersistencyParser = new VerificationOutputParser(mpsatPersistencyStdout);
                 if (!mpsatPersistencyParser.getSolutions().isEmpty()) {
                     return new Result<>(Outcome.SUCCESS,
-                            new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatPersistencyResult, persistencySettings,
+                            new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatPersistencyResult, persistencyParameters,
                                     "Circuit is not output-persistent after the following trace(s):"));
                 }
             }
@@ -313,10 +313,10 @@ public class CheckTask implements Task<VerificationChainOutput> {
 
             // Success
             Result<? extends VerificationOutput>  mpsatResult = new Result<>(Outcome.SUCCESS);
-            VerificationParameters completionSettings = ReachUtils.getToolchainCompletionSettings();
+            VerificationParameters completionParameters = ReachUtils.getToolchainCompletionParameters();
             String message = getSuccessMessage(envFile);
             return new Result<>(Outcome.SUCCESS,
-                    new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, completionSettings, message));
+                    new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, completionParameters, message));
 
         } catch (Throwable e) {
             return new Result<>(e);

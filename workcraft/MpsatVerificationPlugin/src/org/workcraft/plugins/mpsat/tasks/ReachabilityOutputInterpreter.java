@@ -1,19 +1,20 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.Framework;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.dialogs.ReachibilityDialog;
-import org.workcraft.utils.TraceUtils;
-import org.workcraft.traces.Solution;
-import org.workcraft.traces.Trace;
-import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.utils.StgUtils;
+import org.workcraft.tasks.AbstractOutputInterpreter;
 import org.workcraft.tasks.ExportOutput;
+import org.workcraft.traces.Solution;
+import org.workcraft.traces.Trace;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.TraceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
@@ -23,36 +24,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-class ReachabilityOutputHandler implements Runnable {
+class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<VerificationOutput, Boolean> {
 
     protected static final String TITLE = "Verification results";
 
-    private final WorkspaceEntry we;
-    private ExportOutput exportOutput;
+    private final ExportOutput exportOutput;
     private final PcompOutput pcompOutput;
-    private final VerificationOutput mpsatOutput;
-    private final VerificationParameters verificationParameters;
 
     private CompositionData compositionData = null;
 
-    ReachabilityOutputHandler(WorkspaceEntry we, VerificationOutput mpsatOutput,
-            VerificationParameters verificationParameters) {
+    ReachabilityOutputInterpreter(WorkspaceEntry we, ExportOutput exportOutput,
+            PcompOutput pcompOutput, VerificationOutput mpsatOutput, boolean interactive) {
 
-        this(we, null, null, mpsatOutput, verificationParameters);
-    }
-
-    ReachabilityOutputHandler(WorkspaceEntry we, ExportOutput exportOutput, PcompOutput pcompOutput,
-            VerificationOutput mpsatOutput, VerificationParameters verificationParameters) {
-
-        this.we = we;
+        super(we, mpsatOutput, interactive);
         this.exportOutput = exportOutput;
         this.pcompOutput = pcompOutput;
-        this.mpsatOutput = mpsatOutput;
-        this.verificationParameters = verificationParameters;
-    }
-
-    public WorkspaceEntry getWorkspaceEntry() {
-        return we;
     }
 
     public ExportOutput getExportOutput() {
@@ -63,16 +49,29 @@ class ReachabilityOutputHandler implements Runnable {
         return pcompOutput;
     }
 
-    public VerificationOutput getMpsatOutput() {
-        return mpsatOutput;
+    public void showOutcome(boolean propertyHolds, String message) {
+        if (isInteractive()) {
+            if (propertyHolds) {
+                DialogUtils.showInfo(message, TITLE);
+            } else {
+                DialogUtils.showWarning(message, TITLE);
+            }
+        } else {
+            logOutcome(propertyHolds, message);
+        }
     }
 
-    public VerificationParameters getVerificationParameters() {
-        return verificationParameters;
+    public void logOutcome(boolean propertyHolds, String message) {
+        if (propertyHolds) {
+            LogUtils.logInfo(message);
+        } else {
+            LogUtils.logWarning(message);
+        }
     }
 
     public List<Solution> getSolutions() {
-        VerificationOutputParser mrp = new VerificationOutputParser(getMpsatOutput());
+        String mpsatStdout = getOutput().getStdoutString();
+        VerificationOutputParser mrp = new VerificationOutputParser(mpsatStdout);
         return mrp.getSolutions();
     }
 
@@ -142,7 +141,7 @@ class ReachabilityOutputHandler implements Runnable {
     public StgModel getSrcStg(WorkspaceEntry we) {
         ComponentData data = getCompositionData(we);
         if (data == null) {
-            return getMpsatOutput().getInputStg();
+            return getOutput().getInputStg();
         }
         File file = new File(data.getFileName());
         if ((file != null) && file.exists()) {
@@ -151,46 +150,47 @@ class ReachabilityOutputHandler implements Runnable {
         return null;
     }
 
-    public String getMessage(boolean isSatisfiable) {
-        String propertyName = "Property";
-        if ((getVerificationParameters().getName() != null) && !getVerificationParameters().getName().isEmpty()) {
-            propertyName = getVerificationParameters().getName();
+    public String getMessage(boolean propertyHolds) {
+        String propertyName = getOutput().getVerificationParameters().getName();
+        if ((propertyName == null) || propertyName.isEmpty()) {
+            propertyName = "Property";
         }
-        boolean inversePredicate = getVerificationParameters().getInversePredicate();
-        String propertyStatus = isSatisfiable == inversePredicate ? " is violated." : " holds.";
-        return propertyName + propertyStatus;
+        return propertyName + (propertyHolds ? " holds." :  " is violated.");
     }
 
     public String extendMessage(String message) {
-        String traceCharacteristic = getVerificationParameters().getInversePredicate() ? "problematic" : "sought";
+        boolean inversePredicate = getOutput().getVerificationParameters().getInversePredicate();
+        String traceCharacteristic = inversePredicate ? "problematic" : "sought";
         String traceInfo = "Trace(s) leading to the " + traceCharacteristic + " state(s):";
         return "<html>" + message + "<br><br>" + traceInfo + "</html>";
     }
 
     @Override
-    public void run() {
+    public Boolean interpret() {
+        if (getOutput() == null) {
+            return null;
+        }
         List<Solution> solutions = getSolutions();
-        boolean isSatisfiable = TraceUtils.hasTraces(solutions);
-        String message = getMessage(isSatisfiable);
-        if (!isSatisfiable) {
-            if (getVerificationParameters().getInversePredicate()) {
-                DialogUtils.showInfo(message, TITLE);
-            } else {
-                DialogUtils.showWarning(message, TITLE);
-            }
+        boolean predicateSatisfiable = TraceUtils.hasTraces(solutions);
+        boolean inversePredicate = getOutput().getVerificationParameters().getInversePredicate();
+        boolean propertyHolds = predicateSatisfiable != inversePredicate;
+        String message = getMessage(propertyHolds);
+        if (!predicateSatisfiable) {
+            showOutcome(propertyHolds, message);
         } else {
-            LogUtils.logWarning(message);
+            logOutcome(propertyHolds, message);
             reportSolutions(solutions);
             List<Solution> processedSolutions = processSolutions(getWorkspaceEntry(), solutions);
-            Framework framework = Framework.getInstance();
-            if (framework.isInGuiMode()) {
+            if (isInteractive()) {
                 message = extendMessage(message);
+                MainWindow mainWindow = Framework.getInstance().getMainWindow();
                 ReachibilityDialog solutionsDialog = new ReachibilityDialog(
-                        framework.getMainWindow(), getWorkspaceEntry(), TITLE, message, processedSolutions);
+                        mainWindow, getWorkspaceEntry(), TITLE, message, processedSolutions);
 
                 solutionsDialog.reveal();
             }
         }
+        return propertyHolds;
     }
 
 }

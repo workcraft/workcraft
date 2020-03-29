@@ -43,12 +43,12 @@ public class CustomAssertionVerificationCommandTests {
         Assert.assertFalse(reachAssertion.execute(we, reachAssertion.deserialiseData("$S\"dsr\" ^ $S\"dsw\"")));
         Assert.assertTrue(reachAssertion.execute(we, reachAssertion.deserialiseData("$S\"dsr\" & $S\"dsw\"")));
 
-        // FIXME: Should be True because of the inversePredicate=false
-        Assert.assertFalse(reachAssertion.execute(we, reachAssertion.deserialiseData(
-                "<settings inversePredicate=\"true\"><reach>$S\"dsr\" ^ $S\"dsw\"</reach></settings>")));
-
-        // FIXME: Should be False because of the inversePredicate=false
+        // Should be True because of the inversePredicate=false
         Assert.assertTrue(reachAssertion.execute(we, reachAssertion.deserialiseData(
+                "<settings inversePredicate=\"false\"><reach>$S\"dsr\" ^ $S\"dsw\"</reach></settings>")));
+
+        // Should be False because of the inversePredicate=false
+        Assert.assertFalse(reachAssertion.execute(we, reachAssertion.deserialiseData(
                 "<settings inversePredicate=\"false\"><reach>$S\"dsr\" &amp; $S\"dsw\"</reach></settings>")));
     }
 

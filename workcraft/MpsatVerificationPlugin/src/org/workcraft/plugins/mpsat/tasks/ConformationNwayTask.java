@@ -1,7 +1,6 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.Framework;
-import org.workcraft.utils.WorkUtils;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
@@ -19,6 +18,7 @@ import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.WorkUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -75,7 +75,7 @@ public class ConformationNwayTask implements Task<VerificationChainOutput> {
         String prefix = FileUtils.getTempPrefix("-nway_conformation");
         File directory = FileUtils.createTempDirectory(prefix);
         String stgFileExtension = StgFormat.getInstance().getExtension();
-        VerificationParameters preparationSettings = ReachUtils.getToolchainPreparationSettings();
+        VerificationParameters preparationParameters = ReachUtils.getToolchainPreparationParameters();
         try {
             List<File> stgFiles = new ArrayList<>();
             List<Map<String, String>> substitutes = new ArrayList<>();
@@ -96,7 +96,7 @@ public class ConformationNwayTask implements Task<VerificationChainOutput> {
                         return new Result<>(Outcome.CANCEL);
                     }
                     return new Result<>(Outcome.FAILURE,
-                            new VerificationChainOutput(exportResult, null, null, null, preparationSettings));
+                            new VerificationChainOutput(exportResult, null, null, null, preparationParameters));
                 }
             }
             Result<MultiSubExportOutput> multiExportResult = new Result<>(new MultiSubExportOutput(stgFiles, substitutes));
@@ -116,7 +116,7 @@ public class ConformationNwayTask implements Task<VerificationChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(multiExportResult, pcompResult, null, null, preparationSettings));
+                        new VerificationChainOutput(multiExportResult, pcompResult, null, null, preparationParameters));
             }
             monitor.progressUpdate(0.50);
 
@@ -138,14 +138,13 @@ public class ConformationNwayTask implements Task<VerificationChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(modSysExportResult, pcompResult, punfResult, null, preparationSettings));
+                        new VerificationChainOutput(modSysExportResult, pcompResult, punfResult, null, preparationParameters));
             }
             monitor.progressUpdate(0.60);
 
             // Check for conformation
-            VerificationParameters mpsatSettings = getSettings(shadowTransitions);
-            VerificationTask verificationTask = new VerificationTask(mpsatSettings.getMpsatArguments(directory),
-                    unfoldingFile, directory, sysStgFile);
+            VerificationParameters verificationParameters = getVerificationParameters(shadowTransitions);
+            VerificationTask verificationTask = new VerificationTask(unfoldingFile, sysStgFile, verificationParameters, directory);
             Result<? extends VerificationOutput>  mpsatResult = taskManager.execute(
                     verificationTask, "Running conformation check [MPSat]", new SubtaskMonitor<>(monitor));
 
@@ -154,14 +153,15 @@ public class ConformationNwayTask implements Task<VerificationChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(modSysExportResult, pcompResult, punfResult, mpsatResult, mpsatSettings));
+                        new VerificationChainOutput(modSysExportResult, pcompResult, punfResult, mpsatResult, verificationParameters));
             }
             monitor.progressUpdate(0.80);
 
-            VerificationOutputParser mpsatParser = new VerificationOutputParser(mpsatResult.getPayload());
+            String mpsatStdout = mpsatResult.getPayload().getStdoutString();
+            VerificationOutputParser mpsatParser = new VerificationOutputParser(mpsatStdout);
             if (!mpsatParser.getSolutions().isEmpty()) {
                 return new Result<>(Outcome.SUCCESS,
-                        new VerificationChainOutput(multiExportResult, pcompResult, punfResult, mpsatResult, mpsatSettings,
+                        new VerificationChainOutput(multiExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,
                                 "This model does not conform to the environment."));
             }
             monitor.progressUpdate(1.0);
@@ -169,7 +169,7 @@ public class ConformationNwayTask implements Task<VerificationChainOutput> {
             // Success
             String message = "N-way conformation holds.";
             return new Result<>(Outcome.SUCCESS,
-                    new VerificationChainOutput(multiExportResult, pcompResult, punfResult, mpsatResult, mpsatSettings, message));
+                    new VerificationChainOutput(multiExportResult, pcompResult, punfResult, mpsatResult, verificationParameters, message));
 
         } catch (Throwable e) {
             return new Result<>(e);
@@ -178,7 +178,7 @@ public class ConformationNwayTask implements Task<VerificationChainOutput> {
         }
     }
 
-    private VerificationParameters getSettings(Set<String> shadowTransitionNames) {
+    private VerificationParameters getVerificationParameters(Set<String> shadowTransitionNames) {
         String str = shadowTransitionNames.stream().map(ref -> "\"" + ref + "\", ").collect(Collectors.joining());
         String reachConformationNway = REACH_CONFORMATION_NWAY.replace(REPLACEMENT_SHADOW_TRANSITIONS, str);
 

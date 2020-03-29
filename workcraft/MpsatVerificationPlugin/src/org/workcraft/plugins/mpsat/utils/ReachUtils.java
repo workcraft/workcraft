@@ -14,60 +14,23 @@ import java.util.stream.Collectors;
 
 public class ReachUtils {
 
-    public static VerificationParameters getToolchainPreparationSettings() {
+    public static VerificationParameters getToolchainPreparationParameters() {
         return new VerificationParameters("Toolchain preparation of data",
                 VerificationMode.UNDEFINED, 0,
                 null, 0);
     }
 
-    public static VerificationParameters getToolchainCompletionSettings() {
+    public static VerificationParameters getToolchainCompletionParameters() {
         return new VerificationParameters("Toolchain completion",
                 VerificationMode.UNDEFINED, 0,
                 null, 0);
     }
 
-    public static VerificationParameters getDeadlockSettings() {
+    public static VerificationParameters getDeadlockParameters() {
         return new VerificationParameters("Deadlock freeness",
                 VerificationMode.DEADLOCK, 0,
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount());
-    }
-
-    private static final String REACH_DEADLOCK =
-            "forall t in TRANSITIONS { ~@t }\n";
-
-    public static VerificationParameters getDeadlockReachSettings() {
-        return new VerificationParameters("Deadlock freeness",
-                VerificationMode.REACHABILITY, 0,
-                MpsatVerificationSettings.getSolutionMode(),
-                MpsatVerificationSettings.getSolutionCount(),
-                REACH_DEADLOCK, true);
-    }
-
-    private static final String REACH_DEADLOCK_WITHOUT_MAXIMAL_DUMMY =
-            "// Ensure that the explored configurations have no maximal dummies, i.e. whenever a dummy\n" +
-            "// event is included into a configuration, some of its causal successors is also included.\n" +
-            "forall e in ev DUMMY \\ CUTOFFS {\n" +
-            "    $e -> exists f in post post e \\ CUTOFFS { $f }\n" +
-            "}\n" +
-            "&\n" +
-            "// e is 'stubborn' if |(*e)*\\CUTOFFS|<=1;\n" +
-            "// to reach a deadlock, a non-cut-off stubborn e must fire whenever **e fired;\n" +
-            "// for a cut-off subborn e, **e cannot be a part of a deadlocked configuration.\n" +
-            "forall e in EVENTS {\n" +
-            "    let Pe = pre e, Pe_P = post Pe \\ CUTOFFS, stb = card Pe_P <= 1 {\n" +
-            "        exists f in pre Pe { ~$f }\n" +
-            "        |\n" +
-            "        (stb ? ~is_cutoff e & $e : exists f in Pe_P { $f })\n" +
-            "    }\n" +
-            "}\n";
-
-    public static VerificationParameters getDeadlockWithoutMaximalDummyReachSettings() {
-        return new VerificationParameters("Deadlock freeness without maximal dummies",
-                VerificationMode.REACHABILITY, 0,
-                MpsatVerificationSettings.getSolutionMode(),
-                MpsatVerificationSettings.getSolutionCount(),
-                REACH_DEADLOCK_WITHOUT_MAXIMAL_DUMMY, true);
     }
 
     private static final String REACH_CONSISTENCY =
@@ -80,7 +43,7 @@ public class ReachUtils {
             "    }\n" +
             "}\n";
 
-    public static VerificationParameters getConsistencySettings() {
+    public static VerificationParameters getConsistencyParameters() {
         return new VerificationParameters("Consistency",
                 VerificationMode.STG_REACHABILITY_CONSISTENCY, 0,
                 MpsatVerificationSettings.getSolutionMode(),
@@ -130,11 +93,11 @@ public class ReachUtils {
             "    }\n" +
             "}\n";
 
-    public static VerificationParameters getOutputPersistencySettings() {
-        return getOutputPersistencySettings(new LinkedList<>());
+    public static VerificationParameters getOutputPersistencyParameters() {
+        return getOutputPersistencyParameters(new LinkedList<>());
     }
 
-    public static VerificationParameters getOutputPersistencySettings(Collection<Pair<String, String>> exceptionPairs) {
+    public static VerificationParameters getOutputPersistencyParameters(Collection<Pair<String, String>> exceptionPairs) {
         String str = "";
         if (exceptionPairs != null) {
             for (Pair<String, String> exceptionPair: exceptionPairs) {
@@ -170,7 +133,7 @@ public class ReachUtils {
             "    }\n" +
             "}\n";
 
-    public static VerificationParameters getDiInterfaceSettings() {
+    public static VerificationParameters getDiInterfaceParameters() {
         return new VerificationParameters("Delay insensitive interface",
                 VerificationMode.STG_REACHABILITY, 0,
                 MpsatVerificationSettings.getSolutionMode(),
@@ -217,7 +180,7 @@ public class ReachUtils {
             "    }\n" +
             "}\n";
 
-    public static VerificationParameters getInputPropernessSettings() {
+    public static VerificationParameters getInputPropernessParameters() {
         return new VerificationParameters("Input properness",
                 VerificationMode.STG_REACHABILITY, 0,
                 MpsatVerificationSettings.getSolutionMode(),
@@ -281,7 +244,7 @@ public class ReachUtils {
     // Note: New (PNML-based) version of Punf is required to check conformation property. Old version of
     // Punf does not support dead signals, dead transitions and dead places well (e.g. a dead transition
     // may disappear from unfolding), therefore the conformation property cannot be checked reliably.
-    public static VerificationParameters getConformationSettings(Collection<String> devPlaceRefs) {
+    public static VerificationParameters getConformationParameters(Collection<String> devPlaceRefs) {
         String str = devPlaceRefs.stream().map(ref -> "\"" + ref + "\", ").collect(Collectors.joining());
         String reachConformation = REACH_CONFORMATION.replace(REPLACEMENT_CONFORMATION_DEV_PLACES, str);
         return new VerificationParameters("Conformation",
@@ -367,15 +330,15 @@ public class ReachUtils {
             "    r1 & g1 & r2 & g2  // mutual exclusion of critical sections\n" +
             "}\n";
 
-    public static ArrayList<VerificationParameters> getMutexImplementabilitySettings(Collection<Mutex> mutexes) {
+    public static ArrayList<VerificationParameters> getMutexImplementabilityParameters(Collection<Mutex> mutexes) {
         final ArrayList<VerificationParameters> settingsList = new ArrayList<>();
         for (Mutex mutex: mutexes) {
-            settingsList.add(getMutexImplementabilitySettings(mutex));
+            settingsList.add(getMutexImplementabilityParameters(mutex));
         }
         return settingsList;
     }
 
-    private static VerificationParameters getMutexImplementabilitySettings(Mutex mutex) {
+    private static VerificationParameters getMutexImplementabilityParameters(Mutex mutex) {
         String reach = getMutexImplementabilityReach()
                 .replace(REPLACEMENT_MUTEX_R1, mutex.r1.name)
                 .replace(REPLACEMENT_MUTEX_G1, mutex.g1.name)

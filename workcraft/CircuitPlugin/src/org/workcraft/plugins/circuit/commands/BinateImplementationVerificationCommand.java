@@ -15,8 +15,7 @@ import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.tasks.CombinedChainOutput;
-import org.workcraft.plugins.mpsat.tasks.CombinedChainResultHandler;
+import org.workcraft.plugins.mpsat.tasks.CombinedChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
@@ -60,22 +59,21 @@ public class BinateImplementationVerificationCommand extends AbstractVerificatio
 
     @Override
     public void run(WorkspaceEntry we) {
-        queueVerification(we);
+        CombinedChainResultHandlingMonitor monitor = new CombinedChainResultHandlingMonitor(we, true);
+        queueVerification(we, monitor);
     }
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        CombinedChainResultHandler monitor = queueVerification(we);
-        Result<? extends CombinedChainOutput> result = null;
-        if (monitor != null) {
-            result = monitor.waitResult();
-        }
-        return MpsatUtils.getCombinedChainOutcome(result);
+        CombinedChainResultHandlingMonitor monitor = new CombinedChainResultHandlingMonitor(we, false);
+        queueVerification(we, monitor);
+        return MpsatUtils.getCombinedChainOutcome(monitor.waitResult());
     }
 
-    private CombinedChainResultHandler queueVerification(WorkspaceEntry we) {
+    private void queueVerification(WorkspaceEntry we, CombinedChainResultHandlingMonitor monitor) {
         if (!checkPrerequisites(we)) {
-            return null;
+            monitor.isFinished(Result.failure());
+            return;
         }
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         Collection<BinateData> binateItems = getBinateData(circuit);
@@ -92,9 +90,7 @@ public class BinateImplementationVerificationCommand extends AbstractVerificatio
         TaskManager manager = Framework.getInstance().getTaskManager();
         CombinedCheckTask task = new CombinedCheckTask(we, settingsList, "Binate consensus vacuously holds");
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
-        CombinedChainResultHandler monitor = new CombinedChainResultHandler(we, null);
         manager.queue(task, description, monitor);
-        return monitor;
     }
 
     private boolean checkPrerequisites(WorkspaceEntry we) {

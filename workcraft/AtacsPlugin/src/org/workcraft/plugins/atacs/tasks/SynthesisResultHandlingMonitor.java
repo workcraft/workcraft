@@ -13,7 +13,7 @@ import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderTy
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.tasks.AbstractExtendedResultHandler;
+import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SynthesisResultHandler extends AbstractExtendedResultHandler<SynthesisOutput, WorkspaceEntry> {
+public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonitor<SynthesisOutput, WorkspaceEntry> {
 
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
 
@@ -39,7 +39,7 @@ public class SynthesisResultHandler extends AbstractExtendedResultHandler<Synthe
     private final boolean sequentialAssign;
     private final Collection<Mutex> mutexes;
 
-    public SynthesisResultHandler(WorkspaceEntry we,
+    public SynthesisResultHandlingMonitor(WorkspaceEntry we,
             boolean boxSequentialComponents, boolean boxCombinationalComponents,
             boolean sequentialAssign, Collection<Mutex> mutexes) {
 

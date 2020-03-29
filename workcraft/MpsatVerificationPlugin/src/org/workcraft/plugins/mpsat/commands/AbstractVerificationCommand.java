@@ -3,16 +3,15 @@ package org.workcraft.plugins.mpsat.commands;
 import org.workcraft.Framework;
 import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
+import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat.tasks.VerificationChainTask;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public abstract class AbstractVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand implements ScriptableCommand<Boolean> {
 
@@ -23,31 +22,28 @@ public abstract class AbstractVerificationCommand extends org.workcraft.commands
 
     @Override
     public void run(WorkspaceEntry we) {
-        queueVerification(we);
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
+        queueVerification(we, monitor);
     }
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        VerificationChainResultHandler monitor = queueVerification(we);
-        Result<? extends VerificationChainOutput> result = null;
-        if (monitor != null) {
-            result = monitor.waitResult();
-        }
-        return MpsatUtils.getChainOutcome(result);
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
+        queueVerification(we, monitor);
+        return monitor.waitForHandledResult();
     }
 
-    private VerificationChainResultHandler queueVerification(WorkspaceEntry we) {
+    private void queueVerification(WorkspaceEntry we, VerificationChainResultHandlingMonitor monitor) {
         if (!checkPrerequisites(we)) {
-            return null;
+            monitor.isFinished(Result.failure());
+            return;
         }
         Framework framework = Framework.getInstance();
         TaskManager manager = framework.getTaskManager();
         VerificationParameters verificationParameters = getVerificationParameters(we);
         VerificationChainTask task = new VerificationChainTask(we, verificationParameters);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
-        VerificationChainResultHandler monitor = new VerificationChainResultHandler(we);
         manager.queue(task, description, monitor);
-        return monitor;
     }
 
     public boolean checkPrerequisites(WorkspaceEntry we) {

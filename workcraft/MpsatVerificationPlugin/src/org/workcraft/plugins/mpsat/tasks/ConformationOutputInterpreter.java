@@ -1,9 +1,6 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.dom.references.ReferenceHelper;
-import org.workcraft.traces.Solution;
-import org.workcraft.traces.Trace;
-import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.utils.EnablednessUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -14,6 +11,8 @@ import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.tasks.ExportOutput;
+import org.workcraft.traces.Solution;
+import org.workcraft.traces.Trace;
 import org.workcraft.types.Triple;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -22,35 +21,34 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class ConformationOutputHandler extends ReachabilityOutputHandler {
+class ConformationOutputInterpreter extends ReachabilityOutputInterpreter {
 
     private static final Pattern DEAD_SIGNAL_PATTERN = Pattern.compile(
             "Warning: signal (\\w+) is dead");
 
-    ConformationOutputHandler(WorkspaceEntry we, ExportOutput exportOutput, PcompOutput pcompOutput,
-            VerificationOutput mpsatOutput, VerificationParameters verificationParameters) {
+    ConformationOutputInterpreter(WorkspaceEntry we, ExportOutput exportOutput,
+            PcompOutput pcompOutput, VerificationOutput mpsatOutput, boolean interactive) {
 
-        super(we, exportOutput, pcompOutput, mpsatOutput, verificationParameters);
+        super(we, exportOutput, pcompOutput, mpsatOutput, interactive);
     }
 
     @Override
-    public String getMessage(boolean isSatisfiable) {
-        String result = super.getMessage(isSatisfiable);
-        String stderr = getMpsatOutput().getStderrString();
-        Matcher matcher = DEAD_SIGNAL_PATTERN.matcher(stderr);
+    public String getMessage(boolean propertyHolds) {
+        String result = super.getMessage(propertyHolds);
+        String mpsatStderr = getOutput().getStderrString();
+        Matcher matcher = DEAD_SIGNAL_PATTERN.matcher(mpsatStderr);
         List<String> signals = new ArrayList<>();
         while (matcher.find()) {
             signals.add(matcher.group(1));
         }
         if (!signals.isEmpty()) {
-            boolean inversePredicate = getVerificationParameters().getInversePredicate();
-            if (isSatisfiable == inversePredicate) {
-                result += "<br>Also ";
-            } else {
+            if (propertyHolds) {
                 result += "\nYet ";
+            } else {
+                result += "<br>Also ";
             }
             result += ReferenceHelper.getTextWithReferences("composition has dead signal", signals);
-            if (isSatisfiable != inversePredicate) {
+            if (propertyHolds) {
                 result += "\nWarning: dead signals may indicate design issues!";
             }
         }
@@ -63,7 +61,7 @@ class ConformationOutputHandler extends ReachabilityOutputHandler {
         if (needsMultiLineMessage) {
             LogUtils.logMessage("Violation traces of the composition:");
         }
-        StgModel compStg = getMpsatOutput().getInputStg();
+        StgModel compStg = getOutput().getInputStg();
         for (Solution solution: solutions) {
             // FIXME: This is to rename toggle events from x to x~
             Trace compTrace = fixTraceToggleEvents(compStg, solution.getMainTrace());
@@ -90,7 +88,7 @@ class ConformationOutputHandler extends ReachabilityOutputHandler {
             LogUtils.logMessage("Unique projection(s) to '" + we.getTitle() + "':");
         }
 
-        StgModel compStg = getMpsatOutput().getInputStg();
+        StgModel compStg = getOutput().getInputStg();
         for (Solution solution : solutions) {
             // Get unique projection trace
             Trace trace = getProjectedTrace(solution.getMainTrace(), data, substitutions);

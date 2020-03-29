@@ -11,20 +11,20 @@ public class VerificationChainOutput {
     private Result<? extends PcompOutput> pcompResult;
     private Result<? extends PunfOutput> punfResult;
     private Result<? extends VerificationOutput> mpsatResult;
-    private VerificationParameters mpsatSettings;
+    private VerificationParameters verificationParameters;
     private String message;
 
     public VerificationChainOutput(Result<? extends ExportOutput> exportResult,
             Result<? extends PcompOutput> pcompResult,
             Result<? extends PunfOutput> punfResult,
             Result<? extends VerificationOutput> mpsatResult,
-            VerificationParameters mpsatSettings, String message) {
+            VerificationParameters verificationParameters, String message) {
 
         this.exportResult = exportResult;
         this.pcompResult = pcompResult;
         this.punfResult = punfResult;
         this.mpsatResult = mpsatResult;
-        this.mpsatSettings = mpsatSettings;
+        this.verificationParameters = verificationParameters;
         this.message = message;
     }
 
@@ -32,13 +32,13 @@ public class VerificationChainOutput {
             Result<? extends PcompOutput> pcompResult,
             Result<? extends PunfOutput> punfResult,
             Result<? extends VerificationOutput> mpsatResult,
-            VerificationParameters mpsatSettings) {
+            VerificationParameters verificationParameters) {
 
-        this(exportResult, pcompResult, punfResult, mpsatResult, mpsatSettings, null);
+        this(exportResult, pcompResult, punfResult, mpsatResult, verificationParameters, null);
     }
 
-    public VerificationParameters getMpsatSettings() {
-        return mpsatSettings;
+    public VerificationParameters getVerificationParameters() {
+        return verificationParameters;
     }
 
     public Result<? extends ExportOutput> getExportResult() {

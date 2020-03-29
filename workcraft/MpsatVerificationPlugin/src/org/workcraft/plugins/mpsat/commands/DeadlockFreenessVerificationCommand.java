@@ -30,7 +30,7 @@ public class DeadlockFreenessVerificationCommand extends AbstractVerificationCom
 
     @Override
     public VerificationParameters getVerificationParameters(WorkspaceEntry we) {
-        return ReachUtils.getDeadlockSettings();
+        return ReachUtils.getDeadlockParameters();
     }
 
 }

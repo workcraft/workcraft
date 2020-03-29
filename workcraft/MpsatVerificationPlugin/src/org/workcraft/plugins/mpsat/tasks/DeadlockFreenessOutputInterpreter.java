@@ -1,11 +1,8 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.Framework;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.dialogs.ReachibilityDialog;
-import org.workcraft.utils.TraceUtils;
-import org.workcraft.traces.Solution;
-import org.workcraft.traces.Trace;
-import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.petri.Place;
@@ -14,8 +11,10 @@ import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.ExportOutput;
-import org.workcraft.utils.DialogUtils;
+import org.workcraft.traces.Solution;
+import org.workcraft.traces.Trace;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.TraceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.HashMap;
@@ -23,13 +22,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-class DeadlockFreenessOutputHandler extends ReachabilityOutputHandler {
+class DeadlockFreenessOutputInterpreter extends ReachabilityOutputInterpreter {
 
-    DeadlockFreenessOutputHandler(WorkspaceEntry we,
-            ExportOutput exportOutput, PcompOutput pcompOutput, VerificationOutput mpsatOutput,
-            VerificationParameters verificationParameters) {
+    DeadlockFreenessOutputInterpreter(WorkspaceEntry we, ExportOutput exportOutput,
+            PcompOutput pcompOutput, VerificationOutput mpsatOutput, boolean interactive) {
 
-        super(we, exportOutput, pcompOutput, mpsatOutput, verificationParameters);
+        super(we, exportOutput, pcompOutput, mpsatOutput, interactive);
     }
 
     @Override
@@ -69,27 +67,33 @@ class DeadlockFreenessOutputHandler extends ReachabilityOutputHandler {
     }
 
     @Override
-    public void run() {
+    public Boolean interpret() {
+        if (getOutput() == null) {
+            return null;
+        }
         List<Solution> solutions = getSolutions();
-        if (!TraceUtils.hasTraces(solutions)) {
-            DialogUtils.showInfo("The system is deadlock-free", TITLE);
+        boolean propertyHolds = !TraceUtils.hasTraces(solutions);
+        if (propertyHolds) {
+            showOutcome(propertyHolds, "The system is deadlock-free");
         } else {
             List<Solution> processedSolutions = processSolutions(getWorkspaceEntry(), solutions);
             if (!TraceUtils.hasTraces(processedSolutions)) {
-                DialogUtils.showWarning("Deadlock freeness cannot be reliably verified because of conformation violation", TITLE);
+                showOutcome(propertyHolds, "Deadlock freeness cannot be reliably verified because of conformation violation");
+                return null;
             } else {
                 String message = "The system has a deadlock";
                 LogUtils.logWarning(message);
-                Framework framework = Framework.getInstance();
-                if (framework.isInGuiMode()) {
+                if (isInteractive()) {
                     message = "<html><br>&#160;" + message + " after the following trace(s):<br><br></html>";
+                    MainWindow mainWindow = Framework.getInstance().getMainWindow();
                     ReachibilityDialog solutionsDialog = new ReachibilityDialog(
-                            framework.getMainWindow(), getWorkspaceEntry(), TITLE, message, processedSolutions);
+                            mainWindow, getWorkspaceEntry(), TITLE, message, processedSolutions);
 
                     solutionsDialog.reveal();
                 }
             }
         }
+        return propertyHolds;
     }
 
 }

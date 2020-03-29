@@ -131,7 +131,7 @@ public class CombinedCheckTask implements Task<CombinedChainOutput> {
             SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
             ArrayList<Result<? extends VerificationOutput>> mpsatResultList = new ArrayList<>(verificationParametersList.size());
             for (VerificationParameters verificationParameters : verificationParametersList) {
-                VerificationTask verificationTask = new VerificationTask(verificationParameters.getMpsatArguments(directory), unfoldingFile, directory, sysStgFile);
+                VerificationTask verificationTask = new VerificationTask(unfoldingFile, sysStgFile, verificationParameters, directory);
                 Result<? extends VerificationOutput> mpsatResult = manager.execute(
                         verificationTask, "Running verification [MPSat]", mpsatMonitor);
                 mpsatResultList.add(mpsatResult);

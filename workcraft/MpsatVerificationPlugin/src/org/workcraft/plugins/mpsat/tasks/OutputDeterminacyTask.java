@@ -78,7 +78,7 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         String stgFileExtension = StgFormat.getInstance().getExtension();
-        VerificationParameters preparationSettings = new VerificationParameters("Toolchain preparation of data",
+        VerificationParameters preparationParameters = new VerificationParameters("Toolchain preparation of data",
                 VerificationMode.UNDEFINED, 0, null, 0);
         try {
             // Clone STG before converting its internal signals to outputs
@@ -89,11 +89,11 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
             // Structural check for vacuously held output-determinacy, i.e. there are no dummies
             // and there are no choices between transitions of the same signal.
             if (isVacuouslyOutputDeterminate(stg)) {
-                VerificationParameters vacuousSettings = new VerificationParameters("Output determinacy (vacuously)",
+                VerificationParameters vacuousParameters = new VerificationParameters("Output determinacy (vacuously)",
                         VerificationMode.UNDEFINED, 0, null, 0);
                 return new Result<>(Outcome.SUCCESS,
                         new VerificationChainOutput(null, null, null, null,
-                                vacuousSettings, "Output determinacy vacuously holds."));
+                                vacuousParameters, "Output determinacy vacuously holds."));
             }
             monitor.progressUpdate(0.20);
 
@@ -105,7 +105,7 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(devExportResult, null, null, null, preparationSettings));
+                        new VerificationChainOutput(devExportResult, null, null, null, preparationParameters));
             }
 
             File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + stgFileExtension);
@@ -115,7 +115,7 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(envExportResult, null, null, null, preparationSettings));
+                        new VerificationChainOutput(envExportResult, null, null, null, preparationParameters));
             }
 
             List<File> stgFiles = Arrays.asList(devStgFile, envStgFile);
@@ -136,7 +136,7 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(multiExportResult, pcompResult, null, null, preparationSettings));
+                        new VerificationChainOutput(multiExportResult, pcompResult, null, null, preparationParameters));
             }
             monitor.progressUpdate(0.50);
 
@@ -159,14 +159,13 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(modSysExportResult, pcompResult, punfResult, null, preparationSettings));
+                        new VerificationChainOutput(modSysExportResult, pcompResult, punfResult, null, preparationParameters));
             }
             monitor.progressUpdate(0.60);
 
             // Check for output determinacy
-            VerificationParameters mpsatSettings = getSettings(devShadowTransitions);
-            VerificationTask verificationTask = new VerificationTask(mpsatSettings.getMpsatArguments(directory),
-                    unfoldingFile, directory, sysStgFile);
+            VerificationParameters verificationParameters = getVerificationParameters(devShadowTransitions);
+            VerificationTask verificationTask = new VerificationTask(unfoldingFile, sysStgFile, verificationParameters, directory);
             Result<? extends VerificationOutput>  mpsatResult = taskManager.execute(
                     verificationTask, "Running output determinacy check [MPSat]", new SubtaskMonitor<>(monitor));
 
@@ -175,14 +174,15 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(modSysExportResult, pcompResult, punfResult, mpsatResult, mpsatSettings));
+                        new VerificationChainOutput(modSysExportResult, pcompResult, punfResult, mpsatResult, verificationParameters));
             }
             monitor.progressUpdate(0.80);
 
-            VerificationOutputParser mpsatParser = new VerificationOutputParser(mpsatResult.getPayload());
+            String mpsatStdout = mpsatResult.getPayload().getStdoutString();
+            VerificationOutputParser mpsatParser = new VerificationOutputParser(mpsatStdout);
             if (!mpsatParser.getSolutions().isEmpty()) {
                 return new Result<>(Outcome.SUCCESS,
-                        new VerificationChainOutput(multiExportResult, pcompResult, punfResult, mpsatResult, mpsatSettings,
+                        new VerificationChainOutput(multiExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,
                                 "This model does is not output determinate."));
             }
             monitor.progressUpdate(1.0);
@@ -190,7 +190,7 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
             // Success
             return new Result<>(Outcome.SUCCESS,
                     new VerificationChainOutput(multiExportResult, pcompResult, punfResult, mpsatResult,
-                            mpsatSettings, "Output determinacy holds."));
+                            verificationParameters, "Output determinacy holds."));
 
         } catch (Throwable e) {
             return new Result<>(e);
@@ -216,7 +216,7 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
         return true;
     }
 
-    private VerificationParameters getSettings(Collection<String> shadowTransitionRefs) {
+    private VerificationParameters getVerificationParameters(Collection<String> shadowTransitionRefs) {
         String str = shadowTransitionRefs.stream().map(ref -> "\"" + ref + "\", ").collect(Collectors.joining());
         String reachConformationNway = REACH_OUTPUT_DETERMINACY.replace(REPLACEMENT_SHADOW_TRANSITIONS, str);
 

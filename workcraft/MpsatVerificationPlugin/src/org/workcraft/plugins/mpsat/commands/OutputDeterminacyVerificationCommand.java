@@ -3,8 +3,7 @@ package org.workcraft.plugins.mpsat.commands;
 import org.workcraft.Framework;
 import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.plugins.mpsat.tasks.OutputDeterminacyTask;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
+import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.tasks.Result;
@@ -35,33 +34,29 @@ public class OutputDeterminacyVerificationCommand extends org.workcraft.commands
         return Position.TOP;
     }
 
-
     @Override
     public void run(WorkspaceEntry we) {
-        queueVerification(we);
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
+        queueVerification(we, monitor);
     }
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        VerificationChainResultHandler monitor = queueVerification(we);
-        Result<? extends VerificationChainOutput> result = null;
-        if (monitor != null) {
-            result = monitor.waitResult();
-        }
-        return MpsatUtils.getChainOutcome(result);
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
+        queueVerification(we, monitor);
+        return monitor.waitForHandledResult();
+//        return MpsatUtils.getChainOutcome(monitor.waitResult());
     }
 
-    private VerificationChainResultHandler queueVerification(WorkspaceEntry we) {
+    private void queueVerification(WorkspaceEntry we, VerificationChainResultHandlingMonitor monitor) {
         if (!isApplicableTo(we)) {
-            return null;
+            monitor.isFinished(Result.failure());
+            return;
         }
-        final Framework framework = Framework.getInstance();
         OutputDeterminacyTask task = new OutputDeterminacyTask(we);
-        TaskManager manager = framework.getTaskManager();
+        TaskManager manager = Framework.getInstance().getTaskManager();
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
-        VerificationChainResultHandler monitor = new VerificationChainResultHandler(we);
         manager.queue(task, description, monitor);
-        return monitor;
     }
 
 }

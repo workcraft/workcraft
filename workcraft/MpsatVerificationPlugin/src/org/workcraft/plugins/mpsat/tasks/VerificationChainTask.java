@@ -104,8 +104,7 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
             monitor.progressUpdate(0.66);
 
             // Run MPSat on the generated unfolding
-            VerificationTask verificationTask = new VerificationTask(verificationParameters.getMpsatArguments(directory),
-                    unfoldingFile, directory, netFile);
+            VerificationTask verificationTask = new VerificationTask(unfoldingFile, netFile, verificationParameters, directory);
             Result<? extends VerificationOutput> mpsatResult = manager.execute(
                     verificationTask, "Running verification [MPSat]", subtaskMonitor);
 

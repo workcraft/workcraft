@@ -9,18 +9,18 @@ public class SynthesisChainOutput {
     private final Result<? extends ExportOutput> exportResult;
     private final Result<? extends PunfOutput> punfResult;
     private final Result<? extends SynthesisOutput> mpsatResult;
-    private final SynthesisParameters mpsatSettings;
+    private final SynthesisParameters synthesisParameters;
 
     public SynthesisChainOutput(
             Result<? extends ExportOutput> exportResult,
             Result<? extends PunfOutput> punfResult,
             Result<? extends SynthesisOutput> mpsatResult,
-            SynthesisParameters mpsatSettings) {
+            SynthesisParameters synthesisParameters) {
 
         this.exportResult = exportResult;
         this.punfResult = punfResult;
         this.mpsatResult = mpsatResult;
-        this.mpsatSettings = mpsatSettings;
+        this.synthesisParameters = synthesisParameters;
     }
 
     public Result<? extends ExportOutput> getExportResult() {
@@ -34,8 +34,8 @@ public class SynthesisChainOutput {
         return mpsatResult;
     }
 
-    public SynthesisParameters getMpsatSettings() {
-        return mpsatSettings;
+    public SynthesisParameters getSynthesisParameters() {
+        return synthesisParameters;
     }
 
 }

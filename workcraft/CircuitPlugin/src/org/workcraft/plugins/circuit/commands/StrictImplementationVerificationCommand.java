@@ -10,8 +10,7 @@ import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.tasks.StrictImplementationCheckTask;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
+import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
@@ -48,30 +47,27 @@ public class StrictImplementationVerificationCommand extends AbstractVerificatio
 
     @Override
     public void run(WorkspaceEntry we) {
-        queueVerification(we);
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
+        queueVerification(we, monitor);
     }
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        VerificationChainResultHandler monitor = queueVerification(we);
-        Result<? extends VerificationChainOutput> result = null;
-        if (monitor != null) {
-            result = monitor.waitResult();
-        }
-        return MpsatUtils.getChainOutcome(result);
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
+        queueVerification(we, monitor);
+        return MpsatUtils.getChainOutcome(monitor.waitResult());
     }
 
-    private VerificationChainResultHandler queueVerification(WorkspaceEntry we) {
-        VerificationChainResultHandler monitor = null;
-        if (checkPrerequisites(we)) {
+    private void queueVerification(WorkspaceEntry we, VerificationChainResultHandlingMonitor monitor) {
+        if (!checkPrerequisites(we)) {
+            monitor.isFinished(Result.failure());
+        } else {
             Framework framework = Framework.getInstance();
             TaskManager manager = framework.getTaskManager();
             StrictImplementationCheckTask task = new StrictImplementationCheckTask(we);
             String description = MpsatUtils.getToolchainDescription(we.getTitle());
-            monitor = new VerificationChainResultHandler(we);
             manager.queue(task, description, monitor);
         }
-        return monitor;
     }
 
     private boolean checkPrerequisites(WorkspaceEntry we) {

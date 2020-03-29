@@ -25,7 +25,7 @@ public class DiInterfaceVerificationCommand extends AbstractVerificationCommand 
 
     @Override
     public VerificationParameters getVerificationParameters(WorkspaceEntry we) {
-        return ReachUtils.getDiInterfaceSettings();
+        return ReachUtils.getDiInterfaceParameters();
     }
 
 }

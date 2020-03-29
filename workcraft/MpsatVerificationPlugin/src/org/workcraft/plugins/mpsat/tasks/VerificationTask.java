@@ -2,6 +2,7 @@ package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
+import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgImporter;
@@ -59,20 +60,20 @@ public class VerificationTask implements Task<VerificationOutput> {
             ")",
             Pattern.UNIX_LINES);
 
-    private final String[] args;
+    private final VerificationParameters verificationParameters;
     private final File unfoldingFile;
     private final File directory;
     private final File netFile;
 
-    public VerificationTask(String[] args, File unfoldingFile, File directory, File netFile) {
-        this.args = args;
-        this.unfoldingFile = unfoldingFile;
+    public VerificationTask(File unfoldingFile, File netFile, VerificationParameters verificationParameters, File directory) {
         if (directory == null) {
             // Prefix must be at least 3 symbols long.
             directory = FileUtils.createTempDirectory("mpsat-");
         }
         this.directory = directory;
+        this.unfoldingFile = unfoldingFile;
         this.netFile = netFile;
+        this.verificationParameters = verificationParameters;
     }
 
     @Override
@@ -87,7 +88,7 @@ public class VerificationTask implements Task<VerificationOutput> {
         command.add(toolName);
 
         // Built-in arguments
-        for (String arg : args) {
+        for (String arg : verificationParameters.getMpsatArguments(directory)) {
             command.add(arg);
         }
 
@@ -130,9 +131,9 @@ public class VerificationTask implements Task<VerificationOutput> {
                 if (success) {
                     StgModel inputStg = readStg(netFile);
                     StgModel outputStg = readStg(new File(directory, STG_FILE_NAME));
-                    return Result.success(new VerificationOutput(output, inputStg, outputStg));
+                    return Result.success(new VerificationOutput(output, inputStg, outputStg, verificationParameters));
                 }
-                return Result.failure(new VerificationOutput(output));
+                return Result.failure(new VerificationOutput(output, null, null, verificationParameters));
             }
         }
 
