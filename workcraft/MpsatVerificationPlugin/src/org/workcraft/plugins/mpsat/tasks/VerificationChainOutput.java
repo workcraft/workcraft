@@ -6,27 +6,10 @@ import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.tasks.Result;
 
-public class VerificationChainOutput {
-    private Result<? extends ExportOutput> exportResult;
-    private Result<? extends PcompOutput> pcompResult;
-    private Result<? extends PunfOutput> punfResult;
-    private Result<? extends VerificationOutput> mpsatResult;
-    private VerificationParameters verificationParameters;
-    private String message;
+public class VerificationChainOutput extends ChainOutput {
 
-    public VerificationChainOutput(Result<? extends ExportOutput> exportResult,
-            Result<? extends PcompOutput> pcompResult,
-            Result<? extends PunfOutput> punfResult,
-            Result<? extends VerificationOutput> mpsatResult,
-            VerificationParameters verificationParameters, String message) {
-
-        this.exportResult = exportResult;
-        this.pcompResult = pcompResult;
-        this.punfResult = punfResult;
-        this.mpsatResult = mpsatResult;
-        this.verificationParameters = verificationParameters;
-        this.message = message;
-    }
+    private final Result<? extends VerificationOutput> mpsatResult;
+    private final VerificationParameters verificationParameters;
 
     public VerificationChainOutput(Result<? extends ExportOutput> exportResult,
             Result<? extends PcompOutput> pcompResult,
@@ -37,28 +20,24 @@ public class VerificationChainOutput {
         this(exportResult, pcompResult, punfResult, mpsatResult, verificationParameters, null);
     }
 
+    public VerificationChainOutput(Result<? extends ExportOutput> exportResult,
+            Result<? extends PcompOutput> pcompResult,
+            Result<? extends PunfOutput> punfResult,
+            Result<? extends VerificationOutput> mpsatResult,
+            VerificationParameters verificationParameters,
+            String message) {
+
+        super(exportResult, pcompResult, punfResult, message);
+        this.mpsatResult = mpsatResult;
+        this.verificationParameters = verificationParameters;
+    }
+
     public VerificationParameters getVerificationParameters() {
         return verificationParameters;
     }
 
-    public Result<? extends ExportOutput> getExportResult() {
-        return exportResult;
-    }
-
-    public Result<? extends PcompOutput> getPcompResult() {
-        return pcompResult;
-    }
-
-    public Result<? extends PunfOutput> getPunfResult() {
-        return punfResult;
-    }
-
     public Result<? extends VerificationOutput> getMpsatResult() {
         return mpsatResult;
-    }
-
-    public String getMessage() {
-        return message;
     }
 
 }

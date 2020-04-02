@@ -5,7 +5,7 @@ import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.builtin.settings.AbstractToolSettings;
 import org.workcraft.plugins.mpsat.VerificationParameters.SolutionMode;
-import org.workcraft.plugins.mpsat.tasks.ConformationNwayOutputInterpreter.ConformationReportStyle;
+import org.workcraft.plugins.mpsat.tasks.NwayConformationOutputInterpreter.ConformationReportStyle;
 import org.workcraft.utils.BackendUtils;
 
 import java.util.LinkedList;

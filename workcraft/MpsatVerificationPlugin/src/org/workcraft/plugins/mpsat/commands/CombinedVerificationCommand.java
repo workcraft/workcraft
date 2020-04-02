@@ -101,7 +101,7 @@ public class CombinedVerificationCommand extends org.workcraft.commands.Abstract
         TaskManager manager = Framework.getInstance().getTaskManager();
         CombinedChainTask task = new CombinedChainTask(we, settingsList, extraTask);
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-        monitor.setMutexes(mutexes);
+        monitor.setVacuousMutexImplementability(mutexes.isEmpty());
 
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         manager.queue(task, description, monitor);

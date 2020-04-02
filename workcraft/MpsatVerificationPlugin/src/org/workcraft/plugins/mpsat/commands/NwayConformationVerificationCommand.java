@@ -5,8 +5,8 @@ import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.mpsat.gui.NwayConformationDialog;
-import org.workcraft.plugins.mpsat.tasks.ConformationNwayTask;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandlingMonitor;
+import org.workcraft.plugins.mpsat.tasks.NwayConformationChainResultHandlingMonitor;
+import org.workcraft.plugins.mpsat.tasks.NwayConformationTask;
 import org.workcraft.plugins.mpsat.utils.MpsatUtils;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.Result;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ConformationNwayVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand
+public class NwayConformationVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand
         implements ScriptableCommand<Boolean> {
 
     @Override
@@ -60,7 +60,7 @@ public class ConformationNwayVerificationCommand extends org.workcraft.commands.
                 }
             }
 
-            VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(wes);
+            NwayConformationChainResultHandlingMonitor monitor = new NwayConformationChainResultHandlingMonitor(wes);
             queueVerification(wes, monitor);
         }
     }
@@ -75,19 +75,19 @@ public class ConformationNwayVerificationCommand extends org.workcraft.commands.
             }
         }
 
-        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(wes);
+        NwayConformationChainResultHandlingMonitor monitor = new NwayConformationChainResultHandlingMonitor(wes);
         queueVerification(wes, monitor);
         return MpsatUtils.getChainOutcome(monitor.waitResult());
     }
 
-    private void queueVerification(List<WorkspaceEntry> wes, VerificationChainResultHandlingMonitor monitor) {
+    private void queueVerification(List<WorkspaceEntry> wes, NwayConformationChainResultHandlingMonitor monitor) {
         if (wes.size() < 2) {
             DialogUtils.showWarning("At least two STGs are required for N-way conformation.");
             monitor.isFinished(Result.failure());
             return;
         }
 
-        ConformationNwayTask task = new ConformationNwayTask(wes);
+        NwayConformationTask task = new NwayConformationTask(wes);
         TaskManager manager = Framework.getInstance().getTaskManager();
         String titles = wes.stream().map(w -> w.getTitle()).collect(Collectors.joining(", "));
         String description = MpsatUtils.getToolchainDescription(titles);

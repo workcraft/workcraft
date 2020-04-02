@@ -5,12 +5,12 @@ import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.plugins.mpsat.VerificationMode;
 import org.workcraft.plugins.mpsat.VerificationParameters;
 import org.workcraft.plugins.mpsat.VerificationParameters.SolutionMode;
-import org.workcraft.plugins.mpsat.tasks.*;
+import org.workcraft.plugins.mpsat.tasks.ConflictResolutionChainResultHandlingMonitor;
+import org.workcraft.plugins.mpsat.tasks.VerificationChainTask;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.utils.MutexUtils;
-import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -38,28 +38,18 @@ public class CscConflictResolutionCommand implements ScriptableCommand<Workspace
 
     @Override
     public void run(WorkspaceEntry we) {
-        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
+        ConflictResolutionChainResultHandlingMonitor monitor = new ConflictResolutionChainResultHandlingMonitor(we, true);
         queueCscConflictResolution(we, monitor);
     }
 
     @Override
     public WorkspaceEntry execute(WorkspaceEntry we) {
-        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
+        ConflictResolutionChainResultHandlingMonitor monitor = new ConflictResolutionChainResultHandlingMonitor(we, true);
         queueCscConflictResolution(we, monitor);
-
-        Collection<Mutex> mutexes = monitor.getMutexes();
-        Result<? extends VerificationChainOutput> chainResult = monitor.waitResult();
-        VerificationChainOutput chainOutput = chainResult.getPayload();
-        Result<? extends VerificationOutput> mpsatResult = chainOutput.getMpsatResult();
-        VerificationOutput mpsatOutput = mpsatResult.getPayload();
-        CscConflictResolutionOutputHandler resultHandler = new CscConflictResolutionOutputHandler(
-                we, mpsatOutput, mutexes);
-
-        resultHandler.run();
-        return resultHandler.getResult();
+        return monitor.waitForHandledResult();
     }
 
-    private void queueCscConflictResolution(WorkspaceEntry we, VerificationChainResultHandlingMonitor monitor) {
+    private void queueCscConflictResolution(WorkspaceEntry we, ConflictResolutionChainResultHandlingMonitor monitor) {
         VerificationParameters verificationParameters = new VerificationParameters(TITLE,
                 VerificationMode.RESOLVE_ENCODING_CONFLICTS, 4, SolutionMode.MINIMUM_COST, 1);
 

@@ -183,7 +183,7 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
             if (!mpsatParser.getSolutions().isEmpty()) {
                 return new Result<>(Outcome.SUCCESS,
                         new VerificationChainOutput(multiExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,
-                                "This model does is not output determinate."));
+                                "This model is not output determinate."));
             }
             monitor.progressUpdate(1.0);
 

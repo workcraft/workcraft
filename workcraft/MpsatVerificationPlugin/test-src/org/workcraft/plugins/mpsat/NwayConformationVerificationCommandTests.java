@@ -5,7 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.plugins.mpsat.commands.ConformationNwayVerificationCommand;
+import org.workcraft.plugins.mpsat.commands.NwayConformationVerificationCommand;
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.utils.BackendUtils;
@@ -13,7 +13,7 @@ import org.workcraft.utils.PackageUtils;
 
 import java.net.URL;
 
-public class ConformationNwayVerificationCommandTests {
+public class NwayConformationVerificationCommandTests {
 
     @BeforeClass
     public static void init() {
@@ -56,7 +56,7 @@ public class ConformationNwayVerificationCommandTests {
             framework.loadWork(url.getFile());
         }
 
-        ConformationNwayVerificationCommand command = new ConformationNwayVerificationCommand();
+        NwayConformationVerificationCommand command = new NwayConformationVerificationCommand();
         Assert.assertEquals(result, command.execute(null));
     }
 

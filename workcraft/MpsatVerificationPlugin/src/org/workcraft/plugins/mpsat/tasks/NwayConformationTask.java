@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ConformationNwayTask implements Task<VerificationChainOutput> {
+public class NwayConformationTask implements Task<VerificationChainOutput> {
 
     private static final String REPLACEMENT_SHADOW_TRANSITIONS =
             "/* insert set of names of shadow transitions here */"; // For example: "x+/1", "x-", "y+", "y-/1"
@@ -62,7 +62,7 @@ public class ConformationNwayTask implements Task<VerificationChainOutput> {
 
     private final List<WorkspaceEntry> wes;
 
-    public ConformationNwayTask(List<WorkspaceEntry> wes) {
+    public NwayConformationTask(List<WorkspaceEntry> wes) {
         this.wes = wes;
     }
 

@@ -46,7 +46,7 @@ public class MpsatVerificationPlugin implements Plugin {
                 "check the STG 'work' for implementability of its mutex places");
         ScriptableCommandUtils.register(OutputDeterminacyVerificationCommand.class, "checkStgOutputDeterminacy",
                 "check the STG 'work' for output determinacy");
-        ScriptableCommandUtils.register(ConformationNwayVerificationCommand.class, "checkStgNwayConformation",
+        ScriptableCommandUtils.register(NwayConformationVerificationCommand.class, "checkStgNwayConformation",
                 "check all the open STG works for N-way conformation ('null' should be passed as the parameter)");
 
         // TODO: Need a way to pass the list of places from the JavaScript wrapper

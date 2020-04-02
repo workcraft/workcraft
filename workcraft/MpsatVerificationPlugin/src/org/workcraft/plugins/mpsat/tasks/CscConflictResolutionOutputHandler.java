@@ -3,48 +3,44 @@ package org.workcraft.plugins.mpsat.tasks;
 import org.workcraft.Framework;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.utils.MutexUtils;
+import org.workcraft.tasks.AbstractOutputInterpreter;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.Collection;
 
-public class CscConflictResolutionOutputHandler implements Runnable {
+public class CscConflictResolutionOutputHandler extends AbstractOutputInterpreter<VerificationOutput, WorkspaceEntry> {
 
-    private final WorkspaceEntry we;
-    private final VerificationOutput output;
     private final Collection<Mutex> mutexes;
-    private WorkspaceEntry weResult = null;
 
-    public CscConflictResolutionOutputHandler(final WorkspaceEntry we,
-            VerificationOutput output, Collection<Mutex> mutexes) {
-        this.we = we;
-        this.output = output;
+    public CscConflictResolutionOutputHandler(WorkspaceEntry we,
+            VerificationOutput output, Collection<Mutex> mutexes, boolean interactive) {
+
+        super(we, output, interactive);
         this.mutexes = mutexes;
     }
 
     @Override
-    public void run() {
-        final Framework framework = Framework.getInstance();
-        final StgModel model = output.getOutputStg();
-        if (model == null) {
-            final String errorMessage = output.getErrorsHeadAndTail();
-            DialogUtils.showWarning("Conflict resolution failed. MPSat output: \n" + errorMessage);
-        } else {
-            model.setTitle(we.getModelTitle());
-            MutexUtils.restoreMutexSignals(model, mutexes);
-            MutexUtils.restoreMutexPlacesByName(model, mutexes);
-            final ModelEntry me = new ModelEntry(new StgDescriptor(), model);
-            final Path<String> path = we.getWorkspacePath();
-            weResult = framework.createWork(me, path);
+    public WorkspaceEntry interpret() {
+        if (getOutput() == null) {
+            return null;
         }
-    }
-
-    public WorkspaceEntry getResult() {
-        return weResult;
+        final StgModel model = getOutput().getOutputStg();
+        if (model == null) {
+            final String errorMessage = getOutput().getErrorsHeadAndTail();
+            DialogUtils.showWarning("Conflict resolution failed. MPSat output: \n" + errorMessage);
+            return null;
+        }
+        model.setTitle(getWorkspaceEntry().getModelTitle());
+        MutexUtils.restoreMutexSignals(model, mutexes);
+        MutexUtils.restoreMutexPlacesByName(model, mutexes);
+        final ModelEntry me = new ModelEntry(new StgDescriptor(), model);
+        final Path<String> path = getWorkspaceEntry().getWorkspacePath();
+        return Framework.getInstance().createWork(me, path);
     }
 
 }

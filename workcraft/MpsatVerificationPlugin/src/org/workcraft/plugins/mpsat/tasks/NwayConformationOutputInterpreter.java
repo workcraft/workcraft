@@ -28,7 +28,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.*;
 
-public class ConformationNwayOutputInterpreter extends ConformationOutputInterpreter {
+public class NwayConformationOutputInterpreter extends ConformationOutputInterpreter {
 
     // Right arrow symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
     public static final String RIGHT_ARROW_SYMBOL = Character.toString((char) 0x2192);
@@ -59,7 +59,7 @@ public class ConformationNwayOutputInterpreter extends ConformationOutputInterpr
 
     private final List<WorkspaceEntry> wes;
 
-    ConformationNwayOutputInterpreter(ArrayList<WorkspaceEntry> wes, ExportOutput exportOutput,
+    NwayConformationOutputInterpreter(ArrayList<WorkspaceEntry> wes, ExportOutput exportOutput,
             PcompOutput pcompOutput, VerificationOutput mpsatOutput,  boolean interactive) {
 
         super(wes.get(0), exportOutput, pcompOutput, mpsatOutput, interactive);

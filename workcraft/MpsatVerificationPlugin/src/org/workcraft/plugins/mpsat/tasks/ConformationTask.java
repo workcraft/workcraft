@@ -54,7 +54,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             Stg devStg = WorkspaceUtils.getAs(we, Stg.class);
             Exporter devStgExporter = ExportUtils.chooseBestExporter(pluginManager, devStg, format);
             if (devStgExporter == null) {
-                throw new NoExporterException(devStg, format);
+                return Result.exception(new NoExporterException(devStg, format));
             }
             SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
 
@@ -66,18 +66,18 @@ public class ConformationTask implements Task<VerificationChainOutput> {
 
             if (devExportResult.getOutcome() != Outcome.SUCCESS) {
                 if (devExportResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+                    return Result.cancelation();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(devExportResult, null, null, null, toolchainPreparationParameters));
+                return Result.failure(new VerificationChainOutput(
+                        devExportResult, null, null, null, toolchainPreparationParameters));
             }
             monitor.progressUpdate(0.30);
 
             // Generating .g for the environment
             Stg envStg = StgUtils.loadStg(envFile);
             if (envStg == null) {
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(null, null, null, null, toolchainPreparationParameters));
+                return Result.failure(new VerificationChainOutput(
+                        null, null, null, null, toolchainPreparationParameters));
             }
 
             // Make sure that input signals of the device STG are also inputs in the environment STG
@@ -92,10 +92,10 @@ public class ConformationTask implements Task<VerificationChainOutput> {
 
             if (envExportResult.getOutcome() != Outcome.SUCCESS) {
                 if (envExportResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+                    return Result.cancelation();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(envExportResult, null, null, null, toolchainPreparationParameters));
+                return Result.failure(new VerificationChainOutput(
+                        envExportResult, null, null, null, toolchainPreparationParameters));
             }
             monitor.progressUpdate(0.40);
 
@@ -110,10 +110,10 @@ public class ConformationTask implements Task<VerificationChainOutput> {
 
             if (pcompResult.getOutcome() != Outcome.SUCCESS) {
                 if (pcompResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+                    return Result.cancelation();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(devExportResult, pcompResult, null, null, toolchainPreparationParameters));
+                return Result.failure(new VerificationChainOutput(
+                        devExportResult, pcompResult, null, null, toolchainPreparationParameters));
             }
             monitor.progressUpdate(0.50);
 
@@ -125,10 +125,10 @@ public class ConformationTask implements Task<VerificationChainOutput> {
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {
                 if (punfResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+                    return Result.cancelation();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(devExportResult, pcompResult, punfResult, null, toolchainPreparationParameters));
+                return Result.failure(new VerificationChainOutput(
+                        devExportResult, pcompResult, punfResult, null, toolchainPreparationParameters));
             }
             monitor.progressUpdate(0.60);
 
@@ -143,29 +143,29 @@ public class ConformationTask implements Task<VerificationChainOutput> {
 
             if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
                 if (mpsatResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+                    return Result.cancelation();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters));
+                return Result.failure(new VerificationChainOutput(
+                        devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters));
             }
             monitor.progressUpdate(0.80);
 
             String mpsatStdout = mpsatResult.getPayload().getStdoutString();
             VerificationOutputParser verificationOutputParser = new VerificationOutputParser(mpsatStdout);
             if (!verificationOutputParser.getSolutions().isEmpty()) {
-                return new Result<>(Outcome.SUCCESS,
-                        new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,
-                                "This model does not conform to the environment."));
+                return Result.success(new VerificationChainOutput(
+                        devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,
+                        "This model does not conform to the environment."));
             }
             monitor.progressUpdate(1.0);
 
             // Success
-            String message = "The model conforms to its environment (" + envFile.getName() + ").";
-            return new Result<>(Outcome.SUCCESS,
-                    new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters, message));
+            return Result.success(new VerificationChainOutput(
+                    devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,
+                    "The model conforms to its environment (" + envFile.getName() + ")."));
 
         } catch (Throwable e) {
-            return new Result<>(e);
+            return Result.exception(e);
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
         }

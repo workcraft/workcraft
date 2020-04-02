@@ -72,7 +72,6 @@ public class MutexImplementabilityVerificationCommand extends AbstractVerificati
         ArrayList<VerificationParameters> settingsList = ReachUtils.getMutexImplementabilityParameters(mutexes);
         CombinedChainTask task = new CombinedChainTask(we, settingsList, null);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
-        monitor.setMutexes(mutexes);
         manager.queue(task, description, monitor);
     }
 
