@@ -3,7 +3,7 @@ package org.workcraft.plugins.atacs.commands;
 import org.workcraft.Framework;
 import org.workcraft.plugins.atacs.AtacsSettings;
 import org.workcraft.plugins.atacs.tasks.SynthesisResultHandlingMonitor;
-import org.workcraft.plugins.atacs.tasks.SynthesisTask;
+import org.workcraft.plugins.atacs.tasks.AtacsTask;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
@@ -60,7 +60,7 @@ public abstract class AbstractSynthesisCommand extends org.workcraft.commands.Ab
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
         Framework framework = Framework.getInstance();
         TaskManager taskManager = framework.getTaskManager();
-        SynthesisTask task = new SynthesisTask(we, getSynthesisParameter(), mutexes);
+        AtacsTask task = new AtacsTask(we, getSynthesisParameter(), mutexes);
         SynthesisResultHandlingMonitor monitor = new SynthesisResultHandlingMonitor(we,
                 boxSequentialComponents(), boxCombinationalComponents(), sequentialAssign(),
                 mutexes);

@@ -5,12 +5,12 @@ import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
-import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
-import org.workcraft.plugins.mpsat.tasks.VerificationOutput;
-import org.workcraft.plugins.mpsat.tasks.VerificationOutputParser;
-import org.workcraft.plugins.mpsat.tasks.VerificationTask;
-import org.workcraft.plugins.mpsat.utils.ReachUtils;
+import org.workcraft.plugins.mpsat_verification.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
+import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutput;
+import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutputParser;
+import org.workcraft.plugins.mpsat_verification.tasks.MpsatTask;
+import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -233,9 +233,9 @@ public class CheckTask implements Task<VerificationChainOutput> {
                 ComponentData devComponentData = compositionData.getComponentData(devStgFile);
                 Set<String> devPlaceNames = devComponentData.getDstPlaces();
                 VerificationParameters conformationParameters = ReachUtils.getConformationParameters(devPlaceNames);
-                VerificationTask mpsatConformationTask = new VerificationTask(unfoldingModFile, sysModStgFile, conformationParameters, directory);
+                MpsatTask mpsatConformationTask = new MpsatTask(unfoldingModFile, sysModStgFile, conformationParameters, directory);
                 SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
-                Result<? extends VerificationOutput>  mpsatConformationResult = manager.execute(
+                Result<? extends MpsatOutput>  mpsatConformationResult = manager.execute(
                         mpsatConformationTask, "Running conformation check [MPSat]", mpsatMonitor);
 
                 if (mpsatConformationResult.getOutcome() != Outcome.SUCCESS) {
@@ -248,7 +248,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                 monitor.progressUpdate(0.5);
 
                 String mpsatConformationStdout = mpsatConformationResult.getPayload().getStdoutString();
-                VerificationOutputParser mpsatConformationParser = new VerificationOutputParser(mpsatConformationStdout);
+                MpsatOutputParser mpsatConformationParser = new MpsatOutputParser(mpsatConformationStdout);
                 if (!mpsatConformationParser.getSolutions().isEmpty()) {
                     return new Result<>(Outcome.SUCCESS,
                             new VerificationChainOutput(devExportResult, pcompModResult, punfModResult, mpsatConformationResult, conformationParameters,
@@ -260,9 +260,9 @@ public class CheckTask implements Task<VerificationChainOutput> {
             // Check for deadlock (if requested)
             if (checkDeadlock) {
                 VerificationParameters deadlockParameters = ReachUtils.getDeadlockParameters();
-                VerificationTask mpsatDeadlockTask = new VerificationTask(unfoldingFile, sysStgFile, deadlockParameters, directory);
+                MpsatTask mpsatDeadlockTask = new MpsatTask(unfoldingFile, sysStgFile, deadlockParameters, directory);
                 SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
-                Result<? extends VerificationOutput> mpsatDeadlockResult = manager.execute(
+                Result<? extends MpsatOutput> mpsatDeadlockResult = manager.execute(
                         mpsatDeadlockTask, "Running deadlock check [MPSat]", mpsatMonitor);
 
                 if (mpsatDeadlockResult.getOutcome() != Outcome.SUCCESS) {
@@ -275,7 +275,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                 monitor.progressUpdate(0.7);
 
                 String mpsatDeadlockStdout = mpsatDeadlockResult.getPayload().getStdoutString();
-                VerificationOutputParser mpsatDeadlockParser = new VerificationOutputParser(mpsatDeadlockStdout);
+                MpsatOutputParser mpsatDeadlockParser = new MpsatOutputParser(mpsatDeadlockStdout);
                 if (!mpsatDeadlockParser.getSolutions().isEmpty()) {
                     return new Result<>(Outcome.SUCCESS,
                             new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatDeadlockResult, deadlockParameters,
@@ -287,9 +287,9 @@ public class CheckTask implements Task<VerificationChainOutput> {
             // Check for persistency (if requested)
             if (checkPersistency) {
                 VerificationParameters persistencyParameters = ReachUtils.getOutputPersistencyParameters(grantPairs);
-                VerificationTask mpsatPersistencyTask = new VerificationTask(unfoldingFile, sysStgFile, persistencyParameters, directory);
+                MpsatTask mpsatPersistencyTask = new MpsatTask(unfoldingFile, sysStgFile, persistencyParameters, directory);
                 SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
-                Result<? extends VerificationOutput>  mpsatPersistencyResult = manager.execute(
+                Result<? extends MpsatOutput>  mpsatPersistencyResult = manager.execute(
                         mpsatPersistencyTask, "Running output persistency check [MPSat]", mpsatMonitor);
 
                 if (mpsatPersistencyResult.getOutcome() != Outcome.SUCCESS) {
@@ -302,7 +302,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                 monitor.progressUpdate(0.9);
 
                 String mpsatPersistencyStdout = mpsatPersistencyResult.getPayload().getStdoutString();
-                VerificationOutputParser mpsatPersistencyParser = new VerificationOutputParser(mpsatPersistencyStdout);
+                MpsatOutputParser mpsatPersistencyParser = new MpsatOutputParser(mpsatPersistencyStdout);
                 if (!mpsatPersistencyParser.getSolutions().isEmpty()) {
                     return new Result<>(Outcome.SUCCESS,
                             new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatPersistencyResult, persistencyParameters,
@@ -312,7 +312,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
             monitor.progressUpdate(1.0);
 
             // Success
-            Result<? extends VerificationOutput>  mpsatResult = new Result<>(Outcome.SUCCESS);
+            Result<? extends MpsatOutput>  mpsatResult = new Result<>(Outcome.SUCCESS);
             VerificationParameters completionParameters = ReachUtils.getToolchainCompletionParameters();
             String message = getSuccessMessage(envFile);
             return new Result<>(Outcome.SUCCESS,

@@ -3,13 +3,13 @@ package org.workcraft.plugins.policy.tasks;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
-import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
-import org.workcraft.plugins.mpsat.VerificationMode;
-import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
-import org.workcraft.plugins.mpsat.tasks.VerificationOutput;
-import org.workcraft.plugins.mpsat.tasks.VerificationOutputParser;
-import org.workcraft.plugins.mpsat.tasks.VerificationTask;
+import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
+import org.workcraft.plugins.mpsat_verification.VerificationMode;
+import org.workcraft.plugins.mpsat_verification.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
+import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutput;
+import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutputParser;
+import org.workcraft.plugins.mpsat_verification.tasks.MpsatTask;
 import org.workcraft.plugins.petri.Petri;
 import org.workcraft.plugins.policy.VisualPolicy;
 import org.workcraft.plugins.policy.tools.PolicyToPetriConverter;
@@ -81,9 +81,9 @@ public class DeadlockFreenessTask implements Task<VerificationChainOutput> {
             }
             monitor.progressUpdate(0.70);
 
-            VerificationTask verificationTask = new VerificationTask(unfoldingFile, netFile, verificationParameters, directory);
-            Result<? extends VerificationOutput> mpsatResult = framework.getTaskManager().execute(
-                    verificationTask, "Running deadlock checking [MPSat]", mon);
+            MpsatTask mpsatTask = new MpsatTask(unfoldingFile, netFile, verificationParameters, directory);
+            Result<? extends MpsatOutput> mpsatResult = framework.getTaskManager().execute(
+                    mpsatTask, "Running deadlock checking [MPSat]", mon);
 
             if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
                 if (mpsatResult.getOutcome() == Outcome.CANCEL) {
@@ -96,7 +96,7 @@ public class DeadlockFreenessTask implements Task<VerificationChainOutput> {
             monitor.progressUpdate(0.90);
 
             String mpsatStdout = mpsatResult.getPayload().getStdoutString();
-            VerificationOutputParser mdp = new VerificationOutputParser(mpsatStdout);
+            MpsatOutputParser mdp = new MpsatOutputParser(mpsatStdout);
             if (!mdp.getSolutions().isEmpty()) {
                 return new Result<>(Outcome.SUCCESS,
                         new VerificationChainOutput(exportResult, null, punfResult, mpsatResult, verificationParameters, "Policy net has a deadlock"));

@@ -4,12 +4,12 @@ import org.workcraft.Framework;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
-import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
-import org.workcraft.plugins.mpsat.tasks.VerificationOutput;
-import org.workcraft.plugins.mpsat.tasks.VerificationOutputParser;
-import org.workcraft.plugins.mpsat.tasks.VerificationTask;
-import org.workcraft.plugins.mpsat.utils.ReachUtils;
+import org.workcraft.plugins.mpsat_verification.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
+import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutput;
+import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutputParser;
+import org.workcraft.plugins.mpsat_verification.tasks.MpsatTask;
+import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
@@ -122,10 +122,10 @@ public class AssertionCheckTask implements Task<VerificationChainOutput> {
             monitor.progressUpdate(0.40);
 
             // Check custom property (if requested)
-            VerificationTask verificationTask = new VerificationTask(unfoldingFile, sysStgFile, verificationParameters, directory);
+            MpsatTask mpsatTask = new MpsatTask(unfoldingFile, sysStgFile, verificationParameters, directory);
             SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
-            Result<? extends VerificationOutput> mpsatResult = manager.execute(
-                    verificationTask, "Running custom property check [MPSat]", mpsatMonitor);
+            Result<? extends MpsatOutput> mpsatResult = manager.execute(
+                    mpsatTask, "Running custom property check [MPSat]", mpsatMonitor);
 
             if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
                 if (mpsatResult.getOutcome() == Outcome.CANCEL) {
@@ -137,7 +137,7 @@ public class AssertionCheckTask implements Task<VerificationChainOutput> {
             monitor.progressUpdate(0.50);
 
             String mpsatStdout = mpsatResult.getPayload().getStdoutString();
-            VerificationOutputParser mpsatParser = new VerificationOutputParser(mpsatStdout);
+            MpsatOutputParser mpsatParser = new MpsatOutputParser(mpsatStdout);
             if (!mpsatParser.getSolutions().isEmpty()) {
                 return new Result<>(Outcome.SUCCESS,
                         new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,

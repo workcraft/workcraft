@@ -5,12 +5,12 @@ import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.plugins.dfs.stg.DfsToStgConverter;
-import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
-import org.workcraft.plugins.mpsat.tasks.VerificationOutput;
-import org.workcraft.plugins.mpsat.tasks.VerificationOutputParser;
-import org.workcraft.plugins.mpsat.tasks.VerificationTask;
-import org.workcraft.plugins.mpsat.utils.ReachUtils;
+import org.workcraft.plugins.mpsat_verification.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
+import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutput;
+import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutputParser;
+import org.workcraft.plugins.mpsat_verification.tasks.MpsatTask;
+import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.StgModel;
@@ -79,9 +79,9 @@ public class OutputPersistencyCheckTask implements Task<VerificationChainOutput>
             }
             monitor.progressUpdate(0.40);
 
-            VerificationTask verificationTask = new VerificationTask(unfoldingFile, netFile, verificationParameters, directory);
-            Result<? extends VerificationOutput> mpsatResult = framework.getTaskManager().execute(
-                    verificationTask, "Running semimodularity checking [MPSat]", mon);
+            MpsatTask mpsatTask = new MpsatTask(unfoldingFile, netFile, verificationParameters, directory);
+            Result<? extends MpsatOutput> mpsatResult = framework.getTaskManager().execute(
+                    mpsatTask, "Running semimodularity checking [MPSat]", mon);
 
             if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
                 if (mpsatResult.getOutcome() == Outcome.CANCEL) {
@@ -93,7 +93,7 @@ public class OutputPersistencyCheckTask implements Task<VerificationChainOutput>
             monitor.progressUpdate(0.90);
 
             String mpsatStdout = mpsatResult.getPayload().getStdoutString();
-            VerificationOutputParser mdp = new VerificationOutputParser(mpsatStdout);
+            MpsatOutputParser mdp = new MpsatOutputParser(mpsatStdout);
             if (!mdp.getSolutions().isEmpty()) {
                 return new Result<>(Outcome.SUCCESS,
                         new VerificationChainOutput(exportResult, null, punfResult, mpsatResult, verificationParameters, "Dataflow is not output-persistent"));

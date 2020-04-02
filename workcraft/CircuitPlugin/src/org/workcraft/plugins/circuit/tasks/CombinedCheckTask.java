@@ -4,10 +4,10 @@ import org.workcraft.Framework;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
-import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.tasks.CombinedChainOutput;
-import org.workcraft.plugins.mpsat.tasks.VerificationOutput;
-import org.workcraft.plugins.mpsat.tasks.VerificationTask;
+import org.workcraft.plugins.mpsat_verification.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.tasks.CombinedChainOutput;
+import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutput;
+import org.workcraft.plugins.mpsat_verification.tasks.MpsatTask;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
@@ -129,11 +129,11 @@ public class CombinedCheckTask implements Task<CombinedChainOutput> {
 
             // Run MPSat on the generated unfolding
             SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
-            ArrayList<Result<? extends VerificationOutput>> mpsatResultList = new ArrayList<>(verificationParametersList.size());
+            ArrayList<Result<? extends MpsatOutput>> mpsatResultList = new ArrayList<>(verificationParametersList.size());
             for (VerificationParameters verificationParameters : verificationParametersList) {
-                VerificationTask verificationTask = new VerificationTask(unfoldingFile, sysStgFile, verificationParameters, directory);
-                Result<? extends VerificationOutput> mpsatResult = manager.execute(
-                        verificationTask, "Running verification [MPSat]", mpsatMonitor);
+                MpsatTask mpsatTask = new MpsatTask(unfoldingFile, sysStgFile, verificationParameters, directory);
+                Result<? extends MpsatOutput> mpsatResult = manager.execute(
+                        mpsatTask, "Running verification [MPSat]", mpsatMonitor);
                 mpsatResultList.add(mpsatResult);
                 if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
                     if (mpsatResult.getOutcome() == Outcome.CANCEL) {

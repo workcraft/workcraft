@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonitor<SynthesisOutput, WorkspaceEntry> {
+public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonitor<AtacsOutput, WorkspaceEntry> {
 
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
 
@@ -51,9 +51,9 @@ public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonito
     }
 
     @Override
-    public WorkspaceEntry handle(Result<? extends SynthesisOutput> result) {
+    public WorkspaceEntry handle(Result<? extends AtacsOutput> result) {
         WorkspaceEntry weResult = null;
-        SynthesisOutput atacsResult = result.getPayload();
+        AtacsOutput atacsResult = result.getPayload();
         if (result.getOutcome() == Outcome.SUCCESS) {
             weResult = handleSuccess(atacsResult);
         } else if (result.getOutcome() == Outcome.FAILURE) {
@@ -62,11 +62,11 @@ public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonito
         return weResult;
     }
 
-    private WorkspaceEntry handleSuccess(SynthesisOutput atacsOutput) {
+    private WorkspaceEntry handleSuccess(AtacsOutput atacsOutput) {
         return handleVerilogSynthesisOutput(atacsOutput);
     }
 
-    private WorkspaceEntry handleVerilogSynthesisOutput(SynthesisOutput atacsOutput) {
+    private WorkspaceEntry handleVerilogSynthesisOutput(AtacsOutput atacsOutput) {
         WorkspaceEntry dstWe = null;
         String verilogOutput = atacsOutput.getVerilog();
         if ((verilogOutput != null) && !verilogOutput.isEmpty()) {
@@ -162,7 +162,7 @@ public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonito
         }
     }
 
-    private void handleFailure(SynthesisOutput atacsOutput) {
+    private void handleFailure(AtacsOutput atacsOutput) {
         String errorMessage = "Error: ATACS synthesis failed.\n"
                 + "Please refer to the log in Output window for details.\n"
                 + "Note that ATACS requires STG to have Complete State Coding.";

@@ -9,14 +9,14 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
-import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
-import org.workcraft.plugins.mpsat.VerificationMode;
-import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
-import org.workcraft.plugins.mpsat.tasks.VerificationOutput;
-import org.workcraft.plugins.mpsat.tasks.VerificationOutputParser;
-import org.workcraft.plugins.mpsat.tasks.VerificationTask;
-import org.workcraft.plugins.mpsat.utils.ReachUtils;
+import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
+import org.workcraft.plugins.mpsat_verification.VerificationMode;
+import org.workcraft.plugins.mpsat_verification.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
+import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutput;
+import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutputParser;
+import org.workcraft.plugins.mpsat_verification.tasks.MpsatTask;
+import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.Stg;
@@ -143,10 +143,10 @@ public class StrictImplementationCheckTask implements Task<VerificationChainOutp
                 }
             }
             VerificationParameters verificationParameters = getVerificationParameters(signalInfos);
-            VerificationTask verificationTask = new VerificationTask(unfoldingFile, envStgFile, verificationParameters, directory);
+            MpsatTask mpsatTask = new MpsatTask(unfoldingFile, envStgFile, verificationParameters, directory);
             SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
-            Result<? extends VerificationOutput>  mpsatResult = taskManager.execute(
-                    verificationTask, "Running strict implementation check [MPSat]", mpsatMonitor);
+            Result<? extends MpsatOutput>  mpsatResult = taskManager.execute(
+                    mpsatTask, "Running strict implementation check [MPSat]", mpsatMonitor);
 
             if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
                 if (mpsatResult.getOutcome() == Outcome.CANCEL) {
@@ -158,7 +158,7 @@ public class StrictImplementationCheckTask implements Task<VerificationChainOutp
             monitor.progressUpdate(0.80);
 
             String mpsatStdout = mpsatResult.getPayload().getStdoutString();
-            VerificationOutputParser mpsatParser = new VerificationOutputParser(mpsatStdout);
+            MpsatOutputParser mpsatParser = new MpsatOutputParser(mpsatStdout);
             if (!mpsatParser.getSolutions().isEmpty()) {
                 return new Result<>(Outcome.SUCCESS,
                         new VerificationChainOutput(envExportResult, null, punfResult, mpsatResult, verificationParameters,
