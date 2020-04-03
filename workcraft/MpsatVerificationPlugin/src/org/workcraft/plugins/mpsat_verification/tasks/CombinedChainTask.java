@@ -4,12 +4,10 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.PluginManager;
-import org.workcraft.plugins.mpsat_verification.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.petri.PetriModel;
-import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.interop.StgFormat;
@@ -96,16 +94,7 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
             monitor.progressUpdate(0.33);
 
             // Generate unfolding
-            boolean useMci = false;
-            if (PunfSettings.getUseMciCsc()) {
-                useMci = true;
-                for (VerificationParameters verificationParameters: verificationParametersList) {
-                    useMci &= verificationParameters.getMode() == VerificationMode.RESOLVE_ENCODING_CONFLICTS;
-                }
-            }
-            String unfoldingExtension = useMci ? PunfTask.MCI_FILE_EXTENSION : PunfTask.PNML_FILE_EXTENSION;
-
-            File unfoldingFile = new File(directory, "unfolding" + unfoldingExtension);
+            File unfoldingFile = new File(directory, "unfolding" + PunfTask.PNML_FILE_EXTENSION);
             PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory);
             Result<? extends PunfOutput> punfResult = taskManager.execute(punfTask, "Unfolding .g", subtaskMonitor);
 

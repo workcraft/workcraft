@@ -21,9 +21,6 @@ public class MpsatVerificationPlugin implements Plugin {
 
         pm.registerSettings(MpsatVerificationSettings.class);
 
-        ScriptableCommandUtils.register(CscConflictResolutionCommand.class, "resolveCscConflictMpsat",
-                "resolve complete state coding conflicts with MPSat backend");
-
         ScriptableCommandUtils.register(CombinedVerificationCommand.class, "checkStgCombined",
                 "combined check of the STG 'work' for consistency, deadlock freeness, input properness, output persistency, and mutex implementability");
         ScriptableCommandUtils.register(ConsistencyVerificationCommand.class, "checkStgConsistency",

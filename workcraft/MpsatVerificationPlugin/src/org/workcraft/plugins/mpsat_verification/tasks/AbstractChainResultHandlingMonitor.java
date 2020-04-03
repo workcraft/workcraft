@@ -77,7 +77,7 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput, 
                     String mpsatFakeStdout = "SOLUTION 0\n" + solution + "\npath cost: " + cost + "\n";
                     MpsatOutput mpsatFakeOutput = new MpsatOutput(
                             new ExternalProcessOutput(0, mpsatFakeStdout.getBytes(), new byte[0]),
-                            null, null, ReachUtils.getConsistencyParameters());
+                            null, ReachUtils.getConsistencyParameters());
 
                     new ConsistencyOutputInterpreter(we, exportOutput, pcompOutput, mpsatFakeOutput, isInteractive()).interpret();
                 } else {

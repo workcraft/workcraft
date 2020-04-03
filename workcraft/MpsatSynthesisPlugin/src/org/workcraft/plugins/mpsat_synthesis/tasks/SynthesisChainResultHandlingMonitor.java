@@ -17,6 +17,10 @@ import org.workcraft.plugins.mpsat_synthesis.MpsatSynthesisSettings;
 import org.workcraft.plugins.mpsat_synthesis.SynthesisMode;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.plugins.stg.StgDescriptor;
+import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.interop.StgImporter;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.ExportOutput;
@@ -32,14 +36,14 @@ import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonitor<SynthesisChainOutput, WorkspaceEntry> {
+public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingMonitor<SynthesisChainOutput, WorkspaceEntry> {
 
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
 
     private final WorkspaceEntry we;
     private final Collection<Mutex> mutexes;
 
-    public SynthesisResultHandlingMonitor(WorkspaceEntry we, Collection<Mutex> mutexes) {
+    public SynthesisChainResultHandlingMonitor(WorkspaceEntry we, Collection<Mutex> mutexes) {
         this.we = we;
         this.mutexes = mutexes;
     }
@@ -57,27 +61,48 @@ public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonito
 
     private WorkspaceEntry handleSuccess(final Result<? extends SynthesisChainOutput> chainResult) {
         SynthesisChainOutput chainOutput = chainResult.getPayload();
-        SynthesisMode mpsatMode = chainOutput.getSynthesisParameters().getMode();
+        SynthesisMode mpsatMode = chainOutput.getSynthesisMode();
         MpsatOutput mpsatOutput = chainOutput.getMpsatResult().getPayload();
-        WorkspaceEntry synthResult = null;
         switch (mpsatMode) {
+        case RESOLVE_ENCODING_CONFLICTS:
+            return handleConflictResolutionOutput(mpsatOutput);
+
         case COMPLEX_GATE_IMPLEMENTATION:
-            synthResult = handleSynthesisOutput(mpsatOutput, false, RenderType.GATE, false);
-            break;
+            return handleSynthesisOutput(mpsatOutput, false, RenderType.GATE, false);
+
         case GENERALISED_CELEMENT_IMPLEMENTATION:
-            synthResult = handleSynthesisOutput(mpsatOutput, true, RenderType.BOX, false);
-            break;
+            return handleSynthesisOutput(mpsatOutput, true, RenderType.BOX, false);
+
         case STANDARD_CELEMENT_IMPLEMENTATION:
-            synthResult = handleSynthesisOutput(mpsatOutput, true, RenderType.GATE, false);
-            break;
+            return handleSynthesisOutput(mpsatOutput, true, RenderType.GATE, false);
+
         case TECH_MAPPING:
-            synthResult = handleSynthesisOutput(mpsatOutput, false, RenderType.GATE, true);
-            break;
+            return handleSynthesisOutput(mpsatOutput, false, RenderType.GATE, true);
+
         default:
             DialogUtils.showWarning("MPSat synthesis mode \'" + mpsatMode.getArgument() + "\' is not (yet) supported.");
-            break;
+            return null;
         }
-        return synthResult;
+    }
+
+    public WorkspaceEntry handleConflictResolutionOutput(MpsatOutput mpsatOutput) {
+        try {
+            ByteArrayInputStream dstStream = new ByteArrayInputStream(mpsatOutput.getStgOutput());
+            StgModel model = new StgImporter().importStg(dstStream);
+            if (model == null) {
+                final String errorMessage = mpsatOutput.getErrorsHeadAndTail();
+                DialogUtils.showWarning("Conflict resolution failed. MPSat output: \n" + errorMessage);
+                return null;
+            }
+            model.setTitle(we.getModelTitle());
+            MutexUtils.restoreMutexSignals(model, mutexes);
+            MutexUtils.restoreMutexPlacesByName(model, mutexes);
+            final ModelEntry me = new ModelEntry(new StgDescriptor(), model);
+            final Path<String> path = we.getWorkspacePath();
+            return Framework.getInstance().createWork(me, path);
+        } catch (DeserialisationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private WorkspaceEntry handleSynthesisOutput(MpsatOutput mpsatOutput,

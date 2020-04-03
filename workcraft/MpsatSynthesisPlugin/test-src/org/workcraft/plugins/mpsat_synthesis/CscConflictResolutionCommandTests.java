@@ -1,11 +1,11 @@
-package org.workcraft.plugins.mpsat_verification;
+package org.workcraft.plugins.mpsat_synthesis;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.plugins.mpsat_verification.commands.CscConflictResolutionCommand;
+import org.workcraft.plugins.mpsat_synthesis.commands.CscConflictResolutionCommand;
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
@@ -27,7 +27,7 @@ public class CscConflictResolutionCommandTests {
         final Framework framework = Framework.getInstance();
         framework.init();
         PunfSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "punf"));
-        MpsatVerificationSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
+        MpsatSynthesisSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
     }
 
     @Test

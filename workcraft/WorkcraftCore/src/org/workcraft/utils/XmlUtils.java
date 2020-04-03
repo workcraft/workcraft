@@ -40,6 +40,15 @@ public class XmlUtils {
         }
     }
 
+    public static <T extends Enum<T>> T readEnumAttribute(Element element, String attributeName, Class<T> enumType, T defaultValue) {
+        String value = element.getAttribute(attributeName);
+        try {
+            return Enum.valueOf(enumType, value);
+        } catch (IllegalArgumentException e) {
+            return defaultValue;
+        }
+    }
+
     public static List<Element> getChildElements(String tagName, Element element) {
         LinkedList<Element> result = new LinkedList<>();
         NodeList nl = element.getChildNodes();

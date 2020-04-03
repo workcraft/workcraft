@@ -3,13 +3,12 @@ package org.workcraft.plugins.policy.tasks;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
-import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
-import org.workcraft.plugins.mpsat_verification.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.VerificationParameters;
-import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutput;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutputParser;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatTask;
+import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
+import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.petri.Petri;
 import org.workcraft.plugins.policy.VisualPolicy;
 import org.workcraft.plugins.policy.tools.PolicyToPetriConverter;
@@ -38,9 +37,7 @@ public class DeadlockFreenessTask implements Task<VerificationChainOutput> {
         final Framework framework = Framework.getInstance();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
-        VerificationParameters verificationParameters = new VerificationParameters("Deadlock freeness",
-                VerificationMode.DEADLOCK, 0,
-                MpsatVerificationSettings.getSolutionMode(), MpsatVerificationSettings.getSolutionCount());
+        VerificationParameters verificationParameters = ReachUtils.getDeadlockParameters();
         try {
             VisualPolicy policy = WorkspaceUtils.getAs(we, VisualPolicy.class);
             PolicyToPetriConverter converter = new PolicyToPetriConverter(policy);

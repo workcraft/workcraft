@@ -9,8 +9,8 @@ import java.util.ArrayList;
 
 public class VerificationParameters {
 
-    private static final String PROPERTY_FILE_PREFIX = "assertion";
-    private static final String PROPERTY_FILE_EXTENTION = ".re";
+    private static final String ASSERTION_FILE_PREFIX = "assertion";
+    private static final String ASSERTION_FILE_EXTENTION = ".txt";
 
     public enum SolutionMode {
         MINIMUM_COST("Minimal cost solution"),
@@ -89,27 +89,27 @@ public class VerificationParameters {
             args.add(option);
         }
 
-        if (getMode().hasExpression()) {
+        String expression = getExpression();
+        if (expression != null) {
             try {
-                File reachFile = null;
+                File assertionFile = null;
                 if (workingDirectory == null) {
-                    reachFile = FileUtils.createTempFile(PROPERTY_FILE_PREFIX, PROPERTY_FILE_EXTENTION);
-                    reachFile.deleteOnExit();
+                    assertionFile = FileUtils.createTempFile(ASSERTION_FILE_PREFIX, ASSERTION_FILE_EXTENTION);
+                    assertionFile.deleteOnExit();
                 } else {
-                    String prefix = name == null ? PROPERTY_FILE_PREFIX
-                            : PROPERTY_FILE_PREFIX + "-" + name.replaceAll("\\s", "_");
+                    String prefix = name == null ? ASSERTION_FILE_PREFIX
+                            : ASSERTION_FILE_PREFIX + "-" + name.replaceAll("\\s", "_");
 
-                    reachFile = new File(workingDirectory, prefix + PROPERTY_FILE_EXTENTION);
+                    assertionFile = new File(workingDirectory, prefix + ASSERTION_FILE_EXTENTION);
                 }
-                String reachExpression = getExpression();
-                FileUtils.dumpString(reachFile, reachExpression);
+                FileUtils.dumpString(assertionFile, expression);
                 if (MpsatVerificationSettings.getDebugReach()) {
                     LogUtils.logInfo("REACH expression to check");
-                    LogUtils.logMessage(reachExpression);
+                    LogUtils.logMessage(expression);
                 }
 
                 args.add("-d");
-                args.add("@" + reachFile.getAbsolutePath());
+                args.add("@" + assertionFile.getAbsolutePath());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

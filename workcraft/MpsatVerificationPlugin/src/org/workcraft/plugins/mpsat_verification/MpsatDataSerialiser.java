@@ -22,20 +22,16 @@ public class MpsatDataSerialiser implements DataSerialiser<VerificationParameter
 
         String name = element.getAttribute(SETTINGS_NAME_ATTRIBUTE);
 
-        String modeAttribute = element.getAttribute(SETTINGS_MODE_ATTRIBUTE);
-        VerificationMode mode = modeAttribute.isEmpty()
-                ? VerificationMode.STG_REACHABILITY
-                : VerificationMode.getModeByArgument(modeAttribute);
+        VerificationMode mode = XmlUtils.readEnumAttribute(element, SETTINGS_MODE_ATTRIBUTE,
+                VerificationMode.class, VerificationMode.STG_REACHABILITY);
 
         int verbosity = XmlUtils.readIntAttribute(element, SETTINGS_VERBOSITY_ATTRIBUTE, 0);
 
         int solutionNumberLimit = XmlUtils.readIntAttribute(element, SETTINGS_SOLUTION_LIMIT_ATTRIBUTE,
                 MpsatVerificationSettings.getSolutionCount());
 
-        String solutionModeAttribute = element.getAttribute(SETTINGS_SOLUTION_MODE_ATTRIBUTE);
-        SolutionMode solutionMode = solutionModeAttribute.isEmpty()
-                ? MpsatVerificationSettings.getSolutionMode()
-                : SolutionMode.valueOf(solutionModeAttribute);
+        SolutionMode solutionMode = XmlUtils.readEnumAttribute(element, SETTINGS_SOLUTION_MODE_ATTRIBUTE,
+                SolutionMode.class, MpsatVerificationSettings.getSolutionMode());
 
         Element reachElement = XmlUtils.getChildElement(SETTINGS_REACH_ELEMENT, element);
         String reach = reachElement == null ? "" : reachElement.getTextContent();
@@ -49,7 +45,7 @@ public class MpsatDataSerialiser implements DataSerialiser<VerificationParameter
     public void toXML(VerificationParameters verificationParameters, Element parent) {
         Element element = parent.getOwnerDocument().createElement(SETTINGS_ELEMENT);
         element.setAttribute(SETTINGS_NAME_ATTRIBUTE, verificationParameters.getName());
-        element.setAttribute(SETTINGS_MODE_ATTRIBUTE, verificationParameters.getMode().getArgument());
+        element.setAttribute(SETTINGS_MODE_ATTRIBUTE, verificationParameters.getMode().name());
         element.setAttribute(SETTINGS_VERBOSITY_ATTRIBUTE, Integer.toString(verificationParameters.getVerbosity()));
         element.setAttribute(SETTINGS_SOLUTION_LIMIT_ATTRIBUTE, Integer.toString(verificationParameters.getSolutionNumberLimit()));
         element.setAttribute(SETTINGS_SOLUTION_MODE_ATTRIBUTE, verificationParameters.getSolutionMode().name());

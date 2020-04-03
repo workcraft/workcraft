@@ -21,10 +21,7 @@ import java.util.regex.Pattern;
 
 public class MpsatTask implements Task<MpsatOutput> {
 
-    // IMPORTANT: The name of output file must be mpsat.g -- this is not configurable on MPSat side.
-    private static final String STG_FILE_NAME = "mpsat.g";
-
-    private static final Pattern patternSuccess = Pattern.compile(
+    private static final Pattern SUCCESS_PATTERN = Pattern.compile(
             "(" +
              /* Deadlock */
             "the system is deadlock-free" +
@@ -50,9 +47,6 @@ public class MpsatTask implements Task<MpsatOutput> {
             "no reachable state satisfies the predicate" +
             "|" +
             "there is a reachable state satisfying the predicate" +
-            "|" +
-            /* CSC resolution and decomposition */
-            "all conflicts resolved \\(\\d+ signal insertion\\(s\\) and \\d+ concurrency reduction\\(s\\) applied\\)" +
             "|" +
             "no transformation computed" +
             "|" +
@@ -125,15 +119,14 @@ public class MpsatTask implements Task<MpsatOutput> {
                 // Even if the return code is 0 or 1, still test MPSat output to make sure it has completed successfully.
                 boolean success = false;
                 if ((returnCode == 0) || (returnCode == 1)) {
-                    Matcher matcherSuccess = patternSuccess.matcher(output.getStdoutString());
+                    Matcher matcherSuccess = SUCCESS_PATTERN.matcher(output.getStdoutString());
                     success = matcherSuccess.find();
                 }
                 if (success) {
                     StgModel inputStg = readStg(netFile);
-                    StgModel outputStg = readStg(new File(directory, STG_FILE_NAME));
-                    return Result.success(new MpsatOutput(output, inputStg, outputStg, verificationParameters));
+                    return Result.success(new MpsatOutput(output, inputStg, verificationParameters));
                 }
-                return Result.failure(new MpsatOutput(output, null, null, verificationParameters));
+                return Result.failure(new MpsatOutput(output, null, verificationParameters));
             }
         }
 

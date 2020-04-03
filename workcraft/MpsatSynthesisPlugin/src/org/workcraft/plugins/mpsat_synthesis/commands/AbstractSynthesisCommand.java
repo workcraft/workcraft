@@ -1,11 +1,10 @@
 package org.workcraft.plugins.mpsat_synthesis.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.mpsat_synthesis.SynthesisMode;
-import org.workcraft.plugins.mpsat_synthesis.SynthesisParameters;
+import org.workcraft.plugins.mpsat_synthesis.tasks.SynthesisChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat_synthesis.tasks.SynthesisChainTask;
-import org.workcraft.plugins.mpsat_synthesis.tasks.SynthesisResultHandlingMonitor;
+import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
@@ -43,14 +42,14 @@ public abstract class AbstractSynthesisCommand extends  org.workcraft.commands.A
     @Override
     public WorkspaceEntry execute(WorkspaceEntry we) {
         WorkspaceEntry result = null;
-        SynthesisResultHandlingMonitor monitor = queueSynthesis(we);
+        SynthesisChainResultHandlingMonitor monitor = queueSynthesis(we);
         if (monitor != null) {
             result = monitor.waitForHandledResult();
         }
         return result;
     }
 
-    private SynthesisResultHandlingMonitor queueSynthesis(WorkspaceEntry we) {
+    private SynthesisChainResultHandlingMonitor queueSynthesis(WorkspaceEntry we) {
         if (!checkPrerequisites(we)) {
             return null;
         }
@@ -61,10 +60,9 @@ public abstract class AbstractSynthesisCommand extends  org.workcraft.commands.A
         }
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
         TaskManager manager = Framework.getInstance().getTaskManager();
-        SynthesisParameters synthesisParameters = getSynthesisParameters();
-        SynthesisChainTask task = new SynthesisChainTask(we, synthesisParameters, mutexes);
+        SynthesisChainTask task = new SynthesisChainTask(we, getSynthesisMode(), mutexes);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
-        SynthesisResultHandlingMonitor monitor = new SynthesisResultHandlingMonitor(we, mutexes);
+        SynthesisChainResultHandlingMonitor monitor = new SynthesisChainResultHandlingMonitor(we, mutexes);
         manager.queue(task, description, monitor);
         return monitor;
     }
@@ -72,11 +70,6 @@ public abstract class AbstractSynthesisCommand extends  org.workcraft.commands.A
     public boolean checkPrerequisites(WorkspaceEntry we) {
         StgModel net = WorkspaceUtils.getAs(we, StgModel.class);
         return PetriUtils.checkSoundness(net, true);
-    }
-
-    private SynthesisParameters getSynthesisParameters() {
-        SynthesisMode mode = getSynthesisMode();
-        return new SynthesisParameters(mode.toString(), mode, 0);
     }
 
     public abstract SynthesisMode getSynthesisMode();

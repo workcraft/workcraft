@@ -5,6 +5,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.mpsat_verification.utils.TransformUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
@@ -78,8 +79,7 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         String stgFileExtension = StgFormat.getInstance().getExtension();
-        VerificationParameters preparationParameters = new VerificationParameters("Toolchain preparation of data",
-                VerificationMode.UNDEFINED, 0, null, 0);
+        VerificationParameters preparationParameters = ReachUtils.getToolchainPreparationParameters();
         try {
             // Clone STG before converting its internal signals to outputs
             ModelEntry me = WorkUtils.cloneModel(we.getModelEntry());

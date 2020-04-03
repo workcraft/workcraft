@@ -3,10 +3,8 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
-import org.workcraft.plugins.mpsat_verification.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.VerificationParameters;
 import org.workcraft.plugins.petri.PetriModel;
-import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.Mutex;
@@ -88,10 +86,8 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
             monitor.progressUpdate(0.33);
 
             // Generate unfolding
-            boolean useLegacyMci = PunfSettings.getUseMciCsc() && (verificationParameters.getMode() == VerificationMode.RESOLVE_ENCODING_CONFLICTS);
-            String unfoldingExtension = useLegacyMci ? PunfTask.MCI_FILE_EXTENSION : PunfTask.PNML_FILE_EXTENSION;
-            File unfoldingFile = new File(directory, "unfolding" + unfoldingExtension);
-            PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory, useLegacyMci);
+            File unfoldingFile = new File(directory, "unfolding" + PunfTask.PNML_FILE_EXTENSION);
+            PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory);
             Result<? extends PunfOutput> punfResult = manager.execute(punfTask, "Unfolding .g", subtaskMonitor);
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {

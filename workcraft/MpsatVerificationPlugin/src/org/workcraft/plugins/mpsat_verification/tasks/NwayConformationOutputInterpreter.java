@@ -194,7 +194,7 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
 
     private String findUnexpectedOutputAfterTrace(Trace compTrace, Map<WorkspaceEntry, Trace> workToTraceMap) {
         // Find output enabled in component STG that is not enabled in the composition STG
-        StgModel compStg = getOutput().getInputStg();
+        StgModel compStg = getOutput().getStg();
         Enabledness compEnabledness = EnablednessUtils.getOutputEnablednessAfterTrace(compStg, compTrace);
         for (WorkspaceEntry we : wes) {
             StgModel stg = getSrcStg(we);

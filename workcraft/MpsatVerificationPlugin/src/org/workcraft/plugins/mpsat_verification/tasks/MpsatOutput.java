@@ -6,25 +6,19 @@ import org.workcraft.tasks.ExternalProcessOutput;
 
 public class MpsatOutput extends ExternalProcessOutput {
 
-    private final StgModel inputStg;
-    private final StgModel outputStg;
+    private final StgModel stg;
     private final VerificationParameters verificationParameters;
 
-    public MpsatOutput(ExternalProcessOutput output, StgModel inputStg, StgModel outputStg,
+    public MpsatOutput(ExternalProcessOutput output, StgModel stg,
             VerificationParameters verificationParameters) {
 
         super(output.getReturnCode(), output.getStdout(), output.getStderr());
-        this.inputStg = inputStg;
-        this.outputStg = outputStg;
+        this.stg = stg;
         this.verificationParameters = verificationParameters;
     }
 
-    public StgModel getInputStg() {
-        return inputStg;
-    }
-
-    public StgModel getOutputStg() {
-        return outputStg;
+    public StgModel getStg() {
+        return stg;
     }
 
     public VerificationParameters getVerificationParameters() {

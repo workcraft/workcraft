@@ -1,12 +1,10 @@
-package org.workcraft.plugins.mpsat_verification.commands;
+package org.workcraft.plugins.mpsat_synthesis.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.ScriptableCommand;
-import org.workcraft.plugins.mpsat_verification.VerificationMode;
-import org.workcraft.plugins.mpsat_verification.VerificationParameters;
-import org.workcraft.plugins.mpsat_verification.VerificationParameters.SolutionMode;
-import org.workcraft.plugins.mpsat_verification.tasks.ConflictResolutionChainResultHandlingMonitor;
-import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainTask;
+import org.workcraft.plugins.mpsat_synthesis.SynthesisMode;
+import org.workcraft.plugins.mpsat_synthesis.tasks.SynthesisChainResultHandlingMonitor;
+import org.workcraft.plugins.mpsat_synthesis.tasks.SynthesisChainTask;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
@@ -38,29 +36,24 @@ public class CscConflictResolutionCommand implements ScriptableCommand<Workspace
 
     @Override
     public void run(WorkspaceEntry we) {
-        ConflictResolutionChainResultHandlingMonitor monitor = new ConflictResolutionChainResultHandlingMonitor(we, true);
-        queueCscConflictResolution(we, monitor);
+        queueCscConflictResolution(we);
     }
 
     @Override
     public WorkspaceEntry execute(WorkspaceEntry we) {
-        ConflictResolutionChainResultHandlingMonitor monitor = new ConflictResolutionChainResultHandlingMonitor(we, true);
-        queueCscConflictResolution(we, monitor);
+        SynthesisChainResultHandlingMonitor monitor = queueCscConflictResolution(we);
         return monitor.waitForHandledResult();
     }
 
-    private void queueCscConflictResolution(WorkspaceEntry we, ConflictResolutionChainResultHandlingMonitor monitor) {
-        VerificationParameters verificationParameters = new VerificationParameters(TITLE,
-                VerificationMode.RESOLVE_ENCODING_CONFLICTS, 4, SolutionMode.MINIMUM_COST, 1);
-
+    private SynthesisChainResultHandlingMonitor queueCscConflictResolution(WorkspaceEntry we) {
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
-        monitor.setMutexes(mutexes);
-        VerificationChainTask task = new VerificationChainTask(we, verificationParameters, mutexes);
+        SynthesisChainResultHandlingMonitor monitor = new SynthesisChainResultHandlingMonitor(we, mutexes);
 
         TaskManager taskManager = Framework.getInstance().getTaskManager();
-        MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
+        SynthesisChainTask task = new SynthesisChainTask(we, SynthesisMode.RESOLVE_ENCODING_CONFLICTS, mutexes);
         taskManager.queue(task, TITLE, monitor);
+        return monitor;
     }
 
 }

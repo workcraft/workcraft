@@ -4,7 +4,6 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.PluginManager;
-import org.workcraft.plugins.mpsat_verification.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
@@ -30,9 +29,6 @@ import java.util.Set;
 
 public class ConformationTask implements Task<VerificationChainOutput> {
 
-    private final VerificationParameters toolchainPreparationParameters = new VerificationParameters("Toolchain preparation of data",
-            VerificationMode.UNDEFINED, 0, null, 0);
-
     private final WorkspaceEntry we;
     private final File envFile;
 
@@ -50,6 +46,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
         File directory = FileUtils.createTempDirectory(prefix);
         StgFormat format = StgFormat.getInstance();
         String stgFileExtension = format.getExtension();
+        VerificationParameters preparationParameters = ReachUtils.getToolchainPreparationParameters();
         try {
             Stg devStg = WorkspaceUtils.getAs(we, Stg.class);
             Exporter devStgExporter = ExportUtils.chooseBestExporter(pluginManager, devStg, format);
@@ -69,7 +66,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
                     return Result.cancelation();
                 }
                 return Result.failure(new VerificationChainOutput(
-                        devExportResult, null, null, null, toolchainPreparationParameters));
+                        devExportResult, null, null, null, preparationParameters));
             }
             monitor.progressUpdate(0.30);
 
@@ -77,7 +74,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             Stg envStg = StgUtils.loadStg(envFile);
             if (envStg == null) {
                 return Result.failure(new VerificationChainOutput(
-                        null, null, null, null, toolchainPreparationParameters));
+                        null, null, null, null, preparationParameters));
             }
 
             // Make sure that input signals of the device STG are also inputs in the environment STG
@@ -95,7 +92,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
                     return Result.cancelation();
                 }
                 return Result.failure(new VerificationChainOutput(
-                        envExportResult, null, null, null, toolchainPreparationParameters));
+                        envExportResult, null, null, null, preparationParameters));
             }
             monitor.progressUpdate(0.40);
 
@@ -113,7 +110,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
                     return Result.cancelation();
                 }
                 return Result.failure(new VerificationChainOutput(
-                        devExportResult, pcompResult, null, null, toolchainPreparationParameters));
+                        devExportResult, pcompResult, null, null, preparationParameters));
             }
             monitor.progressUpdate(0.50);
 
@@ -128,7 +125,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
                     return Result.cancelation();
                 }
                 return Result.failure(new VerificationChainOutput(
-                        devExportResult, pcompResult, punfResult, null, toolchainPreparationParameters));
+                        devExportResult, pcompResult, punfResult, null, preparationParameters));
             }
             monitor.progressUpdate(0.60);
 

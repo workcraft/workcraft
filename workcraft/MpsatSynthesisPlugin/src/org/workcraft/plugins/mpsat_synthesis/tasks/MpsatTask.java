@@ -2,6 +2,8 @@ package org.workcraft.plugins.mpsat_synthesis.tasks;
 
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.mpsat_synthesis.MpsatSynthesisSettings;
+import org.workcraft.plugins.mpsat_synthesis.SynthesisMode;
+import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
@@ -20,25 +22,29 @@ public class MpsatTask implements Task<MpsatOutput> {
     private static final String STG_FILE_NAME = "mpsat.g";
     private static final String VERILOG_FILE_NAME = "mpsat.v";
 
-    private static final Pattern patternSuccess = Pattern.compile(
+    private static final Pattern SUCCESS_PATTERN = Pattern.compile(
+            "(" +
+            /* CSC resolution and decomposition */
+            "all conflicts resolved \\(\\d+ signal insertion\\(s\\) and \\d+ concurrency reduction\\(s\\) applied\\)" +
+            "|" +
+            /* Synthesis and technology mapping */
             "Original Num Var/Cl/Lit\\s+\\d+/\\d+/\\d+\\R" +
-            "\\s*SAT/Total time:\\s+(\\d+\\.)?\\d+/(\\d+\\.)?\\d+",
+            "\\s*SAT/Total time:\\s+(\\d+\\.)?\\d+/(\\d+\\.)?\\d+" +
+            ")",
             Pattern.UNIX_LINES);
 
-    private final String[] args;
-    private final String inputFileName;
+    private final File unfoldingFile;
+    private final SynthesisMode synthesisMode;
     private final File directory;
-    private final boolean needsGateLibrary;
 
-    public MpsatTask(String[] args, String inputFileName, File directory, boolean needsGateLibrary) {
-        this.args = args;
-        this.inputFileName = inputFileName;
+    public MpsatTask(File unfoldingFile, SynthesisMode synthesisMode, File directory) {
+        this.unfoldingFile = unfoldingFile;
         if (directory == null) {
             // Prefix must be at least 3 symbols long.
             directory = FileUtils.createTempDirectory("mpsat-");
         }
         this.directory = directory;
-        this.needsGateLibrary = needsGateLibrary;
+        this.synthesisMode = synthesisMode;
     }
 
     @Override
@@ -46,17 +52,20 @@ public class MpsatTask implements Task<MpsatOutput> {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
-        String toolName = ExecutableUtils.getAbsoluteCommandPath(MpsatSynthesisSettings.getCommand());
+        String toolPrefix = MpsatSynthesisSettings.getCommand();
+        String unfoldingFileName = unfoldingFile.getName();
+        String toolSuffix = unfoldingFileName.endsWith(PunfTask.MCI_FILE_EXTENSION) ? PunfTask.LEGACY_TOOL_SUFFIX : "";
+        String toolName = ExecutableUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
         command.add(toolName);
 
         // Built-in arguments
-        for (String arg : args) {
+        for (String arg : synthesisMode.getArgument().split("\\s")) {
             command.add(arg);
         }
 
         // Technology mapping library (if needed and accepted)
         String gateLibrary = ExecutableUtils.getAbsoluteCommandPath(CircuitSettings.getGateLibrary());
-        if (needsGateLibrary) {
+        if (synthesisMode.needLib()) {
             if ((gateLibrary == null) || gateLibrary.isEmpty()) {
                 return Result.exception(new IOException("Gate library is not specified.\n" +
                         "Check '" + CircuitSettings.GATE_LIBRARY_TITLE + "' item in Digital Circuit preferences."));
@@ -86,11 +95,15 @@ public class MpsatTask implements Task<MpsatOutput> {
         }
 
         // Input file
-        command.add(inputFileName);
+        if (unfoldingFile != null) {
+            command.add(unfoldingFile.getAbsolutePath());
+        }
 
         // Output file
-        File verilogFile = new File(directory, VERILOG_FILE_NAME);
-        command.add(verilogFile.getAbsolutePath());
+        if (synthesisMode != SynthesisMode.RESOLVE_ENCODING_CONFLICTS) {
+            File verilogFile = new File(directory, VERILOG_FILE_NAME);
+            command.add(verilogFile.getAbsolutePath());
+        }
 
         boolean printStdout = MpsatSynthesisSettings.getPrintStdout();
         boolean printStderr = MpsatSynthesisSettings.getPrintStderr();
@@ -105,7 +118,7 @@ public class MpsatTask implements Task<MpsatOutput> {
                 // Even if the return code is 0 or 1, still test MPSat output to make sure it has completed successfully.
                 boolean success = false;
                 if ((returnCode == 0) || (returnCode == 1)) {
-                    Matcher matcherSuccess = patternSuccess.matcher(output.getStdoutString());
+                    Matcher matcherSuccess = SUCCESS_PATTERN.matcher(output.getStdoutString());
                     success = matcherSuccess.find();
                 }
                 if (success) {
@@ -116,6 +129,7 @@ public class MpsatTask implements Task<MpsatOutput> {
                         if (stgFile.exists()) {
                             stgOutput = FileUtils.readAllBytes(stgFile);
                         }
+                        File verilogFile = new File(directory, VERILOG_FILE_NAME);
                         if (verilogFile.exists()) {
                             verilogOutput = FileUtils.readAllBytes(verilogFile);
                         }

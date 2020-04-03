@@ -3,7 +3,8 @@ package org.workcraft.plugins.mpsat_synthesis.tasks;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
-import org.workcraft.plugins.mpsat_synthesis.SynthesisParameters;
+import org.workcraft.plugins.mpsat_synthesis.SynthesisMode;
+import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.Mutex;
@@ -23,12 +24,12 @@ import java.util.Collection;
 
 public class SynthesisChainTask implements Task<SynthesisChainOutput> {
     private final WorkspaceEntry we;
-    private final SynthesisParameters synthesisParameters;
+    private final SynthesisMode synthesisMode;
     private final Collection<Mutex> mutexes;
 
-    public SynthesisChainTask(WorkspaceEntry we, SynthesisParameters synthesisParameters, Collection<Mutex> mutexes) {
+    public SynthesisChainTask(WorkspaceEntry we, SynthesisMode synthesisMode, Collection<Mutex> mutexes) {
         this.we = we;
-        this.synthesisParameters = synthesisParameters;
+        this.synthesisMode = synthesisMode;
         this.mutexes = mutexes;
     }
 
@@ -59,7 +60,7 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new SynthesisChainOutput(exportResult, null, null, synthesisParameters));
+                        new SynthesisChainOutput(exportResult, null, null, synthesisMode));
             }
             if ((mutexes != null) && !mutexes.isEmpty()) {
                 model = StgUtils.loadStg(netFile);
@@ -74,14 +75,16 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
                         return new Result<>(Outcome.CANCEL);
                     }
                     return new Result<>(Outcome.FAILURE,
-                            new SynthesisChainOutput(exportResult, null, null, synthesisParameters));
+                            new SynthesisChainOutput(exportResult, null, null, synthesisMode));
                 }
             }
             monitor.progressUpdate(0.33);
 
             // Generate unfolding
-            File unfoldingFile = new File(directory, filePrefix + PunfTask.PNML_FILE_EXTENSION);
-            PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory);
+            boolean useLegacyMci = PunfSettings.getUseMciCsc() && (synthesisMode == SynthesisMode.RESOLVE_ENCODING_CONFLICTS);
+            String unfoldingExtension = useLegacyMci ? PunfTask.MCI_FILE_EXTENSION : PunfTask.PNML_FILE_EXTENSION;
+            File unfoldingFile = new File(directory, filePrefix + unfoldingExtension);
+            PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory, useLegacyMci);
             Result<? extends PunfOutput> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", subtaskMonitor);
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {
@@ -89,14 +92,12 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new SynthesisChainOutput(exportResult, punfResult, null, synthesisParameters));
+                        new SynthesisChainOutput(exportResult, punfResult, null, synthesisMode));
             }
             monitor.progressUpdate(0.66);
 
             // Run MPSat on the generated unfolding
-            boolean needsGateLibrary = synthesisParameters.getMode().needLib();
-            MpsatTask mpsatTask = new MpsatTask(synthesisParameters.getMpsatArguments(directory),
-                    unfoldingFile.getAbsolutePath(), directory, needsGateLibrary);
+            MpsatTask mpsatTask = new MpsatTask(unfoldingFile, synthesisMode, directory);
             Result<? extends MpsatOutput> mpsatResult = framework.getTaskManager().execute(
                     mpsatTask, "Running synthesis [MPSat]", subtaskMonitor);
 
@@ -105,12 +106,12 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new SynthesisChainOutput(exportResult, punfResult, mpsatResult, synthesisParameters));
+                        new SynthesisChainOutput(exportResult, punfResult, mpsatResult, synthesisMode));
             }
             monitor.progressUpdate(1.0);
 
             return new Result<>(Outcome.SUCCESS,
-                    new SynthesisChainOutput(exportResult, punfResult, mpsatResult, synthesisParameters));
+                    new SynthesisChainOutput(exportResult, punfResult, mpsatResult, synthesisMode));
         } catch (Throwable e) {
             return new Result<>(e);
         } finally {
