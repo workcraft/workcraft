@@ -82,7 +82,7 @@ public class VerificationOutputInterpreter extends AbstractOutputInterpreter<Mps
                     isInteractive()).interpret();
 
         default:
-            DialogUtils.showError(verificationMode + " is not supported in combined verification.");
+            DialogUtils.showError(verificationMode.name() + " is not supported by MPSat verification.");
             return null;
         }
     }

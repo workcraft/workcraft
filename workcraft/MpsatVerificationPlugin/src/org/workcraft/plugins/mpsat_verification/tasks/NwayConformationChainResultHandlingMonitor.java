@@ -10,8 +10,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NwayConformationChainResultHandlingMonitor
-        extends AbstractChainResultHandlingMonitor<VerificationChainOutput, Boolean> {
+public class NwayConformationChainResultHandlingMonitor extends AbstractChainResultHandlingMonitor<VerificationChainOutput> {
 
     private final ArrayList<WorkspaceEntry> wes = new ArrayList<>();
 

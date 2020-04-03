@@ -7,7 +7,7 @@ import org.workcraft.tasks.ExportOutput;
 import org.workcraft.tasks.Result;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class VerificationChainResultHandlingMonitor extends AbstractChainResultHandlingMonitor<VerificationChainOutput, Boolean> {
+public class VerificationChainResultHandlingMonitor extends AbstractChainResultHandlingMonitor<VerificationChainOutput> {
 
     public VerificationChainResultHandlingMonitor(WorkspaceEntry we, boolean interactive) {
         super(we, interactive);

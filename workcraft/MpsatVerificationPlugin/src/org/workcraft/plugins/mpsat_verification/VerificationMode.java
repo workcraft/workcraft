@@ -1,29 +1,33 @@
 package org.workcraft.plugins.mpsat_verification;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 public enum VerificationMode {
     UNDEFINED(null), // Special mode to integrate foreign tasks into MPSat toolchain (export, composition, unfolding)
-    DEADLOCK("-D"),
-    REACHABILITY("-F"),
-    REACHABILITY_REDUNDANCY("-F"),
-    STG_REACHABILITY("-Fs"),
-    STG_REACHABILITY_CONSISTENCY("-Fs"),
-    STG_REACHABILITY_OUTPUT_PERSISTENCY("-Fs"),
-    STG_REACHABILITY_CONFORMATION("-Fs"),
-    STG_REACHABILITY_CONFORMATION_NWAY("-Fe"),
-    STG_REACHABILITY_OUTPUT_DETERMINACY("-Fe"),
-    CSC_CONFLICT_DETECTION("-C"),
-    NORMALCY("-N"),
-    USC_CONFLICT_DETECTION("-U"),
-    ASSERTION("-Fa");
+    DEADLOCK(Arrays.asList("-D")),
+    REACHABILITY(Arrays.asList("-F")),
+    REACHABILITY_REDUNDANCY(Arrays.asList("-F")),
+    STG_REACHABILITY(Arrays.asList("-Fs")),
+    STG_REACHABILITY_CONSISTENCY(Arrays.asList("-Fs")),
+    STG_REACHABILITY_OUTPUT_PERSISTENCY(Arrays.asList("-Fs")),
+    STG_REACHABILITY_CONFORMATION(Arrays.asList("-Fs")),
+    STG_REACHABILITY_CONFORMATION_NWAY(Arrays.asList("-Fe")),
+    STG_REACHABILITY_OUTPUT_DETERMINACY(Arrays.asList("-Fe")),
+    CSC_CONFLICT_DETECTION(Arrays.asList("-C")),
+    NORMALCY(Arrays.asList("-N")),
+    USC_CONFLICT_DETECTION(Arrays.asList("-U")),
+    ASSERTION(Arrays.asList("-Fa"));
 
-    private String argument;
+    private List<String> arguments;
 
-    VerificationMode(String argument) {
-        this.argument = argument;
+    VerificationMode(List<String> arguments) {
+        this.arguments = arguments;
     }
 
-    public String getArgument() {
-        return argument;
+    public List<String> getArguments() {
+        return Collections.unmodifiableList(arguments);
     }
 
 }

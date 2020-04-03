@@ -15,7 +15,7 @@ import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.TraceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput, U> extends AbstractResultHandlingMonitor<T, U> {
+public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput> extends AbstractResultHandlingMonitor<T, Boolean> {
 
     private static final String CANNOT_VERIFY_PREFIX = "Cannot build unfolding prefix";
     private static final String AFTER_THE_TRACE_SUFFIX = " after the following trace:\n";
@@ -39,7 +39,7 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput, 
     }
 
     @Override
-    public final U handle(Result<? extends T> result) {
+    public final Boolean handle(Result<? extends T> result) {
         if (result.getOutcome() == Outcome.SUCCESS) {
             return handleSuccess(result);
         }
@@ -52,7 +52,7 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput, 
         return null;
     }
 
-    public abstract U handleSuccess(Result<? extends T> chainResult);
+    public abstract Boolean handleSuccess(Result<? extends T> chainResult);
 
     private boolean handlePartialFailure(Result<? extends T> chainResult) {
         T chainOutput = chainResult.getPayload();

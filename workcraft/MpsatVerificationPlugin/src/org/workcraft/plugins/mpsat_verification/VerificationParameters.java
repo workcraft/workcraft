@@ -85,8 +85,8 @@ public class VerificationParameters {
 
     public String[] getMpsatArguments(File workingDirectory) {
         ArrayList<String> args = new ArrayList<>();
-        for (String option: getMode().getArgument().split("\\s")) {
-            args.add(option);
+        for (String arg: getMode().getArguments()) {
+            args.add(arg);
         }
 
         String expression = getExpression();

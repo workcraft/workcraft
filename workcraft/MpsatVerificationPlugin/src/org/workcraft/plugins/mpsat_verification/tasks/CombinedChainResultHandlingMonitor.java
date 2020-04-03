@@ -13,7 +13,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.List;
 
-public class CombinedChainResultHandlingMonitor extends AbstractChainResultHandlingMonitor<CombinedChainOutput, Boolean> {
+public class CombinedChainResultHandlingMonitor extends AbstractChainResultHandlingMonitor<CombinedChainOutput> {
 
     private boolean vacuousMutexImplementability = false;
 

@@ -59,13 +59,13 @@ public class MpsatTask implements Task<MpsatOutput> {
         command.add(toolName);
 
         // Built-in arguments
-        for (String arg : synthesisMode.getArgument().split("\\s")) {
+        for (String arg : synthesisMode.getArguments()) {
             command.add(arg);
         }
 
         // Technology mapping library (if needed and accepted)
         String gateLibrary = ExecutableUtils.getAbsoluteCommandPath(CircuitSettings.getGateLibrary());
-        if (synthesisMode.needLib()) {
+        if (synthesisMode.needGateLibrary()) {
             if ((gateLibrary == null) || gateLibrary.isEmpty()) {
                 return Result.exception(new IOException("Gate library is not specified.\n" +
                         "Check '" + CircuitSettings.GATE_LIBRARY_TITLE + "' item in Digital Circuit preferences."));

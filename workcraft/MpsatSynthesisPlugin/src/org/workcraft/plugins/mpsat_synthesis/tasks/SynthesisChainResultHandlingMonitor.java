@@ -80,7 +80,7 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
             return handleSynthesisOutput(mpsatOutput, false, RenderType.GATE, true);
 
         default:
-            DialogUtils.showWarning("MPSat synthesis mode \'" + mpsatMode.getArgument() + "\' is not (yet) supported.");
+            DialogUtils.showWarning(mpsatMode.name() + " is not supported by MPSat synthesis.");
             return null;
         }
     }
