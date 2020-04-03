@@ -13,8 +13,6 @@ import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
-import java.util.Arrays;
-import java.util.HashSet;
 
 public class PlaceRedundancyVerificationCommandTest {
 
@@ -30,18 +28,19 @@ public class PlaceRedundancyVerificationCommandTest {
     @Test
     public void testPhilosophersPlaceRedundancyVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "philosophers-deadlock.pn.work");
-        testPlaceRedundancyVerificationCommands(workName, new String[]{"north.p4", "south.p5"}, true);
-        testPlaceRedundancyVerificationCommands(workName, new String[]{"fork1_free", "north.p4"}, false);
+        testPlaceRedundancyVerificationCommands(workName, "north.p4 south.p5", true);
+        testPlaceRedundancyVerificationCommands(workName, " fork1_free  north.p4 ", false);
     }
 
     @Test
     public void testVmePlaceRedundancyVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
-        testPlaceRedundancyVerificationCommands(workName, new String[]{"<d+,dtack+>"}, false);
-        testPlaceRedundancyVerificationCommands(workName, new String[]{"<d+/100,dtack+/100>"}, null);
+        testPlaceRedundancyVerificationCommands(workName, "<d+,dtack+>", false);
+        testPlaceRedundancyVerificationCommands(workName, "<d+, dtack+>", null);
+        testPlaceRedundancyVerificationCommands(workName, "<d+/100,dtack+/100>", null);
     }
 
-    private void testPlaceRedundancyVerificationCommands(String workName, String[] refs, Boolean redundant)
+    private void testPlaceRedundancyVerificationCommands(String workName, String refs, Boolean redundant)
             throws DeserialisationException {
 
         final Framework framework = Framework.getInstance();
@@ -49,14 +48,9 @@ public class PlaceRedundancyVerificationCommandTest {
         URL url = classLoader.getResource(workName);
         WorkspaceEntry we = framework.loadWork(url.getFile());
 
-        PlaceRedundancyVerificationCommand command = new PlaceRedundancyVerificationCommand() {
-            @Override
-            protected HashSet<String> getSelectedPlaces(WorkspaceEntry we) {
-                return new HashSet<>(Arrays.asList(refs));
-            }
-        };
+        PlaceRedundancyVerificationCommand command = new PlaceRedundancyVerificationCommand();
 
-        Assert.assertEquals(redundant, command.execute(we));
+        Assert.assertEquals(redundant, command.execute(we, command.deserialiseData(refs)));
     }
 
 }

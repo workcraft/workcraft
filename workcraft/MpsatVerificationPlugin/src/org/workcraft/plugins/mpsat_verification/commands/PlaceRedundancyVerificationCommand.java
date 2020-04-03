@@ -1,23 +1,34 @@
 package org.workcraft.plugins.mpsat_verification.commands;
 
+import org.workcraft.Framework;
 import org.workcraft.commands.NodeTransformer;
+import org.workcraft.commands.ScriptableDataCommand;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainResultHandlingMonitor;
+import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainTask;
+import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
+import org.workcraft.tasks.ProgressMonitor;
+import org.workcraft.tasks.Result;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
-public class PlaceRedundancyVerificationCommand extends AbstractVerificationCommand implements NodeTransformer {
+public class PlaceRedundancyVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand
+        implements NodeTransformer, ScriptableDataCommand<Boolean, Collection<String>> {
 
     private static final String REACH_PLACE_REDUNDANCY_NAMES =
             "/* insert place names for redundancy check */"; // For example: "p1", "<a+;b->
@@ -68,42 +79,61 @@ public class PlaceRedundancyVerificationCommand extends AbstractVerificationComm
 
     @Override
     public void run(WorkspaceEntry we) {
-        if (getSelectedPlaces(we).isEmpty()) {
-            DialogUtils.showWarning("At least one place must be selected for redundancy check.");
-            return;
-        }
-        super.run(we);
-    }
-
-    @Override
-    public VerificationParameters getVerificationParameters(WorkspaceEntry we) {
-        HashSet<String> placeNames = getSelectedPlaces(we);
-        String str = placeNames.stream().map(ref -> "\"" + ref + "\", ").collect(Collectors.joining());
-        String reachPlaceRedundancy = REACH_PLACE_REDUNDANCY.replace(REACH_PLACE_REDUNDANCY_NAMES, str);
-        return new VerificationParameters("Place redundancy",
-                VerificationMode.REACHABILITY_REDUNDANCY, 0,
-                MpsatVerificationSettings.getSolutionMode(),
-                MpsatVerificationSettings.getSolutionCount(),
-                reachPlaceRedundancy, true);
-    }
-
-    protected HashSet<String> getSelectedPlaces(WorkspaceEntry we) {
         VisualModel model = we.getModelEntry().getVisualModel();
-        HashSet<String> placeNames = new HashSet<>();
-        for (VisualNode node: model.getSelection()) {
+        Collection<String> data = new ArrayList<>();
+        for (VisualNode node : model.getSelection()) {
             if ((node instanceof VisualPlace) || (node instanceof VisualImplicitPlaceArc)) {
-                String placeName = model.getMathReference(node);
-                if (placeName != null) {
-                    placeNames.add(placeName);
+                String placeRef = model.getMathReference(node);
+                if (placeRef != null) {
+                    data.add(placeRef);
                 }
             }
         }
-        return placeNames;
+        if (data.isEmpty()) {
+            DialogUtils.showWarning("At least one place must be selected for redundancy check.");
+            return;
+        }
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
+        run(we, data, monitor);
     }
 
     @Override
     public void transform(VisualModel model, VisualNode node) {
         // No transformation applied.
+    }
+
+    @Override
+    public void run(WorkspaceEntry we, Collection<String> data, ProgressMonitor monitor) {
+        if (data.isEmpty()) {
+            DialogUtils.showWarning("No places specified for redundancy check.");
+            monitor.isFinished(Result.failure());
+            return;
+        }
+
+        String str = data.stream().map(ref -> "\"" + ref + "\", ").collect(Collectors.joining());
+        String reachPlaceRedundancy = REACH_PLACE_REDUNDANCY.replace(REACH_PLACE_REDUNDANCY_NAMES, str);
+        VerificationParameters verificationParameters = new VerificationParameters("Place redundancy",
+                VerificationMode.REACHABILITY_REDUNDANCY, 0,
+                MpsatVerificationSettings.getSolutionMode(),
+                MpsatVerificationSettings.getSolutionCount(),
+                reachPlaceRedundancy, true);
+
+        TaskManager manager = Framework.getInstance().getTaskManager();
+        VerificationChainTask task = new VerificationChainTask(we, verificationParameters);
+        String description = MpsatUtils.getToolchainDescription(we.getTitle());
+        manager.queue(task, description, monitor);
+    }
+
+    @Override
+    public Collection<String> deserialiseData(String s) {
+        return Arrays.asList(s.trim().split("\\s"));
+    }
+
+    @Override
+    public Boolean execute(WorkspaceEntry we, Collection<String> data) {
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
+        run(we, data, monitor);
+        return monitor.waitForHandledResult();
     }
 
 }

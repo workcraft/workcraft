@@ -38,8 +38,7 @@ public abstract class AbstractVerificationCommand extends org.workcraft.commands
             monitor.isFinished(Result.failure());
             return;
         }
-        Framework framework = Framework.getInstance();
-        TaskManager manager = framework.getTaskManager();
+        TaskManager manager = Framework.getInstance().getTaskManager();
         VerificationParameters verificationParameters = getVerificationParameters(we);
         VerificationChainTask task = new VerificationChainTask(we, verificationParameters);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
