@@ -2,7 +2,7 @@ package org.workcraft.plugins.mpsat_verification.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.ScriptableCommand;
-import org.workcraft.plugins.mpsat_verification.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainTask;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;

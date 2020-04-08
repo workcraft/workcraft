@@ -5,6 +5,6 @@ write(
     "Conformation: " + checkCircuitConformation(work) + "\n" +
     "Output persistency: " + checkCircuitOutputPersistency(work) + "\n" +
     "Binate function implementation: " + checkCircuitBinateImplementation(work) + "\n" +
-    "Strict implementation: " + checkCircuitStrictImplementation(work) + "\n",
-    "om-tm.circuit.result");
+    "Strict implementation: " + checkCircuitStrictImplementation(work) + "\n" +
+    "", "om-tm.circuit.result");
 exit();

@@ -1,14 +1,16 @@
 package org.workcraft.plugins.mpsat_verification.gui;
 
+import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.gui.dialogs.ModalDialog;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
-import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
-import org.workcraft.plugins.mpsat_verification.VerificationMode;
-import org.workcraft.plugins.mpsat_verification.VerificationParameters;
-import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
+import org.workcraft.plugins.mpsat_verification.presets.HandshakeParameters;
+import org.workcraft.plugins.mpsat_verification.presets.HandshakePresetManager;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
+import org.workcraft.presets.DataMapper;
+import org.workcraft.presets.PresetDialog;
+import org.workcraft.presets.PresetManagerPanel;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.utils.SortUtils;
 
@@ -16,110 +18,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
-public class HandshakeWizardDialog extends ModalDialog<Stg> {
-
-    private static final String REQ_NAMES_REPLACEMENT =
-            "/* insert request signal names here */"; // For example: "req1", "req2"
-
-    private static final String ACK_NAMES_REPLACEMENT =
-            "/* insert acknowledgement signal names here */"; // For example: "ack1", "ack2"
-
-    private static final String CHECK_ASSERT_ENABLED_REPLACEMENT =
-            "/* insert check assert enabled flag here */"; // true or false
-
-    private static final String CHECK_WITHDRAW_ENABLED_REPLACEMENT =
-            "/* insert check withdraw enabled flag here */"; // true or false
-
-    private static final String REQ_INITIALLY_ASSERTED_REPLACEMENT =
-            "/* insert request initial assertion state here */"; // true or false
-
-    private static final String ACK_INITIALLY_ASSERTED_REPLACEMENT =
-            "/* insert acknowledgment initial assertion state here */"; // true or false
-
-    private static final String ALLOW_INVERSIONS_REPLACEMENT =
-            "/* insert inversion permission flag here */"; // true or false
-
-    private static final String HANDSHAKE_REACH =
-            "// Checks whether the given request(s) and acknowledgement(s) form a handshake;\n" +
-            "// optionally, one can allow inverting some of these signals and specify the initial phase of the handshake.\n" +
-            "let\n" +
-            "    // Non-empty set of request signal names.\n" +
-            "    REQ_NAMES = {" + REQ_NAMES_REPLACEMENT + "},\n" +
-            "    // Non-empty set of acknowledgement signal names.\n" +
-            "    ACK_NAMES = {" + ACK_NAMES_REPLACEMENT + "},\n" +
-            "    // If true then check assertion/withdrawal receptiveness.\n" +
-            "    CHECK_ASSERT_ENABLED = " + CHECK_ASSERT_ENABLED_REPLACEMENT + ",\n" +
-            "    CHECK_WITHDRAW_ENABLED = " + CHECK_WITHDRAW_ENABLED_REPLACEMENT + ",\n" +
-            "    // The following two values specify the initial state of the handshake.\n" +
-            "    REQ_INITIALLY_ASSERTED = " + REQ_INITIALLY_ASSERTED_REPLACEMENT + ",\n" +
-            "    ACK_INITIALLY_ASSERTED = " + ACK_INITIALLY_ASSERTED_REPLACEMENT + ",\n" +
-            "    // If true then arbitrary inversions of signals are allowed.\n" +
-            "    ALLOW_INVERSIONS = " + ALLOW_INVERSIONS_REPLACEMENT + ",\n" +
-            "\n" +
-            "    // Auxiliary calculated set of requests.\n" +
-            "    reqs = gather nm in REQ_NAMES { S nm },\n" +
-            "    // Auxiliary calculated set of acknowledgements.\n" +
-            "    acks = gather nm in ACK_NAMES { S nm },\n" +
-            "\n" +
-            "    // Handshake is active if the request is an output;\n" +
-            "    // if there are several requests, they must all be of the same type.\n" +
-            "    active = exists s in reqs { is_output s },\n" +
-            "    // Some request is asserted (correcting for the polarity and initial state of handshake).\n" +
-            "    req = exists s in reqs { $s ^ (is_init s ^ REQ_INITIALLY_ASSERTED) },\n" +
-            "    // Some acknowledgement is asserted (correcting for the polarity and initial state of handshake).\n" +
-            "    ack = exists s in acks { $s ^ (is_init s ^ ACK_INITIALLY_ASSERTED) },\n" +
-            "\n" +
-            "    // Request assert/withdraw/change is enabled (correcting for the polarity and initial state of handshake).\n" +
-            "    en_req_assert = exists e in ev reqs s.t. (is_init sig e ^ REQ_INITIALLY_ASSERTED) ? is_minus e : is_plus e { @e },\n" +
-            "    en_req_withdraw = exists e in ev reqs s.t. (is_init sig e ^ REQ_INITIALLY_ASSERTED)  ? is_plus e : is_minus e { @e },\n" +
-            "    en_req = en_req_assert | en_req_withdraw,\n" +
-            "    // Acknowledgement assert/withdraw/change is enabled (correcting for the polarity and initial state of handshake).\n" +
-            "    en_ack_assert = exists e in ev acks s.t. (is_init sig e ^ ACK_INITIALLY_ASSERTED) ? is_minus e : is_plus e { @e },\n" +
-            "    en_ack_withdraw = exists e in ev acks s.t. (is_init sig e ^ ACK_INITIALLY_ASSERTED) ? is_plus e : is_minus e { @e },\n" +
-            "    en_ack = en_ack_assert | en_ack_withdraw\n" +
-            "{\n" +
-            "    // Check that all requests are of the same type.\n" +
-            "    exists s in reqs { ~(active ? is_output s : is_input s) } ?\n" +
-            "    fail \"The requests must be of the same type (either inputs or outputs)\" :\n" +
-            "    // Check that all acknowledgement have the type opposite to that of requests.\n" +
-            "    exists s in acks { ~(active ? is_input s : is_output s) } ?\n" +
-            "    fail \"The acknowledgements must be of the opposite type (either inputs or outputs) to requests\" :\n" +
-            "\n" +
-            "    // Check that either inversions are allowed or the initial values of requests are equal to REQ_INITIALLY_ASSERTED.\n" +
-            "    ~ALLOW_INVERSIONS & exists s in reqs { is_init s ^ REQ_INITIALLY_ASSERTED } ?\n" +
-            "    fail \"The initial values of some request(s) are wrong and inversions are not allowed\" :\n" +
-            "    // Check that either inversions are allowed or the initial values of acknowledgements are equal to ACK_INITIALLY_ASSERTED.\n" +
-            "    ~ALLOW_INVERSIONS & exists s in acks { is_init s ^ ACK_INITIALLY_ASSERTED } ?\n" +
-            "    fail \"The initial values of some acknowledgement(s) are wrong and inversions are not allowed\" :\n" +
-            "\n" +
-            "    // Check that the requests are 1-hot (correcting for the polarity and initial state of handshake).\n" +
-            "    threshold s in reqs { $s ^ (is_init s ^ REQ_INITIALLY_ASSERTED) }\n" +
-            "    |\n" +
-            "    // Check that the acknowledgement are 1-hot (correcting for the polarity and initial state of handshake).\n" +
-            "    threshold s in acks { $s ^ (is_init s ^ ACK_INITIALLY_ASSERTED) }\n" +
-            "    |\n" +
-            "    // Check that the handshake progresses as expected, i.e. signals are not enabled unexpectedly.\n" +
-            "    ~req & ~ack & (en_req_withdraw | en_ack)\n" +
-            "    |\n" +
-            "     req & ~ack & (en_req | en_ack_withdraw)\n" +
-            "    |\n" +
-            "     req &  ack & (en_req_assert | en_ack)\n" +
-            "    |\n" +
-            "    ~req &  ack & (en_req | en_ack_assert)\n" +
-            "    |\n" +
-            "    // If the handshake is active, check that the appropriate acknowledgement edge\n" +
-            "    // is enabled after request changes, unless this check is disabled.\n" +
-            "    active & (CHECK_ASSERT_ENABLED & req & ~ack & ~en_ack_assert | CHECK_WITHDRAW_ENABLED & ~req & ack & ~en_ack_withdraw)\n" +
-            "    |\n" +
-            "    // If the handshake is passive, check that the appropriate request edge\n" +
-            "    // is enabled after acknowledgement changes, unless this check is disabled.\n" +
-            "    ~active & (CHECK_WITHDRAW_ENABLED & req & ack & ~en_req_withdraw | CHECK_ASSERT_ENABLED & ~req & ~ack & ~en_req_assert)\n" +
-            "}\n";
+public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
 
     private static final String REQ_LABEL = "REQ";
     private static final String ACK_LABEL = "ACK";
@@ -130,9 +32,12 @@ public class HandshakeWizardDialog extends ModalDialog<Stg> {
     private static final String ASSERTED_SUFFIX = " asserted";
     private static final String WITHDRAWN_SUFFIX = " withdrawn";
 
+    private PresetManagerPanel<HandshakeParameters> presetPanel;
     private JRadioButton passiveRadioButton;
+    private JRadioButton activeRadioButton;
     private SignalList inputList;
     private SignalList outputList;
+    private JRadioButton stateReq0Ack0RadioButton;
     private JRadioButton stateReq1Ack0RadioButton;
     private JRadioButton stateReq1Ack1RadioButton;
     private JRadioButton stateReq0Ack1RadioButton;
@@ -192,8 +97,9 @@ public class HandshakeWizardDialog extends ModalDialog<Stg> {
         }
     }
 
-    public HandshakeWizardDialog(Window owner, Stg stg) {
-        super(owner, "Handshake wizard", stg);
+    public HandshakeWizardDialog(Window owner, HandshakePresetManager presetManager) {
+        super(owner, "Handshake wizard", presetManager);
+        presetPanel.selectFirst();
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent e) {
@@ -201,17 +107,34 @@ public class HandshakeWizardDialog extends ModalDialog<Stg> {
                 requestFocus();
             }
         });
+    }
 
+    @Override
+    public HandshakePresetManager getUserData() {
+        return (HandshakePresetManager) super.getUserData();
     }
 
     @Override
     public JPanel createControlsPanel() {
         JPanel result = super.createControlsPanel();
+        result.setLayout(GuiUtils.createTableLayout(
+                new double[]{TableLayout.FILL},
+                new double[]{TableLayout.PREFERRED, TableLayout.FILL}));
+
+        result.add(createOptionsPanel(), new TableLayoutConstraints(0, 1));
+        // Preset panel has to be created the last as its guiMapper refers to other controls
+        presetPanel = createPresetPanel();
+        result.add(presetPanel, new TableLayoutConstraints(0, 0));
+        return result;
+    }
+
+    private JPanel createOptionsPanel() {
+        JPanel result = new JPanel(new BorderLayout());
         result.setLayout(GuiUtils.createBorderLayout());
         result.setBorder(SizeHelper.getGapBorder());
 
         passiveRadioButton = new JRadioButton("passive");
-        JRadioButton activeRadioButton = new JRadioButton("active");
+        activeRadioButton = new JRadioButton("active");
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(passiveRadioButton);
         buttonGroup.add(activeRadioButton);
@@ -221,7 +144,7 @@ public class HandshakeWizardDialog extends ModalDialog<Stg> {
         typePanel.add(passiveRadioButton);
         typePanel.add(activeRadioButton);
 
-        Stg stg = getUserData();
+        Stg stg = getUserData().getStg();
 
         List<String> inputSignals = new ArrayList<>(stg.getSignalReferences(Signal.Type.INPUT));
         SortUtils.sortNatural(inputSignals);
@@ -242,23 +165,23 @@ public class HandshakeWizardDialog extends ModalDialog<Stg> {
         JPanel statePanel = new JPanel(GuiUtils.createFlowLayout());
         ButtonGroup stateButtonGroup = new ButtonGroup();
 
-        JRadioButton stateReq0Ack0RadioButton = new JRadioButton(LABEL_PREFIX + REQ_LABEL + ASSERTED_LABEL);
-        stateReq0Ack0RadioButton.setToolTipText(TOOLTIP_PREFIX + REQ_LABEL + ASSERTED_SUFFIX);
+        stateReq0Ack0RadioButton = new JRadioButton(getStateLabel(HandshakeParameters.State.REQ0ACK0));
+        stateReq0Ack0RadioButton.setToolTipText(getStateTooltip(HandshakeParameters.State.REQ0ACK0));
         stateButtonGroup.add(stateReq0Ack0RadioButton);
         statePanel.add(stateReq0Ack0RadioButton);
 
-        stateReq1Ack0RadioButton = new JRadioButton(LABEL_PREFIX + ACK_LABEL + ASSERTED_LABEL);
-        stateReq1Ack0RadioButton.setToolTipText(TOOLTIP_PREFIX + ACK_LABEL + ASSERTED_SUFFIX);
+        stateReq1Ack0RadioButton = new JRadioButton(getStateLabel(HandshakeParameters.State.REQ1ACK0));
+        stateReq1Ack0RadioButton.setToolTipText(getStateTooltip(HandshakeParameters.State.REQ1ACK0));
         stateButtonGroup.add(stateReq1Ack0RadioButton);
         statePanel.add(stateReq1Ack0RadioButton);
 
-        stateReq1Ack1RadioButton = new JRadioButton(LABEL_PREFIX + REQ_LABEL + WITHDRAWN_LABEL);
-        stateReq1Ack1RadioButton.setToolTipText(TOOLTIP_PREFIX + REQ_LABEL + WITHDRAWN_SUFFIX);
+        stateReq1Ack1RadioButton = new JRadioButton(getStateLabel(HandshakeParameters.State.REQ1ACK1));
+        stateReq1Ack1RadioButton.setToolTipText(getStateTooltip(HandshakeParameters.State.REQ1ACK1));
         stateButtonGroup.add(stateReq1Ack1RadioButton);
         statePanel.add(stateReq1Ack1RadioButton);
 
-        stateReq0Ack1RadioButton = new JRadioButton(LABEL_PREFIX + ACK_LABEL + WITHDRAWN_LABEL);
-        stateReq0Ack1RadioButton.setToolTipText(TOOLTIP_PREFIX + ACK_LABEL + WITHDRAWN_SUFFIX);
+        stateReq0Ack1RadioButton = new JRadioButton(getStateLabel(HandshakeParameters.State.REQ0ACK1));
+        stateReq0Ack1RadioButton.setToolTipText(getStateTooltip(HandshakeParameters.State.REQ0ACK1));
         stateButtonGroup.add(stateReq0Ack1RadioButton);
         statePanel.add(stateReq0Ack1RadioButton);
 
@@ -295,22 +218,110 @@ public class HandshakeWizardDialog extends ModalDialog<Stg> {
         return result;
     }
 
-    public VerificationParameters getSettings() {
+    private String getStateLabel(HandshakeParameters.State state) {
+        switch (state) {
+        case REQ0ACK0:
+            return LABEL_PREFIX + REQ_LABEL + ASSERTED_LABEL;
+        case REQ1ACK0:
+            return LABEL_PREFIX + ACK_LABEL + ASSERTED_LABEL;
+        case REQ1ACK1:
+            return LABEL_PREFIX + REQ_LABEL + WITHDRAWN_LABEL;
+        case REQ0ACK1:
+            return LABEL_PREFIX + ACK_LABEL + WITHDRAWN_LABEL;
+        }
+        return "";
+    }
 
-        String reach = HANDSHAKE_REACH
-                .replace(REQ_NAMES_REPLACEMENT, getQuotedSelectedItems(getReqList()))
-                .replace(ACK_NAMES_REPLACEMENT, getQuotedSelectedItems(getAckList()))
-                .replace(CHECK_ASSERT_ENABLED_REPLACEMENT, getCheckAssertEnabledFlag())
-                .replace(CHECK_WITHDRAW_ENABLED_REPLACEMENT, getCheckWithdrawEnabledFlag())
-                .replace(REQ_INITIALLY_ASSERTED_REPLACEMENT, getReqAssertionState())
-                .replace(ACK_INITIALLY_ASSERTED_REPLACEMENT, getAckAssertionState())
-                .replace(ALLOW_INVERSIONS_REPLACEMENT, getAllowInversionFlag());
 
-        return new VerificationParameters("Handshake protocol",
-                VerificationMode.STG_REACHABILITY, 0,
-                MpsatVerificationSettings.getSolutionMode(),
-                MpsatVerificationSettings.getSolutionCount(),
-                reach, true);
+    private String getStateTooltip(HandshakeParameters.State state) {
+        switch (state) {
+        case REQ0ACK0:
+            return TOOLTIP_PREFIX + REQ_LABEL + ASSERTED_SUFFIX;
+        case REQ1ACK0:
+            return TOOLTIP_PREFIX + ACK_LABEL + ASSERTED_SUFFIX;
+        case REQ1ACK1:
+            return TOOLTIP_PREFIX + REQ_LABEL + WITHDRAWN_SUFFIX;
+        case REQ0ACK1:
+            return TOOLTIP_PREFIX + ACK_LABEL + WITHDRAWN_SUFFIX;
+        }
+        return "";
+    }
+
+    private PresetManagerPanel<HandshakeParameters> createPresetPanel() {
+        HandshakePresetManager presetManager = getUserData();
+
+        Set<String> empty = Collections.emptySet();
+        presetManager.addExample("Clear", new HandshakeParameters(empty, empty));
+
+        DataMapper<HandshakeParameters> guiMapper = new DataMapper<HandshakeParameters>() {
+            @Override
+            public void applyDataToControls(HandshakeParameters data) {
+                passiveRadioButton.setSelected(data.getType() == HandshakeParameters.Type.PASSIVE);
+                activeRadioButton.setSelected(data.getType() == HandshakeParameters.Type.ACTIVE);
+                selectSignals(getReqList(), data.getReqs());
+                selectSignals(getAckList(), data.getAcks());
+                checkAssertEnabledCheckbox.setSelected(data.isCheckAssertion());
+                checkWithdrawEnabledCheckbox.setSelected(data.isCheckWithdrawal());
+                stateReq0Ack0RadioButton.setSelected(data.getState() == HandshakeParameters.State.REQ0ACK0);
+                stateReq1Ack0RadioButton.setSelected(data.getState() == HandshakeParameters.State.REQ1ACK0);
+                stateReq1Ack1RadioButton.setSelected(data.getState() == HandshakeParameters.State.REQ1ACK1);
+                stateReq0Ack1RadioButton.setSelected(data.getState() == HandshakeParameters.State.REQ0ACK1);
+                allowInversionCheckbox.setSelected(data.isAllowInversion());
+            }
+
+            @Override
+            public HandshakeParameters getDataFromControls() {
+                return getPresetData();
+            }
+        };
+
+        return new PresetManagerPanel<>(presetManager, guiMapper);
+    }
+
+    private void selectSignals(SignalList signalList, Set<String> signals) {
+        ListModel<String> signalListModel = signalList.getModel();
+        List<Integer> indices = new ArrayList<>();
+        for (int index = 0; index < signalListModel.getSize(); index++) {
+            String signal = signalListModel.getElementAt(index);
+            if (signals.contains(signal)) {
+                indices.add(index);
+            }
+        }
+        // Convert ArrayList<Integer> to int[]
+        int[] itemsToSelect = indices.stream().mapToInt(i -> i).toArray();
+        signalList.setSelectedIndices(itemsToSelect);
+    }
+
+    @Override
+    public HandshakeParameters getPresetData() {
+        HandshakeParameters.Type type = null;
+        if (passiveRadioButton.isSelected()) {
+            type = HandshakeParameters.Type.PASSIVE;
+        }
+        if (activeRadioButton.isSelected()) {
+            type = HandshakeParameters.Type.ACTIVE;
+        }
+
+        Collection<String> reqs = getReqList().getSelectedValuesList();
+        Collection<String> acks = getAckList().getSelectedValuesList();
+
+        HandshakeParameters.State state = null;
+        if (stateReq0Ack0RadioButton.isSelected()) {
+            state = HandshakeParameters.State.REQ0ACK0;
+        }
+        if (stateReq1Ack0RadioButton.isSelected()) {
+            state = HandshakeParameters.State.REQ1ACK0;
+        }
+        if (stateReq1Ack1RadioButton.isSelected()) {
+            state = HandshakeParameters.State.REQ1ACK1;
+        }
+        if (stateReq0Ack1RadioButton.isSelected()) {
+            state = HandshakeParameters.State.REQ0ACK1;
+        }
+
+        return new HandshakeParameters(type, reqs, acks,
+                checkAssertEnabledCheckbox.isSelected(), checkWithdrawEnabledCheckbox.isSelected(),
+                state, allowInversionCheckbox.isSelected());
     }
 
     private SignalList getReqList() {
@@ -333,35 +344,9 @@ public class HandshakeWizardDialog extends ModalDialog<Stg> {
         return  first +  " must be enabled after " + second;
     }
 
-    private String getCheckAssertEnabledFlag() {
-        return ReachUtils.getBooleanAsString(checkAssertEnabledCheckbox.isSelected());
-    }
-
-    private String getCheckWithdrawEnabledFlag() {
-        return ReachUtils.getBooleanAsString(checkWithdrawEnabledCheckbox.isSelected());
-    }
-
-    private String getReqAssertionState() {
-        return ReachUtils.getBooleanAsString(stateReq1Ack0RadioButton.isSelected() || stateReq1Ack1RadioButton.isSelected());
-    }
-
-    private String getAckAssertionState() {
-        return ReachUtils.getBooleanAsString(stateReq0Ack1RadioButton.isSelected() || stateReq1Ack1RadioButton.isSelected());
-    }
-
-    private String getAllowInversionFlag() {
-        return ReachUtils.getBooleanAsString(allowInversionCheckbox.isSelected());
-    }
-
     private void updateOkEnableness() {
         setOkEnableness((inputList != null) && !inputList.getSelectedValuesList().isEmpty()
                 && (outputList != null) && !outputList.getSelectedValuesList().isEmpty());
-    }
-
-    private String getQuotedSelectedItems(JList<String> list) {
-        return list.getSelectedValuesList().stream()
-                .map(ref -> "\"" + ref + "\"")
-                .collect(Collectors.joining(", "));
     }
 
 }

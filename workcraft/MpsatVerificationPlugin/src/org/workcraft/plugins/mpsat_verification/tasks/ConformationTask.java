@@ -4,7 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.PluginManager;
-import org.workcraft.plugins.mpsat_verification.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;

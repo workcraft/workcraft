@@ -3,7 +3,7 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
-import org.workcraft.plugins.mpsat_verification.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;

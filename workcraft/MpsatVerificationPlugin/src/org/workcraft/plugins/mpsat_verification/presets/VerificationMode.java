@@ -1,4 +1,4 @@
-package org.workcraft.plugins.mpsat_verification;
+package org.workcraft.plugins.mpsat_verification.presets;
 
 import java.util.Arrays;
 import java.util.Collections;

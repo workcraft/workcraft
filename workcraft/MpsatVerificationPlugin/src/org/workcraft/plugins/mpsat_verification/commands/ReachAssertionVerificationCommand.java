@@ -6,6 +6,10 @@ import org.workcraft.commands.ScriptableDataCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat_verification.*;
 import org.workcraft.plugins.mpsat_verification.gui.ReachAssertionDialog;
+import org.workcraft.plugins.mpsat_verification.presets.MpsatDataSerialiser;
+import org.workcraft.plugins.mpsat_verification.presets.MpsatPresetManager;
+import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
+import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainTask;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
@@ -16,14 +20,6 @@ import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.io.StringReader;
 
 public class ReachAssertionVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand
         implements ScriptableDataCommand<Boolean, VerificationParameters> {
@@ -72,20 +68,9 @@ public class ReachAssertionVerificationCommand extends org.workcraft.commands.Ab
 
     @Override
     public VerificationParameters deserialiseData(String str) {
-        if (str.startsWith("<" + MpsatDataSerialiser.SETTINGS_ELEMENT) && str.endsWith("</" + MpsatDataSerialiser.SETTINGS_ELEMENT + ">")) {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder;
-            try {
-                builder = factory.newDocumentBuilder();
-                String xml = "<" + PresetManager.PRESET_ELEMENT_NAME + " "
-                        + PresetManager.DESCRIPTION_ATTRIBUTE_NAME + "=\"" + DEFAULT_DESCRIPTION + "\">"
-                        + str + "</" + PresetManager.PRESET_ELEMENT_NAME + ">";
-
-                Document document = builder.parse(new InputSource(new StringReader(xml)));
-                return DATA_SERIALISER.fromXML(document.getDocumentElement());
-            } catch (ParserConfigurationException | SAXException | IOException e) {
-                e.printStackTrace();
-            }
+        if (str.startsWith("<") && str.endsWith(">")) {
+            Document document = PresetManager.buildPresetDocumentFromSettings(DEFAULT_DESCRIPTION, str);
+            return DATA_SERIALISER.fromXML(document.getDocumentElement());
         }
         return new VerificationParameters(DEFAULT_DESCRIPTION,
                 VerificationMode.STG_REACHABILITY, 0,

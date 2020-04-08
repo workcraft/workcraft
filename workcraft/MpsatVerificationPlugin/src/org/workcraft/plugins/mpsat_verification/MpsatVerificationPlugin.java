@@ -69,7 +69,8 @@ public class MpsatVerificationPlugin implements Plugin {
         ScriptableCommandUtils.registerDataCommand(SignalAssertionVerificationCommand.class, "checkStgSignalAssertion",
                 "check STG 'work' for signal assertion 'data'");
 
-        pm.registerCommand(HandshakeVerificationCommand.class);
+        ScriptableCommandUtils.registerDataCommand(HandshakeVerificationCommand.class, "checkStgHandshakeProtocol",
+                "check STG 'work' following handshake protocol as specified by 'data', e.g. '{req1 req2}{ack12}'");
     }
 
 }

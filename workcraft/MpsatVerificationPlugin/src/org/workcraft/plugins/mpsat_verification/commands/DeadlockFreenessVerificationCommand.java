@@ -1,6 +1,6 @@
 package org.workcraft.plugins.mpsat_verification.commands;
 
-import org.workcraft.plugins.mpsat_verification.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.workspace.WorkspaceEntry;

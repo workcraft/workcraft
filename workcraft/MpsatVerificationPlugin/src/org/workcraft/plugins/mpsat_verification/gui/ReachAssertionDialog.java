@@ -5,11 +5,11 @@ import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.controls.FlatTextArea;
-import org.workcraft.plugins.mpsat_verification.MpsatPresetManager;
+import org.workcraft.plugins.mpsat_verification.presets.MpsatPresetManager;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
-import org.workcraft.plugins.mpsat_verification.VerificationMode;
-import org.workcraft.plugins.mpsat_verification.VerificationParameters;
-import org.workcraft.plugins.mpsat_verification.VerificationParameters.SolutionMode;
+import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
+import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters.SolutionMode;
 import org.workcraft.presets.DataMapper;
 import org.workcraft.presets.PresetDialog;
 import org.workcraft.presets.PresetManagerPanel;
@@ -46,6 +46,11 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
     }
 
     @Override
+    public MpsatPresetManager getUserData() {
+        return (MpsatPresetManager) super.getUserData();
+    }
+
+    @Override
     public JPanel createControlsPanel() {
         JPanel result = super.createControlsPanel();
         result.setLayout(GuiUtils.createTableLayout(
@@ -58,11 +63,6 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
         presetPanel = createPresetPanel();
         result.add(presetPanel, new TableLayoutConstraints(0, 0));
         return result;
-    }
-
-    @Override
-    public MpsatPresetManager getUserData() {
-        return (MpsatPresetManager) super.getUserData();
     }
 
     private PresetManagerPanel<VerificationParameters> createPresetPanel() {
@@ -130,7 +130,7 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
 
             @Override
             public VerificationParameters getDataFromControls() {
-                return ReachAssertionDialog.this.getPresetData();
+                return getPresetData();
             }
         };
 

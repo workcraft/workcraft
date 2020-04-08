@@ -2,8 +2,8 @@ package org.workcraft.plugins.mpsat_verification.utils;
 
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.plugins.mpsat_verification.VerificationMode;
-import org.workcraft.plugins.mpsat_verification.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
+import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.*;
 import org.workcraft.plugins.mpsat_verification.tasks.PunfOutputParser.Cause;
 import org.workcraft.plugins.punf.tasks.PunfOutput;

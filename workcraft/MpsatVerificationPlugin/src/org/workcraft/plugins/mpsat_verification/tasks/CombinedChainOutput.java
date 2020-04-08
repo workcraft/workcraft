@@ -1,6 +1,6 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
-import org.workcraft.plugins.mpsat_verification.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.tasks.ExportOutput;

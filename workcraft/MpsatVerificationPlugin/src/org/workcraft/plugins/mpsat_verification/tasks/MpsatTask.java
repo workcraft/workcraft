@@ -2,7 +2,7 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
-import org.workcraft.plugins.mpsat_verification.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgImporter;

@@ -1,5 +1,6 @@
-package org.workcraft.plugins.mpsat_verification;
+package org.workcraft.plugins.mpsat_verification.presets;
 
+import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.LogUtils;
 

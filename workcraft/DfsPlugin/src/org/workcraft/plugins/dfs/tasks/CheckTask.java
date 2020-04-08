@@ -5,7 +5,7 @@ import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.plugins.dfs.stg.DfsToStgConverter;
-import org.workcraft.plugins.mpsat_verification.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutput;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutputParser;

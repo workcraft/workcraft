@@ -15,6 +15,6 @@ write(
     "Redundancy of places 'p1 p2': " + checkStgPlaceRedundancy(work, "p1 p2") + "\n" +
     "Mutual exclusion of 'dsr' and 'dsw' (Signal assertion): " + checkStgSignalAssertion(work, "!dsr || !dsw") + "\n" +
     "Mutual exclusion of 'dsr' and 'dsw' (REACH assertion): " + checkStgReachAssertion(work, "$S\"dsr\" & $S\"dsw\"") + "\n" +
-    "Mutual exclusion of 'dsr' and 'dsw' (SPOT assertion): " + checkStgSpotAssertion(work, "G((!\"dsr\") | (!\"dsw\"))") + "\n",
-    "vme.stg.result");
+    "Mutual exclusion of 'dsr' and 'dsw' (SPOT assertion): " + checkStgSpotAssertion(work, "G((!\"dsr\") | (!\"dsw\"))") + "\n" +
+    "", "vme.stg.result");
 exit();

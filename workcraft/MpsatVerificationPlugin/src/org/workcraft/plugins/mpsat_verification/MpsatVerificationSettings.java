@@ -4,7 +4,7 @@ import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.builtin.settings.AbstractToolSettings;
-import org.workcraft.plugins.mpsat_verification.VerificationParameters.SolutionMode;
+import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters.SolutionMode;
 import org.workcraft.plugins.mpsat_verification.tasks.NwayConformationOutputInterpreter.ConformationReportStyle;
 import org.workcraft.utils.BackendUtils;
 

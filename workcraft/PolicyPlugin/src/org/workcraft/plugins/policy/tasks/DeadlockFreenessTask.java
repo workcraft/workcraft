@@ -3,7 +3,7 @@ package org.workcraft.plugins.policy.tasks;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
-import org.workcraft.plugins.mpsat_verification.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutput;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutputParser;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatTask;

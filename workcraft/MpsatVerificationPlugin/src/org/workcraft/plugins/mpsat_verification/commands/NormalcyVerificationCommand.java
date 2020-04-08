@@ -1,8 +1,8 @@
 package org.workcraft.plugins.mpsat_verification.commands;
 
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
-import org.workcraft.plugins.mpsat_verification.VerificationMode;
-import org.workcraft.plugins.mpsat_verification.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
+import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;

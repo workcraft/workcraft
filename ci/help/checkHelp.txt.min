@@ -20,6 +20,7 @@ checkStgConsistency(work) - check the STG 'work' for consistency
 checkStgCsc(work) - check the STG 'work' for complete state coding
 checkStgDeadlockFreeness(work) - check the STG (or Petri net) 'work' for deadlock freeness
 checkStgDiInterface(work) - check the STG 'work' for delay-insensitive interface
+checkStgHandshakeProtocol(work, data) - check STG 'work' following handshake protocol as specified by 'data', e.g. '{req1 req2}{ack12}'
 checkStgInputProperness(work) - check the STG 'work' for input properness
 checkStgMutexImplementability(work) - check the STG 'work' for implementability of its mutex places
 checkStgNormalcy(work) - check the STG 'work' for normalcy

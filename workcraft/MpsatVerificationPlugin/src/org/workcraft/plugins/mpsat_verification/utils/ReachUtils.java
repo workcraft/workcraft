@@ -1,8 +1,8 @@
 package org.workcraft.plugins.mpsat_verification.utils;
 
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
-import org.workcraft.plugins.mpsat_verification.VerificationMode;
-import org.workcraft.plugins.mpsat_verification.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
+import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.types.Pair;

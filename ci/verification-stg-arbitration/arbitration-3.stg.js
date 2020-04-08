@@ -16,6 +16,6 @@ write(
     "DI interface: " + checkStgDiInterface(work) + "\n" +
     "Normalcy: " + checkStgNormalcy(work) + "\n" +
     "Mutex implementability: " + checkStgMutexImplementability(work) + "\n" +
-    "Mutex implementability (relaxed): " + mutexImplementabilityRelaxed + "\n",
-    "arbitration-3.stg.result");
+    "Mutex implementability (relaxed): " + mutexImplementabilityRelaxed + "\n" +
+    "", "arbitration-3.stg.result");
 exit();
