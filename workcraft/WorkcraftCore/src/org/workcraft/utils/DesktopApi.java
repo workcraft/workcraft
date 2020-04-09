@@ -109,7 +109,7 @@ public class DesktopApi {
         List<String> parts = new ArrayList<>();
         parts.add(command);
         if (args != null) {
-            for (String s : args.split("\\s")) {
+            for (String s : TextUtils.splitWords(args)) {
                 String part = String.format(s, file);
                 parts.add(part.trim());
             }

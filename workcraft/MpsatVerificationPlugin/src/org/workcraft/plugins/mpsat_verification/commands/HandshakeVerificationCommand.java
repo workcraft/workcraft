@@ -15,10 +15,10 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.presets.PresetManager;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.TaskManager;
+import org.workcraft.utils.TextUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -73,19 +73,17 @@ public class HandshakeVerificationCommand extends org.workcraft.commands.Abstrac
     }
 
     @Override
-    public HandshakeParameters deserialiseData(String str) {
-        if (str.startsWith("<") && str.endsWith(">")) {
-            Document document = PresetManager.buildPresetDocumentFromSettings(DEFAULT_DESCRIPTION, str);
+    public HandshakeParameters deserialiseData(String data) {
+        if (data.startsWith("<") && data.endsWith(">")) {
+            Document document = PresetManager.buildPresetDocumentFromSettings(DEFAULT_DESCRIPTION, data);
             return DATA_SERIALISER.fromXML(document.getDocumentElement());
         }
-        Matcher matcher = DATA_PATTERN.matcher(str);
+        Matcher matcher = DATA_PATTERN.matcher(data);
         if (matcher.matches()) {
-            String[] split = str.split("}\\s*\\{");
+            String[] split = data.split("}\\s*\\{");
             if (split.length == 2) {
                 String reqsStr = split[0].replaceAll("\\{", "").trim();
-                System.out.println(reqsStr);
                 String acksStr = split[1].replaceAll("}", "").trim();
-                System.out.println(acksStr);
                 return new HandshakeParameters(getSignals(reqsStr), getSignals(acksStr));
             }
         }
@@ -93,13 +91,7 @@ public class HandshakeVerificationCommand extends org.workcraft.commands.Abstrac
     }
 
     private Collection<String> getSignals(String str) {
-        Collection<String> result = new ArrayList<>();
-        for (String s : str.trim().split("\\s")) {
-            if (!s.isEmpty()) {
-                result.add(s);
-            }
-        }
-        return result;
+        return TextUtils.splitWords(str);
     }
 
     @Override

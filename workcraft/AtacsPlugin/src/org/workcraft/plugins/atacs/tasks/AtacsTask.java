@@ -52,11 +52,7 @@ public class AtacsTask implements Task<AtacsOutput>, ExternalProcessListener {
             }
             extraArgs = tmp;
         }
-        for (String arg : extraArgs.split("\\s")) {
-            if (!arg.isEmpty()) {
-                command.add(arg);
-            }
-        }
+        command.addAll(TextUtils.splitWords(extraArgs));
 
         command.add("-oq"); // Quiet mode
         command.add("-ll"); // Load LPN as Petri net (instead of Timed Event/Rule Structure, which is default semantics)

@@ -4,6 +4,7 @@ import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.ExecutableUtils;
+import org.workcraft.utils.TextUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -60,11 +61,7 @@ public class PcompTask implements Task<PcompOutput> {
         }
 
         // Extra arguments (should go before the file parameters)
-        for (String arg : PcompSettings.getArgs().split("\\s")) {
-            if (!arg.isEmpty()) {
-                command.add(arg);
-            }
-        }
+        command.addAll(TextUtils.splitWords(PcompSettings.getArgs()));
 
         // Composed STG output file
         if (outputFile != null) {

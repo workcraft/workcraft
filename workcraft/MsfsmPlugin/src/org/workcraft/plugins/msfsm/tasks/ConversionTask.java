@@ -47,11 +47,7 @@ public class ConversionTask implements Task<ConversionOutput>, ExternalProcessLi
             }
             extraArgs = tmp;
         }
-        for (String arg : extraArgs.split("\\s")) {
-            if (!arg.isEmpty()) {
-                command.add(arg);
-            }
-        }
+        command.addAll(TextUtils.splitWords(extraArgs));
 
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);

@@ -1,24 +1,13 @@
-block1Work = load("block1.stg.work");
-block2Work = load("block2.stg.work");
-block3Work = load("block3.stg.work");
-result1 = check();
+write(
+    "N-way conformation checks:\n" +
+    "  * block1:                   " +
+    checkStgNwayConformation(null, "block1-bad.stg.work") + "\n" +
+    "  * block1 block2:            " +
+    checkStgNwayConformation(null, "block1.stg.work block3.stg.work") + "\n" +
+    "  * block1 block2 block3:     " +
+    checkStgNwayConformation(null, "block1.stg.work block2.stg.work block3.stg.work") + "\n" +
+    "  * block1-bad block2 block3: " +
+    checkStgNwayConformation(null, "block1-bad.stg.work block2.stg.work block3.stg.work") + "\n" +
+    "", "nway-conformation.result");
 
-closeWork(block1Work);
-block1Work = load("block1-bad.stg.work");
-result2 = check();
-
-closeWork(block2Work);
-closeWork(block3Work);
-result3 = check();
-
-write(result1 + result2 + result3, "nway-conformation.result");
 exit();
-
-function check() {
-    result = "";
-    for each (work in getWorks()) {
-        result += work.getTitle() + " ";
-    }
-    result += ": " + checkStgNwayConformation(null) + "\n";
-    return result
-}

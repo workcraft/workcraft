@@ -68,4 +68,8 @@ public class Result<T> {
         return new Result<>(e);
     }
 
+    public static <T> Result<T> exception(String msg) {
+        return exception(new Throwable(msg));
+    }
+
 }

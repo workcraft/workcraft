@@ -15,7 +15,7 @@ public class NwayConformationChainResultHandlingMonitor extends AbstractChainRes
     private final ArrayList<WorkspaceEntry> wes = new ArrayList<>();
 
     public NwayConformationChainResultHandlingMonitor(List<WorkspaceEntry> wes) {
-        super(wes.get(0), true);
+        super(wes.isEmpty() ? null : wes.get(0), true);
         this.wes.addAll(wes);
     }
 

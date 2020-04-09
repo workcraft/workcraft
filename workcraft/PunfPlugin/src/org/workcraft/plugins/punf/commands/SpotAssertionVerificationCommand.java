@@ -69,8 +69,8 @@ public class SpotAssertionVerificationCommand extends AbstractVerificationComman
     }
 
     @Override
-    public String deserialiseData(String str) {
-        return str;
+    public String deserialiseData(String data) {
+        return data;
     }
 
     @Override

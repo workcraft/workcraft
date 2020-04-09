@@ -78,11 +78,7 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
             }
             extraArgs = tmp;
         }
-        for (String arg : extraArgs.split("\\s")) {
-            if (!arg.isEmpty()) {
-                command.add(arg);
-            }
-        }
+        command.addAll(TextUtils.splitWords(extraArgs));
 
         // Petrify uses the full name of the file as the name of the Verilog module (with _net suffix).
         // As there may be non-alpha-numerical symbols in the model title, it needs to be preprocessed

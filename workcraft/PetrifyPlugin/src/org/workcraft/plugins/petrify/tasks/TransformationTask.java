@@ -26,10 +26,7 @@ import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.ExecutableUtils;
-import org.workcraft.utils.ExportUtils;
-import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.ByteArrayInputStream;
@@ -75,11 +72,7 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
             }
             extraArgs = tmp;
         }
-        for (String arg : extraArgs.split("\\s")) {
-            if (!arg.isEmpty()) {
-                command.add(arg);
-            }
-        }
+        command.addAll(TextUtils.splitWords(extraArgs));
 
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);

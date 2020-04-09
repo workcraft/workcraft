@@ -842,9 +842,12 @@ public final class Framework {
     }
 
     public File getFileByAbsoluteOrRelativePath(String path) {
-        File file = new File(path);
-        if (!file.isAbsolute()) {
-            file = new File(getWorkingDirectory(), path);
+        File file = null;
+        if (path != null) {
+            file = new File(path);
+            if (!file.isAbsolute()) {
+                file = new File(getWorkingDirectory(), path);
+            }
         }
         return file;
     }

@@ -1,6 +1,7 @@
 package org.workcraft.utils;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class TextUtils {
@@ -80,11 +81,17 @@ public class TextUtils {
     }
 
     public static List<String> splitLines(String text) {
-        return Arrays.asList(text.split("\\r?\\n"));
+        if (text == null) {
+            return Collections.emptyList();
+        }
+        return Arrays.asList(text.split("\\r?\\n", -1));
     }
 
     public static List<String> splitWords(String text) {
-        return Arrays.asList(text.split("\\s+"));
+        if ((text == null) || text.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+        return Arrays.asList(text.trim().split("\\s+", -1));
     }
 
     public static String getHeadAndTail(String text, int firstCount, int lastCount) {

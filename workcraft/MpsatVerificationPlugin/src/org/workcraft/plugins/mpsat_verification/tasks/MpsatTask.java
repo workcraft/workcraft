@@ -11,6 +11,7 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.ExecutableUtils;
 import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.TextUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -95,11 +96,7 @@ public class MpsatTask implements Task<MpsatOutput> {
             }
             extraArgs = tmp;
         }
-        for (String arg : extraArgs.split("\\s")) {
-            if (!arg.isEmpty()) {
-                command.add(arg);
-            }
-        }
+        command.addAll(TextUtils.splitWords(extraArgs));
 
         // Input file
         if (unfoldingFile != null) {

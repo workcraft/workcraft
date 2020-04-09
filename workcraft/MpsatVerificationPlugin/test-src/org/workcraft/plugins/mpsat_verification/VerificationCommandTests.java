@@ -14,7 +14,6 @@ import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.io.File;
 import java.net.URL;
 
 public class VerificationCommandTests {
@@ -203,9 +202,7 @@ public class VerificationCommandTests {
         ConformationVerificationCommand conformationCommand = new ConformationVerificationCommand();
         if (envToConform != null) {
             URL envUrl = classLoader.getResource(envToConform);
-            File envFile = new File(envUrl.getFile());
-            conformationCommand.setEnvironment(envFile);
-            Assert.assertEquals(conformation, conformationCommand.execute(we));
+            Assert.assertEquals(conformation, conformationCommand.execute(we, conformationCommand.deserialiseData(envUrl.getFile())));
         }
     }
 

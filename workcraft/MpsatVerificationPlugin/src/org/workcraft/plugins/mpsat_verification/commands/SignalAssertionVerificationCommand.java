@@ -76,8 +76,8 @@ public class SignalAssertionVerificationCommand extends org.workcraft.commands.A
     }
 
     @Override
-    public String deserialiseData(String str) {
-        return str;
+    public String deserialiseData(String data) {
+        return data;
     }
 
     @Override

@@ -5,5 +5,5 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public interface DataCommand<D> extends Command {
     void run(WorkspaceEntry we, D data, ProgressMonitor monitor);
-    D deserialiseData(String s);
+    D deserialiseData(String data);
 }

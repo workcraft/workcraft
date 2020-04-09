@@ -4,6 +4,7 @@ import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.ExecutableUtils;
+import org.workcraft.utils.TextUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -41,11 +42,7 @@ public class PunfTask implements Task<PunfOutput> {
         command.add(toolName);
 
         // Extra arguments (should go before the file parameters)
-        for (String arg : PunfSettings.getArgs().split("\\s")) {
-            if (!arg.isEmpty()) {
-                command.add(arg);
-            }
-        }
+        command.addAll(TextUtils.splitWords(PunfSettings.getArgs()));
 
         // Built-in arguments
         command.add("-m=" + outputFile.getAbsolutePath());

@@ -54,14 +54,14 @@ public class MpsatVerificationPlugin implements Plugin {
         ScriptableCommandUtils.register(OutputDeterminacyVerificationCommand.class, "checkStgOutputDeterminacy",
                 "check the STG 'work' for output determinacy");
 
-        ScriptableCommandUtils.register(NwayConformationVerificationCommand.class, "checkStgNwayConformation",
-                "check all the open STG works for N-way conformation ('null' should be passed as the parameter)");
-
         ScriptableCommandUtils.registerDataCommand(PlaceRedundancyVerificationCommand.class, "checkStgPlaceRedundancy",
                 "check STG (or Petri net) 'work' for redundancy of places in space-separated list 'data'");
 
-        // TODO: Need a way to pass the environment file from the JavaScript wrapper
-        pm.registerCommand(ConformationVerificationCommand.class);
+        ScriptableCommandUtils.registerDataCommand(ConformationVerificationCommand.class, "checkStgConformation",
+                "check STG 'work' for conformation to STG specified by file name 'data'");
+
+        ScriptableCommandUtils.registerDataCommand(NwayConformationVerificationCommand.class, "checkStgNwayConformation",
+                "check STGs specified by space-separated list of file names 'data' for N-way conformation ('work' parameter is ignored)");
 
         ScriptableCommandUtils.registerDataCommand(ReachAssertionVerificationCommand.class, "checkStgReachAssertion",
                 "check STG 'work' for REACH assertion 'data'");
@@ -70,7 +70,7 @@ public class MpsatVerificationPlugin implements Plugin {
                 "check STG 'work' for signal assertion 'data'");
 
         ScriptableCommandUtils.registerDataCommand(HandshakeVerificationCommand.class, "checkStgHandshakeProtocol",
-                "check STG 'work' following handshake protocol as specified by 'data', e.g. '{req1 req2}{ack12}'");
+                "check STG 'work' following handshake protocol as specified by 'data', e.g. '{req1 req2} {ack12}'");
     }
 
 }

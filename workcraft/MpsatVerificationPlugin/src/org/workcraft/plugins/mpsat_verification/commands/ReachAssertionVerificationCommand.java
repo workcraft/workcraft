@@ -67,16 +67,16 @@ public class ReachAssertionVerificationCommand extends org.workcraft.commands.Ab
     }
 
     @Override
-    public VerificationParameters deserialiseData(String str) {
-        if (str.startsWith("<") && str.endsWith(">")) {
-            Document document = PresetManager.buildPresetDocumentFromSettings(DEFAULT_DESCRIPTION, str);
+    public VerificationParameters deserialiseData(String data) {
+        if (data.startsWith("<") && data.endsWith(">")) {
+            Document document = PresetManager.buildPresetDocumentFromSettings(DEFAULT_DESCRIPTION, data);
             return DATA_SERIALISER.fromXML(document.getDocumentElement());
         }
         return new VerificationParameters(DEFAULT_DESCRIPTION,
                 VerificationMode.STG_REACHABILITY, 0,
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount(),
-                str, true);
+                data, true);
     }
 
 

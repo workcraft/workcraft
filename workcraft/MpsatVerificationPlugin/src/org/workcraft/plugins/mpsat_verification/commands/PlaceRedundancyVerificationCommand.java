@@ -18,12 +18,12 @@ import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.TextUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -125,8 +125,8 @@ public class PlaceRedundancyVerificationCommand extends org.workcraft.commands.A
     }
 
     @Override
-    public Collection<String> deserialiseData(String s) {
-        return Arrays.asList(s.trim().split("\\s"));
+    public Collection<String> deserialiseData(String data) {
+        return TextUtils.splitWords(data);
     }
 
     @Override

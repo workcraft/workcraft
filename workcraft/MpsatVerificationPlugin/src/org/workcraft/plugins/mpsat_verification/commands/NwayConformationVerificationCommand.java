@@ -1,7 +1,8 @@
 package org.workcraft.plugins.mpsat_verification.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.commands.ScriptableCommand;
+import org.workcraft.commands.ScriptableDataCommand;
+import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.mpsat_verification.gui.NwayConformationDialog;
@@ -9,20 +10,23 @@ import org.workcraft.plugins.mpsat_verification.tasks.NwayConformationChainResul
 import org.workcraft.plugins.mpsat_verification.tasks.NwayConformationTask;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.TextUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class NwayConformationVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand
-        implements ScriptableCommand<Boolean> {
+        implements ScriptableDataCommand<Boolean, List<WorkspaceEntry>> {
 
     @Override
     public String getDisplayName() {
@@ -61,29 +65,14 @@ public class NwayConformationVerificationCommand extends org.workcraft.commands.
             }
 
             NwayConformationChainResultHandlingMonitor monitor = new NwayConformationChainResultHandlingMonitor(wes);
-            queueVerification(wes, monitor);
+            run(we, wes, monitor);
         }
     }
 
     @Override
-    public Boolean execute(WorkspaceEntry we) {
-        List<WorkspaceEntry> wes = new ArrayList<>();
-        Workspace workspace = Framework.getInstance().getWorkspace();
-        for (WorkspaceEntry work: workspace.getWorks()) {
-            if (WorkspaceUtils.isApplicable(work, StgModel.class)) {
-                wes.add(work);
-            }
-        }
-
-        NwayConformationChainResultHandlingMonitor monitor = new NwayConformationChainResultHandlingMonitor(wes);
-        queueVerification(wes, monitor);
-        return monitor.waitForHandledResult();
-    }
-
-    private void queueVerification(List<WorkspaceEntry> wes, NwayConformationChainResultHandlingMonitor monitor) {
+    public void run(WorkspaceEntry we, List<WorkspaceEntry> wes, ProgressMonitor monitor) {
         if (wes.size() < 2) {
-            DialogUtils.showWarning("At least two STGs are required for N-way conformation.");
-            monitor.isFinished(Result.failure());
+            monitor.isFinished(Result.exception("At least two STGs are required for N-way conformation."));
             return;
         }
 
@@ -92,6 +81,32 @@ public class NwayConformationVerificationCommand extends org.workcraft.commands.
         String titles = wes.stream().map(w -> w.getTitle()).collect(Collectors.joining(", "));
         String description = MpsatUtils.getToolchainDescription(titles);
         manager.queue(task, description, monitor);
+    }
+
+    @Override
+    public List<WorkspaceEntry> deserialiseData(String data) {
+        List<WorkspaceEntry> wes = new ArrayList<>();
+        Framework framework = Framework.getInstance();
+        String msg = "";
+        for (String word : TextUtils.splitWords(data)) {
+            try {
+                wes.add(framework.loadWork(word));
+            } catch (DeserialisationException e) {
+                msg += "\n  * " + word;
+            }
+        }
+        if (msg.isEmpty()) {
+            return wes;
+        }
+        LogUtils.logError("Could not load the following files:" + msg);
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Boolean execute(WorkspaceEntry we, List<WorkspaceEntry> wes) {
+        NwayConformationChainResultHandlingMonitor monitor = new NwayConformationChainResultHandlingMonitor(wes);
+        run(we, wes, monitor);
+        return monitor.waitForHandledResult();
     }
 
 }
