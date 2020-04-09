@@ -14,4 +14,4 @@ else
 fi
 
 $WORKCRAFT -exec:"print('$SPECIAL_LINE'); exit();" \
-| grep -q "$line" || error "Workcraft (release) did not start up correctly"
+| grep -q "$SPECIAL_LINE" || error "Workcraft (release) did not start up correctly"
