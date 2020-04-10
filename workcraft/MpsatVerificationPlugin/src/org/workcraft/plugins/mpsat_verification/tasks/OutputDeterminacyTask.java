@@ -123,10 +123,8 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
             monitor.progressUpdate(0.30);
 
             // Generating .g for the whole system (model and environment)
-            File sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
-            File detailFile = new File(directory, StgUtils.DETAIL_FILE_PREFIX + StgUtils.XML_FILE_EXTENSION);
             PcompParameters pcompParameters = new PcompParameters(PcompParameters.SharedSignalMode.OUTPUT, true, false);
-            PcompTask pcompTask = new PcompTask(stgFiles, sysStgFile, detailFile, pcompParameters, directory);
+            PcompTask pcompTask = new PcompTask(stgFiles, pcompParameters, directory);
 
             Result<? extends PcompOutput> pcompResult = taskManager.execute(
                     pcompTask, "Running parallel composition [PComp]", new SubtaskMonitor<>(monitor));
@@ -141,6 +139,8 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
             monitor.progressUpdate(0.50);
 
             // Insert shadow transitions into the composed STG
+            File sysStgFile = pcompResult.getPayload().getOutputFile();
+            File detailFile = pcompResult.getPayload().getDetailFile();
             CompositionData compositionData = new CompositionData(detailFile);
             ComponentData devComponentData = compositionData.getComponentData(devStgFile);
             Stg modSysStg = StgUtils.loadStg(sysStgFile);

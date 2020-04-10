@@ -17,17 +17,17 @@ public class PunfTask implements Task<PunfOutput> {
 
     private final File inputFile;
     private final File outputFile;
-    private final File workingDir;
+    private final File directory;
     private final boolean useLegacyMci;
 
-    public PunfTask(File inputFile, File outputFile, File workingDir) {
-        this(inputFile, outputFile, workingDir, false);
+    public PunfTask(File inputFile, File outputFile, File directory) {
+        this(inputFile, outputFile, directory, false);
     }
 
-    public PunfTask(File inputFile, File outputFile, File workingDir,  boolean useLegacyMci) {
+    public PunfTask(File inputFile, File outputFile, File directory, boolean useLegacyMci) {
         this.inputFile = inputFile;
         this.outputFile = outputFile;
-        this.workingDir = workingDir;
+        this.directory = directory;
         this.useLegacyMci = useLegacyMci;
     }
 
@@ -50,7 +50,7 @@ public class PunfTask implements Task<PunfOutput> {
 
         boolean printStdout = PunfSettings.getPrintStdout();
         boolean printStderr = PunfSettings.getPrintStderr();
-        ExternalProcessTask task = new ExternalProcessTask(command, workingDir, printStdout, printStderr);
+        ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
         SubtaskMonitor<? super ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
 

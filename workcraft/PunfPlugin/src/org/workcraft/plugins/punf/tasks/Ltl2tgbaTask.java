@@ -15,10 +15,6 @@ public class Ltl2tgbaTask implements Task<Ltl2tgbaOutput> {
     private final File inputFile;
     private final File directory;
 
-    public Ltl2tgbaTask(File inputFile) {
-        this(inputFile, inputFile.getParentFile());
-    }
-
     public Ltl2tgbaTask(File inputFile, File directory) {
         this.inputFile = inputFile;
         this.directory = directory;

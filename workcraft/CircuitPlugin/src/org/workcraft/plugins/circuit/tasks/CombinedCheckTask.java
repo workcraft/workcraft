@@ -83,7 +83,6 @@ public class CombinedCheckTask implements Task<CombinedChainOutput> {
 
             // Generating system .g for custom property check (only if needed)
             File sysStgFile = null;
-            File detailFile = null;
             Result<? extends PcompOutput>  pcompResult = null;
             if (envStg == null) {
                 sysStgFile = devStgFile;
@@ -99,9 +98,7 @@ public class CombinedCheckTask implements Task<CombinedChainOutput> {
                 }
 
                 // Generating .g for the whole system (circuit and environment)
-                sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
-                detailFile = new File(directory, StgUtils.DETAIL_FILE_PREFIX + StgUtils.XML_FILE_EXTENSION);
-                pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, sysStgFile, detailFile, directory, monitor);
+                pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, directory, monitor);
                 if (pcompResult.getOutcome() != Outcome.SUCCESS) {
                     if (pcompResult.getOutcome() == Outcome.CANCEL) {
                         return new Result<>(Outcome.CANCEL);
@@ -109,6 +106,7 @@ public class CombinedCheckTask implements Task<CombinedChainOutput> {
                     return new Result<>(Outcome.FAILURE,
                             new CombinedChainOutput(devExportResult, pcompResult, null, null, verificationParametersList));
                 }
+                sysStgFile = pcompResult.getPayload().getOutputFile();
             }
             monitor.progressUpdate(0.20);
 

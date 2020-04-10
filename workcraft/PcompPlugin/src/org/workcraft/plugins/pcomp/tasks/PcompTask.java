@@ -12,20 +12,27 @@ import java.util.Collection;
 
 public class PcompTask implements Task<PcompOutput> {
 
+    public static final String OUTPUT_FILE_NAME = "composition.g";
+    public static final String DETAIL_FILE_NAME = "detail.xml";
+
     private final Collection<File> inputFiles;
-    private final File outputFile;
-    private final File detailFile;
     private final PcompParameters parameters;
     private final File directory;
+    private final String outputFileName;
+    private final String detailFileName;
 
-    public PcompTask(Collection<File> inputFiles, File outputFile, File detailFile,
-            PcompParameters parameters, File directory) {
+    public PcompTask(Collection<File> inputFiles, PcompParameters parameters, File directory) {
+        this(inputFiles, parameters, directory, OUTPUT_FILE_NAME, DETAIL_FILE_NAME);
+    }
+
+    public PcompTask(Collection<File> inputFiles, PcompParameters parameters, File directory,
+            String outputFileName, String detailFileName) {
 
         this.inputFiles = inputFiles;
-        this.outputFile = outputFile;
-        this.detailFile = detailFile;
         this.parameters = parameters;
         this.directory = directory;
+        this.outputFileName = outputFileName;
+        this.detailFileName = detailFileName;
     }
 
     @Override
@@ -56,17 +63,15 @@ public class PcompTask implements Task<PcompOutput> {
         command.addAll(TextUtils.splitWords(PcompSettings.getArgs()));
 
         // Composed STG output file
-        if (outputFile != null) {
-            command.add("-f" + outputFile.getAbsolutePath());
-        }
+        File outputFile = new File(directory, outputFileName);
+        command.add("-f" + outputFile.getAbsolutePath());
 
         // Composition detail output file
-        if (detailFile != null) {
-            command.add("-l" + detailFile.getAbsolutePath());
-        }
+        File detailFile = new File(directory, detailFileName);
+        command.add("-l" + detailFile.getAbsolutePath());
 
         // STG input files
-        for (File inputFile: inputFiles) {
+        for (File inputFile : inputFiles) {
             if (inputFile != null) {
                 command.add(inputFile.getAbsolutePath());
             }

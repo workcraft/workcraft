@@ -6,10 +6,10 @@ import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
-import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutput;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutputParser;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatTask;
+import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
@@ -114,9 +114,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                     }
 
                     // Generating .g for the whole system (circuit and environment)
-                    sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
-                    detailFile = new File(directory, StgUtils.DETAIL_FILE_PREFIX + StgUtils.XML_FILE_EXTENSION);
-                    pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, sysStgFile, detailFile, directory, monitor);
+                    pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, directory, monitor);
                     if (pcompResult.getOutcome() != Outcome.SUCCESS) {
                         if (pcompResult.getOutcome() == Outcome.CANCEL) {
                             return new Result<>(Outcome.CANCEL);
@@ -124,6 +122,8 @@ public class CheckTask implements Task<VerificationChainOutput> {
                         return new Result<>(Outcome.FAILURE,
                                 new VerificationChainOutput(devExportResult, pcompResult, null, null, preparationParameters));
                     }
+                    sysStgFile = pcompResult.getPayload().getOutputFile();
+                    detailFile = pcompResult.getPayload().getDetailFile();
                 }
                 // Restore the original types of mutex grant in system STG
                 Stg sysStg = StgUtils.loadStg(sysStgFile);
@@ -163,9 +163,10 @@ public class CheckTask implements Task<VerificationChainOutput> {
                     }
 
                     // Generating .g for the whole system (circuit and environment) without internal signals
-                    sysModStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + fileSuffix + stgFileExtension);
-                    detailModFile = new File(directory, StgUtils.DETAIL_FILE_PREFIX + fileSuffix + StgUtils.XML_FILE_EXTENSION);
-                    pcompModResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envModStgFile, sysModStgFile, detailModFile, directory, monitor);
+                    pcompModResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envModStgFile, directory, monitor,
+                            StgUtils.SYSTEM_FILE_PREFIX + fileSuffix + stgFileExtension,
+                            StgUtils.DETAIL_FILE_PREFIX + fileSuffix + StgUtils.XML_FILE_EXTENSION);
+
                     if (pcompModResult.getOutcome() != Outcome.SUCCESS) {
                         if (pcompModResult.getOutcome() == Outcome.CANCEL) {
                             return new Result<>(Outcome.CANCEL);
@@ -173,6 +174,8 @@ public class CheckTask implements Task<VerificationChainOutput> {
                         return new Result<>(Outcome.FAILURE,
                                 new VerificationChainOutput(devExportResult, pcompModResult, null, null, preparationParameters));
                     }
+                    sysModStgFile = pcompModResult.getPayload().getOutputFile();
+                    detailModFile = pcompModResult.getPayload().getDetailFile();
                     // Restore the original types of mutex grant in modified system STG
                     Stg sysModStg = StgUtils.loadStg(sysModStgFile);
                     for (Pair<String, String> grantPair: grantPairs) {

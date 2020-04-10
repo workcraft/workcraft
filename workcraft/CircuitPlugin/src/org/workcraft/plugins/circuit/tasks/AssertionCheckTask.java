@@ -5,10 +5,10 @@ import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
-import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutput;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutputParser;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatTask;
+import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
@@ -77,7 +77,6 @@ public class AssertionCheckTask implements Task<VerificationChainOutput> {
 
             // Generating system .g for custom property check (only if needed)
             File sysStgFile = null;
-            File detailFile = null;
             Result<? extends PcompOutput>  pcompResult = null;
             if (envStg == null) {
                 sysStgFile = devStgFile;
@@ -93,9 +92,7 @@ public class AssertionCheckTask implements Task<VerificationChainOutput> {
                 }
 
                 // Generating .g for the whole system (circuit and environment)
-                sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
-                detailFile = new File(directory, StgUtils.DETAIL_FILE_PREFIX + StgUtils.XML_FILE_EXTENSION);
-                pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, sysStgFile, detailFile, directory, monitor);
+                pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, directory, monitor);
                 if (pcompResult.getOutcome() != Outcome.SUCCESS) {
                     if (pcompResult.getOutcome() == Outcome.CANCEL) {
                         return new Result<>(Outcome.CANCEL);
@@ -103,6 +100,7 @@ public class AssertionCheckTask implements Task<VerificationChainOutput> {
                     return new Result<>(Outcome.FAILURE,
                             new VerificationChainOutput(devExportResult, pcompResult, null, null, preparationParameters));
                 }
+                sysStgFile = pcompResult.getPayload().getOutputFile();
             }
             monitor.progressUpdate(0.20);
 

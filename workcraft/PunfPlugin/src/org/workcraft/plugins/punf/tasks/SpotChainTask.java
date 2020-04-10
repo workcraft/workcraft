@@ -42,7 +42,7 @@ public class SpotChainTask implements Task<SpotChainOutput> {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            Ltl2tgbaTask ltl2tgbaTask = new Ltl2tgbaTask(spotFile);
+            Ltl2tgbaTask ltl2tgbaTask = new Ltl2tgbaTask(spotFile, directory);
             Result<? extends Ltl2tgbaOutput> ltl2tgbaResult = manager.execute(
                     ltl2tgbaTask, "Converting SPOT assertion to B\u00FCchi automaton", subtaskMonitor);
 

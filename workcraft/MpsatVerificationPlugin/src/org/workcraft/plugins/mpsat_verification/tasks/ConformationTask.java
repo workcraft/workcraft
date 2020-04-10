@@ -98,10 +98,8 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             monitor.progressUpdate(0.40);
 
             // Generating .g for the whole system (model and environment)
-            File sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
-            File detailFile = new File(directory, StgUtils.DETAIL_FILE_PREFIX + StgUtils.XML_FILE_EXTENSION);
             PcompParameters pcompParameters = new PcompParameters(PcompParameters.SharedSignalMode.OUTPUT, true, false);
-            PcompTask pcompTask = new PcompTask(Arrays.asList(devStgFile, envStgFile), sysStgFile, detailFile, pcompParameters, directory);
+            PcompTask pcompTask = new PcompTask(Arrays.asList(devStgFile, envStgFile), pcompParameters, directory);
 
             Result<? extends PcompOutput> pcompResult = taskManager.execute(
                     pcompTask, "Running parallel composition [PComp]", subtaskMonitor);
@@ -116,6 +114,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             monitor.progressUpdate(0.50);
 
             // Generate unfolding
+            File sysStgFile = pcompResult.getPayload().getOutputFile();
             File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + PunfTask.PNML_FILE_EXTENSION);
             PunfTask punfTask = new PunfTask(sysStgFile, unfoldingFile, directory);
             Result<? extends PunfOutput> punfResult = taskManager.execute(
@@ -131,6 +130,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             monitor.progressUpdate(0.60);
 
             // Check for conformation
+            File detailFile = pcompResult.getPayload().getDetailFile();
             CompositionData compositionData = new CompositionData(detailFile);
             ComponentData devComponentData = compositionData.getComponentData(devStgFile);
             Set<String> devPlaceNames = devComponentData.getDstPlaces();

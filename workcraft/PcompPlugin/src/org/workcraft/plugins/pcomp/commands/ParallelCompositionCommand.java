@@ -37,9 +37,6 @@ import java.util.HashSet;
 public class ParallelCompositionCommand
         implements ScriptableDataCommand<WorkspaceEntry, Pair<Collection<WorkspaceEntry>, PcompParameters>> {
 
-    public static final String RESULT_FILE_NAME = "result.g";
-    public static final String DETAIL_FILE_NAME = "detail.xml";
-
     @Override
     public String getSection() {
         return "Composition";
@@ -90,18 +87,11 @@ public class ParallelCompositionCommand
             File inputFile = exportStg(inputWe, directory);
             inputFiles.add(inputFile);
         }
-
-        File outputFile = new File(directory, RESULT_FILE_NAME);
-        outputFile.deleteOnExit();
-        File detailFile = new File(directory, DETAIL_FILE_NAME);
-        detailFile.deleteOnExit();
-        PcompParameters parameters = data.getSecond();
-
-        PcompTask pcompTask = new PcompTask(inputFiles, outputFile, detailFile, parameters, directory);
-
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
         ((PcompResultHandlingMonitor) monitor).setMutexes(mutexes);
 
+        PcompParameters parameters = data.getSecond();
+        PcompTask pcompTask = new PcompTask(inputFiles, parameters, directory);
         TaskManager taskManager = Framework.getInstance().getTaskManager();
         taskManager.queue(pcompTask, "Running parallel composition [PComp]", monitor);
     }
