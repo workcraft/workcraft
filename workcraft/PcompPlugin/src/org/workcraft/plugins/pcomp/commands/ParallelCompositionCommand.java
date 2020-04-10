@@ -47,7 +47,7 @@ public class ParallelCompositionCommand
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, StgModel.class);
+        return (we == null) || WorkspaceUtils.isApplicable(we, StgModel.class);
     }
 
     @Override

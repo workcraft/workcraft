@@ -1,0 +1,25 @@
+Signal Transition Graph analysis:
+  Signal count -  12
+    * Input / output / internal -  5 / 7 / 0
+  Transition count -  24
+    * Input / output / internal / dummy -  10 / 14 / 0 / 0
+    * Rising / falling / toggle -  12 / 12 / 0
+    * Fork / join -  7 / 7
+    * Source / sink -  0 / 0
+    * Max fanin / fanout -  2 / 2
+  Place count -  30
+    * Choice / merge -  1 / 1
+    * Source / sink -  0 / 0
+    * Mutex -  1
+    * Max fanin / fanout -  2 / 2
+  Arc count -  62
+    * Producing / consuming -  31 / 31
+    * Self-loop -  0
+  Token count / marked places -  4 / 4
+  Isolated transitions / places -  0 / 0
+  Net type:
+    * Marked graph -  false
+    * State machine -  false
+    * Free choice -  false
+    * Extended free choice -  false
+    * Pure -  true
