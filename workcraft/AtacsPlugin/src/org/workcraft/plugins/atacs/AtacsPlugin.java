@@ -23,11 +23,11 @@ public class AtacsPlugin implements Plugin {
 
         pm.registerSettings(AtacsSettings.class);
 
-        ScriptableCommandUtils.register(ComplexGateSynthesisCommand.class, "synthComplexGateAtacs",
+        ScriptableCommandUtils.registerCommand(ComplexGateSynthesisCommand.class, "synthComplexGateAtacs",
                 "logic synthesis of the STG 'work' into a complex gate Circuit work using ATACS backend");
-        ScriptableCommandUtils.register(GeneralisedCelementSynthesisCommand.class, "synthGeneralisedCelementAtacs",
+        ScriptableCommandUtils.registerCommand(GeneralisedCelementSynthesisCommand.class, "synthGeneralisedCelementAtacs",
                 "synthesis of the STG 'work' into a generalised C-element Circuit work using ATACS");
-        ScriptableCommandUtils.register(StandardCelementSynthesisCommand.class, "synthStandardCelementAtacs",
+        ScriptableCommandUtils.registerCommand(StandardCelementSynthesisCommand.class, "synthStandardCelementAtacs",
                 "synthesis of the STG 'work' into a standard C-element Circuit work using ATACS backend");
     }
 

@@ -9,8 +9,8 @@ import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
+import org.workcraft.plugins.pcomp.tasks.PcompParameters;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
-import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.Signal;
@@ -25,6 +25,7 @@ import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Set;
 
 public class ConformationTask implements Task<VerificationChainOutput> {
@@ -99,8 +100,8 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             // Generating .g for the whole system (model and environment)
             File sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
             File detailFile = new File(directory, StgUtils.DETAIL_FILE_PREFIX + StgUtils.XML_FILE_EXTENSION);
-            PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile}, sysStgFile, detailFile,
-                    ConversionMode.OUTPUT, true, false, directory);
+            PcompParameters pcompParameters = new PcompParameters(PcompParameters.SharedSignalMode.OUTPUT, true, false);
+            PcompTask pcompTask = new PcompTask(Arrays.asList(devStgFile, envStgFile), sysStgFile, detailFile, pcompParameters, directory);
 
             Result<? extends PcompOutput> pcompResult = taskManager.execute(
                     pcompTask, "Running parallel composition [PComp]", subtaskMonitor);

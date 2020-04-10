@@ -8,31 +8,23 @@ import org.workcraft.utils.TextUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class PcompTask implements Task<PcompOutput> {
 
-    public enum ConversionMode {
-        DUMMY,
-        INTERNAL,
-        OUTPUT
-    }
-
-    private final File[] inputFiles;
+    private final Collection<File> inputFiles;
     private final File outputFile;
     private final File detailFile;
-    private final ConversionMode conversionMode;
-    private final boolean useSharedOutputs;
-    private final boolean useImprovedComposition;
+    private final PcompParameters parameters;
     private final File directory;
 
-    public PcompTask(File[] inputFiles, File outputFile, File detailFile,
-            ConversionMode conversionMode, boolean useSharedOutputs, boolean useImprovedComposition, File directory) {
+    public PcompTask(Collection<File> inputFiles, File outputFile, File detailFile,
+            PcompParameters parameters, File directory) {
+
         this.inputFiles = inputFiles;
         this.outputFile = outputFile;
         this.detailFile = detailFile;
-        this.conversionMode = conversionMode;
-        this.useSharedOutputs = useSharedOutputs;
-        this.useImprovedComposition = useImprovedComposition;
+        this.parameters = parameters;
         this.directory = directory;
     }
 
@@ -45,18 +37,18 @@ public class PcompTask implements Task<PcompOutput> {
         command.add(toolName);
 
         // Built-in arguments
-        if (conversionMode == ConversionMode.DUMMY) {
+        if (parameters.getSharedSignalMode() == PcompParameters.SharedSignalMode.DUMMY) {
             command.add("-d");
             command.add("-r");
-        } else if (conversionMode == ConversionMode.INTERNAL) {
+        } else if (parameters.getSharedSignalMode() == PcompParameters.SharedSignalMode.INTERNAL) {
             command.add("-i");
         }
 
-        if (useSharedOutputs) {
+        if (parameters.isSharedOutputs()) {
             command.add("-o");
         }
 
-        if (useImprovedComposition) {
+        if (parameters.isImprovedComposition()) {
             command.add("-p");
         }
 

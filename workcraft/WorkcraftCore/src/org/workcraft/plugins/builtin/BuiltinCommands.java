@@ -23,19 +23,19 @@ public class BuiltinCommands implements Plugin {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
 
-        ScriptableCommandUtils.register(AnonymiseTransformationCommand.class, "transformModelAnonymise",
+        ScriptableCommandUtils.registerCommand(AnonymiseTransformationCommand.class, "transformModelAnonymise",
                 "anonymise the given 'work' by randomly renaming its nodes");
 
-        ScriptableCommandUtils.register(StraightenConnectionTransformationCommand.class, "transformModelStraightenConnection",
+        ScriptableCommandUtils.registerCommand(StraightenConnectionTransformationCommand.class, "transformModelStraightenConnection",
                 "transform the given 'work' by straightening selected (or all) arcs");
 
-        ScriptableCommandUtils.register(DotLayoutCommand.class, "layoutModelDot",
+        ScriptableCommandUtils.registerCommand(DotLayoutCommand.class, "layoutModelDot",
                 "position nodes and shape the arcs using of the model ''work'' using //Graphviz// backend");
 
-        ScriptableCommandUtils.register(RandomLayoutCommand.class, "layoutModelRandom",
+        ScriptableCommandUtils.registerCommand(RandomLayoutCommand.class, "layoutModelRandom",
                 "randomly position graph nodes of the model ''work'' and connect them by straight arcs");
 
-        ScriptableCommandUtils.register(BasicStatisticsCommand.class, "statModel",
+        ScriptableCommandUtils.registerCommand(BasicStatisticsCommand.class, "statModel",
                 "node and arc count for the model 'work' (all model types are supported)");
     }
 

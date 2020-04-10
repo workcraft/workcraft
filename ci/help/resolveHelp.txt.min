@@ -1,0 +1,2 @@
+resolveCscConflictMpsat(work) - resolve complete state coding conflicts in STG 'work' using MPSat backend
+resolveCscConflictPetrify(work) - resolve complete state coding conflicts in STG 'work' using Petrify backend

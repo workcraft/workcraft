@@ -35,11 +35,11 @@ public class FstPlugin implements Plugin {
         pm.registerExporter(SgExporter.class);
         pm.registerImporter(SgImporter.class);
 
-        ScriptableCommandUtils.register(FstToStgConversionCommand.class, "convertFstToStg",
+        ScriptableCommandUtils.registerCommand(FstToStgConversionCommand.class, "convertFstToStg",
                 "convert the given FST 'work' into a new STG work");
-        ScriptableCommandUtils.register(FsmToFstConversionCommand.class, "convertFsmToFst",
+        ScriptableCommandUtils.registerCommand(FsmToFstConversionCommand.class, "convertFsmToFst",
                 "convert the given FSM 'work' into a new FST work");
-        ScriptableCommandUtils.register(FstToFsmConversionCommand.class, "convertFstToFsm",
+        ScriptableCommandUtils.registerCommand(FstToFsmConversionCommand.class, "convertFstToFsm",
                 "convert the given FST 'work' into a new FSM work");
     }
 

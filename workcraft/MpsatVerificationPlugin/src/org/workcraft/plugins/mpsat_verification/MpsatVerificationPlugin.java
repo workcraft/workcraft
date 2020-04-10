@@ -21,37 +21,37 @@ public class MpsatVerificationPlugin implements Plugin {
 
         pm.registerSettings(MpsatVerificationSettings.class);
 
-        ScriptableCommandUtils.register(CombinedVerificationCommand.class, "checkStgCombined",
+        ScriptableCommandUtils.registerCommand(CombinedVerificationCommand.class, "checkStgCombined",
                 "combined check of the STG 'work' for consistency, deadlock freeness, input properness, output persistency, and mutex implementability");
 
-        ScriptableCommandUtils.register(ConsistencyVerificationCommand.class, "checkStgConsistency",
+        ScriptableCommandUtils.registerCommand(ConsistencyVerificationCommand.class, "checkStgConsistency",
                 "check the STG 'work' for consistency");
 
-        ScriptableCommandUtils.register(DeadlockFreenessVerificationCommand.class, "checkStgDeadlockFreeness",
+        ScriptableCommandUtils.registerCommand(DeadlockFreenessVerificationCommand.class, "checkStgDeadlockFreeness",
                 "check the STG (or Petri net) 'work' for deadlock freeness");
 
-        ScriptableCommandUtils.register(InputPropernessVerificationCommand.class, "checkStgInputProperness",
+        ScriptableCommandUtils.registerCommand(InputPropernessVerificationCommand.class, "checkStgInputProperness",
                 "check the STG 'work' for input properness");
 
-        ScriptableCommandUtils.register(OutputPersistencyVerificationCommand.class, "checkStgOutputPersistency",
+        ScriptableCommandUtils.registerCommand(OutputPersistencyVerificationCommand.class, "checkStgOutputPersistency",
                 "check the STG 'work' for output persistency");
 
-        ScriptableCommandUtils.register(CscVerificationCommand.class, "checkStgCsc",
+        ScriptableCommandUtils.registerCommand(CscVerificationCommand.class, "checkStgCsc",
                 "check the STG 'work' for complete state coding");
 
-        ScriptableCommandUtils.register(UscVerificationCommand.class, "checkStgUsc",
+        ScriptableCommandUtils.registerCommand(UscVerificationCommand.class, "checkStgUsc",
                 "check the STG 'work' for unique state coding");
 
-        ScriptableCommandUtils.register(DiInterfaceVerificationCommand.class, "checkStgDiInterface",
+        ScriptableCommandUtils.registerCommand(DiInterfaceVerificationCommand.class, "checkStgDiInterface",
                 "check the STG 'work' for delay-insensitive interface");
 
-        ScriptableCommandUtils.register(NormalcyVerificationCommand.class, "checkStgNormalcy",
+        ScriptableCommandUtils.registerCommand(NormalcyVerificationCommand.class, "checkStgNormalcy",
                 "check the STG 'work' for normalcy");
 
-        ScriptableCommandUtils.register(MutexImplementabilityVerificationCommand.class, "checkStgMutexImplementability",
+        ScriptableCommandUtils.registerCommand(MutexImplementabilityVerificationCommand.class, "checkStgMutexImplementability",
                 "check the STG 'work' for implementability of its mutex places");
 
-        ScriptableCommandUtils.register(OutputDeterminacyVerificationCommand.class, "checkStgOutputDeterminacy",
+        ScriptableCommandUtils.registerCommand(OutputDeterminacyVerificationCommand.class, "checkStgOutputDeterminacy",
                 "check the STG 'work' for output determinacy");
 
         ScriptableCommandUtils.registerDataCommand(PlaceRedundancyVerificationCommand.class, "checkStgPlaceRedundancy",

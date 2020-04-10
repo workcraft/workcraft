@@ -34,22 +34,22 @@ public class WtgPlugin implements Plugin {
         pm.registerXmlSerialiser(GuardSerialiser.class);
         pm.registerXmlDeserialiser(GuardDeserialiser.class);
 
-        ScriptableCommandUtils.register(WtgToStgConversionCommand.class, "convertWtgToStg",
+        ScriptableCommandUtils.registerCommand(WtgToStgConversionCommand.class, "convertWtgToStg",
                 "convert the given WTG 'work' into a new STG work");
 
-        ScriptableCommandUtils.register(SoundnessVerificationCommand.class, "checkWtgSoundness",
+        ScriptableCommandUtils.registerCommand(SoundnessVerificationCommand.class, "checkWtgSoundness",
                 "check the given WTG 'work' for soundness and consistency");
 
-        ScriptableCommandUtils.register(ReachabilityVerificationCommand.class, "checkWtgReachability",
+        ScriptableCommandUtils.registerCommand(ReachabilityVerificationCommand.class, "checkWtgReachability",
                 "check the given WTG 'work' for reachability of nodes and transitions");
 
-        ScriptableCommandUtils.register(InputPropernessVerificationCommand.class, "checkWtgInputProperness",
+        ScriptableCommandUtils.registerCommand(InputPropernessVerificationCommand.class, "checkWtgInputProperness",
                 "check the given WTG 'work' for input properness");
 
-        ScriptableCommandUtils.register(StructureWaveformTransformationCommand.class, "transformWtgStructureWaveform",
+        ScriptableCommandUtils.registerCommand(StructureWaveformTransformationCommand.class, "transformWtgStructureWaveform",
                 "transform the given WTG 'work' by structuring the waveforms");
 
-        ScriptableCommandUtils.register(SynthesisGuidelinesVerificationCommand.class, "checkWtgSynthesisGuidelines",
+        ScriptableCommandUtils.registerCommand(SynthesisGuidelinesVerificationCommand.class, "checkWtgSynthesisGuidelines",
                 "check the given WTG 'work' for compliance with the synthesis guidelines");
     }
 

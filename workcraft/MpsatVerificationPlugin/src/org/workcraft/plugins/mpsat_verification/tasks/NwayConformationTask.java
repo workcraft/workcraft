@@ -8,8 +8,8 @@ import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.mpsat_verification.utils.TransformUtils;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
+import org.workcraft.plugins.pcomp.tasks.PcompParameters;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
-import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.Stg;
@@ -105,8 +105,8 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
             // Generating .g for the whole system (model and environment)
             File sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
             File detailFile = new File(directory, StgUtils.DETAIL_FILE_PREFIX + StgUtils.XML_FILE_EXTENSION);
-            PcompTask pcompTask = new PcompTask(stgFiles.toArray(new File[0]), sysStgFile, detailFile,
-                    ConversionMode.OUTPUT, false, false, directory);
+            PcompParameters pcompParameters = new PcompParameters(PcompParameters.SharedSignalMode.OUTPUT, false, false);
+            PcompTask pcompTask = new PcompTask(stgFiles, sysStgFile, detailFile, pcompParameters, directory);
 
             Result<? extends PcompOutput> pcompResult = taskManager.execute(
                     pcompTask, "Running parallel composition [PComp]", new SubtaskMonitor<>(monitor));

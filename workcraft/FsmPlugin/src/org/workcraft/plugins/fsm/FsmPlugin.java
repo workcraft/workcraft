@@ -33,25 +33,25 @@ public class FsmPlugin implements Plugin {
         pm.registerXmlSerialiser(EventSerialiser.class);
         pm.registerXmlDeserialiser(EventDeserialiser.class);
 
-        ScriptableCommandUtils.register(FsmToGraphConversionCommand.class, "convertFsmToGraph",
+        ScriptableCommandUtils.registerCommand(FsmToGraphConversionCommand.class, "convertFsmToGraph",
                 "convert the given FSM 'work' into a new Graph work");
-        ScriptableCommandUtils.register(GraphToFsmConversionCommand.class, "convertGraphToFsm",
+        ScriptableCommandUtils.registerCommand(GraphToFsmConversionCommand.class, "convertGraphToFsm",
                 "convert the given Graph 'work' into a new FSM work");
-        ScriptableCommandUtils.register(FsmToPetriConversionCommand.class, "convertFsmToPetri",
+        ScriptableCommandUtils.registerCommand(FsmToPetriConversionCommand.class, "convertFsmToPetri",
                 "convert the given FSM 'work' into a new Petri net work");
 
-        ScriptableCommandUtils.register(DeadlockFreenessVerificationCommand.class, "checkFsmDeadlockFreeness",
+        ScriptableCommandUtils.registerCommand(DeadlockFreenessVerificationCommand.class, "checkFsmDeadlockFreeness",
                 "check the FSM or FST 'work' for deadlock freeness");
-        ScriptableCommandUtils.register(DeterminismVerificationCommand.class, "checkFsmDeterminism",
+        ScriptableCommandUtils.registerCommand(DeterminismVerificationCommand.class, "checkFsmDeterminism",
                 "check the FSM or FST 'work' for determinism");
-        ScriptableCommandUtils.register(ReachabilityVerificationCommand.class, "checkFsmReachability",
+        ScriptableCommandUtils.registerCommand(ReachabilityVerificationCommand.class, "checkFsmReachability",
                 "check the FSM or FST 'work' for reachability of all states");
-        ScriptableCommandUtils.register(ReversibilityVerificationCommand.class, "checkFsmReversibility",
+        ScriptableCommandUtils.registerCommand(ReversibilityVerificationCommand.class, "checkFsmReversibility",
                 "check the FSM or FST 'work' for reversibility of all states");
 
-        ScriptableCommandUtils.register(MergeStateTransformationCommand.class, "transformFsmMergeState",
+        ScriptableCommandUtils.registerCommand(MergeStateTransformationCommand.class, "transformFsmMergeState",
                 "transform the given FSM or FST 'work' by merging selected states");
-        ScriptableCommandUtils.register(ContractStateTransformationCommand.class, "transformFsmContractState",
+        ScriptableCommandUtils.registerCommand(ContractStateTransformationCommand.class, "transformFsmContractState",
                 "transform the given FSM or FST 'work' by contracting selected states");
     }
 

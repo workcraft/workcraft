@@ -2,25 +2,22 @@ package org.workcraft.plugins.mpsat_verification.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.ScriptableDataCommand;
-import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.mpsat_verification.gui.NwayConformationDialog;
 import org.workcraft.plugins.mpsat_verification.tasks.NwayConformationChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat_verification.tasks.NwayConformationTask;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
+import org.workcraft.plugins.pcomp.utils.PcompUtils;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.utils.LogUtils;
-import org.workcraft.utils.TextUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -85,21 +82,7 @@ public class NwayConformationVerificationCommand extends org.workcraft.commands.
 
     @Override
     public List<WorkspaceEntry> deserialiseData(String data) {
-        List<WorkspaceEntry> wes = new ArrayList<>();
-        Framework framework = Framework.getInstance();
-        String msg = "";
-        for (String word : TextUtils.splitWords(data)) {
-            try {
-                wes.add(framework.loadWork(word));
-            } catch (DeserialisationException e) {
-                msg += "\n  * " + word;
-            }
-        }
-        if (msg.isEmpty()) {
-            return wes;
-        }
-        LogUtils.logError("Could not load the following files:" + msg);
-        return Collections.emptyList();
+        return PcompUtils.deserealiseData(data);
     }
 
     @Override

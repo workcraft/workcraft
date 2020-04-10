@@ -15,19 +15,19 @@ public class MpsatSynthesisPlugin implements Plugin {
         PluginManager pm = framework.getPluginManager();
         pm.registerSettings(MpsatSynthesisSettings.class);
 
-        ScriptableCommandUtils.register(CscConflictResolutionCommand.class, "resolveCscConflictMpsat",
-                "resolve complete state coding conflicts with MPSat backend");
+        ScriptableCommandUtils.registerCommand(CscConflictResolutionCommand.class, "resolveCscConflictMpsat",
+                "resolve complete state coding conflicts in STG 'work' using MPSat backend");
 
-        ScriptableCommandUtils.register(ComplexGateSynthesisCommand.class, "synthComplexGateMpsat",
+        ScriptableCommandUtils.registerCommand(ComplexGateSynthesisCommand.class, "synthComplexGateMpsat",
                 "logic synthesis of the STG 'work' into a complex gate Circuit work using MPSat backend");
 
-        ScriptableCommandUtils.register(GeneralisedCelementSynthesisCommand.class, "synthGeneralisedCelementMpsat",
+        ScriptableCommandUtils.registerCommand(GeneralisedCelementSynthesisCommand.class, "synthGeneralisedCelementMpsat",
                 "synthesis of the STG 'work' into a generalised C-element Circuit work using MPSat backend");
 
-        ScriptableCommandUtils.register(StandardCelementSynthesisCommand.class, "synthStandardCelementMpsat",
+        ScriptableCommandUtils.registerCommand(StandardCelementSynthesisCommand.class, "synthStandardCelementMpsat",
                 "synthesis of the STG 'work' into a standard C-element Circuit work using MPSat backend");
 
-        ScriptableCommandUtils.register(TechnologyMappingSynthesisCommand.class, "synthTechnologyMappingMpsat",
+        ScriptableCommandUtils.registerCommand(TechnologyMappingSynthesisCommand.class, "synthTechnologyMappingMpsat",
                 "technology mapping of the STG 'work' into a Circuit work using MPSat backend");
     }
 

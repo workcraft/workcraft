@@ -1,24 +1,26 @@
 package org.workcraft.plugins.pcomp.tasks;
 
-import java.io.File;
-
 import org.workcraft.tasks.ExternalProcessOutput;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.Collections;
 
 public class PcompOutput extends ExternalProcessOutput {
 
-    private final File[] inputFiles;
+    private final Collection<File> inputFiles;
     private final File outputFile;
     private final File detailFile;
 
-    public PcompOutput(ExternalProcessOutput output, File[] inputFiles, File outptFile, File detailFile) {
+    public PcompOutput(ExternalProcessOutput output, Collection<File> inputFiles, File outputFile, File detailFile) {
         super(output.getReturnCode(), output.getStdout(), output.getStderr());
         this.inputFiles = inputFiles;
-        this.outputFile = outptFile;
+        this.outputFile = outputFile;
         this.detailFile = detailFile;
     }
 
-    public File[] getInputFiles() {
-        return inputFiles;
+    public Collection<File> getInputFiles() {
+        return Collections.unmodifiableCollection(inputFiles);
     }
 
     public File getOutputFile() {

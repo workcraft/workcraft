@@ -89,7 +89,7 @@ public class FileUtils {
         if (suffix == null) {
             suffix = "";
         } else {
-            errorMessage += " and suffix '" + suffix + "'.";
+            errorMessage += " and suffix '" + suffix + "'";
         }
 
         if (directory == null) {

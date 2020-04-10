@@ -31,10 +31,10 @@ public class CustomAssertionVerificationCommandTests {
         URL url = classLoader.getResource(workName);
         WorkspaceEntry we = framework.loadWork(url.getFile());
 
-        SpotAssertionVerificationCommand spotAssertion = new SpotAssertionVerificationCommand();
-        Assert.assertNull(spotAssertion.execute(we, spotAssertion.deserialiseData("incorrect - expression")));
-        Assert.assertFalse(spotAssertion.execute(we, spotAssertion.deserialiseData("G((\"dsr\") & (\"dsw\"))")));
-        Assert.assertTrue(spotAssertion.execute(we, spotAssertion.deserialiseData("G((!\"dsr\") | (!\"dsw\"))")));
+        SpotAssertionVerificationCommand command = new SpotAssertionVerificationCommand();
+        Assert.assertNull(command.execute(we, command.deserialiseData("incorrect - expression")));
+        Assert.assertFalse(command.execute(we, command.deserialiseData("G((\"dsr\") & (\"dsw\"))")));
+        Assert.assertTrue(command.execute(we, command.deserialiseData("G((!\"dsr\") | (!\"dsw\"))")));
     }
 
 }

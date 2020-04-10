@@ -16,7 +16,7 @@ public class PunfSettingsTest {
     }
 
     @Test
-    public void petrifySettingsTest() {
+    public void punfSettingsTest() {
         final Framework framework = Framework.getInstance();
         String prefix = "Tools.punf";
 

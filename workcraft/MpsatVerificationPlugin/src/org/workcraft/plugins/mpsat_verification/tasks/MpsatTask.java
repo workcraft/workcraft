@@ -55,20 +55,20 @@ public class MpsatTask implements Task<MpsatOutput> {
             ")",
             Pattern.UNIX_LINES);
 
-    private final VerificationParameters verificationParameters;
     private final File unfoldingFile;
-    private final File directory;
     private final File netFile;
+    private final VerificationParameters verificationParameters;
+    private final File directory;
 
     public MpsatTask(File unfoldingFile, File netFile, VerificationParameters verificationParameters, File directory) {
+        this.unfoldingFile = unfoldingFile;
+        this.netFile = netFile;
+        this.verificationParameters = verificationParameters;
         if (directory == null) {
             // Prefix must be at least 3 symbols long.
             directory = FileUtils.createTempDirectory("mpsat-");
         }
         this.directory = directory;
-        this.unfoldingFile = unfoldingFile;
-        this.netFile = netFile;
-        this.verificationParameters = verificationParameters;
     }
 
     @Override

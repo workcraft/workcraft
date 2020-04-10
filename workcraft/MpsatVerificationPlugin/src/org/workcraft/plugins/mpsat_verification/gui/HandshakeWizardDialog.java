@@ -37,10 +37,10 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
     private JRadioButton activeRadioButton;
     private SignalList inputList;
     private SignalList outputList;
-    private JRadioButton stateReq0Ack0RadioButton;
-    private JRadioButton stateReq1Ack0RadioButton;
-    private JRadioButton stateReq1Ack1RadioButton;
-    private JRadioButton stateReq0Ack1RadioButton;
+    private JRadioButton stateReq0Ack0Radio;
+    private JRadioButton stateReq1Ack0Radio;
+    private JRadioButton stateReq1Ack1Radio;
+    private JRadioButton stateReq0Ack1Radio;
     private JCheckBox checkAssertEnabledCheckbox;
     private JCheckBox checkWithdrawEnabledCheckbox;
     private JCheckBox allowInversionCheckbox;
@@ -165,27 +165,27 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
         JPanel statePanel = new JPanel(GuiUtils.createFlowLayout());
         ButtonGroup stateButtonGroup = new ButtonGroup();
 
-        stateReq0Ack0RadioButton = new JRadioButton(getStateLabel(HandshakeParameters.State.REQ0ACK0));
-        stateReq0Ack0RadioButton.setToolTipText(getStateTooltip(HandshakeParameters.State.REQ0ACK0));
-        stateButtonGroup.add(stateReq0Ack0RadioButton);
-        statePanel.add(stateReq0Ack0RadioButton);
+        stateReq0Ack0Radio = new JRadioButton(getStateLabel(HandshakeParameters.State.REQ0ACK0));
+        stateReq0Ack0Radio.setToolTipText(getStateTooltip(HandshakeParameters.State.REQ0ACK0));
+        stateButtonGroup.add(stateReq0Ack0Radio);
+        statePanel.add(stateReq0Ack0Radio);
 
-        stateReq1Ack0RadioButton = new JRadioButton(getStateLabel(HandshakeParameters.State.REQ1ACK0));
-        stateReq1Ack0RadioButton.setToolTipText(getStateTooltip(HandshakeParameters.State.REQ1ACK0));
-        stateButtonGroup.add(stateReq1Ack0RadioButton);
-        statePanel.add(stateReq1Ack0RadioButton);
+        stateReq1Ack0Radio = new JRadioButton(getStateLabel(HandshakeParameters.State.REQ1ACK0));
+        stateReq1Ack0Radio.setToolTipText(getStateTooltip(HandshakeParameters.State.REQ1ACK0));
+        stateButtonGroup.add(stateReq1Ack0Radio);
+        statePanel.add(stateReq1Ack0Radio);
 
-        stateReq1Ack1RadioButton = new JRadioButton(getStateLabel(HandshakeParameters.State.REQ1ACK1));
-        stateReq1Ack1RadioButton.setToolTipText(getStateTooltip(HandshakeParameters.State.REQ1ACK1));
-        stateButtonGroup.add(stateReq1Ack1RadioButton);
-        statePanel.add(stateReq1Ack1RadioButton);
+        stateReq1Ack1Radio = new JRadioButton(getStateLabel(HandshakeParameters.State.REQ1ACK1));
+        stateReq1Ack1Radio.setToolTipText(getStateTooltip(HandshakeParameters.State.REQ1ACK1));
+        stateButtonGroup.add(stateReq1Ack1Radio);
+        statePanel.add(stateReq1Ack1Radio);
 
-        stateReq0Ack1RadioButton = new JRadioButton(getStateLabel(HandshakeParameters.State.REQ0ACK1));
-        stateReq0Ack1RadioButton.setToolTipText(getStateTooltip(HandshakeParameters.State.REQ0ACK1));
-        stateButtonGroup.add(stateReq0Ack1RadioButton);
-        statePanel.add(stateReq0Ack1RadioButton);
+        stateReq0Ack1Radio = new JRadioButton(getStateLabel(HandshakeParameters.State.REQ0ACK1));
+        stateReq0Ack1Radio.setToolTipText(getStateTooltip(HandshakeParameters.State.REQ0ACK1));
+        stateButtonGroup.add(stateReq0Ack1Radio);
+        statePanel.add(stateReq0Ack1Radio);
 
-        stateReq0Ack0RadioButton.setSelected(true);
+        stateReq0Ack0Radio.setSelected(true);
 
         JPanel receptivenessPanel = new JPanel(GuiUtils.createGridLayout(2, 1));
         checkAssertEnabledCheckbox = new JCheckBox();
@@ -199,7 +199,7 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
         receptivenessPanel.add(allowInversionCheckbox);
 
         JPanel optionsPanel = new JPanel(GuiUtils.createBorderLayout());
-        optionsPanel.add(GuiUtils.createBorderedComponent(receptivenessPanel, "Receptiveness check:"), BorderLayout.NORTH);
+        optionsPanel.add(GuiUtils.createBorderedComponent(receptivenessPanel, "Receptiveness check: "), BorderLayout.NORTH);
         optionsPanel.add(GuiUtils.createBorderedComponent(statePanel, "Initial state: "), BorderLayout.CENTER);
         optionsPanel.add(allowInversionCheckbox, BorderLayout.SOUTH);
 
@@ -262,10 +262,10 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
                 selectSignals(getAckList(), data.getAcks());
                 checkAssertEnabledCheckbox.setSelected(data.isCheckAssertion());
                 checkWithdrawEnabledCheckbox.setSelected(data.isCheckWithdrawal());
-                stateReq0Ack0RadioButton.setSelected(data.getState() == HandshakeParameters.State.REQ0ACK0);
-                stateReq1Ack0RadioButton.setSelected(data.getState() == HandshakeParameters.State.REQ1ACK0);
-                stateReq1Ack1RadioButton.setSelected(data.getState() == HandshakeParameters.State.REQ1ACK1);
-                stateReq0Ack1RadioButton.setSelected(data.getState() == HandshakeParameters.State.REQ0ACK1);
+                stateReq0Ack0Radio.setSelected(data.getState() == HandshakeParameters.State.REQ0ACK0);
+                stateReq1Ack0Radio.setSelected(data.getState() == HandshakeParameters.State.REQ1ACK0);
+                stateReq1Ack1Radio.setSelected(data.getState() == HandshakeParameters.State.REQ1ACK1);
+                stateReq0Ack1Radio.setSelected(data.getState() == HandshakeParameters.State.REQ0ACK1);
                 allowInversionCheckbox.setSelected(data.isAllowInversion());
             }
 
@@ -306,16 +306,16 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
         Collection<String> acks = getAckList().getSelectedValuesList();
 
         HandshakeParameters.State state = null;
-        if (stateReq0Ack0RadioButton.isSelected()) {
+        if (stateReq0Ack0Radio.isSelected()) {
             state = HandshakeParameters.State.REQ0ACK0;
         }
-        if (stateReq1Ack0RadioButton.isSelected()) {
+        if (stateReq1Ack0Radio.isSelected()) {
             state = HandshakeParameters.State.REQ1ACK0;
         }
-        if (stateReq1Ack1RadioButton.isSelected()) {
+        if (stateReq1Ack1Radio.isSelected()) {
             state = HandshakeParameters.State.REQ1ACK1;
         }
-        if (stateReq0Ack1RadioButton.isSelected()) {
+        if (stateReq0Ack1Radio.isSelected()) {
             state = HandshakeParameters.State.REQ0ACK1;
         }
 
