@@ -39,43 +39,49 @@ public class CircuitPlugin implements Plugin {
         pm.registerImporter(VerilogImporter.class);
         pm.registerImporter(GenlibImporter.class);
 
+        // Circuit layout settings and commands
+        pm.registerSettings(CircuitLayoutSettings.class);
+
         ScriptableCommandUtils.registerCommand(CircuitLayoutCommand.class, "layoutCircuit",
                 "place components and route wires of the Circuit 'work'");
         ScriptableCommandUtils.registerCommand(CircuitLayoutPlacementCommand.class, "layoutCircuitPlacement",
                 "place components of the Circuit 'work'");
         ScriptableCommandUtils.registerCommand(CircuitLayoutRoutingCommand.class, "layoutCircuitRouting",
                 "route wires of the Circuit 'work'");
-        pm.registerSettings(CircuitLayoutSettings.class);
 
+        // Transformation commands
         ScriptableCommandUtils.registerCommand(ContractJointTransformationCommand.class, "transformCircuitContractJoint",
-                "transform the given Circuit 'work' by contracting selected (or all) joints");
+                "transform the Circuit 'work' by contracting selected (or all) joints");
         ScriptableCommandUtils.registerCommand(DissolveJointTransformationCommand.class, "transformCircuitDissolveJoint",
-                "transform the given Circuit 'work' by dissolving selected (or all) joints");
+                "transform the Circuit 'work' by dissolving selected (or all) joints");
         ScriptableCommandUtils.registerCommand(DetachJointTransformationCommand.class, "transformCircuitDetachJoint",
-                "transform the given Circuit 'work' by detaching selected (or all joints)");
+                "transform the Circuit 'work' by detaching selected (or all joints)");
         ScriptableCommandUtils.registerCommand(ContractComponentTransformationCommand.class, "transformCircuitContractComponent",
-                "transform the given Circuit 'work' by contracting selected single-input/single-output components");
+                "transform the Circuit 'work' by contracting selected single-input/single-output components");
         ScriptableCommandUtils.registerCommand(InsertBufferTransformationCommand.class, "transformCircuitInsertBuffer",
-                "transform the given Circuit 'work' by inserting buffers into selected wires");
+                "transform the Circuit 'work' by inserting buffers into selected wires");
         ScriptableCommandUtils.registerCommand(ToggleBubbleTransformationCommand.class, "transformCircuitToggleBubble",
-                "transform the given Circuit 'work' by toggling inversion of selected contacts and outputs of selected components");
+                "transform the Circuit 'work' by toggling inversion of selected contacts and outputs of selected components");
         ScriptableCommandUtils.registerCommand(ToggleZeroDelayTransformationCommand.class, "transformCircuitToggleZeroDelay",
-                "transform the given Circuit 'work' by toggling zero delay of selected inverters and buffers");
+                "transform the Circuit 'work' by toggling zero delay of selected inverters and buffers");
         ScriptableCommandUtils.registerCommand(OptimiseZeroDelayTransformationCommand.class, "transformCircuitOptimiseZeroDelay",
-                "transform the given Circuit 'work' by discarding redundant zero delay attribute for selected (or all) inverters and buffers");
+                "transform the Circuit 'work' by discarding redundant zero delay attribute for selected (or all) inverters and buffers");
         ScriptableCommandUtils.registerCommand(SplitGateTransformationCommand.class, "transformCircuitSplitGate",
-                "transform the given Circuit 'work' by splitting selected (or all) complex gates into simple gates");
+                "transform the Circuit 'work' by splitting selected (or all) complex gates into simple gates");
         ScriptableCommandUtils.registerCommand(PropagateInversionTransformationCommand.class, "transformCircuitPropagateInversion",
-                "transform the given Circuit 'work' by propagating inversion through selected (or all) gates");
+                "transform the Circuit 'work' by propagating inversion through selected (or all) gates");
 
+        // Statistics commands
         ScriptableCommandUtils.registerCommand(StatisticsCommand.class, "statCircuit",
                 "advanced complexity estimates for the Circuit 'work'");
 
+        // Conversion commands
         ScriptableCommandUtils.registerCommand(CircuitToStgConversionCommand.class, "convertCircuitToStg",
-                "convert the given Circuit 'work' into a new STG work");
+                "convert the Circuit 'work' into a new STG work");
         ScriptableCommandUtils.registerCommand(CircuitToStgWithEnvironmentConversionCommand.class, "convertCircuitToStgWithEnvironment",
-                "convert the given Circuit 'work' and its environment into a new STG work");
+                "convert the Circuit 'work' and its environment into a new STG work");
 
+        // Verification commands
         ScriptableCommandUtils.registerCommand(CombinedVerificationCommand.class, "checkCircuitCombined",
                 "combined check of the Circuit 'work' for conformation to environment, deadlock freeness, and output persistency");
         ScriptableCommandUtils.registerCommand(ConformationVerificationCommand.class, "checkCircuitConformation",
@@ -88,9 +94,10 @@ public class CircuitPlugin implements Plugin {
                 "check the Circuit 'work' for strict implementation of its signals according to the environment");
         ScriptableCommandUtils.registerCommand(BinateImplementationVerificationCommand.class, "checkCircuitBinateImplementation",
                 "check the Circuit 'work' for correct implementation of its binate functions");
-
-        pm.registerCommand(ReachAssertionVerificationCommand.class);
-        pm.registerCommand(SignalAssertionVerificationCommand.class);
+        ScriptableCommandUtils.registerDataCommand(ReachAssertionVerificationCommand.class, "checkCircuitReachAssertion",
+                "check the Circuit 'work' for REACH assertion 'data'");
+        ScriptableCommandUtils.registerDataCommand(SignalAssertionVerificationCommand.class, "checkCircuitSignalAssertion",
+                "check the Circuit 'work' for signal assertion 'data'");
 
         // Force init attributes and Reset insertion
         ScriptableCommandUtils.registerCommand(ForceInitInputPortsTagCommand.class, "tagCircuitForceInitInputPorts",
@@ -105,12 +112,10 @@ public class CircuitPlugin implements Plugin {
                 "auto-discard force init pins that are redundant for initialisation of the Circuit 'work'");
         ScriptableCommandUtils.registerCommand(ForceInitClearAllTagCommand.class, "tagCircuitForceInitClearAll",
                 "clear all force init input ports and output pins in the Circuit 'work'");
-
         ScriptableCommandUtils.registerCommand(ResetActiveLowInsertionCommand.class, "insertCircuitResetActiveLow",
                 "insert active-low reset into the Circuit 'work'");
         ScriptableCommandUtils.registerCommand(ResetActiveHighInsertionCommand.class, "insertCircuitResetActiveHigh",
                 "insert active-high reset into the Circuit 'work'");
-
         ScriptableCommandUtils.registerCommand(ResetVerificationCommand.class, "checkCircuitReset",
                 "check if the Circuit 'work' is correctly initialised via input ports");
 
@@ -123,12 +128,10 @@ public class CircuitPlugin implements Plugin {
                 "auto-discard path breaker pins that are redundant for cycle breaking in the Circuit 'work'");
         ScriptableCommandUtils.registerCommand(PathBreakerClearAllTagCommand.class, "tagCircuitPathBreakerClearAll",
                 "clear all path breaker pins in the Circuit 'work'");
-
         ScriptableCommandUtils.registerCommand(TestableGateInsertionCommand.class, "insertCircuitTestableGates",
                 "insert testable buffers/inverters for path breaker components in the Circuit 'work'");
         ScriptableCommandUtils.registerCommand(ScanInsertionCommand.class, "insertCircuitScan",
                 "insert scan for path breaker components into the Circuit 'work'");
-
         ScriptableCommandUtils.registerCommand(CycleFreenessVerificationCommand.class, "checkCircuitCycles",
                 "check if the Circuit 'work' is free from cyclic paths");
     }

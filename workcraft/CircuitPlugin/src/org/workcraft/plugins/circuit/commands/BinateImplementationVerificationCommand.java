@@ -1,7 +1,6 @@
 package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.formula.*;
 import org.workcraft.formula.bdd.BddManager;
@@ -27,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class BinateImplementationVerificationCommand extends AbstractVerificationCommand
+public class BinateImplementationVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand
         implements ScriptableCommand<Boolean> {
 
     private class BinateData {

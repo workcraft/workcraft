@@ -1,12 +1,12 @@
 package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.commands.AbstractVerificationCommand;
-import org.workcraft.commands.ScriptableCommand;
+import org.workcraft.commands.ScriptableDataCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.tasks.AssertionCheckTask;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
+import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainResultHandlingMonitor;
@@ -14,15 +14,15 @@ import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.presets.PresetManager;
 import org.workcraft.presets.TextDataSerialiser;
 import org.workcraft.presets.TextPresetDialog;
+import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.utils.ScriptableCommandUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 
-public class SignalAssertionVerificationCommand extends AbstractVerificationCommand
-        implements ScriptableCommand<Boolean> {
+public class SignalAssertionVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand
+        implements ScriptableDataCommand<Boolean, String> {
 
     private static final String PRESET_KEY = "signal-assertions.xml";
     private static final TextDataSerialiser DATA_SERIALISER = new TextDataSerialiser();
@@ -45,12 +45,6 @@ public class SignalAssertionVerificationCommand extends AbstractVerificationComm
     }
 
     @Override
-    public Boolean execute(WorkspaceEntry we) {
-        ScriptableCommandUtils.showErrorRequiresGui(getClass());
-        return null;
-    }
-
-    @Override
     public void run(WorkspaceEntry we) {
         if (!checkPrerequisites(we)) {
             return;
@@ -60,24 +54,30 @@ public class SignalAssertionVerificationCommand extends AbstractVerificationComm
         PresetManager<String> presetManager = new PresetManager<>(we, PRESET_KEY, DATA_SERIALISER, preservedData);
 
         presetManager.addExample("Mutual exclusion of signals",
-                "// Signals u and v are mutually exclusive\n"
-                        + "!u || !v");
+                "// Signals u and v are mutually exclusive\n" + "!u || !v");
 
         TextPresetDialog dialog = new TextPresetDialog(mainWindow, "Signal assertion",
                 presetManager, new File("help/assertion.html"));
 
         if (dialog.reveal()) {
-            TaskManager manager = framework.getTaskManager();
             preservedData = dialog.getPresetData();
-            VerificationParameters verificationParameters = new VerificationParameters(null,
-                    VerificationMode.ASSERTION, 0, VerificationParameters.SolutionMode.MINIMUM_COST,
-                    0, preservedData, true);
-
-            AssertionCheckTask task = new AssertionCheckTask(we, verificationParameters);
-            String description = MpsatUtils.getToolchainDescription(we.getTitle());
             VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
-            manager.queue(task, description, monitor);
+            run(we, preservedData, monitor);
         }
+    }
+
+    @Override
+    public void run(WorkspaceEntry we, String data, ProgressMonitor monitor) {
+        TaskManager manager = Framework.getInstance().getTaskManager();
+        VerificationParameters verificationParameters = new VerificationParameters(null,
+                VerificationMode.ASSERTION, 0,
+                MpsatVerificationSettings.getSolutionMode(),
+                MpsatVerificationSettings.getSolutionCount(),
+                data, true);
+
+        AssertionCheckTask task = new AssertionCheckTask(we, verificationParameters);
+        String description = MpsatUtils.getToolchainDescription(we.getTitle());
+        manager.queue(task, description, monitor);
     }
 
     private boolean checkPrerequisites(WorkspaceEntry we) {
@@ -85,6 +85,21 @@ public class SignalAssertionVerificationCommand extends AbstractVerificationComm
             && VerificationUtils.checkCircuitHasComponents(we)
             && VerificationUtils.checkInterfaceInitialState(we)
             && VerificationUtils.checkInterfaceConstrains(we);
+    }
+
+    @Override
+    public String deserialiseData(String data) {
+        return data;
+    }
+
+    @Override
+    public Boolean execute(WorkspaceEntry we, String data) {
+        if (!checkPrerequisites(we)) {
+            return null;
+        }
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
+        run(we, data, monitor);
+        return monitor.waitForHandledResult();
     }
 
 }
