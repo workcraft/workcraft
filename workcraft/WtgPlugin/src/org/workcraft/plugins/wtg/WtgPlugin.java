@@ -35,22 +35,22 @@ public class WtgPlugin implements Plugin {
         pm.registerXmlDeserialiser(GuardDeserialiser.class);
 
         ScriptableCommandUtils.registerCommand(WtgToStgConversionCommand.class, "convertWtgToStg",
-                "convert the given WTG 'work' into a new STG work");
+                "convert the WTG 'work' into a new STG work");
 
         ScriptableCommandUtils.registerCommand(SoundnessVerificationCommand.class, "checkWtgSoundness",
-                "check the given WTG 'work' for soundness and consistency");
+                "check the WTG 'work' for soundness and consistency");
 
         ScriptableCommandUtils.registerCommand(ReachabilityVerificationCommand.class, "checkWtgReachability",
-                "check the given WTG 'work' for reachability of nodes and transitions");
+                "check the WTG 'work' for reachability of nodes and transitions");
 
         ScriptableCommandUtils.registerCommand(InputPropernessVerificationCommand.class, "checkWtgInputProperness",
-                "check the given WTG 'work' for input properness");
+                "check the WTG 'work' for input properness");
 
         ScriptableCommandUtils.registerCommand(StructureWaveformTransformationCommand.class, "transformWtgStructureWaveform",
-                "transform the given WTG 'work' by structuring the waveforms");
+                "transform the WTG 'work' by structuring the waveforms");
 
         ScriptableCommandUtils.registerCommand(SynthesisGuidelinesVerificationCommand.class, "checkWtgSynthesisGuidelines",
-                "check the given WTG 'work' for compliance with the synthesis guidelines");
+                "check the WTG 'work' for compliance with the synthesis guidelines");
     }
 
     private void initCompatibilityManager() {

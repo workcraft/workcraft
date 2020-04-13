@@ -28,7 +28,7 @@ public class GraphPlugin implements Plugin {
         pm.registerXmlDeserialiser(VertexDeserialiser.class);
 
         ScriptableCommandUtils.registerCommand(GraphToPetriConversionCommand.class, "convertGraphToPetri",
-                "convert the given Graph 'work' into a new Petri net work");
+                "convert the Graph 'work' into a new Petri net work");
         ScriptableCommandUtils.registerCommand(ReachabilityVerificationCommand.class, "checkGraphReachability",
                 "check the Graph 'work' for reachability of all its nodes");
     }

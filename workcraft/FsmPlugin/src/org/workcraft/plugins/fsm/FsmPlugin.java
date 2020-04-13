@@ -34,25 +34,25 @@ public class FsmPlugin implements Plugin {
         pm.registerXmlDeserialiser(EventDeserialiser.class);
 
         ScriptableCommandUtils.registerCommand(FsmToGraphConversionCommand.class, "convertFsmToGraph",
-                "convert the given FSM 'work' into a new Graph work");
+                "convert the FSM 'work' into a new Graph work");
         ScriptableCommandUtils.registerCommand(GraphToFsmConversionCommand.class, "convertGraphToFsm",
-                "convert the given Graph 'work' into a new FSM work");
+                "convert the Graph 'work' into a new FSM work");
         ScriptableCommandUtils.registerCommand(FsmToPetriConversionCommand.class, "convertFsmToPetri",
-                "convert the given FSM 'work' into a new Petri net work");
+                "convert the FSM 'work' into a new Petri net work");
 
         ScriptableCommandUtils.registerCommand(DeadlockFreenessVerificationCommand.class, "checkFsmDeadlockFreeness",
-                "check the FSM or FST 'work' for deadlock freeness");
+                "check the FSM/FST 'work' for deadlock freeness");
         ScriptableCommandUtils.registerCommand(DeterminismVerificationCommand.class, "checkFsmDeterminism",
-                "check the FSM or FST 'work' for determinism");
+                "check the FSM/FST 'work' for determinism");
         ScriptableCommandUtils.registerCommand(ReachabilityVerificationCommand.class, "checkFsmReachability",
-                "check the FSM or FST 'work' for reachability of all states");
+                "check the FSM/FST 'work' for reachability of all states");
         ScriptableCommandUtils.registerCommand(ReversibilityVerificationCommand.class, "checkFsmReversibility",
-                "check the FSM or FST 'work' for reversibility of all states");
+                "check the FSM/FST 'work' for reversibility of all states");
 
         ScriptableCommandUtils.registerCommand(MergeStateTransformationCommand.class, "transformFsmMergeState",
-                "transform the given FSM or FST 'work' by merging selected states");
+                "transform the FSM/FST 'work' by merging selected states");
         ScriptableCommandUtils.registerCommand(ContractStateTransformationCommand.class, "transformFsmContractState",
-                "transform the given FSM or FST 'work' by contracting selected states");
+                "transform the FSM/FST 'work' by contracting selected states");
     }
 
     private void initCompatibilityManager() {

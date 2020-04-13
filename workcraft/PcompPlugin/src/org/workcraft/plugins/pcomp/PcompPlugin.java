@@ -22,7 +22,7 @@ public class PcompPlugin implements Plugin {
         pm.registerSettings(PcompSettings.class);
 
         ScriptableCommandUtils.registerDataCommand(ParallelCompositionCommand.class, "composeStg",
-                "compose STGs specified by space-separated list of work file names 'data' ('work' parameter is ignored)");
+                "compose STGs specified by the space-separated list of work file names 'data' ('work' parameter is ignored)");
     }
 
 }

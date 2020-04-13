@@ -31,7 +31,7 @@ public class DfsPlugin implements Plugin {
         pm.registerSettings(DfsSettings.class);
 
         ScriptableCommandUtils.registerCommand(DfsToStgConversionCommand.class, "convertDfsToStg",
-                "convert the given DFS 'work' into a new STG work");
+                "convert the DFS 'work' into a new STG work");
 
         ScriptableCommandUtils.registerCommand(DeadlockFreenessVerificationCommand.class, "checkDfsDeadlockFreeness",
                 "check the DFS 'work' for deadlock freeness");
@@ -41,15 +41,15 @@ public class DfsPlugin implements Plugin {
                 " combined check of the DFS 'work' for deadlock freeness and output persistency");
 
         ScriptableCommandUtils.registerCommand(MergeComponentTransformationCommand.class, "transformDfsMergeComponent",
-                " transform the given DFS 'work' by merging selected components");
+                " transform the DFS 'work' by merging selected components");
         ScriptableCommandUtils.registerCommand(ContractComponentTransformationCommand.class, "transformDfsContractComponent",
-                " transform the given DFS 'work' by contracting selected components");
+                " transform the DFS 'work' by contracting selected components");
         ScriptableCommandUtils.registerCommand(WaggingGenerator2WayCommand.class, "transformDfsWagging2Way",
-                "transform the given DFS 'work' by applying 2-way wagging to the selected pipeline section");
+                "transform the DFS 'work' by applying 2-way wagging to the selected pipeline section");
         ScriptableCommandUtils.registerCommand(WaggingGenerator3WayCommand.class, "transformDfsWagging3Way",
-                "transform the given DFS 'work' by applying 3-way wagging to the selected pipeline section");
+                "transform the DFS 'work' by applying 3-way wagging to the selected pipeline section");
         ScriptableCommandUtils.registerCommand(WaggingGenerator4WayCommand.class, "transformDfsWagging4Way",
-                "transform the given DFS 'work' by applying 4-way wagging to the selected pipeline section");
+                "transform the DFS 'work' by applying 4-way wagging to the selected pipeline section");
         // Do not register generic WaggingGeneratorCommand as it requires user input
         pm.registerCommand(WaggingGeneratorCommand.class);
     }

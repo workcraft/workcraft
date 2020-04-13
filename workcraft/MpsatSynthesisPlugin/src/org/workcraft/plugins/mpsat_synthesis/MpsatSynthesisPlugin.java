@@ -16,7 +16,7 @@ public class MpsatSynthesisPlugin implements Plugin {
         pm.registerSettings(MpsatSynthesisSettings.class);
 
         ScriptableCommandUtils.registerCommand(CscConflictResolutionCommand.class, "resolveCscConflictMpsat",
-                "resolve complete state coding conflicts in STG 'work' using MPSat backend");
+                "resolve complete state coding conflicts in the STG 'work' using MPSat backend");
 
         ScriptableCommandUtils.registerCommand(ComplexGateSynthesisCommand.class, "synthComplexGateMpsat",
                 "logic synthesis of the STG 'work' into a complex gate Circuit work using MPSat backend");
