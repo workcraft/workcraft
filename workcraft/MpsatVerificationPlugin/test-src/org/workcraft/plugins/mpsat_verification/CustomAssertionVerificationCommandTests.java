@@ -7,6 +7,7 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.mpsat_verification.commands.ReachAssertionVerificationCommand;
 import org.workcraft.plugins.mpsat_verification.commands.SignalAssertionVerificationCommand;
+import org.workcraft.plugins.mpsat_verification.commands.SpotAssertionVerificationCommand;
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.PackageUtils;
@@ -21,6 +22,7 @@ public class CustomAssertionVerificationCommandTests {
         final Framework framework = Framework.getInstance();
         framework.init();
         PunfSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "punf"));
+        PunfSettings.setLtl2tgbaCommand(BackendUtils.getTemplateToolPath("Spot", "ltl2tgba"));
         MpsatVerificationSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
     }
 
@@ -33,23 +35,28 @@ public class CustomAssertionVerificationCommandTests {
         URL url = classLoader.getResource(workName);
         WorkspaceEntry we = framework.loadWork(url.getFile());
 
-        SignalAssertionVerificationCommand signalAssertion = new SignalAssertionVerificationCommand();
-        Assert.assertNull(signalAssertion.execute(we, signalAssertion.deserialiseData("incorrect - expression")));
-        Assert.assertFalse(signalAssertion.execute(we, signalAssertion.deserialiseData("dsr && dsw")));
-        Assert.assertTrue(signalAssertion.execute(we, signalAssertion.deserialiseData("!dsr || !dsw")));
-
-        ReachAssertionVerificationCommand reachAssertion = new ReachAssertionVerificationCommand();
-        Assert.assertNull(reachAssertion.execute(we, reachAssertion.deserialiseData("incorrect - expression")));
-        Assert.assertFalse(reachAssertion.execute(we, reachAssertion.deserialiseData("$S\"dsr\" ^ $S\"dsw\"")));
-        Assert.assertTrue(reachAssertion.execute(we, reachAssertion.deserialiseData("$S\"dsr\" & $S\"dsw\"")));
+        ReachAssertionVerificationCommand reachAssertionCommand = new ReachAssertionVerificationCommand();
+        Assert.assertNull(reachAssertionCommand.execute(we, reachAssertionCommand.deserialiseData("incorrect - expression")));
+        Assert.assertFalse(reachAssertionCommand.execute(we, reachAssertionCommand.deserialiseData("$S\"dsr\" ^ $S\"dsw\"")));
+        Assert.assertTrue(reachAssertionCommand.execute(we, reachAssertionCommand.deserialiseData("$S\"dsr\" & $S\"dsw\"")));
 
         // Should be True because of the inversePredicate=false
-        Assert.assertTrue(reachAssertion.execute(we, reachAssertion.deserialiseData(
+        Assert.assertTrue(reachAssertionCommand.execute(we, reachAssertionCommand.deserialiseData(
                 "<settings inversePredicate=\"false\"><reach>$S\"dsr\" ^ $S\"dsw\"</reach></settings>")));
 
         // Should be False because of the inversePredicate=false
-        Assert.assertFalse(reachAssertion.execute(we, reachAssertion.deserialiseData(
+        Assert.assertFalse(reachAssertionCommand.execute(we, reachAssertionCommand.deserialiseData(
                 "<settings inversePredicate=\"false\"><reach>$S\"dsr\" &amp; $S\"dsw\"</reach></settings>")));
+
+        SignalAssertionVerificationCommand signalAssertionCommand = new SignalAssertionVerificationCommand();
+        Assert.assertNull(signalAssertionCommand.execute(we, signalAssertionCommand.deserialiseData("incorrect - expression")));
+        Assert.assertFalse(signalAssertionCommand.execute(we, signalAssertionCommand.deserialiseData("dsr && dsw")));
+        Assert.assertTrue(signalAssertionCommand.execute(we, signalAssertionCommand.deserialiseData("!dsr || !dsw")));
+
+        SpotAssertionVerificationCommand spotAssertionCocommand = new SpotAssertionVerificationCommand();
+        Assert.assertNull(spotAssertionCocommand.execute(we, spotAssertionCocommand.deserialiseData("incorrect - expression")));
+        Assert.assertFalse(spotAssertionCocommand.execute(we, spotAssertionCocommand.deserialiseData("G((\"dsr\") & (\"dsw\"))")));
+        Assert.assertTrue(spotAssertionCocommand.execute(we, spotAssertionCocommand.deserialiseData("G((!\"dsr\") | (!\"dsw\"))")));
     }
 
 }

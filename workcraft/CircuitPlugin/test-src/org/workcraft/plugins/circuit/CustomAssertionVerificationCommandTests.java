@@ -7,6 +7,7 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.commands.ReachAssertionVerificationCommand;
 import org.workcraft.plugins.circuit.commands.SignalAssertionVerificationCommand;
+import org.workcraft.plugins.circuit.commands.SpotAssertionVerificationCommand;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.punf.PunfSettings;
@@ -24,6 +25,7 @@ public class CustomAssertionVerificationCommandTests {
         framework.init();
         PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp"));
         PunfSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "punf"));
+        PunfSettings.setLtl2tgbaCommand(BackendUtils.getTemplateToolPath("Spot", "ltl2tgba"));
         MpsatVerificationSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
     }
 
@@ -35,11 +37,6 @@ public class CustomAssertionVerificationCommandTests {
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         URL url = classLoader.getResource(workName);
         WorkspaceEntry we = framework.loadWork(url.getFile());
-
-        SignalAssertionVerificationCommand signalAssertion = new SignalAssertionVerificationCommand();
-        Assert.assertNull(signalAssertion.execute(we, signalAssertion.deserialiseData("incorrect - expression")));
-        Assert.assertFalse(signalAssertion.execute(we, signalAssertion.deserialiseData("dsr && dsw")));
-        Assert.assertTrue(signalAssertion.execute(we, signalAssertion.deserialiseData("!dsr || !dsw")));
 
         ReachAssertionVerificationCommand reachAssertion = new ReachAssertionVerificationCommand();
         Assert.assertNull(reachAssertion.execute(we, reachAssertion.deserialiseData("incorrect - expression")));
@@ -53,6 +50,17 @@ public class CustomAssertionVerificationCommandTests {
         // Should be False because of the inversePredicate=false
         Assert.assertFalse(reachAssertion.execute(we, reachAssertion.deserialiseData(
                 "<settings inversePredicate=\"false\"><reach>$S\"dsr\" &amp; $S\"dsw\"</reach></settings>")));
+
+
+        SignalAssertionVerificationCommand signalAssertion = new SignalAssertionVerificationCommand();
+        Assert.assertNull(signalAssertion.execute(we, signalAssertion.deserialiseData("incorrect - expression")));
+        Assert.assertFalse(signalAssertion.execute(we, signalAssertion.deserialiseData("dsr && dsw")));
+        Assert.assertTrue(signalAssertion.execute(we, signalAssertion.deserialiseData("!dsr || !dsw")));
+
+        SpotAssertionVerificationCommand spotAssertionCocommand = new SpotAssertionVerificationCommand();
+        Assert.assertNull(spotAssertionCocommand.execute(we, spotAssertionCocommand.deserialiseData("incorrect - expression")));
+        Assert.assertFalse(spotAssertionCocommand.execute(we, spotAssertionCocommand.deserialiseData("G((\"dsr\") & (\"dsw\"))")));
+        Assert.assertTrue(spotAssertionCocommand.execute(we, spotAssertionCocommand.deserialiseData("G((!\"dsr\") | (!\"dsw\"))")));
     }
 
 }

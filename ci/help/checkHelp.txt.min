@@ -33,7 +33,7 @@ checkStgOutputPersistency(work) - check the STG 'work' for output persistency
 checkStgPlaceRedundancy(work, data) - check the STG (or Petri net) 'work' for redundancy of places in space-separated list 'data'
 checkStgReachAssertion(work, data) - check the STG 'work' for REACH assertion 'data'
 checkStgSignalAssertion(work, data) - check the STG 'work' for signal assertion 'data'
-checkStgSpotAssertion(work, data) - check STG 'work' for SPOT assertion 'data'
+checkStgSpotAssertion(work, data) - check the STG 'work' for SPOT assertion 'data'
 checkStgUsc(work) - check the STG 'work' for unique state coding
 checkWtgInputProperness(work) - check the WTG 'work' for input properness
 checkWtgReachability(work) - check the WTG 'work' for reachability of nodes and transitions

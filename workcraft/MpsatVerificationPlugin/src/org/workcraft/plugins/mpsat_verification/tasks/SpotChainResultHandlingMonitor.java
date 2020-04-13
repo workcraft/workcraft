@@ -1,6 +1,11 @@
-package org.workcraft.plugins.punf.tasks;
+package org.workcraft.plugins.mpsat_verification.tasks;
 
+import org.workcraft.plugins.pcomp.tasks.PcompOutput;
+import org.workcraft.plugins.punf.tasks.Ltl2tgbaOutput;
+import org.workcraft.plugins.punf.tasks.PunfLtlxOutputInterpreter;
+import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.tasks.AbstractResultHandlingMonitor;
+import org.workcraft.tasks.ExportOutput;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
@@ -51,12 +56,32 @@ public class SpotChainResultHandlingMonitor extends AbstractResultHandlingMonito
         } else {
             SpotChainOutput chainOutput = chainResult.getPayload();
             Result<? extends Ltl2tgbaOutput> ltl2tgbaResult = (chainOutput == null) ? null : chainOutput.getLtl2tgbaResult();
+            Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
+            Result<? extends PcompOutput> pcompResult = (chainOutput == null) ? null : chainOutput.getPcompResult();
             Result<? extends PunfOutput> punfResult = (chainOutput == null) ? null : chainOutput.getPunfResult();
             if ((ltl2tgbaResult != null) && (ltl2tgbaResult.getOutcome() == Outcome.FAILURE)) {
                 errorMessage += "\n\nCould not derive B\u00FCchi automaton.";
                 Throwable exportCause = ltl2tgbaResult.getCause();
                 if (exportCause != null) {
                     errorMessage += ERROR_CAUSE_PREFIX + exportCause.toString();
+                }
+            } else  if ((exportResult != null) && (exportResult.getOutcome() == Outcome.FAILURE)) {
+                errorMessage += "\n\nCould not export the model as a .g file.";
+                Throwable exportCause = exportResult.getCause();
+                if (exportCause != null) {
+                    errorMessage += ERROR_CAUSE_PREFIX + exportCause.toString();
+                }
+            } else if ((pcompResult != null) && (pcompResult.getOutcome() == Outcome.FAILURE)) {
+                errorMessage += "\n\nPcomp could not compose models.";
+                Throwable pcompCause = pcompResult.getCause();
+                if (pcompCause != null) {
+                    errorMessage += ERROR_CAUSE_PREFIX + pcompCause.toString();
+                } else {
+                    PcompOutput pcompOutput = pcompResult.getPayload();
+                    if (pcompOutput != null) {
+                        String pcompError = pcompOutput.getErrorsHeadAndTail();
+                        errorMessage += ERROR_CAUSE_PREFIX + pcompError;
+                    }
                 }
             } else if ((punfResult != null) && (punfResult.getOutcome() == Outcome.FAILURE)) {
                 errorMessage += "\n\nPunf could not verify LTL-X property.";

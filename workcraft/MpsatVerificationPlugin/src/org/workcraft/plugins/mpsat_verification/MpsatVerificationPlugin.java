@@ -56,12 +56,14 @@ public class MpsatVerificationPlugin implements Plugin {
                 "check the STG 'work' for conformation to the STG specified by file name 'data'");
         ScriptableCommandUtils.registerDataCommand(NwayConformationVerificationCommand.class, "checkStgNwayConformation",
                 "check the STGs specified by space-separated list of file names 'data' for N-way conformation ('work' parameter is ignored)");
+        ScriptableCommandUtils.registerDataCommand(HandshakeVerificationCommand.class, "checkStgHandshakeProtocol",
+                "check the STG 'work' for following a handshake protocol as specified by 'data', e.g. '{req1 req2} {ack12}'");
         ScriptableCommandUtils.registerDataCommand(ReachAssertionVerificationCommand.class, "checkStgReachAssertion",
                 "check the STG 'work' for REACH assertion 'data'");
         ScriptableCommandUtils.registerDataCommand(SignalAssertionVerificationCommand.class, "checkStgSignalAssertion",
                 "check the STG 'work' for signal assertion 'data'");
-        ScriptableCommandUtils.registerDataCommand(HandshakeVerificationCommand.class, "checkStgHandshakeProtocol",
-                "check the STG 'work' for following a handshake protocol as specified by 'data', e.g. '{req1 req2} {ack12}'");
+        ScriptableCommandUtils.registerDataCommand(SpotAssertionVerificationCommand.class, "checkStgSpotAssertion",
+                "check the STG 'work' for SPOT assertion 'data'");
     }
 
 }

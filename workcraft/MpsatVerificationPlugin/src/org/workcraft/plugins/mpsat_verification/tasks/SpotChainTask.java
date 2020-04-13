@@ -1,6 +1,10 @@
-package org.workcraft.plugins.punf.tasks;
+package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.Framework;
+import org.workcraft.plugins.punf.tasks.Ltl2tgbaOutput;
+import org.workcraft.plugins.punf.tasks.Ltl2tgbaTask;
+import org.workcraft.plugins.punf.tasks.PunfLtlxTask;
+import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.serialisation.SerialiserUtils;
@@ -28,23 +32,23 @@ public class SpotChainTask implements Task<SpotChainOutput> {
     public Result<? extends SpotChainOutput> run(ProgressMonitor<? super SpotChainOutput> monitor) {
         Framework framework = Framework.getInstance();
         TaskManager manager = framework.getTaskManager();
-        WorkspaceEntry we = getWorkspaceEntry();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
-        SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
+        String stgFileExtension = StgFormat.getInstance().getExtension();
 
         try {
             // Convert SPOT assertion to Buechi automaton
             File spotFile = new File(directory, "assertion.spot");
             spotFile.deleteOnExit();
             try {
-                FileUtils.dumpString(spotFile, getData());
+                FileUtils.dumpString(spotFile, data);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             Ltl2tgbaTask ltl2tgbaTask = new Ltl2tgbaTask(spotFile, directory);
+            SubtaskMonitor<Object> ltl2tgbaMonitor = new SubtaskMonitor<>(monitor);
             Result<? extends Ltl2tgbaOutput> ltl2tgbaResult = manager.execute(
-                    ltl2tgbaTask, "Converting SPOT assertion to B\u00FCchi automaton", subtaskMonitor);
+                    ltl2tgbaTask, "Converting SPOT assertion to B\u00FCchi automaton", ltl2tgbaMonitor);
 
             if (ltl2tgbaResult.getOutcome() != Result.Outcome.SUCCESS) {
                 if (ltl2tgbaResult.getOutcome() == Result.Outcome.CANCEL) {
@@ -57,7 +61,7 @@ public class SpotChainTask implements Task<SpotChainOutput> {
 
             // Export STG
             Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-            File gFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgFormat.getInstance().getExtension());
+            File gFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + stgFileExtension);
             FileOutputStream gStream = new FileOutputStream(gFile);
             SerialiserUtils.writeModel(stg, gStream, SerialiserUtils.Style.STG, true);
             gStream.close();
@@ -66,7 +70,8 @@ public class SpotChainTask implements Task<SpotChainOutput> {
             // Generate unfolding
             File hoaFile = ltl2tgbaResult.getPayload().getOutputFile();
             PunfLtlxTask punfTask = new PunfLtlxTask(gFile, hoaFile, directory);
-            Result<? extends PunfOutput> punfResult = manager.execute(punfTask, "Unfolding .g", subtaskMonitor);
+            SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<>(monitor);
+            Result<? extends PunfOutput> punfResult = manager.execute(punfTask, "Unfolding .g", punfMonitor);
 
             if (punfResult.getOutcome() != Result.Outcome.SUCCESS) {
                 if (punfResult.getOutcome() == Result.Outcome.CANCEL) {
@@ -84,14 +89,6 @@ public class SpotChainTask implements Task<SpotChainOutput> {
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
         }
-    }
-
-    public WorkspaceEntry getWorkspaceEntry() {
-        return we;
-    }
-
-    private String getData() {
-        return data;
     }
 
 }

@@ -1,13 +1,13 @@
-package org.workcraft.plugins.punf.commands;
+package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.commands.ScriptableDataCommand;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.tasks.SpotChainTask;
+import org.workcraft.plugins.mpsat_verification.tasks.SpotChainResultHandlingMonitor;
 import org.workcraft.plugins.punf.PunfSettings;
-import org.workcraft.plugins.punf.tasks.SpotChainResultHandlingMonitor;
-import org.workcraft.plugins.punf.tasks.SpotChainTask;
-import org.workcraft.plugins.stg.Stg;
 import org.workcraft.presets.PresetManager;
 import org.workcraft.presets.TextDataSerialiser;
 import org.workcraft.presets.TextPresetDialog;
@@ -31,7 +31,7 @@ public class SpotAssertionVerificationCommand extends AbstractVerificationComman
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, Stg.class);
+        return WorkspaceUtils.isApplicable(we, Circuit.class);
     }
 
     @Override

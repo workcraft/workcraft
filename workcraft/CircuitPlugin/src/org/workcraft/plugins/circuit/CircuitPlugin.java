@@ -98,6 +98,8 @@ public class CircuitPlugin implements Plugin {
                 "check the Circuit 'work' for REACH assertion 'data'");
         ScriptableCommandUtils.registerDataCommand(SignalAssertionVerificationCommand.class, "checkCircuitSignalAssertion",
                 "check the Circuit 'work' for signal assertion 'data'");
+        ScriptableCommandUtils.registerDataCommand(SpotAssertionVerificationCommand.class, "checkCircuitSpotAssertion",
+                "check the Circuit 'work' for SPOT assertion 'data'");
 
         // Force init attributes and Reset insertion
         ScriptableCommandUtils.registerCommand(ForceInitInputPortsTagCommand.class, "tagCircuitForceInitInputPorts",
