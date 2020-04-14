@@ -66,7 +66,7 @@ public class BinateImplementationVerificationCommand extends org.workcraft.comma
     public Boolean execute(WorkspaceEntry we) {
         CombinedChainResultHandlingMonitor monitor = new CombinedChainResultHandlingMonitor(we, false);
         queueVerification(we, monitor);
-        return MpsatUtils.getCombinedChainOutcome(monitor.waitResult());
+        return monitor.waitForHandledResult();
     }
 
     private void queueVerification(WorkspaceEntry we, CombinedChainResultHandlingMonitor monitor) {

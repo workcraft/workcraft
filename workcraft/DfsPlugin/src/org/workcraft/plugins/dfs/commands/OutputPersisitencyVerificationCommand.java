@@ -40,7 +40,7 @@ public class OutputPersisitencyVerificationCommand extends AbstractVerificationC
     public Boolean execute(WorkspaceEntry we) {
         VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
         queueVerification(we, monitor);
-        return MpsatUtils.getChainOutcome(monitor.waitResult());
+        return monitor.waitForHandledResult();
     }
 
     private void queueVerification(WorkspaceEntry we, VerificationChainResultHandlingMonitor monitor) {

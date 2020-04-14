@@ -7,144 +7,17 @@ import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.presets.MpsatDataSerialiser;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
-import org.workcraft.plugins.mpsat_verification.tasks.*;
-import org.workcraft.plugins.mpsat_verification.tasks.PunfOutputParser.Cause;
-import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.presets.PresetManager;
-import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.traces.Solution;
-import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.TraceUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 public class MpsatUtils {
-
-    public static List<Solution> getCombinedChainSolutions(Result<? extends CombinedChainOutput> combinedChainResult) {
-        LinkedList<Solution> solutions = null;
-        if (combinedChainResult != null) {
-            CombinedChainOutput combinedChainOutput = combinedChainResult.getPayload();
-            if (combinedChainOutput != null) {
-                if (combinedChainResult.getOutcome() == Outcome.SUCCESS) {
-                    solutions = new LinkedList<>();
-                    List<Result<? extends MpsatOutput>> mpsatResultList = combinedChainOutput.getMpsatResultList();
-                    for (int index = 0; index < mpsatResultList.size(); ++index) {
-                        Result<? extends MpsatOutput> mpsatResult = mpsatResultList.get(index);
-                        if (mpsatResult != null) {
-                            solutions.addAll(getSolutions(mpsatResult));
-                        }
-                    }
-                } else if (combinedChainResult.getOutcome() == Outcome.FAILURE) {
-                    Result<? extends PunfOutput> punfResult = combinedChainOutput.getPunfResult();
-                    if (punfResult != null) {
-                        PunfOutputParser prp = new PunfOutputParser(punfResult.getPayload());
-                        Pair<Solution, PunfOutputParser.Cause> punfOutcome = prp.getOutcome();
-                        if (punfOutcome != null) {
-                            Cause cause = punfOutcome.getSecond();
-                            boolean isConsistencyCheck = false;
-                            if (cause == Cause.INCONSISTENT) {
-                                for (VerificationParameters verificationParameters : combinedChainOutput.getVerificationParametersList()) {
-                                    if (verificationParameters.getMode() == VerificationMode.STG_REACHABILITY_CONSISTENCY) {
-                                        isConsistencyCheck = true;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (isConsistencyCheck) {
-                                solutions = new LinkedList<>();
-                                solutions.add(punfOutcome.getFirst());
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return solutions;
-    }
-
-    public static List<Solution> getChainSolutions(Result<? extends VerificationChainOutput> chainResult) {
-        LinkedList<Solution> solutions = null;
-        if (chainResult != null) {
-            VerificationChainOutput chainOutput = chainResult.getPayload();
-            if (chainOutput != null) {
-                if (chainResult.getOutcome() == Outcome.SUCCESS) {
-                    solutions = new LinkedList<>();
-                    Result<? extends MpsatOutput> mpsatResult = chainOutput.getMpsatResult();
-                    if (mpsatResult != null) {
-                        solutions.addAll(getSolutions(mpsatResult));
-                    }
-                } else if (chainResult.getOutcome() == Outcome.FAILURE) {
-                    Result<? extends PunfOutput> punfResult = chainOutput.getPunfResult();
-                    if (punfResult != null) {
-                        PunfOutputParser prp = new PunfOutputParser(punfResult.getPayload());
-                        Pair<Solution, PunfOutputParser.Cause> punfOutcome = prp.getOutcome();
-                        if (punfOutcome != null) {
-                            Cause cause = punfOutcome.getSecond();
-                            VerificationParameters verificationParameters = chainOutput.getVerificationParameters();
-                            boolean isConsistencyCheck = (cause == Cause.INCONSISTENT)
-                                    && (verificationParameters.getMode() == VerificationMode.STG_REACHABILITY_CONSISTENCY);
-                            if (isConsistencyCheck) {
-                                solutions = new LinkedList<>();
-                                solutions.add(punfOutcome.getFirst());
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return solutions;
-    }
-
-    public static List<Solution> getSolutions(Result<? extends MpsatOutput> result) {
-        LinkedList<Solution> solutions = null;
-        if ((result != null) && (result.getOutcome() == Outcome.SUCCESS)) {
-            solutions = new LinkedList<>();
-            MpsatOutput output = result.getPayload();
-            if (output != null) {
-                solutions.addAll(getSolutions(output));
-            }
-        }
-        return solutions;
-    }
-
-    public static List<Solution> getSolutions(MpsatOutput output) {
-        String stdout = output.getStdoutString();
-        MpsatOutputParser mdp = new MpsatOutputParser(stdout);
-        return mdp.getSolutions();
-    }
-
-    public static Boolean getCombinedChainOutcome(Result<? extends CombinedChainOutput> combinedChainResult) {
-        List<Solution> solutions = getCombinedChainSolutions(combinedChainResult);
-        if (solutions != null) {
-            return !TraceUtils.hasTraces(solutions);
-        }
-        return null;
-    }
-
-    public static Boolean getChainOutcome(VerificationChainResultHandlingMonitor monitor) {
-        Result<? extends VerificationChainOutput> result = null;
-        if (monitor != null) {
-            result = monitor.waitResult();
-        }
-        return getChainOutcome(result);
-    }
-
-    public static Boolean getChainOutcome(Result<? extends VerificationChainOutput> chainResult) {
-        List<Solution> solutions = getChainSolutions(chainResult);
-        if (solutions != null) {
-            return !TraceUtils.hasTraces(solutions);
-        }
-        return null;
-    }
 
     public static  String getToolchainDescription(String title) {
         String result = "MPSat tool chain";

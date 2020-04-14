@@ -40,8 +40,9 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
     public Result<? extends CombinedChainOutput> run(ProgressMonitor<? super CombinedChainOutput> monitor) {
         Result<? extends CombinedChainOutput> result = processSettingList(monitor);
 
-        // Note that getCombinedChainOutcome returns Boolean, therefore can be null.
-        if ((extraTask != null) && (MpsatUtils.getCombinedChainOutcome(result) == Boolean.TRUE)) {
+        // Note that handled result can be null; therefore explicit comparison to Boolean.TRUE is needed.
+        CombinedChainResultHandlingMonitor tmpMonitor = new CombinedChainResultHandlingMonitor(we, false);
+        if ((extraTask != null) && (tmpMonitor.handle(result) == Boolean.TRUE)) {
             // Only proceed with the extra task if the main tasks are all successful and have no solutions.
             Result<? extends VerificationChainOutput> taskResult = processExtraTask(monitor);
             if (taskResult.getOutcome() == Outcome.CANCEL) {

@@ -5,7 +5,6 @@ import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.plugins.dfs.Dfs;
 import org.workcraft.plugins.dfs.tasks.CheckTask;
-import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.tasks.Result;
@@ -36,11 +35,7 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand
     public Boolean execute(WorkspaceEntry we) {
         VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
         queueVerification(we, monitor);
-        Result<? extends VerificationChainOutput> result = null;
-        if (monitor != null) {
-            result = monitor.waitResult();
-        }
-        return MpsatUtils.getChainOutcome(result);
+        return monitor.waitForHandledResult();
     }
 
     private void queueVerification(WorkspaceEntry we, VerificationChainResultHandlingMonitor monitor) {
