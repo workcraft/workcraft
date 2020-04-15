@@ -151,7 +151,7 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
     }
 
     public String getMessage(boolean propertyHolds) {
-        String propertyName = getOutput().getVerificationParameters().getName();
+        String propertyName = getOutput().getVerificationParameters().getDescription();
         if ((propertyName == null) || propertyName.isEmpty()) {
             propertyName = "Property";
         }

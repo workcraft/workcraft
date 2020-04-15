@@ -35,8 +35,8 @@ public class VerificationOutputInterpreter extends AbstractOutputInterpreter<Mps
         switch (verificationMode) {
         case UNDEFINED:
             String message = chainMessage;
-            if ((message != null) && (verificationParameters.getName() != null)) {
-                message = verificationParameters.getName();
+            if ((message == null) && (verificationParameters.getDescription() != null)) {
+                message = verificationParameters.getDescription();
             }
             if (isInteractive()) {
                 DialogUtils.showInfo(message, "Verification results");

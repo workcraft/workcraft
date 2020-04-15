@@ -8,6 +8,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.traces.Solution;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.TraceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -28,39 +29,24 @@ public class CombinedChainResultHandlingMonitor extends AbstractChainResultHandl
     @Override
     public Boolean handleSuccess(Result<? extends CombinedChainOutput> chainResult) {
         CombinedChainOutput chainOutput = chainResult.getPayload();
-        List<Result<? extends MpsatOutput>> mpsatResultList = chainOutput.getMpsatResultList();
-        List<VerificationParameters> verificationParametersList = chainOutput.getVerificationParametersList();
+        MpsatOutput violationMpsatOutput = getViolationMpsatOutput(chainResult);
 
-        MpsatOutput violationMpsatOutput = null;
-        VerificationParameters violationVerificationParameters = null;
-        String verifiedMessageDetailes = "";
-        for (int index = 0; index < mpsatResultList.size(); ++index) {
-            VerificationParameters verificationParameters = verificationParametersList.get(index);
-            Result<? extends MpsatOutput> mpsatResult = mpsatResultList.get(index);
-            boolean hasSolutions = false;
-            if (mpsatResult != null) {
-                String mpsatStdout = mpsatResult.getPayload().getStdoutString();
-                MpsatOutputParser mdp = new MpsatOutputParser(mpsatStdout);
-                List<Solution> solutions = mdp.getSolutions();
-                hasSolutions = TraceUtils.hasTraces(solutions);
+        if (violationMpsatOutput == null) {
+            String msg = "The following checks passed:";
+            for (VerificationParameters verificationParameters : chainOutput.getVerificationParametersList()) {
+                msg += "\n * " + verificationParameters.getDescription();
             }
-            if (!hasSolutions) {
-                verifiedMessageDetailes += "\n * " + verificationParameters.getName();
-            } else {
-                violationMpsatOutput = mpsatResult.getPayload();
-                violationVerificationParameters = verificationParameters;
-            }
-        }
-
-        if (violationVerificationParameters == null) {
             // No solution found in any of the MPSat tasks
             if (vacuousMutexImplementability) {
                 // Add trivial mutex implementability result if no mutex places found
-                verifiedMessageDetailes += "\n * Mutex implementability (vacuously)";
+                msg += "\n * Mutex implementability (vacuously)";
             }
-            DialogUtils.showInfo(verifiedMessageDetailes.isEmpty() ? chainOutput.getMessage()
-                    : "The following checks passed:" + verifiedMessageDetailes);
 
+            if (isInteractive()) {
+                DialogUtils.showInfo(msg);
+            } else {
+                LogUtils.logInfo(msg);
+            }
             return true;
         }
 
@@ -68,10 +54,29 @@ public class CombinedChainResultHandlingMonitor extends AbstractChainResultHandl
         ExportOutput exportOutput = (exportResult == null) ? null : exportResult.getPayload();
         Result<? extends PcompOutput> pcompResult = (chainOutput == null) ? null : chainOutput.getPcompResult();
         PcompOutput pcompOutput = (pcompResult == null) ? null : pcompResult.getPayload();
+        VerificationParameters violationVerificationParameters = violationMpsatOutput.getVerificationParameters();
 
         return new VerificationOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
                 violationMpsatOutput, violationVerificationParameters, chainOutput.getMessage(),
                 isInteractive()).interpret();
+    }
+
+    public static MpsatOutput getViolationMpsatOutput(Result<? extends CombinedChainOutput> chainResult) {
+        if ((chainResult != null) && (chainResult.getOutcome() == Outcome.SUCCESS)) {
+            CombinedChainOutput chainOutput = chainResult.getPayload();
+            for (Result<? extends MpsatOutput> mpsatResult : chainOutput.getMpsatResultList()) {
+                if (mpsatResult != null) {
+                    MpsatOutput mpsatOutput = mpsatResult.getPayload();
+                    String mpsatStdout = mpsatOutput.getStdoutString();
+                    MpsatOutputParser mdp = new MpsatOutputParser(mpsatStdout);
+                    List<Solution> solutions = mdp.getSolutions();
+                    if (TraceUtils.hasTraces(solutions)) {
+                        return mpsatOutput;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     @Override

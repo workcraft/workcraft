@@ -38,12 +38,12 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
 
     @Override
     public Result<? extends CombinedChainOutput> run(ProgressMonitor<? super CombinedChainOutput> monitor) {
-        Result<? extends CombinedChainOutput> result = processSettingList(monitor);
+        Result<? extends CombinedChainOutput> chainResult = processSettingList(monitor);
 
-        // Note that handled result can be null; therefore explicit comparison to Boolean.TRUE is needed.
-        CombinedChainResultHandlingMonitor tmpMonitor = new CombinedChainResultHandlingMonitor(we, false);
-        if ((extraTask != null) && (tmpMonitor.handle(result) == Boolean.TRUE)) {
-            // Only proceed with the extra task if the main tasks are all successful and have no solutions.
+        // Only proceed with the extra task if the main tasks are all successful and have no solutions.
+        if ((extraTask != null) && (chainResult.getOutcome() == Outcome.SUCCESS)
+                && (CombinedChainResultHandlingMonitor.getViolationMpsatOutput(chainResult) == null)) {
+
             Result<? extends VerificationChainOutput> taskResult = processExtraTask(monitor);
             if (taskResult.getOutcome() == Outcome.CANCEL) {
                 return new Result<>(Outcome.CANCEL);
@@ -54,14 +54,14 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
             Result<? extends ExportOutput> exportResult = payload.getExportResult();
             Result<? extends PcompOutput> pcompResult = payload.getPcompResult();
             Result<? extends PunfOutput> punfResult = payload.getPunfResult();
-            List<Result<? extends MpsatOutput>> mpsatResultList = result.getPayload().getMpsatResultList();
+            List<Result<? extends MpsatOutput>> mpsatResultList = chainResult.getPayload().getMpsatResultList();
             mpsatResultList.add(payload.getMpsatResult());
             verificationParametersList.add(payload.getVerificationParameters());
 
-            result = new Result<>(taskResult.getOutcome(),
+            chainResult = new Result<>(taskResult.getOutcome(),
                     new CombinedChainOutput(exportResult, pcompResult, punfResult, mpsatResultList, verificationParametersList));
         }
-        return result;
+        return chainResult;
     }
 
     private Result<? extends CombinedChainOutput> processSettingList(ProgressMonitor<? super CombinedChainOutput> monitor) {
@@ -70,6 +70,7 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
         TaskManager taskManager = framework.getTaskManager();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
+        ArrayList<Result<? extends MpsatOutput>> mpsatResultList = new ArrayList<>(verificationParametersList.size());
         try {
             PetriModel model = WorkspaceUtils.getAs(we, PetriModel.class);
             StgFormat format = StgFormat.getInstance();
@@ -90,7 +91,7 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new CombinedChainOutput(exportResult, null, null, null, verificationParametersList));
+                        new CombinedChainOutput(exportResult, null, null, mpsatResultList, verificationParametersList));
             }
             monitor.progressUpdate(0.33);
 
@@ -104,12 +105,11 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
                     return new Result<>(Outcome.CANCEL);
                 }
                 return new Result<>(Outcome.FAILURE,
-                        new CombinedChainOutput(exportResult, null, punfResult, null, verificationParametersList));
+                        new CombinedChainOutput(exportResult, null, punfResult, mpsatResultList, verificationParametersList));
             }
             monitor.progressUpdate(0.66);
 
             // Run MPSat on the generated unfolding
-            ArrayList<Result<? extends MpsatOutput>> mpsatResultList = new ArrayList<>(verificationParametersList.size());
             for (VerificationParameters verificationParameters: verificationParametersList) {
                 MpsatTask mpsatTask = new MpsatTask(unfoldingFile, netFile, verificationParameters, directory);
                 Result<? extends MpsatOutput> mpsatResult = taskManager.execute(

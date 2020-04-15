@@ -30,7 +30,7 @@ public class VerificationParameters {
         }
     }
 
-    private final String name;
+    private final String description;
     private final VerificationMode mode;
     private final int verbosity;
     private final SolutionMode solutionMode;
@@ -41,13 +41,13 @@ public class VerificationParameters {
     //   false - property holds when predicate is satisfiable
     private final boolean inversePredicate;
 
-    public VerificationParameters(String name, VerificationMode mode, int verbosity, SolutionMode solutionMode, int solutionNumberLimit) {
-        this(name, mode, verbosity, solutionMode, solutionNumberLimit, null, true);
+    public VerificationParameters(String description, VerificationMode mode, int verbosity, SolutionMode solutionMode, int solutionNumberLimit) {
+        this(description, mode, verbosity, solutionMode, solutionNumberLimit, null, true);
     }
 
-    public VerificationParameters(String name, VerificationMode mode, int verbosity, SolutionMode solutionMode, int solutionNumberLimit,
+    public VerificationParameters(String description, VerificationMode mode, int verbosity, SolutionMode solutionMode, int solutionNumberLimit,
             String expression, boolean inversePredicate) {
-        this.name = name;
+        this.description = description;
         this.mode = mode;
         this.verbosity = verbosity;
         this.solutionMode = solutionMode;
@@ -56,8 +56,8 @@ public class VerificationParameters {
         this.inversePredicate = inversePredicate;
     }
 
-    public String getName() {
-        return name;
+    public String getDescription() {
+        return description;
     }
 
     public VerificationMode getMode() {
@@ -98,8 +98,8 @@ public class VerificationParameters {
                     assertionFile = FileUtils.createTempFile(ASSERTION_FILE_PREFIX, ASSERTION_FILE_EXTENTION);
                     assertionFile.deleteOnExit();
                 } else {
-                    String prefix = name == null ? ASSERTION_FILE_PREFIX
-                            : ASSERTION_FILE_PREFIX + "-" + name.replaceAll("\\s", "_");
+                    String prefix = description == null ? ASSERTION_FILE_PREFIX
+                            : ASSERTION_FILE_PREFIX + "-" + description.replaceAll("\\s", "_");
 
                     assertionFile = new File(workingDirectory, prefix + ASSERTION_FILE_EXTENTION);
                 }

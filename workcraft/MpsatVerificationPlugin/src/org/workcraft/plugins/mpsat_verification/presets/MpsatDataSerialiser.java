@@ -9,7 +9,7 @@ import org.workcraft.utils.XmlUtils;
 public class MpsatDataSerialiser implements DataSerialiser<VerificationParameters> {
 
     private static final String SETTINGS_ELEMENT = "settings";
-    private static final String SETTINGS_NAME_ATTRIBUTE = "name";
+    private static final String SETTINGS_DESCRIPTION_ATTRIBUTE = "description";
     private static final String SETTINGS_MODE_ATTRIBUTE = "mode";
     private static final String SETTINGS_VERBOSITY_ATTRIBUTE = "verbosity";
     private static final String SETTINGS_SOLUTION_LIMIT_ATTRIBUTE = "solutionNumberLimit";
@@ -21,7 +21,7 @@ public class MpsatDataSerialiser implements DataSerialiser<VerificationParameter
     public VerificationParameters fromXML(Element parent) {
         Element element = XmlUtils.getChildElement(SETTINGS_ELEMENT, parent);
 
-        String name = element.getAttribute(SETTINGS_NAME_ATTRIBUTE);
+        String description = element.getAttribute(SETTINGS_DESCRIPTION_ATTRIBUTE);
 
         VerificationMode mode = XmlUtils.readEnumAttribute(element, SETTINGS_MODE_ATTRIBUTE,
                 VerificationMode.class, VerificationMode.STG_REACHABILITY);
@@ -39,13 +39,13 @@ public class MpsatDataSerialiser implements DataSerialiser<VerificationParameter
 
         boolean inversePredicate = XmlUtils.readBooleanAttribute(element, SETTINGS_INVERSE_PREDICATE_ATTRIBUTE, true);
 
-        return new VerificationParameters(name, mode, verbosity, solutionMode, solutionNumberLimit, reach, inversePredicate);
+        return new VerificationParameters(description, mode, verbosity, solutionMode, solutionNumberLimit, reach, inversePredicate);
     }
 
     @Override
     public void toXML(VerificationParameters verificationParameters, Element parent) {
         Element element = parent.getOwnerDocument().createElement(SETTINGS_ELEMENT);
-        element.setAttribute(SETTINGS_NAME_ATTRIBUTE, verificationParameters.getName());
+        element.setAttribute(SETTINGS_DESCRIPTION_ATTRIBUTE, verificationParameters.getDescription());
         element.setAttribute(SETTINGS_MODE_ATTRIBUTE, verificationParameters.getMode().name());
         element.setAttribute(SETTINGS_VERBOSITY_ATTRIBUTE, Integer.toString(verificationParameters.getVerbosity()));
         element.setAttribute(SETTINGS_SOLUTION_LIMIT_ATTRIBUTE, Integer.toString(verificationParameters.getSolutionNumberLimit()));
