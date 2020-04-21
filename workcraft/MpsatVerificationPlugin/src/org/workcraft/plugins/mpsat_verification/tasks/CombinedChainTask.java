@@ -82,7 +82,7 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
 
             // Generate .g for the model
             File netFile = new File(directory, "net" + format.getExtension());
-            ExportTask exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
+            ExportTask exportTask = new ExportTask(exporter, model, netFile);
             Result<? extends ExportOutput> exportResult = taskManager.execute(
                     exportTask, "Exporting .g", subtaskMonitor);
 

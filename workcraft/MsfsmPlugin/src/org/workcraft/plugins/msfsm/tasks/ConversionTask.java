@@ -117,7 +117,7 @@ public class ConversionTask implements Task<ConversionOutput>, ExternalProcessLi
             throw new NoExporterException(model, format);
         }
         File file = new File(directory, fileName);
-        ExportTask exportTask = new ExportTask(exporter, model, file.getAbsolutePath());
+        ExportTask exportTask = new ExportTask(exporter, model, file);
         Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
         if (exportResult.getOutcome() != Outcome.SUCCESS) {
             throw new RuntimeException("Unable to export the model.");

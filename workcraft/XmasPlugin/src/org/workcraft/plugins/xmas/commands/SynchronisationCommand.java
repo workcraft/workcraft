@@ -191,11 +191,11 @@ public class SynchronisationCommand implements Command {
                             String str = cb.getSelectedItem().toString();
                             //System.out.println("Found " + str);
                             if ("asynchronous".equals(str)) {
-                                slist.add(new String("asynchronous"));
+                                slist.add("asynchronous");
                             } else if ("mesochronous".equals(str)) {
-                                slist.add(new String("mesochronous"));
+                                slist.add("mesochronous");
                             } else if ("pausible".equals(str)) {
-                                slist.add(new String("pausible"));
+                                slist.add("pausible");
                             }
                         }
                     }
@@ -216,11 +216,11 @@ public class SynchronisationCommand implements Command {
                     for (Component cn2 : jp2.getComponents()) {
                         if (cn2 instanceof JTextField) {
                             JTextField tf = (JTextField) cn2;
-                            String str = tf.getText().toString();
+                            String str = tf.getText();
                             if (n == 2) {
-                                slist1.add(new String(str));
+                                slist1.add(str);
                             } else if (n == 3) {
-                                slist2.add(new String(str));
+                                slist2.add(str);
                             }
                             n++;
                         }
@@ -313,8 +313,8 @@ public class SynchronisationCommand implements Command {
         System.out.println("loaded = " + loaded);
         List<JPanel> panellist = new ArrayList<>();
         for (int no = 0; no < cntSyncnodes; no = no + 1) {
-            if (loaded == 0) slist1.add(new String("1"));
-            if (loaded == 0) slist2.add(new String("1"));
+            if (loaded == 0) slist1.add("1");
+            if (loaded == 0) slist2.add("1");
             panellist.add(new JPanel());
             panellist.get(panellist.size() - 1).add(new JLabel(" Name" + no));
             panellist.get(panellist.size() - 1).add(new JTextField("Sync" + no));

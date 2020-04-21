@@ -144,24 +144,24 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
 
         try {
             if (result.getOutcome() == Outcome.SUCCESS) {
+                byte[] verilogBytes = verilogFile.exists() ? FileUtils.readAllBytes(verilogFile) : null;
+                byte[] stgBytes = stgFile.exists() ? FileUtils.readAllBytes(stgFile) : null;
                 ExternalProcessOutput output = result.getPayload();
-                if (output != null) {
-                    String log = getFileContent(logFile);
-                    String equations = getFileContent(eqnFile);
-                    String verilog = getFileContent(verilogFile);
-                    String stgOutput = getFileContent(outFile);
-                    SynthesisOutput synthesisOutput = new SynthesisOutput(output, log, equations, verilog, stgOutput);
-                    if (output.getReturnCode() == 0) {
-                        return Result.success(synthesisOutput);
-                    }
+                SynthesisOutput synthesisOutput = new SynthesisOutput(output, verilogBytes, stgBytes);
+                if (output.getReturnCode() != 0) {
                     return Result.failure(synthesisOutput);
                 }
+                if ((logFile != null) && logFile.exists()) {
+                    synthesisOutput.setLog(FileUtils.readAllText(logFile));
+                }
+                if ((eqnFile != null) && eqnFile.exists()) {
+                    synthesisOutput.setEquations(FileUtils.readAllText(eqnFile));
+                }
+                return Result.success(synthesisOutput);
             }
-
             if (result.getOutcome() == Outcome.CANCEL) {
                 return Result.cancelation();
             }
-
             return Result.exception(result.getCause());
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -169,10 +169,6 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
             FileUtils.deleteOnExitRecursively(directory);
             we.cancelMemento();
         }
-    }
-
-    private String getFileContent(File file) throws IOException {
-        return (file != null) && file.exists() ? FileUtils.readAllText(file) : "";
     }
 
     private File getInputFile(Stg stg, File directory) {
@@ -185,7 +181,7 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
 
         String gExtension = format.getExtension();
         File stgFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + gExtension);
-        ExportTask exportTask = new ExportTask(stgExporter, stg, stgFile.getAbsolutePath());
+        ExportTask exportTask = new ExportTask(stgExporter, stg, stgFile);
         Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
         if (exportResult.getOutcome() != Outcome.SUCCESS) {
             throw new RuntimeException("Unable to export the model.");
@@ -194,7 +190,7 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
             stg = StgUtils.loadStg(stgFile);
             MutexUtils.factoroutMutexs(stg, mutexes);
             stgFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + gExtension);
-            exportTask = new ExportTask(stgExporter, stg, stgFile.getAbsolutePath());
+            exportTask = new ExportTask(stgExporter, stg, stgFile);
             exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
             if (exportResult.getOutcome() != Outcome.SUCCESS) {
                 throw new RuntimeException("Unable to export the model after factoring out the mutexes.");

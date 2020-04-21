@@ -18,10 +18,6 @@ public class ExportTask implements Task<ExportOutput> {
     private final Model model;
     private final File file;
 
-    public ExportTask(Exporter exporter, Model model, String path) {
-        this(exporter, model, new File(path));
-    }
-
     public ExportTask(Exporter exporter, Model model, File file) {
         this.exporter = exporter;
         this.model = model;

@@ -4,25 +4,21 @@ import org.workcraft.tasks.ExternalProcessOutput;
 
 public class MpsatOutput extends ExternalProcessOutput {
 
-    private final byte[] stgOutput;
-    private final byte[] verilogOutput;
+    private final byte[] verilogBytes;
+    private final byte[] stgBytes;
 
-    public MpsatOutput(ExternalProcessOutput output) {
-        this(output, null, null);
-    }
-
-    public MpsatOutput(ExternalProcessOutput output, byte[] stgOutput, byte[] verilogOutput) {
+    public MpsatOutput(ExternalProcessOutput output, byte[] verilogBytes, byte[] stgBytes) {
         super(output.getReturnCode(), output.getStdout(), output.getStderr());
-        this.stgOutput = stgOutput;
-        this.verilogOutput = verilogOutput;
+        this.verilogBytes = verilogBytes;
+        this.stgBytes = stgBytes;
     }
 
-    public byte[] getStgOutput() {
-        return stgOutput;
+    public byte[] getVerilogBytes() {
+        return verilogBytes;
     }
 
-    public byte[] getVerilogOutput() {
-        return verilogOutput;
+    public byte[] getStgBytes() {
+        return stgBytes;
     }
 
 }

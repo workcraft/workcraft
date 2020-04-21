@@ -66,7 +66,8 @@ public class AtacsTask implements Task<AtacsOutput>, ExternalProcessListener {
         // Input file
         File stgFile = getInputFile(stg, directory);
         command.add(stgFile.getAbsolutePath());
-        File verilogFile = new File(directory, stgFile.getName().replace(".lpn", ".v"));
+        String verilogFileName = stgFile.getName().replace(".lpn", ".v");
+        File verilogFile = new File(directory, verilogFileName);
 
         boolean printStdout = AtacsSettings.getPrintStdout();
         boolean printStderr = AtacsSettings.getPrintStderr();
@@ -113,7 +114,7 @@ public class AtacsTask implements Task<AtacsOutput>, ExternalProcessListener {
 
         String extension = format.getExtension();
         File file = new File(directory, StgUtils.SPEC_FILE_PREFIX + extension);
-        ExportTask exportTask = new ExportTask(exporter, stg, file.getAbsolutePath());
+        ExportTask exportTask = new ExportTask(exporter, stg, file);
         Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .lpn");
         if (exportResult.getOutcome() != Outcome.SUCCESS) {
             throw new RuntimeException("Unable to export the model.");
@@ -122,7 +123,7 @@ public class AtacsTask implements Task<AtacsOutput>, ExternalProcessListener {
             stg = StgUtils.loadStg(file);
             MutexUtils.factoroutMutexs(stg, mutexes);
             file = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + extension);
-            exportTask = new ExportTask(exporter, stg, file.getAbsolutePath());
+            exportTask = new ExportTask(exporter, stg, file);
             exportResult = framework.getTaskManager().execute(exportTask, "Exporting .lpn");
             if (exportResult.getOutcome() != Outcome.SUCCESS) {
                 throw new RuntimeException("Unable to export the model after factoring out the mutexes.");

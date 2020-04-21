@@ -40,12 +40,12 @@ public class MpsatTask implements Task<MpsatOutput> {
 
     public MpsatTask(File unfoldingFile, SynthesisMode synthesisMode, File directory) {
         this.unfoldingFile = unfoldingFile;
+        this.synthesisMode = synthesisMode;
         if (directory == null) {
             // Prefix must be at least 3 symbols long.
             directory = FileUtils.createTempDirectory("mpsat-");
         }
         this.directory = directory;
-        this.synthesisMode = synthesisMode;
     }
 
     @Override
@@ -54,8 +54,7 @@ public class MpsatTask implements Task<MpsatOutput> {
 
         // Name of the executable
         String toolPrefix = MpsatSynthesisSettings.getCommand();
-        String unfoldingFileName = unfoldingFile.getName();
-        String toolSuffix = unfoldingFileName.endsWith(PunfTask.MCI_FILE_EXTENSION) ? PunfTask.LEGACY_TOOL_SUFFIX : "";
+        String toolSuffix = unfoldingFile.getName().endsWith(PunfTask.MCI_FILE_EXTENSION) ? PunfTask.LEGACY_TOOL_SUFFIX : "";
         String toolName = ExecutableUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
         command.add(toolName);
 
@@ -118,24 +117,24 @@ public class MpsatTask implements Task<MpsatOutput> {
                     Matcher matcherSuccess = SUCCESS_PATTERN.matcher(output.getStdoutString());
                     success = matcherSuccess.find();
                 }
+                byte[] verilogBytes = null;
+                byte[] stgBytes = null;
                 if (success) {
-                    byte[] verilogOutput = null;
-                    byte[] stgOutput = null;
                     try {
-                        File stgFile = new File(directory, STG_FILE_NAME);
-                        if (stgFile.exists()) {
-                            stgOutput = FileUtils.readAllBytes(stgFile);
-                        }
                         File verilogFile = new File(directory, VERILOG_FILE_NAME);
                         if (verilogFile.exists()) {
-                            verilogOutput = FileUtils.readAllBytes(verilogFile);
+                            verilogBytes = FileUtils.readAllBytes(verilogFile);
+                        }
+                        File stgFile = new File(directory, STG_FILE_NAME);
+                        if (stgFile.exists()) {
+                            stgBytes = FileUtils.readAllBytes(stgFile);
                         }
                     } catch (IOException e) {
                         return Result.exception(e);
                     }
-                    return Result.success(new MpsatOutput(output, stgOutput, verilogOutput));
+                    return Result.success(new MpsatOutput(output, verilogBytes, stgBytes));
                 }
-                return Result.failure(new MpsatOutput(output));
+                return Result.failure(new MpsatOutput(output, verilogBytes, stgBytes));
             }
         }
 

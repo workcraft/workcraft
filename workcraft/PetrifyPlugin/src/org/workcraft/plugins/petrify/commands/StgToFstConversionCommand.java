@@ -9,6 +9,7 @@ import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.FstDescriptor;
 import org.workcraft.plugins.fst.VisualFst;
+import org.workcraft.plugins.fst.utils.FstUtils;
 import org.workcraft.plugins.petrify.tasks.WriteSgConversionOutput;
 import org.workcraft.plugins.petrify.tasks.WriteSgConversionTask;
 import org.workcraft.plugins.stg.Stg;
@@ -72,7 +73,7 @@ public class StgToFstConversionCommand extends AbstractConversionCommand {
         WorkspaceEntry we = null;
         WriteSgConversionOutput output = result.getPayload();
         if (result.getOutcome() == Result.Outcome.SUCCESS) {
-            Fst model = output.getFst();
+            Fst model = FstUtils.importFst(output.getFstBytes());
             ModelEntry me = new ModelEntry(new FstDescriptor(), model);
             we = Framework.getInstance().createWork(me, path);
             // NOTE: WorkspaceEntry with a new ModelEntry is created

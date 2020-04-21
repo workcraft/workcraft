@@ -51,7 +51,7 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
             // Generate .g for the model
             String filePrefix = StgUtils.SPEC_FILE_PREFIX;
             File netFile = new File(directory, filePrefix + stgFileExtension);
-            ExportTask exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
+            ExportTask exportTask = new ExportTask(exporter, model, netFile);
             Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(
                     exportTask, "Exporting .g", subtaskMonitor);
 
@@ -67,7 +67,7 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
                 MutexUtils.factoroutMutexs(model, mutexes);
                 filePrefix += StgUtils.MUTEX_FILE_SUFFIX;
                 netFile = new File(directory, filePrefix + stgFileExtension);
-                exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
+                exportTask = new ExportTask(exporter, model, netFile);
                 exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
 
                 if (exportResult.getOutcome() != Outcome.SUCCESS) {
@@ -84,7 +84,7 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
             boolean useLegacyMci = PunfSettings.getUseMciCsc() && (synthesisMode == SynthesisMode.RESOLVE_ENCODING_CONFLICTS);
             String unfoldingExtension = useLegacyMci ? PunfTask.MCI_FILE_EXTENSION : PunfTask.PNML_FILE_EXTENSION;
             File unfoldingFile = new File(directory, filePrefix + unfoldingExtension);
-            PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory, useLegacyMci);
+            PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory);
             Result<? extends PunfOutput> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", subtaskMonitor);
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {

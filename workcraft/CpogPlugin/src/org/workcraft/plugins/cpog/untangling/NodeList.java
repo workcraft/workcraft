@@ -60,8 +60,7 @@ public class NodeList extends ArrayList<UntanglingNode> {
                 if (formerNodeName.equals(latterNodeName)) {
                     // append a number at the end representing
                     // the number of times that node occurs
-                    String replaceName = new String(latterNodeName);
-                    replaceName = replaceName.concat("_" + (k + 1));
+                    String replaceName = latterNodeName.concat("_" + (k + 1));
                     k++;
                     this.get(j).setLabel(replaceName);
                 }

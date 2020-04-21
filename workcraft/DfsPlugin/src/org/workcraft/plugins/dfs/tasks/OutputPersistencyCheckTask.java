@@ -51,7 +51,7 @@ public class OutputPersistencyCheckTask implements Task<VerificationChainOutput>
             monitor.progressUpdate(0.10);
 
             File netFile = new File(directory, "net" + stgFileExtension);
-            ExportTask exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
+            ExportTask exportTask = new ExportTask(exporter, model, netFile);
             SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
             Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(
                     exportTask, "Exporting .g", mon);

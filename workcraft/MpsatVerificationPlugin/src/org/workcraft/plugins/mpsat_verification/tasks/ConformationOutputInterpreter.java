@@ -10,6 +10,7 @@ import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.utils.LabelParser;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
@@ -61,7 +62,7 @@ class ConformationOutputInterpreter extends ReachabilityOutputInterpreter {
         if (needsMultiLineMessage) {
             LogUtils.logMessage("Violation traces of the composition:");
         }
-        StgModel compStg = getOutput().getStg();
+        StgModel compStg = StgUtils.importStg(getOutput().getStgBytes());
         for (Solution solution: solutions) {
             // FIXME: This is to rename toggle events from x to x~
             Trace compTrace = fixTraceToggleEvents(compStg, solution.getMainTrace());
@@ -88,7 +89,7 @@ class ConformationOutputInterpreter extends ReachabilityOutputInterpreter {
             LogUtils.logMessage("Unique projection(s) to '" + we.getTitle() + "':");
         }
 
-        StgModel compStg = getOutput().getStg();
+        StgModel compStg = StgUtils.importStg(getOutput().getStgBytes());
         for (Solution solution : solutions) {
             // Get unique projection trace
             Trace trace = getProjectedTrace(solution.getMainTrace(), data, substitutions);

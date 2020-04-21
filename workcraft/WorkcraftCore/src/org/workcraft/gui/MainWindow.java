@@ -960,7 +960,7 @@ public class MainWindow extends JFrame {
         JFileChooser fc = createSaveDialog(title, file, format);
         String path = ExportUtils.getValidSavePath(fc, format);
         VisualModel model = editorInFocus.getModel();
-        ExportTask exportTask = new ExportTask(exporter, model, path);
+        ExportTask exportTask = new ExportTask(exporter, model, new File(path));
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
         String description = "Exporting " + title;

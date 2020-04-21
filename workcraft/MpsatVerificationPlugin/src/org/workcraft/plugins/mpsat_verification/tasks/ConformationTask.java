@@ -58,7 +58,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
 
             // Generating .g for the model
             File devStgFile = new File(directory, StgUtils.DEVICE_FILE_PREFIX + stgFileExtension);
-            ExportTask devExportTask = new ExportTask(devStgExporter, devStg, devStgFile.getAbsolutePath());
+            ExportTask devExportTask = new ExportTask(devStgExporter, devStg, devStgFile);
             Result<? extends ExportOutput> devExportResult = taskManager.execute(
                     devExportTask, "Exporting circuit .g", subtaskMonitor);
 
@@ -84,7 +84,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             StgUtils.restoreInterfaceSignals(envStg, inputSignals, outputSignals);
             Exporter envStgExporter = ExportUtils.chooseBestExporter(pluginManager, envStg, format);
             File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + stgFileExtension);
-            ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getAbsolutePath());
+            ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile);
             Result<? extends ExportOutput> envExportResult = taskManager.execute(
                     envExportTask, "Exporting environment .g", subtaskMonitor);
 

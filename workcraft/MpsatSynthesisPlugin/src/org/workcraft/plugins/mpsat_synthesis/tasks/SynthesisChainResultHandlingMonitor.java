@@ -17,9 +17,8 @@ import org.workcraft.plugins.mpsat_synthesis.MpsatSynthesisSettings;
 import org.workcraft.plugins.mpsat_synthesis.SynthesisMode;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgDescriptor;
-import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.AbstractResultHandlingMonitor;
@@ -86,23 +85,18 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
     }
 
     public WorkspaceEntry handleConflictResolutionOutput(MpsatOutput mpsatOutput) {
-        try {
-            ByteArrayInputStream dstStream = new ByteArrayInputStream(mpsatOutput.getStgOutput());
-            StgModel model = new StgImporter().importStg(dstStream);
-            if (model == null) {
-                final String errorMessage = mpsatOutput.getErrorsHeadAndTail();
-                DialogUtils.showWarning("Conflict resolution failed. MPSat output: \n" + errorMessage);
-                return null;
-            }
-            model.setTitle(we.getModelTitle());
-            MutexUtils.restoreMutexSignals(model, mutexes);
-            MutexUtils.restoreMutexPlacesByName(model, mutexes);
-            final ModelEntry me = new ModelEntry(new StgDescriptor(), model);
-            final Path<String> path = we.getWorkspacePath();
-            return Framework.getInstance().createWork(me, path);
-        } catch (DeserialisationException e) {
-            throw new RuntimeException(e);
+        Stg stg = StgUtils.importStg(mpsatOutput.getStgBytes());
+        if (stg == null) {
+            final String errorMessage = mpsatOutput.getErrorsHeadAndTail();
+            DialogUtils.showWarning("Conflict resolution failed. MPSat output: \n" + errorMessage);
+            return null;
         }
+        stg.setTitle(we.getModelTitle());
+        MutexUtils.restoreMutexSignals(stg, mutexes);
+        MutexUtils.restoreMutexPlacesByName(stg, mutexes);
+        final ModelEntry me = new ModelEntry(new StgDescriptor(), stg);
+        final Path<String> path = we.getWorkspacePath();
+        return Framework.getInstance().createWork(me, path);
     }
 
     private WorkspaceEntry handleSynthesisOutput(MpsatOutput mpsatOutput,
@@ -129,7 +123,7 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
 
     private WorkspaceEntry handleStgSynthesisOutput(MpsatOutput mpsatOutput) {
         if (MpsatSynthesisSettings.getOpenSynthesisStg()) {
-            return StgUtils.createStgIfNewSignals(we, mpsatOutput.getStgOutput());
+            return StgUtils.createStgIfNewSignals(we, mpsatOutput.getStgBytes());
         }
         return null;
     }
@@ -138,7 +132,7 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
             boolean sequentialAssign, RenderType renderType) {
 
         WorkspaceEntry dstWe = null;
-        final byte[] verilogOutput = mpsatOutput.getVerilogOutput();
+        final byte[] verilogOutput = mpsatOutput.getVerilogBytes();
         if ((verilogOutput != null) && (verilogOutput.length > 0)) {
             LogUtils.logInfo("MPSat synthesis result in Verilog format:");
             System.out.println(new String(verilogOutput));

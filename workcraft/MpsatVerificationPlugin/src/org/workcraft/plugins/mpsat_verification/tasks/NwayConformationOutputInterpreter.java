@@ -15,6 +15,7 @@ import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.utils.LabelParser;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
@@ -194,7 +195,7 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
 
     private String findUnexpectedOutputAfterTrace(Trace compTrace, Map<WorkspaceEntry, Trace> workToTraceMap) {
         // Find output enabled in component STG that is not enabled in the composition STG
-        StgModel compStg = getOutput().getStg();
+        StgModel compStg = StgUtils.importStg(getOutput().getStgBytes());
         Enabledness compEnabledness = EnablednessUtils.getOutputEnablednessAfterTrace(compStg, compTrace);
         for (WorkspaceEntry we : wes) {
             StgModel stg = getSrcStg(we);

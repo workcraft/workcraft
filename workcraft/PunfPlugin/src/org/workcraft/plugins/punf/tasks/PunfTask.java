@@ -18,17 +18,11 @@ public class PunfTask implements Task<PunfOutput> {
     private final File inputFile;
     private final File outputFile;
     private final File directory;
-    private final boolean useLegacyMci;
 
     public PunfTask(File inputFile, File outputFile, File directory) {
-        this(inputFile, outputFile, directory, false);
-    }
-
-    public PunfTask(File inputFile, File outputFile, File directory, boolean useLegacyMci) {
         this.inputFile = inputFile;
         this.outputFile = outputFile;
         this.directory = directory;
-        this.useLegacyMci = useLegacyMci;
     }
 
     @Override
@@ -37,7 +31,7 @@ public class PunfTask implements Task<PunfOutput> {
 
         // Name of the executable
         String toolPrefix = PunfSettings.getCommand();
-        String toolSuffix = useLegacyMci ? LEGACY_TOOL_SUFFIX : "";
+        String toolSuffix = outputFile.getName().endsWith(MCI_FILE_EXTENSION) ? LEGACY_TOOL_SUFFIX : "";
         String toolName = ExecutableUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
         command.add(toolName);
 

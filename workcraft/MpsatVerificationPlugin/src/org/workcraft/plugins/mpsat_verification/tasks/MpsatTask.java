@@ -1,11 +1,8 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
-import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.punf.tasks.PunfTask;
-import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.tasks.*;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
@@ -14,8 +11,7 @@ import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.TextUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -77,8 +73,7 @@ public class MpsatTask implements Task<MpsatOutput> {
 
         // Name of the executable
         String toolPrefix = MpsatVerificationSettings.getCommand();
-        String unfoldingFileName = unfoldingFile.getName();
-        String toolSuffix = unfoldingFileName.endsWith(PunfTask.MCI_FILE_EXTENSION) ? PunfTask.LEGACY_TOOL_SUFFIX : "";
+        String toolSuffix = unfoldingFile.getName().endsWith(PunfTask.MCI_FILE_EXTENSION) ? PunfTask.LEGACY_TOOL_SUFFIX : "";
         String toolName = ExecutableUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
         command.add(toolName);
 
@@ -120,8 +115,15 @@ public class MpsatTask implements Task<MpsatOutput> {
                     success = matcherSuccess.find();
                 }
                 if (success) {
-                    StgModel inputStg = readStg(netFile);
-                    return Result.success(new MpsatOutput(output, inputStg, verificationParameters));
+                    byte[] stgBytes = null;
+                    try {
+                        if (netFile.exists()) {
+                            stgBytes = FileUtils.readAllBytes(netFile);
+                        }
+                    } catch (IOException e) {
+                        return Result.exception(e);
+                    }
+                    return Result.success(new MpsatOutput(output, stgBytes, verificationParameters));
                 }
                 return Result.failure(new MpsatOutput(output, null, verificationParameters));
             }
@@ -132,19 +134,6 @@ public class MpsatTask implements Task<MpsatOutput> {
         }
 
         return Result.exception(result.getCause());
-    }
-
-    private StgModel readStg(File file) {
-        if ((file != null) && file.exists()) {
-            try {
-                StgImporter importer = new StgImporter();
-                FileInputStream is = new FileInputStream(file);
-                return importer.importStg(is);
-            } catch (final DeserialisationException | FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return null;
     }
 
 }

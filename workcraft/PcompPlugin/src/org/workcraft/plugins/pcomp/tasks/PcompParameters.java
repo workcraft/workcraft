@@ -12,6 +12,7 @@ public class PcompParameters {
         SharedSignalMode(String decription) {
             this.description = decription;
         }
+
         @Override
         public String toString() {
             return description;

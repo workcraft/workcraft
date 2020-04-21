@@ -5,7 +5,6 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.ExternalProcessListener;
@@ -19,9 +18,7 @@ import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.petrify.PetrifyUtils;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
-import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
@@ -29,7 +26,6 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.*;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -86,9 +82,9 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
                 command.add(logFile.getAbsolutePath());
             }
 
-            File outFile = new File(directory, PetrifyUtils.STG_FILE_NAME);
+            File stgFile = new File(directory, PetrifyUtils.STG_FILE_NAME);
             command.add("-o");
-            command.add(outFile.getAbsolutePath());
+            command.add(stgFile.getAbsolutePath());
 
             Model model = we.getModelEntry().getMathModel();
 
@@ -121,23 +117,13 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
             Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
 
             if (result.getOutcome() == Outcome.SUCCESS) {
-                StgModel outStg = null;
-                if (outFile.exists()) {
-                    String out = FileUtils.readAllText(outFile);
-                    ByteArrayInputStream outStream = new ByteArrayInputStream(out.getBytes());
-                    try {
-                        outStg = new StgImporter().importStg(outStream);
-                    } catch (DeserialisationException e) {
-                        return Result.exception(e);
-                    }
-                }
+                byte[] stgBytes = stgFile.exists() ? FileUtils.readAllBytes(stgFile) : null;
                 ExternalProcessOutput output = result.getPayload();
-                int returnCode = output.getReturnCode();
                 String errorMessage = output.getStderrString();
-                if ((returnCode != 0) || (errorMessage.contains(">>> ERROR: Cannot solve CSC.\n"))) {
-                    return Result.failure(new TransformationOutput(output, outStg));
+                if ((output.getReturnCode() != 0) || (errorMessage.contains(">>> ERROR: Cannot solve CSC.\n"))) {
+                    return Result.failure(new TransformationOutput(output, stgBytes));
                 }
-                return Result.success(new TransformationOutput(output, outStg));
+                return Result.success(new TransformationOutput(output, stgBytes));
             }
             if (result.getOutcome() == Outcome.CANCEL) {
                 return Result.cancelation();
@@ -180,7 +166,7 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
             Stg stg = StgUtils.loadStg(file);
             MutexUtils.factoroutMutexs(stg, mutexes);
             file = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + extension);
-            exportTask = new ExportTask(exporter, stg, file.getAbsolutePath());
+            exportTask = new ExportTask(exporter, stg, file);
             exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
             if (exportResult.getOutcome() != Outcome.SUCCESS) {
                 throw new RuntimeException("Unable to export the model after factoring out the mutexes.");

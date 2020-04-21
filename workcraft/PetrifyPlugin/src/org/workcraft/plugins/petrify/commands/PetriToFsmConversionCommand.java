@@ -10,6 +10,7 @@ import org.workcraft.plugins.fsm.FsmDescriptor;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.fst.converters.FstToFsmConverter;
+import org.workcraft.plugins.fst.utils.FstUtils;
 import org.workcraft.plugins.petri.Petri;
 import org.workcraft.plugins.petrify.tasks.WriteSgConversionOutput;
 import org.workcraft.plugins.petrify.tasks.WriteSgConversionTask;
@@ -50,7 +51,7 @@ public class PetriToFsmConversionCommand extends AbstractConversionCommand {
         WorkspaceEntry we = null;
         WriteSgConversionOutput output = result.getPayload();
         if (result.getOutcome() == Result.Outcome.SUCCESS) {
-            VisualFst fst = new VisualFst(output.getFst());
+            VisualFst fst = new VisualFst(FstUtils.importFst(output.getFstBytes()));
             VisualFsm fsm = new VisualFsm(new Fsm());
             FstToFsmConverter converter = new FstToFsmConverter(fst, fsm);
             MathModel model = converter.getDstModel().getMathModel();

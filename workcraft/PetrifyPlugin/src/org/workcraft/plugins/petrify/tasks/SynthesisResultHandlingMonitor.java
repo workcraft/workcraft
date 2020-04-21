@@ -121,22 +121,19 @@ public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonito
 
     private WorkspaceEntry handleStgSynthesisOutput(SynthesisOutput synthOutput) {
         if (PetrifySettings.getOpenSynthesisStg()) {
-            return StgUtils.createStgIfNewSignals(we, synthOutput.getStg().getBytes());
+            return StgUtils.createStgIfNewSignals(we, synthOutput.getStgBytes());
         }
         return null;
     }
 
     private WorkspaceEntry handleVerilogSynthesisOutput(SynthesisOutput synthOutput) {
         WorkspaceEntry result = null;
-        String verilogOutput = synthOutput.getVerilog();
-        if ((verilogOutput != null) && !verilogOutput.isEmpty()) {
+        byte[] verilogBytes = synthOutput.getVerilogBytes();
+        if (verilogBytes != null) {
             LogUtils.logInfo("Petrify synthesis result in Verilog format:");
-            System.out.println(verilogOutput);
-        }
-
-        if ((verilogOutput != null) && !verilogOutput.isEmpty()) {
+            System.out.println(new String(verilogBytes));
             try {
-                ByteArrayInputStream verilogStream = new ByteArrayInputStream(verilogOutput.getBytes());
+                ByteArrayInputStream verilogStream = new ByteArrayInputStream(verilogBytes);
                 VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
                 Circuit circuit = verilogImporter.importTopModule(verilogStream, mutexes);
                 Path<String> path = we.getWorkspacePath();

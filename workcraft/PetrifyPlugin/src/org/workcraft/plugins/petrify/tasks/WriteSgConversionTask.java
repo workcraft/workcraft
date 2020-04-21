@@ -1,11 +1,8 @@
 package org.workcraft.plugins.petrify.tasks;
 
 import org.workcraft.Framework;
-import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
-import org.workcraft.plugins.fst.Fst;
-import org.workcraft.plugins.fst.interop.SgImporter;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
@@ -18,7 +15,6 @@ import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +73,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionOutput> {
             // Generating .g file for Petri Net
             File petriFile = FileUtils.createTempFile("stg-", ".g");
             petriFile.deleteOnExit();
-            ExportTask petriExportTask = new ExportTask(petriExporter, petri, petriFile.getAbsolutePath());
+            ExportTask petriExportTask = new ExportTask(petriExporter, petri, petriFile);
             Result<? extends ExportOutput> petriExportResult = taskManager.execute(
                     petriExportTask, "Exporting .g", subtaskMonitor);
 
@@ -102,13 +98,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionOutput> {
 
                 ExternalProcessOutput output = result.getPayload();
                 if (result.getOutcome() == Outcome.SUCCESS) {
-                    try {
-                        ByteArrayInputStream in = new ByteArrayInputStream(output.getStdout());
-                        final Fst fst = new SgImporter().importSG(in);
-                        return Result.success(new WriteSgConversionOutput(output, fst));
-                    } catch (DeserialisationException e) {
-                        return Result.exception(e);
-                    }
+                    return Result.success(new WriteSgConversionOutput(output));
                 }
                 if (result.getOutcome() == Outcome.CANCEL) {
                     return Result.cancelation();
@@ -128,7 +118,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionOutput> {
                             return Result.cancelation();
                         }
                     } else {
-                        return Result.failure(new WriteSgConversionOutput(output, null));
+                        return Result.failure(new WriteSgConversionOutput(output));
                     }
                 }
             }

@@ -57,7 +57,7 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
 
             // Generate .g for the model
             File netFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + format.getExtension());
-            ExportTask exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
+            ExportTask exportTask = new ExportTask(exporter, model, netFile);
             Result<? extends ExportOutput> exportResult = manager.execute(
                     exportTask, "Exporting .g", subtaskMonitor);
 
@@ -72,7 +72,7 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
                 Stg stg = StgUtils.loadStg(netFile);
                 MutexUtils.factoroutMutexs(stg, mutexes);
                 netFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + format.getExtension());
-                exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
+                exportTask = new ExportTask(exporter, model, netFile);
                 exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
 
                 if (exportResult.getOutcome() != Outcome.SUCCESS) {

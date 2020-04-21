@@ -17,21 +17,22 @@ import org.workcraft.shared.DataAccumulator;
 import org.workcraft.utils.ExecutableUtils;
 
 public class WriteSgTask implements Task<ExternalProcessOutput>, ExternalProcessListener {
+
     private final List<String> options;
     private final File inputFile;
     private final File outputFile;
-    private final File workingDirectory;
+    private final File directory;
 
     private ProgressMonitor<? super ExternalProcessOutput> monitor;
 
     private final DataAccumulator stdoutAccum = new DataAccumulator();
     private final DataAccumulator stderrAccum = new DataAccumulator();
 
-    public WriteSgTask(List<String> options, File inputFile, File outputFile, File workingDirectory) {
+    public WriteSgTask(List<String> options, File inputFile, File outputFile, File directory) {
         this.options = options;
         this.inputFile = inputFile;
         this.outputFile = outputFile;
-        this.workingDirectory = workingDirectory;
+        this.directory = directory;
     }
 
     @Override
@@ -62,7 +63,7 @@ public class WriteSgTask implements Task<ExternalProcessOutput>, ExternalProcess
             command.add(outputFile.getAbsolutePath());
         }
 
-        ExternalProcessTask task = new ExternalProcessTask(command, workingDirectory);
+        ExternalProcessTask task = new ExternalProcessTask(command, directory);
         Result<? extends ExternalProcessOutput> result = task.run(monitor);
         if (result.getOutcome() != Outcome.SUCCESS) {
             return result;

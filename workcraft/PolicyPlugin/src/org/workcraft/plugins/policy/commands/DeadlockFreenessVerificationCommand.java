@@ -17,7 +17,7 @@ public class DeadlockFreenessVerificationCommand extends AbstractVerificationCom
 
     @Override
     public String getDisplayName() {
-        return "Deadlock with bundels [MPSat]";
+        return "Deadlock with bundles [MPSat]";
     }
 
     @Override

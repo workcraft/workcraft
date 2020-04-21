@@ -1,7 +1,6 @@
 package org.workcraft.plugins.stg.utils;
 
 import org.workcraft.Framework;
-import org.workcraft.utils.WorkUtils;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -26,18 +25,12 @@ import org.workcraft.plugins.stg.converters.SignalStg;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.tasks.*;
-import org.workcraft.utils.ExportUtils;
-import org.workcraft.utils.FileUtils;
-import org.workcraft.utils.LogUtils;
-import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.awt.*;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.List;
 import java.util.Queue;
 import java.util.*;
@@ -219,17 +212,32 @@ public class StgUtils {
     }
 
     public static Stg importStg(File file) {
-        Stg result = null;
-        if (file != null) {
-            try {
-                FileInputStream is = new FileInputStream(file);
-                StgImporter importer = new StgImporter();
-                result = importer.importStg(is);
-            } catch (DeserialisationException | FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+        if (file == null) {
+            return null;
         }
-        return result;
+        try {
+            FileInputStream is = new FileInputStream(file);
+            return importStg(is);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Stg importStg(byte[] bytes) {
+        if (bytes == null) {
+            return null;
+        }
+        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        return importStg(is);
+    }
+
+    public static Stg importStg(InputStream is) {
+        StgImporter importer = new StgImporter();
+        try {
+            return importer.importStg(is);
+        } catch (DeserialisationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static Result<? extends ExportOutput> exportStg(Stg stg, File file, ProgressMonitor<?> monitor) {
@@ -241,7 +249,7 @@ public class StgUtils {
             throw new NoExporterException(stg, format);
         }
 
-        ExportTask exportTask = new ExportTask(exporter, stg, file.getAbsolutePath());
+        ExportTask exportTask = new ExportTask(exporter, stg, file);
         String description = "Exporting " + file.getAbsolutePath();
         SubtaskMonitor<Object> subtaskMonitor = null;
         if (monitor != null) {

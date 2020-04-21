@@ -105,9 +105,9 @@ public class ExternalProcess {
         this(command, null);
     }
 
-    public ExternalProcess(String[] command, String workingDirectoryPath) {
+    public ExternalProcess(String[] command, File directory) {
         processBuilder = new ProcessBuilder(command);
-        processBuilder.directory(workingDirectoryPath == null ? null : new File(workingDirectoryPath));
+        processBuilder.directory(directory);
     }
 
     private void outputData(byte[] data) {
