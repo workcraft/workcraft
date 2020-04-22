@@ -30,26 +30,26 @@ public class DfsPlugin implements Plugin {
         pm.registerExporter(VerilogExporter.class);
         pm.registerSettings(DfsSettings.class);
 
-        ScriptableCommandUtils.register(DfsToStgConversionCommand.class, "convertDfsToStg",
-                "convert the given DFS 'work' into a new STG work");
+        ScriptableCommandUtils.registerCommand(DfsToStgConversionCommand.class, "convertDfsToStg",
+                "convert the DFS 'work' into a new STG work");
 
-        ScriptableCommandUtils.register(DeadlockFreenessVerificationCommand.class, "checkDfsDeadlockFreeness",
+        ScriptableCommandUtils.registerCommand(DeadlockFreenessVerificationCommand.class, "checkDfsDeadlockFreeness",
                 "check the DFS 'work' for deadlock freeness");
-        ScriptableCommandUtils.register(OutputPersisitencyVerificationCommand.class, "checkDfsOutputPersistency",
+        ScriptableCommandUtils.registerCommand(OutputPersisitencyVerificationCommand.class, "checkDfsOutputPersistency",
                 "check the DFS 'work' for output persistency");
-        ScriptableCommandUtils.register(CombinedVerificationCommand.class, "checkDfsCombined",
+        ScriptableCommandUtils.registerCommand(CombinedVerificationCommand.class, "checkDfsCombined",
                 " combined check of the DFS 'work' for deadlock freeness and output persistency");
 
-        ScriptableCommandUtils.register(MergeComponentTransformationCommand.class, "transformDfsMergeComponent",
-                " transform the given DFS 'work' by merging selected components");
-        ScriptableCommandUtils.register(ContractComponentTransformationCommand.class, "transformDfsContractComponent",
-                " transform the given DFS 'work' by contracting selected components");
-        ScriptableCommandUtils.register(WaggingGenerator2WayCommand.class, "transformDfsWagging2Way",
-                "transform the given DFS 'work' by applying 2-way wagging to the selected pipeline section");
-        ScriptableCommandUtils.register(WaggingGenerator3WayCommand.class, "transformDfsWagging3Way",
-                "transform the given DFS 'work' by applying 3-way wagging to the selected pipeline section");
-        ScriptableCommandUtils.register(WaggingGenerator4WayCommand.class, "transformDfsWagging4Way",
-                "transform the given DFS 'work' by applying 4-way wagging to the selected pipeline section");
+        ScriptableCommandUtils.registerCommand(MergeComponentTransformationCommand.class, "transformDfsMergeComponent",
+                " transform the DFS 'work' by merging selected components");
+        ScriptableCommandUtils.registerCommand(ContractComponentTransformationCommand.class, "transformDfsContractComponent",
+                " transform the DFS 'work' by contracting selected components");
+        ScriptableCommandUtils.registerCommand(WaggingGenerator2WayCommand.class, "transformDfsWagging2Way",
+                "transform the DFS 'work' by applying 2-way wagging to the selected pipeline section");
+        ScriptableCommandUtils.registerCommand(WaggingGenerator3WayCommand.class, "transformDfsWagging3Way",
+                "transform the DFS 'work' by applying 3-way wagging to the selected pipeline section");
+        ScriptableCommandUtils.registerCommand(WaggingGenerator4WayCommand.class, "transformDfsWagging4Way",
+                "transform the DFS 'work' by applying 4-way wagging to the selected pipeline section");
         // Do not register generic WaggingGeneratorCommand as it requires user input
         pm.registerCommand(WaggingGeneratorCommand.class);
     }

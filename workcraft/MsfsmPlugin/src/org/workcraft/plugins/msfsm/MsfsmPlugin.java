@@ -21,7 +21,7 @@ public class MsfsmPlugin implements Plugin {
 
         pm.registerSettings(MsfsmSettings.class);
 
-        ScriptableCommandUtils.register(SyncFsmConversionCommand.class, "convertSyncFsmMsfsm",
+        ScriptableCommandUtils.registerCommand(SyncFsmConversionCommand.class, "convertSyncFsmMsfsm",
                 "convert Petri net 'work' into multiple synchronised FSMs using MSFSM backend");
     }
 

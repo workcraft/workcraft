@@ -4,6 +4,7 @@ helpRegex("export.*", "exportHelp.txt");
 helpRegex("insert.*", "insertHelp.txt");
 helpRegex("layout.*", "layoutHelp.txt");
 helpRegex("stat.*", "statHelp.txt");
+helpRegex("resolve.*", "resolveHelp.txt");
 helpRegex("synth.*", "synthHelp.txt");
 helpRegex("tag.*", "tagHelp.txt");
 helpRegex("transform.*", "transformHelp.txt");

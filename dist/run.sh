@@ -5,18 +5,17 @@ DOC_DIR="doc"
 TEMPLATE_DIR="template"
 RESULT_DIR="result"
 PLUGINS_DIR="workcraft"
-ALL_PLATFORMS="windows linux osx"
-DEFAULT_PLATFORM="all"
+PLATFORMS="windows linux osx"
 
 usage() {
     script_name="$(basename $0)"
     cat <<EOF
 $script_name: create a distribution for Workcraft as workcraft-TAG-PLATFORM archive
 
-Usage: $script_name [PLATFORMS] [-p DIR] [-t TAG] [f] [-h]
+Usage: $script_name [PLATFORMS] [-p DIR] [-t TAG] [-f] [-h]
 
-  PLATFORMS          distribution platforms [$ALL_PLATFORMS $DEFAULT_PLATFORM] ('$DEFAULT_PLATFORM' by default)
-  -p, --plugins DIR  additional plugins directory (only '$PLUGINS_DIR' by deafault)
+  PLATFORMS          distribution platforms [$PLATFORMS] (all by default)
+  -p, --plugins DIR  additional plugins directory (only '$PLUGINS_DIR' by default)
   -t, --tag TAG      user-defined tag (git tag is used by default)
   -f, --force        force removal of output dir
   -h, --help         print this help
@@ -45,11 +44,8 @@ copy_jars() {
     fi
 }
 
-# Change to Workcraft root directory
-cd "$(dirname "$0")/.."
-
 # Defaults
-platforms="$DEFAULT_PLATFORM"
+platforms=""
 plugins="$PLUGINS_DIR"
 tag="$(git describe --tags)"
 private=false
@@ -70,14 +66,19 @@ for param in "$@"; do
         -f | --force)
             force=true
             shift ;;
+        *)
+            platforms="$platforms $1"
+            shift ;;
     esac
 done
 
-if [ -z "$@" ] || [ "$@" = "all" ]; then
-    platforms="$allplatforms"
-else
-    platforms="$@"
+# If no platforms are specified, then use all platforms
+if [ -z "$platforms" ]; then
+    platforms="$PLATFORMS"
 fi
+
+# Change to Workcraft root directory
+cd "$(dirname "$0")/.."
 
 for platform in $platforms; do
 
@@ -142,5 +143,5 @@ for platform in $platforms; do
             ;;
     esac
 
-    cd ../..
+    cd ../../..
 done

@@ -2,7 +2,7 @@ package org.workcraft.tasks;
 
 public class Result<T> {
 
-    public enum Outcome {
+    enum Outcome {
         SUCCESS,
         CANCEL,
         FAILURE
@@ -36,6 +36,18 @@ public class Result<T> {
         this.payload = payload;
     }
 
+    public boolean isSuccess() {
+        return outcome == Outcome.SUCCESS;
+    }
+
+    public boolean isFailure() {
+        return outcome == Outcome.FAILURE;
+    }
+
+    public boolean isCancel() {
+        return outcome == Outcome.CANCEL;
+    }
+
     public Outcome getOutcome() {
         return outcome;
     }
@@ -48,11 +60,15 @@ public class Result<T> {
         return payload;
     }
 
+    public static <T> Result<T> success() {
+        return new Result<>(Outcome.SUCCESS);
+    }
+
     public static <T> Result<T> success(T payload) {
         return new Result<>(Outcome.SUCCESS, payload);
     }
 
-    public static <T> Result<T> cancelation() {
+    public static <T> Result<T> cancel() {
         return new Result<>(Outcome.CANCEL);
     }
 
@@ -66,6 +82,10 @@ public class Result<T> {
 
     public static <T> Result<T> exception(Throwable e) {
         return new Result<>(e);
+    }
+
+    public static <T> Result<T> exception(String msg) {
+        return exception(new Throwable(msg));
     }
 
 }

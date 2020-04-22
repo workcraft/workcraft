@@ -9,3 +9,8 @@ USC: false
 DI interface: true
 Normalcy: false
 Mutex implementability: null
+Redundancy of place '<d+,dtack+>': false
+Redundancy of places 'p1 p2': null
+Mutual exclusion of 'dsr' and 'dsw' (Signal assertion): true
+Mutual exclusion of 'dsr' and 'dsw' (REACH assertion): true
+Mutual exclusion of 'dsr' and 'dsw' (SPOT assertion): true

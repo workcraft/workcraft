@@ -10,8 +10,9 @@ import java.io.IOException;
 import java.util.List;
 
 public class ExternalProcessTask implements Task<ExternalProcessOutput>, ExternalProcessListener {
+
     private List<String> args;
-    private final File workingDir;
+    private final File directory;
     private boolean printStdout;
     private boolean printStderr;
 
@@ -23,13 +24,13 @@ public class ExternalProcessTask implements Task<ExternalProcessOutput>, Externa
     private final DataAccumulator stdoutAccum = new DataAccumulator();
     private final DataAccumulator stderrAccum = new DataAccumulator();
 
-    public ExternalProcessTask(List<String> args, File workingDir) {
-        this(args, workingDir, false, false);
+    public ExternalProcessTask(List<String> args, File directory) {
+        this(args, directory, false, false);
     }
 
-    public ExternalProcessTask(List<String> args, File workingDir, boolean printStdout, boolean printStderr) {
+    public ExternalProcessTask(List<String> args, File directory, boolean printStdout, boolean printStderr) {
         this.args = args;
-        this.workingDir = workingDir;
+        this.directory = directory;
         this.printStdout = printStdout;
         this.printStderr = printStderr;
     }
@@ -38,8 +39,7 @@ public class ExternalProcessTask implements Task<ExternalProcessOutput>, Externa
     public Result<? extends ExternalProcessOutput> run(ProgressMonitor<? super ExternalProcessOutput> monitor) {
         this.monitor = monitor;
 
-        String workingDirectoryPath = workingDir == null ? null : workingDir.getAbsolutePath();
-        ExternalProcess process = new ExternalProcess(args.toArray(new String[args.size()]), workingDirectoryPath);
+        ExternalProcess process = new ExternalProcess(args.toArray(new String[args.size()]), directory);
 
         process.addListener(this);
 
@@ -69,7 +69,7 @@ public class ExternalProcessTask implements Task<ExternalProcessOutput>, Externa
         }
 
         if (userCancelled) {
-            return Result.cancelation();
+            return Result.cancel();
         }
 
         ExternalProcessOutput output = new ExternalProcessOutput(

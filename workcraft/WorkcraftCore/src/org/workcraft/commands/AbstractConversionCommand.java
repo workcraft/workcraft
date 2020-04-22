@@ -26,6 +26,11 @@ public abstract class AbstractConversionCommand implements ScriptableCommand<Wor
     }
 
     @Override
+    public void run(WorkspaceEntry we) {
+        execute(we);
+    }
+
+    @Override
     public WorkspaceEntry execute(WorkspaceEntry we) {
         final ModelEntry meDst = convert(we.getModelEntry());
         if (meDst == null) {

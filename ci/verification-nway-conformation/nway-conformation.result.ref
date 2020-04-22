@@ -1,3 +1,5 @@
-block1.stg block2.stg block3.stg : true
-block2.stg block3.stg block1-bad.stg : false
-block1-bad.stg : null
+N-way conformation checks:
+  * block1:                   null
+  * block1 block2:            false
+  * block1 block2 block3:     true
+  * block1-bad block2 block3: false

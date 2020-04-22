@@ -2,6 +2,7 @@ package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
+import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
@@ -9,9 +10,8 @@ import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.tasks.StrictImplementationCheckTask;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
-import org.workcraft.plugins.mpsat.utils.MpsatUtils;
+import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainResultHandlingMonitor;
+import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.utils.StgUtils;
@@ -27,7 +27,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class StrictImplementationVerificationCommand extends AbstractVerificationCommand {
+public class StrictImplementationVerificationCommand extends AbstractVerificationCommand
+        implements ScriptableCommand<Boolean> {
 
     @Override
     public String getDisplayName() {
@@ -46,30 +47,27 @@ public class StrictImplementationVerificationCommand extends AbstractVerificatio
 
     @Override
     public void run(WorkspaceEntry we) {
-        queueVerification(we);
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
+        queueVerification(we, monitor);
     }
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        VerificationChainResultHandler monitor = queueVerification(we);
-        Result<? extends VerificationChainOutput> result = null;
-        if (monitor != null) {
-            result = monitor.waitResult();
-        }
-        return MpsatUtils.getChainOutcome(result);
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
+        queueVerification(we, monitor);
+        return monitor.waitForHandledResult();
     }
 
-    private VerificationChainResultHandler queueVerification(WorkspaceEntry we) {
-        VerificationChainResultHandler monitor = null;
-        if (checkPrerequisites(we)) {
+    private void queueVerification(WorkspaceEntry we, VerificationChainResultHandlingMonitor monitor) {
+        if (!checkPrerequisites(we)) {
+            monitor.isFinished(Result.failure());
+        } else {
             Framework framework = Framework.getInstance();
             TaskManager manager = framework.getTaskManager();
             StrictImplementationCheckTask task = new StrictImplementationCheckTask(we);
             String description = MpsatUtils.getToolchainDescription(we.getTitle());
-            monitor = new VerificationChainResultHandler(we);
             manager.queue(task, description, monitor);
         }
-        return monitor;
     }
 
     private boolean checkPrerequisites(WorkspaceEntry we) {

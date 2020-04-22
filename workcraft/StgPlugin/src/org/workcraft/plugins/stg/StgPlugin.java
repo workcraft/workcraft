@@ -43,37 +43,37 @@ public class StgPlugin implements Plugin {
         pm.registerExporter(LpnExporter.class);
         pm.registerImporter(LpnImporter.class);
 
-        ScriptableCommandUtils.register(MirrorSignalTransformationCommand.class, "transformStgMirrorSignal",
-                "transform the given STG 'work' by mirroring selected (or all) signals");
-        ScriptableCommandUtils.register(MirrorTransitionTransformationCommand.class, "transformStgMirrorTransition",
-                "transform the given STG 'work' by mirroring selected (or all) transition sign");
-        ScriptableCommandUtils.register(ImplicitPlaceTransformationCommand.class, "transformStgImplicitPlace",
-                "transform the given STG 'work' by making selected (or all) places implicit");
-        ScriptableCommandUtils.register(ExplicitPlaceTransformationCommand.class, "transformStgExplicitPlace",
-                "transform the given STG 'work' by making selected (or all) places explicit");
-        ScriptableCommandUtils.register(SignalToDummyTransitionTransformationCommand.class, "transformStgSignalToDummyTransition",
-                "transform the given STG 'work' by converting selected signal transitions to dummies");
-        ScriptableCommandUtils.register(DummyToSignalTransitionTransformationCommand.class, "transformStgDummyToSignalTransition",
-                "transform the given STG 'work' by converting selected dummies to signal transitions");
-        ScriptableCommandUtils.register(ContractNamedTransitionTransformationCommand.class, "transformStgContractNamedTransition",
-                "transform the given STG 'work' by contracting a selected transition");
-        ScriptableCommandUtils.register(MergeTransitionTransformationCommand.class, "transformStgMergeTransition",
-                "transform the given STG 'work' by merging selected transitions");
-        ScriptableCommandUtils.register(InsertDummyTransformationCommand.class, "transformStgInsertDummy",
-                "transform the given STG 'work' by inserting dummies into selected arcs");
-        ScriptableCommandUtils.register(ExpandHandshakeTransformationCommand.class, "transformStgExpandHandshake",
-                "transform the given STG 'work' by expanding selected handshake transitions");
-        ScriptableCommandUtils.register(ExpandHandshakeReqAckTransformationCommand.class, "transformStgExpandHandshakeReqAck",
-                "transform the given STG 'work' by expanding selected handshake transitions by adding _req and _ack suffixes");
-        ScriptableCommandUtils.register(SelectAllSignalTransitionsTransformationCommand.class, "transformStgSelectAllSignalTransitions",
-                "select all transitions of selected signals in the given STG 'work'");
+        ScriptableCommandUtils.registerCommand(MirrorSignalTransformationCommand.class, "transformStgMirrorSignal",
+                "transform the STG 'work' by mirroring selected (or all) signals");
+        ScriptableCommandUtils.registerCommand(MirrorTransitionTransformationCommand.class, "transformStgMirrorTransition",
+                "transform the STG 'work' by mirroring selected (or all) transition sign");
+        ScriptableCommandUtils.registerCommand(ImplicitPlaceTransformationCommand.class, "transformStgImplicitPlace",
+                "transform the STG 'work' by making selected (or all) places implicit");
+        ScriptableCommandUtils.registerCommand(ExplicitPlaceTransformationCommand.class, "transformStgExplicitPlace",
+                "transform the STG 'work' by making selected (or all) places explicit");
+        ScriptableCommandUtils.registerCommand(SignalToDummyTransitionTransformationCommand.class, "transformStgSignalToDummyTransition",
+                "transform the STG 'work' by converting selected signal transitions to dummies");
+        ScriptableCommandUtils.registerCommand(DummyToSignalTransitionTransformationCommand.class, "transformStgDummyToSignalTransition",
+                "transform the STG 'work' by converting selected dummies to signal transitions");
+        ScriptableCommandUtils.registerCommand(ContractNamedTransitionTransformationCommand.class, "transformStgContractNamedTransition",
+                "transform the STG 'work' by contracting a selected transition");
+        ScriptableCommandUtils.registerCommand(MergeTransitionTransformationCommand.class, "transformStgMergeTransition",
+                "transform the STG 'work' by merging selected transitions");
+        ScriptableCommandUtils.registerCommand(InsertDummyTransformationCommand.class, "transformStgInsertDummy",
+                "transform the STG 'work' by inserting dummies into selected arcs");
+        ScriptableCommandUtils.registerCommand(ExpandHandshakeTransformationCommand.class, "transformStgExpandHandshake",
+                "transform the STG 'work' by expanding selected handshake transitions");
+        ScriptableCommandUtils.registerCommand(ExpandHandshakeReqAckTransformationCommand.class, "transformStgExpandHandshakeReqAck",
+                "transform the STG 'work' by expanding selected handshake transitions by adding _req and _ack suffixes");
+        ScriptableCommandUtils.registerCommand(SelectAllSignalTransitionsTransformationCommand.class, "transformStgSelectAllSignalTransitions",
+                "select all transitions of selected signals in the STG 'work'");
 
-        ScriptableCommandUtils.register(PetriToStgConversionCommand.class, "convertPetriToStg",
-                "convert the given Petri net 'work' into a new STG work");
-        ScriptableCommandUtils.register(StgToPetriConversionCommand.class, "convertStgToPetri",
-                "convert the given STG 'work' into a new Petri net work");
+        ScriptableCommandUtils.registerCommand(PetriToStgConversionCommand.class, "convertPetriToStg",
+                "convert the Petri net 'work' into a new STG work");
+        ScriptableCommandUtils.registerCommand(StgToPetriConversionCommand.class, "convertStgToPetri",
+                "convert the STG 'work' into a new Petri net work");
 
-        ScriptableCommandUtils.register(StgStatisticsCommand.class, "statStg",
+        ScriptableCommandUtils.registerCommand(StgStatisticsCommand.class, "statStg",
                 "advanced complexity estimates for the STG 'work'");
     }
 

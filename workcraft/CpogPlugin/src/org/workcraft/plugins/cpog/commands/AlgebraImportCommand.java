@@ -4,7 +4,6 @@ import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.plugins.cpog.tools.CpogSelectionTool;
-import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
@@ -20,21 +19,17 @@ public class AlgebraImportCommand extends AbstractAlgebraCommand {
     @Override
     public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
-        if (!framework.isInGuiMode()) {
-            LogUtils.logError("Tool '" + getClass().getSimpleName() + "' only works in GUI mode.");
-        } else {
-            we.captureMemento();
-            JFileChooser chooser = new JFileChooser();
-            if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-                final MainWindow mainWindow = framework.getMainWindow();
-                final Toolbox toolbox = mainWindow.getCurrentToolbox();
-                final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
-                File file = chooser.getSelectedFile();
-                if (tool.insertCpogFromFile(file)) {
-                    we.saveMemento();
-                } else {
-                    we.cancelMemento();
-                }
+        we.captureMemento();
+        JFileChooser chooser = new JFileChooser();
+        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            final MainWindow mainWindow = framework.getMainWindow();
+            final Toolbox toolbox = mainWindow.getCurrentToolbox();
+            final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
+            File file = chooser.getSelectedFile();
+            if (tool.insertCpogFromFile(file)) {
+                we.saveMemento();
+            } else {
+                we.cancelMemento();
             }
         }
     }

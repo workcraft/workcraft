@@ -9,7 +9,6 @@ import org.workcraft.plugins.msfsm.MsfsmSettings;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.*;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.*;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -43,15 +42,11 @@ public class ConversionTask implements Task<ConversionOutput>, ExternalProcessLi
         if (MsfsmSettings.getAdvancedMode()) {
             String tmp = DialogUtils.showInput("Additional parameters for MSFSM:", extraArgs);
             if (tmp == null) {
-                return Result.cancelation();
+                return Result.cancel();
             }
             extraArgs = tmp;
         }
-        for (String arg : extraArgs.split("\\s")) {
-            if (!arg.isEmpty()) {
-                command.add(arg);
-            }
-        }
+        command.addAll(TextUtils.splitWords(extraArgs));
 
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
@@ -74,20 +69,18 @@ public class ConversionTask implements Task<ConversionOutput>, ExternalProcessLi
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
 
         try {
-            if (result.getOutcome() == Outcome.SUCCESS) {
-                ExternalProcessOutput output = result.getPayload();
-                if (output != null) {
-                    if (output.getReturnCode() == 0) {
-                        String ext = SgFormat.getInstance().getExtension();
-                        File[] files = directory.listFiles(file -> file.getName().endsWith(ext));
-                        return Result.success(new ConversionOutput(output, files));
-                    }
-                    return Result.failure(new ConversionOutput(output, null));
+            ExternalProcessOutput output = result.getPayload();
+            if (result.isSuccess() && (output != null)) {
+                if (output.getReturnCode() == 0) {
+                    String ext = SgFormat.getInstance().getExtension();
+                    File[] files = directory.listFiles(file -> file.getName().endsWith(ext));
+                    return Result.success(new ConversionOutput(output, files));
                 }
+                return Result.failure(new ConversionOutput(output, null));
             }
 
-            if (result.getOutcome() == Outcome.CANCEL) {
-                return Result.cancelation();
+            if (result.isCancel()) {
+                return Result.cancel();
             }
 
             return Result.exception(result.getCause());
@@ -121,9 +114,9 @@ public class ConversionTask implements Task<ConversionOutput>, ExternalProcessLi
             throw new NoExporterException(model, format);
         }
         File file = new File(directory, fileName);
-        ExportTask exportTask = new ExportTask(exporter, model, file.getAbsolutePath());
+        ExportTask exportTask = new ExportTask(exporter, model, file);
         Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
-        if (exportResult.getOutcome() != Outcome.SUCCESS) {
+        if (!exportResult.isSuccess()) {
             throw new RuntimeException("Unable to export the model.");
         }
         return file;

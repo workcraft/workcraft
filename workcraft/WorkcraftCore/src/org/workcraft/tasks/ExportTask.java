@@ -4,7 +4,6 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.interop.Exporter;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.ExportUtils;
 import org.workcraft.utils.LogUtils;
 
@@ -17,10 +16,6 @@ public class ExportTask implements Task<ExportOutput> {
     private final Exporter exporter;
     private final Model model;
     private final File file;
-
-    public ExportTask(Exporter exporter, Model model, String path) {
-        this(exporter, model, new File(path));
-    }
 
     public ExportTask(Exporter exporter, Model model, File file) {
         this.exporter = exporter;
@@ -72,7 +67,7 @@ public class ExportTask implements Task<ExportOutput> {
             }
         }
 
-        return new Result<>(Outcome.SUCCESS, new ExportOutput(file));
+        return Result.success(new ExportOutput(file));
     }
 
 }

@@ -2,9 +2,9 @@ package org.workcraft.commands;
 
 import org.workcraft.utils.CommandUtils;
 
-public abstract class AbstractVerificationCommand implements ScriptableCommand<Boolean>, MenuOrdering {
+public abstract class AbstractVerificationCommand implements Command, MenuOrdering {
 
-    public static final String SECTION_TITLE = CommandUtils.makePromotedSectionTitle("Verification", 3);
+    private static final String SECTION_TITLE = CommandUtils.makePromotedSectionTitle("Verification", 3);
 
     @Override
     public final String getSection() {

@@ -3,7 +3,6 @@ package org.workcraft.plugins.plato.exceptions;
 import org.workcraft.plugins.plato.PlatoSettings;
 import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
 
@@ -18,7 +17,7 @@ public class PlatoException extends Exception {
 
     public void handleConceptsError() {
         try {
-            if (result.getOutcome() == Outcome.FAILURE) {
+            if (result.isFailure()) {
                 String errors = result.getPayload().getStderrString();
                 LogUtils.logStderr(errors);
                 if (errors.contains("<no location info>")) {

@@ -4,7 +4,7 @@ import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.builtin.settings.AbstractToolSettings;
-import org.workcraft.utils.DesktopApi;
+import org.workcraft.utils.BackendUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -22,12 +22,12 @@ public class PunfSettings extends AbstractToolSettings {
     private static final String keyLtl2tgbaCommand = prefix + ".ltl2tgbaCommand";
     private static final String keyShowSpotInMenu = prefix + ".showSpotInMenu";
 
-    private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\UnfoldingTools\\punf.exe" : "tools/UnfoldingTools/punf";
+    private static final String defaultCommand = BackendUtils.getToolPath("UnfoldingTools", "punf");
     private static final String defaultArgs = "-r";
     private static final Boolean defaultPrintStdout = true;
     private static final Boolean defaultPrintStderr = true;
     private static final Boolean defaultUseMciCsc = true;
-    private static final String defaultLtl2tgbaCommand = DesktopApi.getOs().isWindows() ? "tools\\Spot\\ltl2tgba.exe" : "tools/Spot/ltl2tgba";
+    private static final String defaultLtl2tgbaCommand = BackendUtils.getToolPath("Spot", "ltl2tgba");
     private static final Boolean defaultShowSpotInMenu = false;
 
 

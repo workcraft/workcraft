@@ -4,30 +4,38 @@ checkCircuitConformation(work) - check the Circuit 'work' for conformation to en
 checkCircuitCycles(work) - check if the Circuit 'work' is free from cyclic paths
 checkCircuitDeadlockFreeness(work) - check the Circuit 'work' for deadlock freeness
 checkCircuitOutputPersistency(work) - check the Circuit 'work' for output persistency
+checkCircuitReachAssertion(work, data) - check the Circuit 'work' for REACH assertion 'data'
 checkCircuitReset(work) - check if the Circuit 'work' is correctly initialised via input ports
+checkCircuitSignalAssertion(work, data) - check the Circuit 'work' for signal assertion 'data'
 checkCircuitStrictImplementation(work) - check the Circuit 'work' for strict implementation of its signals according to the environment
 checkDfsCombined(work) -  combined check of the DFS 'work' for deadlock freeness and output persistency
 checkDfsDeadlockFreeness(work) - check the DFS 'work' for deadlock freeness
 checkDfsOutputPersistency(work) - check the DFS 'work' for output persistency
-checkFsmDeadlockFreeness(work) - check the FSM or FST 'work' for deadlock freeness
-checkFsmDeterminism(work) - check the FSM or FST 'work' for determinism
-checkFsmReachability(work) - check the FSM or FST 'work' for reachability of all states
-checkFsmReversibility(work) - check the FSM or FST 'work' for reversibility of all states
+checkFsmDeadlockFreeness(work) - check the FSM/FST 'work' for deadlock freeness
+checkFsmDeterminism(work) - check the FSM/FST 'work' for determinism
+checkFsmReachability(work) - check the FSM/FST 'work' for reachability of all states
+checkFsmReversibility(work) - check the FSM/FST 'work' for reversibility of all states
 checkGraphReachability(work) - check the Graph 'work' for reachability of all its nodes
 checkPolicyDeadlockFreeness(work) - check the Policy net 'work' for deadlock freeness
 checkStgCombined(work) - combined check of the STG 'work' for consistency, deadlock freeness, input properness, output persistency, and mutex implementability
+checkStgConformation(work, data) - check the STG 'work' for conformation to the STG specified by file name 'data'
 checkStgConsistency(work) - check the STG 'work' for consistency
 checkStgCsc(work) - check the STG 'work' for complete state coding
 checkStgDeadlockFreeness(work) - check the STG (or Petri net) 'work' for deadlock freeness
 checkStgDiInterface(work) - check the STG 'work' for delay-insensitive interface
+checkStgHandshakeProtocol(work, data) - check the STG 'work' for following a handshake protocol as specified by 'data', e.g. '{req1 req2} {ack12}'
 checkStgInputProperness(work) - check the STG 'work' for input properness
 checkStgMutexImplementability(work) - check the STG 'work' for implementability of its mutex places
 checkStgNormalcy(work) - check the STG 'work' for normalcy
-checkStgNwayConformation(work) - check all the open STG works for N-way conformation ('null' should be passed as the parameter)
+checkStgNwayConformation(work, data) - check the STGs specified by space-separated list of file names 'data' for N-way conformation ('work' parameter is ignored)
 checkStgOutputDeterminacy(work) - check the STG 'work' for output determinacy
 checkStgOutputPersistency(work) - check the STG 'work' for output persistency
+checkStgPlaceRedundancy(work, data) - check the STG (or Petri net) 'work' for redundancy of places in space-separated list 'data'
+checkStgReachAssertion(work, data) - check the STG 'work' for REACH assertion 'data'
+checkStgSignalAssertion(work, data) - check the STG 'work' for signal assertion 'data'
+checkStgSpotAssertion(work, data) - check the STG 'work' for SPOT assertion 'data'
 checkStgUsc(work) - check the STG 'work' for unique state coding
-checkWtgInputProperness(work) - check the given WTG 'work' for input properness
-checkWtgReachability(work) - check the given WTG 'work' for reachability of nodes and transitions
-checkWtgSoundness(work) - check the given WTG 'work' for soundness and consistency
-checkWtgSynthesisGuidelines(work) - check the given WTG 'work' for compliance with the synthesis guidelines
+checkWtgInputProperness(work) - check the WTG 'work' for input properness
+checkWtgReachability(work) - check the WTG 'work' for reachability of nodes and transitions
+checkWtgSoundness(work) - check the WTG 'work' for soundness and consistency
+checkWtgSynthesisGuidelines(work) - check the WTG 'work' for compliance with the synthesis guidelines

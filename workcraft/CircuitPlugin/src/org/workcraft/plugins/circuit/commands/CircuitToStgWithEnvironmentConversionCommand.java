@@ -44,40 +44,31 @@ public class CircuitToStgWithEnvironmentConversionCommand extends CircuitToStgCo
     }
 
     private static Stg createSystemStg(Stg devStg, File envWorkFile, String title) {
-        Stg systemStg = null;
         String prefix = FileUtils.getTempPrefix(title);
         File directory = FileUtils.createTempDirectory(prefix);
-        try {
-            File devStgFile = exportDevStg(devStg, directory);
-            devStgFile.deleteOnExit();
-            // Make sure that input signals of the device STG are also inputs in the environment STG
-            Set<String> inputSignalNames = devStg.getSignalNames(Signal.Type.INPUT, null);
-            Set<String> outputSignalNames = devStg.getSignalNames(Signal.Type.OUTPUT, null);
-            File envStgFile = exportEnvStg(envWorkFile, inputSignalNames, outputSignalNames, directory);
-            if (envStgFile != null) {
-                envStgFile.deleteOnExit();
-            }
-            // Generating .g for the whole system (circuit and environment)
-            String stgFileExtension = StgFormat.getInstance().getExtension();
-            File sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
-            sysStgFile.deleteOnExit();
-            Result<? extends PcompOutput> pcompResult = CircuitStgUtils.composeDevWithEnv(
-                    devStgFile, envStgFile, sysStgFile, null, directory, null);
-
-            switch (pcompResult.getOutcome()) {
-            case SUCCESS:
-                break;
-            case CANCEL:
-                sysStgFile = null;
-                break;
-            case FAILURE:
-                throw new RuntimeException("Composition failed:\n" + pcompResult.getCause());
-            }
-            systemStg = StgUtils.loadStg(sysStgFile);
-        } catch (Throwable e) {
-            System.err.println(e.getMessage());
+        File devStgFile = exportDevStg(devStg, directory);
+        devStgFile.deleteOnExit();
+        // Make sure that input signals of the device STG are also inputs in the environment STG
+        Set<String> inputSignalNames = devStg.getSignalNames(Signal.Type.INPUT, null);
+        Set<String> outputSignalNames = devStg.getSignalNames(Signal.Type.OUTPUT, null);
+        File envStgFile = exportEnvStg(envWorkFile, inputSignalNames, outputSignalNames, directory);
+        if (envStgFile != null) {
+            envStgFile.deleteOnExit();
         }
-        return systemStg;
+        // Generating .g for the whole system (circuit and environment)
+        Result<? extends PcompOutput> pcompResult = CircuitStgUtils.composeDevWithEnv(
+                devStgFile, envStgFile, directory, null);
+
+        if (pcompResult.isSuccess()) {
+            File sysStgFile = pcompResult.getPayload().getOutputFile();
+            return StgUtils.loadStg(sysStgFile);
+        }
+
+        if (pcompResult.isFailure()) {
+            throw new RuntimeException("Composition failed:\n" + pcompResult.getCause());
+        }
+
+        return null;
     }
 
     private static File exportEnvStg(File envFile, Set<String> inputSignalNames, Set<String> outputSignalNames,
@@ -102,15 +93,14 @@ public class CircuitToStgWithEnvironmentConversionCommand extends CircuitToStgCo
         File stgFile = new File(directory, fileName);
         Result<? extends ExportOutput> exportResult = StgUtils.exportStg(stg, stgFile, null);
 
-        switch (exportResult.getOutcome()) {
-        case SUCCESS:
-            break;
-        case CANCEL:
-            stgFile = null;
-            break;
-        case FAILURE:
+        if (exportResult.isFailure()) {
             throw new RuntimeException("Export failed for file '" + fileName + "':\n" + exportResult.getCause());
         }
+
+        if (exportResult.isCancel()) {
+            stgFile = null;
+        }
+
         return stgFile;
     }
 

@@ -1,10 +1,5 @@
 package org.workcraft.plugins.cpog.tasks;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-
-import javax.swing.SwingUtilities;
-
 import org.workcraft.Framework;
 import org.workcraft.Info;
 import org.workcraft.dom.visual.VisualModel;
@@ -18,13 +13,16 @@ import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.tasks.BasicProgressMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class ScencoResultHandler extends BasicProgressMonitor<ScencoResult> {
+import javax.swing.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+
+public class ScencoResultHandler extends BasicProgressMonitor<ScencoOutput> {
     public static final String INTERNAL_ERROR_MSG = "Internal error. Contact developers at " + Info.getHomepage();
 
     private ScencoExternalToolTask scenco;
@@ -38,9 +36,9 @@ public class ScencoResultHandler extends BasicProgressMonitor<ScencoResult> {
     }
 
     @Override
-    public void isFinished(Result<? extends ScencoResult> result) {
+    public void isFinished(Result<? extends ScencoOutput> result) {
         super.isFinished(result);
-        if (result.getOutcome() == Outcome.SUCCESS) {
+        if (result.isSuccess()) {
             String[] stdoutLines = result.getPayload().getStdout().split("\n");
             String resultDirectory = result.getPayload().getResultDirectory();
             solver.handleResult(stdoutLines, resultDirectory);
@@ -68,7 +66,7 @@ public class ScencoResultHandler extends BasicProgressMonitor<ScencoResult> {
                     throw new RuntimeException(e);
                 }
             }
-        } else if (result.getOutcome() == Outcome.FAILURE) {
+        } else if (result.isFailure()) {
             final String errorMessage = getErrorMessage(result.getPayload());
 
             // In case of an internal error, activate automatically verbose mode
@@ -89,15 +87,15 @@ public class ScencoResultHandler extends BasicProgressMonitor<ScencoResult> {
     }
 
     // Get the error from the STDOUT of SCENCO
-    private String getErrorMessage(ScencoResult scencoResult) {
+    private String getErrorMessage(ScencoOutput scencoOutput) {
 
         // SCENCO accessing error
-        if (scencoResult.getStdout().equals(ScencoSolver.ACCESS_SCENCO_ERROR)) {
-            return scencoResult.getError();
+        if (scencoOutput.getStdout().equals(ScencoSolver.ACCESS_SCENCO_ERROR)) {
+            return scencoOutput.getError();
         }
 
         // SCENCO known error
-        String[] sentence = scencoResult.getStdout().split("\n");
+        String[] sentence = scencoOutput.getStdout().split("\n");
         int i = 0;
         for (i = 0; i < sentence.length; i++) {
             if (sentence[i].contains(".error")) {

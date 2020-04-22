@@ -11,6 +11,7 @@ import org.workcraft.plugins.petrify.commands.ComplexGateSynthesisCommand;
 import org.workcraft.plugins.petrify.commands.GeneralisedCelementSynthesisCommand;
 import org.workcraft.plugins.petrify.commands.StandardCelementSynthesisCommand;
 import org.workcraft.plugins.petrify.commands.TechnologyMappingSynthesisCommand;
+import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.PackageUtils;
 
@@ -20,8 +21,8 @@ public class SynthesisCommandsTests {
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
-        PetrifySettings.setCommand(TestUtils.getToolPath("PetrifyTools", "petrify"));
-        CircuitSettings.setGateLibrary(TestUtils.getLibraryPath("workcraft.lib"));
+        PetrifySettings.setCommand(BackendUtils.getTemplateToolPath("PetrifyTools", "petrify"));
+        CircuitSettings.setGateLibrary(BackendUtils.getTemplateLibraryPath("workcraft.lib"));
     }
 
     @Test

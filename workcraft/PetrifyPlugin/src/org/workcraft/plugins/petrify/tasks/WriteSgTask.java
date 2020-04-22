@@ -1,37 +1,33 @@
 package org.workcraft.plugins.petrify.tasks;
 
+import org.workcraft.interop.ExternalProcessListener;
+import org.workcraft.plugins.petrify.PetrifySettings;
+import org.workcraft.shared.DataAccumulator;
+import org.workcraft.tasks.*;
+import org.workcraft.utils.ExecutableUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.workcraft.interop.ExternalProcessListener;
-import org.workcraft.plugins.petrify.PetrifySettings;
-import org.workcraft.tasks.ExternalProcessOutput;
-import org.workcraft.tasks.ExternalProcessTask;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.tasks.Task;
-import org.workcraft.shared.DataAccumulator;
-import org.workcraft.utils.ExecutableUtils;
-
 public class WriteSgTask implements Task<ExternalProcessOutput>, ExternalProcessListener {
+
     private final List<String> options;
     private final File inputFile;
     private final File outputFile;
-    private final File workingDirectory;
+    private final File directory;
 
     private ProgressMonitor<? super ExternalProcessOutput> monitor;
 
     private final DataAccumulator stdoutAccum = new DataAccumulator();
     private final DataAccumulator stderrAccum = new DataAccumulator();
 
-    public WriteSgTask(List<String> options, File inputFile, File outputFile, File workingDirectory) {
+    public WriteSgTask(List<String> options, File inputFile, File outputFile, File directory) {
         this.options = options;
         this.inputFile = inputFile;
         this.outputFile = outputFile;
-        this.workingDirectory = workingDirectory;
+        this.directory = directory;
     }
 
     @Override
@@ -62,9 +58,9 @@ public class WriteSgTask implements Task<ExternalProcessOutput>, ExternalProcess
             command.add(outputFile.getAbsolutePath());
         }
 
-        ExternalProcessTask task = new ExternalProcessTask(command, workingDirectory);
+        ExternalProcessTask task = new ExternalProcessTask(command, directory);
         Result<? extends ExternalProcessOutput> result = task.run(monitor);
-        if (result.getOutcome() != Outcome.SUCCESS) {
+        if (!result.isSuccess()) {
             return result;
         }
 

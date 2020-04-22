@@ -10,10 +10,9 @@ import org.workcraft.plugins.cpog.CpogDescriptor;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.VisualCpogDescriptor;
 import org.workcraft.plugins.cpog.tools.CpogSelectionTool;
-import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.BasicProgressMonitor;
+import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -38,7 +37,7 @@ public class PGMinerResultHandler extends BasicProgressMonitor<ExternalProcessOu
     @Override
     public void isFinished(final Result<? extends ExternalProcessOutput> result) {
         super.isFinished(result);
-        if (result.getOutcome() == Outcome.FAILURE) {
+        if (result.isFailure()) {
             DialogUtils.showError("PGMiner could not run, concurrency extraction failed.");
         } else {
             try {

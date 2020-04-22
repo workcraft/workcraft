@@ -1,11 +1,10 @@
 package org.workcraft.gui.tasks;
 
-import javax.swing.SwingUtilities;
-
 import org.workcraft.tasks.BasicProgressMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
+
+import javax.swing.*;
 
 public class TaskFailureNotifier extends BasicProgressMonitor<Object> {
     private final String description;
@@ -23,7 +22,7 @@ public class TaskFailureNotifier extends BasicProgressMonitor<Object> {
     @Override
     public void isFinished(final Result<? extends Object> result) {
         super.isFinished(result);
-        if (result.getOutcome() == Outcome.FAILURE) {
+        if (result.isFailure()) {
             SwingUtilities.invokeLater(() -> {
                 String message = "Task '" + description + "' has failed to complete as expected.";
                 if (result.getCause() != null) {

@@ -3,15 +3,15 @@ package org.workcraft.commands;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.utils.CommandUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.Collection;
 import java.util.HashSet;
 
 public abstract class AbstractTransformationCommand implements ScriptableCommand<Void>, MenuOrdering {
 
-    public static final String SECTION_TITLE = CommandUtils.makePromotedSectionTitle("Transformation", 2);
+    private static final String SECTION_TITLE = CommandUtils.makePromotedSectionTitle("Transformation", 2);
 
     @Override
     public final String getSection() {
@@ -29,13 +29,18 @@ public abstract class AbstractTransformationCommand implements ScriptableCommand
     }
 
     @Override
-    public Void execute(WorkspaceEntry we) {
+    public void run(WorkspaceEntry we) {
         VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
         Collection<? extends VisualNode> nodes = collect(visualModel);
         if (!nodes.isEmpty()) {
             we.saveMemento();
             transform(visualModel, nodes);
         }
+    }
+
+    @Override
+    public Void execute(WorkspaceEntry we) {
+        run(we);
         return null;
     }
 

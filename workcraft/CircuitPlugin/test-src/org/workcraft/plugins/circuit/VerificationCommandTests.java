@@ -6,9 +6,10 @@ import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.commands.*;
-import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
+import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.punf.PunfSettings;
+import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -20,9 +21,9 @@ public class VerificationCommandTests {
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
-        PcompSettings.setCommand(TestUtils.getToolPath("UnfoldingTools", "pcomp"));
-        PunfSettings.setCommand(TestUtils.getToolPath("UnfoldingTools", "punf"));
-        MpsatVerificationSettings.setCommand(TestUtils.getToolPath("UnfoldingTools", "mpsat"));
+        PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp"));
+        PunfSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "punf"));
+        MpsatVerificationSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
     }
 
     @Test

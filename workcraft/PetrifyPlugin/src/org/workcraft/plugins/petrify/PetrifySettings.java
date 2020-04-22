@@ -4,7 +4,7 @@ import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.builtin.settings.AbstractToolSettings;
-import org.workcraft.utils.DesktopApi;
+import org.workcraft.utils.BackendUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class PetrifySettings extends AbstractToolSettings {
     private static final String keyPrintStderr = prefix + ".printStderr";
     private static final String keyOpenSynthesisStg = prefix + ".openSynthesisStg";
 
-    private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\PetrifyTools\\petrify.exe" : "tools/PetrifyTools/petrify";
+    private static final String defaultCommand = BackendUtils.getToolPath("PetrifyTools", "petrify");
     private static final String defaultArgs = "";
     private static final boolean defaultAdvancedMode = false;
     private static final boolean defaultWriteLog = true;

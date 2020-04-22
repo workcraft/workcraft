@@ -9,13 +9,12 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class ResetActiveLowInsertionCommand extends AbstractInsertionCommand {
 
     @Override
-    public Void execute(WorkspaceEntry we) {
+    public void run(WorkspaceEntry we) {
         if (isApplicableTo(we) && VerificationUtils.checkCircuitHasComponents(we)) {
             we.saveMemento();
             VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
             ResetUtils.insertReset(circuit, true);
         }
-        return null;
     }
 
 }

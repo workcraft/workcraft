@@ -4,33 +4,40 @@ import org.workcraft.tasks.ExternalProcessOutput;
 
 public class SynthesisOutput extends ExternalProcessOutput {
 
-    private final String equations;
-    private final String verilog;
-    private final String log;
-    private final String stg;
+    private final byte[] verilogBytes;
+    private final byte[] stgBytes;
 
-    public SynthesisOutput(ExternalProcessOutput output, String log, String equations, String verilog, String stg) {
+    private String log;
+    private String equations;
+
+    public SynthesisOutput(ExternalProcessOutput output, byte[] verilogBytes, byte[] stgBytes) {
         super(output.getReturnCode(), output.getStdout(), output.getStderr());
+        this.verilogBytes = verilogBytes;
+        this.stgBytes = stgBytes;
+    }
+
+    public byte[] getVerilogBytes() {
+        return this.verilogBytes;
+    }
+
+    public byte[] getStgBytes() {
+        return this.stgBytes;
+    }
+
+    public void setLog(String log) {
         this.log = log;
-        this.equations = equations;
-        this.verilog = verilog;
-        this.stg = stg;
     }
 
     public String getLog() {
-        return this.log;
+        return log;
+    }
+
+    public void setEquations(String equations) {
+        this.equations = equations;
     }
 
     public String getEquation() {
-        return this.equations;
-    }
-
-    public String getVerilog() {
-        return this.verilog;
-    }
-
-    public String getStg() {
-        return this.stg;
+        return equations;
     }
 
 }

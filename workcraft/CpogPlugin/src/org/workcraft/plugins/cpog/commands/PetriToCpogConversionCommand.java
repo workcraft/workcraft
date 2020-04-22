@@ -33,12 +33,12 @@ public class PetriToCpogConversionCommand extends AbstractConversionCommand {
             return null;
         }
         final MainWindow mainWindow = Framework.getInstance().getMainWindow();
-        PetriToCpogParameters settings = new PetriToCpogParameters();
-        PetriToCpogDialog dialog = new PetriToCpogDialog(mainWindow, settings);
+        PetriToCpogParameters parameters = new PetriToCpogParameters();
+        PetriToCpogDialog dialog = new PetriToCpogDialog(mainWindow, parameters);
         if (dialog.reveal()) {
             VisualPetri src = me.getAs(VisualPetri.class);
             PetriToCpogConverter converter = new PetriToCpogConverter(src);
-            VisualCpog dst = converter.run(settings);
+            VisualCpog dst = converter.run(parameters);
             return new ModelEntry(new CpogDescriptor(), dst);
         }
         return null;

@@ -2,6 +2,7 @@ package org.workcraft.plugins.graph.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
+import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SelectionHelper;
@@ -19,7 +20,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class ReachabilityVerificationCommand extends AbstractVerificationCommand {
+public class ReachabilityVerificationCommand extends AbstractVerificationCommand implements ScriptableCommand<Boolean> {
 
     private static final String TITLE = "Verification result";
 
@@ -31,6 +32,11 @@ public class ReachabilityVerificationCommand extends AbstractVerificationCommand
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.isApplicable(we, Graph.class);
+    }
+
+    @Override
+    public void run(WorkspaceEntry we) {
+        execute(we);
     }
 
     @Override

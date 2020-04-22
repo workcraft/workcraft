@@ -32,26 +32,26 @@ public class PetriPlugin implements Plugin {
         pm.registerXmlSerialiser(ReadArcSerialiser.class);
         pm.registerXmlDeserialiser(ReadArcDeserialiser.class);
 
-        ScriptableCommandUtils.register(ContractTransitionTransformationCommand.class, "transformPetriContractTransition",
-                "transform the given Petri net 'work' by contracting a selected transition");
-        ScriptableCommandUtils.register(MergeTransitionTransformationCommand.class, "transformPetriMergeTransition",
-                "transform the given Petri net 'work' by merging selected transitions");
-        ScriptableCommandUtils.register(DirectedArcToReadArcTransformationCommand.class, "transformPetriDirectedArcToReadArc",
-                "transform the given Petri net (or derived model, e.g.STG) 'work' by converting selected arcs to read-arcs");
-        ScriptableCommandUtils.register(DualArcToReadArcTransformationCommand.class, "transformPetriDualArcToReadArc",
-                "transform the given Petri net (or derived model, e.g.STG) 'work' by converting selected (or all) dual producing/consuming arcs to read-arcs");
-        ScriptableCommandUtils.register(ReadArcToDualArcTransformationCommand.class, "transformPetriReadArcToDualArc",
-                "transform the given Petri net (or derived model, e.g.STG) 'work' by converting selected (or all) read-arcs to dual producing/consuming arcs");
-        ScriptableCommandUtils.register(CollapseProxyTransformationCommand.class, "transformPetriCollapseProxy",
-                "transform the given Petri net (or derived model, e.g.STG) 'work' by collapsing selected (or all) proxy places");
-        ScriptableCommandUtils.register(ProxyDirectedArcPlaceTransformationCommand.class, "transformPetriProxyDirectedArcPlace",
-                "transform the given Petri net (or derived model, e.g.STG) 'work' by creating proxies for selected producing/consuming arc places");
-        ScriptableCommandUtils.register(ProxyReadArcPlaceTransformationCommand.class, "transformPetriProxyReadArcPlace",
-                "transform the given Petri net (or derived model, e.g.STG) 'work' by creating selected (or all) proxies for read-arc places");
-        ScriptableCommandUtils.register(MergePlaceTransformationCommand.class, "transformPetriMergePlace",
-                "transform the given Petri net (or derived model, e.g.STG) 'work' by merging selected places");
+        ScriptableCommandUtils.registerCommand(ContractTransitionTransformationCommand.class, "transformPetriContractTransition",
+                "transform the Petri net 'work' by contracting a selected transition");
+        ScriptableCommandUtils.registerCommand(MergeTransitionTransformationCommand.class, "transformPetriMergeTransition",
+                "transform the Petri net 'work' by merging selected transitions");
+        ScriptableCommandUtils.registerCommand(DirectedArcToReadArcTransformationCommand.class, "transformPetriDirectedArcToReadArc",
+                "transform the Petri net (or derived model, e.g.STG) 'work' by converting selected arcs to read-arcs");
+        ScriptableCommandUtils.registerCommand(DualArcToReadArcTransformationCommand.class, "transformPetriDualArcToReadArc",
+                "transform the Petri net (or derived model, e.g.STG) 'work' by converting selected (or all) dual producing/consuming arcs to read-arcs");
+        ScriptableCommandUtils.registerCommand(ReadArcToDualArcTransformationCommand.class, "transformPetriReadArcToDualArc",
+                "transform the Petri net (or derived model, e.g.STG) 'work' by converting selected (or all) read-arcs to dual producing/consuming arcs");
+        ScriptableCommandUtils.registerCommand(CollapseProxyTransformationCommand.class, "transformPetriCollapseProxy",
+                "transform the Petri net (or derived model, e.g.STG) 'work' by collapsing selected (or all) proxy places");
+        ScriptableCommandUtils.registerCommand(ProxyDirectedArcPlaceTransformationCommand.class, "transformPetriProxyDirectedArcPlace",
+                "transform the Petri net (or derived model, e.g.STG) 'work' by creating proxies for selected producing/consuming arc places");
+        ScriptableCommandUtils.registerCommand(ProxyReadArcPlaceTransformationCommand.class, "transformPetriProxyReadArcPlace",
+                "transform the Petri net (or derived model, e.g.STG) 'work' by creating selected (or all) proxies for read-arc places");
+        ScriptableCommandUtils.registerCommand(MergePlaceTransformationCommand.class, "transformPetriMergePlace",
+                "transform the Petri net (or derived model, e.g.STG) 'work' by merging selected places");
 
-        ScriptableCommandUtils.register(PetriStatisticsCommand.class, "statPetri",
+        ScriptableCommandUtils.registerCommand(PetriStatisticsCommand.class, "statPetri",
                 "advanced complexity estimates for the Petri net 'work'");
     }
 

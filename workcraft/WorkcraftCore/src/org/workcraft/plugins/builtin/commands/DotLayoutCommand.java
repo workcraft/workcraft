@@ -17,7 +17,6 @@ import org.workcraft.plugins.builtin.settings.DotLayoutSettings;
 import org.workcraft.plugins.layout.jj.DotParser;
 import org.workcraft.plugins.layout.jj.ParseException;
 import org.workcraft.tasks.*;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.*;
 
@@ -61,10 +60,10 @@ public class DotLayoutCommand extends AbstractLayoutCommand {
             final TaskManager taskManager = framework.getTaskManager();
             Result<? extends ExternalProcessOutput> res = taskManager.execute(task, "Laying out the graph...");
 
-            if (res.getOutcome() == Outcome.CANCEL) {
+            if (res.isCancel()) {
                 return;
             }
-            if (res.getOutcome() == Outcome.FAILURE) {
+            if (res.isFailure()) {
                 throw new LayoutException("Failed to execute external process:\n" + res.getCause());
             }
             ExternalProcessOutput output = res.getPayload();

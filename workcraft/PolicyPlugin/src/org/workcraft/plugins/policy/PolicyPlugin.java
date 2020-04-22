@@ -39,16 +39,16 @@ public class PolicyPlugin implements Plugin {
         pm.registerXmlSerialiser(VisualLocalitySerialiser.class);
         pm.registerXmlDeserialiser(VisualLocalityDeserialiser.class);
 
-        ScriptableCommandUtils.register(BundleTransitionTransformationCommand.class, "transformPolicyBundleTransitions",
-                "transform the given Policy net 'work' by bundling selected transition");
+        ScriptableCommandUtils.registerCommand(BundleTransitionTransformationCommand.class, "transformPolicyBundleTransitions",
+                "transform the Policy net 'work' by bundling selected transition");
 
-        ScriptableCommandUtils.register(DeadlockFreenessVerificationCommand.class, "checkPolicyDeadlockFreeness",
+        ScriptableCommandUtils.registerCommand(DeadlockFreenessVerificationCommand.class, "checkPolicyDeadlockFreeness",
                 "check the Policy net 'work' for deadlock freeness");
 
-        ScriptableCommandUtils.register(PolicyToPetriConversionCommand.class, "convertPolicyToPetri",
-                "convert the given Policy net 'work' into a new Petri net work");
-        ScriptableCommandUtils.register(PetriToPolicyConversionCommand.class, "convertPetriToPolicy",
-                "convert the given Petri net 'work' into a new Policy net work");
+        ScriptableCommandUtils.registerCommand(PolicyToPetriConversionCommand.class, "convertPolicyToPetri",
+                "convert the Policy net 'work' into a new Petri net work");
+        ScriptableCommandUtils.registerCommand(PetriToPolicyConversionCommand.class, "convertPetriToPolicy",
+                "convert the Petri net 'work' into a new Policy net work");
     }
 
     private void initCompatibilityManager() {

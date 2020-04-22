@@ -32,6 +32,17 @@ public class SizeHelper {
         return getScreenDpi() * 0.0393701;
     }
 
+    public static Dimension getScreenDimension() {
+        return Toolkit.getDefaultToolkit().getScreenSize();
+    }
+
+    public static Dimension getFitScreenDimension(Dimension dimension, float screenWidthRatio, float screenHeightRatio) {
+        Dimension screenDimension = getScreenDimension();
+        return new Dimension(
+                Math.min(Math.round(screenWidthRatio * screenDimension.width), dimension.width),
+                Math.min(Math.round(screenHeightRatio * screenDimension.height), dimension.height));
+    }
+
     public static double getBaseSize() {
         return VisualCommonSettings.getFontSize() * getScreenDpi() / 72.0;
     }

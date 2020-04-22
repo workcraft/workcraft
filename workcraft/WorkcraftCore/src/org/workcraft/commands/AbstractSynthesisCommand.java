@@ -5,7 +5,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public abstract class AbstractSynthesisCommand implements ScriptableCommand<WorkspaceEntry>, MenuOrdering {
 
-    public static final String SECTION_TITLE = CommandUtils.makePromotedSectionTitle("Synthesis", 4);
+    private static final String SECTION_TITLE = CommandUtils.makePromotedSectionTitle("Synthesis", 4);
 
     @Override
     public final String getSection() {

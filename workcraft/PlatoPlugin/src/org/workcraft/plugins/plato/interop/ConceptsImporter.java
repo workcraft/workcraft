@@ -5,12 +5,11 @@ import org.workcraft.interop.Importer;
 import org.workcraft.plugins.plato.exceptions.PlatoException;
 import org.workcraft.plugins.plato.tasks.PlatoResultHandler;
 import org.workcraft.plugins.plato.tasks.PlatoTask;
-import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgImporter;
+import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 
@@ -35,7 +34,7 @@ public class ConceptsImporter implements Importer {
             PlatoTask task = new PlatoTask(file, new String[0], false, system);
             PlatoResultHandler monitor = new PlatoResultHandler(this);
             Result<? extends ExternalProcessOutput> result = task.run(monitor);
-            if (result.getOutcome() == Outcome.SUCCESS) {
+            if (result.isSuccess()) {
                 String stdout = result.getPayload().getStdoutString();
                 if (stdout.startsWith(".model")) {
                     StgImporter importer = new StgImporter();

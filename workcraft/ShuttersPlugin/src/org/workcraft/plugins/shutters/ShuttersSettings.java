@@ -1,9 +1,10 @@
 package org.workcraft.plugins.shutters;
 
 import org.workcraft.Config;
-import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.builtin.settings.AbstractToolSettings;
+import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DesktopApi;
 
 import java.util.Collection;
@@ -22,7 +23,7 @@ public class ShuttersSettings extends AbstractToolSettings {
 
     private static final String defaultShuttersCommand = DesktopApi.getOs().isWindows() ? "tools\\Process-Windows\\Shutters\\shutters.exe" : "tools/Process-Windows/Shutters/shutters";
     private static final String defaultLtscatFolder = DesktopApi.getOs().isWindows() ? "tools\\Process-Windows\\Ltscat" : "tools/Process-Windows/Ltscat";
-    private static final String defaultEspressoCommand = DesktopApi.getOs().isWindows() ? "tools\\Espresso\\espresso.exe" : "tools/Espresso/espresso";
+    private static final String defaultEspressoCommand = BackendUtils.getToolPath("Espresso", "espresso");
     private static final String defaultAbcCommand = DesktopApi.getOs().isWindows() ? "abc.exe" : "abc";
     private static final Boolean defaultForcePositiveMode = false;
 

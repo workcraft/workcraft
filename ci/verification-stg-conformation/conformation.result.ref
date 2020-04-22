@@ -1,0 +1,5 @@
+Conformation checks:
+  * null:                null
+  * incorrect-file:      null
+  * charge.stg.work:     true
+  * charge-bad.stg.work: false

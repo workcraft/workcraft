@@ -16,7 +16,6 @@ import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.tools.SONSimulationTool;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -86,7 +85,7 @@ public class ReachabilityTask implements Task<VerificationResult> {
                     "Double click on condition/channel place or use property editor"
                     + " to mark some nodes and check the reachability.",
                     "Marking required", JOptionPane.INFORMATION_MESSAGE);
-            return new Result<>(Outcome.SUCCESS);
+            return Result.success();
         }
 
         final SON net = WorkspaceUtils.getAs(we, SON.class);
@@ -103,14 +102,14 @@ public class ReachabilityTask implements Task<VerificationResult> {
                         throw new RuntimeException("Reachability task error, doesn't reach selected marking" + ref);
                     }
                 }
-                return new Result<>(Outcome.SUCCESS);
+                return Result.success();
             }
         } else {
             JOptionPane.showMessageDialog(mainWindow,
                     "The selected marking is UNREACHABLE from the initial states",
                     "Reachability task result", JOptionPane.INFORMATION_MESSAGE);
         }
-        return new Result<>(Outcome.SUCCESS);
+        return Result.success();
     }
 
     private Map<PlaceNode, Boolean> simulation() {

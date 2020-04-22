@@ -3,7 +3,7 @@ package org.workcraft.plugins.petrify.commands;
 import org.workcraft.Framework;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.petri.PetriModel;
-import org.workcraft.plugins.petrify.tasks.TransformationResultHandler;
+import org.workcraft.plugins.petrify.tasks.TransformationResultHandlingMonitor;
 import org.workcraft.plugins.petrify.tasks.TransformationTask;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.tasks.TaskManager;
@@ -37,7 +37,7 @@ public class NetConversionCommand extends AbstractConversionCommand {
         TransformationTask task = new TransformationTask(we, args, mutexes);
 
         boolean hasSignals = hasSignals(we);
-        TransformationResultHandler monitor = new TransformationResultHandler(we, !hasSignals, mutexes);
+        TransformationResultHandlingMonitor monitor = new TransformationResultHandlingMonitor(we, !hasSignals, mutexes);
 
         TaskManager taskManager = Framework.getInstance().getTaskManager();
         taskManager.execute(task, "Petrify net synthesis", monitor);

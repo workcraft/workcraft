@@ -8,6 +8,7 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.plugins.circuit.interop.VerilogFormat;
+import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -23,7 +24,7 @@ public class ImportHierarchyTests {
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
-        CircuitSettings.setGateLibrary(TestUtils.getLibraryPath("workcraft.lib"));
+        CircuitSettings.setGateLibrary(BackendUtils.getTemplateLibraryPath("workcraft.lib"));
         DebugCommonSettings.setShortExportHeader(true);
     }
 

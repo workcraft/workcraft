@@ -11,7 +11,6 @@ import org.workcraft.plugins.shutters.ShuttersSettings;
 import org.workcraft.plugins.shutters.tasks.LtscatResultHandler;
 import org.workcraft.plugins.shutters.tasks.LtscatTask;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.ExecutableUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.WorkspaceUtils;
@@ -98,11 +97,7 @@ public class ExtractWindowsCommand implements Command, MenuOrdering {
             writer.println("from " + ltscatModule + " import LtsCat as lts");
             writer.println("from " + ltscatModule + " import LtsCat_Windows as win");
             writer.println("l = lts('" + sgName + "')");
-            writer.println("l.extractWindows(prefix='"
-                    + dir.getAbsolutePath()
-                    + (DesktopApi.getOs().isWindows() ? "\\" : "/")
-                    + title
-                    + "')");
+            writer.println("l.extractWindows(prefix='" + dir.getAbsolutePath() + File.separator + title + "')");
             writer.println("exit");
             writer.close();
         } catch (IOException e) {

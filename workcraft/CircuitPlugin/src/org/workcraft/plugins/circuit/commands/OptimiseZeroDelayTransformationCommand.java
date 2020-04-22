@@ -13,11 +13,10 @@ import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.tasks.CheckTask;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
-import org.workcraft.plugins.mpsat.utils.MpsatUtils;
+import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainResultHandlingMonitor;
+import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.utils.StgUtils;
-import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.Hierarchy;
@@ -166,8 +165,9 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
         Framework framework = Framework.getInstance();
         TaskManager manager = framework.getTaskManager();
         CheckTask task = new CheckTask(we, checkConformation, false, checkPersistence);
-        Result<? extends VerificationChainOutput> result = manager.execute(task, description);
-        return MpsatUtils.getChainOutcome(result);
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
+        manager.queue(task, description, monitor);
+        return monitor.waitForHandledResult();
     }
 
     @Override

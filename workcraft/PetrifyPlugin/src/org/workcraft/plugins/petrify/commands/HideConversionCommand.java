@@ -4,7 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petri.utils.ConversionUtils;
-import org.workcraft.plugins.petrify.tasks.TransformationResultHandler;
+import org.workcraft.plugins.petrify.tasks.TransformationResultHandlingMonitor;
 import org.workcraft.plugins.petrify.tasks.TransformationTask;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.VisualDummyTransition;
@@ -65,7 +65,7 @@ public class HideConversionCommand extends AbstractConversionCommand {
         TransformationTask task = new TransformationTask(we, args, mutexes);
 
         boolean hasSignals = hasSignals(we);
-        TransformationResultHandler monitor = new TransformationResultHandler(we, !hasSignals, mutexes);
+        TransformationResultHandlingMonitor monitor = new TransformationResultHandlingMonitor(we, !hasSignals, mutexes);
 
         TaskManager taskManager = Framework.getInstance().getTaskManager();
         taskManager.execute(task, "Petrify net synthesis", monitor);

@@ -7,8 +7,8 @@ dependencies {
 }
 
 cpdCheck {
-    exclude 'org/workcraft/plugins/mpsat/tasks/CombinedChainResultHandler.java'
-    exclude 'org/workcraft/plugins/mpsat/tasks/VerificationChainResultHandler.java'
+    exclude 'org/workcraft/plugins/mpsat/tasks/CombinedChainResultHandlingMonitor.java'
+    exclude 'org/workcraft/plugins/mpsat/tasks/VerificationChainResultHandlingMonitor.java'
 }
 
 ext.excludeFromCoverage = [

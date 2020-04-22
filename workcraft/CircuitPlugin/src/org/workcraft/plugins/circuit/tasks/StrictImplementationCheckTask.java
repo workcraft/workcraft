@@ -9,21 +9,20 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
-import org.workcraft.plugins.mpsat.MpsatVerificationSettings;
-import org.workcraft.plugins.mpsat.VerificationMode;
-import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
-import org.workcraft.plugins.mpsat.tasks.VerificationOutput;
-import org.workcraft.plugins.mpsat.tasks.VerificationOutputParser;
-import org.workcraft.plugins.mpsat.tasks.VerificationTask;
-import org.workcraft.plugins.mpsat.utils.ReachUtils;
+import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
+import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
+import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutput;
+import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutputParser;
+import org.workcraft.plugins.mpsat_verification.tasks.MpsatTask;
+import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
+import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -86,7 +85,7 @@ public class StrictImplementationCheckTask implements Task<VerificationChainOutp
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         String stgFileExtension = StgFormat.getInstance().getExtension();
-        VerificationParameters preparationSettings = ReachUtils.getToolchainPreparationSettings();
+        VerificationParameters preparationParameters = ReachUtils.getToolchainPreparationParameters();
         try {
             // Common variables
             Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
@@ -102,12 +101,12 @@ public class StrictImplementationCheckTask implements Task<VerificationChainOutp
             // Write environment STG into a .g file
             File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + stgFileExtension);
             Result<? extends ExportOutput> envExportResult = StgUtils.exportStg(envStg, envStgFile, monitor);
-            if (envExportResult.getOutcome() != Outcome.SUCCESS) {
-                if (envExportResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!envExportResult.isSuccess()) {
+                if (envExportResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(envExportResult, null, null, null, preparationSettings));
+                return Result.failure(new VerificationChainOutput(
+                        envExportResult, null, null, null, preparationParameters));
             }
             monitor.progressUpdate(0.20);
 
@@ -119,12 +118,12 @@ public class StrictImplementationCheckTask implements Task<VerificationChainOutp
             SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<>(monitor);
             punfResult = taskManager.execute(punfTask, "Unfolding .g", punfMonitor);
 
-            if (punfResult.getOutcome() != Outcome.SUCCESS) {
-                if (punfResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!punfResult.isSuccess()) {
+                if (punfResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(envExportResult, null, punfResult, null, preparationSettings));
+                return Result.failure(new VerificationChainOutput(
+                        envExportResult, null, punfResult, null, preparationParameters));
             }
             monitor.progressUpdate(0.50);
 
@@ -142,34 +141,34 @@ public class StrictImplementationCheckTask implements Task<VerificationChainOutp
                     }
                 }
             }
-            VerificationParameters mpsatSettings = getSettings(signalInfos);
-            VerificationTask verificationTask = new VerificationTask(mpsatSettings.getMpsatArguments(directory),
-                    unfoldingFile, directory, envStgFile);
+            VerificationParameters verificationParameters = getVerificationParameters(signalInfos);
+            MpsatTask mpsatTask = new MpsatTask(unfoldingFile, envStgFile, verificationParameters, directory);
             SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
-            Result<? extends VerificationOutput>  mpsatResult = taskManager.execute(
-                    verificationTask, "Running strict implementation check [MPSat]", mpsatMonitor);
+            Result<? extends MpsatOutput>  mpsatResult = taskManager.execute(
+                    mpsatTask, "Running strict implementation check [MPSat]", mpsatMonitor);
 
-            if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
-                if (mpsatResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!mpsatResult.isSuccess()) {
+                if (mpsatResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(envExportResult, null, punfResult, mpsatResult, mpsatSettings));
+                return Result.failure(new VerificationChainOutput(
+                        envExportResult, null, punfResult, mpsatResult, verificationParameters));
             }
             monitor.progressUpdate(0.80);
 
-            VerificationOutputParser mpsatParser = new VerificationOutputParser(mpsatResult.getPayload());
+            String mpsatStdout = mpsatResult.getPayload().getStdoutString();
+            MpsatOutputParser mpsatParser = new MpsatOutputParser(mpsatStdout);
             if (!mpsatParser.getSolutions().isEmpty()) {
-                return new Result<>(Outcome.SUCCESS,
-                        new VerificationChainOutput(envExportResult, null, punfResult, mpsatResult, mpsatSettings,
-                                "Circuit does not strictly implement the environment after the following trace(s):"));
+                return Result.success(new VerificationChainOutput(
+                        envExportResult, null, punfResult, mpsatResult, verificationParameters,
+                        "Circuit does not strictly implement the environment after the following trace(s):"));
             }
             monitor.progressUpdate(1.00);
 
             // Success
-            return new Result<>(Outcome.SUCCESS,
-                    new VerificationChainOutput(envExportResult, null, punfResult, mpsatResult, mpsatSettings,
-                            "The circuit strictly implements its environment."));
+            return Result.success(new VerificationChainOutput(
+                    envExportResult, null, punfResult, mpsatResult, verificationParameters,
+                    "The circuit strictly implements its environment."));
 
         } catch (Throwable e) {
             return new Result<>(e);
@@ -178,7 +177,7 @@ public class StrictImplementationCheckTask implements Task<VerificationChainOutp
         }
     }
 
-    private VerificationParameters getSettings(Collection<SignalInfo> signalInfos) {
+    private VerificationParameters getVerificationParameters(Collection<SignalInfo> signalInfos) {
         String reachStrictImplementation = REACH_STRICT_IMPLEMENTATION;
         boolean isFirstSignal = true;
         for (SignalInfo signalInfo: signalInfos) {

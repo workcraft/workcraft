@@ -311,30 +311,30 @@ public class SelectionTool extends AbstractGraphEditorTool {
     public JPopupMenu createPopupMenu(VisualNode node, final GraphEditor editor) {
         JPopupMenu popup = null;
         WorkspaceEntry we = editor.getWorkspaceEntry();
-        List<Command> applicableTools = new ArrayList<>();
-        HashSet<Command> enabledTools = new HashSet<>();
+        List<Command> applicableCommands = new ArrayList<>();
+        HashSet<Command> enabledCommands = new HashSet<>();
         for (Command command: CommandUtils.getApplicableVisibleCommands(we)) {
             if (command instanceof NodeTransformer) {
                 NodeTransformer nodeTransformer = (NodeTransformer) command;
                 if (nodeTransformer.isApplicableTo(node)) {
-                    applicableTools.add(command);
+                    applicableCommands.add(command);
                     ModelEntry me = we.getModelEntry();
                     if (nodeTransformer.isEnabled(me, node)) {
-                        enabledTools.add(command);
+                        enabledCommands.add(command);
                     }
                 }
             }
         }
-        if (!applicableTools.isEmpty()) {
+        if (!applicableCommands.isEmpty()) {
             popup = new JPopupMenu();
             final MainWindow mainWindow = Framework.getInstance().getMainWindow();
-            for (Command tool: applicableTools) {
-                String text = (tool instanceof NodeTransformer) ? ((NodeTransformer) tool).getPopupName() : tool.getDisplayName();
-                Action action = new Action(text.trim(), () -> CommandUtils.run(tool));
-                ActionMenuItem miTool = new ActionMenuItem(action);
-                miTool.addScriptedActionListener(mainWindow.getDefaultActionListener());
-                miTool.setEnabled(enabledTools.contains(tool));
-                popup.add(miTool);
+            for (Command command: applicableCommands) {
+                String text = (command instanceof NodeTransformer) ? ((NodeTransformer) command).getPopupName() : command.getDisplayName();
+                Action action = new Action(text.trim(), () -> CommandUtils.run(mainWindow, command));
+                ActionMenuItem miCommand = new ActionMenuItem(action);
+                miCommand.addScriptedActionListener(mainWindow.getDefaultActionListener());
+                miCommand.setEnabled(enabledCommands.contains(command));
+                popup.add(miCommand);
             }
         }
         return popup;

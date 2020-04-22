@@ -1,7 +1,7 @@
 package org.workcraft.plugins.stg.commands;
 
-import org.workcraft.commands.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
+import org.workcraft.commands.NodeTransformer;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.visual.MixUtils;
 import org.workcraft.dom.visual.TransformHelper;
@@ -14,19 +14,17 @@ import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.Hierarchy;
-import org.workcraft.utils.LogUtils;
 import org.workcraft.types.Pair;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 
 public class ExpandHandshakeTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
@@ -178,9 +176,9 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
         String ans = DialogUtils.showInput("Enter a pair of space-separated suffixes for handshake signals:",
                 SUFFIX_REQ + " " + SUFFIX_ACK);
         if (ans != null) {
-            String[] split = ans.trim().split("\\s");
-            if (split.length == 2) {
-                result = Pair.of(split[0], split[1]);
+            List<String> words = TextUtils.splitWords(ans);
+            if (words.size() == 2) {
+                result = Pair.of(words.get(0), words.get(1));
             } else {
                 DialogUtils.showError("Two suffixes are required for handshake expansion.\n\n" +
                         "Default suffixes " + SUFFIX_REQ + " and " + SUFFIX_ACK + " will be used.");

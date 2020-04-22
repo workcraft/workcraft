@@ -6,11 +6,15 @@ import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.XmlUtils;
 import org.workcraft.workspace.Resource;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,9 +22,9 @@ import java.util.List;
 
 public class PresetManager<T> {
 
-    private static final String PRESETS_ELEMENT_NAME = "presets";
-    private static final String PRESET_ELEMENT_NAME = "preset";
-    private static final String DESCRIPTION_ATTRIBUTE_NAME = "description";
+    public static final String PRESETS_ELEMENT_NAME = "presets";
+    public static final String PRESET_ELEMENT_NAME = "preset";
+    public static final String DESCRIPTION_ATTRIBUTE_NAME = "description";
 
     private static final String AUTO_PRESERVE_PREFIX = "\u2713 ";
     private static final String EXAMPLE_PRESET_PREFIX = "\u00BB ";
@@ -67,6 +71,10 @@ public class PresetManager<T> {
         } else {
             Collections.sort(presets.subList(1, presets.size()), Comparator.comparing(Preset::toString));
         }
+    }
+
+    public WorkspaceEntry getWorkspaceEntry() {
+        return we;
     }
 
     public void addExample(String description, T data) {
@@ -150,6 +158,21 @@ public class PresetManager<T> {
     private void checkBuiltIn(Preset<T> preset) {
         if (preset.isBuiltIn()) {
             throw new RuntimeException("Invalid operation attempted on a built-in preset.");
+        }
+    }
+
+    public static Document buildPresetDocumentFromSettings(String name, String settings) {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        try {
+            builder = factory.newDocumentBuilder();
+            String xml = "<" + PRESET_ELEMENT_NAME + " "
+                    + DESCRIPTION_ATTRIBUTE_NAME + "=\"" + name + "\">"
+                    + settings + "</" + PresetManager.PRESET_ELEMENT_NAME + ">";
+
+            return builder.parse(new InputSource(new StringReader(xml)));
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

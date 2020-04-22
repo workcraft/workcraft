@@ -1,12 +1,8 @@
 package org.workcraft.plugins.fsm.commands;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
+import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.SizeHelper;
@@ -18,10 +14,15 @@ import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fsm.utils.FsmUtils;
 import org.workcraft.utils.DialogUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
-public class ReachabilityVerificationCommand extends AbstractVerificationCommand {
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+
+public class ReachabilityVerificationCommand extends AbstractVerificationCommand implements ScriptableCommand<Boolean> {
 
     private static final String TITLE = "Verification result";
 
@@ -33,6 +34,11 @@ public class ReachabilityVerificationCommand extends AbstractVerificationCommand
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.isApplicable(we, Fsm.class);
+    }
+
+    @Override
+    public void run(WorkspaceEntry we) {
+        execute(we);
     }
 
     @Override

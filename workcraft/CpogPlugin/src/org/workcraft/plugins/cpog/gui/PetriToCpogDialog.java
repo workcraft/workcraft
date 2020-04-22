@@ -25,11 +25,11 @@ public class PetriToCpogDialog extends JDialog {
     private JPanel settingPanel;
     private boolean modalResult;
 
-    public PetriToCpogDialog(Window owner, PetriToCpogParameters settings) {
+    public PetriToCpogDialog(Window owner, PetriToCpogParameters parameters) {
         super(owner, "Petri Net to CPOG conversion [Untanglings]", ModalityType.APPLICATION_MODAL);
 
         createSettingPanel();
-        createButtonPanel(settings);
+        createButtonPanel(parameters);
 
         JPanel content = new JPanel(GuiUtils.createBorderLayout());
         content.setBorder(SizeHelper.getEmptyBorder());
@@ -109,12 +109,12 @@ public class PetriToCpogDialog extends JDialog {
     }
 
     /** creates panel containing the buttons for running or closing the converter **/
-    private void createButtonPanel(final PetriToCpogParameters settings) {
+    private void createButtonPanel(final PetriToCpogParameters parameters) {
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
         // run the converter
         JButton runButton = GuiUtils.createDialogButton("Run");
-        runButton.addActionListener(event -> runAction(settings));
+        runButton.addActionListener(event -> runAction(parameters));
 
         // close the converter
         JButton closeButton = GuiUtils.createDialogButton("Close");
@@ -123,11 +123,11 @@ public class PetriToCpogDialog extends JDialog {
         buttonPanel.add(closeButton);
     }
 
-    private void runAction(PetriToCpogParameters settings) {
-        settings.setReduce(reduceCheck.isSelected());
-        settings.setIsomorphism(isomorphismCheck.isSelected());
-        settings.setSignificance(significanceBox.getSelectedIndex());
-        settings.setRemoveNodes(removeNodesCheck.isSelected());
+    private void runAction(PetriToCpogParameters parameters) {
+        parameters.setReduce(reduceCheck.isSelected());
+        parameters.setIsomorphism(isomorphismCheck.isSelected());
+        parameters.setSignificance(significanceBox.getSelectedIndex());
+        parameters.setRemoveNodes(removeNodesCheck.isSelected());
         modalResult = true;
         setVisible(false);
     }

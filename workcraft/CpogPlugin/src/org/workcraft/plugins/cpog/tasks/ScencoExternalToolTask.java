@@ -1,18 +1,12 @@
 package org.workcraft.plugins.cpog.tasks;
 
-import java.util.ArrayList;
-
 import org.workcraft.interop.ExternalProcessListener;
-import org.workcraft.tasks.ExternalProcessOutput;
-import org.workcraft.tasks.ExternalProcessTask;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.tasks.SubtaskMonitor;
-import org.workcraft.tasks.Task;
+import org.workcraft.tasks.*;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class ScencoExternalToolTask implements Task<ScencoResult>, ExternalProcessListener {
+import java.util.ArrayList;
+
+public class ScencoExternalToolTask implements Task<ScencoOutput>, ExternalProcessListener {
 
     private final WorkspaceEntry we;
     private final ScencoSolver solver;
@@ -23,15 +17,14 @@ public class ScencoExternalToolTask implements Task<ScencoResult>, ExternalProce
     }
 
     @Override
-    public Result<? extends ScencoResult> run(ProgressMonitor<? super ScencoResult> monitor) {
+    public Result<? extends ScencoOutput> run(ProgressMonitor<? super ScencoOutput> monitor) {
         ArrayList<String> args = solver.getScencoArguments();
         String resultDirectoryPath = getResultDirectoryPath(args);
 
         // Error handling
         if (args.get(0).contains("ERROR")) {
             we.cancelMemento();
-            ScencoResult result = new ScencoResult(args.get(1), args.get(2), resultDirectoryPath);
-            return new Result<>(Outcome.FAILURE, result);
+            return Result.failure(new ScencoOutput(args.get(1), args.get(2), resultDirectoryPath));
         }
 
         // Running the tool through external process interface
@@ -40,20 +33,18 @@ public class ScencoExternalToolTask implements Task<ScencoResult>, ExternalProce
         Result<? extends ExternalProcessOutput> result = task.run(mon);
 
         // Handling the result
-        if (result.getOutcome() == Outcome.CANCEL) {
+        if (result.isCancel()) {
             we.cancelMemento();
-            return new Result<>(Outcome.CANCEL);
-        } else {
-            final Outcome outcome;
-            if (result.getPayload().getReturnCode() == 0) {
-                outcome = Outcome.SUCCESS;
-            } else {
-                we.cancelMemento();
-                outcome = Outcome.FAILURE;
-            }
-            ScencoResult finalResult = new ScencoResult(result.getPayload().getStdoutString(), resultDirectoryPath);
-            return new Result<>(outcome, finalResult);
+            return Result.cancel();
         }
+
+        ScencoOutput scencoOutput = new ScencoOutput(result.getPayload().getStdoutString(), resultDirectoryPath);
+        if (result.getPayload().getReturnCode() == 0) {
+            return Result.success(scencoOutput);
+        }
+
+        we.cancelMemento();
+        return Result.failure(scencoOutput);
     }
 
     private String getResultDirectoryPath(ArrayList<String> args) {

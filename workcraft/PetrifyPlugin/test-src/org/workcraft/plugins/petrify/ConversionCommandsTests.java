@@ -5,12 +5,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.plugins.circuit.TestUtils;
 import org.workcraft.plugins.petrify.commands.CscConflictResolutionCommand;
 import org.workcraft.plugins.petrify.commands.UntoggleConversionCommand;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
+import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -24,7 +24,7 @@ public class ConversionCommandsTests {
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
-        PetrifySettings.setCommand(TestUtils.getToolPath("PetrifyTools", "petrify"));
+        PetrifySettings.setCommand(BackendUtils.getTemplateToolPath("PetrifyTools", "petrify"));
     }
 
     @Test

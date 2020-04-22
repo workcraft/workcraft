@@ -9,7 +9,7 @@ function getWorks() {
 
 
 framework.addJavaScriptHelp("getWorkFile", "work",
-    "return a file object for the specified work");
+    "return a file object for the model 'work'");
 
 function getWorkFile(work) {
     return work.getFile();
@@ -17,7 +17,7 @@ function getWorkFile(work) {
 
 
 framework.addJavaScriptHelp("getModelDescriptor", "work",
-    "return a model descriptor string for the specified work");
+    "return descriptor string for the model 'work'");
 
 function getModelDescriptor(work) {
     return work.getModelEntry().getDescriptor().getDisplayName();
@@ -25,7 +25,7 @@ function getModelDescriptor(work) {
 
 
 framework.addJavaScriptHelp("getModelTitle", "work",
-    "return a model title string for the specified work");
+    "return title string for the model 'work'");
 
 function getModelTitle(work) {
     return work.getModelEntry().getModel().getTitle();
@@ -33,7 +33,7 @@ function getModelTitle(work) {
 
 
 framework.addJavaScriptHelp("setModelTitle", "work, title",
-    "set the model title of the specified work to the title string");
+    "set title of the model 'work' to the string 'title'");
 
 function setModelTitle(work, title) {
     return work.getModelEntry().getModel().setTitle(title);
@@ -41,7 +41,7 @@ function setModelTitle(work, title) {
 
 
 framework.addJavaScriptHelp("closeWork", "work",
-    "close the specified work");
+    "close the model 'work'");
 
 function closeWork(work) {
     return framework.closeWork(work);

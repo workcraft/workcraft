@@ -17,7 +17,6 @@ public abstract class AbstractTaskManager implements TaskManager {
             }
             return l;
         }
-
     }
 
     @Override

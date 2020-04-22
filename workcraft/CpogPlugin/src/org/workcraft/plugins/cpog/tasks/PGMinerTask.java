@@ -2,7 +2,6 @@ package org.workcraft.plugins.cpog.tasks;
 
 import org.workcraft.plugins.cpog.CpogSettings;
 import org.workcraft.tasks.*;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.ExecutableUtils;
 
 import java.io.File;
@@ -35,17 +34,18 @@ public class PGMinerTask implements Task<ExternalProcessOutput> {
         SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(mon);
 
-        if (result.getOutcome() == Outcome.CANCEL) {
-            return Result.cancelation();
-        } else if (result.getOutcome() == Outcome.SUCCESS) {
-            ExternalProcessOutput output = result.getPayload();
-            if (output != null) {
-                if (output.getReturnCode() == 0) {
-                    return Result.success(output);
-                }
-                return Result.failure(output);
+        ExternalProcessOutput output = result.getPayload();
+        if (result.isSuccess() && (output != null)) {
+            if (output.getReturnCode() == 0) {
+                return Result.success(output);
             }
+            return Result.failure(output);
         }
+
+        if (result.isCancel()) {
+            return Result.cancel();
+        }
+
         return Result.exception(result.getCause());
     }
 

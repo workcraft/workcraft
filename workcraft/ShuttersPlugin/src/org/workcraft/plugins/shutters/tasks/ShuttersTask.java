@@ -3,8 +3,6 @@ package org.workcraft.plugins.shutters.tasks;
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.shutters.ShuttersSettings;
 import org.workcraft.tasks.*;
-import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.ExecutableUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.LogUtils;
@@ -13,7 +11,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.io.File;
 import java.util.ArrayList;
 
-public class ShuttersTask implements Task<ShuttersResult>, ExternalProcessListener {
+public class ShuttersTask implements Task<ShuttersOutput>, ExternalProcessListener {
 
     private static final String MSG_ESPRESSO_NOT_PRESENT = "Espresso is not present.";
     private static final String ACCESS_SHUTTERS_ERROR = "Shutters error";
@@ -27,15 +25,14 @@ public class ShuttersTask implements Task<ShuttersResult>, ExternalProcessListen
     }
 
     @Override
-    public Result<? extends ShuttersResult> run(ProgressMonitor<? super ShuttersResult> monitor) {
+    public Result<? extends ShuttersOutput> run(ProgressMonitor<? super ShuttersOutput> monitor) {
 
         ArrayList<String> args = getArguments();
 
         // Error handling
         if (args.get(0).contains("ERROR")) {
             we.cancelMemento();
-            ShuttersResult result = new ShuttersResult(args.get(1), args.get(2));
-            return new Result<>(Outcome.FAILURE, result);
+            return Result.failure(new ShuttersOutput(args.get(1), args.get(2)));
         }
 
         // Running the tool through external process interface
@@ -44,29 +41,22 @@ public class ShuttersTask implements Task<ShuttersResult>, ExternalProcessListen
         Result<? extends ExternalProcessOutput> result = task.run(mon);
 
         // Handling the result
-        if (result.getOutcome() == Outcome.CANCEL) {
-
+        if (result.isCancel()) {
             FileUtils.deleteOnExitRecursively(tmpDir);
             we.cancelMemento();
-            return new Result<>(Outcome.CANCEL);
-
-        } else {
-
-            final Outcome outcome;
-            if (result.getPayload().getReturnCode() == 0) {
-                outcome = Outcome.SUCCESS;
-            } else {
-                FileUtils.deleteOnExitRecursively(tmpDir);
-                we.cancelMemento();
-                outcome = Outcome.FAILURE;
-            }
-
-            String stdout = result.getPayload().getStdoutString();
-            String stderr = result.getPayload().getStderrString();
-            ShuttersResult finalResult = new ShuttersResult(stderr, stdout);
-
-            return new Result<>(outcome, finalResult);
+            return Result.cancel();
         }
+
+        String stdout = result.getPayload().getStdoutString();
+        String stderr = result.getPayload().getStderrString();
+        ShuttersOutput shuttersOutput = new ShuttersOutput(stderr, stdout);
+        if (result.getPayload().getReturnCode() == 0) {
+            return Result.success(shuttersOutput);
+        }
+
+        FileUtils.deleteOnExitRecursively(tmpDir);
+        we.cancelMemento();
+        return Result.failure(shuttersOutput);
     }
 
     @Override
@@ -90,10 +80,7 @@ public class ShuttersTask implements Task<ShuttersResult>, ExternalProcessListen
         File f = null;
 
         args.add(ExecutableUtils.getAbsoluteCommandPath(ShuttersSettings.getShuttersCommand()));
-        args.add(tmpDir.getAbsolutePath()
-                + (DesktopApi.getOs().isWindows() ? "\\" : "/")
-                + we.getTitle()
-                + ShuttersSettings.getMarkingsExtension());
+        args.add(tmpDir.getAbsolutePath() + File.separator + we.getTitle() + ShuttersSettings.getMarkingsExtension());
 
         // Espresso related arguments
         f = new File(ExecutableUtils.getAbsoluteCommandPath(ShuttersSettings.getEspressoCommand()));

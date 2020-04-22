@@ -13,11 +13,11 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fst.FstDescriptor;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.fst.VisualFstDescriptor;
-import org.workcraft.plugins.mpsat.VerificationMode;
-import org.workcraft.plugins.mpsat.VerificationParameters;
-import org.workcraft.plugins.mpsat.VerificationParameters.SolutionMode;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainTask;
+import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
+import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters.SolutionMode;
+import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainResultHandlingMonitor;
+import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainTask;
 import org.workcraft.plugins.plato.commands.FstConversionCommand;
 import org.workcraft.plugins.plato.commands.StgConversionCommand;
 import org.workcraft.plugins.plato.exceptions.PlatoException;
@@ -28,7 +28,6 @@ import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.tasks.BasicProgressMonitor;
 import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.ImportUtils;
 import org.workcraft.utils.LogUtils;
@@ -55,7 +54,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
         public void run() {
             try {
                 if (system) {
-                    if (result.getOutcome() == Outcome.SUCCESS) {
+                    if (result.isSuccess()) {
                         PlatoSystemTask task = new PlatoSystemTask();
                         PlatoResultHandler resultHandler = new PlatoResultHandler(sender, name, we, false);
                         final TaskManager taskManager = Framework.getInstance().getTaskManager();
@@ -64,7 +63,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
                     }
                 } else {
                     String stdout = result.getPayload().getStdoutString();
-                    if (result.getOutcome() == Outcome.SUCCESS) {
+                    if (result.isSuccess()) {
                         final Framework framework = Framework.getInstance();
                         final MainWindow mainWindow = framework.getMainWindow();
                         GraphEditorPanel editor = mainWindow.getEditor(we);
@@ -245,7 +244,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
             VerificationParameters param = new VerificationParameters(null, VerificationMode.STG_REACHABILITY, 0, SolutionMode.MINIMUM_COST, 10, fullExpression, true);
             final VerificationChainTask mpsatTask = new VerificationChainTask(we, param);
             final TaskManager taskManager = Framework.getInstance().getTaskManager();
-            final VerificationChainResultHandler monitor = new VerificationChainResultHandler(we);
+            final VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
             taskManager.queue(mpsatTask, "Verify invariant of translated concepts", monitor);
         }
     }

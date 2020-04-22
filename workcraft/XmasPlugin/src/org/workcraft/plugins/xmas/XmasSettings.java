@@ -1,10 +1,10 @@
 package org.workcraft.plugins.xmas;
 
 import org.workcraft.Config;
-import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.builtin.settings.AbstractModelSettings;
-import org.workcraft.utils.DesktopApi;
+import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.FileUtils;
 
 import java.io.File;
@@ -39,7 +39,7 @@ public class XmasSettings extends AbstractModelSettings {
     private static final boolean defaultShowContacts = false;
     private static final double defaultBorderWidth = 0.06;
     private static final double defaultWireWidth = 0.06;
-    private static final String defaultVxmCommand = DesktopApi.getOs().isWindows() ? "tools\\vxm\\vxm.exe" : "tools/vxm/vxm";
+    private static final String defaultVxmCommand = BackendUtils.getToolPath("vxm", "vxm");
 
     private static boolean showContacts = defaultShowContacts;
     private static double borderWidth = defaultBorderWidth;

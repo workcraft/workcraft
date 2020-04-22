@@ -18,7 +18,6 @@ import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.*;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -74,15 +73,11 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
         if (PetrifySettings.getAdvancedMode()) {
             String tmp = DialogUtils.showInput("Additional parameters for Petrify:", extraArgs);
             if (tmp == null) {
-                return Result.cancelation();
+                return Result.cancel();
             }
             extraArgs = tmp;
         }
-        for (String arg : extraArgs.split("\\s")) {
-            if (!arg.isEmpty()) {
-                command.add(arg);
-            }
-        }
+        command.addAll(TextUtils.splitWords(extraArgs));
 
         // Petrify uses the full name of the file as the name of the Verilog module (with _net suffix).
         // As there may be non-alpha-numerical symbols in the model title, it needs to be preprocessed
@@ -129,7 +124,7 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
                     + "Problematic places are:\n" + refStr + "\n\n"
                     + "Proceed without these places?";
             if (!DialogUtils.showConfirmWarning(msg, "Petrify synthesis", true)) {
-                return Result.cancelation();
+                return Result.cancel();
             }
             we.captureMemento();
             VisualModel visualModel = we.getModelEntry().getVisualModel();
@@ -147,23 +142,25 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
 
         try {
-            if (result.getOutcome() == Outcome.SUCCESS) {
-                ExternalProcessOutput output = result.getPayload();
-                if (output != null) {
-                    String log = getFileContent(logFile);
-                    String equations = getFileContent(eqnFile);
-                    String verilog = getFileContent(verilogFile);
-                    String stgOutput = getFileContent(outFile);
-                    SynthesisOutput synthesisOutput = new SynthesisOutput(output, log, equations, verilog, stgOutput);
-                    if (output.getReturnCode() == 0) {
-                        return Result.success(synthesisOutput);
-                    }
+            ExternalProcessOutput output = result.getPayload();
+            if (result.isSuccess() && (output != null)) {
+                byte[] verilogBytes = verilogFile.exists() ? FileUtils.readAllBytes(verilogFile) : null;
+                byte[] stgBytes = stgFile.exists() ? FileUtils.readAllBytes(stgFile) : null;
+                SynthesisOutput synthesisOutput = new SynthesisOutput(output, verilogBytes, stgBytes);
+                if (output.getReturnCode() != 0) {
                     return Result.failure(synthesisOutput);
                 }
+                if ((logFile != null) && logFile.exists()) {
+                    synthesisOutput.setLog(FileUtils.readAllText(logFile));
+                }
+                if ((eqnFile != null) && eqnFile.exists()) {
+                    synthesisOutput.setEquations(FileUtils.readAllText(eqnFile));
+                }
+                return Result.success(synthesisOutput);
             }
 
-            if (result.getOutcome() == Outcome.CANCEL) {
-                return Result.cancelation();
+            if (result.isCancel()) {
+                return Result.cancel();
             }
 
             return Result.exception(result.getCause());
@@ -173,10 +170,6 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
             FileUtils.deleteOnExitRecursively(directory);
             we.cancelMemento();
         }
-    }
-
-    private String getFileContent(File file) throws IOException {
-        return (file != null) && file.exists() ? FileUtils.readAllText(file) : "";
     }
 
     private File getInputFile(Stg stg, File directory) {
@@ -189,18 +182,18 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
 
         String gExtension = format.getExtension();
         File stgFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + gExtension);
-        ExportTask exportTask = new ExportTask(stgExporter, stg, stgFile.getAbsolutePath());
+        ExportTask exportTask = new ExportTask(stgExporter, stg, stgFile);
         Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
-        if (exportResult.getOutcome() != Outcome.SUCCESS) {
+        if (!exportResult.isSuccess()) {
             throw new RuntimeException("Unable to export the model.");
         }
         if (!mutexes.isEmpty()) {
             stg = StgUtils.loadStg(stgFile);
             MutexUtils.factoroutMutexs(stg, mutexes);
             stgFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + gExtension);
-            exportTask = new ExportTask(stgExporter, stg, stgFile.getAbsolutePath());
+            exportTask = new ExportTask(stgExporter, stg, stgFile);
             exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
-            if (exportResult.getOutcome() != Outcome.SUCCESS) {
+            if (!exportResult.isSuccess()) {
                 throw new RuntimeException("Unable to export the model after factoring out the mutexes.");
             }
         }

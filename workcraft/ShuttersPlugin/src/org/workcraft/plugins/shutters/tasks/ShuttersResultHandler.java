@@ -1,16 +1,14 @@
 package org.workcraft.plugins.shutters.tasks;
 
-import java.io.File;
-
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
 import org.workcraft.tasks.BasicProgressMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.FileUtils;
 
-public class ShuttersResultHandler extends BasicProgressMonitor<ShuttersResult>  {
+import javax.swing.*;
+import java.io.File;
+
+public class ShuttersResultHandler extends BasicProgressMonitor<ShuttersOutput>  {
 
     private final File tmpDir;
 
@@ -19,11 +17,11 @@ public class ShuttersResultHandler extends BasicProgressMonitor<ShuttersResult> 
     }
 
     @Override
-    public void isFinished(Result<? extends ShuttersResult> result) {
+    public void isFinished(Result<? extends ShuttersOutput> result) {
         super.isFinished(result);
-        if (result.getOutcome() == Outcome.SUCCESS) {
+        if (result.isSuccess()) {
             System.out.println(result.getPayload().getStdout());
-        } else if (result.getOutcome() == Outcome.FAILURE) {
+        } else if (result.isFailure()) {
             FileUtils.deleteOnExitRecursively(tmpDir);
             String errorMessage = result.getPayload().getError();
             Framework framework = Framework.getInstance();

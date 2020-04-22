@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.atacs.commands.ComplexGateSynthesisCommand;
-import org.workcraft.plugins.circuit.TestUtils;
+import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -22,7 +22,7 @@ public class MissingToolTests {
 
     @Test
     public void testMissingAtacsVerification() throws DeserialisationException {
-        AtacsSettings.setCommand(TestUtils.getToolPath("ATACS", "atacs-missing"));
+        AtacsSettings.setCommand(BackendUtils.getTemplateToolPath("ATACS", "atacs-missing"));
         testMissingTool();
     }
 

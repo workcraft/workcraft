@@ -1,7 +1,7 @@
 package org.workcraft.plugins.petrify.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.plugins.petrify.tasks.SynthesisResultHandler;
+import org.workcraft.plugins.petrify.tasks.SynthesisResultHandlingMonitor;
 import org.workcraft.plugins.petrify.tasks.SynthesisTask;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
@@ -29,14 +29,14 @@ public abstract class AbstractSynthesisCommand extends  org.workcraft.commands.A
     @Override
     public WorkspaceEntry execute(WorkspaceEntry we) {
         WorkspaceEntry result = null;
-        SynthesisResultHandler monitor = queueSynthesis(we);
+        SynthesisResultHandlingMonitor monitor = queueSynthesis(we);
         if (monitor != null) {
             result = monitor.waitForHandledResult();
         }
         return result;
     }
 
-    private SynthesisResultHandler queueSynthesis(WorkspaceEntry we) {
+    private SynthesisResultHandlingMonitor queueSynthesis(WorkspaceEntry we) {
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         LinkedList<Mutex> mutexes = MutexUtils.getImplementableMutexes(stg);
         if (mutexes == null) {
@@ -46,7 +46,7 @@ public abstract class AbstractSynthesisCommand extends  org.workcraft.commands.A
         Framework framework = Framework.getInstance();
         TaskManager taskManager = framework.getTaskManager();
         SynthesisTask task = new SynthesisTask(we, getSynthesisParameter(), mutexes, technologyMapping());
-        SynthesisResultHandler monitor = new SynthesisResultHandler(we, mutexes,
+        SynthesisResultHandlingMonitor monitor = new SynthesisResultHandlingMonitor(we, mutexes,
                 boxSequentialComponents(), boxCombinationalComponents(), sequentialAssign(),
                 technologyMapping());
 

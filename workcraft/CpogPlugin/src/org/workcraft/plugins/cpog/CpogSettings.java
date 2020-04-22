@@ -1,10 +1,10 @@
 package org.workcraft.plugins.cpog;
 
 import org.workcraft.Config;
-import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.builtin.settings.AbstractModelSettings;
-import org.workcraft.utils.DesktopApi;
+import org.workcraft.utils.BackendUtils;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -38,10 +38,10 @@ public class CpogSettings extends AbstractModelSettings {
     private static final String keyClaspCommand = prefix + ".claspCommand";
     private static final String keyMinisatCommand = prefix + ".minisatCommand";
 
-    private static final String defaultScencoCommand = DesktopApi.getOs().isWindows() ? "tools\\ScEnco\\scenco.exe" : "tools/ScEnco/scenco";
-    private static final String defaultEspressoCommand = DesktopApi.getOs().isWindows() ? "tools\\Espresso\\espresso.exe" : "tools/Espresso/espresso";
-    private static final String defaultAbcTool = DesktopApi.getOs().isWindows() ? "tools\\Abc\\abc.exe" : "tools/Abc/abc";
-    private static final String defaultPgminerCommand = DesktopApi.getOs().isWindows() ? "tools\\PGMiner\\pgminer.exe" : "tools/PGMiner/pgminer";
+    private static final String defaultScencoCommand = BackendUtils.getToolPath("ScEnco", "scenco");
+    private static final String defaultEspressoCommand = BackendUtils.getToolPath("Espresso", "espresso");
+    private static final String defaultAbcTool = BackendUtils.getToolPath("Abc", "abc");
+    private static final String defaultPgminerCommand = BackendUtils.getToolPath("PGMiner", "pgminer");
     private static final SatSolver defaultSatSolver = SatSolver.CLASP;
     private static final String defaultClaspCommand = "clasp";
     private static final String defaultMinisatCommand = "minisat";

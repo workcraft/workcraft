@@ -8,9 +8,7 @@ import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.tasks.AbstractResultHandler;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -20,7 +18,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
-public class LtscatResultHandler extends AbstractResultHandler<LtscatResult>  {
+public class LtscatResultHandler extends AbstractResultHandler<LtscatOutput>  {
 
     private final WorkspaceEntry we;
     private final File tmpDir;
@@ -31,8 +29,8 @@ public class LtscatResultHandler extends AbstractResultHandler<LtscatResult>  {
     }
 
     @Override
-    public void handleResult(Result<? extends LtscatResult> result) {
-        if (result.getOutcome() == Outcome.SUCCESS) {
+    public void handleResult(Result<? extends LtscatOutput> result) {
+        if (result.isSuccess()) {
             int windows = 1;
 
             // Print stdout of Ltscat
@@ -73,7 +71,7 @@ public class LtscatResultHandler extends AbstractResultHandler<LtscatResult>  {
             final ShuttersResultHandler shuttersResult = new ShuttersResultHandler(tmpDir);
             taskManager.queue(shuttersTask, "Shutters - process windows", shuttersResult);
 
-        } else if (result.getOutcome() == Outcome.FAILURE) {
+        } else if (result.isFailure()) {
             String errorMessage = result.getPayload().getError();
             Framework framework = Framework.getInstance();
             JOptionPane.showMessageDialog(framework.getMainWindow(), errorMessage, "Ltscat error", JOptionPane.ERROR_MESSAGE);
@@ -81,11 +79,7 @@ public class LtscatResultHandler extends AbstractResultHandler<LtscatResult>  {
     }
 
     private String getWindowName(int window) {
-        return tmpDir.getAbsolutePath()
-                + (DesktopApi.getOs().isWindows() ? "\\" : "/")
-                + we.getTitle()
-                + window
-                + ShuttersSettings.getWindowsExtension();
+        return tmpDir.getAbsolutePath() + File.separator + we.getTitle() + window + ShuttersSettings.getWindowsExtension();
     }
 
 }

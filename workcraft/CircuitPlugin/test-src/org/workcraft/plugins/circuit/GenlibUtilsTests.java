@@ -14,6 +14,7 @@ import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.Library;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.types.Pair;
+import org.workcraft.utils.BackendUtils;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -26,7 +27,7 @@ public class GenlibUtilsTests {
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
-        CircuitSettings.setGateLibrary(TestUtils.getLibraryPath("workcraft.lib"));
+        CircuitSettings.setGateLibrary(BackendUtils.getTemplateLibraryPath("workcraft.lib"));
     }
 
     @Test

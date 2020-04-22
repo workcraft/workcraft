@@ -1,17 +1,11 @@
 package org.workcraft.plugins.plato.tasks;
 
+import org.workcraft.plugins.plato.PlatoSettings;
+import org.workcraft.tasks.*;
+import org.workcraft.utils.DesktopApi;
+
 import java.io.File;
 import java.util.ArrayList;
-
-import org.workcraft.utils.DesktopApi;
-import org.workcraft.plugins.plato.PlatoSettings;
-import org.workcraft.tasks.ExternalProcessOutput;
-import org.workcraft.tasks.ExternalProcessTask;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.tasks.SubtaskMonitor;
-import org.workcraft.tasks.Task;
 
 public class PlatoSystemTask implements Task<ExternalProcessOutput> {
 
@@ -25,7 +19,7 @@ public class PlatoSystemTask implements Task<ExternalProcessOutput> {
         ExternalProcessTask task = new ExternalProcessTask(command, new File("."));
         SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(mon);
-        if (result.getOutcome() != Outcome.SUCCESS) {
+        if (!result.isSuccess()) {
             return result;
         }
         deleteTranslateExecutable();

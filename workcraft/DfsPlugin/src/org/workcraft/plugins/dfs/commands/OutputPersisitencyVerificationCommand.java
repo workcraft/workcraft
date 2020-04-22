@@ -2,17 +2,18 @@ package org.workcraft.plugins.dfs.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
+import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.plugins.dfs.Dfs;
 import org.workcraft.plugins.dfs.tasks.OutputPersistencyCheckTask;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainOutput;
-import org.workcraft.plugins.mpsat.tasks.VerificationChainResultHandler;
-import org.workcraft.plugins.mpsat.utils.MpsatUtils;
+import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainResultHandlingMonitor;
+import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
-public class OutputPersisitencyVerificationCommand extends AbstractVerificationCommand {
+public class OutputPersisitencyVerificationCommand extends AbstractVerificationCommand
+        implements ScriptableCommand<Boolean> {
 
     @Override
     public int getPriority() {
@@ -31,30 +32,27 @@ public class OutputPersisitencyVerificationCommand extends AbstractVerificationC
 
     @Override
     public void run(WorkspaceEntry we) {
-        queueVerification(we);
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
+        queueVerification(we, monitor);
     }
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        VerificationChainResultHandler monitor = queueVerification(we);
-        Result<? extends VerificationChainOutput> result = null;
-        if (monitor != null) {
-            result = monitor.waitResult();
-        }
-        return MpsatUtils.getChainOutcome(result);
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
+        queueVerification(we, monitor);
+        return monitor.waitForHandledResult();
     }
 
-    private VerificationChainResultHandler queueVerification(WorkspaceEntry we) {
+    private void queueVerification(WorkspaceEntry we, VerificationChainResultHandlingMonitor monitor) {
         if (!isApplicableTo(we)) {
-            return null;
+            monitor.isFinished(Result.failure());
+        } else {
+            Framework framework = Framework.getInstance();
+            TaskManager manager = framework.getTaskManager();
+            OutputPersistencyCheckTask task = new OutputPersistencyCheckTask(we);
+            String description = MpsatUtils.getToolchainDescription(we.getTitle());
+            manager.queue(task, description, monitor);
         }
-        Framework framework = Framework.getInstance();
-        TaskManager manager = framework.getTaskManager();
-        OutputPersistencyCheckTask task = new OutputPersistencyCheckTask(we);
-        String description = MpsatUtils.getToolchainDescription(we.getTitle());
-        VerificationChainResultHandler monitor = new VerificationChainResultHandler(we);
-        manager.queue(task, description, monitor);
-        return monitor;
     }
 
 }

@@ -10,6 +10,6 @@ write(
     "USC: " + checkStgUsc(work) + "\n" +
     "DI interface: " + checkStgDiInterface(work) + "\n" +
     "Normalcy: " + checkStgNormalcy(work) + "\n" +
-    "Mutex implementability: " + checkStgMutexImplementability(work) + "\n",
-    "bad.stg.result");
+    "Mutex implementability: " + checkStgMutexImplementability(work) + "\n" +
+    "", "bad.stg.result");
 exit();

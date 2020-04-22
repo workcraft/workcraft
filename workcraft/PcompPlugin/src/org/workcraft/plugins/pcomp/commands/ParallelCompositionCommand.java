@@ -1,22 +1,30 @@
 package org.workcraft.plugins.pcomp.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.commands.Command;
+import org.workcraft.commands.ScriptableDataCommand;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.PluginManager;
+import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.pcomp.gui.ParallelCompositionDialog;
-import org.workcraft.plugins.pcomp.tasks.PcompResultHandler;
+import org.workcraft.plugins.pcomp.tasks.PcompParameters;
+import org.workcraft.plugins.pcomp.tasks.PcompResultHandlingMonitor;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
+import org.workcraft.plugins.pcomp.utils.PcompUtils;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
+import org.workcraft.plugins.stg.utils.MutexUtils;
+import org.workcraft.tasks.ProgressMonitor;
+import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.utils.*;
+import org.workcraft.types.Pair;
+import org.workcraft.utils.ExportUtils;
+import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -25,12 +33,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
-public class ParallelCompositionCommand implements Command {
-
-    public static final String RESULT_FILE_NAME = "result.g";
-    public static final String DETAIL_FILE_NAME = "detail.xml";
+public class ParallelCompositionCommand
+        implements ScriptableDataCommand<WorkspaceEntry, Pair<Collection<WorkspaceEntry>, PcompParameters>> {
 
     @Override
     public String getSection() {
@@ -39,7 +44,7 @@ public class ParallelCompositionCommand implements Command {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, StgModel.class);
+        return (we == null) || WorkspaceUtils.isApplicable(we, StgModel.class);
     }
 
     @Override
@@ -50,53 +55,59 @@ public class ParallelCompositionCommand implements Command {
     @Override
     public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
-        if (!framework.isInGuiMode()) {
-            LogUtils.logError("Command '" + getClass().getSimpleName() + "' only works in GUI mode.");
-            return;
-        }
         MainWindow mainWindow = framework.getMainWindow();
         ParallelCompositionDialog dialog = new ParallelCompositionDialog(mainWindow);
-        if (!dialog.reveal()) {
-            return;
+        if (dialog.reveal()) {
+            Collection<WorkspaceEntry> wes = new ArrayList<>();
+            for (Path<String> path : dialog.getSourcePaths()) {
+                Workspace workspace = framework.getWorkspace();
+                wes.add(workspace.getWork(path));
+            }
+            PcompParameters parameters = dialog.getPcompParameters();
+            Pair<Collection<WorkspaceEntry>, PcompParameters> data = Pair.of(wes, parameters);
+            PcompResultHandlingMonitor monitor = new PcompResultHandlingMonitor();
+            run(we, data, monitor);
         }
+    }
 
-        Set<Path<String>> paths = dialog.getSourcePaths();
-        if ((paths == null) || (paths.size() < 2)) {
-            DialogUtils.showWarning("At least 2 STGs are required for parallel composition.");
+    @Override
+    public void run(WorkspaceEntry we, Pair<Collection<WorkspaceEntry>, PcompParameters> data, ProgressMonitor monitor) {
+        Collection<WorkspaceEntry> wes = data.getFirst();
+        if (wes.size() < 2) {
+            monitor.isFinished(Result.exception("At least 2 STGs are required for parallel composition."));
             return;
         }
 
         Collection<Mutex> mutexes = new HashSet<>();
-        String prefix = FileUtils.getTempPrefix(we.getTitle());
-        File directory = FileUtils.createTempDirectory(prefix);
+        File directory = FileUtils.createTempDirectory();
         ArrayList<File> inputFiles = new ArrayList<>();
-        for (Path<String> path: paths) {
-            Workspace workspace = framework.getWorkspace();
-            WorkspaceEntry inputWe = workspace.getWork(path);
+        for (WorkspaceEntry inputWe : wes) {
             Stg stg = WorkspaceUtils.getAs(inputWe, Stg.class);
-            Collection<Mutex> inputMutexes = MutexUtils.getMutexes(stg);
-            if (inputMutexes != null) {
-                mutexes.addAll(inputMutexes);
-            }
-            File stgFile = exportStg(inputWe, directory);
-            inputFiles.add(stgFile);
+            mutexes.addAll(MutexUtils.getMutexes(stg));
+            File inputFile = exportStg(inputWe, directory);
+            inputFiles.add(inputFile);
         }
-
-        File outputFile = new File(directory, RESULT_FILE_NAME);
-        outputFile.deleteOnExit();
-        File detailFile = null;
-        if (dialog.isSaveDetailChecked()) {
-            detailFile = new File(directory, DETAIL_FILE_NAME);
-        }
-
-        PcompTask pcompTask = new PcompTask(inputFiles.toArray(new File[0]), outputFile, detailFile,
-                dialog.getMode(), dialog.isSharedOutputsChecked(), dialog.isImprovedPcompChecked(),
-                directory);
-
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-        PcompResultHandler pcompResult = new PcompResultHandler(dialog.isShowInEditor(), outputFile, mutexes);
-        TaskManager taskManager = framework.getTaskManager();
-        taskManager.queue(pcompTask, "Running parallel composition [PComp]", pcompResult);
+        ((PcompResultHandlingMonitor) monitor).setMutexes(mutexes);
+
+        PcompParameters parameters = data.getSecond();
+        PcompTask pcompTask = new PcompTask(inputFiles, parameters, directory);
+        TaskManager taskManager = Framework.getInstance().getTaskManager();
+        taskManager.queue(pcompTask, "Running parallel composition [PComp]", monitor);
+    }
+
+    @Override
+    public Pair<Collection<WorkspaceEntry>, PcompParameters> deserialiseData(String data) {
+        Collection<WorkspaceEntry> wes = PcompUtils.deserealiseData(data);
+        PcompParameters parameters = new PcompParameters(PcompSettings.getSharedSignalMode(), false, false);
+        return Pair.of(wes, parameters);
+    }
+
+    @Override
+    public WorkspaceEntry execute(WorkspaceEntry we, Pair<Collection<WorkspaceEntry>, PcompParameters> data) {
+        PcompResultHandlingMonitor monitor = new PcompResultHandlingMonitor();
+        run(we, data, monitor);
+        return monitor.waitForHandledResult();
     }
 
     public File exportStg(WorkspaceEntry we, File directory) {
