@@ -16,7 +16,6 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.WorkUtils;
 import org.workcraft.utils.WorkspaceUtils;
@@ -91,12 +90,12 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
                 stgFiles.add(stgFile);
 
                 Result<? extends ExportOutput> exportResult = StgUtils.exportStg(stg, stgFile, monitor);
-                if (exportResult.getOutcome() != Outcome.SUCCESS) {
-                    if (exportResult.getOutcome() == Outcome.CANCEL) {
-                        return new Result<>(Outcome.CANCEL);
+                if (!exportResult.isSuccess()) {
+                    if (exportResult.isCancel()) {
+                        return Result.cancel();
                     }
-                    return new Result<>(Outcome.FAILURE,
-                            new VerificationChainOutput(exportResult, null, null, null, preparationParameters));
+                    return Result.failure(new VerificationChainOutput(
+                            exportResult, null, null, null, preparationParameters));
                 }
             }
             Result<MultiSubExportOutput> multiExportResult = new Result<>(new MultiSubExportOutput(stgFiles, substitutes));
@@ -109,12 +108,12 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
             Result<? extends PcompOutput> pcompResult = taskManager.execute(
                     pcompTask, "Running parallel composition [PComp]", new SubtaskMonitor<>(monitor));
 
-            if (pcompResult.getOutcome() != Outcome.SUCCESS) {
-                if (pcompResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!pcompResult.isSuccess()) {
+                if (pcompResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(multiExportResult, pcompResult, null, null, preparationParameters));
+                return Result.failure(new VerificationChainOutput(
+                        multiExportResult, pcompResult, null, null, preparationParameters));
             }
             monitor.progressUpdate(0.50);
 
@@ -133,12 +132,12 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
             Result<? extends PunfOutput> punfResult = taskManager.execute(
                     punfTask, "Unfolding .g", new SubtaskMonitor<>(monitor));
 
-            if (punfResult.getOutcome() != Outcome.SUCCESS) {
-                if (punfResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!punfResult.isSuccess()) {
+                if (punfResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(modSysExportResult, pcompResult, punfResult, null, preparationParameters));
+                return Result.failure(new VerificationChainOutput(
+                        modSysExportResult, pcompResult, punfResult, null, preparationParameters));
             }
             monitor.progressUpdate(0.60);
 
@@ -148,28 +147,28 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
             Result<? extends MpsatOutput>  mpsatResult = taskManager.execute(
                     mpsatTask, "Running conformation check [MPSat]", new SubtaskMonitor<>(monitor));
 
-            if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
-                if (mpsatResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!mpsatResult.isSuccess()) {
+                if (mpsatResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(modSysExportResult, pcompResult, punfResult, mpsatResult, verificationParameters));
+                return Result.failure(new VerificationChainOutput(
+                        modSysExportResult, pcompResult, punfResult, mpsatResult, verificationParameters));
             }
             monitor.progressUpdate(0.80);
 
             String mpsatStdout = mpsatResult.getPayload().getStdoutString();
             MpsatOutputParser mpsatParser = new MpsatOutputParser(mpsatStdout);
             if (!mpsatParser.getSolutions().isEmpty()) {
-                return new Result<>(Outcome.SUCCESS,
-                        new VerificationChainOutput(multiExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,
-                                "This model does not conform to the environment."));
+                return Result.success(new VerificationChainOutput(
+                        multiExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,
+                        "This model does not conform to the environment."));
             }
             monitor.progressUpdate(1.0);
 
             // Success
             String message = "N-way conformation holds.";
-            return new Result<>(Outcome.SUCCESS,
-                    new VerificationChainOutput(multiExportResult, pcompResult, punfResult, mpsatResult, verificationParameters, message));
+            return Result.success(new VerificationChainOutput(
+                    multiExportResult, pcompResult, punfResult, mpsatResult, verificationParameters, message));
 
         } catch (Throwable e) {
             return new Result<>(e);

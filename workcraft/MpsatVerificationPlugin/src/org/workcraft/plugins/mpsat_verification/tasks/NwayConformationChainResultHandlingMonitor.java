@@ -43,7 +43,7 @@ public class NwayConformationChainResultHandlingMonitor extends AbstractChainRes
     @Override
     public Result<? extends MpsatOutput> getFailedMpsatResult(VerificationChainOutput chainOutput) {
         Result<? extends MpsatOutput> mpsatResult = (chainOutput == null) ? null : chainOutput.getMpsatResult();
-        if ((mpsatResult != null) && (mpsatResult.getOutcome() == Result.Outcome.FAILURE)) {
+        if ((mpsatResult != null) && (mpsatResult.isFailure())) {
             return mpsatResult;
         }
         return null;

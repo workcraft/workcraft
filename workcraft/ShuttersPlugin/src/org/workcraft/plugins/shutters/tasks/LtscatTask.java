@@ -3,14 +3,13 @@ package org.workcraft.plugins.shutters.tasks;
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.shutters.ShuttersSettings;
 import org.workcraft.tasks.*;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 import java.util.ArrayList;
 
-public class LtscatTask implements Task<LtscatResult>, ExternalProcessListener {
+public class LtscatTask implements Task<LtscatOutput>, ExternalProcessListener {
 
     private final WorkspaceEntry we;
     private final File tmpDir;
@@ -23,7 +22,7 @@ public class LtscatTask implements Task<LtscatResult>, ExternalProcessListener {
     }
 
     @Override
-    public Result<? extends LtscatResult> run(ProgressMonitor<? super LtscatResult> monitor) {
+    public Result<? extends LtscatOutput> run(ProgressMonitor<? super LtscatOutput> monitor) {
         ArrayList<String> args = new ArrayList<>();
 
         args.add(ShuttersSettings.getPython3Command());
@@ -35,24 +34,22 @@ public class LtscatTask implements Task<LtscatResult>, ExternalProcessListener {
         Result<? extends ExternalProcessOutput> result = task.run(mon);
 
         // Handling the result
-        if (result.getOutcome() == Outcome.CANCEL) {
+        if (result.isCancel()) {
             FileUtils.deleteOnExitRecursively(tmpDir);
             we.cancelMemento();
-            return new Result<>(Outcome.CANCEL);
-        } else {
-            final Outcome outcome;
-            if (result.getPayload().getReturnCode() == 0) {
-                outcome = Outcome.SUCCESS;
-            } else {
-                FileUtils.deleteOnExitRecursively(tmpDir);
-                we.cancelMemento();
-                outcome = Outcome.FAILURE;
-            }
-            String stdout = result.getPayload().getStdoutString();
-            String stderr = result.getPayload().getStderrString();
-            LtscatResult finalResult = new LtscatResult(stderr, stdout);
-            return new Result<>(outcome, finalResult);
+            return Result.cancel();
         }
+
+        String stdout = result.getPayload().getStdoutString();
+        String stderr = result.getPayload().getStderrString();
+        LtscatOutput ltscatOutput = new LtscatOutput(stderr, stdout);
+        if (result.getPayload().getReturnCode() == 0) {
+            return Result.success(ltscatOutput);
+        }
+
+        FileUtils.deleteOnExitRecursively(tmpDir);
+        we.cancelMemento();
+        return Result.failure(ltscatOutput);
     }
 
     @Override

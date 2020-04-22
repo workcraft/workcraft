@@ -4,15 +4,15 @@ import org.workcraft.tasks.ExternalProcessOutput;
 
 public class AtacsOutput extends ExternalProcessOutput {
 
-    private final String verilog;
+    private final byte[] verilogBytes;
 
-    public AtacsOutput(ExternalProcessOutput output, String verilog) {
+    public AtacsOutput(ExternalProcessOutput output, byte[] verilogBytes) {
         super(output.getReturnCode(), output.getStdout(), output.getStderr());
-        this.verilog = verilog;
+        this.verilogBytes = verilogBytes;
     }
 
-    public String getVerilog() {
-        return this.verilog;
+    public byte[] getVerilogBytes() {
+        return this.verilogBytes;
     }
 
 }

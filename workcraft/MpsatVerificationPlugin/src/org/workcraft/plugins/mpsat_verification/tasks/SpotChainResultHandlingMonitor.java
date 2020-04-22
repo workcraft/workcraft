@@ -7,7 +7,6 @@ import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -26,14 +25,14 @@ public class SpotChainResultHandlingMonitor extends AbstractResultHandlingMonito
 
     @Override
     public Boolean handle(final Result<? extends SpotChainOutput> chainResult) {
-        if (chainResult.getOutcome() == Outcome.SUCCESS) {
+        if (chainResult.isSuccess()) {
             SpotChainOutput chainOutput = chainResult.getPayload();
             Result<? extends PunfOutput> punfResult = (chainOutput == null) ? null : chainOutput.getPunfResult();
             PunfOutput punfOutput = (punfResult == null) ? null : punfResult.getPayload();
             return new PunfLtlxOutputInterpreter(we, punfOutput, interactive).interpret();
         }
 
-        if (chainResult.getOutcome() == Outcome.FAILURE) {
+        if (chainResult.isFailure()) {
             String message = buildFailureMessage(chainResult);
             if (message != null) {
                 if (interactive) {
@@ -59,19 +58,19 @@ public class SpotChainResultHandlingMonitor extends AbstractResultHandlingMonito
             Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
             Result<? extends PcompOutput> pcompResult = (chainOutput == null) ? null : chainOutput.getPcompResult();
             Result<? extends PunfOutput> punfResult = (chainOutput == null) ? null : chainOutput.getPunfResult();
-            if ((ltl2tgbaResult != null) && (ltl2tgbaResult.getOutcome() == Outcome.FAILURE)) {
+            if ((ltl2tgbaResult != null) && (ltl2tgbaResult.isFailure())) {
                 errorMessage += "\n\nCould not derive B\u00FCchi automaton.";
                 Throwable exportCause = ltl2tgbaResult.getCause();
                 if (exportCause != null) {
                     errorMessage += ERROR_CAUSE_PREFIX + exportCause.toString();
                 }
-            } else  if ((exportResult != null) && (exportResult.getOutcome() == Outcome.FAILURE)) {
+            } else  if ((exportResult != null) && (exportResult.isFailure())) {
                 errorMessage += "\n\nCould not export the model as a .g file.";
                 Throwable exportCause = exportResult.getCause();
                 if (exportCause != null) {
                     errorMessage += ERROR_CAUSE_PREFIX + exportCause.toString();
                 }
-            } else if ((pcompResult != null) && (pcompResult.getOutcome() == Outcome.FAILURE)) {
+            } else if ((pcompResult != null) && (pcompResult.isFailure())) {
                 errorMessage += "\n\nPcomp could not compose models.";
                 Throwable pcompCause = pcompResult.getCause();
                 if (pcompCause != null) {
@@ -83,7 +82,7 @@ public class SpotChainResultHandlingMonitor extends AbstractResultHandlingMonito
                         errorMessage += ERROR_CAUSE_PREFIX + pcompError;
                     }
                 }
-            } else if ((punfResult != null) && (punfResult.getOutcome() == Outcome.FAILURE)) {
+            } else if ((punfResult != null) && (punfResult.isFailure())) {
                 errorMessage += "\n\nPunf could not verify LTL-X property.";
                 Throwable punfCause = punfResult.getCause();
                 if (punfCause != null) {

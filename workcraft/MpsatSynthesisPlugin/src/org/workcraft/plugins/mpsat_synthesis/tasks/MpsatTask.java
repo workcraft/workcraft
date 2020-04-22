@@ -5,7 +5,6 @@ import org.workcraft.plugins.mpsat_synthesis.MpsatSynthesisSettings;
 import org.workcraft.plugins.mpsat_synthesis.SynthesisMode;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.tasks.*;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.ExecutableUtils;
 import org.workcraft.utils.FileUtils;
@@ -84,7 +83,7 @@ public class MpsatTask implements Task<MpsatOutput> {
         if (MpsatSynthesisSettings.getAdvancedMode()) {
             String tmp = DialogUtils.showInput("Additional parameters for MPSat:", extraArgs);
             if (tmp == null) {
-                return Result.cancelation();
+                return Result.cancel();
             }
             extraArgs = tmp;
         }
@@ -96,8 +95,8 @@ public class MpsatTask implements Task<MpsatOutput> {
         }
 
         // Output file
+        File verilogFile = new File(directory, VERILOG_FILE_NAME);
         if (synthesisMode != SynthesisMode.RESOLVE_ENCODING_CONFLICTS) {
-            File verilogFile = new File(directory, VERILOG_FILE_NAME);
             command.add(verilogFile.getAbsolutePath());
         }
 
@@ -107,39 +106,30 @@ public class MpsatTask implements Task<MpsatOutput> {
         SubtaskMonitor<? super ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
 
-        if (result.getOutcome() == Outcome.SUCCESS) {
-            ExternalProcessOutput output = result.getPayload();
-            if (output != null) {
-                int returnCode = output.getReturnCode();
-                // Even if the return code is 0 or 1, still test MPSat output to make sure it has completed successfully.
-                boolean success = false;
-                if ((returnCode == 0) || (returnCode == 1)) {
-                    Matcher matcherSuccess = SUCCESS_PATTERN.matcher(output.getStdoutString());
-                    success = matcherSuccess.find();
-                }
-                byte[] verilogBytes = null;
-                byte[] stgBytes = null;
-                if (success) {
-                    try {
-                        File verilogFile = new File(directory, VERILOG_FILE_NAME);
-                        if (verilogFile.exists()) {
-                            verilogBytes = FileUtils.readAllBytes(verilogFile);
-                        }
-                        File stgFile = new File(directory, STG_FILE_NAME);
-                        if (stgFile.exists()) {
-                            stgBytes = FileUtils.readAllBytes(stgFile);
-                        }
-                    } catch (IOException e) {
-                        return Result.exception(e);
-                    }
-                    return Result.success(new MpsatOutput(output, verilogBytes, stgBytes));
-                }
-                return Result.failure(new MpsatOutput(output, verilogBytes, stgBytes));
+        ExternalProcessOutput output = result.getPayload();
+        if (result.isSuccess() && (output != null)) {
+            int returnCode = output.getReturnCode();
+            // Even if the return code is 0 or 1, still test MPSat output to make sure it has completed successfully.
+            boolean success = false;
+            if ((returnCode == 0) || (returnCode == 1)) {
+                Matcher matcherSuccess = SUCCESS_PATTERN.matcher(output.getStdoutString());
+                success = matcherSuccess.find();
             }
+            if (success) {
+                try {
+                    byte[] verilogBytes = verilogFile.exists() ? FileUtils.readAllBytes(verilogFile) : null;
+                    File stgFile = new File(directory, STG_FILE_NAME);
+                    byte[] stgBytes = stgFile.exists() ? FileUtils.readAllBytes(stgFile) : null;
+                    return Result.success(new MpsatOutput(output, verilogBytes, stgBytes));
+                } catch (IOException e) {
+                    return Result.exception(e);
+                }
+            }
+            return Result.failure(new MpsatOutput(output, null, null));
         }
 
-        if (result.getOutcome() == Outcome.CANCEL) {
-            return Result.cancelation();
+        if (result.isCancel()) {
+            return Result.cancel();
         }
 
         return Result.exception(result.getCause());

@@ -2,7 +2,6 @@ package org.workcraft.plugins.pcomp.tasks;
 
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.tasks.*;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.ExecutableUtils;
 import org.workcraft.utils.TextUtils;
 
@@ -83,20 +82,18 @@ public class PcompTask implements Task<PcompOutput> {
         SubtaskMonitor<? super ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
 
-        if (result.getOutcome() == Outcome.SUCCESS) {
-            ExternalProcessOutput output = result.getPayload();
-            if (output != null) {
-                int returnCode = output.getReturnCode();
-                PcompOutput pcompOutput = new PcompOutput(output, inputFiles, outputFile, detailFile);
-                if ((returnCode == 0) || (returnCode == 1)) {
-                    return Result.success(pcompOutput);
-                }
-                return Result.failure(pcompOutput);
+        ExternalProcessOutput output = result.getPayload();
+        if (result.isSuccess() && (output != null)) {
+            int returnCode = output.getReturnCode();
+            PcompOutput pcompOutput = new PcompOutput(output, inputFiles, outputFile, detailFile);
+            if ((returnCode == 0) || (returnCode == 1)) {
+                return Result.success(pcompOutput);
             }
+            return Result.failure(pcompOutput);
         }
 
-        if (result.getOutcome() == Outcome.CANCEL) {
-            return Result.cancelation();
+        if (result.isCancel()) {
+            return Result.cancel();
         }
 
         return Result.exception(result.getCause());

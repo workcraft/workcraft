@@ -1,20 +1,15 @@
 package org.workcraft.plugins.petrify.tasks;
 
+import org.workcraft.interop.ExternalProcessListener;
+import org.workcraft.plugins.petrify.PetrifySettings;
+import org.workcraft.shared.DataAccumulator;
+import org.workcraft.tasks.*;
+import org.workcraft.utils.ExecutableUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.workcraft.interop.ExternalProcessListener;
-import org.workcraft.plugins.petrify.PetrifySettings;
-import org.workcraft.tasks.ExternalProcessOutput;
-import org.workcraft.tasks.ExternalProcessTask;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.tasks.Task;
-import org.workcraft.shared.DataAccumulator;
-import org.workcraft.utils.ExecutableUtils;
 
 public class WriteSgTask implements Task<ExternalProcessOutput>, ExternalProcessListener {
 
@@ -65,7 +60,7 @@ public class WriteSgTask implements Task<ExternalProcessOutput>, ExternalProcess
 
         ExternalProcessTask task = new ExternalProcessTask(command, directory);
         Result<? extends ExternalProcessOutput> result = task.run(monitor);
-        if (result.getOutcome() != Outcome.SUCCESS) {
+        if (!result.isSuccess()) {
             return result;
         }
 

@@ -18,7 +18,6 @@ import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.*;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -74,7 +73,7 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
         if (PetrifySettings.getAdvancedMode()) {
             String tmp = DialogUtils.showInput("Additional parameters for Petrify:", extraArgs);
             if (tmp == null) {
-                return Result.cancelation();
+                return Result.cancel();
             }
             extraArgs = tmp;
         }
@@ -125,7 +124,7 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
                     + "Problematic places are:\n" + refStr + "\n\n"
                     + "Proceed without these places?";
             if (!DialogUtils.showConfirmWarning(msg, "Petrify synthesis", true)) {
-                return Result.cancelation();
+                return Result.cancel();
             }
             we.captureMemento();
             VisualModel visualModel = we.getModelEntry().getVisualModel();
@@ -143,10 +142,10 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
 
         try {
-            if (result.getOutcome() == Outcome.SUCCESS) {
+            ExternalProcessOutput output = result.getPayload();
+            if (result.isSuccess() && (output != null)) {
                 byte[] verilogBytes = verilogFile.exists() ? FileUtils.readAllBytes(verilogFile) : null;
                 byte[] stgBytes = stgFile.exists() ? FileUtils.readAllBytes(stgFile) : null;
-                ExternalProcessOutput output = result.getPayload();
                 SynthesisOutput synthesisOutput = new SynthesisOutput(output, verilogBytes, stgBytes);
                 if (output.getReturnCode() != 0) {
                     return Result.failure(synthesisOutput);
@@ -159,9 +158,11 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
                 }
                 return Result.success(synthesisOutput);
             }
-            if (result.getOutcome() == Outcome.CANCEL) {
-                return Result.cancelation();
+
+            if (result.isCancel()) {
+                return Result.cancel();
             }
+
             return Result.exception(result.getCause());
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -183,7 +184,7 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
         File stgFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + gExtension);
         ExportTask exportTask = new ExportTask(stgExporter, stg, stgFile);
         Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
-        if (exportResult.getOutcome() != Outcome.SUCCESS) {
+        if (!exportResult.isSuccess()) {
             throw new RuntimeException("Unable to export the model.");
         }
         if (!mutexes.isEmpty()) {
@@ -192,7 +193,7 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
             stgFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + gExtension);
             exportTask = new ExportTask(stgExporter, stg, stgFile);
             exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
-            if (exportResult.getOutcome() != Outcome.SUCCESS) {
+            if (!exportResult.isSuccess()) {
                 throw new RuntimeException("Unable to export the model after factoring out the mutexes.");
             }
         }

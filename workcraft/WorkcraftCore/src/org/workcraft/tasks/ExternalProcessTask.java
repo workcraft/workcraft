@@ -69,7 +69,7 @@ public class ExternalProcessTask implements Task<ExternalProcessOutput>, Externa
         }
 
         if (userCancelled) {
-            return Result.cancelation();
+            return Result.cancel();
         }
 
         ExternalProcessOutput output = new ExternalProcessOutput(

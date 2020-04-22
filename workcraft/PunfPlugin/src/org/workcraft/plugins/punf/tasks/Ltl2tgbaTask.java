@@ -2,7 +2,6 @@ package org.workcraft.plugins.punf.tasks;
 
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.tasks.*;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.ExecutableUtils;
 
 import java.io.File;
@@ -46,18 +45,21 @@ public class Ltl2tgbaTask implements Task<Ltl2tgbaOutput> {
         SubtaskMonitor<? super ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
 
-        if (result.getOutcome() == Outcome.CANCEL) {
-            return Result.cancelation();
-        } else {
-            ExternalProcessOutput output = result.getPayload();
+        ExternalProcessOutput output = result.getPayload();
+        if (result.isSuccess() && (output != null)) {
             Ltl2tgbaOutput ltl2tgbaOutput = new Ltl2tgbaOutput(output, inputFile, outputFile);
             int returnCode = output.getReturnCode();
-            if ((result.getOutcome() == Outcome.SUCCESS) && ((returnCode == 0) || (returnCode == 1))) {
+            if ((returnCode == 0) || (returnCode == 1)) {
                 return Result.success(ltl2tgbaOutput);
-            } else {
-                return Result.failure(ltl2tgbaOutput);
             }
+            return Result.failure(ltl2tgbaOutput);
         }
+
+        if (result.isCancel()) {
+            return Result.cancel();
+        }
+
+        return Result.exception(result.getCause());
     }
 
 }

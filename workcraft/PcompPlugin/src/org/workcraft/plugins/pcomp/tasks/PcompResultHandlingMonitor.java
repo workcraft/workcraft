@@ -7,7 +7,6 @@ import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -27,7 +26,7 @@ public class PcompResultHandlingMonitor extends AbstractResultHandlingMonitor<Pc
     @Override
     public WorkspaceEntry handle(final Result<? extends PcompOutput> pcompResult) {
         PcompOutput pcompOutput = pcompResult.getPayload();
-        if (pcompResult.getOutcome() == Outcome.SUCCESS) {
+        if (pcompResult.isSuccess()) {
             try {
                 Framework framework = Framework.getInstance();
                 File outputFile = pcompOutput.getOutputFile();
@@ -40,7 +39,7 @@ public class PcompResultHandlingMonitor extends AbstractResultHandlingMonitor<Pc
             }
         }
 
-        if (pcompResult.getOutcome() == Outcome.FAILURE) {
+        if (pcompResult.isFailure()) {
             String message;
             if (pcompResult.getCause() != null) {
                 message = pcompResult.getCause().toString();

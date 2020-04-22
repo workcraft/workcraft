@@ -14,7 +14,6 @@ import org.workcraft.plugins.fst.converters.FstToFsmConverter;
 import org.workcraft.plugins.fst.interop.SgImporter;
 import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -42,9 +41,9 @@ public class ConversionResultHandlingMonitor extends AbstractResultHandlingMonit
     public Collection<WorkspaceEntry> handle(Result<? extends ConversionOutput> result) {
         Collection<WorkspaceEntry> wes = null;
         ConversionOutput msfsmResult = result.getPayload();
-        if (result.getOutcome() == Outcome.SUCCESS) {
+        if (result.isSuccess()) {
             wes = handleSuccess(msfsmResult);
-        } else if (result.getOutcome() == Outcome.FAILURE) {
+        } else if (result.isFailure()) {
             handleFailure(msfsmResult);
         }
         return wes;

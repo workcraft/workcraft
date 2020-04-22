@@ -24,7 +24,6 @@ import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.ModelEntry;
@@ -50,9 +49,9 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
     @Override
     public WorkspaceEntry handle(final Result<? extends SynthesisChainOutput> chainResult) {
         WorkspaceEntry result = null;
-        if (chainResult.getOutcome() == Outcome.SUCCESS) {
+        if (chainResult.isSuccess()) {
             result = handleSuccess(chainResult);
-        } else if (chainResult.getOutcome() == Outcome.FAILURE) {
+        } else if (chainResult.isFailure()) {
             handleFailure(chainResult);
         }
         return result;
@@ -204,13 +203,13 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
             final Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
             final Result<? extends PunfOutput> punfResult = (chainOutput == null) ? null : chainOutput.getPunfResult();
             final Result<? extends MpsatOutput> mpsatResult = (chainOutput == null) ? null : chainOutput.getMpsatResult();
-            if ((exportResult != null) && (exportResult.getOutcome() == Outcome.FAILURE)) {
+            if ((exportResult != null) && (exportResult.isFailure())) {
                 errorMessage += "\n\nCould not export the model as a .g file.";
                 final Throwable exportCause = exportResult.getCause();
                 if (exportCause != null) {
                     errorMessage += ERROR_CAUSE_PREFIX + exportCause.toString();
                 }
-            } else if ((punfResult != null) && (punfResult.getOutcome() == Outcome.FAILURE)) {
+            } else if ((punfResult != null) && (punfResult.isFailure())) {
                 errorMessage += "\n\nPunf could not build the unfolding prefix.";
                 final Throwable punfCause = punfResult.getCause();
                 if (punfCause != null) {
@@ -222,7 +221,7 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
                         errorMessage += ERROR_CAUSE_PREFIX + punfErrorMessage;
                     }
                 }
-            } else if ((mpsatResult != null) && (mpsatResult.getOutcome() == Outcome.FAILURE)) {
+            } else if ((mpsatResult != null) && (mpsatResult.isFailure())) {
                 errorMessage += "\n\nMPSat did not execute as expected.";
                 final Throwable mpsatCause = mpsatResult.getCause();
                 if (mpsatCause != null) {

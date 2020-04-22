@@ -59,12 +59,12 @@ public class CircuitToStgWithEnvironmentConversionCommand extends CircuitToStgCo
         Result<? extends PcompOutput> pcompResult = CircuitStgUtils.composeDevWithEnv(
                 devStgFile, envStgFile, directory, null);
 
-        if (pcompResult.getOutcome() == Result.Outcome.SUCCESS) {
+        if (pcompResult.isSuccess()) {
             File sysStgFile = pcompResult.getPayload().getOutputFile();
             return StgUtils.loadStg(sysStgFile);
         }
 
-        if (pcompResult.getOutcome() == Result.Outcome.FAILURE) {
+        if (pcompResult.isFailure()) {
             throw new RuntimeException("Composition failed:\n" + pcompResult.getCause());
         }
 
@@ -93,15 +93,14 @@ public class CircuitToStgWithEnvironmentConversionCommand extends CircuitToStgCo
         File stgFile = new File(directory, fileName);
         Result<? extends ExportOutput> exportResult = StgUtils.exportStg(stg, stgFile, null);
 
-        switch (exportResult.getOutcome()) {
-        case SUCCESS:
-            break;
-        case CANCEL:
-            stgFile = null;
-            break;
-        case FAILURE:
+        if (exportResult.isFailure()) {
             throw new RuntimeException("Export failed for file '" + fileName + "':\n" + exportResult.getCause());
         }
+
+        if (exportResult.isCancel()) {
+            stgFile = null;
+        }
+
         return stgFile;
     }
 

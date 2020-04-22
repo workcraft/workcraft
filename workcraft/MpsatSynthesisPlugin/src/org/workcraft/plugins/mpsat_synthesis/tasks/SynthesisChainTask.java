@@ -13,7 +13,6 @@ import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.ExportUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.WorkspaceUtils;
@@ -55,12 +54,11 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
             Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(
                     exportTask, "Exporting .g", subtaskMonitor);
 
-            if (exportResult.getOutcome() != Outcome.SUCCESS) {
-                if (exportResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!exportResult.isSuccess()) {
+                if (exportResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new SynthesisChainOutput(exportResult, null, null, synthesisMode));
+                return Result.failure(new SynthesisChainOutput(exportResult, null, null, synthesisMode));
             }
             if ((mutexes != null) && !mutexes.isEmpty()) {
                 model = StgUtils.loadStg(netFile);
@@ -70,12 +68,11 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
                 exportTask = new ExportTask(exporter, model, netFile);
                 exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
 
-                if (exportResult.getOutcome() != Outcome.SUCCESS) {
-                    if (exportResult.getOutcome() == Outcome.CANCEL) {
-                        return new Result<>(Outcome.CANCEL);
+                if (!exportResult.isSuccess()) {
+                    if (exportResult.isCancel()) {
+                        return Result.cancel();
                     }
-                    return new Result<>(Outcome.FAILURE,
-                            new SynthesisChainOutput(exportResult, null, null, synthesisMode));
+                    return Result.failure(new SynthesisChainOutput(exportResult, null, null, synthesisMode));
                 }
             }
             monitor.progressUpdate(0.33);
@@ -87,12 +84,12 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
             PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory);
             Result<? extends PunfOutput> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", subtaskMonitor);
 
-            if (punfResult.getOutcome() != Outcome.SUCCESS) {
-                if (punfResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!punfResult.isSuccess()) {
+                if (punfResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new SynthesisChainOutput(exportResult, punfResult, null, synthesisMode));
+                return Result.failure(new SynthesisChainOutput(
+                        exportResult, punfResult, null, synthesisMode));
             }
             monitor.progressUpdate(0.66);
 
@@ -101,26 +98,20 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
             Result<? extends MpsatOutput> mpsatResult = framework.getTaskManager().execute(
                     mpsatTask, "Running synthesis [MPSat]", subtaskMonitor);
 
-            if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
-                if (mpsatResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!mpsatResult.isSuccess()) {
+                if (mpsatResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new SynthesisChainOutput(exportResult, punfResult, mpsatResult, synthesisMode));
+                return Result.failure(new SynthesisChainOutput(exportResult, punfResult, mpsatResult, synthesisMode));
             }
             monitor.progressUpdate(1.0);
 
-            return new Result<>(Outcome.SUCCESS,
-                    new SynthesisChainOutput(exportResult, punfResult, mpsatResult, synthesisMode));
+            return Result.success(new SynthesisChainOutput(exportResult, punfResult, mpsatResult, synthesisMode));
         } catch (Throwable e) {
             return new Result<>(e);
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
         }
-    }
-
-    public WorkspaceEntry getWorkspaceEntry() {
-        return we;
     }
 
 }

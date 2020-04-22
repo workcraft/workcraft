@@ -18,7 +18,6 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -66,12 +65,12 @@ public class AssertionCheckTask implements Task<VerificationChainOutput> {
             String devStgName = (envStg != null ? StgUtils.DEVICE_FILE_PREFIX : StgUtils.SYSTEM_FILE_PREFIX) + stgFileExtension;
             File devStgFile = new File(directory, devStgName);
             Result<? extends ExportOutput> devExportResult = StgUtils.exportStg(devStg, devStgFile, monitor);
-            if (devExportResult.getOutcome() != Outcome.SUCCESS) {
-                if (devExportResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!devExportResult.isSuccess()) {
+                if (devExportResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(devExportResult, null, null, null, preparationParameters));
+                return Result.failure(new VerificationChainOutput(
+                        devExportResult, null, null, null, preparationParameters));
             }
             monitor.progressUpdate(0.10);
 
@@ -83,22 +82,22 @@ public class AssertionCheckTask implements Task<VerificationChainOutput> {
             } else {
                 File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + stgFileExtension);
                 Result<? extends ExportOutput> envExportResult = StgUtils.exportStg(envStg, envStgFile, monitor);
-                if (envExportResult.getOutcome() != Outcome.SUCCESS) {
-                    if (envExportResult.getOutcome() == Outcome.CANCEL) {
-                        return new Result<>(Outcome.CANCEL);
+                if (!envExportResult.isSuccess()) {
+                    if (envExportResult.isCancel()) {
+                        return Result.cancel();
                     }
-                    return new Result<>(Outcome.FAILURE,
-                            new VerificationChainOutput(envExportResult, null, null, null, preparationParameters));
+                    return Result.failure(new VerificationChainOutput(
+                            envExportResult, null, null, null, preparationParameters));
                 }
 
                 // Generating .g for the whole system (circuit and environment)
                 pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, directory, monitor);
-                if (pcompResult.getOutcome() != Outcome.SUCCESS) {
-                    if (pcompResult.getOutcome() == Outcome.CANCEL) {
-                        return new Result<>(Outcome.CANCEL);
+                if (!pcompResult.isSuccess()) {
+                    if (pcompResult.isCancel()) {
+                        return Result.cancel();
                     }
-                    return new Result<>(Outcome.FAILURE,
-                            new VerificationChainOutput(devExportResult, pcompResult, null, null, preparationParameters));
+                    return Result.failure(new VerificationChainOutput(
+                            devExportResult, pcompResult, null, null, preparationParameters));
                 }
                 sysStgFile = pcompResult.getPayload().getOutputFile();
             }
@@ -110,12 +109,12 @@ public class AssertionCheckTask implements Task<VerificationChainOutput> {
             SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<>(monitor);
             Result<? extends PunfOutput> punfResult = manager.execute(punfTask, "Unfolding .g", punfMonitor);
 
-            if (punfResult.getOutcome() != Outcome.SUCCESS) {
-                if (punfResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!punfResult.isSuccess()) {
+                if (punfResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(devExportResult, pcompResult, punfResult, null, preparationParameters));
+                return Result.failure(new VerificationChainOutput(
+                        devExportResult, pcompResult, punfResult, null, preparationParameters));
             }
             monitor.progressUpdate(0.40);
 
@@ -125,28 +124,28 @@ public class AssertionCheckTask implements Task<VerificationChainOutput> {
             Result<? extends MpsatOutput> mpsatResult = manager.execute(
                     mpsatTask, "Running custom property check [MPSat]", mpsatMonitor);
 
-            if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
-                if (mpsatResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!mpsatResult.isSuccess()) {
+                if (mpsatResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters));
+                return Result.failure(new VerificationChainOutput(
+                        devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters));
             }
             monitor.progressUpdate(0.50);
 
             String mpsatStdout = mpsatResult.getPayload().getStdoutString();
             MpsatOutputParser mpsatParser = new MpsatOutputParser(mpsatStdout);
             if (!mpsatParser.getSolutions().isEmpty()) {
-                return new Result<>(Outcome.SUCCESS,
-                        new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,
-                                "Property is violated after the following trace(s):"));
+                return Result.success(new VerificationChainOutput(
+                        devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,
+                        "Property is violated after the following trace(s):"));
             }
             monitor.progressUpdate(1.00);
 
             // Success
-            return new Result<>(Outcome.SUCCESS,
-                    new VerificationChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,
-                            "Property holds"));
+            return Result.success(new VerificationChainOutput(
+                    devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,
+                    "Property holds"));
 
         } catch (Throwable e) {
             return new Result<>(e);
@@ -154,5 +153,6 @@ public class AssertionCheckTask implements Task<VerificationChainOutput> {
             FileUtils.deleteOnExitRecursively(directory);
         }
     }
+
 
 }

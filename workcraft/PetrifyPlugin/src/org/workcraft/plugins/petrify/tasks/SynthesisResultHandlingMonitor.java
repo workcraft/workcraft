@@ -19,7 +19,6 @@ import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.ModelEntry;
@@ -63,9 +62,9 @@ public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonito
     @Override
     public WorkspaceEntry handle(Result<? extends SynthesisOutput> synthResult) {
         WorkspaceEntry weResult = null;
-        if (synthResult.getOutcome() == Outcome.SUCCESS) {
+        if (synthResult.isSuccess()) {
             weResult = handleSuccess(synthResult);
-        } else if (synthResult.getOutcome() == Outcome.FAILURE) {
+        } else if (synthResult.isFailure()) {
             handleFailure(synthResult);
         }
         return weResult;

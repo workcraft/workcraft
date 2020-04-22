@@ -72,7 +72,7 @@ public class StgToFstConversionCommand extends AbstractConversionCommand {
     private WorkspaceEntry processResult(Result<? extends WriteSgConversionOutput> result, Path<String> path) {
         WorkspaceEntry we = null;
         WriteSgConversionOutput output = result.getPayload();
-        if (result.getOutcome() == Result.Outcome.SUCCESS) {
+        if (result.isSuccess()) {
             Fst model = FstUtils.importFst(output.getFstBytes());
             ModelEntry me = new ModelEntry(new FstDescriptor(), model);
             we = Framework.getInstance().createWork(me, path);
@@ -81,7 +81,7 @@ public class StgToFstConversionCommand extends AbstractConversionCommand {
             if (visualModel instanceof VisualFst) {
                 highlightCscConflicts((VisualFst) visualModel);
             }
-        } else if (result.getOutcome() == Result.Outcome.FAILURE) {
+        } else if (result.isFailure()) {
             if (result.getCause() != null) {
                 ExceptionDialog.show(result.getCause());
             } else {

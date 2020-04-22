@@ -8,7 +8,6 @@ import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.traces.Solution;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
@@ -40,15 +39,16 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput> 
 
     @Override
     public final Boolean handle(Result<? extends T> result) {
-        if (result.getOutcome() == Outcome.SUCCESS) {
+        if (result.isSuccess()) {
             return handleSuccess(result);
         }
 
-        if (result.getOutcome() == Outcome.FAILURE) {
+        if (result.isFailure()) {
             if (!handlePartialFailure(result)) {
                 handleFailure(result);
             }
         }
+
         return null;
     }
 
@@ -57,11 +57,11 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput> 
     private boolean handlePartialFailure(Result<? extends T> chainResult) {
         T chainOutput = chainResult.getPayload();
         Result<? extends PcompOutput> pcompResult = (chainOutput == null) ? null : chainOutput.getPcompResult();
-        if ((pcompResult != null) && (pcompResult.getOutcome() == Outcome.FAILURE)) {
+        if ((pcompResult != null) && (pcompResult.isFailure())) {
             return false;
         }
         Result<? extends PunfOutput> punfResult = (chainOutput == null) ? null : chainOutput.getPunfResult();
-        if ((punfResult != null) && (punfResult.getOutcome() == Outcome.FAILURE)) {
+        if ((punfResult != null) && (punfResult.isFailure())) {
             PunfOutputParser prp = new PunfOutputParser(punfResult.getPayload());
             Pair<Solution, PunfOutputParser.Cause> punfOutcome = prp.getOutcome();
             if (punfOutcome != null) {
@@ -127,13 +127,13 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput> 
             Result<? extends PcompOutput> pcompResult = (chainOutput == null) ? null : chainOutput.getPcompResult();
             Result<? extends PunfOutput> punfResult = (chainOutput == null) ? null : chainOutput.getPunfResult();
             Result<? extends MpsatOutput> mpsatResult = getFailedMpsatResult(chainOutput);
-            if ((exportResult != null) && (exportResult.getOutcome() == Outcome.FAILURE)) {
+            if ((exportResult != null) && (exportResult.isFailure())) {
                 errorMessage += "\n\nCould not export the model as a .g file.";
                 Throwable exportCause = exportResult.getCause();
                 if (exportCause != null) {
                     errorMessage += ERROR_CAUSE_PREFIX + exportCause.toString();
                 }
-            } else if ((pcompResult != null) && (pcompResult.getOutcome() == Outcome.FAILURE)) {
+            } else if ((pcompResult != null) && (pcompResult.isFailure())) {
                 errorMessage += "\n\nPcomp could not compose models.";
                 Throwable pcompCause = pcompResult.getCause();
                 if (pcompCause != null) {
@@ -145,7 +145,7 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput> 
                         errorMessage += ERROR_CAUSE_PREFIX + pcompError;
                     }
                 }
-            } else if ((punfResult != null) && (punfResult.getOutcome() == Outcome.FAILURE)) {
+            } else if ((punfResult != null) && (punfResult.isFailure())) {
                 errorMessage += "\n\nPunf could not build the unfolding prefix.";
                 Throwable punfCause = punfResult.getCause();
                 if (punfCause != null) {
@@ -157,7 +157,7 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput> 
                         errorMessage += ERROR_CAUSE_PREFIX + punfErrorMessage;
                     }
                 }
-            } else if ((mpsatResult != null) && (mpsatResult.getOutcome() == Outcome.FAILURE)) {
+            } else if ((mpsatResult != null) && (mpsatResult.isFailure())) {
                 errorMessage += "\n\nMPSat did not execute as expected.";
                 Throwable mpsatCause = mpsatResult.getCause();
                 if (mpsatCause != null) {

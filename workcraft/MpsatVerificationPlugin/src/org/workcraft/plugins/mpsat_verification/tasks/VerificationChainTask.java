@@ -13,7 +13,6 @@ import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.ExportUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.WorkspaceUtils;
@@ -61,12 +60,12 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
             Result<? extends ExportOutput> exportResult = manager.execute(
                     exportTask, "Exporting .g", subtaskMonitor);
 
-            if (exportResult.getOutcome() != Outcome.SUCCESS) {
-                if (exportResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!exportResult.isSuccess()) {
+                if (exportResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(exportResult, null, null, null, verificationParameters));
+                return Result.failure(new VerificationChainOutput(
+                        exportResult, null, null, null, verificationParameters));
             }
             if ((mutexes != null) && !mutexes.isEmpty()) {
                 Stg stg = StgUtils.loadStg(netFile);
@@ -75,12 +74,12 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
                 exportTask = new ExportTask(exporter, model, netFile);
                 exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
 
-                if (exportResult.getOutcome() != Outcome.SUCCESS) {
-                    if (exportResult.getOutcome() == Outcome.CANCEL) {
-                        return new Result<>(Outcome.CANCEL);
+                if (!exportResult.isSuccess()) {
+                    if (exportResult.isCancel()) {
+                        return Result.cancel();
                     }
-                    return new Result<>(Outcome.FAILURE,
-                            new VerificationChainOutput(exportResult, null, null, null, verificationParameters));
+                    return Result.failure(new VerificationChainOutput(
+                            exportResult, null, null, null, verificationParameters));
                 }
             }
             monitor.progressUpdate(0.33);
@@ -90,12 +89,12 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
             PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory);
             Result<? extends PunfOutput> punfResult = manager.execute(punfTask, "Unfolding .g", subtaskMonitor);
 
-            if (punfResult.getOutcome() != Outcome.SUCCESS) {
-                if (punfResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!punfResult.isSuccess()) {
+                if (punfResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(exportResult, null, punfResult, null, verificationParameters));
+                return Result.failure(new VerificationChainOutput(
+                        exportResult, null, punfResult, null, verificationParameters));
             }
             monitor.progressUpdate(0.66);
 
@@ -104,17 +103,17 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
             Result<? extends MpsatOutput> mpsatResult = manager.execute(
                     mpsatTask, "Running verification [MPSat]", subtaskMonitor);
 
-            if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
-                if (mpsatResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!mpsatResult.isSuccess()) {
+                if (mpsatResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(exportResult, null, punfResult, mpsatResult, verificationParameters));
+                return Result.failure(new VerificationChainOutput(
+                        exportResult, null, punfResult, mpsatResult, verificationParameters));
             }
             monitor.progressUpdate(1.0);
 
-            return new Result<>(Outcome.SUCCESS,
-                    new VerificationChainOutput(exportResult, null, punfResult, mpsatResult, verificationParameters));
+            return Result.success(new VerificationChainOutput(
+                    exportResult, null, punfResult, mpsatResult, verificationParameters));
         } catch (Throwable e) {
             return new Result<>(e);
         } finally {

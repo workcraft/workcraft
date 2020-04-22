@@ -5,7 +5,6 @@ import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.traces.Solution;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
@@ -62,7 +61,7 @@ public class CombinedChainResultHandlingMonitor extends AbstractChainResultHandl
     }
 
     public static MpsatOutput getViolationMpsatOutput(Result<? extends CombinedChainOutput> chainResult) {
-        if ((chainResult != null) && (chainResult.getOutcome() == Outcome.SUCCESS)) {
+        if ((chainResult != null) && (chainResult.isSuccess())) {
             CombinedChainOutput chainOutput = chainResult.getPayload();
             for (Result<? extends MpsatOutput> mpsatResult : chainOutput.getMpsatResultList()) {
                 if (mpsatResult != null) {
@@ -94,7 +93,7 @@ public class CombinedChainResultHandlingMonitor extends AbstractChainResultHandl
         List<Result<? extends MpsatOutput>> mpsatResultList = (chainOutput == null) ? null : chainOutput.getMpsatResultList();
         if (mpsatResultList != null) {
             for (Result<? extends MpsatOutput> mpsatResult : mpsatResultList) {
-                if ((mpsatResult != null) && (mpsatResult.getOutcome() == Outcome.FAILURE)) {
+                if ((mpsatResult != null) && (mpsatResult.isFailure())) {
                     return mpsatResult;
                 }
             }

@@ -28,7 +28,6 @@ import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.tasks.BasicProgressMonitor;
 import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.ImportUtils;
 import org.workcraft.utils.LogUtils;
@@ -55,7 +54,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
         public void run() {
             try {
                 if (system) {
-                    if (result.getOutcome() == Outcome.SUCCESS) {
+                    if (result.isSuccess()) {
                         PlatoSystemTask task = new PlatoSystemTask();
                         PlatoResultHandler resultHandler = new PlatoResultHandler(sender, name, we, false);
                         final TaskManager taskManager = Framework.getInstance().getTaskManager();
@@ -64,7 +63,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
                     }
                 } else {
                     String stdout = result.getPayload().getStdoutString();
-                    if (result.getOutcome() == Outcome.SUCCESS) {
+                    if (result.isSuccess()) {
                         final Framework framework = Framework.getInstance();
                         final MainWindow mainWindow = framework.getMainWindow();
                         GraphEditorPanel editor = mainWindow.getEditor(we);

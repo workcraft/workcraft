@@ -7,7 +7,6 @@ import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.*;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.ExportUtils;
 import org.workcraft.utils.FileUtils;
@@ -77,9 +76,9 @@ public class WriteSgConversionTask implements Task<WriteSgConversionOutput> {
             Result<? extends ExportOutput> petriExportResult = taskManager.execute(
                     petriExportTask, "Exporting .g", subtaskMonitor);
 
-            if (petriExportResult.getOutcome() != Outcome.SUCCESS) {
-                if (petriExportResult.getOutcome() == Outcome.CANCEL) {
-                    return Result.cancelation();
+            if (!petriExportResult.isSuccess()) {
+                if (petriExportResult.isCancel()) {
+                    return Result.cancel();
                 }
                 return Result.exception(petriExportResult.getCause());
             }
@@ -97,11 +96,11 @@ public class WriteSgConversionTask implements Task<WriteSgConversionOutput> {
                         writeSgTask, "Building state graph", subtaskMonitor);
 
                 ExternalProcessOutput output = result.getPayload();
-                if (result.getOutcome() == Outcome.SUCCESS) {
+                if (result.isSuccess()) {
                     return Result.success(new WriteSgConversionOutput(output));
                 }
-                if (result.getOutcome() == Outcome.CANCEL) {
-                    return Result.cancelation();
+                if (result.isCancel()) {
+                    return Result.cancel();
                 }
                 if (result.getCause() != null) {
                     return Result.exception(result.getCause());
@@ -115,7 +114,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionOutput> {
                             writeSgOptions.add("-huge");
                             continue;
                         } else {
-                            return Result.cancelation();
+                            return Result.cancel();
                         }
                     } else {
                         return Result.failure(new WriteSgConversionOutput(output));

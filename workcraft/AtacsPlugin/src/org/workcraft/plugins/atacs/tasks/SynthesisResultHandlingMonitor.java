@@ -15,7 +15,6 @@ import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.LogUtils;
@@ -54,9 +53,9 @@ public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonito
     public WorkspaceEntry handle(Result<? extends AtacsOutput> result) {
         WorkspaceEntry weResult = null;
         AtacsOutput atacsResult = result.getPayload();
-        if (result.getOutcome() == Outcome.SUCCESS) {
+        if (result.isSuccess()) {
             weResult = handleSuccess(atacsResult);
-        } else if (result.getOutcome() == Outcome.FAILURE) {
+        } else if (result.isFailure()) {
             handleFailure(atacsResult);
         }
         return weResult;
@@ -67,49 +66,46 @@ public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonito
     }
 
     private WorkspaceEntry handleVerilogSynthesisOutput(AtacsOutput atacsOutput) {
-        WorkspaceEntry dstWe = null;
-        String verilogOutput = atacsOutput.getVerilog();
-        if ((verilogOutput != null) && !verilogOutput.isEmpty()) {
-            LogUtils.logInfo("ATACS synthesis result in Verilog format:");
-            LogUtils.logMessage(verilogOutput);
+        byte[] verilogBytes = atacsOutput.getVerilogBytes();
+        if (verilogBytes == null) {
+            return null;
         }
+        LogUtils.logInfo("ATACS synthesis result in Verilog format:");
+        LogUtils.logMessage(new String(verilogBytes));
+        try {
+            ByteArrayInputStream verilogStream = new ByteArrayInputStream(verilogBytes);
+            VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
+            Circuit circuit = verilogImporter.importTopModule(verilogStream, mutexes);
 
-        if ((verilogOutput != null) && !verilogOutput.isEmpty()) {
-            try {
-                ByteArrayInputStream verilogStream = new ByteArrayInputStream(verilogOutput.getBytes());
-                VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
-                Circuit circuit = verilogImporter.importTopModule(verilogStream, mutexes);
+            removePortsForExposedInternalSignals(circuit);
 
-                removePortsForExposedInternalSignals(circuit);
+            Path<String> path = we.getWorkspacePath();
+            ModelEntry dstMe = new ModelEntry(new CircuitDescriptor(), circuit);
+            Framework framework = Framework.getInstance();
+            WorkspaceEntry dstWe = framework.createWork(dstMe, path);
 
-                Path<String> path = we.getWorkspacePath();
-                ModelEntry dstMe = new ModelEntry(new CircuitDescriptor(), circuit);
-                Framework framework = Framework.getInstance();
-                dstWe = framework.createWork(dstMe, path);
-
-                VisualModel visualModel = dstWe.getModelEntry().getVisualModel();
-                if (visualModel instanceof VisualCircuit) {
-                    final VisualCircuit visualCircuit = (VisualCircuit) visualModel;
-                    setComponentsRenderStyle(visualCircuit);
-                    visualCircuit.setTitle(we.getModelTitle());
-                    if (!we.getFile().exists()) {
-                        DialogUtils.showError("Unsaved STG cannot be set as the circuit environment.");
-                    } else {
-                        visualCircuit.getMathModel().setEnvironmentFile(we.getFile());
-                        if (we.isChanged()) {
-                            DialogUtils.showWarning("The STG with unsaved changes is set as the circuit environment.");
-                        }
-                    }
-                    MainWindow mainWindow = framework.getMainWindow();
-                    if (mainWindow != null) {
-                        SwingUtilities.invokeLater(() -> mainWindow.getCurrentEditor().updatePropertyView());
+            VisualModel visualModel = dstWe.getModelEntry().getVisualModel();
+            if (visualModel instanceof VisualCircuit) {
+                final VisualCircuit visualCircuit = (VisualCircuit) visualModel;
+                setComponentsRenderStyle(visualCircuit);
+                visualCircuit.setTitle(we.getModelTitle());
+                if (!we.getFile().exists()) {
+                    DialogUtils.showError("Unsaved STG cannot be set as the circuit environment.");
+                } else {
+                    visualCircuit.getMathModel().setEnvironmentFile(we.getFile());
+                    if (we.isChanged()) {
+                        DialogUtils.showWarning("The STG with unsaved changes is set as the circuit environment.");
                     }
                 }
-            } catch (final DeserialisationException e) {
-                throw new RuntimeException(e);
+                MainWindow mainWindow = framework.getMainWindow();
+                if (mainWindow != null) {
+                    SwingUtilities.invokeLater(() -> mainWindow.getCurrentEditor().updatePropertyView());
+                }
             }
+            return dstWe;
+        } catch (final DeserialisationException e) {
+            throw new RuntimeException(e);
         }
-        return dstWe;
     }
 
     private void removePortsForExposedInternalSignals(Circuit circuit) {

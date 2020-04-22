@@ -1,12 +1,5 @@
 package org.workcraft.plugins.son.tasks;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SON;
@@ -24,10 +17,12 @@ import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
+import java.awt.*;
+import java.util.*;
 
 public class TimeConsistencyTask implements Task<VerificationResult> {
 
@@ -239,7 +234,7 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
         complete(timeInfoMap);
         logger.info("\n\nVerification-Result : " + totalErrNum + " Error(s).");
 
-        return new Result<>(Outcome.SUCCESS);
+        return Result.success();
     }
 
     private Map<Node, Boolean[]> createTimeInfoMap(Collection<Node> nodes) {

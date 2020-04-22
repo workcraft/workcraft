@@ -1,25 +1,20 @@
 package org.workcraft.plugins.son.tasks;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-
 import org.apache.log4j.Logger;
-import org.workcraft.plugins.son.BlockConnector;
-import org.workcraft.plugins.son.SON;
-import org.workcraft.plugins.son.SONSettings;
-import org.workcraft.plugins.son.StructureVerifySettings;
-import org.workcraft.plugins.son.VisualSON;
+import org.workcraft.plugins.son.*;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.util.Before;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
-import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
 
 public class SONMainTask implements Task<VerificationResult> {
 
@@ -162,7 +157,7 @@ public class SONMainTask implements Task<VerificationResult> {
 
         logger.info("\n\nVerification-Result : " + err + " Error(s), " + warning + " Warning(s).");
 
-        return new Result<>(Outcome.SUCCESS);
+        return Result.success();
     }
 
     private static void clearConsole() {

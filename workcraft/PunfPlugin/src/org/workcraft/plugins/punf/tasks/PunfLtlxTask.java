@@ -2,7 +2,6 @@ package org.workcraft.plugins.punf.tasks;
 
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.tasks.*;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.ExecutableUtils;
 import org.workcraft.utils.TextUtils;
 
@@ -44,17 +43,20 @@ public class PunfLtlxTask implements Task<PunfOutput> {
         SubtaskMonitor<? super ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
 
-        if (result.getOutcome() == Outcome.CANCEL) {
-            return Result.cancelation();
-        } else {
-            ExternalProcessOutput output = result.getPayload();
+        ExternalProcessOutput output = result.getPayload();
+        if (result.isSuccess() && (result.getOutcome() != null)) {
             int returnCode = output.getReturnCode();
-            if ((result.getOutcome() == Outcome.SUCCESS) && ((returnCode == 0) || (returnCode == 1))) {
+            if ((returnCode == 0) || (returnCode == 1)) {
                 return Result.success(new PunfOutput(output));
-            } else {
-                return Result.failure(new PunfOutput(output));
             }
+            return Result.failure(new PunfOutput(output));
         }
+
+        if (result.isCancel()) {
+            return Result.cancel();
+        }
+
+        return Result.exception(result.getCause());
     }
 
 }

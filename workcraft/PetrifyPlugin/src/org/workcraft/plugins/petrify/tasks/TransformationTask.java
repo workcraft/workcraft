@@ -22,7 +22,6 @@ import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.*;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -64,7 +63,7 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
         if (PetrifySettings.getAdvancedMode()) {
             String tmp = DialogUtils.showInput("Additional parameters for Petrify:", extraArgs);
             if (tmp == null) {
-                return Result.cancelation();
+                return Result.cancel();
             }
             extraArgs = tmp;
         }
@@ -98,7 +97,7 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
                             + "Problematic places are:\n" + refStr + "\n\n"
                             + "Proceed without these places?";
                     if (!DialogUtils.showConfirmWarning(msg, "Petrify transformation", true)) {
-                        return Result.cancelation();
+                        return Result.cancel();
                     }
                     we.captureMemento();
                     VisualModel visualModel = we.getModelEntry().getVisualModel();
@@ -116,7 +115,7 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
             SubtaskMonitor<ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
             Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
 
-            if (result.getOutcome() == Outcome.SUCCESS) {
+            if (result.isSuccess()) {
                 byte[] stgBytes = stgFile.exists() ? FileUtils.readAllBytes(stgFile) : null;
                 ExternalProcessOutput output = result.getPayload();
                 String errorMessage = output.getStderrString();
@@ -125,8 +124,8 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
                 }
                 return Result.success(new TransformationOutput(output, stgBytes));
             }
-            if (result.getOutcome() == Outcome.CANCEL) {
-                return Result.cancelation();
+            if (result.isCancel()) {
+                return Result.cancel();
             }
             return Result.exception(result.getCause());
         } catch (Throwable e) {
@@ -159,7 +158,7 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
         File file = new File(directory, StgUtils.SPEC_FILE_PREFIX + extension);
         ExportTask exportTask = new ExportTask(exporter, model, file);
         Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(exportTask, "Exporting model");
-        if (exportResult.getOutcome() != Outcome.SUCCESS) {
+        if (!exportResult.isSuccess()) {
             throw new RuntimeException("Unable to export the model.");
         }
         if ((mutexes != null) && !mutexes.isEmpty()) {
@@ -168,7 +167,7 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
             file = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + extension);
             exportTask = new ExportTask(exporter, stg, file);
             exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
-            if (exportResult.getOutcome() != Outcome.SUCCESS) {
+            if (!exportResult.isSuccess()) {
                 throw new RuntimeException("Unable to export the model after factoring out the mutexes.");
             }
         }

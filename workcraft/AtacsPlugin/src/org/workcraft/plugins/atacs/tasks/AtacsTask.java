@@ -11,7 +11,6 @@ import org.workcraft.plugins.stg.interop.LpnFormat;
 import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.*;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -48,7 +47,7 @@ public class AtacsTask implements Task<AtacsOutput>, ExternalProcessListener {
         if (AtacsSettings.getAdvancedMode()) {
             String tmp = DialogUtils.showInput("Additional parameters for ATACS:", extraArgs);
             if (tmp == null) {
-                return Result.cancelation();
+                return Result.cancel();
             }
             extraArgs = tmp;
         }
@@ -76,20 +75,17 @@ public class AtacsTask implements Task<AtacsOutput>, ExternalProcessListener {
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
 
         try {
-            if (result.getOutcome() == Outcome.SUCCESS) {
-                ExternalProcessOutput output = result.getPayload();
-                if (output != null) {
-                    String verilog = getFileContent(verilogFile);
-                    AtacsOutput atacsOutput = new AtacsOutput(output, verilog);
-                    if (output.getReturnCode() == 0) {
-                        return Result.success(atacsOutput);
-                    }
-                    return Result.failure(atacsOutput);
+            ExternalProcessOutput output = result.getPayload();
+            if ((result.isSuccess()) && (output != null)) {
+                byte[] verilogBytes = verilogFile.exists() ? FileUtils.readAllBytes(verilogFile) : null;
+                if (output.getReturnCode() == 0) {
+                    return Result.success(new AtacsOutput(output, verilogBytes));
                 }
+                return Result.failure(new AtacsOutput(output, null));
             }
 
-            if (result.getOutcome() == Outcome.CANCEL) {
-                return Result.cancelation();
+            if (result.isCancel()) {
+                return Result.cancel();
             }
 
             return Result.exception(result.getCause());
@@ -98,10 +94,6 @@ public class AtacsTask implements Task<AtacsOutput>, ExternalProcessListener {
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
         }
-    }
-
-    private String getFileContent(File file) throws IOException {
-        return (file != null) && file.exists() ? FileUtils.readAllText(file) : "";
     }
 
     private File getInputFile(Stg stg, File directory) {
@@ -116,7 +108,7 @@ public class AtacsTask implements Task<AtacsOutput>, ExternalProcessListener {
         File file = new File(directory, StgUtils.SPEC_FILE_PREFIX + extension);
         ExportTask exportTask = new ExportTask(exporter, stg, file);
         Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .lpn");
-        if (exportResult.getOutcome() != Outcome.SUCCESS) {
+        if (!exportResult.isSuccess()) {
             throw new RuntimeException("Unable to export the model.");
         }
         if (!mutexes.isEmpty()) {
@@ -125,7 +117,7 @@ public class AtacsTask implements Task<AtacsOutput>, ExternalProcessListener {
             file = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + extension);
             exportTask = new ExportTask(exporter, stg, file);
             exportResult = framework.getTaskManager().execute(exportTask, "Exporting .lpn");
-            if (exportResult.getOutcome() != Outcome.SUCCESS) {
+            if (!exportResult.isSuccess()) {
                 throw new RuntimeException("Unable to export the model after factoring out the mutexes.");
             }
         }

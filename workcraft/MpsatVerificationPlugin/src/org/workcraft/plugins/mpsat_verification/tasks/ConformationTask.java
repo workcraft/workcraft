@@ -18,7 +18,6 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.ExportUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.WorkspaceUtils;
@@ -62,9 +61,9 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             Result<? extends ExportOutput> devExportResult = taskManager.execute(
                     devExportTask, "Exporting circuit .g", subtaskMonitor);
 
-            if (devExportResult.getOutcome() != Outcome.SUCCESS) {
-                if (devExportResult.getOutcome() == Outcome.CANCEL) {
-                    return Result.cancelation();
+            if (!devExportResult.isSuccess()) {
+                if (devExportResult.isCancel()) {
+                    return Result.cancel();
                 }
                 return Result.failure(new VerificationChainOutput(
                         devExportResult, null, null, null, preparationParameters));
@@ -88,9 +87,9 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             Result<? extends ExportOutput> envExportResult = taskManager.execute(
                     envExportTask, "Exporting environment .g", subtaskMonitor);
 
-            if (envExportResult.getOutcome() != Outcome.SUCCESS) {
-                if (envExportResult.getOutcome() == Outcome.CANCEL) {
-                    return Result.cancelation();
+            if (!envExportResult.isSuccess()) {
+                if (envExportResult.isCancel()) {
+                    return Result.cancel();
                 }
                 return Result.failure(new VerificationChainOutput(
                         envExportResult, null, null, null, preparationParameters));
@@ -104,9 +103,9 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             Result<? extends PcompOutput> pcompResult = taskManager.execute(
                     pcompTask, "Running parallel composition [PComp]", subtaskMonitor);
 
-            if (pcompResult.getOutcome() != Outcome.SUCCESS) {
-                if (pcompResult.getOutcome() == Outcome.CANCEL) {
-                    return Result.cancelation();
+            if (!pcompResult.isSuccess()) {
+                if (pcompResult.isCancel()) {
+                    return Result.cancel();
                 }
                 return Result.failure(new VerificationChainOutput(
                         devExportResult, pcompResult, null, null, preparationParameters));
@@ -120,9 +119,9 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             Result<? extends PunfOutput> punfResult = taskManager.execute(
                     punfTask, "Unfolding .g", subtaskMonitor);
 
-            if (punfResult.getOutcome() != Outcome.SUCCESS) {
-                if (punfResult.getOutcome() == Outcome.CANCEL) {
-                    return Result.cancelation();
+            if (!punfResult.isSuccess()) {
+                if (punfResult.isCancel()) {
+                    return Result.cancel();
                 }
                 return Result.failure(new VerificationChainOutput(
                         devExportResult, pcompResult, punfResult, null, preparationParameters));
@@ -139,9 +138,9 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             Result<? extends MpsatOutput>  mpsatResult = taskManager.execute(
                     mpsatTask, "Running conformation check [MPSat]", subtaskMonitor);
 
-            if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
-                if (mpsatResult.getOutcome() == Outcome.CANCEL) {
-                    return Result.cancelation();
+            if (!mpsatResult.isSuccess()) {
+                if (mpsatResult.isCancel()) {
+                    return Result.cancel();
                 }
                 return Result.failure(new VerificationChainOutput(
                         devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters));

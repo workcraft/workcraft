@@ -12,7 +12,6 @@ import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.*;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.ExportUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.WorkspaceUtils;
@@ -41,12 +40,12 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
         Result<? extends CombinedChainOutput> chainResult = processSettingList(monitor);
 
         // Only proceed with the extra task if the main tasks are all successful and have no solutions.
-        if ((extraTask != null) && (chainResult.getOutcome() == Outcome.SUCCESS)
+        if ((extraTask != null) && (chainResult.isSuccess())
                 && (CombinedChainResultHandlingMonitor.getViolationMpsatOutput(chainResult) == null)) {
 
             Result<? extends VerificationChainOutput> taskResult = processExtraTask(monitor);
-            if (taskResult.getOutcome() == Outcome.CANCEL) {
-                return new Result<>(Outcome.CANCEL);
+            if (taskResult.isCancel()) {
+                return Result.cancel();
             }
 
             VerificationChainOutput payload = taskResult.getPayload();
@@ -86,12 +85,12 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
             Result<? extends ExportOutput> exportResult = taskManager.execute(
                     exportTask, "Exporting .g", subtaskMonitor);
 
-            if (exportResult.getOutcome() != Outcome.SUCCESS) {
-                if (exportResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!exportResult.isSuccess()) {
+                if (exportResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new CombinedChainOutput(exportResult, null, null, mpsatResultList, verificationParametersList));
+                return Result.failure(new CombinedChainOutput(
+                        exportResult, null, null, mpsatResultList, verificationParametersList));
             }
             monitor.progressUpdate(0.33);
 
@@ -100,12 +99,12 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
             PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory);
             Result<? extends PunfOutput> punfResult = taskManager.execute(punfTask, "Unfolding .g", subtaskMonitor);
 
-            if (punfResult.getOutcome() != Outcome.SUCCESS) {
-                if (punfResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!punfResult.isSuccess()) {
+                if (punfResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new CombinedChainOutput(exportResult, null, punfResult, mpsatResultList, verificationParametersList));
+                return Result.failure(new CombinedChainOutput(
+                        exportResult, null, punfResult, mpsatResultList, verificationParametersList));
             }
             monitor.progressUpdate(0.66);
 
@@ -115,18 +114,18 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
                 Result<? extends MpsatOutput> mpsatResult = taskManager.execute(
                         mpsatTask, "Running verification [MPSat]", subtaskMonitor);
                 mpsatResultList.add(mpsatResult);
-                if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
-                    if (mpsatResult.getOutcome() == Outcome.CANCEL) {
-                        return new Result<>(Outcome.CANCEL);
+                if (!mpsatResult.isSuccess()) {
+                    if (mpsatResult.isCancel()) {
+                        return Result.cancel();
                     }
-                    return new Result<>(Outcome.FAILURE,
-                            new CombinedChainOutput(exportResult, null, punfResult, mpsatResultList, verificationParametersList));
+                    return Result.failure(new CombinedChainOutput(
+                            exportResult, null, punfResult, mpsatResultList, verificationParametersList));
                 }
             }
             monitor.progressUpdate(1.0);
 
-            return new Result<>(Outcome.SUCCESS,
-                    new CombinedChainOutput(exportResult, null, punfResult, mpsatResultList, verificationParametersList));
+            return Result.success(new CombinedChainOutput(
+                    exportResult, null, punfResult, mpsatResultList, verificationParametersList));
         } catch (Throwable e) {
             return new Result<>(e);
         } finally {

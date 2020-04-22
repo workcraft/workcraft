@@ -20,7 +20,6 @@ import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.WorkUtils;
@@ -91,31 +90,31 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
             if (isVacuouslyOutputDeterminate(stg)) {
                 VerificationParameters vacuousParameters = new VerificationParameters("Output determinacy (vacuously)",
                         VerificationMode.UNDEFINED, 0, null, 0);
-                return new Result<>(Outcome.SUCCESS,
-                        new VerificationChainOutput(null, null, null, null,
-                                vacuousParameters, "Output determinacy vacuously holds."));
+                return Result.success(new VerificationChainOutput(
+                        null, null, null, null,
+                        vacuousParameters, "Output determinacy vacuously holds."));
             }
             monitor.progressUpdate(0.20);
 
             // Generating two copies of .g file for the model (dev and env)
             File devStgFile = new File(directory, StgUtils.DEVICE_FILE_PREFIX + stgFileExtension);
             Result<? extends ExportOutput> devExportResult = StgUtils.exportStg(stg, devStgFile, monitor);
-            if (devExportResult.getOutcome() != Outcome.SUCCESS) {
-                if (devExportResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!devExportResult.isSuccess()) {
+                if (devExportResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(devExportResult, null, null, null, preparationParameters));
+                return Result.failure(new VerificationChainOutput(
+                        devExportResult, null, null, null, preparationParameters));
             }
 
             File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + stgFileExtension);
             Result<? extends ExportOutput> envExportResult = StgUtils.exportStg(stg, envStgFile, monitor);
-            if (envExportResult.getOutcome() != Outcome.SUCCESS) {
-                if (envExportResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!envExportResult.isSuccess()) {
+                if (envExportResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(envExportResult, null, null, null, preparationParameters));
+                return Result.failure(new VerificationChainOutput(
+                        envExportResult, null, null, null, preparationParameters));
             }
 
             List<File> stgFiles = Arrays.asList(devStgFile, envStgFile);
@@ -129,12 +128,12 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
             Result<? extends PcompOutput> pcompResult = taskManager.execute(
                     pcompTask, "Running parallel composition [PComp]", new SubtaskMonitor<>(monitor));
 
-            if (pcompResult.getOutcome() != Outcome.SUCCESS) {
-                if (pcompResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!pcompResult.isSuccess()) {
+                if (pcompResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(multiExportResult, pcompResult, null, null, preparationParameters));
+                return Result.failure(new VerificationChainOutput(
+                        multiExportResult, pcompResult, null, null, preparationParameters));
             }
             monitor.progressUpdate(0.50);
 
@@ -154,12 +153,12 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
             Result<? extends PunfOutput> punfResult = taskManager.execute(
                     punfTask, "Unfolding .g", new SubtaskMonitor<>(monitor));
 
-            if (punfResult.getOutcome() != Outcome.SUCCESS) {
-                if (punfResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!punfResult.isSuccess()) {
+                if (punfResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(modSysExportResult, pcompResult, punfResult, null, preparationParameters));
+                return Result.failure(new VerificationChainOutput(
+                        modSysExportResult, pcompResult, punfResult, null, preparationParameters));
             }
             monitor.progressUpdate(0.60);
 
@@ -169,28 +168,28 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
             Result<? extends MpsatOutput>  mpsatResult = taskManager.execute(
                     mpsatTask, "Running output determinacy check [MPSat]", new SubtaskMonitor<>(monitor));
 
-            if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
-                if (mpsatResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!mpsatResult.isSuccess()) {
+                if (mpsatResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(modSysExportResult, pcompResult, punfResult, mpsatResult, verificationParameters));
+                return Result.failure(new VerificationChainOutput(
+                        modSysExportResult, pcompResult, punfResult, mpsatResult, verificationParameters));
             }
             monitor.progressUpdate(0.80);
 
             String mpsatStdout = mpsatResult.getPayload().getStdoutString();
             MpsatOutputParser mpsatParser = new MpsatOutputParser(mpsatStdout);
             if (!mpsatParser.getSolutions().isEmpty()) {
-                return new Result<>(Outcome.SUCCESS,
-                        new VerificationChainOutput(multiExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,
-                                "This model is not output determinate."));
+                return Result.success(new VerificationChainOutput(
+                        multiExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,
+                        "This model is not output determinate."));
             }
             monitor.progressUpdate(1.0);
 
             // Success
-            return new Result<>(Outcome.SUCCESS,
-                    new VerificationChainOutput(multiExportResult, pcompResult, punfResult, mpsatResult,
-                            verificationParameters, "Output determinacy holds."));
+            return Result.success(new VerificationChainOutput(
+                    multiExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,
+                    "Output determinacy holds."));
 
         } catch (Throwable e) {
             return new Result<>(e);

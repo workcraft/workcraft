@@ -1,17 +1,17 @@
 package org.workcraft.plugins.cpog.tasks;
 
-public class ScencoResult {
+public class ScencoOutput {
     private final String stdout;
     private final String error;
     private final String resultDirectoryPath;
 
-    public ScencoResult(String stdout, String resultDirectoryPath) {
+    public ScencoOutput(String stdout, String resultDirectoryPath) {
         this.stdout = stdout;
         this.error = null;
         this.resultDirectoryPath = resultDirectoryPath;
     }
 
-    public ScencoResult(String error, String stdout, String resultDirectoryPath) {
+    public ScencoOutput(String error, String stdout, String resultDirectoryPath) {
         this.stdout = stdout;
         this.error = error;
         this.resultDirectoryPath = resultDirectoryPath;

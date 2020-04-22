@@ -50,12 +50,11 @@ public class SpotChainTask implements Task<SpotChainOutput> {
             Result<? extends Ltl2tgbaOutput> ltl2tgbaResult = manager.execute(
                     ltl2tgbaTask, "Converting SPOT assertion to B\u00FCchi automaton", ltl2tgbaMonitor);
 
-            if (ltl2tgbaResult.getOutcome() != Result.Outcome.SUCCESS) {
-                if (ltl2tgbaResult.getOutcome() == Result.Outcome.CANCEL) {
-                    return new Result<>(Result.Outcome.CANCEL);
+            if (!ltl2tgbaResult.isSuccess()) {
+                if (ltl2tgbaResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Result.Outcome.FAILURE,
-                        new SpotChainOutput(ltl2tgbaResult, null));
+                return Result.failure(new SpotChainOutput(ltl2tgbaResult, null));
             }
             monitor.progressUpdate(0.1);
 
@@ -73,17 +72,15 @@ public class SpotChainTask implements Task<SpotChainOutput> {
             SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<>(monitor);
             Result<? extends PunfOutput> punfResult = manager.execute(punfTask, "Unfolding .g", punfMonitor);
 
-            if (punfResult.getOutcome() != Result.Outcome.SUCCESS) {
-                if (punfResult.getOutcome() == Result.Outcome.CANCEL) {
-                    return new Result<>(Result.Outcome.CANCEL);
+            if (!punfResult.isSuccess()) {
+                if (punfResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Result.Outcome.FAILURE,
-                        new SpotChainOutput(ltl2tgbaResult, punfResult));
+                return Result.failure(new SpotChainOutput(ltl2tgbaResult, punfResult));
             }
             monitor.progressUpdate(1.0);
 
-            return new Result<>(Result.Outcome.SUCCESS,
-                    new SpotChainOutput(ltl2tgbaResult, punfResult));
+            return Result.success(new SpotChainOutput(ltl2tgbaResult, punfResult));
         } catch (Throwable e) {
             return new Result<>(e);
         } finally {

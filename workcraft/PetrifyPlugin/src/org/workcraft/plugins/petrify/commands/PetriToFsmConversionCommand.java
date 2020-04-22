@@ -50,14 +50,14 @@ public class PetriToFsmConversionCommand extends AbstractConversionCommand {
     private WorkspaceEntry processResult(Result<? extends WriteSgConversionOutput> result, Path<String> path) {
         WorkspaceEntry we = null;
         WriteSgConversionOutput output = result.getPayload();
-        if (result.getOutcome() == Result.Outcome.SUCCESS) {
+        if (result.isSuccess()) {
             VisualFst fst = new VisualFst(FstUtils.importFst(output.getFstBytes()));
             VisualFsm fsm = new VisualFsm(new Fsm());
             FstToFsmConverter converter = new FstToFsmConverter(fst, fsm);
             MathModel model = converter.getDstModel().getMathModel();
             ModelEntry me = new ModelEntry(new FsmDescriptor(), model);
             we = Framework.getInstance().createWork(me, path);
-        } else if (result.getOutcome() == Result.Outcome.FAILURE) {
+        } else if (result.isFailure()) {
             if (result.getCause() != null) {
                 ExceptionDialog.show(result.getCause());
             } else {

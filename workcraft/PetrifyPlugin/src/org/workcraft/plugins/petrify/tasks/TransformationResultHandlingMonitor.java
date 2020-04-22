@@ -14,7 +14,6 @@ import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -36,7 +35,7 @@ public class TransformationResultHandlingMonitor extends AbstractResultHandlingM
     public WorkspaceEntry handle(final Result<? extends TransformationOutput> result) {
         WorkspaceEntry weResult = null;
         TransformationOutput output = result.getPayload();
-        if (result.getOutcome() == Outcome.SUCCESS) {
+        if (result.isSuccess()) {
             StgModel stgModel = StgUtils.importStg(output.getStgBytes());
             MutexUtils.restoreMutexSignals(stgModel, mutexes);
             MutexUtils.restoreMutexPlacesByContext(stgModel, mutexes);
@@ -47,7 +46,7 @@ public class TransformationResultHandlingMonitor extends AbstractResultHandlingM
             Path<String> path = we.getWorkspacePath();
             Framework framework = Framework.getInstance();
             weResult = framework.createWork(me, path);
-        } else if (result.getOutcome() == Outcome.FAILURE) {
+        } else if (result.isFailure()) {
             if (result.getCause() != null) {
                 ExceptionDialog.show(result.getCause());
             } else {

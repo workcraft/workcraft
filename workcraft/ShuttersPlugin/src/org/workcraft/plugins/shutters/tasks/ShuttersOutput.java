@@ -1,15 +1,10 @@
 package org.workcraft.plugins.shutters.tasks;
 
-public class ShuttersResult {
+public class ShuttersOutput {
     private final String stdout;
     private final String error;
 
-    public ShuttersResult(String stdout) {
-        this.stdout = stdout;
-        this.error = null;
-    }
-
-    public ShuttersResult(String error, String stdout) {
+    public ShuttersOutput(String error, String stdout) {
         this.stdout = stdout;
         this.error = error;
     }

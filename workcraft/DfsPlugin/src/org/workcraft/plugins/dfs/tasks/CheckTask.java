@@ -6,17 +6,16 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.plugins.dfs.stg.DfsToStgConverter;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
-import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutput;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutputParser;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatTask;
+import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.*;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.ExportUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.WorkspaceUtils;
@@ -55,12 +54,12 @@ public class CheckTask implements Task<VerificationChainOutput> {
             Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(
                     exportTask, "Exporting .g", mon);
 
-            if (exportResult.getOutcome() != Outcome.SUCCESS) {
-                if (exportResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!exportResult.isSuccess()) {
+                if (exportResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(exportResult, null, null, null, preparationParameters));
+                return Result.failure(new VerificationChainOutput(
+                        exportResult, null, null, null, preparationParameters));
             }
             monitor.progressUpdate(0.20);
 
@@ -69,12 +68,12 @@ public class CheckTask implements Task<VerificationChainOutput> {
             Result<? extends PunfOutput> punfResult = framework.getTaskManager().execute(
                     punfTask, "Unfolding .g", mon);
 
-            if (punfResult.getOutcome() != Outcome.SUCCESS) {
-                if (punfResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!punfResult.isSuccess()) {
+                if (punfResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(exportResult, null, punfResult, null, preparationParameters));
+                return Result.failure(new VerificationChainOutput(
+                        exportResult, null, punfResult, null, preparationParameters));
             }
             monitor.progressUpdate(0.40);
 
@@ -83,21 +82,21 @@ public class CheckTask implements Task<VerificationChainOutput> {
             Result<? extends MpsatOutput> deadlockMpsatResult = framework.getTaskManager().execute(
                     deadlockMpsatTask, "Running deadlock checking [MPSat]", mon);
 
-            if (deadlockMpsatResult.getOutcome() != Outcome.SUCCESS) {
-                if (deadlockMpsatResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!deadlockMpsatResult.isSuccess()) {
+                if (deadlockMpsatResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(exportResult, null, punfResult, deadlockMpsatResult, deadlockParameters));
+                return Result.failure(new VerificationChainOutput(
+                        exportResult, null, punfResult, deadlockMpsatResult, deadlockParameters));
             }
             monitor.progressUpdate(0.60);
 
             String deadlockMpsatStdout = deadlockMpsatResult.getPayload().getStdoutString();
             MpsatOutputParser deadlockMpsatResultParser = new MpsatOutputParser(deadlockMpsatStdout);
             if (!deadlockMpsatResultParser.getSolutions().isEmpty()) {
-                return new Result<>(Outcome.SUCCESS,
-                        new VerificationChainOutput(exportResult, null, punfResult, deadlockMpsatResult, deadlockParameters,
-                                "Dataflow has a deadlock"));
+                return Result.success(new VerificationChainOutput(
+                        exportResult, null, punfResult, deadlockMpsatResult, deadlockParameters,
+                        "Dataflow has a deadlock"));
             }
             monitor.progressUpdate(0.70);
 
@@ -105,30 +104,28 @@ public class CheckTask implements Task<VerificationChainOutput> {
             MpsatTask persistencyMpsatTask = new MpsatTask(unfoldingFile, netFile, persistencyParameters, directory);
             Result<? extends MpsatOutput> persistencyMpsatResult = framework.getTaskManager().execute(persistencyMpsatTask,
                     "Running semimodularity checking [MPSat]", mon);
-            if (persistencyMpsatResult.getOutcome() != Outcome.SUCCESS) {
-                if (persistencyMpsatResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<>(Outcome.CANCEL);
+            if (!persistencyMpsatResult.isSuccess()) {
+                if (persistencyMpsatResult.isCancel()) {
+                    return Result.cancel();
                 }
-                return new Result<>(Outcome.FAILURE,
-                        new VerificationChainOutput(exportResult, null, punfResult, persistencyMpsatResult, persistencyParameters));
+                return Result.failure(new VerificationChainOutput(
+                        exportResult, null, punfResult, persistencyMpsatResult, persistencyParameters));
             }
             monitor.progressUpdate(0.90);
 
             String persistencyMpsatStdout = persistencyMpsatResult.getPayload().getStdoutString();
             MpsatOutputParser persistencyMpsatResultParser = new MpsatOutputParser(persistencyMpsatStdout);
             if (!persistencyMpsatResultParser.getSolutions().isEmpty()) {
-                return new Result<>(Outcome.SUCCESS,
-                        new VerificationChainOutput(exportResult, null, punfResult,
-                                persistencyMpsatResult, persistencyParameters,
-                                "Dataflow is not output-persistent"));
+                return Result.success(new VerificationChainOutput(
+                        exportResult, null, punfResult, persistencyMpsatResult, persistencyParameters,
+                        "Dataflow is not output-persistent"));
             }
             monitor.progressUpdate(1.0);
 
             VerificationParameters completionParameters = ReachUtils.getToolchainCompletionParameters();
-            return new Result<>(Outcome.SUCCESS,
-                    new VerificationChainOutput(exportResult, null, punfResult,
-                            null, completionParameters,
-                            "Dataflow is deadlock-free and output-persistent"));
+            return Result.success(new VerificationChainOutput(
+                    exportResult, null, punfResult, null, completionParameters,
+                    "Dataflow is deadlock-free and output-persistent"));
 
         } catch (Throwable e) {
             return new Result<>(e);

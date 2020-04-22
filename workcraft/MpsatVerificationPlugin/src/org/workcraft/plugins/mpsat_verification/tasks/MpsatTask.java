@@ -4,7 +4,6 @@ import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.tasks.*;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.ExecutableUtils;
 import org.workcraft.utils.FileUtils;
@@ -87,7 +86,7 @@ public class MpsatTask implements Task<MpsatOutput> {
         if (MpsatVerificationSettings.getAdvancedMode()) {
             String tmp = DialogUtils.showInput("Additional parameters for MPSat:", extraArgs);
             if (tmp == null) {
-                return Result.cancelation();
+                return Result.cancel();
             }
             extraArgs = tmp;
         }
@@ -104,33 +103,28 @@ public class MpsatTask implements Task<MpsatOutput> {
         SubtaskMonitor<? super ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
 
-        if (result.getOutcome() == Outcome.SUCCESS) {
-            ExternalProcessOutput output = result.getPayload();
-            if (output != null) {
-                int returnCode = output.getReturnCode();
-                // Even if the return code is 0 or 1, still test MPSat output to make sure it has completed successfully.
-                boolean success = false;
-                if ((returnCode == 0) || (returnCode == 1)) {
-                    Matcher matcherSuccess = SUCCESS_PATTERN.matcher(output.getStdoutString());
-                    success = matcherSuccess.find();
-                }
-                if (success) {
-                    byte[] stgBytes = null;
-                    try {
-                        if (netFile.exists()) {
-                            stgBytes = FileUtils.readAllBytes(netFile);
-                        }
-                    } catch (IOException e) {
-                        return Result.exception(e);
-                    }
-                    return Result.success(new MpsatOutput(output, stgBytes, verificationParameters));
-                }
-                return Result.failure(new MpsatOutput(output, null, verificationParameters));
+        ExternalProcessOutput output = result.getPayload();
+        if (result.isSuccess() && (output != null)) {
+            int returnCode = output.getReturnCode();
+            // Even if the return code is 0 or 1, still test MPSat output to make sure it has completed successfully.
+            boolean success = false;
+            if ((returnCode == 0) || (returnCode == 1)) {
+                Matcher matcherSuccess = SUCCESS_PATTERN.matcher(output.getStdoutString());
+                success = matcherSuccess.find();
             }
+            if (success) {
+                try {
+                    byte[] stgBytes = netFile.exists() ? FileUtils.readAllBytes(netFile) : null;
+                    return Result.success(new MpsatOutput(output, stgBytes, verificationParameters));
+                } catch (IOException e) {
+                    return Result.exception(e);
+                }
+            }
+            return Result.failure(new MpsatOutput(output, null, verificationParameters));
         }
 
-        if (result.getOutcome() == Outcome.CANCEL) {
-            return Result.cancelation();
+        if (result.isCancel()) {
+            return Result.cancel();
         }
 
         return Result.exception(result.getCause());

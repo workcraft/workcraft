@@ -2,7 +2,6 @@ package org.workcraft.plugins.plato.tasks;
 
 import org.workcraft.plugins.plato.PlatoSettings;
 import org.workcraft.tasks.*;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.utils.DesktopApi;
 
 import java.io.File;
@@ -37,7 +36,7 @@ public class PlatoTask implements Task<ExternalProcessOutput> {
         ExternalProcessTask task = new ExternalProcessTask(command, new File("."));
         SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(mon);
-        if (result.getOutcome() != Outcome.SUCCESS) {
+        if (!result.isSuccess()) {
             return result;
         }
         ExternalProcessOutput output = result.getPayload();
