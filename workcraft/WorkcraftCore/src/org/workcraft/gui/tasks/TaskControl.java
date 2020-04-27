@@ -40,7 +40,7 @@ public class TaskControl extends JPanel {
         cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(event -> cancel());
 
-        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
+        JPanel buttonsPanel = GuiUtils.createDialogButtonsPanel();
         buttonsPanel.add(cancelButton);
 
         add(label, BorderLayout.NORTH);

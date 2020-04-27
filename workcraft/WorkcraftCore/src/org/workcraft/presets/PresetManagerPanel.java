@@ -59,10 +59,14 @@ public class PresetManagerPanel<T> extends JPanel {
         deleteButton.setEnabled(false);
         deleteButton.addActionListener(event -> deletePreset());
 
-        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        // Use 0 gap in FlowLayout to remove the gap after the last button and explicitly add gaps between the buttons.
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         buttonsPanel.add(createButton);
+        buttonsPanel.add(GuiUtils.createHGap());
         buttonsPanel.add(updateButton);
+        buttonsPanel.add(GuiUtils.createHGap());
         buttonsPanel.add(renameButton);
+        buttonsPanel.add(GuiUtils.createHGap());
         buttonsPanel.add(deleteButton);
 
         fillPresetComboAndSelect(null);

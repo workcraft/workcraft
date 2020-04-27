@@ -74,8 +74,8 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
     }
 
     @Override
-    public JPanel createControlsPanel() {
-        JPanel result = super.createControlsPanel();
+    public JPanel createContentPanel() {
+        JPanel result = super.createContentPanel();
         result.setLayout(GuiUtils.createBorderLayout());
 
         Collection<VerilogModule> modules = getUserData();

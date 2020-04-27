@@ -39,7 +39,7 @@ public class ReachibilityDialog extends JDialog {
         scrollPanel.setBorder(new EmptyBorder(0, SizeHelper.getLayoutHGap(), 0, SizeHelper.getLayoutHGap()));
         scrollPanel.add(new JScrollPane(solutionsPanel), BorderLayout.CENTER);
 
-        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel buttonsPanel = GuiUtils.createDialogButtonsPanel();
         JButton closeButton = GuiUtils.createDialogButton("Close");
         getRootPane().setDefaultButton(closeButton);
 

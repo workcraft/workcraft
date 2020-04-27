@@ -165,24 +165,29 @@ public class SizeHelper {
     }
 
     public static CompoundBorder getTitledBorder(String title) {
-        return new CompoundBorder(new TitledBorder(title), getEmptyBorder());
+        return new CompoundBorder(new TitledBorder(title), getGapBorder());
     }
 
     public static Border getEmptyBorder() {
-        return getEmptyBorder(true, true);
+        int gap = (int) Math.round(0.2 * getBaseSize());
+        return new EmptyBorder(gap, gap, gap, gap);
     }
 
-    public static Border getEmptyBorder(boolean v, boolean h) {
+    public static Border getEmptyLeftRightBorder() {
         int gap = (int) Math.round(0.2 * getBaseSize());
-        int vGap = v ? gap : 0;
-        int hGap = h ? gap : 0;
-        return new EmptyBorder(vGap, hGap, vGap, hGap);
+        return new EmptyBorder(0, gap, 0, gap);
     }
 
     public static Border getGapBorder() {
         int vGap = getLayoutVGap();
         int hGap = getLayoutHGap();
         return new EmptyBorder(vGap, hGap, vGap, hGap);
+    }
+
+    public static Border getContentPanelBorder() {
+        int vGap = getLayoutVGap();
+        int hGap = getLayoutHGap();
+        return new EmptyBorder(vGap, hGap, 0, hGap);
     }
 
     public static Border getTableCellBorder() {

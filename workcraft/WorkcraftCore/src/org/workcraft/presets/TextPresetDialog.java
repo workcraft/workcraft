@@ -35,8 +35,8 @@ public class TextPresetDialog extends PresetDialog<String> {
     }
 
     @Override
-    public JPanel createControlsPanel() {
-        JPanel result = super.createControlsPanel();
+    public JPanel createContentPanel() {
+        JPanel result = super.createContentPanel();
         result.setLayout(GuiUtils.createBorderLayout());
         result.add(createTextPanel(), BorderLayout.CENTER);
         // Preset panel has to be created the last as its guiMapper refers to other controls

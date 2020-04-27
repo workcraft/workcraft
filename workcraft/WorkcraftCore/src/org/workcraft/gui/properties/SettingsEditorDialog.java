@@ -234,7 +234,7 @@ public class SettingsEditorDialog extends JDialog {
         restoreButton = GuiUtils.createDialogButton("Restore defaults (all)");
         restoreButton.addActionListener(event -> restoreAction());
 
-        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
+        JPanel buttonsPanel = GuiUtils.createDialogButtonsPanel();
         buttonsPanel.add(okButton);
         buttonsPanel.add(cancelButton);
         buttonsPanel.add(restoreButton);

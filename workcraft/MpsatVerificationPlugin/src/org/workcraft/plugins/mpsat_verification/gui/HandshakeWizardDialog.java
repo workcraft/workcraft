@@ -115,8 +115,8 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
     }
 
     @Override
-    public JPanel createControlsPanel() {
-        JPanel result = super.createControlsPanel();
+    public JPanel createContentPanel() {
+        JPanel result = super.createContentPanel();
         result.setLayout(GuiUtils.createTableLayout(
                 new double[]{TableLayout.FILL},
                 new double[]{TableLayout.PREFERRED, TableLayout.FILL}));
@@ -129,9 +129,7 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
     }
 
     private JPanel createOptionsPanel() {
-        JPanel result = new JPanel(new BorderLayout());
-        result.setLayout(GuiUtils.createBorderLayout());
-        result.setBorder(SizeHelper.getGapBorder());
+        JPanel result = new JPanel(GuiUtils.createBorderLayout());
 
         passiveRadioButton = new JRadioButton("passive");
         activeRadioButton = new JRadioButton("active");
@@ -139,9 +137,11 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
         buttonGroup.add(passiveRadioButton);
         buttonGroup.add(activeRadioButton);
 
-        JPanel typePanel = new JPanel(GuiUtils.createFlowLayout());
+        JPanel typePanel = new JPanel(GuiUtils.createNogapFlowLayout());
         typePanel.add(new JLabel("Type:"));
+        typePanel.add(GuiUtils.createHGap());
         typePanel.add(passiveRadioButton);
+        typePanel.add(GuiUtils.createHGap());
         typePanel.add(activeRadioButton);
 
         Stg stg = getUserData().getStg();
@@ -156,13 +156,14 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
         outputList = new SignalList(outputSignals, SignalCommonSettings.getOutputColor());
         outputList.addListSelectionListener(l -> updateOkEnableness());
 
-        JPanel signalPanel = new JPanel(GuiUtils.createGridLayout(1, 2));
+        JPanel signalPanel = new JPanel(GuiUtils.createNogapGridLayout(1, 2));
         JScrollPane reqScroll = new JScrollPane();
         signalPanel.add(GuiUtils.createLabeledComponent(reqScroll, REQ_LABEL + ":", BorderLayout.NORTH));
         JScrollPane ackScroll = new JScrollPane();
         signalPanel.add(GuiUtils.createLabeledComponent(ackScroll, ACK_LABEL + ":", BorderLayout.NORTH));
 
-        JPanel statePanel = new JPanel(GuiUtils.createFlowLayout());
+        JPanel statePanel = new JPanel(GuiUtils.createNogapFlowLayout());
+        statePanel.setBorder(SizeHelper.getTitledBorder("Initial state"));
         ButtonGroup stateButtonGroup = new ButtonGroup();
 
         stateReq0Ack0Radio = new JRadioButton(getStateLabel(HandshakeParameters.State.REQ0ACK0));
@@ -187,20 +188,20 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
 
         stateReq0Ack0Radio.setSelected(true);
 
-        JPanel receptivenessPanel = new JPanel(GuiUtils.createGridLayout(2, 1));
+        JPanel receptivenessPanel = new JPanel(GuiUtils.createNogapGridLayout(2, 1));
+        receptivenessPanel.setBorder(SizeHelper.getTitledBorder("Receptiveness check"));
         checkAssertEnabledCheckbox = new JCheckBox();
         checkAssertEnabledCheckbox.setSelected(true);
         checkWithdrawEnabledCheckbox = new JCheckBox();
         checkWithdrawEnabledCheckbox.setSelected(true);
-        receptivenessPanel.add(checkAssertEnabledCheckbox);
-        receptivenessPanel.add(checkWithdrawEnabledCheckbox);
+        receptivenessPanel.add(checkAssertEnabledCheckbox, BorderLayout.NORTH);
+        receptivenessPanel.add(checkWithdrawEnabledCheckbox, BorderLayout.SOUTH);
 
         allowInversionCheckbox = new JCheckBox(" Allow arbitrary inversions of signals");
-        receptivenessPanel.add(allowInversionCheckbox);
 
         JPanel optionsPanel = new JPanel(GuiUtils.createBorderLayout());
-        optionsPanel.add(GuiUtils.createBorderedComponent(receptivenessPanel, "Receptiveness check: "), BorderLayout.NORTH);
-        optionsPanel.add(GuiUtils.createBorderedComponent(statePanel, "Initial state: "), BorderLayout.CENTER);
+        optionsPanel.add(receptivenessPanel, BorderLayout.NORTH);
+        optionsPanel.add(statePanel, BorderLayout.CENTER);
         optionsPanel.add(allowInversionCheckbox, BorderLayout.SOUTH);
 
         passiveRadioButton.addChangeListener(l -> {

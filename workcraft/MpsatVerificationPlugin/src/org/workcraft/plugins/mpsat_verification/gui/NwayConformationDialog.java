@@ -29,13 +29,13 @@ public class NwayConformationDialog extends ModalDialog<Void> {
     }
 
     @Override
-    public JPanel createControlsPanel() {
+    public JPanel createContentPanel() {
         Workspace workspace = Framework.getInstance().getWorkspace();
         chooser = new WorkspaceChooser(workspace, new StgWorkspaceFilter());
         chooser.setBorder(SizeHelper.getTitledBorder("Source STGs"));
         chooser.setCheckBoxMode(TreeWindow.CheckBoxMode.LEAF);
 
-        JPanel result = super.createControlsPanel();
+        JPanel result = super.createContentPanel();
         result.setLayout(new BorderLayout());
         result.add(chooser, BorderLayout.CENTER);
         return result;

@@ -3,10 +3,10 @@ package org.workcraft.gui.dialogs;
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.utils.TraceUtils;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
 import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.TraceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
@@ -27,7 +27,7 @@ public class SolutionPanel extends JPanel {
 
         JLabel commentLabel = new JLabel();
         if (solution.getComment() != null) {
-            commentLabel.setBorder(SizeHelper.getEmptyBorder(false, true));
+            commentLabel.setBorder(SizeHelper.getEmptyLeftRightBorder());
             commentLabel.setText(solution.getComment());
         }
 
@@ -42,7 +42,7 @@ public class SolutionPanel extends JPanel {
         }
 
         JPanel tracePanel = new JPanel(new BorderLayout());
-        tracePanel.setBorder(SizeHelper.getEmptyBorder(false, true));
+        tracePanel.setBorder(SizeHelper.getEmptyLeftRightBorder());
         tracePanel.add(new JScrollPane(traceText), BorderLayout.CENTER);
 
         JPanel buttonsPanel = new JPanel();

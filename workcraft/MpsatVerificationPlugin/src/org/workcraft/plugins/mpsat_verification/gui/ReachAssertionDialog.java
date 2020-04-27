@@ -51,8 +51,8 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
     }
 
     @Override
-    public JPanel createControlsPanel() {
-        JPanel result = super.createControlsPanel();
+    public JPanel createContentPanel() {
+        JPanel result = super.createContentPanel();
         result.setLayout(GuiUtils.createTableLayout(
                 new double[]{TableLayout.FILL},
                 new double[]{TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL}));
@@ -148,7 +148,7 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
     }
 
     private JPanel createOptionsPanel() {
-        JPanel result = new JPanel(new BorderLayout());
+        JPanel result = new JPanel(GuiUtils.createBorderLayout());
         result.setBorder(SizeHelper.getTitledBorder("MPSat settings"));
 
         modeCombo = new JComboBox<>();
@@ -158,9 +158,9 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
         }
         modeCombo.addItem(VerificationMode.REACHABILITY);
 
-        result.add(GuiUtils.createLabeledComponent(modeCombo, "  Mode:      "), BorderLayout.NORTH);
+        result.add(GuiUtils.createLabeledComponent(modeCombo, "Mode:     "), BorderLayout.NORTH);
 
-        JPanel solutionModePanel = new JPanel(GuiUtils.createFlowLayout());
+        JPanel solutionModePanel = new JPanel(GuiUtils.createNogapFlowLayout());
         solutionModePanel.add(new JLabel("Solution:"));
         cheapestSolutionRadioButton = new JRadioButton("minimise cost function");
         cheapestSolutionRadioButton.setSelected(true);
@@ -173,8 +173,11 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
         buttonGroup.add(cheapestSolutionRadioButton);
         buttonGroup.add(firstSolutionRadioButton);
         buttonGroup.add(allSolutionsRadioButton);
+        solutionModePanel.add(GuiUtils.createHGap());
         solutionModePanel.add(cheapestSolutionRadioButton);
+        solutionModePanel.add(GuiUtils.createHGap());
         solutionModePanel.add(firstSolutionRadioButton);
+        solutionModePanel.add(GuiUtils.createHGap());
         solutionModePanel.add(allSolutionsRadioButton);
 
         solutionLimitText = new JTextField();
@@ -190,7 +193,7 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
     }
 
     public JPanel createPropertyPanel() {
-        JPanel resutl = new JPanel(new BorderLayout());
+        JPanel resutl = new JPanel(GuiUtils.createBorderLayout());
         String title = "REACH predicate (use '" + NamespaceHelper.getHierarchySeparator() + "' as hierarchy separator)";
         resutl.setBorder(SizeHelper.getTitledBorder(title));
 
@@ -215,10 +218,11 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
         buttonGroup.add(unsatisfiableRadioButton);
         unsatisfiableRadioButton.setSelected(true);
 
-        JPanel propertyPanel = new JPanel(GuiUtils.createFlowLayout());
-
+        JPanel propertyPanel = new JPanel(GuiUtils.createNogapFlowLayout());
         propertyPanel.add(new JLabel("Property holds if predicate is:"));
+        propertyPanel.add(GuiUtils.createHGap());
         propertyPanel.add(satisfiableRadioButton);
+        propertyPanel.add(GuiUtils.createHGap());
         propertyPanel.add(unsatisfiableRadioButton);
 
         resutl.add(propertyScrollPane, BorderLayout.CENTER);

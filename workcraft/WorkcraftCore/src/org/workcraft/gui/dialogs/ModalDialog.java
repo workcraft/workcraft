@@ -29,7 +29,7 @@ public class ModalDialog<T> extends JDialog {
 
         JPanel contentPanel = new JPanel(new BorderLayout(SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
         contentPanel.setBorder(SizeHelper.getEmptyBorder());
-        contentPanel.add(createControlsPanel(), BorderLayout.CENTER);
+        contentPanel.add(createContentPanel(), BorderLayout.CENTER);
         contentPanel.add(createButtonsPanel(), BorderLayout.SOUTH);
         setContentPane(contentPanel);
 
@@ -40,12 +40,14 @@ public class ModalDialog<T> extends JDialog {
         setLocationRelativeTo(owner);
     }
 
-    public JPanel createControlsPanel() {
-        return new JPanel();
+    public JPanel createContentPanel() {
+        JPanel panel = new JPanel();
+        panel.setBorder(SizeHelper.getContentPanelBorder());
+        return panel;
     }
 
     public JPanel createButtonsPanel() {
-        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
+        JPanel buttonsPanel = GuiUtils.createDialogButtonsPanel();
         okButton = GuiUtils.createDialogButton("OK");
         okButton.addActionListener(event -> okAction());
 
