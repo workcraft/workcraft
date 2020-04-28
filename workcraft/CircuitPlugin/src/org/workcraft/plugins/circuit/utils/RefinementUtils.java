@@ -1,18 +1,14 @@
 package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.Framework;
-import org.workcraft.utils.WorkUtils;
+import org.workcraft.utils.*;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.references.FileReference;
-import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.types.Pair;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.FileUtils;
-import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -162,7 +158,7 @@ public final class RefinementUtils {
         if (refs.isEmpty()) {
             return true;
         } else {
-            String msg = ReferenceHelper.getTextWithReferences("Incompatible refinement interface for component", refs);
+            String msg = TextUtils.wrapMessageWithItems("Incompatible refinement interface for component", refs);
             DialogUtils.showError(msg);
             return false;
         }

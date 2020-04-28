@@ -616,7 +616,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
                 boolean isSelected, boolean hasFocus, int row, int column) {
 
             JLabel result = null;
-            label.setBorder(SizeHelper.getTableCellBorder());
+            label.setBorder(GuiUtils.getTableCellBorder());
             if (isActivated() && (value instanceof String)) {
                 label.setText(value.toString());
                 if (isActive(row, column)) {

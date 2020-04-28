@@ -1,6 +1,6 @@
 package org.workcraft.gui.properties;
 
-import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
@@ -16,7 +16,7 @@ public class GenericCellEditor extends AbstractCellEditor implements TableCellEd
     public GenericCellEditor() {
         textField = new JTextField();
         textField.setFocusable(true);
-        textField.setBorder(SizeHelper.getTableCellBorder());
+        textField.setBorder(GuiUtils.getTableCellBorder());
         textField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {

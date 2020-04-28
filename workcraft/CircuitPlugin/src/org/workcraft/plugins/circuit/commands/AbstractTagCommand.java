@@ -8,6 +8,7 @@ import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.TextUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -47,7 +48,7 @@ public abstract class AbstractTagCommand implements ScriptableCommand<Void> {
         } else {
             we.saveMemento();
             ArrayList<String> refs = ReferenceHelper.getReferenceList(circuit, contacts);
-            LogUtils.logInfo(ReferenceHelper.getTextWithReferences(getMessage(), refs));
+            LogUtils.logInfo(TextUtils.wrapMessageWithItems(getMessage(), refs));
         }
 
         final Framework framework = Framework.getInstance();

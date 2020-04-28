@@ -1,6 +1,5 @@
 package org.workcraft.plugins.cpog.scenco;
 
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
@@ -30,7 +29,7 @@ public class SingleSequentialScencoDialog extends AbstractScencoDialog {
         createButtonPanel(title);
 
         JPanel content = new JPanel(new BorderLayout());
-        content.setBorder(SizeHelper.getEmptyBorder());
+        content.setBorder(GuiUtils.getEmptyBorder());
 
         content.add(standardPanel);
         content.add(buttonsPanel, BorderLayout.SOUTH);

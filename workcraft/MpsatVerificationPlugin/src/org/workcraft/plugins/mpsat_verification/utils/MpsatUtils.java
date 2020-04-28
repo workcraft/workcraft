@@ -2,7 +2,6 @@ package org.workcraft.plugins.mpsat_verification.utils;
 
 import org.w3c.dom.Document;
 import org.workcraft.dom.references.ReferenceHelper;
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.presets.MpsatDataSerialiser;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
@@ -13,6 +12,7 @@ import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.presets.PresetManager;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.TextUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,12 +41,11 @@ public class MpsatUtils {
             }
         }
         if (!problematicPlaces.isEmpty()) {
-            String problematicPlacesString = ReferenceHelper.getNodesAsString(stg, problematicPlaces, SizeHelper.getWrapLength());
+            Collection<String> problematicPlacesRefs = ReferenceHelper.getReferenceList(stg, problematicPlaces);
             DialogUtils.showError("A mutex place must precede two transitions of distinct\n" +
                     "output or internal signals, each with a single trigger.\n\n" +
-                    "Problematic places are:" +
-                    (problematicPlacesString.length() > SizeHelper.getWrapLength() - 20 ? "\n" : " ") +
-                    problematicPlacesString);
+                    TextUtils.wrapMessageWithItems("Problematic place", problematicPlacesRefs));
+
             return false;
         }
         return true;

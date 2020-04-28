@@ -12,6 +12,7 @@ import org.workcraft.plugins.circuit.tools.InitialisationAnalyserTool;
 import org.workcraft.plugins.circuit.utils.ResetUtils;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.TextUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -64,7 +65,7 @@ public class ResetVerificationCommand extends AbstractVerificationCommand
             }
             List<String> refs = ReferenceHelper.getReferenceList(circuit, problematicContacts);
             String msg = "The circuit cannot be initialised via forced inputs.\n" +
-                    ReferenceHelper.getTextWithReferences("Problematic signal", refs);
+                    TextUtils.wrapMessageWithItems("Problematic signal", refs);
 
             DialogUtils.showError(msg);
             return false;

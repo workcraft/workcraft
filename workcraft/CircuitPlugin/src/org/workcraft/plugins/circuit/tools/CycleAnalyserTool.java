@@ -3,7 +3,6 @@ package org.workcraft.plugins.circuit.tools;
 import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -64,7 +63,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         ));
 
         JPanel legendPanel = new JPanel(new BorderLayout());
-        legendPanel.setBorder(SizeHelper.getTitledBorder("<html><b>Highlight legend</b></html>"));
+        legendPanel.setBorder(GuiUtils.getTitledBorder("<html><b>Highlight legend</b></html>"));
         legendPanel.add(colorLegendTable, BorderLayout.CENTER);
         return legendPanel;
     }

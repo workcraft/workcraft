@@ -2,7 +2,6 @@ package org.workcraft.plugins.mpsat_verification.gui;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.mpsat_verification.presets.HandshakeParameters;
 import org.workcraft.plugins.mpsat_verification.presets.HandshakePresetManager;
@@ -91,7 +90,7 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
 
         SignalList(Collection<String> signals, Color color) {
             super(signals.toArray(new String[signals.size()]));
-            setBorder(SizeHelper.getEmptyBorder());
+            setBorder(GuiUtils.getEmptyBorder());
             setSelectionModel(new ListMultipleSelectionModel());
             setCellRenderer(new ListCellRenderer(color));
         }
@@ -163,7 +162,7 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
         signalPanel.add(GuiUtils.createLabeledComponent(ackScroll, ACK_LABEL + ":", BorderLayout.NORTH));
 
         JPanel statePanel = new JPanel(GuiUtils.createNogapFlowLayout());
-        statePanel.setBorder(SizeHelper.getTitledBorder("Initial state"));
+        statePanel.setBorder(GuiUtils.getTitledBorder("Initial state"));
         ButtonGroup stateButtonGroup = new ButtonGroup();
 
         stateReq0Ack0Radio = new JRadioButton(getStateLabel(HandshakeParameters.State.REQ0ACK0));
@@ -189,7 +188,7 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
         stateReq0Ack0Radio.setSelected(true);
 
         JPanel receptivenessPanel = new JPanel(GuiUtils.createNogapGridLayout(2, 1));
-        receptivenessPanel.setBorder(SizeHelper.getTitledBorder("Receptiveness check"));
+        receptivenessPanel.setBorder(GuiUtils.getTitledBorder("Receptiveness check"));
         checkAssertEnabledCheckbox = new JCheckBox();
         checkAssertEnabledCheckbox.setSelected(true);
         checkWithdrawEnabledCheckbox = new JCheckBox();

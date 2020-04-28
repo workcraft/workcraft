@@ -34,6 +34,7 @@ import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.TextUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -317,7 +318,7 @@ public class VerilogImporter implements Importer {
             if (!msg.isEmpty()) {
                 msg += " and ";
             }
-            msg += ReferenceHelper.getTextWithReferences("hanging contact", hangingSignals);
+            msg += TextUtils.wrapMessageWithItems("hanging contact", hangingSignals);
         }
         if (!msg.isEmpty()) {
             DialogUtils.showWarning("The imported circuit " + msg);

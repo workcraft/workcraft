@@ -1,11 +1,13 @@
 package org.workcraft.utils;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 public class TextUtils {
 
+    public static final int DEFAULT_WRAP_LENGTH = 100;
     private static final String ELLIPSIS_SYMBOL = Character.toString((char) 0x2026);
 
     public static String truncateText(String text, int length) {
@@ -44,6 +46,10 @@ public class TextUtils {
         return result.toString();
     }
 
+    public static String wrapText(String text) {
+        return wrapText(text, DEFAULT_WRAP_LENGTH);
+    }
+
     public static String wrapText(String text, int length) {
         StringBuffer result = new StringBuffer();
         boolean firstLine = true;
@@ -58,6 +64,10 @@ public class TextUtils {
         return result.toString();
     }
 
+    public static String wrapLine(String line) {
+        return wrapLine(line, DEFAULT_WRAP_LENGTH);
+    }
+
     public static String wrapLine(String line, int length) {
         if (line.length() <= length) {
             return line;
@@ -69,6 +79,7 @@ public class TextUtils {
             if (curLength > 0) {
                 if (curLength + wordLength < length) {
                     result.append(" ");
+                    curLength++;
                 } else {
                     result.append("\n");
                     curLength = 0;
@@ -114,5 +125,51 @@ public class TextUtils {
         }
         return result.toString();
     }
+
+    public static String wrapItems(Collection<String> items) {
+        return wrapItems(items, DEFAULT_WRAP_LENGTH);
+    }
+
+    public static String wrapItems(Collection<String> items, int length) {
+        return wrapText(String.join(", ", items), length);
+    }
+
+    public static String wrapMessageWithItems(String message, Collection<String> items) {
+        return wrapMessageWithItems(message, items, DEFAULT_WRAP_LENGTH);
+    }
+
+    public static String wrapMessageWithItems(String message, Collection<String> items, int length) {
+        if ((items == null) || items.isEmpty()) {
+            return message;
+        }
+        if (items.size() == 1) {
+            return message + " '" + items.iterator().next() + "'";
+        }
+        String text = makePlural(message) + ":";
+        String str = String.join(", ", items);
+        if (text.length() + str.length() > length) {
+            text += "\n";
+        } else {
+            text += " ";
+        }
+        return text + wrapItems(items, length);
+    }
+
+    public static String makePlural(String word) {
+        if (word.endsWith("y") && !word.endsWith("ay") && !word.endsWith("ey")
+                && !word.endsWith("iy") && !word.endsWith("oy") && !word.endsWith("uy")) {
+
+            return word.substring(0, word.length() - 1) + "ies";
+        }
+        if (word.endsWith("s") || word.endsWith("x") || word.endsWith("z") || word.endsWith("ch") || word.endsWith("sh")) {
+            return word + "es";
+        }
+        return word + "s";
+    }
+
+    public static String repeat(String str, int count) {
+        return String.join("", Collections.nCopies(count, str));
+    }
+
 
 }

@@ -4,7 +4,6 @@ import org.workcraft.Framework;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -71,10 +70,10 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
             return panel;
         }
 
-        granularityPanel = new GranularityPanel(SizeHelper.getTitledBorder("Time Granularity"));
+        granularityPanel = new GranularityPanel(GuiUtils.getTitledBorder("Time Granularity"));
 
         timePropertyPanel = new JPanel(new WrapLayout());
-        timePropertyPanel.setBorder(SizeHelper.getTitledBorder("Time value"));
+        timePropertyPanel.setBorder(GuiUtils.getTitledBorder("Time value"));
 
         estimatorButton = new JButton("Estimate...");
         estimatorButton.setPreferredSize(buttonSize);

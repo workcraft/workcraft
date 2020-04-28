@@ -1,11 +1,11 @@
 package org.workcraft.plugins.son.gui;
 
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.util.Step;
+import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
@@ -180,7 +180,7 @@ public class ParallelSimDialog extends JDialog {
         eventPanel.setPreferredSize(new Dimension(250, 150));
         eventPanel.setLayout(new BorderLayout());
         eventPanel.add(listScroller, BorderLayout.CENTER);
-        eventPanel.setBorder(SizeHelper.getTitledBorder("Possible parallel execution:"));
+        eventPanel.setBorder(GuiUtils.getTitledBorder("Possible parallel execution:"));
     }
 
     private void createButtonsPanel() {
@@ -217,7 +217,7 @@ public class ParallelSimDialog extends JDialog {
         firsetColumn.setPreferredWidth(12);
 
         eventInfoPanel.setLayout(new BoxLayout(eventInfoPanel, BoxLayout.Y_AXIS));
-        eventInfoPanel.setBorder(SizeHelper.getTitledBorder("Parallel execution:"));
+        eventInfoPanel.setBorder(GuiUtils.getTitledBorder("Parallel execution:"));
         eventInfoPanel.add(table);
     }
 

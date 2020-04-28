@@ -3,7 +3,6 @@ package org.workcraft.plugins.petrify.tasks;
 import org.workcraft.Framework;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.references.ReferenceHelper;
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
@@ -92,7 +91,7 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
                 PetriModel petri = (PetriModel) model;
                 HashSet<Place> isolatedPlaces = ConversionUtils.getIsolatedMarkedPlaces(petri);
                 if (!isolatedPlaces.isEmpty()) {
-                    String refStr = ReferenceHelper.getNodesAsString(petri, isolatedPlaces, SizeHelper.getWrapLength());
+                    String refStr = ReferenceHelper.getNodesAsWrapString(petri, isolatedPlaces);
                     String msg = "Petrify does not support isolated marked places.\n\n"
                             + "Problematic places are:\n" + refStr + "\n\n"
                             + "Proceed without these places?";

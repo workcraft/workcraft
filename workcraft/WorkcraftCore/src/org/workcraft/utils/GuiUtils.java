@@ -13,6 +13,10 @@ import org.workcraft.gui.tools.GraphEditor;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.font.LineMetrics;
 import java.awt.image.BufferedImage;
@@ -255,6 +259,42 @@ public class GuiUtils {
 
     public static Component createHGap() {
         return Box.createHorizontalStrut(SizeHelper.getLayoutHGap());
+    }
+
+    public static Border getEmptyBorder() {
+        int gap = (int) Math.round(0.2 * SizeHelper.getBaseSize());
+        return new EmptyBorder(gap, gap, gap, gap);
+    }
+
+    public static Border getEmptyLeftRightBorder() {
+        int gap = (int) Math.round(0.2 * SizeHelper.getBaseSize());
+        return new EmptyBorder(0, gap, 0, gap);
+    }
+
+    public static Border getGapBorder() {
+        int vGap = SizeHelper.getLayoutVGap();
+        int hGap = SizeHelper.getLayoutHGap();
+        return new EmptyBorder(vGap, hGap, vGap, hGap);
+    }
+
+    public static Border getTitledBorder(String title) {
+        return new CompoundBorder(new TitledBorder(title), getGapBorder());
+    }
+
+    public static Border getContentPanelBorder() {
+        int vGap = SizeHelper.getLayoutVGap();
+        int hGap = SizeHelper.getLayoutHGap();
+        return new EmptyBorder(vGap, hGap, 0, hGap);
+    }
+
+    public static Border getTableCellBorder() {
+        int vGap = SizeHelper.getCellVGap();
+        int hGap = SizeHelper.getCellHGap();
+        return new EmptyBorder(vGap, hGap, vGap, hGap);
+    }
+
+    public static Border getTableHeaderBorder() {
+        return UIManager.getBorder("TableHeader.cellBorder");
     }
 
 }

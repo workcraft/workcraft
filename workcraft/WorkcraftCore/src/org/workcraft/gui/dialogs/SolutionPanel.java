@@ -20,14 +20,14 @@ public class SolutionPanel extends JPanel {
     private static final int MAX_COLUMN_COUNT = 60;
 
     public SolutionPanel(final WorkspaceEntry we, final Solution solution, final ActionListener closeAction) {
-        setBorder(SizeHelper.getEmptyBorder());
+        setBorder(GuiUtils.getEmptyBorder());
         setLayout(GuiUtils.createTableLayout(
                 new double[]{TableLayout.FILL, TableLayout.PREFERRED},
                 new double[]{TableLayout.PREFERRED, TableLayout.FILL}));
 
         JLabel commentLabel = new JLabel();
         if (solution.getComment() != null) {
-            commentLabel.setBorder(SizeHelper.getEmptyLeftRightBorder());
+            commentLabel.setBorder(GuiUtils.getEmptyLeftRightBorder());
             commentLabel.setText(solution.getComment());
         }
 
@@ -42,7 +42,7 @@ public class SolutionPanel extends JPanel {
         }
 
         JPanel tracePanel = new JPanel(new BorderLayout());
-        tracePanel.setBorder(SizeHelper.getEmptyLeftRightBorder());
+        tracePanel.setBorder(GuiUtils.getEmptyLeftRightBorder());
         tracePanel.add(new JScrollPane(traceText), BorderLayout.CENTER);
 
         JPanel buttonsPanel = new JPanel();

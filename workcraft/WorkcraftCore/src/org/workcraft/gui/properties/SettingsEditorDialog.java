@@ -2,7 +2,6 @@ package org.workcraft.gui.properties;
 
 import org.workcraft.Config;
 import org.workcraft.Framework;
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.PluginManager;
@@ -211,12 +210,12 @@ public class SettingsEditorDialog extends JDialog {
 
         JPanel sectionPanel = new JPanel(new BorderLayout());
         sectionPanel.setMinimumSize(new Dimension(100, 0));
-        sectionPanel.setBorder(SizeHelper.getEmptyBorder());
+        sectionPanel.setBorder(GuiUtils.getEmptyBorder());
         sectionPanel.add(sectionScrollPane, BorderLayout.CENTER);
 
         JPanel propertiesPanel = new JPanel(new BorderLayout());
         propertiesPanel.setMinimumSize(new Dimension(250, 0));
-        propertiesPanel.setBorder(SizeHelper.getEmptyBorder());
+        propertiesPanel.setBorder(GuiUtils.getEmptyBorder());
         propertiesPanel.add(sectionLabel, BorderLayout.NORTH);
         propertiesPanel.add(propertiesScrollPane, BorderLayout.CENTER);
 

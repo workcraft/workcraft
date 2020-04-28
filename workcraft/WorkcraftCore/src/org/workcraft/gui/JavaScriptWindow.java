@@ -2,8 +2,8 @@ package org.workcraft.gui;
 
 import org.mozilla.javascript.Context;
 import org.workcraft.Framework;
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.utils.DesktopApi;
+import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,7 +54,7 @@ public class JavaScriptWindow extends JPanel {
 
     public JavaScriptWindow() {
         txtScript = new JTextPane();
-        txtScript.setBorder(SizeHelper.getEmptyBorder());
+        txtScript.setBorder(GuiUtils.getEmptyBorder());
         txtScript.addFocusListener(new FocusListener() {
             @Override
             public void focusLost(FocusEvent e) {

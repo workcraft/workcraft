@@ -1,6 +1,5 @@
 package org.workcraft.gui.workspace;
 
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.trees.FilteredTreeSource;
 import org.workcraft.gui.trees.TreeWindow;
 import org.workcraft.gui.trees.TreeWindow.CheckBoxMode;
@@ -26,7 +25,7 @@ public class WorkspaceChooser extends JPanel {
         this.filter = filter;
 
         setLayout(GuiUtils.createBorderLayout());
-        setBorder(SizeHelper.getEmptyBorder());
+        setBorder(GuiUtils.getEmptyBorder());
 
         nameFilter = new JTextField();
 

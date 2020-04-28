@@ -6,7 +6,6 @@ import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.NameManager;
-import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.circuit.*;
@@ -18,10 +17,7 @@ import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.Hierarchy;
-import org.workcraft.utils.LogUtils;
-import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
@@ -126,7 +122,7 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
                 DialogUtils.showInfo("All zero delay assumptions for the selected components are necessary.");
             }
         } else {
-            String infoString = ReferenceHelper.getTextWithReferences(
+            String infoString = TextUtils.wrapMessageWithItems(
                     "Zero delay assumption is removed for component", refs);
 
             String questionString = refs.size() > 1

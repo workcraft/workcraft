@@ -1,6 +1,5 @@
 package org.workcraft.gui.tasks;
 
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
@@ -21,7 +20,7 @@ public class TaskControl extends JPanel {
         setLayout(GuiUtils.createBorderLayout());
 
         Border outsideBorder = new LineBorder(Color.LIGHT_GRAY);
-        Border insideBorder = SizeHelper.getEmptyBorder();
+        Border insideBorder = GuiUtils.getEmptyBorder();
         Border lineBorder = new CompoundBorder(outsideBorder, insideBorder);
         setBorder(lineBorder);
 

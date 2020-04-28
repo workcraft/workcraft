@@ -1,7 +1,6 @@
 package org.workcraft.plugins.pcomp.gui;
 
 import org.workcraft.Framework;
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.exceptions.NotSupportedException;
 import org.workcraft.gui.dialogs.ModalDialog;
 import org.workcraft.gui.trees.TreeWindow;
@@ -41,11 +40,11 @@ public class ParallelCompositionDialog extends ModalDialog<Void> {
     public JPanel createContentPanel() {
         Workspace workspace = Framework.getInstance().getWorkspace();
         stgChooser = new WorkspaceChooser(workspace, new StgWorkspaceFilter());
-        stgChooser.setBorder(SizeHelper.getTitledBorder("Source STGs"));
+        stgChooser.setBorder(GuiUtils.getTitledBorder("Source STGs"));
         stgChooser.setCheckBoxMode(TreeWindow.CheckBoxMode.LEAF);
 
         JPanel signalPanel = new JPanel(GuiUtils.createNogapFlowLayout());
-        signalPanel.setBorder(SizeHelper.getTitledBorder("Conversion of shared signals"));
+        signalPanel.setBorder(GuiUtils.getTitledBorder("Conversion of shared signals"));
         outputRadio = createSharedSignalRadio(PcompParameters.SharedSignalMode.OUTPUT);
         internalRadio = createSharedSignalRadio(PcompParameters.SharedSignalMode.INTERNAL);
         dummyRadio = createSharedSignalRadio(PcompParameters.SharedSignalMode.DUMMY);

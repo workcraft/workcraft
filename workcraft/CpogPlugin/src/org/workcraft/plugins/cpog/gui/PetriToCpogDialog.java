@@ -1,6 +1,5 @@
 package org.workcraft.plugins.cpog.gui;
 
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.layouts.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.commands.PetriToCpogParameters;
 import org.workcraft.utils.GuiUtils;
@@ -32,7 +31,7 @@ public class PetriToCpogDialog extends JDialog {
         createButtonPanel(parameters);
 
         JPanel content = new JPanel(GuiUtils.createBorderLayout());
-        content.setBorder(SizeHelper.getEmptyBorder());
+        content.setBorder(GuiUtils.getEmptyBorder());
 
         content.add(settingPanel, BorderLayout.CENTER);
         content.add(buttonPanel, BorderLayout.SOUTH);

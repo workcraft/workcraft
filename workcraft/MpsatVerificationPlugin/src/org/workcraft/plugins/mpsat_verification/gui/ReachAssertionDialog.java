@@ -5,8 +5,8 @@ import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.controls.FlatTextArea;
-import org.workcraft.plugins.mpsat_verification.presets.MpsatPresetManager;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
+import org.workcraft.plugins.mpsat_verification.presets.MpsatPresetManager;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters.SolutionMode;
@@ -16,13 +16,13 @@ import org.workcraft.presets.PresetManagerPanel;
 import org.workcraft.shared.IntDocument;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.TextUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.util.Collections;
 
 public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
 
@@ -149,7 +149,7 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
 
     private JPanel createOptionsPanel() {
         JPanel result = new JPanel(GuiUtils.createBorderLayout());
-        result.setBorder(SizeHelper.getTitledBorder("MPSat settings"));
+        result.setBorder(GuiUtils.getTitledBorder("MPSat settings"));
 
         modeCombo = new JComboBox<>();
         modeCombo.setEditable(false);
@@ -195,12 +195,12 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
     public JPanel createPropertyPanel() {
         JPanel resutl = new JPanel(GuiUtils.createBorderLayout());
         String title = "REACH predicate (use '" + NamespaceHelper.getHierarchySeparator() + "' as hierarchy separator)";
-        resutl.setBorder(SizeHelper.getTitledBorder(title));
+        resutl.setBorder(GuiUtils.getTitledBorder(title));
 
         propertyText = new FlatTextArea();
         propertyText.setMargin(SizeHelper.getTextMargin());
         propertyText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
-        propertyText.setText(String.join("", Collections.nCopies(6, "\n")));
+        propertyText.setText(TextUtils.repeat("\n", 6));
         propertyText.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {

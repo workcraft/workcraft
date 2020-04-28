@@ -1,7 +1,6 @@
 package org.workcraft.plugins.wtg.utils;
 
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.plugins.dtd.*;
 import org.workcraft.plugins.wtg.Guard;
@@ -10,6 +9,7 @@ import org.workcraft.plugins.wtg.Waveform;
 import org.workcraft.plugins.wtg.Wtg;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.TextUtils;
 
 import java.util.*;
 
@@ -554,7 +554,7 @@ public class VerificationUtils {
             unreachableNodeNames.add(wtg.getName(state));
         }
         if (!unreachableNodeNames.isEmpty()) {
-            DialogUtils.showError(ReferenceHelper.getTextWithReferences("Unreachable node", unreachableNodeNames));
+            DialogUtils.showError(TextUtils.wrapMessageWithItems("Unreachable node", unreachableNodeNames));
             return false;
         }
         return true;

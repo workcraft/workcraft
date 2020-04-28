@@ -1,6 +1,5 @@
 package org.workcraft.presets;
 
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.GuiUtils;
 
@@ -73,7 +72,7 @@ public class PresetManagerPanel<T> extends JPanel {
         // Assign listener only after the initial fill-in, so actions are not triggered while controls are still being created
         presetCombo.addActionListener(event -> setButtonsState(updateButton, renameButton, deleteButton));
 
-        setBorder(SizeHelper.getTitledBorder("Presets"));
+        setBorder(GuiUtils.getTitledBorder("Presets"));
         setLayout(GuiUtils.createBorderLayout());
         add(presetCombo, BorderLayout.CENTER);
         add(buttonsPanel, BorderLayout.SOUTH);

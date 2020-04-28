@@ -18,6 +18,7 @@ import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.TextUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -110,8 +111,8 @@ public class StrictImplementationVerificationCommand extends AbstractVerificatio
             missingInputSignals.removeAll(stgInputs);
             String msg = "Strict implementation cannot be checked for a circuit whose\n"
                     + "input signals are not specified in its environment STG.";
-            msg += "\n\nThe following input signals are missing in the environemnt STG:\n"
-                    + ReferenceHelper.getReferencesAsString(missingInputSignals, 50);
+            msg += "\n\nThe following input signals are missing in the environment STG:\n"
+                    + TextUtils.wrapItems(missingInputSignals);
             DialogUtils.showError(msg);
             return false;
         }
@@ -143,13 +144,13 @@ public class StrictImplementationVerificationCommand extends AbstractVerificatio
             missingCircuitSignals.removeAll(stgLocalSignals);
             if (!missingCircuitSignals.isEmpty()) {
                 msg += "\n\nNon-input signals missing in the circuit:\n"
-                        + ReferenceHelper.getReferencesAsString(missingCircuitSignals, 50);
+                        + TextUtils.wrapItems(missingCircuitSignals);
             }
             Set<String> missingStgSignals = new HashSet<>(stgLocalSignals);
             missingStgSignals.removeAll(circuitLocalSignals);
             if (!missingStgSignals.isEmpty()) {
                 msg += "\n\nNon-input signals missing in the environment STG:\n"
-                        + ReferenceHelper.getReferencesAsString(missingStgSignals, 50);
+                        + TextUtils.wrapItems(missingStgSignals);
             }
             DialogUtils.showError(msg);
             return false;

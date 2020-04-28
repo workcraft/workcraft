@@ -1,13 +1,13 @@
 package org.workcraft.plugins.dfs.commands;
 
 import org.workcraft.commands.ScriptableCommand;
-import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.dfs.Dfs;
 import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.plugins.dfs.VisualRegister;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.TextUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -92,7 +92,7 @@ public class WaggingGeneratorCommand implements ScriptableCommand<Void> {
             String msg = "It is advised to have registers at the entry to wagging slice.\n" +
                     "This enables the token to propagate into the active slice with the\n" +
                     "minimum delay and free the space for the next token.\n\n" +
-                    ReferenceHelper.getTextWithReferences("Non-register entry component", nonRegisterEntryRefs) +
+                    TextUtils.wrapMessageWithItems("Non-register entry component", nonRegisterEntryRefs) +
                     "\n\nProceed anyway?";
 
             return DialogUtils.showConfirmWarning(msg);

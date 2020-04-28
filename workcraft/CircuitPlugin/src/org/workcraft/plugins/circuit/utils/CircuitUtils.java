@@ -6,7 +6,6 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -22,10 +21,7 @@ import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.types.Pair;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.Hierarchy;
-import org.workcraft.utils.LogUtils;
-import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.*;
@@ -485,7 +481,7 @@ public class CircuitUtils {
             }
         }
         if (!signals.isEmpty()) {
-            String msg = ReferenceHelper.getTextWithReferences("Technology mapping failed to implement signal", signals);
+            String msg = TextUtils.wrapMessageWithItems("Technology mapping failed to implement signal", signals);
             DialogUtils.showWarning(msg);
             return false;
         }

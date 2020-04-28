@@ -94,7 +94,7 @@ public class CreateWorkDialog extends ModalDialog<Void> {
         workTypeList = new JList(new DefaultListModel());
         workTypeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         workTypeList.setVisibleRowCount(0);
-        workTypeList.setBorder(SizeHelper.getEmptyBorder());
+        workTypeList.setBorder(GuiUtils.getEmptyBorder());
         workTypeList.setCellRenderer(new WorkTypeCellRenderer());
 
         workTypeList.addListSelectionListener(event -> setOkEnableness(workTypeList.getSelectedIndex() != -1));

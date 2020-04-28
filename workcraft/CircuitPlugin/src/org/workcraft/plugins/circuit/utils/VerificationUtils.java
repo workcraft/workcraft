@@ -11,6 +11,7 @@ import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.TextUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -49,7 +50,7 @@ public final class VerificationUtils {
             Set<String> conflictSignals = getConflictingInterfaceSignals(circuit, envStg);
             if (!conflictSignals.isEmpty()) {
                 String msg = "The circuit and its environment have different initial state of interface signal";
-                DialogUtils.showError(ReferenceHelper.getTextWithReferences(msg, conflictSignals));
+                DialogUtils.showError(TextUtils.wrapMessageWithItems(msg, conflictSignals));
                 return false;
             }
         }
@@ -98,7 +99,7 @@ public final class VerificationUtils {
             if (!msg.isEmpty()) {
                 msg += "\n\n";
             }
-            msg += ReferenceHelper.getTextWithReferences("  * Hanging contact", hangingSignals);
+            msg += TextUtils.wrapMessageWithItems("  * Hanging contact", hangingSignals);
         }
         // Check the circuit for unconstrained inputs and unused outputs
         Set<String> unconstrainedInputSignals = getUnconstrainedInputSignals(envStg, circuit);
@@ -106,7 +107,7 @@ public final class VerificationUtils {
             if (!msg.isEmpty()) {
                 msg += "\n";
             }
-            msg += ReferenceHelper.getTextWithReferences("  * Unconstrained input signal", unconstrainedInputSignals);
+            msg += TextUtils.wrapMessageWithItems("  * Unconstrained input signal", unconstrainedInputSignals);
         }
         // Check the circuit for unconstrained inputs and unused outputs
         Set<String> unusedOutputSignals = getUnusedOutputSignals(envStg, circuit);
@@ -114,7 +115,7 @@ public final class VerificationUtils {
             if (!msg.isEmpty()) {
                 msg += "\n";
             }
-            msg += ReferenceHelper.getTextWithReferences("  * Unused output signal", unusedOutputSignals);
+            msg += TextUtils.wrapMessageWithItems("  * Unused output signal", unusedOutputSignals);
         }
         // Check the circuit for excited components
         Set<String> excitedComponentRefs = getExcitedComponentRefs(circuit);
@@ -122,7 +123,7 @@ public final class VerificationUtils {
             if (!msg.isEmpty()) {
                 msg += "\n";
             }
-            msg += ReferenceHelper.getTextWithReferences("  * Non-quiescent component", excitedComponentRefs);
+            msg += TextUtils.wrapMessageWithItems("  * Non-quiescent component", excitedComponentRefs);
         }
 
         if (!msg.isEmpty()) {

@@ -3,7 +3,6 @@ package org.workcraft.plugins.circuit.tools;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.HitMan;
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -57,7 +56,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         String forcedPinLegend = getHtmlPinLegend("&#x25C6;", "Forced high / low");
         JLabel legendLabel = new JLabel("<html><b>Pin initial state:</b><br>" + expectedPinLegend + "<br>" + propagatedPinLegend + "<br>" + forcedPinLegend + "</html>");
         JPanel legendPanel = new JPanel(new BorderLayout());
-        legendPanel.setBorder(SizeHelper.getTitledBorder("<html><b>Gate highlight legend</b></html>"));
+        legendPanel.setBorder(GuiUtils.getTitledBorder("<html><b>Gate highlight legend</b></html>"));
         legendPanel.add(colorLegendTable, BorderLayout.CENTER);
         legendPanel.add(legendLabel, BorderLayout.SOUTH);
         return legendPanel;

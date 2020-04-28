@@ -234,7 +234,7 @@ public class TreeWindow<T> extends JPanel {
     public void startup(final TreeSource<T> source, final TreeDecorator<T> decorator) {
         tree = new JTree();
         tree.setFocusable(true);
-        tree.setBorder(SizeHelper.getEmptyBorder());
+        tree.setBorder(GuiUtils.getEmptyBorder());
 
         checkBox = new JCheckBox();
         checkBox.setBackground(tree.getBackground());

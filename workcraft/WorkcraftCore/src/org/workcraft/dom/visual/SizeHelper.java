@@ -2,27 +2,9 @@ package org.workcraft.dom.visual;
 
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 
 public class SizeHelper {
-
-    private static final double ICON_SCALE_THRESHOLD = 0.2;
-    private static final int WRAP_LENGTH = 100;
-    private static final int TRANCATE_LENGTH = 120;
-
-    public static int getWrapLength() {
-        return WRAP_LENGTH;
-    }
-
-    public static int getTrauncateLength() {
-        return TRANCATE_LENGTH;
-    }
 
     public static double getScreenDpi() {
         return Toolkit.getDefaultToolkit().getScreenResolution();
@@ -133,71 +115,6 @@ public class SizeHelper {
 
     public static int getComponentHeightFromFont(Font font) {
         return (int) Math.round(1.4 * font.getSize2D());
-    }
-
-    private static Icon scaleButtonIcon(Icon icon, int size) {
-        Icon result = icon;
-        if (icon != null) {
-            int h = icon.getIconHeight();
-            if ((size > (1.0 + ICON_SCALE_THRESHOLD) * h) || (size < (1.0 - ICON_SCALE_THRESHOLD) * h)) {
-                int w = icon.getIconWidth();
-                BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-                icon.paintIcon(new JButton(), image.getGraphics(), 0, 0);
-                double ratio = (h == 0) ? 0.0 : (double) w / (double) h;
-                int width = (int) Math.round(ratio * size);
-                Image scaleImage = image.getScaledInstance(width, size, Image.SCALE_SMOOTH);
-                result = new ImageIcon(scaleImage);
-            }
-        }
-        return result;
-    }
-
-    public static Icon scaleFrameIcon(Icon icon) {
-        return scaleButtonIcon(icon, getFrameButtonIconSize());
-    }
-
-    public static Icon scaleFileViewIcon(Icon icon) {
-        return scaleButtonIcon(icon, getFileViewIconSize());
-    }
-
-    public static Icon scaleFileChooserIcon(Icon icon) {
-        return scaleButtonIcon(icon, getFileChooserIconSize());
-    }
-
-    public static CompoundBorder getTitledBorder(String title) {
-        return new CompoundBorder(new TitledBorder(title), getGapBorder());
-    }
-
-    public static Border getEmptyBorder() {
-        int gap = (int) Math.round(0.2 * getBaseSize());
-        return new EmptyBorder(gap, gap, gap, gap);
-    }
-
-    public static Border getEmptyLeftRightBorder() {
-        int gap = (int) Math.round(0.2 * getBaseSize());
-        return new EmptyBorder(0, gap, 0, gap);
-    }
-
-    public static Border getGapBorder() {
-        int vGap = getLayoutVGap();
-        int hGap = getLayoutHGap();
-        return new EmptyBorder(vGap, hGap, vGap, hGap);
-    }
-
-    public static Border getContentPanelBorder() {
-        int vGap = getLayoutVGap();
-        int hGap = getLayoutHGap();
-        return new EmptyBorder(vGap, hGap, 0, hGap);
-    }
-
-    public static Border getTableCellBorder() {
-        int vGap = getCellVGap();
-        int hGap = getCellHGap();
-        return new EmptyBorder(vGap, hGap, vGap, hGap);
-    }
-
-    public static Border getTableHeaderBorder() {
-        return UIManager.getBorder("TableHeader.cellBorder");
     }
 
     public static Insets getTextMargin() {

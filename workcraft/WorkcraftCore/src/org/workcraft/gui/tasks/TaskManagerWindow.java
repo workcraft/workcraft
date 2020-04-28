@@ -1,12 +1,12 @@
 package org.workcraft.gui.tasks;
 
 import org.workcraft.Framework;
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.layouts.SmartFlowLayout;
 import org.workcraft.tasks.BasicProgressMonitor;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskMonitor;
+import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -110,7 +110,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         Border outsideBorder = new LineBorder(Color.LIGHT_GRAY);
-        Border insideBorder = SizeHelper.getEmptyBorder();
+        Border insideBorder = GuiUtils.getEmptyBorder();
         Border lineBorder = new CompoundBorder(outsideBorder, insideBorder);
         setBorder(lineBorder);
 

@@ -1,6 +1,5 @@
 package org.workcraft.plugins.cpog.scenco;
 
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.layouts.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.VisualCpog;
@@ -84,7 +83,7 @@ public class SatBasedScencoDialog extends AbstractScencoDialog {
 
     private void createGenerationPanel() {
         generationPanel = new JPanel(new SimpleFlowLayout());
-        generationPanel.setBorder(SizeHelper.getTitledBorder("Encoding parameters"));
+        generationPanel.setBorder(GuiUtils.getTitledBorder("Encoding parameters"));
 
         JLabel bitsLabel = new JLabel(ScencoHelper.textEncodingBitWidth);
         JLabel circuitSizeLabel = new JLabel(ScencoHelper.textCircuitSizeLabel);

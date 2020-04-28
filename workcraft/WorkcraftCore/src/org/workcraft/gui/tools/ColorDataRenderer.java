@@ -1,6 +1,6 @@
 package org.workcraft.gui.tools;
 
-import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
@@ -21,7 +21,7 @@ public final class ColorDataRenderer implements TableCellRenderer {
     public Component getTableCellRendererComponent(final JTable table, final Object value,
             final boolean isSelected, final boolean hasFocus, final int row, final int column) {
         label.setText("");
-        label.setBorder(SizeHelper.getTableCellBorder());
+        label.setBorder(GuiUtils.getTableCellBorder());
         label.setBackground((Color) value);
         return label;
     }

@@ -2,7 +2,6 @@ package org.workcraft.plugins.son.gui;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.son.SON;
@@ -83,7 +82,7 @@ public class TimeEstimatorDialog extends JDialog {
         defaultDurationPanel.setLayout(GuiUtils.createFlowLayout());
 
         JPanel entirePanel = new JPanel(new BorderLayout());
-        entirePanel.setBorder(SizeHelper.getTitledBorder("Entire estimation"));
+        entirePanel.setBorder(GuiUtils.getTitledBorder("Entire estimation"));
         entirePanel.setLayout(new GridLayout(3, 0));
 
         entireEst = new JCheckBox("Estimate time value for entire SON");
@@ -105,7 +104,7 @@ public class TimeEstimatorDialog extends JDialog {
         entirePanel.add(twoDir);
 
         JPanel singlePanel = new JPanel(new BorderLayout());
-        singlePanel.setBorder(SizeHelper.getTitledBorder("Single Node estimation"));
+        singlePanel.setBorder(GuiUtils.getTitledBorder("Single Node estimation"));
         singlePanel.setLayout(new GridLayout(2, 0));
 
         intermediate = new JCheckBox("Set values for intermediate nodes");

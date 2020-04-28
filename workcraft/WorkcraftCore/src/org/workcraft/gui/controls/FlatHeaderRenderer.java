@@ -1,6 +1,6 @@
 package org.workcraft.gui.controls;
 
-import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -20,7 +20,7 @@ public class FlatHeaderRenderer extends DefaultTableCellRenderer {
             setBackground(tableHeader.getBackground());
         }
         setHorizontalAlignment(CENTER);
-        setBorder(SizeHelper.getTableHeaderBorder());
+        setBorder(GuiUtils.getTableHeaderBorder());
         return this;
     }
 

@@ -20,10 +20,7 @@ import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
 import org.workcraft.types.Triple;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.LogUtils;
-import org.workcraft.utils.WorkUtils;
-import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -132,7 +129,7 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
     }
 
     private void writeTables(List<Solution> solutions) {
-        String indent = String.join("", Collections.nCopies(2, " "));
+        String indent = TextUtils.repeat(" ", 2);
         for (Solution solution : solutions) {
             writeTableHeader("Projected events", indent);
             writeTableBody(solution, indent);
@@ -149,7 +146,7 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
         }
         LogUtils.logMessage(indent + prefix + " " + extraTitle);
         int n = prefix.length() + extraTitle.length() + 1;
-        String separator = String.join("", Collections.nCopies(n, "-"));
+        String separator = TextUtils.repeat("-", n);
         LogUtils.logMessage(indent + separator);
     }
 
