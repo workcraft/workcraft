@@ -4,13 +4,13 @@ import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.controls.FlatTextArea;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.TextUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.util.Collections;
 
 public class TextPresetDialog extends PresetDialog<String> {
 
@@ -35,8 +35,8 @@ public class TextPresetDialog extends PresetDialog<String> {
     }
 
     @Override
-    public JPanel createControlsPanel() {
-        JPanel result = super.createControlsPanel();
+    public JPanel createContentPanel() {
+        JPanel result = super.createContentPanel();
         result.setLayout(GuiUtils.createBorderLayout());
         result.add(createTextPanel(), BorderLayout.CENTER);
         // Preset panel has to be created the last as its guiMapper refers to other controls
@@ -68,7 +68,7 @@ public class TextPresetDialog extends PresetDialog<String> {
         textArea = new FlatTextArea();
         textArea.setMargin(SizeHelper.getTextMargin());
         textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
-        textArea.setText(String.join("", Collections.nCopies(4, "\n")));
+        textArea.setText(TextUtils.repeat("\n", 4));
         textArea.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {

@@ -7,6 +7,7 @@ import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.stg.VisualNamedTransition;
+import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
@@ -250,7 +251,7 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
             JLabel result = null;
-            label.setBorder(SizeHelper.getTableCellBorder());
+            label.setBorder(GuiUtils.getTableCellBorder());
             if ((cores != null) && (row >= 0) && (row < cores.size())) {
                 Core core = cores.get(row);
                 label.setText((String) value);
@@ -348,7 +349,7 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
             JLabel result = null;
-            label.setBorder(SizeHelper.getTableCellBorder());
+            label.setBorder(GuiUtils.getTableCellBorder());
             if (density != null) {
                 label.setText((String) value);
                 Color color = density.getLevelColor(column);

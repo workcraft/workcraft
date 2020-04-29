@@ -9,11 +9,14 @@ import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.metal.OceanTheme;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
 public class SilverOceanTheme extends OceanTheme {
+
+    private static final double ICON_SCALE_THRESHOLD = 0.2;
 
     private final class CheckBoxIcon implements Icon {
         @Override
@@ -251,24 +254,53 @@ public class SilverOceanTheme extends OceanTheme {
         Icon fileChooserUpFolderIcon = UIManager.getIcon("FileChooser.upFolderIcon");
 
         return new Object[]{
-                "InternalFrame.icon", SizeHelper.scaleFrameIcon(internalFrameIcon),
-                "InternalFrame.iconifyIcon", SizeHelper.scaleFrameIcon(internalFrameIconifyIcon),
-                "InternalFrame.minimizeIcon", SizeHelper.scaleFrameIcon(internalFrameMinimizeIcon),
-                "InternalFrame.maximizeIcon", SizeHelper.scaleFrameIcon(internalFrameMaximizeIcon),
-                "InternalFrame.closeIcon", SizeHelper.scaleFrameIcon(internalFrameCloseIcon),
+                "InternalFrame.icon", scaleFrameIcon(internalFrameIcon),
+                "InternalFrame.iconifyIcon", scaleFrameIcon(internalFrameIconifyIcon),
+                "InternalFrame.minimizeIcon", scaleFrameIcon(internalFrameMinimizeIcon),
+                "InternalFrame.maximizeIcon", scaleFrameIcon(internalFrameMaximizeIcon),
+                "InternalFrame.closeIcon", scaleFrameIcon(internalFrameCloseIcon),
 
-                "FileView.computerIcon", SizeHelper.scaleFileViewIcon(fileViewComputerIcon),
-                "FileView.directoryIcon", SizeHelper.scaleFileViewIcon(fileViewDirectoryIcon),
-                "FileView.fileIcon", SizeHelper.scaleFileViewIcon(fileViewFileIcon),
-                "FileView.floppyDriveIcon", SizeHelper.scaleFileViewIcon(fileViewFloppyDriveIcon),
-                "FileView.hardDriveIcon", SizeHelper.scaleFileViewIcon(fileViewHardDriveIcon),
+                "FileView.computerIcon", scaleFileViewIcon(fileViewComputerIcon),
+                "FileView.directoryIcon", scaleFileViewIcon(fileViewDirectoryIcon),
+                "FileView.fileIcon", scaleFileViewIcon(fileViewFileIcon),
+                "FileView.floppyDriveIcon", scaleFileViewIcon(fileViewFloppyDriveIcon),
+                "FileView.hardDriveIcon", scaleFileViewIcon(fileViewHardDriveIcon),
 
-                "FileChooser.detailsViewIcon", SizeHelper.scaleFileChooserIcon(fileChooserDetailsViewIcon),
-                "FileChooser.homeFolderIcon", SizeHelper.scaleFileChooserIcon(fileChooserHomeFolderIcon),
-                "FileChooser.listViewIcon", SizeHelper.scaleFileChooserIcon(fileChooserListViewIcon),
-                "FileChooser.newFolderIcon", SizeHelper.scaleFileChooserIcon(fileChooserNewFolderIcon),
-                "FileChooser.upFolderIcon", SizeHelper.scaleFileChooserIcon(fileChooserUpFolderIcon),
+                "FileChooser.detailsViewIcon", scaleFileChooserIcon(fileChooserDetailsViewIcon),
+                "FileChooser.homeFolderIcon", scaleFileChooserIcon(fileChooserHomeFolderIcon),
+                "FileChooser.listViewIcon", scaleFileChooserIcon(fileChooserListViewIcon),
+                "FileChooser.newFolderIcon", scaleFileChooserIcon(fileChooserNewFolderIcon),
+                "FileChooser.upFolderIcon", scaleFileChooserIcon(fileChooserUpFolderIcon),
         };
+    }
+
+    private static Icon scaleButtonIcon(Icon icon, int size) {
+        Icon result = icon;
+        if (icon != null) {
+            int h = icon.getIconHeight();
+            if ((size > (1.0 + ICON_SCALE_THRESHOLD) * h) || (size < (1.0 - ICON_SCALE_THRESHOLD) * h)) {
+                int w = icon.getIconWidth();
+                BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+                icon.paintIcon(new JButton(), image.getGraphics(), 0, 0);
+                double ratio = (h == 0) ? 0.0 : (double) w / (double) h;
+                int width = (int) Math.round(ratio * size);
+                Image scaleImage = image.getScaledInstance(width, size, Image.SCALE_SMOOTH);
+                result = new ImageIcon(scaleImage);
+            }
+        }
+        return result;
+    }
+
+    private static Icon scaleFrameIcon(Icon icon) {
+        return scaleButtonIcon(icon, SizeHelper.getFrameButtonIconSize());
+    }
+
+    private static Icon scaleFileViewIcon(Icon icon) {
+        return scaleButtonIcon(icon, SizeHelper.getFileViewIconSize());
+    }
+
+    private static Icon scaleFileChooserIcon(Icon icon) {
+        return scaleButtonIcon(icon, SizeHelper.getFileChooserIconSize());
     }
 
 }

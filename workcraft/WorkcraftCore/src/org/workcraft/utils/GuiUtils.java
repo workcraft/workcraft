@@ -13,6 +13,10 @@ import org.workcraft.gui.tools.GraphEditor;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.font.LineMetrics;
 import java.awt.image.BufferedImage;
@@ -35,11 +39,8 @@ public class GuiUtils {
         return result;
     }
 
-    public static JPanel createBorderedComponent(JComponent component, String borderText) {
-        JPanel result = new JPanel(createBorderLayout());
-        result.setBorder(SizeHelper.getTitledBorder(borderText));
-        result.add(component, BorderLayout.CENTER);
-        return result;
+    public static JPanel createDialogButtonsPanel() {
+        return new JPanel(new FlowLayout(FlowLayout.RIGHT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
     }
 
     public static void centerAndSizeToParent(Window frame, Window parent) {
@@ -224,6 +225,10 @@ public class GuiUtils {
         return new FlowLayout(FlowLayout.LEFT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap());
     }
 
+    public static FlowLayout createNogapFlowLayout() {
+        return new FlowLayout(FlowLayout.LEFT, 0, 0);
+    }
+
     public static BorderLayout createBorderLayout() {
         return new BorderLayout(SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap());
     }
@@ -235,8 +240,8 @@ public class GuiUtils {
         return result;
     }
 
-    public static GridLayout createGridLayout(int rows, int cols) {
-        return new GridLayout(rows, cols, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap());
+    public static GridLayout createNogapGridLayout(int rows, int cols) {
+        return new GridLayout(rows, cols);
     }
 
     public static void setButtonPanelLayout(JPanel panel, Dimension buttonSize) {
@@ -250,6 +255,46 @@ public class GuiUtils {
         Dimension panelSize = new Dimension(buttonWidth * buttonCount + hGap, buttonHeight + vGap);
         panel.setPreferredSize(panelSize);
         panel.setMaximumSize(panelSize);
+    }
+
+    public static Component createHGap() {
+        return Box.createHorizontalStrut(SizeHelper.getLayoutHGap());
+    }
+
+    public static Border getEmptyBorder() {
+        int gap = (int) Math.round(0.2 * SizeHelper.getBaseSize());
+        return new EmptyBorder(gap, gap, gap, gap);
+    }
+
+    public static Border getEmptyLeftRightBorder() {
+        int gap = (int) Math.round(0.2 * SizeHelper.getBaseSize());
+        return new EmptyBorder(0, gap, 0, gap);
+    }
+
+    public static Border getGapBorder() {
+        int vGap = SizeHelper.getLayoutVGap();
+        int hGap = SizeHelper.getLayoutHGap();
+        return new EmptyBorder(vGap, hGap, vGap, hGap);
+    }
+
+    public static Border getTitledBorder(String title) {
+        return new CompoundBorder(new TitledBorder(title), getGapBorder());
+    }
+
+    public static Border getContentPanelBorder() {
+        int vGap = SizeHelper.getLayoutVGap();
+        int hGap = SizeHelper.getLayoutHGap();
+        return new EmptyBorder(vGap, hGap, 0, hGap);
+    }
+
+    public static Border getTableCellBorder() {
+        int vGap = SizeHelper.getCellVGap();
+        int hGap = SizeHelper.getCellHGap();
+        return new EmptyBorder(vGap, hGap, vGap, hGap);
+    }
+
+    public static Border getTableHeaderBorder() {
+        return UIManager.getBorder("TableHeader.cellBorder");
     }
 
 }

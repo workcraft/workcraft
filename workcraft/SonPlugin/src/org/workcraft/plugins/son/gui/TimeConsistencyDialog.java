@@ -1,7 +1,6 @@
 package org.workcraft.plugins.son.gui;
 
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.TimeConsistencySettings;
@@ -9,6 +8,7 @@ import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.plugins.son.util.ScenarioRef;
+import org.workcraft.utils.GuiUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -372,7 +372,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
         createSettingPanel();
         createButtonsPanel();
         createCausalConsistencyPanel();
-        granularityPanel = new GranularityPanel(SizeHelper.getTitledBorder("Time Granularity"));
+        granularityPanel = new GranularityPanel(GuiUtils.getTitledBorder("Time Granularity"));
 
         leftPanel = new JPanel(new BorderLayout());
         leftPanel.add(granularityPanel, BorderLayout.PAGE_START);

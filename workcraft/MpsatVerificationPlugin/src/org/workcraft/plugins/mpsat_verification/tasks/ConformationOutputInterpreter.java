@@ -1,6 +1,5 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
-import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.plugins.mpsat_verification.utils.EnablednessUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -16,6 +15,7 @@ import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
 import org.workcraft.types.Triple;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.TextUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.*;
@@ -48,7 +48,7 @@ class ConformationOutputInterpreter extends ReachabilityOutputInterpreter {
             } else {
                 result += "<br>Also ";
             }
-            result += ReferenceHelper.getTextWithReferences("composition has dead signal", signals);
+            result += TextUtils.wrapMessageWithItems("composition has dead signal", signals);
             if (propertyHolds) {
                 result += "\nWarning: dead signals may indicate design issues!";
             }

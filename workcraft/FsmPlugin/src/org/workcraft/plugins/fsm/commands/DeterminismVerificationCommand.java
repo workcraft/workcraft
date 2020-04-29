@@ -8,7 +8,6 @@ import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SelectionHelper;
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.tools.SelectionTool;
 import org.workcraft.plugins.fsm.Event;
@@ -50,7 +49,7 @@ public class DeterminismVerificationCommand extends AbstractVerificationCommand 
         if (nondeterministicStates.isEmpty()) {
             DialogUtils.showInfo("The model is deterministic.", TITLE);
         } else {
-            String refStr = ReferenceHelper.getNodesAsString(fsm, nondeterministicStates, SizeHelper.getWrapLength());
+            String refStr = ReferenceHelper.getNodesAsWrapString(fsm, nondeterministicStates);
             String msg = "The model has non-deterministic states:\n" + refStr + "\n\nSelect non-deterministic states?\n";
             if (DialogUtils.showConfirmInfo(msg, TITLE, true)) {
                 final Framework framework = Framework.getInstance();

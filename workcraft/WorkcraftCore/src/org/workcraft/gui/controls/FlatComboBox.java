@@ -1,6 +1,6 @@
 package org.workcraft.gui.controls;
 
-import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -29,7 +29,7 @@ public class FlatComboBox extends JComboBox {
     }
 
     class FlatListCellRenderer implements ListCellRenderer {
-        private final Border insetBorder = SizeHelper.getTableCellBorder();
+        private final Border insetBorder = GuiUtils.getTableCellBorder();
         private final DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
 
         @Override

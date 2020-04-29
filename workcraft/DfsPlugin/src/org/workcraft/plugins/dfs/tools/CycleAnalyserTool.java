@@ -354,7 +354,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
-            label.setBorder(SizeHelper.getTableCellBorder());
+            label.setBorder(GuiUtils.getTableCellBorder());
             if ((cycles != null) && (row >= 0) && (row < cycles.size())) {
                 label.setText(value.toString());
                 label.setToolTipText(cycles.get(row).toString());

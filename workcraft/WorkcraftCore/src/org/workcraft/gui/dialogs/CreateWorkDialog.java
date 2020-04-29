@@ -87,15 +87,14 @@ public class CreateWorkDialog extends ModalDialog<Void> {
     }
 
     @Override
-    public JPanel createControlsPanel() {
-        JPanel result = super.createControlsPanel();
+    public JPanel createContentPanel() {
+        JPanel result = super.createContentPanel();
         result.setLayout(GuiUtils.createBorderLayout());
-        result.setBorder(SizeHelper.getGapBorder());
 
         workTypeList = new JList(new DefaultListModel());
         workTypeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         workTypeList.setVisibleRowCount(0);
-        workTypeList.setBorder(SizeHelper.getEmptyBorder());
+        workTypeList.setBorder(GuiUtils.getEmptyBorder());
         workTypeList.setCellRenderer(new WorkTypeCellRenderer());
 
         workTypeList.addListSelectionListener(event -> setOkEnableness(workTypeList.getSelectedIndex() != -1));

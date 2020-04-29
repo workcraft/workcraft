@@ -24,10 +24,7 @@ import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.shared.ColorGenerator;
 import org.workcraft.traces.Trace;
 import org.workcraft.types.Pair;
-import org.workcraft.utils.ColorUtils;
-import org.workcraft.utils.Coloriser;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.TraceUtils;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.ModelEntry;
 
 import javax.activation.ActivationDataFlavor;
@@ -238,7 +235,7 @@ public class StgSimulationTool extends PetriSimulationTool {
                 final boolean isSelected, final boolean hasFocus, final int row, final int column) {
 
             label.setText("");
-            label.setBorder(SizeHelper.getTableCellBorder());
+            label.setBorder(GuiUtils.getTableCellBorder());
             label.setForeground(table.getForeground());
             label.setBackground(table.getBackground());
             label.setFont(table.getFont().deriveFont(Font.PLAIN));
@@ -357,7 +354,7 @@ public class StgSimulationTool extends PetriSimulationTool {
                 final boolean isSelected, final boolean hasFocus, final int row, final int column) {
 
             JLabel result = null;
-            label.setBorder(SizeHelper.getTableCellBorder());
+            label.setBorder(GuiUtils.getTableCellBorder());
             if (isActivated() && (value instanceof String)) {
                 String text = value.toString();
                 Pair<String, String> pair = TraceUtils.splitLoopDecoration(text);

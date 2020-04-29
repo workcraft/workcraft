@@ -5,8 +5,8 @@ import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.controls.FlatTextArea;
-import org.workcraft.plugins.mpsat_verification.presets.MpsatPresetManager;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
+import org.workcraft.plugins.mpsat_verification.presets.MpsatPresetManager;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters.SolutionMode;
@@ -16,13 +16,13 @@ import org.workcraft.presets.PresetManagerPanel;
 import org.workcraft.shared.IntDocument;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.TextUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.util.Collections;
 
 public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
 
@@ -51,8 +51,8 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
     }
 
     @Override
-    public JPanel createControlsPanel() {
-        JPanel result = super.createControlsPanel();
+    public JPanel createContentPanel() {
+        JPanel result = super.createContentPanel();
         result.setLayout(GuiUtils.createTableLayout(
                 new double[]{TableLayout.FILL},
                 new double[]{TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL}));
@@ -148,8 +148,8 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
     }
 
     private JPanel createOptionsPanel() {
-        JPanel result = new JPanel(new BorderLayout());
-        result.setBorder(SizeHelper.getTitledBorder("MPSat settings"));
+        JPanel result = new JPanel(GuiUtils.createBorderLayout());
+        result.setBorder(GuiUtils.getTitledBorder("MPSat settings"));
 
         modeCombo = new JComboBox<>();
         modeCombo.setEditable(false);
@@ -158,9 +158,9 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
         }
         modeCombo.addItem(VerificationMode.REACHABILITY);
 
-        result.add(GuiUtils.createLabeledComponent(modeCombo, "  Mode:      "), BorderLayout.NORTH);
+        result.add(GuiUtils.createLabeledComponent(modeCombo, "Mode:     "), BorderLayout.NORTH);
 
-        JPanel solutionModePanel = new JPanel(GuiUtils.createFlowLayout());
+        JPanel solutionModePanel = new JPanel(GuiUtils.createNogapFlowLayout());
         solutionModePanel.add(new JLabel("Solution:"));
         cheapestSolutionRadioButton = new JRadioButton("minimise cost function");
         cheapestSolutionRadioButton.setSelected(true);
@@ -173,8 +173,11 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
         buttonGroup.add(cheapestSolutionRadioButton);
         buttonGroup.add(firstSolutionRadioButton);
         buttonGroup.add(allSolutionsRadioButton);
+        solutionModePanel.add(GuiUtils.createHGap());
         solutionModePanel.add(cheapestSolutionRadioButton);
+        solutionModePanel.add(GuiUtils.createHGap());
         solutionModePanel.add(firstSolutionRadioButton);
+        solutionModePanel.add(GuiUtils.createHGap());
         solutionModePanel.add(allSolutionsRadioButton);
 
         solutionLimitText = new JTextField();
@@ -190,14 +193,14 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
     }
 
     public JPanel createPropertyPanel() {
-        JPanel resutl = new JPanel(new BorderLayout());
+        JPanel resutl = new JPanel(GuiUtils.createBorderLayout());
         String title = "REACH predicate (use '" + NamespaceHelper.getHierarchySeparator() + "' as hierarchy separator)";
-        resutl.setBorder(SizeHelper.getTitledBorder(title));
+        resutl.setBorder(GuiUtils.getTitledBorder(title));
 
         propertyText = new FlatTextArea();
         propertyText.setMargin(SizeHelper.getTextMargin());
         propertyText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
-        propertyText.setText(String.join("", Collections.nCopies(6, "\n")));
+        propertyText.setText(TextUtils.repeat("\n", 6));
         propertyText.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -215,10 +218,11 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
         buttonGroup.add(unsatisfiableRadioButton);
         unsatisfiableRadioButton.setSelected(true);
 
-        JPanel propertyPanel = new JPanel(GuiUtils.createFlowLayout());
-
+        JPanel propertyPanel = new JPanel(GuiUtils.createNogapFlowLayout());
         propertyPanel.add(new JLabel("Property holds if predicate is:"));
+        propertyPanel.add(GuiUtils.createHGap());
         propertyPanel.add(satisfiableRadioButton);
+        propertyPanel.add(GuiUtils.createHGap());
         propertyPanel.add(unsatisfiableRadioButton);
 
         resutl.add(propertyScrollPane, BorderLayout.CENTER);

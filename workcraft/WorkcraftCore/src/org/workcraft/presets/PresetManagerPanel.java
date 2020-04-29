@@ -1,6 +1,5 @@
 package org.workcraft.presets;
 
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.GuiUtils;
 
@@ -59,17 +58,21 @@ public class PresetManagerPanel<T> extends JPanel {
         deleteButton.setEnabled(false);
         deleteButton.addActionListener(event -> deletePreset());
 
-        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        // Use 0 gap in FlowLayout to remove the gap after the last button and explicitly add gaps between the buttons.
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         buttonsPanel.add(createButton);
+        buttonsPanel.add(GuiUtils.createHGap());
         buttonsPanel.add(updateButton);
+        buttonsPanel.add(GuiUtils.createHGap());
         buttonsPanel.add(renameButton);
+        buttonsPanel.add(GuiUtils.createHGap());
         buttonsPanel.add(deleteButton);
 
         fillPresetComboAndSelect(null);
         // Assign listener only after the initial fill-in, so actions are not triggered while controls are still being created
         presetCombo.addActionListener(event -> setButtonsState(updateButton, renameButton, deleteButton));
 
-        setBorder(SizeHelper.getTitledBorder("Presets"));
+        setBorder(GuiUtils.getTitledBorder("Presets"));
         setLayout(GuiUtils.createBorderLayout());
         add(presetCombo, BorderLayout.CENTER);
         add(buttonsPanel, BorderLayout.SOUTH);

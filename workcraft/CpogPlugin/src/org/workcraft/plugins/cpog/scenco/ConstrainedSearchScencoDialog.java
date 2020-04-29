@@ -72,7 +72,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
         JPanel content = new JPanel(GuiUtils.createTableLayout(
                 new double[]{TableLayout.FILL}, new double[]{60, height, TableLayout.FILL, 39}));
 
-        content.setBorder(SizeHelper.getEmptyBorder());
+        content.setBorder(GuiUtils.getEmptyBorder());
 
         content.add(standardPanel, new TableLayoutConstraints(0, 0));
         content.add(generationPanel, new TableLayoutConstraints(0, 1));
@@ -164,7 +164,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
         JScrollPane scrollPane = new JScrollPane(encodingTable);
 
         customPanel = new JPanel(new BorderLayout());
-        customPanel.setBorder(SizeHelper.getTitledBorder("Custom encoding"));
+        customPanel.setBorder(GuiUtils.getTitledBorder("Custom encoding"));
 
         JPanel propertyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
         propertyPanel.add(customEncodings);
@@ -253,7 +253,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
 
     private void createGenerationPanel(final int mode) {
         generationPanel = new JPanel(new SimpleFlowLayout());
-        generationPanel.setBorder(SizeHelper.getTitledBorder("Search range"));
+        generationPanel.setBorder(GuiUtils.getTitledBorder("Search range"));
 
         // SPEED UP MODE
         fast = new JRadioButton("Synthesise only optimal (w.r.t. heuristic function) solutions (fast)");

@@ -61,7 +61,14 @@ public class TextUtilsTests {
                 TextUtils.wrapLine(line, 5));
 
         Assert.assertEquals("1 22 333 4444\n55555 666666\n7777777\n88888888",
-                TextUtils.wrapLine(line, 12));
+                TextUtils.wrapLine(line, 14));
+
+        int n = TextUtils.DEFAULT_WRAP_LENGTH / 2;
+        String aLine = TextUtils.repeat("a ", n);
+        String bLine = TextUtils.repeat("b ", n);
+        String cLine = TextUtils.repeat("c ", n);
+        Assert.assertEquals(aLine.trim() + "\n" + bLine.trim() + "\n" + cLine.trim(),
+                TextUtils.wrapLine(aLine + bLine + cLine));
     }
 
     @Test
@@ -69,6 +76,41 @@ public class TextUtilsTests {
         String text = "1 22 333 \r\n 4444 55555 666666 7777777 88888888\n999999999";
         Assert.assertEquals("1 22 333 \n4444 55555\n666666\n7777777\n88888888\n999999999",
                 TextUtils.wrapText(text, 10));
+
+        int n = TextUtils.DEFAULT_WRAP_LENGTH / 2;
+        String aLine = TextUtils.repeat("a ", n);
+        String a2Line = TextUtils.repeat("a ", n / 2);
+        String bLine = TextUtils.repeat("b ", n);
+        String cLine = TextUtils.repeat("c ", n);
+        Assert.assertEquals(aLine.trim() + "\n" + a2Line.trim() + "\n" + bLine.trim() + "\n" + cLine.trim(),
+                TextUtils.wrapText(aLine + a2Line + "\n" + bLine + cLine));
+    }
+
+    @Test
+    public void wrapItemsTest() {
+        Assert.assertEquals("",
+                TextUtils.wrapItems(Arrays.asList()));
+
+        Assert.assertEquals("A, B, C,\nD, E, F",
+                TextUtils.wrapItems(Arrays.asList("A", "B", "C", "D", "E", "F"), 9));
+    }
+
+    @Test
+    public void wrapMessageWithItemsTest() {
+        Assert.assertEquals("Nothing",
+                TextUtils.wrapMessageWithItems("Nothing", Arrays.asList()));
+
+        Assert.assertEquals("Vegetable 'carrot'",
+                TextUtils.wrapMessageWithItems("Vegetable", Arrays.asList("carrot")));
+
+        Assert.assertEquals("Toys: ball, car",
+                TextUtils.wrapMessageWithItems("Toy", Arrays.asList("ball", "car")));
+
+        Assert.assertEquals("Boxes: small, large",
+                TextUtils.wrapMessageWithItems("Box", Arrays.asList("small", "large")));
+
+        Assert.assertEquals("Bodies:\nA, B, C",
+                TextUtils.wrapMessageWithItems("Body", Arrays.asList("A", "B", "C"), 10));
     }
 
     @Test

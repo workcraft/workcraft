@@ -10,7 +10,6 @@ import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SelectionHelper;
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.tools.SelectionTool;
 import org.workcraft.plugins.fsm.Event;
@@ -51,7 +50,7 @@ public class ReversibilityVerificationCommand extends AbstractVerificationComman
         if (irreversibleStates.isEmpty()) {
             DialogUtils.showInfo("The model is reversible.", TITLE);
         } else {
-            String refStr = ReferenceHelper.getNodesAsString(fsm, irreversibleStates, SizeHelper.getWrapLength());
+            String refStr = ReferenceHelper.getNodesAsWrapString(fsm, irreversibleStates);
             String msg = "The model has irreversible states:\n" + refStr + "\n\nSelect irreversible states?\n";
             if (DialogUtils.showConfirmInfo(msg, TITLE, true)) {
                 final Framework framework = Framework.getInstance();

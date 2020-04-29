@@ -8,6 +8,7 @@ import org.workcraft.gui.controls.FlatHeaderRenderer;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -146,7 +147,7 @@ public class PropertyEditorTable extends JTable {
 
                 String text = (value == null) ? "" : value.toString();
                 label.setText(text);
-                label.setBorder(SizeHelper.getTableCellBorder());
+                label.setBorder(GuiUtils.getTableCellBorder());
 
                 Font font = label.getFont();
                 PropertyDescriptor descriptor = model.getDeclaration(row);

@@ -1,8 +1,8 @@
 package org.workcraft.gui.properties;
 
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ActionUtils;
+import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
@@ -24,7 +24,7 @@ public class TextActionCellEditor extends AbstractCellEditor implements TableCel
         leftButton.setMargin(PropertyHelper.BUTTON_INSETS);
 
         text.setFocusable(true);
-        text.setBorder(SizeHelper.getTableCellBorder());
+        text.setBorder(GuiUtils.getTableCellBorder());
         text.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {

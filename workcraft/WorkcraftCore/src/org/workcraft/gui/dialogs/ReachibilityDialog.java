@@ -24,12 +24,12 @@ public class ReachibilityDialog extends JDialog {
             String message, List<Solution> solutions) {
 
         JLabel messageLabel = new JLabel(message);
-        messageLabel.setBorder(SizeHelper.getGapBorder());
+        messageLabel.setBorder(GuiUtils.getGapBorder());
 
         JPanel solutionsPanel = new JPanel(new GridLayout(solutions.size(), 1,
                 SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
 
-        solutionsPanel.setBorder(SizeHelper.getEmptyBorder());
+        solutionsPanel.setBorder(GuiUtils.getEmptyBorder());
         for (Solution solution : solutions) {
             SolutionPanel solutionPanel = new SolutionPanel(we, solution, event -> setVisible(false));
             solutionsPanel.add(solutionPanel);
@@ -39,7 +39,7 @@ public class ReachibilityDialog extends JDialog {
         scrollPanel.setBorder(new EmptyBorder(0, SizeHelper.getLayoutHGap(), 0, SizeHelper.getLayoutHGap()));
         scrollPanel.add(new JScrollPane(solutionsPanel), BorderLayout.CENTER);
 
-        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel buttonsPanel = GuiUtils.createDialogButtonsPanel();
         JButton closeButton = GuiUtils.createDialogButton("Close");
         getRootPane().setDefaultButton(closeButton);
 

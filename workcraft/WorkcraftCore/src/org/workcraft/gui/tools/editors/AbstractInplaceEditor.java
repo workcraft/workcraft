@@ -3,6 +3,7 @@ package org.workcraft.gui.tools.editors;
 import org.workcraft.dom.visual.*;
 import org.workcraft.gui.editor.Viewport;
 import org.workcraft.gui.tools.GraphEditor;
+import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -154,7 +155,7 @@ public abstract class AbstractInplaceEditor {
         panel.add(scrollPane, BorderLayout.CENTER);
         if (multiline) {
             JLabel label = new JLabel("Press Shift-Enter for a new line ");
-            label.setBorder(SizeHelper.getEmptyBorder());
+            label.setBorder(GuiUtils.getEmptyBorder());
             label.setHorizontalAlignment(SwingConstants.RIGHT);
             panel.add(label, BorderLayout.SOUTH);
         }

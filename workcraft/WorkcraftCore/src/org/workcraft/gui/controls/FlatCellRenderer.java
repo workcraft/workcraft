@@ -1,6 +1,6 @@
 package org.workcraft.gui.controls;
 
-import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
@@ -22,7 +22,7 @@ public class FlatCellRenderer extends JLabel implements TableCellRenderer {
             setFont(table.getFont());
             setOpaque(text.isEmpty());
         }
-        setBorder(SizeHelper.getTableCellBorder());
+        setBorder(GuiUtils.getTableCellBorder());
         return this;
     }
 

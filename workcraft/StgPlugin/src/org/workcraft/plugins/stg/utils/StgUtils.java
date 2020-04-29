@@ -6,7 +6,6 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.DeserialisationException;
@@ -198,7 +197,7 @@ public class StgUtils {
                 if (newSignals.isEmpty()) {
                     LogUtils.logInfo("No new signals are inserted in the STG");
                 } else {
-                    String msg = ReferenceHelper.getTextWithReferences("STG modified by inserting new signal", newSignals);
+                    String msg = TextUtils.wrapMessageWithItems("STG modified by inserting new signal", newSignals);
                     LogUtils.logInfo(msg);
                     ModelEntry dstMe = new ModelEntry(new StgDescriptor(), dstStg);
                     Path<String> path = srcWe.getWorkspacePath();

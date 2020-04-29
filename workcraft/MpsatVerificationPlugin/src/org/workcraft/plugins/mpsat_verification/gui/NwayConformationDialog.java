@@ -1,12 +1,12 @@
 package org.workcraft.plugins.mpsat_verification.gui;
 
 import org.workcraft.Framework;
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.dialogs.ModalDialog;
 import org.workcraft.gui.trees.TreeWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.gui.workspace.WorkspaceChooser;
 import org.workcraft.plugins.stg.StgWorkspaceFilter;
+import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -29,13 +29,13 @@ public class NwayConformationDialog extends ModalDialog<Void> {
     }
 
     @Override
-    public JPanel createControlsPanel() {
+    public JPanel createContentPanel() {
         Workspace workspace = Framework.getInstance().getWorkspace();
         chooser = new WorkspaceChooser(workspace, new StgWorkspaceFilter());
-        chooser.setBorder(SizeHelper.getTitledBorder("Source STGs"));
+        chooser.setBorder(GuiUtils.getTitledBorder("Source STGs"));
         chooser.setCheckBoxMode(TreeWindow.CheckBoxMode.LEAF);
 
-        JPanel result = super.createControlsPanel();
+        JPanel result = super.createContentPanel();
         result.setLayout(new BorderLayout());
         result.add(chooser, BorderLayout.CENTER);
         return result;

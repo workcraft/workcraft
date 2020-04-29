@@ -1,7 +1,6 @@
 package org.workcraft.plugins.pcomp.gui;
 
 import org.workcraft.Framework;
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.exceptions.NotSupportedException;
 import org.workcraft.gui.dialogs.ModalDialog;
 import org.workcraft.gui.trees.TreeWindow;
@@ -38,14 +37,14 @@ public class ParallelCompositionDialog extends ModalDialog<Void> {
     }
 
     @Override
-    public JPanel createControlsPanel() {
+    public JPanel createContentPanel() {
         Workspace workspace = Framework.getInstance().getWorkspace();
         stgChooser = new WorkspaceChooser(workspace, new StgWorkspaceFilter());
-        stgChooser.setBorder(SizeHelper.getTitledBorder("Source STGs"));
+        stgChooser.setBorder(GuiUtils.getTitledBorder("Source STGs"));
         stgChooser.setCheckBoxMode(TreeWindow.CheckBoxMode.LEAF);
 
-        JPanel signalPanel = new JPanel(GuiUtils.createFlowLayout());
-        signalPanel.setBorder(SizeHelper.getTitledBorder("Conversion of shared signals: "));
+        JPanel signalPanel = new JPanel(GuiUtils.createNogapFlowLayout());
+        signalPanel.setBorder(GuiUtils.getTitledBorder("Conversion of shared signals"));
         outputRadio = createSharedSignalRadio(PcompParameters.SharedSignalMode.OUTPUT);
         internalRadio = createSharedSignalRadio(PcompParameters.SharedSignalMode.INTERNAL);
         dummyRadio = createSharedSignalRadio(PcompParameters.SharedSignalMode.DUMMY);
@@ -56,10 +55,12 @@ public class ParallelCompositionDialog extends ModalDialog<Void> {
         outputsGroup.add(internalRadio);
 
         signalPanel.add(outputRadio);
+        signalPanel.add(GuiUtils.createHGap());
         signalPanel.add(internalRadio);
+        signalPanel.add(GuiUtils.createHGap());
         signalPanel.add(dummyRadio);
 
-        JPanel compositionPanel = new JPanel(GuiUtils.createGridLayout(2, 1));
+        JPanel compositionPanel = new JPanel(GuiUtils.createNogapGridLayout(2, 1));
         sharedOutputsCheckbox = new JCheckBox("Allow the STGs to share outputs");
         improvedPcompCheckbox = new JCheckBox("Guaranteed N-way conformation");
         compositionPanel.add(sharedOutputsCheckbox);
@@ -69,9 +70,8 @@ public class ParallelCompositionDialog extends ModalDialog<Void> {
         optionsPanel.add(signalPanel, BorderLayout.NORTH);
         optionsPanel.add(compositionPanel, BorderLayout.SOUTH);
 
-        JPanel result = super.createControlsPanel();
+        JPanel result = super.createContentPanel();
         result.setLayout(GuiUtils.createBorderLayout());
-        result.setBorder(SizeHelper.getGapBorder());
         result.add(stgChooser, BorderLayout.CENTER);
         result.add(optionsPanel, BorderLayout.SOUTH);
 

@@ -8,6 +8,7 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ActionButton;
 import org.workcraft.gui.actions.ScriptedActionListener;
+import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -116,7 +117,7 @@ public class DockableWindowContentPanel extends JPanel {
             titleLabel.setOpaque(false);
             titleLabel.setForeground(UIManager.getColor("InternalFrame.activeTitleForeground"));
             titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
-            titleLabel.setBorder(SizeHelper.getEmptyBorder());
+            titleLabel.setBorder(GuiUtils.getEmptyBorder());
             add(titleLabel, BorderLayout.WEST);
 
             setMaximized(false);

@@ -1,13 +1,13 @@
 package org.workcraft.utils;
 
 import org.workcraft.Framework;
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.MainWindow;
 
 import javax.swing.*;
 
 public class DialogUtils {
 
+    private static final int TRUNCATE_LENGTH = 100;
     private static final String TITLE_MESSAGE = "Message";
     private static final String TITLE_INFO = "Information";
     private static final String TITLE_ERROR = "Error";
@@ -31,8 +31,8 @@ public class DialogUtils {
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
         if ((mainWindow != null) && framework.isInGuiMode()) {
-            String wrapText = TextUtils.truncateText(msg, SizeHelper.getTrauncateLength());
-            JOptionPane.showMessageDialog(mainWindow, wrapText, title, messageType);
+            String text = TextUtils.truncateText(msg, TRUNCATE_LENGTH);
+            JOptionPane.showMessageDialog(mainWindow, text, title, messageType);
         }
     }
 
