@@ -69,12 +69,6 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
         }
     }
 
-    public List<Solution> getSolutions() {
-        String mpsatStdout = getOutput().getStdoutString();
-        MpsatOutputParser mrp = new MpsatOutputParser(mpsatStdout);
-        return mrp.getSolutions();
-    }
-
     public void reportSolutions(List<Solution> solutions) {
     }
 
@@ -141,7 +135,7 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
     public StgModel getSrcStg(WorkspaceEntry we) {
         ComponentData data = getCompositionData(we);
         if (data == null) {
-            return StgUtils.importStg(getOutput().getStgBytes());
+            return getOutput().getStg();
         }
         File file = new File(data.getFileName());
         if ((file != null) && file.exists()) {
@@ -170,7 +164,7 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
         if (getOutput() == null) {
             return null;
         }
-        List<Solution> solutions = getSolutions();
+        List<Solution> solutions = getOutput().getSolutions();
         boolean predicateSatisfiable = TraceUtils.hasTraces(solutions);
         boolean inversePredicate = getOutput().getVerificationParameters().getInversePredicate();
         boolean propertyHolds = predicateSatisfiable != inversePredicate;

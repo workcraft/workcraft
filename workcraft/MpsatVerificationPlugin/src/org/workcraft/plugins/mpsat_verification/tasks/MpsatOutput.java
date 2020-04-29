@@ -1,26 +1,43 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.tasks.ExternalProcessOutput;
+import org.workcraft.traces.Solution;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class MpsatOutput extends ExternalProcessOutput {
 
-    private final byte[] stgBytes;
+    private final Stg stg;
+    private final List<Solution> solutions;
     private final VerificationParameters verificationParameters;
 
-    public MpsatOutput(ExternalProcessOutput output, byte[] stgBytes,
+    public MpsatOutput(ExternalProcessOutput output, Stg stg, List<Solution> solutions,
             VerificationParameters verificationParameters) {
 
         super(output.getReturnCode(), output.getStdout(), output.getStderr());
-        this.stgBytes = stgBytes;
+        this.stg = stg;
+        this.solutions = solutions == null ? null : new ArrayList<>(solutions);
         this.verificationParameters = verificationParameters;
     }
 
-    public byte[] getStgBytes() {
-        return stgBytes;
+    public Stg getStg() {
+        return stg;
+    }
+
+    public List<Solution> getSolutions() {
+        return Collections.unmodifiableList(solutions);
     }
 
     public VerificationParameters getVerificationParameters() {
         return verificationParameters;
     }
+
+    public boolean hasSolutions() {
+        return (solutions != null) && !solutions.isEmpty();
+    }
+
 }

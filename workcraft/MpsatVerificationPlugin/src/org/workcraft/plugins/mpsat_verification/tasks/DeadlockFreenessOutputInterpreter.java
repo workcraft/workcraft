@@ -71,7 +71,7 @@ class DeadlockFreenessOutputInterpreter extends ReachabilityOutputInterpreter {
         if (getOutput() == null) {
             return null;
         }
-        List<Solution> solutions = getSolutions();
+        List<Solution> solutions = getOutput().getSolutions();
         boolean propertyHolds = !TraceUtils.hasTraces(solutions);
         if (propertyHolds) {
             showOutcome(propertyHolds, "The system is deadlock-free");

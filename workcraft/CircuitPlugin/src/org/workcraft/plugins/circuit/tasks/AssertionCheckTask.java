@@ -6,7 +6,6 @@ import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutput;
-import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutputParser;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatTask;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
@@ -133,9 +132,7 @@ public class AssertionCheckTask implements Task<VerificationChainOutput> {
             }
             monitor.progressUpdate(0.50);
 
-            String mpsatStdout = mpsatResult.getPayload().getStdoutString();
-            MpsatOutputParser mpsatParser = new MpsatOutputParser(mpsatStdout);
-            if (!mpsatParser.getSolutions().isEmpty()) {
+            if (mpsatResult.getPayload().hasSolutions()) {
                 return Result.success(new VerificationChainOutput(
                         devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,
                         "Property is violated after the following trace(s):"));

@@ -13,7 +13,6 @@ import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutput;
-import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutputParser;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatTask;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
@@ -156,9 +155,7 @@ public class StrictImplementationCheckTask implements Task<VerificationChainOutp
             }
             monitor.progressUpdate(0.80);
 
-            String mpsatStdout = mpsatResult.getPayload().getStdoutString();
-            MpsatOutputParser mpsatParser = new MpsatOutputParser(mpsatStdout);
-            if (!mpsatParser.getSolutions().isEmpty()) {
+            if (mpsatResult.getPayload().hasSolutions()) {
                 return Result.success(new VerificationChainOutput(
                         envExportResult, null, punfResult, mpsatResult, verificationParameters,
                         "Circuit does not strictly implement the environment after the following trace(s):"));

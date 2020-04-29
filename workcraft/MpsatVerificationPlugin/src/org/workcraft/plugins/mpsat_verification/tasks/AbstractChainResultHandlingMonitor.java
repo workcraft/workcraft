@@ -4,6 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
+import org.workcraft.plugins.punf.tasks.PunfOutputParser;
 import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.tasks.ExternalProcessOutput;
@@ -13,6 +14,8 @@ import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.TraceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import java.util.Arrays;
 
 public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput> extends AbstractResultHandlingMonitor<T, Boolean> {
 
@@ -62,8 +65,8 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput> 
         }
         Result<? extends PunfOutput> punfResult = (chainOutput == null) ? null : chainOutput.getPunfResult();
         if ((punfResult != null) && (punfResult.isFailure())) {
-            PunfOutputParser prp = new PunfOutputParser(punfResult.getPayload());
-            Pair<Solution, PunfOutputParser.Cause> punfOutcome = prp.getOutcome();
+            PunfOutputParser punfOutputParser = new PunfOutputParser(punfResult.getPayload());
+            Pair<Solution, PunfOutputParser.Cause> punfOutcome = punfOutputParser.getOutcome();
             if (punfOutcome != null) {
                 Solution solution = punfOutcome.getFirst();
                 PunfOutputParser.Cause cause = punfOutcome.getSecond();
@@ -71,13 +74,9 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput> 
                 if ((cause == PunfOutputParser.Cause.INCONSISTENT) && isConsistencyCheckMode(chainOutput)) {
                     Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
                     ExportOutput exportOutput = (exportResult == null) ? null : exportResult.getPayload();
-
                     PcompOutput pcompOutput = (pcompResult == null) ? null : pcompResult.getPayload();
-                    int cost = solution.getMainTrace().size();
-                    String mpsatFakeStdout = "SOLUTION 0\n" + solution + "\npath cost: " + cost + "\n";
-                    MpsatOutput mpsatFakeOutput = new MpsatOutput(
-                            new ExternalProcessOutput(0, mpsatFakeStdout.getBytes(), new byte[0]),
-                            null, ReachUtils.getConsistencyParameters());
+                    MpsatOutput mpsatFakeOutput = new MpsatOutput(new ExternalProcessOutput(0),
+                            null, Arrays.asList(solution), ReachUtils.getConsistencyParameters());
 
                     new ConsistencyOutputInterpreter(we, exportOutput, pcompOutput, mpsatFakeOutput, isInteractive()).interpret();
                 } else {

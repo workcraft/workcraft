@@ -3,52 +3,25 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.punf.tasks.PunfTask;
+import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
+import org.workcraft.traces.Solution;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.ExecutableUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.TextUtils;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.List;
 
 public class MpsatTask implements Task<MpsatOutput> {
 
-    private static final Pattern SUCCESS_PATTERN = Pattern.compile(
-            "(" +
-             /* Deadlock */
-            "the system is deadlock-free" +
-            "|" +
-            "the system has a deadlock" +
-            "|" +
-            /* CSC conflicts detection */
-            "there are no CSC conflicts" +
-            "|" +
-            "CSC conflict has been detected" +
-            "|" +
-            /* USC conflicts detection */
-            "there are no USC conflicts" +
-            "|" +
-            "USC conflict has been detected" +
-            "|" +
-            /* Normalcy */
-            "there are no normalcy violations" +
-            "|" +
-            "normalcy is violated" +
-            "|" +
-            /* REACH expression */
-            "no reachable state satisfies the predicate" +
-            "|" +
-            "there is a reachable state satisfying the predicate" +
-            "|" +
-            "no transformation computed" +
-            "|" +
-            "suggested a transformation" +
-            ")",
-            Pattern.UNIX_LINES);
+    public static final String OUTPUT_FILE_NAME = "solutions.xml";
 
     private final File unfoldingFile;
     private final File netFile;
@@ -97,6 +70,10 @@ public class MpsatTask implements Task<MpsatOutput> {
             command.add(unfoldingFile.getAbsolutePath());
         }
 
+        // Output file
+        File outputFile = new File(directory, OUTPUT_FILE_NAME);
+        command.add(outputFile.getAbsolutePath());
+
         boolean printStdout = MpsatVerificationSettings.getPrintStdout();
         boolean printStderr = MpsatVerificationSettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
@@ -106,21 +83,21 @@ public class MpsatTask implements Task<MpsatOutput> {
         ExternalProcessOutput output = result.getPayload();
         if (result.isSuccess() && (output != null)) {
             int returnCode = output.getReturnCode();
-            // Even if the return code is 0 or 1, still test MPSat output to make sure it has completed successfully.
-            boolean success = false;
             if ((returnCode == 0) || (returnCode == 1)) {
-                Matcher matcherSuccess = SUCCESS_PATTERN.matcher(output.getStdoutString());
-                success = matcherSuccess.find();
-            }
-            if (success) {
+                Stg stg = StgUtils.importStg(netFile);
                 try {
-                    byte[] stgBytes = netFile.exists() ? FileUtils.readAllBytes(netFile) : null;
-                    return Result.success(new MpsatOutput(output, stgBytes, verificationParameters));
-                } catch (IOException e) {
+                    MpsatOutputReader outputReader = new MpsatOutputReader(outputFile);
+                    List<Solution> solutions = outputReader.getSolutions();
+                    if (outputReader.isSuccess()) {
+                        return Result.success(new MpsatOutput(output, stg, solutions, verificationParameters));
+                    }
+                    return Result.exception(outputReader.getMessage());
+                } catch (ParserConfigurationException | SAXException | IOException e) {
                     return Result.exception(e);
                 }
+
             }
-            return Result.failure(new MpsatOutput(output, null, verificationParameters));
+            return Result.failure(new MpsatOutput(output, null, null, verificationParameters));
         }
 
         if (result.isCancel()) {

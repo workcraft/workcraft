@@ -5,7 +5,6 @@ import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.tasks.Result;
-import org.workcraft.traces.Solution;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.TraceUtils;
@@ -66,10 +65,7 @@ public class CombinedChainResultHandlingMonitor extends AbstractChainResultHandl
             for (Result<? extends MpsatOutput> mpsatResult : chainOutput.getMpsatResultList()) {
                 if (mpsatResult != null) {
                     MpsatOutput mpsatOutput = mpsatResult.getPayload();
-                    String mpsatStdout = mpsatOutput.getStdoutString();
-                    MpsatOutputParser mdp = new MpsatOutputParser(mpsatStdout);
-                    List<Solution> solutions = mdp.getSolutions();
-                    if (TraceUtils.hasTraces(solutions)) {
+                    if (TraceUtils.hasTraces(mpsatOutput.getSolutions())) {
                         return mpsatOutput;
                     }
                 }
