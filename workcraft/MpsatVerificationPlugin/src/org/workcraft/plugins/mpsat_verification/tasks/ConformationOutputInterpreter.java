@@ -61,7 +61,7 @@ class ConformationOutputInterpreter extends ReachabilityOutputInterpreter {
         if (needsMultiLineMessage) {
             LogUtils.logMessage("Violation traces of the composition:");
         }
-        StgModel compStg = getOutput().getStg();
+        StgModel compStg = getOutput().getInputStg();
         for (Solution solution: solutions) {
             // FIXME: This is to rename toggle events from x to x~
             Trace compTrace = fixTraceToggleEvents(compStg, solution.getMainTrace());
@@ -88,7 +88,7 @@ class ConformationOutputInterpreter extends ReachabilityOutputInterpreter {
             LogUtils.logMessage("Unique projection(s) to '" + we.getTitle() + "':");
         }
 
-        StgModel compStg = getOutput().getStg();
+        StgModel compStg = getOutput().getInputStg();
         for (Solution solution : solutions) {
             // Get unique projection trace
             Trace trace = getProjectedTrace(solution.getMainTrace(), data, substitutions);

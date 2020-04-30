@@ -11,21 +11,21 @@ import java.util.List;
 
 public class MpsatOutput extends ExternalProcessOutput {
 
-    private final Stg stg;
+    private final Stg inputStg;
     private final List<Solution> solutions;
     private final VerificationParameters verificationParameters;
 
-    public MpsatOutput(ExternalProcessOutput output, Stg stg, List<Solution> solutions,
+    public MpsatOutput(ExternalProcessOutput output, Stg inputStg, List<Solution> solutions,
             VerificationParameters verificationParameters) {
 
         super(output.getReturnCode(), output.getStdout(), output.getStderr());
-        this.stg = stg;
+        this.inputStg = inputStg;
         this.solutions = solutions == null ? null : new ArrayList<>(solutions);
         this.verificationParameters = verificationParameters;
     }
 
-    public Stg getStg() {
-        return stg;
+    public Stg getInputStg() {
+        return inputStg;
     }
 
     public List<Solution> getSolutions() {

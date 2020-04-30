@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 
 public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessListener {
+
     private final WorkspaceEntry we;
     private final List<String> args;
     private final Collection<Mutex> mutexes;
@@ -143,12 +144,14 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
         try {
             ExternalProcessOutput output = result.getPayload();
             if (result.isSuccess() && (output != null)) {
-                byte[] verilogBytes = verilogFile.exists() ? FileUtils.readAllBytes(verilogFile) : null;
-                byte[] stgBytes = stgFile.exists() ? FileUtils.readAllBytes(stgFile) : null;
-                SynthesisOutput synthesisOutput = new SynthesisOutput(output, verilogBytes, stgBytes);
                 if (output.getReturnCode() != 0) {
-                    return Result.failure(synthesisOutput);
+                    return Result.failure(new SynthesisOutput(output, null, null));
                 }
+
+                byte[] verilogBytes = verilogFile.exists() ? FileUtils.readAllBytes(verilogFile) : null;
+                Stg outStg = outFile != null && outFile.exists() ? StgUtils.importStg(outFile) : null;
+                SynthesisOutput synthesisOutput = new SynthesisOutput(output, verilogBytes, outStg);
+
                 if ((logFile != null) && logFile.exists()) {
                     synthesisOutput.setLog(FileUtils.readAllText(logFile));
                 }

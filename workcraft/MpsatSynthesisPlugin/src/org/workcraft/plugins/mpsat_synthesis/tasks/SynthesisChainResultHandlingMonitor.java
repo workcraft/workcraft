@@ -84,7 +84,7 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
     }
 
     public WorkspaceEntry handleConflictResolutionOutput(MpsatOutput mpsatOutput) {
-        Stg stg = StgUtils.importStg(mpsatOutput.getStgBytes());
+        Stg stg = mpsatOutput.getStg();
         if (stg == null) {
             final String errorMessage = mpsatOutput.getErrorsHeadAndTail();
             DialogUtils.showWarning("Conflict resolution failed. MPSat output: \n" + errorMessage);
@@ -122,7 +122,7 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
 
     private WorkspaceEntry handleStgSynthesisOutput(MpsatOutput mpsatOutput) {
         if (MpsatSynthesisSettings.getOpenSynthesisStg()) {
-            return StgUtils.createStgIfNewSignals(we, mpsatOutput.getStgBytes());
+            return StgUtils.createStgWorkIfNewSignals(we, mpsatOutput.getStg());
         }
         return null;
     }

@@ -11,7 +11,6 @@ import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.converters.StgToPetriConverter;
 import org.workcraft.plugins.stg.utils.MutexUtils;
-import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.utils.DialogUtils;
@@ -36,7 +35,7 @@ public class TransformationResultHandlingMonitor extends AbstractResultHandlingM
         WorkspaceEntry weResult = null;
         TransformationOutput output = result.getPayload();
         if (result.isSuccess()) {
-            StgModel stgModel = StgUtils.importStg(output.getStgBytes());
+            StgModel stgModel = output.getStg();
             MutexUtils.restoreMutexSignals(stgModel, mutexes);
             MutexUtils.restoreMutexPlacesByContext(stgModel, mutexes);
             PetriModel model = convertToPetriNet ? convertStgToPetriNet(stgModel) : stgModel;

@@ -31,7 +31,7 @@ class OutputDeterminacyOutputInterpreter extends ReachabilityOutputInterpreter {
     public List<Solution> processSolutions(WorkspaceEntry we, List<Solution> solutions) {
         List<Solution> result = new LinkedList<>();
 
-        StgModel compStg = getOutput().getStg();
+        StgModel compStg = getOutput().getInputStg();
         StgModel stg = getSrcStg(we);
         ComponentData devData = getCompositionData(0);
         ComponentData envData = getCompositionData(1);

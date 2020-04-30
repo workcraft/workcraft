@@ -115,17 +115,20 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
             Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
 
             if (result.isSuccess()) {
-                byte[] stgBytes = stgFile.exists() ? FileUtils.readAllBytes(stgFile) : null;
                 ExternalProcessOutput output = result.getPayload();
                 String errorMessage = output.getStderrString();
-                if ((output.getReturnCode() != 0) || (errorMessage.contains(">>> ERROR: Cannot solve CSC.\n"))) {
-                    return Result.failure(new TransformationOutput(output, stgBytes));
+                if ((output.getReturnCode() != 0) || errorMessage.contains(">>> ERROR: Cannot solve CSC.\n")) {
+                    return Result.failure(new TransformationOutput(output, null));
                 }
-                return Result.success(new TransformationOutput(output, stgBytes));
+
+                Stg stg = stgFile.exists() ? StgUtils.importStg(stgFile) : null;
+                return Result.success(new TransformationOutput(output, stg));
             }
+
             if (result.isCancel()) {
                 return Result.cancel();
             }
+
             return Result.exception(result.getCause());
         } catch (Throwable e) {
             throw new RuntimeException(e);

@@ -135,7 +135,7 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
     public StgModel getSrcStg(WorkspaceEntry we) {
         ComponentData data = getCompositionData(we);
         if (data == null) {
-            return getOutput().getStg();
+            return getOutput().getInputStg();
         }
         File file = new File(data.getFileName());
         if ((file != null) && file.exists()) {

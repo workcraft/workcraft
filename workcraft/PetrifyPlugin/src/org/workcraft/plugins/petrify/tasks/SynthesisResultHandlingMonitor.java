@@ -120,7 +120,7 @@ public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonito
 
     private WorkspaceEntry handleStgSynthesisOutput(SynthesisOutput synthOutput) {
         if (PetrifySettings.getOpenSynthesisStg()) {
-            return StgUtils.createStgIfNewSignals(we, synthOutput.getStgBytes());
+            return StgUtils.createStgWorkIfNewSignals(we, synthOutput.getStg());
         }
         return null;
     }
