@@ -3,6 +3,8 @@ package org.workcraft.plugins.petrify.tasks;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
+import org.workcraft.plugins.fst.Fst;
+import org.workcraft.plugins.fst.utils.FstUtils;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
@@ -97,28 +99,31 @@ public class WriteSgConversionTask implements Task<WriteSgConversionOutput> {
 
                 ExternalProcessOutput output = result.getPayload();
                 if (result.isSuccess()) {
-                    return Result.success(new WriteSgConversionOutput(output));
+                    Fst fst = FstUtils.importFst(output.getStdout());
+                    return Result.success(new WriteSgConversionOutput(output, fst));
                 }
+
                 if (result.isCancel()) {
                     return Result.cancel();
                 }
+
                 if (result.getCause() != null) {
                     return Result.exception(result.getCause());
-                } else {
-                    final String errorMessages = output.getStderrString();
-                    final Matcher matcher = hugeSgPattern.matcher(errorMessages);
-                    if (matcher.find()) {
-                        final HugeSgRunnable hugeSgRunnable = new HugeSgRunnable(matcher.group(1));
-                        SwingUtilities.invokeAndWait(hugeSgRunnable);
-                        if (hugeSgRunnable.isHugeSgConfirmed()) {
-                            writeSgOptions.add("-huge");
-                            continue;
-                        } else {
-                            return Result.cancel();
-                        }
+                }
+
+                String errorMessages = output.getStderrString();
+                Matcher matcher = hugeSgPattern.matcher(errorMessages);
+                if (matcher.find()) {
+                    HugeSgRunnable hugeSgRunnable = new HugeSgRunnable(matcher.group(1));
+                    SwingUtilities.invokeAndWait(hugeSgRunnable);
+                    if (hugeSgRunnable.isHugeSgConfirmed()) {
+                        writeSgOptions.add("-huge");
+                        continue;
                     } else {
-                        return Result.failure(new WriteSgConversionOutput(output));
+                        return Result.cancel();
                     }
+                } else {
+                    return Result.failure(new WriteSgConversionOutput(output, null));
                 }
             }
         } catch (Throwable e) {
