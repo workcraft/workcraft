@@ -18,15 +18,10 @@ import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.expression.Expression;
-import org.workcraft.plugins.circuit.utils.ExpressionUtils;
 import org.workcraft.plugins.circuit.expression.Literal;
 import org.workcraft.plugins.circuit.genlib.*;
 import org.workcraft.plugins.circuit.jj.expression.ExpressionParser;
-import org.workcraft.plugins.circuit.jj.verilog.VerilogParser;
-import org.workcraft.plugins.circuit.utils.CircuitUtils;
-import org.workcraft.plugins.circuit.utils.GateUtils;
-import org.workcraft.plugins.circuit.utils.VerificationUtils;
-import org.workcraft.plugins.circuit.utils.VerilogUtils;
+import org.workcraft.plugins.circuit.utils.*;
 import org.workcraft.plugins.circuit.verilog.*;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
@@ -45,9 +40,6 @@ import java.util.*;
 
 public class VerilogImporter implements Importer {
 
-    private static final String MSG_NO_MODULE = "No module found.";
-    private static final String MSG_NO_TOP_MODULE = "No top module found.";
-    private static final String MSG_MANY_TOP_MODULES = "More than one top module is found.";
     private static final String MSG_CANCELED_BY_USER = "Import operation cancelled by user.";
     private static final String MSG_CLASH_OF_FILE_NAMES = "Clash of file names.";
 
@@ -94,19 +86,30 @@ public class VerilogImporter implements Importer {
     }
 
     @Override
-    public ModelEntry importFrom(InputStream in) throws OperationCancelledException, DeserialisationException  {
-        Collection<VerilogModule> verilogModules = importVerilogModules(in);
-        if ((verilogModules == null) || verilogModules.isEmpty()) {
-            throw new DeserialisationException(MSG_NO_MODULE);
-        }
+    public ModelEntry importFrom(InputStream in)
+            throws OperationCancelledException, DeserialisationException  {
+
+        substitutionRules = null;
+        moduleFileNames = null;
+        Collection<VerilogModule> verilogModules = VerilogUtils.importVerilogModules(in);
         Circuit circuit = null;
-        if (verilogModules.size() == 1) {
+        if ((verilogModules == null) || verilogModules.isEmpty()) {
+            circuit = new Circuit();
+        } else if (verilogModules.size() == 1) {
             VerilogModule verilogModule = verilogModules.iterator().next();
-            circuit = createCircuit(verilogModule, verilogModules);
+            circuit = createCircuit(verilogModule);
         } else {
             circuit = createCircuitHierarchy(verilogModules);
         }
         return new ModelEntry(new CircuitDescriptor(), circuit);
+    }
+
+    public Circuit createCircuit(VerilogModule verilogModule) {
+        return createCircuit(verilogModule, Collections.emptySet());
+    }
+
+    public Circuit createCircuit(VerilogModule verilogModule, Collection<Mutex> mutexes) {
+        return createCircuit(verilogModule, Arrays.asList(verilogModule), mutexes);
     }
 
     private Circuit createCircuitHierarchy(Collection<VerilogModule> verilogModules)
@@ -146,7 +149,7 @@ public class VerilogImporter implements Importer {
     private Circuit createCircuitHierarchyAuto(Collection<VerilogModule> verilogModules)
             throws DeserialisationException {
 
-        VerilogModule topVerilogModule = getTopModule(verilogModules);
+        VerilogModule topVerilogModule = VerilogUtils.getTopModule(verilogModules);
         Set<VerilogModule> descendantModules = VerilogUtils.getDescendantModules(topVerilogModule, verilogModules);
         File dir = Framework.getInstance().getWorkingDirectory();
         moduleFileNames = VerilogUtils.getModuleToFileMap(verilogModules);
@@ -176,12 +179,12 @@ public class VerilogImporter implements Importer {
     private Circuit createCircuitHierarchy(VerilogModule topVerilogModule,
             Collection<VerilogModule> descendantModules, File dir) {
 
-        Circuit circuit = createCircuit(topVerilogModule, descendantModules);
+        Circuit circuit = createCircuit(topVerilogModule, descendantModules, Collections.emptySet());
 
         Map<Circuit, String> circuitFileNames = new HashMap<>();
         for (VerilogModule verilogModule : descendantModules) {
             if (!verilogModule.isEmpty()) {
-                Circuit descendantCircuit = createCircuit(verilogModule, descendantModules);
+                Circuit descendantCircuit = createCircuit(verilogModule, descendantModules, Collections.emptySet());
                 if (moduleFileNames != null) {
                     circuitFileNames.put(descendantCircuit, moduleFileNames.get(verilogModule));
                 }
@@ -212,58 +215,9 @@ public class VerilogImporter implements Importer {
         }
     }
 
-    public Circuit importTopModule(InputStream in) throws DeserialisationException {
-        return importTopModule(in, Collections.emptySet());
-    }
+    private Circuit createCircuit(VerilogModule verilogModule,
+            Collection<VerilogModule> descendantModules, Collection<Mutex> mutexes) {
 
-    public Circuit importTopModule(InputStream in, Collection<Mutex> mutexes) throws DeserialisationException {
-        Collection<VerilogModule> verilogModules = importVerilogModules(in);
-        VerilogModule topVerilogModule = getTopModule(verilogModules);
-        return createCircuit(topVerilogModule, verilogModules, mutexes);
-    }
-
-    private VerilogModule getTopModule(Collection<VerilogModule> verilogModules) throws DeserialisationException {
-        Collection<VerilogModule> topVerilogModules = VerilogUtils.getTopModules(verilogModules);
-        if (topVerilogModules.isEmpty()) {
-            throw new DeserialisationException(MSG_NO_TOP_MODULE);
-        }
-        if (topVerilogModules.size() > 1) {
-            throw new DeserialisationException(MSG_MANY_TOP_MODULES);
-        }
-        return topVerilogModules.iterator().next();
-    }
-
-    private Collection<VerilogModule> importVerilogModules(InputStream in) throws DeserialisationException {
-        substitutionRules = null;
-        moduleFileNames = null;
-        List<VerilogModule> result = null;
-        try {
-            VerilogParser parser = new VerilogParser(in);
-            if (DebugCommonSettings.getParserTracing()) {
-                parser.enable_tracing();
-            } else {
-                parser.disable_tracing();
-            }
-            result = parser.parseCircuit();
-        } catch (FormatException | org.workcraft.plugins.circuit.jj.verilog.ParseException e) {
-            throw new DeserialisationException(e);
-        }
-        if (DebugCommonSettings.getVerboseImport()) {
-            LogUtils.logInfo("Parsed Verilog modules");
-            for (VerilogModule verilogModule : result) {
-                if (!verilogModule.isEmpty()) {
-                    VerilogUtils.printModule(verilogModule);
-                }
-            }
-        }
-        return result;
-    }
-
-    private Circuit createCircuit(VerilogModule verilogModule, Collection<VerilogModule> verilogModules) {
-        return createCircuit(verilogModule, verilogModules, Collections.emptySet());
-    }
-
-    private Circuit createCircuit(VerilogModule verilogModule, Collection<VerilogModule> verilogModules, Collection<Mutex> mutexes) {
         Circuit circuit = new Circuit();
         circuit.setTitle(verilogModule.name);
         HashMap<VerilogInstance, FunctionComponent> instanceComponentMap = new HashMap<>();
@@ -294,7 +248,7 @@ public class VerilogImporter implements Importer {
                 Mutex mutexInstance = instanceToMutex(verilogInstance, mutexModule);
                 component = createMutex(circuit, mutexInstance, mutexModule, wires);
             } else {
-                component = createBlackBox(circuit, verilogInstance, wires, verilogModules);
+                component = createBlackBox(circuit, verilogInstance, wires, descendantModules);
             }
             if (component != null) {
                 instanceComponentMap.put(verilogInstance, component);

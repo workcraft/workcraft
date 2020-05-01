@@ -5,6 +5,8 @@ import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.atacs.AtacsSettings;
+import org.workcraft.plugins.circuit.utils.VerilogUtils;
+import org.workcraft.plugins.circuit.verilog.VerilogModule;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.LpnFormat;
@@ -15,7 +17,6 @@ import org.workcraft.utils.*;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -73,27 +74,22 @@ public class AtacsTask implements Task<AtacsOutput>, ExternalProcessListener {
         ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
         SubtaskMonitor<ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
+        FileUtils.deleteOnExitRecursively(directory);
 
-        try {
-            ExternalProcessOutput output = result.getPayload();
-            if ((result.isSuccess()) && (output != null)) {
-                byte[] verilogBytes = verilogFile.exists() ? FileUtils.readAllBytes(verilogFile) : null;
-                if (output.getReturnCode() == 0) {
-                    return Result.success(new AtacsOutput(output, verilogBytes));
-                }
+        ExternalProcessOutput output = result.getPayload();
+        if ((result.isSuccess()) && (output != null)) {
+            if (output.getReturnCode() != 0) {
                 return Result.failure(new AtacsOutput(output, null));
             }
-
-            if (result.isCancel()) {
-                return Result.cancel();
-            }
-
-            return Result.exception(result.getCause());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            FileUtils.deleteOnExitRecursively(directory);
+            VerilogModule verilogModule = VerilogUtils.importTopVerilogModule(verilogFile);
+            return Result.success(new AtacsOutput(output, verilogModule));
         }
+
+        if (result.isCancel()) {
+            return Result.cancel();
+        }
+
+        return Result.exception(result.getCause());
     }
 
     private File getInputFile(Stg stg, File directory) {

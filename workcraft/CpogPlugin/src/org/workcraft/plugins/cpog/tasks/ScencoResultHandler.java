@@ -2,24 +2,19 @@ package org.workcraft.plugins.cpog.tasks;
 
 import org.workcraft.Framework;
 import org.workcraft.Info;
-import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.editor.GraphEditorPanel;
-import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitDescriptor;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
+import org.workcraft.plugins.circuit.verilog.VerilogModule;
 import org.workcraft.tasks.BasicProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import javax.swing.*;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 
 public class ScencoResultHandler extends BasicProgressMonitor<ScencoOutput> {
@@ -45,26 +40,15 @@ public class ScencoResultHandler extends BasicProgressMonitor<ScencoOutput> {
 
             // Import Verilog file into circuit
             if (solver.isVerilog()) {
-                try {
-                    byte[] verilogBytes = solver.getVerilog();
-                    final ByteArrayInputStream in = new ByteArrayInputStream(verilogBytes);
-                    final VerilogImporter verilogImporter = new VerilogImporter(false);
-                    final Circuit circuit = verilogImporter.importTopModule(in);
-                    final ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
-                    final Path<String> path = we.getWorkspacePath();
-                    final Framework framework = Framework.getInstance();
-                    final MainWindow mainWindow = framework.getMainWindow();
-                    final WorkspaceEntry weCircuit = framework.createWork(me, path);
-                    final VisualModel visualModel = weCircuit.getModelEntry().getVisualModel();
-                    if (visualModel instanceof VisualCircuit) {
-                        final VisualCircuit visualCircuit = (VisualCircuit) visualModel;
-                        visualCircuit.setTitle(we.getModelTitle());
-                        final GraphEditorPanel currentEditor = mainWindow.getCurrentEditor();
-                        SwingUtilities.invokeLater(() -> currentEditor.updatePropertyView());
-                    }
-                } catch (DeserialisationException e) {
-                    throw new RuntimeException(e);
-                }
+                VerilogModule verilogModule = solver.getVerilogModule();
+                VerilogImporter verilogImporter = new VerilogImporter();
+                Circuit circuit = verilogImporter.createCircuit(verilogModule);
+                ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
+                Framework framework = Framework.getInstance();
+                WorkspaceEntry weCircuit = framework.createWork(me, we.getWorkspacePath());
+                VisualCircuit visualCircuit = WorkspaceUtils.getAs(weCircuit, VisualCircuit.class);
+                visualCircuit.setTitle(we.getModelTitle());
+                framework.updatePropertyView();
             }
         } else if (result.isFailure()) {
             final String errorMessage = getErrorMessage(result.getPayload());

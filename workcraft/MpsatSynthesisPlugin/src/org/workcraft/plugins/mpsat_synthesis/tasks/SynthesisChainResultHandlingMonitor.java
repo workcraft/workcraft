@@ -2,9 +2,6 @@ package org.workcraft.plugins.mpsat_synthesis.tasks;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractLayoutCommand;
-import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitDescriptor;
@@ -13,6 +10,7 @@ import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.plugins.circuit.verilog.VerilogModule;
 import org.workcraft.plugins.mpsat_synthesis.MpsatSynthesisSettings;
 import org.workcraft.plugins.mpsat_synthesis.SynthesisMode;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
@@ -25,12 +23,10 @@ import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.tasks.Result;
 import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import javax.swing.*;
-import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -130,46 +126,20 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
     private WorkspaceEntry handleVerilogSynthesisOutput(MpsatOutput mpsatOutput,
             boolean sequentialAssign, RenderType renderType) {
 
-        WorkspaceEntry dstWe = null;
-        final byte[] verilogOutput = mpsatOutput.getVerilogBytes();
-        if ((verilogOutput != null) && (verilogOutput.length > 0)) {
-            LogUtils.logInfo("MPSat synthesis result in Verilog format:");
-            System.out.println(new String(verilogOutput));
-            System.out.println();
+        VerilogModule verilogModule = mpsatOutput.getVerilogModule();
+        if (verilogModule == null) {
+            return null;
         }
+        VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
+        Circuit circuit = verilogImporter.createCircuit(verilogModule, mutexes);
+        ModelEntry dstMe = new ModelEntry(new CircuitDescriptor(), circuit);
+        Framework framework = Framework.getInstance();
+        WorkspaceEntry dstWe = framework.createWork(dstMe, we.getWorkspacePath());
 
-        if ((verilogOutput != null) && (verilogOutput.length > 0)) {
-            try {
-                ByteArrayInputStream verilogStream = new ByteArrayInputStream(verilogOutput);
-                VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
-                Circuit circuit = verilogImporter.importTopModule(verilogStream, mutexes);
-                ModelEntry dstMe = new ModelEntry(new CircuitDescriptor(), circuit);
-
-                Path<String> path = we.getWorkspacePath();
-                dstWe = Framework.getInstance().createWork(dstMe, path);
-
-                final VisualModel visualModel = dstWe.getModelEntry().getVisualModel();
-                if (visualModel instanceof VisualCircuit) {
-                    VisualCircuit visualCircuit = (VisualCircuit) visualModel;
-                    setComponentsRenderStyle(visualCircuit, renderType);
-                    visualCircuit.setTitle(we.getModelTitle());
-                    if (!we.getFile().exists()) {
-                        DialogUtils.showError("Unsaved STG cannot be set as the circuit environment.");
-                    } else {
-                        visualCircuit.getMathModel().setEnvironmentFile(we.getFile());
-                        if (we.isChanged()) {
-                            DialogUtils.showWarning("The STG with unsaved changes is set as the circuit environment.");
-                        }
-                    }
-                    if (Framework.getInstance().isInGuiMode()) {
-                        GraphEditorPanel editor = Framework.getInstance().getMainWindow().getCurrentEditor();
-                        SwingUtilities.invokeLater(() -> editor.updatePropertyView());
-                    }
-                }
-            } catch (final DeserialisationException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        VisualCircuit visualCircuit = WorkspaceUtils.getAs(dstWe, VisualCircuit.class);
+        setComponentsRenderStyle(visualCircuit, renderType);
+        CircuitUtils.setTitleAndEnvironment(visualCircuit, we);
+        framework.updatePropertyView();
         return dstWe;
     }
 

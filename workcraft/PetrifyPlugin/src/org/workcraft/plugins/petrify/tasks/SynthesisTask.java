@@ -7,6 +7,8 @@ import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.circuit.CircuitSettings;
+import org.workcraft.plugins.circuit.utils.VerilogUtils;
+import org.workcraft.plugins.circuit.verilog.VerilogModule;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.plugins.petrify.PetrifySettings;
@@ -148,9 +150,9 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
                     return Result.failure(new SynthesisOutput(output, null, null));
                 }
 
-                byte[] verilogBytes = verilogFile.exists() ? FileUtils.readAllBytes(verilogFile) : null;
+                VerilogModule verilogModule = VerilogUtils.importTopVerilogModule(verilogFile);
                 Stg outStg = outFile != null && outFile.exists() ? StgUtils.importStg(outFile) : null;
-                SynthesisOutput synthesisOutput = new SynthesisOutput(output, verilogBytes, outStg);
+                SynthesisOutput synthesisOutput = new SynthesisOutput(output, verilogModule, outStg);
 
                 if ((logFile != null) && logFile.exists()) {
                     synthesisOutput.setLog(FileUtils.readAllText(logFile));

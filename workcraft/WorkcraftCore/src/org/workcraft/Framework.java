@@ -12,6 +12,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.*;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.gui.properties.Settings;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Exporter;
@@ -874,6 +875,13 @@ public final class Framework {
             }
         }
         return null;
+    }
+
+    public void updatePropertyView() {
+        if (isInGuiMode()) {
+            GraphEditorPanel editor = getMainWindow().getCurrentEditor();
+            SwingUtilities.invokeLater(() -> editor.updatePropertyView());
+        }
     }
 
 }

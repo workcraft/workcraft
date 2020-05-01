@@ -1,6 +1,8 @@
 package org.workcraft.plugins.mpsat_synthesis.tasks;
 
 import org.workcraft.plugins.circuit.CircuitSettings;
+import org.workcraft.plugins.circuit.utils.VerilogUtils;
+import org.workcraft.plugins.circuit.verilog.VerilogModule;
 import org.workcraft.plugins.mpsat_synthesis.MpsatSynthesisSettings;
 import org.workcraft.plugins.mpsat_synthesis.SynthesisMode;
 import org.workcraft.plugins.punf.tasks.PunfTask;
@@ -117,14 +119,10 @@ public class MpsatTask implements Task<MpsatOutput> {
                 return Result.failure(new MpsatOutput(output, null, null));
             }
 
+            VerilogModule verilogModule = verilogFile.exists() ? VerilogUtils.importTopVerilogModule(verilogFile) : null;
             File stgFile = new File(directory, STG_FILE_NAME);
             Stg stg = stgFile.exists() ? StgUtils.importStg(stgFile) : null;
-            try {
-                byte[] verilogBytes = verilogFile.exists() ? FileUtils.readAllBytes(verilogFile) : null;
-                return Result.success(new MpsatOutput(output, verilogBytes, stg));
-            } catch (IOException e) {
-                return Result.exception(e);
-            }
+            return Result.success(new MpsatOutput(output, verilogModule, stg));
         }
 
         if (result.isCancel()) {
