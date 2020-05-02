@@ -7,7 +7,6 @@ import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.plugins.dfs.stg.DfsToStgConverter;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutput;
-import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutputParser;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatTask;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
@@ -91,9 +90,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
             }
             monitor.progressUpdate(0.60);
 
-            String deadlockMpsatStdout = deadlockMpsatResult.getPayload().getStdoutString();
-            MpsatOutputParser deadlockMpsatResultParser = new MpsatOutputParser(deadlockMpsatStdout);
-            if (!deadlockMpsatResultParser.getSolutions().isEmpty()) {
+            if (deadlockMpsatResult.getPayload().hasSolutions()) {
                 return Result.success(new VerificationChainOutput(
                         exportResult, null, punfResult, deadlockMpsatResult, deadlockParameters,
                         "Dataflow has a deadlock"));
@@ -113,9 +110,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
             }
             monitor.progressUpdate(0.90);
 
-            String persistencyMpsatStdout = persistencyMpsatResult.getPayload().getStdoutString();
-            MpsatOutputParser persistencyMpsatResultParser = new MpsatOutputParser(persistencyMpsatStdout);
-            if (!persistencyMpsatResultParser.getSolutions().isEmpty()) {
+            if (persistencyMpsatResult.getPayload().hasSolutions()) {
                 return Result.success(new VerificationChainOutput(
                         exportResult, null, punfResult, persistencyMpsatResult, persistencyParameters,
                         "Dataflow is not output-persistent"));

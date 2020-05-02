@@ -1,9 +1,13 @@
 package org.workcraft.plugins.mpsat_synthesis.tasks;
 
 import org.workcraft.plugins.circuit.CircuitSettings;
+import org.workcraft.plugins.circuit.utils.VerilogUtils;
+import org.workcraft.plugins.circuit.verilog.VerilogModule;
 import org.workcraft.plugins.mpsat_synthesis.MpsatSynthesisSettings;
 import org.workcraft.plugins.mpsat_synthesis.SynthesisMode;
 import org.workcraft.plugins.punf.tasks.PunfTask;
+import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.ExecutableUtils;
@@ -110,22 +114,15 @@ public class MpsatTask implements Task<MpsatOutput> {
         if (result.isSuccess() && (output != null)) {
             int returnCode = output.getReturnCode();
             // Even if the return code is 0 or 1, still test MPSat output to make sure it has completed successfully.
-            boolean success = false;
-            if ((returnCode == 0) || (returnCode == 1)) {
-                Matcher matcherSuccess = SUCCESS_PATTERN.matcher(output.getStdoutString());
-                success = matcherSuccess.find();
+            Matcher matcherSuccess = SUCCESS_PATTERN.matcher(output.getStdoutString());
+            if ((returnCode != 0) && (returnCode != 1) || !matcherSuccess.find()) {
+                return Result.failure(new MpsatOutput(output, null, null));
             }
-            if (success) {
-                try {
-                    byte[] verilogBytes = verilogFile.exists() ? FileUtils.readAllBytes(verilogFile) : null;
-                    File stgFile = new File(directory, STG_FILE_NAME);
-                    byte[] stgBytes = stgFile.exists() ? FileUtils.readAllBytes(stgFile) : null;
-                    return Result.success(new MpsatOutput(output, verilogBytes, stgBytes));
-                } catch (IOException e) {
-                    return Result.exception(e);
-                }
-            }
-            return Result.failure(new MpsatOutput(output, null, null));
+
+            VerilogModule verilogModule = verilogFile.exists() ? VerilogUtils.importTopVerilogModule(verilogFile) : null;
+            File stgFile = new File(directory, STG_FILE_NAME);
+            Stg stg = stgFile.exists() ? StgUtils.importStg(stgFile) : null;
+            return Result.success(new MpsatOutput(output, verilogModule, stg));
         }
 
         if (result.isCancel()) {

@@ -195,8 +195,7 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
                 editor.updateToolsView();
             }
             // Update visibility of Property editor and Tool controls.
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
+            MainWindow mainWindow = Framework.getInstance().getMainWindow();
             mainWindow.updateDockableWindowVisibility();
         }
     }

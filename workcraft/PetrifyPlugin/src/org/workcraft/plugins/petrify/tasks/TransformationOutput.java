@@ -1,18 +1,19 @@
 package org.workcraft.plugins.petrify.tasks;
 
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.tasks.ExternalProcessOutput;
 
 public class TransformationOutput extends ExternalProcessOutput {
 
-    private final byte[] stgBytes;
+    private final Stg stg;
 
-    public TransformationOutput(ExternalProcessOutput output, byte[] stgBytes) {
+    public TransformationOutput(ExternalProcessOutput output, Stg stg) {
         super(output.getReturnCode(), output.getStdout(), output.getStderr());
-        this.stgBytes = stgBytes;
+        this.stg = stg;
     }
 
-    public byte[] getStgBytes() {
-        return stgBytes;
+    public Stg getStg() {
+        return stg;
     }
 
 }

@@ -1,18 +1,19 @@
 package org.workcraft.plugins.atacs.tasks;
 
+import org.workcraft.plugins.circuit.verilog.VerilogModule;
 import org.workcraft.tasks.ExternalProcessOutput;
 
 public class AtacsOutput extends ExternalProcessOutput {
 
-    private final byte[] verilogBytes;
+    private final VerilogModule verilogModule;
 
-    public AtacsOutput(ExternalProcessOutput output, byte[] verilogBytes) {
+    public AtacsOutput(ExternalProcessOutput output, VerilogModule verilogModule) {
         super(output.getReturnCode(), output.getStdout(), output.getStderr());
-        this.verilogBytes = verilogBytes;
+        this.verilogModule = verilogModule;
     }
 
-    public byte[] getVerilogBytes() {
-        return this.verilogBytes;
+    public VerilogModule getVerilogModule() {
+        return verilogModule;
     }
 
 }

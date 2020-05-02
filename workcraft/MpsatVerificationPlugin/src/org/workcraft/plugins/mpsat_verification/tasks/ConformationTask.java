@@ -147,9 +147,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             }
             monitor.progressUpdate(0.80);
 
-            String mpsatStdout = mpsatResult.getPayload().getStdoutString();
-            MpsatOutputParser mpsatOutputParser = new MpsatOutputParser(mpsatStdout);
-            if (!mpsatOutputParser.getSolutions().isEmpty()) {
+            if (mpsatResult.getPayload().hasSolutions()) {
                 return Result.success(new VerificationChainOutput(
                         devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,
                         "This model does not conform to the environment."));

@@ -4,6 +4,8 @@ import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.plugins.circuit.CircuitSettings;
+import org.workcraft.plugins.circuit.utils.VerilogUtils;
+import org.workcraft.plugins.circuit.verilog.VerilogModule;
 import org.workcraft.plugins.cpog.*;
 import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
 import org.workcraft.plugins.cpog.encoding.Encoding;
@@ -17,10 +19,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
@@ -478,14 +477,8 @@ public class ScencoSolver {
         return !verilogFlag.isEmpty();
     }
 
-    public byte[] getVerilog() {
-        byte[] verilogBytes = null;
-        try {
-            verilogBytes = Files.readAllBytes(Paths.get(verilogFile.getAbsolutePath()));
-        } catch (IOException io) {
-            FileUtils.deleteOnExitRecursively(directory);
-        }
-        return verilogBytes;
+    public VerilogModule getVerilogModule() {
+        return VerilogUtils.importTopVerilogModule(verilogFile);
     }
 
 }

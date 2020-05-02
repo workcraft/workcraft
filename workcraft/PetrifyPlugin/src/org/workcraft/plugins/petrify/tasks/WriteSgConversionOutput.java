@@ -1,15 +1,19 @@
 package org.workcraft.plugins.petrify.tasks;
 
+import org.workcraft.plugins.fst.Fst;
 import org.workcraft.tasks.ExternalProcessOutput;
 
 public class WriteSgConversionOutput extends ExternalProcessOutput {
 
-    public WriteSgConversionOutput(ExternalProcessOutput output) {
+    private final Fst fst;
+
+    public WriteSgConversionOutput(ExternalProcessOutput output, Fst fst) {
         super(output.getReturnCode(), output.getStdout(), output.getStderr());
+        this.fst = fst;
     }
 
-    public byte[] getFstBytes() {
-        return getStdout();
+    public Fst getFst() {
+        return fst;
     }
 
 }

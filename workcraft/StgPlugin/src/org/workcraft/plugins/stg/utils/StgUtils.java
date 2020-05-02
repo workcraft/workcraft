@@ -184,27 +184,21 @@ public class StgUtils {
         return result;
     }
 
-    public static WorkspaceEntry createStgIfNewSignals(WorkspaceEntry srcWe, byte[] dstOutput) {
+    public static WorkspaceEntry createStgWorkIfNewSignals(WorkspaceEntry srcWe, Stg dstStg) {
         WorkspaceEntry dstWe = null;
-        if (dstOutput != null) {
+        if (dstStg != null) {
             Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
-            try {
-                ByteArrayInputStream dstStream = new ByteArrayInputStream(dstOutput);
-                Stg dstStg = new StgImporter().importStg(dstStream);
-                Set<String> newSignals = dstStg.getSignalReferences();
-                newSignals.removeAll(srcStg.getSignalReferences());
+            Set<String> newSignals = dstStg.getSignalReferences();
+            newSignals.removeAll(srcStg.getSignalReferences());
 
-                if (newSignals.isEmpty()) {
-                    LogUtils.logInfo("No new signals are inserted in the STG");
-                } else {
-                    String msg = TextUtils.wrapMessageWithItems("STG modified by inserting new signal", newSignals);
-                    LogUtils.logInfo(msg);
-                    ModelEntry dstMe = new ModelEntry(new StgDescriptor(), dstStg);
-                    Path<String> path = srcWe.getWorkspacePath();
-                    dstWe = Framework.getInstance().createWork(dstMe, path);
-                }
-            } catch (final DeserialisationException e) {
-                throw new RuntimeException(e);
+            if (newSignals.isEmpty()) {
+                LogUtils.logInfo("No new signals are inserted in the STG");
+            } else {
+                String msg = TextUtils.wrapMessageWithItems("STG modified by inserting new signal", newSignals);
+                LogUtils.logInfo(msg);
+                ModelEntry dstMe = new ModelEntry(new StgDescriptor(), dstStg);
+                Path<String> path = srcWe.getWorkspacePath();
+                dstWe = Framework.getInstance().createWork(dstMe, path);
             }
         }
         return dstWe;

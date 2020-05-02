@@ -156,9 +156,7 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
             }
             monitor.progressUpdate(0.80);
 
-            String mpsatStdout = mpsatResult.getPayload().getStdoutString();
-            MpsatOutputParser mpsatParser = new MpsatOutputParser(mpsatStdout);
-            if (!mpsatParser.getSolutions().isEmpty()) {
+            if (mpsatResult.getPayload().hasSolutions()) {
                 return Result.success(new VerificationChainOutput(
                         multiExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,
                         "This model does not conform to the environment."));

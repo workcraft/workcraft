@@ -3,13 +3,12 @@ package org.workcraft.plugins.atacs.tasks;
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractLayoutCommand;
 import org.workcraft.dom.math.PageNode;
-import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.plugins.circuit.verilog.VerilogModule;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
@@ -22,8 +21,6 @@ import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import javax.swing.*;
-import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -66,46 +63,25 @@ public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonito
     }
 
     private WorkspaceEntry handleVerilogSynthesisOutput(AtacsOutput atacsOutput) {
-        byte[] verilogBytes = atacsOutput.getVerilogBytes();
-        if (verilogBytes == null) {
+        VerilogModule verilogModule = atacsOutput.getVerilogModule();
+        if (verilogModule == null) {
             return null;
         }
-        LogUtils.logInfo("ATACS synthesis result in Verilog format:");
-        LogUtils.logMessage(new String(verilogBytes));
-        try {
-            ByteArrayInputStream verilogStream = new ByteArrayInputStream(verilogBytes);
-            VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
-            Circuit circuit = verilogImporter.importTopModule(verilogStream, mutexes);
+        VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
+        Circuit circuit = verilogImporter.createCircuit(verilogModule, mutexes);
 
-            removePortsForExposedInternalSignals(circuit);
+        removePortsForExposedInternalSignals(circuit);
 
-            Path<String> path = we.getWorkspacePath();
-            ModelEntry dstMe = new ModelEntry(new CircuitDescriptor(), circuit);
-            Framework framework = Framework.getInstance();
-            WorkspaceEntry dstWe = framework.createWork(dstMe, path);
+        Path<String> path = we.getWorkspacePath();
+        ModelEntry dstMe = new ModelEntry(new CircuitDescriptor(), circuit);
+        Framework framework = Framework.getInstance();
+        WorkspaceEntry dstWe = framework.createWork(dstMe, path);
 
-            VisualModel visualModel = dstWe.getModelEntry().getVisualModel();
-            if (visualModel instanceof VisualCircuit) {
-                final VisualCircuit visualCircuit = (VisualCircuit) visualModel;
-                setComponentsRenderStyle(visualCircuit);
-                visualCircuit.setTitle(we.getModelTitle());
-                if (!we.getFile().exists()) {
-                    DialogUtils.showError("Unsaved STG cannot be set as the circuit environment.");
-                } else {
-                    visualCircuit.getMathModel().setEnvironmentFile(we.getFile());
-                    if (we.isChanged()) {
-                        DialogUtils.showWarning("The STG with unsaved changes is set as the circuit environment.");
-                    }
-                }
-                MainWindow mainWindow = framework.getMainWindow();
-                if (mainWindow != null) {
-                    SwingUtilities.invokeLater(() -> mainWindow.getCurrentEditor().updatePropertyView());
-                }
-            }
-            return dstWe;
-        } catch (final DeserialisationException e) {
-            throw new RuntimeException(e);
-        }
+        VisualCircuit visualCircuit = WorkspaceUtils.getAs(dstWe, VisualCircuit.class);
+        setComponentsRenderStyle(visualCircuit);
+        CircuitUtils.setTitleAndEnvironment(visualCircuit, we);
+        framework.updatePropertyView();
+        return dstWe;
     }
 
     private void removePortsForExposedInternalSignals(Circuit circuit) {

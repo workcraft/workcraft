@@ -1,8 +1,7 @@
-package org.workcraft.plugins.mpsat_verification.tasks;
+package org.workcraft.plugins.punf.tasks;
 
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
-import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.types.Pair;
 
 import java.util.regex.Matcher;
@@ -34,25 +33,25 @@ public class PunfOutputParser {
      * It is equivalent to \u000D\u000A\u000A\u000B\u000C\u000D\u0085\u2028\u2029].
      */
 
-    private static final Pattern patternInconsistent = Pattern.compile(
+    private static final Pattern INCONSISTENT_PATTERN = Pattern.compile(
             "Error: the STG is inconsistent, signal (.*); trace:\\R" +
             "(.*)\\R",
             Pattern.UNIX_LINES);
 
-    private static final Pattern patternNotSafe = Pattern.compile(
+    private static final Pattern NOT_SAFE_PATTERN = Pattern.compile(
             "Error: the net is not safe, place (.*); trace:\\R" +
             "(.*)\\R",
             Pattern.UNIX_LINES);
 
-    private static final Pattern patternEmptyPreset = Pattern.compile(
+    private static final Pattern EMPTY_PRESET_PATTERN = Pattern.compile(
             "Error: the net contains (.*) transition\\(s\\) with empty preset: (.*)",
             Pattern.UNIX_LINES);
 
     public PunfOutputParser(PunfOutput output) {
         String stderr = output == null ? "" : output.getStderrString();
-        Matcher matcherInconsistent = patternInconsistent.matcher(stderr);
-        Matcher matcherNotSafe = patternNotSafe.matcher(stderr);
-        Matcher matcherEmptyPreset = patternEmptyPreset.matcher(stderr);
+        Matcher matcherInconsistent = INCONSISTENT_PATTERN.matcher(stderr);
+        Matcher matcherNotSafe = NOT_SAFE_PATTERN.matcher(stderr);
+        Matcher matcherEmptyPreset = EMPTY_PRESET_PATTERN.matcher(stderr);
         if (matcherInconsistent.find()) {
             Solution solution = new Solution(getTrace(matcherInconsistent.group(2)));
             solution.setComment("Signal '" + matcherInconsistent.group(1) + "' is inconsistent");

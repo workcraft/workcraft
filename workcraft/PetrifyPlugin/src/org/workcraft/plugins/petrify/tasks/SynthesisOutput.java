@@ -1,27 +1,29 @@
 package org.workcraft.plugins.petrify.tasks;
 
+import org.workcraft.plugins.circuit.verilog.VerilogModule;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.tasks.ExternalProcessOutput;
 
 public class SynthesisOutput extends ExternalProcessOutput {
 
-    private final byte[] verilogBytes;
-    private final byte[] stgBytes;
+    private final VerilogModule verilogModule;
+    private final Stg stg;
 
     private String log;
     private String equations;
 
-    public SynthesisOutput(ExternalProcessOutput output, byte[] verilogBytes, byte[] stgBytes) {
+    public SynthesisOutput(ExternalProcessOutput output, VerilogModule verilogModule, Stg stg) {
         super(output.getReturnCode(), output.getStdout(), output.getStderr());
-        this.verilogBytes = verilogBytes;
-        this.stgBytes = stgBytes;
+        this.verilogModule = verilogModule;
+        this.stg = stg;
     }
 
-    public byte[] getVerilogBytes() {
-        return this.verilogBytes;
+    public VerilogModule getVerilogModule() {
+        return verilogModule;
     }
 
-    public byte[] getStgBytes() {
-        return this.stgBytes;
+    public Stg getStg() {
+        return stg;
     }
 
     public void setLog(String log) {

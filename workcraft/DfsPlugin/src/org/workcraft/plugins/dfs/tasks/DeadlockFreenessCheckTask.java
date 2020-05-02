@@ -9,7 +9,6 @@ import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutput;
-import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutputParser;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatTask;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
@@ -95,9 +94,7 @@ public class DeadlockFreenessCheckTask implements Task<VerificationChainOutput> 
             }
             monitor.progressUpdate(0.90);
 
-            String mpsatStdout = mpsatResult.getPayload().getStdoutString();
-            MpsatOutputParser mdp = new MpsatOutputParser(mpsatStdout);
-            if (!mdp.getSolutions().isEmpty()) {
+            if (mpsatResult.getPayload().hasSolutions()) {
                 return Result.success(new VerificationChainOutput(
                         exportResult, null, punfResult, mpsatResult, verificationParameters,
                         "Dataflow has a deadlock"));

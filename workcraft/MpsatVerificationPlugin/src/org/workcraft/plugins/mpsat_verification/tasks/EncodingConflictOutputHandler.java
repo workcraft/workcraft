@@ -19,8 +19,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 final class EncodingConflictOutputHandler extends AbstractOutputInterpreter<MpsatOutput, Boolean> {
+
+    private static final Pattern SIGNAL_PATTERN = Pattern.compile(
+            "CSC conflict for signal (.+)");
 
     private final ColorGenerator colorGenerator = new ColorGenerator(ColorUtils.getHsbPalette(
             new float[]{0.45f, 0.15f, 0.70f, 0.25f, 0.05f, 0.80f, 0.55f, 0.20f, 075f, 0.50f},
@@ -35,9 +40,7 @@ final class EncodingConflictOutputHandler extends AbstractOutputInterpreter<Mpsa
         if (getOutput() == null) {
             return null;
         }
-        String mpsatStdout = getOutput().getStdoutString();
-        MpsatOutputParser mdp = new MpsatOutputParser(mpsatStdout);
-        List<Solution> solutions = mdp.getSolutions();
+        List<Solution> solutions = getOutput().getSolutions();
         boolean propertyHolds = !TraceUtils.hasTraces(solutions);
         if (propertyHolds) {
             String msg = "No encoding conflicts.";
@@ -69,17 +72,20 @@ final class EncodingConflictOutputHandler extends AbstractOutputInterpreter<Mpsa
     private LinkedHashSet<Core> convertSolutionsToCores(List<Solution> solutions) {
         LinkedHashSet<Core> cores = new LinkedHashSet<>();
         for (Solution solution: solutions) {
-            Core core = new Core(solution.getMainTrace(), solution.getBranchTrace(), solution.getComment());
+            String comment = solution.getComment();
+            Matcher matcher = SIGNAL_PATTERN.matcher(comment);
+            String signalName = matcher.find() ? matcher.group(1) : null;
+            Core core = new Core(solution.getMainTrace(), solution.getBranchTrace(), signalName);
             boolean isDuplicateCore = cores.contains(core);
             if (!isDuplicateCore) {
                 core.setColor(colorGenerator.updateColor());
                 cores.add(core);
             }
             if (MpsatVerificationSettings.getDebugCores()) {
-                if (solution.getComment() == null) {
+                if (signalName == null) {
                     LogUtils.logMessage("Encoding conflict:");
                 } else {
-                    LogUtils.logMessage("Encoding conflict for signal '" + solution.getComment() + "':");
+                    LogUtils.logMessage("Encoding conflict for signal '" + signalName + "':");
                 }
                 LogUtils.logMessage("    Configuration 1: " + solution.getMainTrace());
                 LogUtils.logMessage("    Configuration 2: " + solution.getBranchTrace());

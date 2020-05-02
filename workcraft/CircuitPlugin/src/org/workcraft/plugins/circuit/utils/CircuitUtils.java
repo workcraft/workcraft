@@ -589,4 +589,16 @@ public class CircuitUtils {
         return result;
     }
 
+    public static void setTitleAndEnvironment(VisualCircuit visualCircuit, WorkspaceEntry stgWe) {
+        visualCircuit.setTitle(stgWe.getModelTitle());
+        if (!stgWe.getFile().exists()) {
+            DialogUtils.showError("Unsaved STG cannot be set as the circuit environment.");
+        } else {
+            visualCircuit.getMathModel().setEnvironmentFile(stgWe.getFile());
+            if (stgWe.isChanged()) {
+                DialogUtils.showWarning("The STG with unsaved changes is set as the circuit environment.");
+            }
+        }
+    }
+
 }

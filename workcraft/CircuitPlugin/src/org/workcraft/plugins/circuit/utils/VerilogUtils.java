@@ -1,9 +1,17 @@
 package org.workcraft.plugins.circuit.utils;
 
+import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.exceptions.FormatException;
+import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
+import org.workcraft.plugins.circuit.jj.verilog.VerilogParser;
 import org.workcraft.plugins.circuit.verilog.*;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.FileFilters;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -57,6 +65,19 @@ public final class VerilogUtils {
         return result;
     }
 
+    public static VerilogModule getTopModule(Collection<VerilogModule> verilogModules)
+            throws DeserialisationException {
+
+        Collection<VerilogModule> topVerilogModules = VerilogUtils.getTopModules(verilogModules);
+        if (topVerilogModules.isEmpty()) {
+            throw new DeserialisationException("No top module found.");
+        }
+        if (topVerilogModules.size() > 1) {
+            throw new DeserialisationException("More than one top module are found.");
+        }
+        return topVerilogModules.iterator().next();
+    }
+
     public static Collection<VerilogModule> getTopModules(Collection<VerilogModule> verilogModules) {
         HashMap<String, VerilogModule> nameToModuleMap = getNameToModuleMap(verilogModules);
         HashSet<VerilogModule> result = new HashSet<>(verilogModules);
@@ -83,10 +104,47 @@ public final class VerilogUtils {
         return nameToModuleMap;
     }
 
+    public static VerilogModule importTopVerilogModule(File file) {
+        try {
+            FileInputStream is = new FileInputStream(file);
+            return getTopModule(importVerilogModules(is));
+        } catch (FileNotFoundException | DeserialisationException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public static Collection<VerilogModule> importVerilogModules(InputStream in)
+            throws DeserialisationException {
+
+        Collection<VerilogModule> result = null;
+        try {
+            VerilogParser parser = new VerilogParser(in);
+            if (DebugCommonSettings.getParserTracing()) {
+                parser.enable_tracing();
+            } else {
+                parser.disable_tracing();
+            }
+            result = parser.parseCircuit();
+        } catch (FormatException | org.workcraft.plugins.circuit.jj.verilog.ParseException e) {
+            throw new DeserialisationException(e);
+        }
+        if (DebugCommonSettings.getVerboseImport()) {
+            LogUtils.logInfo("Parsed Verilog modules");
+            for (VerilogModule verilogModule : result) {
+                if (!verilogModule.isEmpty()) {
+                    printModule(verilogModule);
+                }
+            }
+        }
+        return result;
+    }
+
     public static void printModule(VerilogModule verilogModule) {
         String portNames = verilogModule.ports.stream()
                 .map(verilogPort -> verilogPort.name)
                 .collect(Collectors.joining(", "));
+
         LogUtils.logMessage("module " + verilogModule.name + " (" + portNames + ");");
         for (VerilogPort verilogPort : verilogModule.ports) {
             LogUtils.logMessage("    " + verilogPort.type + " " + ((verilogPort.range == null) ? "" : verilogPort.range + " ") + verilogPort.name + ";");

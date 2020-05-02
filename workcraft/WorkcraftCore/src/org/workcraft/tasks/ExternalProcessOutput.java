@@ -8,6 +8,10 @@ public class ExternalProcessOutput {
     private final byte[] stdout;
     private final byte[] stderr;
 
+    public ExternalProcessOutput(int returnCode) {
+        this(returnCode, new byte[0], new byte[0]);
+    }
+
     public ExternalProcessOutput(int returnCode, byte[] stdout, byte[] stderr) {
         this.returnCode = returnCode;
         this.stdout = stdout;

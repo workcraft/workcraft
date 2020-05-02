@@ -8,7 +8,6 @@ import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
@@ -32,7 +31,7 @@ class OutputDeterminacyOutputInterpreter extends ReachabilityOutputInterpreter {
     public List<Solution> processSolutions(WorkspaceEntry we, List<Solution> solutions) {
         List<Solution> result = new LinkedList<>();
 
-        StgModel compStg = StgUtils.importStg(getOutput().getStgBytes());
+        StgModel compStg = getOutput().getInputStg();
         StgModel stg = getSrcStg(we);
         ComponentData devData = getCompositionData(0);
         ComponentData envData = getCompositionData(1);
