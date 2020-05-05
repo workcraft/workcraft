@@ -34,6 +34,7 @@ public class SpotAssertionVerificationCommandTests {
 
         SpotAssertionVerificationCommand command = new SpotAssertionVerificationCommand();
         Assert.assertNull(command.execute(we, command.deserialiseData("incorrect - expression")));
+        Assert.assertNull(command.execute(we, command.deserialiseData("G({\"r1\"} |=> \"g1\")")));
         Assert.assertFalse(command.execute(we, command.deserialiseData("G((\"dsr\") & (\"dsw\"))")));
         Assert.assertTrue(command.execute(we, command.deserialiseData("G((!\"dsr\") | (!\"dsw\"))")));
     }

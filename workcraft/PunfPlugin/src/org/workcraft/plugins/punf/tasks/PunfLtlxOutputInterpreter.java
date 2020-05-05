@@ -32,11 +32,11 @@ public class PunfLtlxOutputInterpreter extends AbstractOutputInterpreter<PunfOut
 
     private Solution getSolution() {
         String mpsatStdout = getOutput().getStdoutString();
-        Matcher matcherLtlxSolution = SOLUTION_PATTERN.matcher(mpsatStdout);
-        if (matcherLtlxSolution.find()) {
-            Trace trace = TraceUtils.deserialiseTrace(matcherLtlxSolution.group(1));
+        Matcher matcher = SOLUTION_PATTERN.matcher(mpsatStdout);
+        if (matcher.find()) {
+            Trace trace = TraceUtils.deserialiseTrace(matcher.group(1));
             int loopPosition = trace.size();
-            trace.addAll(TraceUtils.deserialiseTrace(matcherLtlxSolution.group(2)));
+            trace.addAll(TraceUtils.deserialiseTrace(matcher.group(2)));
             Solution solution = new Solution(trace);
             solution.setLoopPosition(loopPosition);
             return solution;

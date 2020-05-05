@@ -3,6 +3,7 @@ package org.workcraft.plugins.circuit.utils;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
+import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
@@ -82,9 +83,9 @@ public final class VerificationUtils {
         String msg = "";
         if (!skipEnvironmentCheck && (envStg == null)) {
             if (envFile == null) {
-                msg = "  * Environment STG is missing.";
+                msg = PropertyHelper.BULLET_PREFIX + "Environment STG is missing.";
             } else {
-                msg = "  * Environment STG cannot be read from the file:\n" + envFile.getAbsolutePath();
+                msg = PropertyHelper.BULLET_PREFIX + "Environment STG cannot be read from the file:\n" + envFile.getAbsolutePath();
             }
         }
         // Restore signal types in the environment STG
@@ -99,7 +100,7 @@ public final class VerificationUtils {
             if (!msg.isEmpty()) {
                 msg += "\n\n";
             }
-            msg += TextUtils.wrapMessageWithItems("  * Hanging contact", hangingSignals);
+            msg += TextUtils.wrapMessageWithItems(PropertyHelper.BULLET_PREFIX + "Hanging contact", hangingSignals);
         }
         // Check the circuit for unconstrained inputs and unused outputs
         Set<String> unconstrainedInputSignals = getUnconstrainedInputSignals(envStg, circuit);
@@ -107,7 +108,7 @@ public final class VerificationUtils {
             if (!msg.isEmpty()) {
                 msg += "\n";
             }
-            msg += TextUtils.wrapMessageWithItems("  * Unconstrained input signal", unconstrainedInputSignals);
+            msg += TextUtils.wrapMessageWithItems(PropertyHelper.BULLET_PREFIX + "Unconstrained input signal", unconstrainedInputSignals);
         }
         // Check the circuit for unconstrained inputs and unused outputs
         Set<String> unusedOutputSignals = getUnusedOutputSignals(envStg, circuit);
@@ -115,7 +116,7 @@ public final class VerificationUtils {
             if (!msg.isEmpty()) {
                 msg += "\n";
             }
-            msg += TextUtils.wrapMessageWithItems("  * Unused output signal", unusedOutputSignals);
+            msg += TextUtils.wrapMessageWithItems(PropertyHelper.BULLET_PREFIX + "Unused output signal", unusedOutputSignals);
         }
         // Check the circuit for excited components
         Set<String> excitedComponentRefs = getExcitedComponentRefs(circuit);
@@ -123,7 +124,7 @@ public final class VerificationUtils {
             if (!msg.isEmpty()) {
                 msg += "\n";
             }
-            msg += TextUtils.wrapMessageWithItems("  * Non-quiescent component", excitedComponentRefs);
+            msg += TextUtils.wrapMessageWithItems(PropertyHelper.BULLET_PREFIX + "Non-quiescent component", excitedComponentRefs);
         }
 
         if (!msg.isEmpty()) {

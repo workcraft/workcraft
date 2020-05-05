@@ -73,7 +73,7 @@ public class DialogUtils {
     }
 
     public static boolean showConfirmInfo(String msg) {
-        return showConfirm(msg, TITLE_INFO, true);
+        return showConfirmInfo(msg, TITLE_INFO, true);
     }
 
     public static boolean showConfirmInfo(String msg, String title, boolean defaultChoice) {
@@ -81,7 +81,7 @@ public class DialogUtils {
     }
 
     public static boolean showConfirmWarning(String msg) {
-        return showConfirm(msg, TITLE_WARNING, JOptionPane.WARNING_MESSAGE, true);
+        return showConfirmWarning(msg, TITLE_WARNING, true);
     }
 
     public static boolean showConfirmWarning(String msg, String title, boolean defaultChoice) {
@@ -89,11 +89,11 @@ public class DialogUtils {
     }
 
     public static boolean showConfirmError(String msg) {
-        return showConfirm(msg, TITLE_ERROR, JOptionPane.ERROR_MESSAGE, true);
+        return showConfirmError(msg, TITLE_ERROR,  true);
     }
 
-    public static boolean showConfirmError(String msg, boolean defaultChoice) {
-        return showConfirm(msg, TITLE_ERROR, JOptionPane.ERROR_MESSAGE, defaultChoice);
+    public static boolean showConfirmError(String msg,  String title, boolean defaultChoice) {
+        return showConfirm(msg, title, JOptionPane.ERROR_MESSAGE, defaultChoice);
     }
 
     private static boolean showConfirm(String msg, String title, int messageType, boolean defaultChoice) {
