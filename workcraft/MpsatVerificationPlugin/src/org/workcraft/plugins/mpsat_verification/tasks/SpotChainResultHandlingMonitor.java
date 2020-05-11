@@ -2,6 +2,7 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.Ltl2tgbaOutput;
+import org.workcraft.plugins.punf.tasks.Ltl2tgbaOutputInterpreter;
 import org.workcraft.plugins.punf.tasks.PunfLtlxOutputInterpreter;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.tasks.AbstractResultHandlingMonitor;
@@ -25,14 +26,22 @@ public class SpotChainResultHandlingMonitor extends AbstractResultHandlingMonito
 
     @Override
     public Boolean handle(final Result<? extends SpotChainOutput> chainResult) {
+        SpotChainOutput chainOutput = chainResult.getPayload();
+        Result<? extends PunfOutput> punfResult = (chainOutput == null) ? null : chainOutput.getPunfResult();
         if (chainResult.isSuccess()) {
-            SpotChainOutput chainOutput = chainResult.getPayload();
-            Result<? extends PunfOutput> punfResult = (chainOutput == null) ? null : chainOutput.getPunfResult();
             PunfOutput punfOutput = (punfResult == null) ? null : punfResult.getPayload();
             return new PunfLtlxOutputInterpreter(we, punfOutput, interactive).interpret();
         }
 
         if (chainResult.isFailure()) {
+            Result<? extends Ltl2tgbaOutput> ltl2tgbaResult = (chainOutput == null) ? null : chainOutput.getLtl2tgbaResult();
+            // Process starter-sensitivity failure
+            if ((punfResult == null) && (ltl2tgbaResult != null) && ltl2tgbaResult.isSuccess()) {
+                Ltl2tgbaOutput ltl2tgbaOutput = (ltl2tgbaResult == null) ? null : ltl2tgbaResult.getPayload();
+                new Ltl2tgbaOutputInterpreter(we, ltl2tgbaOutput, interactive).interpret();
+                return null;
+            }
+            // Process other failures
             String message = buildFailureMessage(chainResult);
             if (message != null) {
                 if (interactive) {
@@ -42,16 +51,15 @@ public class SpotChainResultHandlingMonitor extends AbstractResultHandlingMonito
                 }
             }
         }
-
         return null;
     }
 
     private String buildFailureMessage(final Result<? extends SpotChainOutput> chainResult) {
-        String errorMessage = "SPOT verification failed.";
+        String message = "SPOT verification failed.";
         Throwable genericCause = chainResult.getCause();
         if (genericCause != null) {
             // Exception was thrown somewhere in the chain task run() method (not in any of the subtasks)
-            errorMessage += ERROR_CAUSE_PREFIX + genericCause.toString();
+            message += ERROR_CAUSE_PREFIX + genericCause.toString();
         } else {
             SpotChainOutput chainOutput = chainResult.getPayload();
             Result<? extends Ltl2tgbaOutput> ltl2tgbaResult = (chainOutput == null) ? null : chainOutput.getLtl2tgbaResult();
@@ -59,40 +67,40 @@ public class SpotChainResultHandlingMonitor extends AbstractResultHandlingMonito
             Result<? extends PcompOutput> pcompResult = (chainOutput == null) ? null : chainOutput.getPcompResult();
             Result<? extends PunfOutput> punfResult = (chainOutput == null) ? null : chainOutput.getPunfResult();
             if ((ltl2tgbaResult != null) && (ltl2tgbaResult.isFailure())) {
-                errorMessage += "\n\nCould not derive B\u00FCchi automaton.";
+                message += "\n\nCould not derive B\u00FCchi automaton.";
                 Throwable exportCause = ltl2tgbaResult.getCause();
                 if (exportCause != null) {
-                    errorMessage += ERROR_CAUSE_PREFIX + exportCause.toString();
+                    message += ERROR_CAUSE_PREFIX + exportCause.toString();
                 }
             } else  if ((exportResult != null) && (exportResult.isFailure())) {
-                errorMessage += "\n\nCould not export the model as a .g file.";
+                message += "\n\nCould not export the model as a .g file.";
                 Throwable exportCause = exportResult.getCause();
                 if (exportCause != null) {
-                    errorMessage += ERROR_CAUSE_PREFIX + exportCause.toString();
+                    message += ERROR_CAUSE_PREFIX + exportCause.toString();
                 }
             } else if ((pcompResult != null) && (pcompResult.isFailure())) {
-                errorMessage += "\n\nPcomp could not compose models.";
+                message += "\n\nPcomp could not compose models.";
                 Throwable pcompCause = pcompResult.getCause();
                 if (pcompCause != null) {
-                    errorMessage += ERROR_CAUSE_PREFIX + pcompCause.toString();
+                    message += ERROR_CAUSE_PREFIX + pcompCause.toString();
                 } else {
                     PcompOutput pcompOutput = pcompResult.getPayload();
                     if (pcompOutput != null) {
                         String pcompError = pcompOutput.getErrorsHeadAndTail();
-                        errorMessage += ERROR_CAUSE_PREFIX + pcompError;
+                        message += ERROR_CAUSE_PREFIX + pcompError;
                     }
                 }
             } else if ((punfResult != null) && (punfResult.isFailure())) {
-                errorMessage += "\n\nPunf could not verify LTL-X property.";
+                message += "\n\nPunf could not verify LTL-X property.";
                 Throwable punfCause = punfResult.getCause();
                 if (punfCause != null) {
-                    errorMessage += ERROR_CAUSE_PREFIX + punfCause.toString();
+                    message += ERROR_CAUSE_PREFIX + punfCause.toString();
                 }
             } else {
-                errorMessage += "\n\nSPOT chain task returned failure status without further explanation.";
+                message += "\n\nSPOT chain task returned failure status without further explanation.";
             }
         }
-        return errorMessage;
+        return message;
     }
 
 }

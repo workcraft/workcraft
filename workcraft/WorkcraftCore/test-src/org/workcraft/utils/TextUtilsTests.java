@@ -120,4 +120,11 @@ public class TextUtilsTests {
                 TextUtils.getHeadAndTail(text, 3, 2));
     }
 
+    @Test
+    public void escapeHtmlTest() {
+        String text = "(a < b) & (c > d) = \"true\"";
+        Assert.assertEquals("(a &lt; b) &amp; (c &gt; d) = &quot;true&quot;",
+                TextUtils.escapeHtml(text));
+    }
+
 }

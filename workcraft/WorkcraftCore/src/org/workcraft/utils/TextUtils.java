@@ -171,5 +171,30 @@ public class TextUtils {
         return String.join("", Collections.nCopies(count, str));
     }
 
+    public static String escapeHtml(String str) {
+        StringBuilder sb = new StringBuilder();
+        char c;
+        for (int i = 0; i < str.length(); i++) {
+            c = str.charAt(i);
+            switch (c) {
+            case '<':
+                sb.append("&lt;");
+                break;
+            case '>':
+                sb.append("&gt;");
+                break;
+            case '&':
+                sb.append("&amp;");
+                break;
+            case '"':
+                sb.append("&quot;");
+                break;
+            default:
+                sb.append(c);
+                break;
+            }
+        }
+        return sb.toString();
+    }
 
 }

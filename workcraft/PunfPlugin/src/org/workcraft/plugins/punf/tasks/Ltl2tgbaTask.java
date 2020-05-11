@@ -31,6 +31,7 @@ public class Ltl2tgbaTask implements Task<Ltl2tgbaOutput> {
         command.add("-B");
         command.add("--negate");
         command.add("--check=stutter-invariant");
+        command.add("--check=stutter-sensitive-example");
         command.add("-F");
         command.add(inputFile.getAbsolutePath());
 

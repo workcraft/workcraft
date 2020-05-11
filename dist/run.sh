@@ -48,27 +48,32 @@ copy_jars() {
 platforms=""
 plugins="$PLUGINS_DIR"
 tag="$(git describe --tags)"
-private=false
 force=false
 
 # Process parameters
-for param in "$@"; do
-    case "$param" in
+while [ "$#" -gt 0 ]; do
+echo "$@ : param=$1"
+    case "$1" in
         -h | --help)
             usage
-            exit 0 ;;
-        -p | --private)
+            exit 0
+            ;;
+        -p | --plugins)
             plugins="$plugins $2"
-            shift 2 ;;
+            shift 2
+            ;;
         -t | --tag)
             tag="$2"
-            shift 2 ;;
+            shift 2
+            ;;
         -f | --force)
             force=true
-            shift ;;
+            shift
+            ;;
         *)
             platforms="$platforms $1"
-            shift ;;
+            shift
+            ;;
     esac
 done
 

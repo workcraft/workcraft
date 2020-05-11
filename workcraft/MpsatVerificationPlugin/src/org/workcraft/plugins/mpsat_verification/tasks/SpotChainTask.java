@@ -5,6 +5,7 @@ import org.workcraft.plugins.punf.tasks.Ltl2tgbaOutput;
 import org.workcraft.plugins.punf.tasks.Ltl2tgbaTask;
 import org.workcraft.plugins.punf.tasks.PunfLtlxTask;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
+import org.workcraft.plugins.punf.utils.Ltl2tgbaUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.serialisation.SerialiserUtils;
@@ -54,6 +55,10 @@ public class SpotChainTask implements Task<SpotChainOutput> {
                 if (ltl2tgbaResult.isCancel()) {
                     return Result.cancel();
                 }
+                return Result.failure(new SpotChainOutput(ltl2tgbaResult, null));
+            }
+            // Failure if assertion is stutter-sensitive
+            if (Ltl2tgbaUtils.extraxtStutterExample(ltl2tgbaResult.getPayload()) != null) {
                 return Result.failure(new SpotChainOutput(ltl2tgbaResult, null));
             }
             monitor.progressUpdate(0.1);
