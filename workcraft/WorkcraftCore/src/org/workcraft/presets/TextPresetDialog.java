@@ -1,37 +1,21 @@
 package org.workcraft.presets;
 
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.controls.FlatTextArea;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.GuiUtils;
-import org.workcraft.utils.TextUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.io.File;
 
 public class TextPresetDialog extends PresetDialog<String> {
 
     private PresetManagerPanel<String> presetPanel;
     private FlatTextArea textArea;
-    private JPanel buttonsPanel;
 
     public TextPresetDialog(Window owner, String title, PresetManager<String> presetManager) {
-        this(owner, title, presetManager, null);
-    }
-
-    public TextPresetDialog(Window owner, String title, PresetManager<String> presetManager, File helpFile) {
         super(owner, title, presetManager);
         presetPanel.selectFirst();
         textArea.setCaretPosition(0);
         textArea.requestFocus();
-        if (helpFile != null) {
-            JButton helpButton = GuiUtils.createDialogButton("Help");
-            helpButton.addActionListener(event -> DesktopApi.open(helpFile));
-            buttonsPanel.add(helpButton);
-        }
     }
 
     @Override
@@ -65,18 +49,7 @@ public class TextPresetDialog extends PresetDialog<String> {
     }
 
     private JPanel createTextPanel() {
-        textArea = new FlatTextArea();
-        textArea.setMargin(SizeHelper.getTextMargin());
-        textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
-        textArea.setText(TextUtils.repeat("\n", 4));
-        textArea.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                if (e.getKeyChar() > 127) {
-                    e.consume();  // ignore non-ASCII characters
-                }
-            }
-        });
+        textArea = new FlatTextArea(4);
         JScrollPane scrollPane = new JScrollPane(textArea);
         JPanel panel = new JPanel(GuiUtils.createBorderLayout());
         panel.add(scrollPane, BorderLayout.CENTER);
@@ -88,10 +61,8 @@ public class TextPresetDialog extends PresetDialog<String> {
         return textArea.getText();
     }
 
-    @Override
-    public JPanel createButtonsPanel() {
-        buttonsPanel = super.createButtonsPanel();
-        return buttonsPanel;
+    public JTextArea getTextArea() {
+        return textArea;
     }
 
 }

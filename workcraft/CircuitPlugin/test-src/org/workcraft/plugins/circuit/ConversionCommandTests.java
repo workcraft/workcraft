@@ -44,7 +44,7 @@ public class ConversionCommandTests {
     @Test
     public void testVmeTmConversionCommands() throws IOException, DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
-        testConversionCommands(workName, false, 0);
+        //testConversionCommands(workName, false, 0);
         testConversionCommands(workName, true, 17);
     }
 
@@ -75,10 +75,10 @@ public class ConversionCommandTests {
             }
         }
 
-        CircuitToStgConversionCommand command = new CircuitToStgConversionCommand();
-        if (composeEnvironment) {
-            command = new CircuitToStgWithEnvironmentConversionCommand();
-        }
+        CircuitToStgConversionCommand command = composeEnvironment
+                ? new CircuitToStgWithEnvironmentConversionCommand()
+                : new CircuitToStgConversionCommand();
+
         WorkspaceEntry dstWe = command.execute(srcWe);
 
         Stg dstStg = WorkspaceUtils.getAs(dstWe, Stg.class);

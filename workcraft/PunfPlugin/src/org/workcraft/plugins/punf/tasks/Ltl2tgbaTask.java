@@ -13,10 +13,15 @@ public class Ltl2tgbaTask implements Task<Ltl2tgbaOutput> {
 
     private final File inputFile;
     private final File directory;
+    private boolean quiet = false;
 
     public Ltl2tgbaTask(File inputFile, File directory) {
         this.inputFile = inputFile;
         this.directory = directory;
+    }
+
+    public void setQuiet(boolean value) {
+        quiet = value;
     }
 
     @Override
@@ -40,8 +45,8 @@ public class Ltl2tgbaTask implements Task<Ltl2tgbaOutput> {
         command.add(outputFile.getAbsolutePath());
         outputFile.deleteOnExit();
 
-        boolean printStdout = PunfSettings.getPrintStdout();
-        boolean printStderr = PunfSettings.getPrintStderr();
+        boolean printStdout = PunfSettings.getPrintStdout() && !quiet;
+        boolean printStderr = PunfSettings.getPrintStderr() && !quiet;
         ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
         SubtaskMonitor<? super ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);

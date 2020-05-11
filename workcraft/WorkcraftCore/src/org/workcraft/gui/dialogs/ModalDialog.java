@@ -5,6 +5,7 @@ import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 public class ModalDialog<T> extends JDialog {
@@ -12,6 +13,9 @@ public class ModalDialog<T> extends JDialog {
     private final T userData;
     private JButton okButton;
     private boolean modalResult;
+    private final JPanel actionPanel;
+    private final JPanel buttonsPanel;
+
 
     public ModalDialog(Window owner, String title, T userData) {
         super(owner, title, ModalityType.DOCUMENT_MODAL);
@@ -27,11 +31,17 @@ public class ModalDialog<T> extends JDialog {
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-        JPanel contentPanel = new JPanel(new BorderLayout(SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
-        contentPanel.setBorder(GuiUtils.getEmptyBorder());
-        contentPanel.add(createContentPanel(), BorderLayout.CENTER);
-        contentPanel.add(createButtonsPanel(), BorderLayout.SOUTH);
-        setContentPane(contentPanel);
+        buttonsPanel = createButtonsPanel();
+        actionPanel = createActionPanel();
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel.add(actionPanel, BorderLayout.WEST);
+        bottomPanel.add(buttonsPanel, BorderLayout.EAST);
+
+        JPanel panel = new JPanel(new BorderLayout(SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
+        panel.setBorder(GuiUtils.getEmptyBorder());
+        panel.add(createContentPanel(), BorderLayout.CENTER);
+        panel.add(bottomPanel, BorderLayout.SOUTH);
+        setContentPane(panel);
 
         pack();
         Dimension dimension = getSize();
@@ -46,6 +56,21 @@ public class ModalDialog<T> extends JDialog {
         return panel;
     }
 
+    public JPanel createActionPanel() {
+        return GuiUtils.createDialogActionPanel();
+    }
+
+    public JPanel getActionPanel() {
+        return actionPanel;
+    }
+
+    public JButton addAction(String text, ActionListener action) {
+        JButton button = GuiUtils.createDialogButton(text);
+        button.addActionListener(action);
+        getActionPanel().add(button);
+        return button;
+    }
+
     public JPanel createButtonsPanel() {
         JPanel buttonsPanel = GuiUtils.createDialogButtonsPanel();
         okButton = GuiUtils.createDialogButton("OK");
@@ -57,6 +82,17 @@ public class ModalDialog<T> extends JDialog {
         buttonsPanel.add(okButton);
         buttonsPanel.add(cancelButton);
         return buttonsPanel;
+    }
+
+    public JPanel getButtonsPanel() {
+        return buttonsPanel;
+    }
+
+    public JButton addButton(String text, ActionListener action) {
+        JButton button = GuiUtils.createDialogButton(text);
+        button.addActionListener(action);
+        getButtonsPanel().add(button);
+        return button;
     }
 
     public T getUserData() {

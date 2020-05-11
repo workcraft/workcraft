@@ -18,8 +18,8 @@ import java.util.Locale;
 public class DesktopApi {
 
     public static boolean browse(URI uri) {
-        if (openSystemSpecific(uri.toString())) return true;
         if (browseDesktop(uri)) return true;
+        if (openSystemSpecific(uri.toString())) return true;
         LogUtils.logError("Cannot open a browser for '" + uri.toString() + "'");
         return false;
     }

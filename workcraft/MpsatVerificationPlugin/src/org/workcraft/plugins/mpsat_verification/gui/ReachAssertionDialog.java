@@ -14,7 +14,6 @@ import org.workcraft.presets.DataMapper;
 import org.workcraft.presets.PresetDialog;
 import org.workcraft.presets.PresetManagerPanel;
 import org.workcraft.shared.IntDocument;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.utils.TextUtils;
 
@@ -43,6 +42,7 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
         presetPanel.selectFirst();
         propertyText.setCaretPosition(0);
         propertyText.requestFocus();
+        addHelpButton(new File("help/reach.html"));
     }
 
     @Override
@@ -228,15 +228,6 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
         resutl.add(propertyScrollPane, BorderLayout.CENTER);
         resutl.add(propertyPanel, BorderLayout.SOUTH);
         return resutl;
-    }
-
-    @Override
-    public JPanel createButtonsPanel() {
-        JPanel result = super.createButtonsPanel();
-        JButton helpButton = GuiUtils.createDialogButton("Help");
-        helpButton.addActionListener(event -> DesktopApi.open(new File("help/reach.html")));
-        result.add(helpButton);
-        return result;
     }
 
     @Override

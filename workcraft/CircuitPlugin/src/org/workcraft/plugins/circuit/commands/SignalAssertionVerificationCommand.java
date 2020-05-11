@@ -56,9 +56,8 @@ public class SignalAssertionVerificationCommand extends org.workcraft.commands.A
         presetManager.addExample("Mutual exclusion of signals",
                 "// Signals u and v are mutually exclusive\n" + "!u || !v");
 
-        TextPresetDialog dialog = new TextPresetDialog(mainWindow, "Signal assertion",
-                presetManager, new File("help/assertion.html"));
-
+        TextPresetDialog dialog = new TextPresetDialog(mainWindow, "Signal assertion", presetManager);
+        dialog.addHelpButton(new File("help/assertion.html"));
         if (dialog.reveal()) {
             preservedData = dialog.getPresetData();
             VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);

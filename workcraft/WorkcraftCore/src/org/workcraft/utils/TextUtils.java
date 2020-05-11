@@ -4,11 +4,15 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TextUtils {
 
     public static final int DEFAULT_WRAP_LENGTH = 100;
     private static final String ELLIPSIS_SYMBOL = Character.toString((char) 0x2026);
+    public static final String NEWLINE_REGEX = "\\r?\\n";
+    public static final Pattern LEADING_SPACES_PATTERN = Pattern.compile("^\\s+");
 
     public static String truncateText(String text, int length) {
         StringBuffer result = new StringBuffer();
@@ -32,7 +36,12 @@ public class TextUtils {
         int curLength = 0;
         for (String word : splitWords(line)) {
             int wordLength = word.length();
-            if (curLength > 0) {
+            if (curLength == 0) {
+                int leadingSpaceLength = countLeadingSpaces(line);
+                if (leadingSpaceLength + wordLength < length) {
+                    result.append(repeat(" ", leadingSpaceLength));
+                }
+            } else {
                 if (curLength + wordLength < length) {
                     result.append(" ");
                 } else {
@@ -95,7 +104,7 @@ public class TextUtils {
         if (text == null) {
             return Collections.emptyList();
         }
-        return Arrays.asList(text.split("\\r?\\n", -1));
+        return Arrays.asList(text.split(NEWLINE_REGEX, -1));
     }
 
     public static List<String> splitWords(String text) {
@@ -195,6 +204,25 @@ public class TextUtils {
             }
         }
         return sb.toString();
+    }
+
+    public static int countLeadingSpaces(String text) {
+        if (text == null) {
+            return 0;
+        }
+        Matcher matcher = LEADING_SPACES_PATTERN.matcher(text);
+        return matcher.find() ? matcher.group().length() : 0;
+    }
+
+    public static String removeLinebreaks(String text) {
+        return replaceLinebreaks(text, "");
+    }
+
+    public static String replaceLinebreaks(String text, String replacement) {
+        if (text == null) {
+            return null;
+        }
+        return text.replaceAll(NEWLINE_REGEX, replacement);
     }
 
 }

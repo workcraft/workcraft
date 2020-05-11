@@ -33,7 +33,7 @@ public class CircuitToStgWithEnvironmentConversionCommand extends CircuitToStgCo
         } else if (!envWorkFile.exists()) {
             DialogUtils.showWarning("Envioronment STG file does not exist:\n" + envWorkFile.getAbsolutePath());
         } else {
-            Stg devStg = (Stg) converter.getStg().getMathModel();
+            Stg devStg = converter.getStg().getMathModel();
             String title = circuit.getTitle();
             Stg systemStg = createSystemStg(devStg, envWorkFile, title);
             if (systemStg != null) {

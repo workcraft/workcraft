@@ -1,7 +1,7 @@
 package org.workcraft.plugins.punf.tasks;
 
 import org.workcraft.gui.properties.PropertyHelper;
-import org.workcraft.plugins.punf.utils.Ltl2tgbaUtils;
+import org.workcraft.plugins.punf.utils.SpotUtils;
 import org.workcraft.tasks.AbstractOutputInterpreter;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
@@ -12,34 +12,29 @@ import java.io.IOException;
 
 public class Ltl2tgbaOutputInterpreter extends AbstractOutputInterpreter<Ltl2tgbaOutput, Boolean> {
 
-    public static final String TITLE = "Verification results";
-
     public Ltl2tgbaOutputInterpreter(WorkspaceEntry we, Ltl2tgbaOutput output, boolean interactive) {
         super(we, output, interactive);
     }
 
-    public void showOutcome(boolean stutterInvariant, Pair<String, String> example) {
-        String message = getMessage(example);
-        if (stutterInvariant) {
+    public void showOutcome(Pair<String, String> example) {
+        if (example == null) {
+            String msg = "The property is stutter-invariant.";
             if (isInteractive()) {
-                DialogUtils.showInfo(message, TITLE);
+                DialogUtils.showInfo(msg);
             } else {
-                LogUtils.logInfo(message);
+                LogUtils.logInfo(msg);
             }
         } else {
+            String message = "The property is stutter-sensitive as shown by the following stutter-equivalent words:"
+                    + "\n" + PropertyHelper.BULLET_PREFIX + "Accepted word: " + example.getFirst()
+                    + "\n" + PropertyHelper.BULLET_PREFIX + "Rejected word: " + example.getSecond();
+
             if (isInteractive()) {
-                DialogUtils.showWarning(message, TITLE);
+                DialogUtils.showWarning(message);
             } else {
                 LogUtils.logWarning(message);
             }
         }
-    }
-
-    public String getMessage(Pair<String, String> example) {
-        return example == null ? "The property is stutter-invariant"
-                : "The property is stutter-sensitive as shown by the following stutter-equivalent words:"
-                + "\n" + PropertyHelper.BULLET_PREFIX + "Accepted word: " + example.getFirst()
-                + "\n" + PropertyHelper.BULLET_PREFIX + "Rejected word: " + example.getSecond();
     }
 
     @Override
@@ -48,10 +43,9 @@ public class Ltl2tgbaOutputInterpreter extends AbstractOutputInterpreter<Ltl2tgb
             return null;
         }
         try {
-            Pair<String, String> example = Ltl2tgbaUtils.extraxtStutterExample(getOutput());
-            boolean stutterInvariant = example == null;
-            showOutcome(stutterInvariant, example);
-            return stutterInvariant;
+            Pair<String, String> example = SpotUtils.extractStutterExample(getOutput());
+            showOutcome(example);
+            return example == null;
         } catch (IOException e) {
         }
         return null;

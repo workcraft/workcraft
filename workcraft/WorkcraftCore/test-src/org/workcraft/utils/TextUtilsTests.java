@@ -49,13 +49,8 @@ public class TextUtilsTests {
 
     @Test
     public void truncateTextTest() {
-<<<<<<< HEAD
-        String text = "1 22 333 \r\n 4444 55555 666666 7777777 88888888\n999999999";
-        Assert.assertEquals("1 22 333 \n4444 55555\u2026\n999999999",
-=======
         String text = "1 22 333 \r\n  4444 55555 666666 7777777 88888888\n  999999999";
         Assertions.assertEquals("1 22 333 \n  4444 55555\u2026\n999999999",
->>>>>>> 05e0d12... Migrate unit tests to JUnit5
                 TextUtils.truncateText(text, 10));
     }
 
@@ -130,6 +125,20 @@ public class TextUtilsTests {
         String text = "(a < b) & (c > d) = \"true\"";
         Assertions.assertEquals("(a &lt; b) &amp; (c &gt; d) = &quot;true&quot;",
                 TextUtils.escapeHtml(text));
+    }
+
+    @Test
+    public void replaceLinebreaksTest() {
+        Assertions.assertNull(TextUtils.replaceLinebreaks(null, " "));
+        Assertions.assertEquals("aaa bbb ccc",
+                TextUtils.replaceLinebreaks("aaa\nbbb\r\nccc", " "));
+    }
+
+    @Test
+    public void removeLinebreaksTest() {
+        Assertions.assertNull(TextUtils.removeLinebreaks(null));
+        Assertions.assertEquals("aaabbbccc",
+                TextUtils.removeLinebreaks("aaa\nbbb\r\nccc"));
     }
 
 }

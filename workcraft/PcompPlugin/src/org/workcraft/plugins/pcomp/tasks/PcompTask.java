@@ -64,10 +64,12 @@ public class PcompTask implements Task<PcompOutput> {
         // Composed STG output file
         File outputFile = new File(directory, outputFileName);
         command.add("-f" + outputFile.getAbsolutePath());
+        outputFile.deleteOnExit();
 
         // Composition detail output file
         File detailFile = new File(directory, detailFileName);
         command.add("-l" + detailFile.getAbsolutePath());
+        detailFile.deleteOnExit();
 
         // STG input files
         for (File inputFile : inputFiles) {
