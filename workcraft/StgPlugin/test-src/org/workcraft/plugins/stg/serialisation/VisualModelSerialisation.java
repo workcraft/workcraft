@@ -1,6 +1,6 @@
 package org.workcraft.plugins.stg.serialisation;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.PluginProvider;

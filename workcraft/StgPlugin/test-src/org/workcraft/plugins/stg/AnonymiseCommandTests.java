@@ -1,8 +1,8 @@
 package org.workcraft.plugins.stg;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.builtin.commands.AnonymiseTransformationCommand;
@@ -17,7 +17,7 @@ import java.util.HashSet;
 
 public class AnonymiseCommandTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -49,11 +49,11 @@ public class AnonymiseCommandTests {
                 actualPlaceRefs.add(stg.getNodeReference(place));
             }
         }
-        Assert.assertEquals(expectedPlacesRefs, actualPlaceRefs);
+        Assertions.assertEquals(expectedPlacesRefs, actualPlaceRefs);
 
         HashSet<String> expectedSignalRefs = new HashSet<>(Arrays.asList(signalRefs));
         Collection<String> actualSignalRefs = stg.getSignalReferences();
-        Assert.assertEquals(expectedSignalRefs, actualSignalRefs);
+        Assertions.assertEquals(expectedSignalRefs, actualSignalRefs);
 
         framework.closeWork(we);
     }

@@ -1,8 +1,8 @@
 package org.workcraft.plugins.pcomp;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.plugins.pcomp.commands.ParallelCompositionCommand;
 import org.workcraft.plugins.pcomp.tasks.PcompParameters;
@@ -22,7 +22,7 @@ import java.util.Set;
 
 public class ParallelCompositionCommandTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -32,7 +32,7 @@ public class ParallelCompositionCommandTests {
     @Test
     public void testIncorrectComposition() {
         ParallelCompositionCommand command = new ParallelCompositionCommand();
-        Assert.assertNull(command.execute(null, command.deserialiseData("incorrect work file names")));
+        Assertions.assertNull(command.execute(null, command.deserialiseData("incorrect work file names")));
     }
 
     @Test
@@ -54,16 +54,16 @@ public class ParallelCompositionCommandTests {
 
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         Set<String> inputRefs = stg.getSignalNames(Signal.Type.INPUT, null);
-        Assert.assertEquals(new HashSet<>(Arrays.asList("uv_san", "oc_san", "zc_san", "gp_ack", "gn_ack")), inputRefs);
-        Assert.assertEquals(10, stg.getSignalTransitions(Signal.Type.INPUT).size());
+        Assertions.assertEquals(new HashSet<>(Arrays.asList("uv_san", "oc_san", "zc_san", "gp_ack", "gn_ack")), inputRefs);
+        Assertions.assertEquals(10, stg.getSignalTransitions(Signal.Type.INPUT).size());
 
         Set<String> outputRefs = stg.getSignalNames(Signal.Type.OUTPUT, null);
-        Assert.assertEquals(new HashSet<>(Arrays.asList("uv_ctrl", "oc_ctrl", "zc_ctrl", "gp", "gn")), outputRefs);
-        Assert.assertEquals(10, stg.getSignalTransitions(Signal.Type.OUTPUT).size());
+        Assertions.assertEquals(new HashSet<>(Arrays.asList("uv_ctrl", "oc_ctrl", "zc_ctrl", "gp", "gn")), outputRefs);
+        Assertions.assertEquals(10, stg.getSignalTransitions(Signal.Type.OUTPUT).size());
 
         Set<String> internalRefs = stg.getSignalNames(Signal.Type.INTERNAL, null);
-        Assert.assertEquals(new HashSet<>(Arrays.asList("chrg_req", "chrg_ack")), internalRefs);
-        Assert.assertEquals(4, stg.getSignalTransitions(Signal.Type.INTERNAL).size());
+        Assertions.assertEquals(new HashSet<>(Arrays.asList("chrg_req", "chrg_ack")), internalRefs);
+        Assertions.assertEquals(4, stg.getSignalTransitions(Signal.Type.INTERNAL).size());
     }
 
 }

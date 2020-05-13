@@ -1,6 +1,6 @@
 package org.workcraft.plugins.circuit;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractSynthesisCommand;
 import org.workcraft.dom.math.PageNode;
@@ -76,12 +76,12 @@ public class TestUtils {
         Set<String> dstMutexes = getMutexComponentReferences(dstCircuit);
         int dstComponentCount = dstCircuit.getFunctionComponents().size();
 
-        Assert.assertEquals(srcInputs, dstInputs);
-        Assert.assertEquals(srcOutputs, dstOutputs);
-        Assert.assertEquals(srcMutexes, dstMutexes);
-        Assert.assertTrue(minComponentCount <= dstComponentCount);
-        Assert.assertTrue(maxComponentCount >= dstComponentCount);
-        Assert.assertEquals(srcPageRefs, dstPageRefs);
+        Assertions.assertEquals(srcInputs, dstInputs);
+        Assertions.assertEquals(srcOutputs, dstOutputs);
+        Assertions.assertEquals(srcMutexes, dstMutexes);
+        Assertions.assertTrue(minComponentCount <= dstComponentCount);
+        Assertions.assertTrue(maxComponentCount >= dstComponentCount);
+        Assertions.assertEquals(srcPageRefs, dstPageRefs);
     }
 
     private static Set<String> getMutexComponentReferences(Circuit circuit) {

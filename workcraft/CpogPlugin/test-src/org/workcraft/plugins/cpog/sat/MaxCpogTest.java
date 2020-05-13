@@ -1,9 +1,9 @@
 package org.workcraft.plugins.cpog.sat;
 
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.plugins.cpog.CpogSettings;
 import org.workcraft.plugins.cpog.encoding.Encoding;
@@ -15,12 +15,12 @@ public class MaxCpogTest {
 
     private static final String[] cpog = {"-0001", "00011", "11111", "10111", "1z1ZZ"};
 
-    @BeforeClass
+    @BeforeAll
     public static void skipOnWindows() {
-        Assume.assumeFalse(DesktopApi.getOs().isWindows());
+        Assumptions.assumeFalse(DesktopApi.getOs().isWindows());
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setSatSolver() {
         CpogSettings.setSatSolver(CpogSettings.SatSolver.CLASP);
     }
@@ -30,7 +30,7 @@ public class MaxCpogTest {
         Optimiser<OneHotIntBooleanFormula> optimiser = new Optimiser<>(new OneHotNumberProvider(), null);
         LegacySolver<BooleanFormula> solver = new LegacySolver<>(optimiser, new CleverCnfGenerator());
         Encoding result = solver.solve(cpog, 3, 4);
-        Assert.assertNotNull("Should be satisfiable", result);
+        Assertions.assertNotNull(result, "Should be satisfiable");
     }
 
 }

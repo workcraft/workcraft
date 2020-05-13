@@ -1,8 +1,8 @@
 package org.workcraft.plugins.circuit;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.DeserialisationException;
@@ -22,7 +22,7 @@ import java.util.Set;
 
 public class TransformationCommandTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -48,7 +48,7 @@ public class TransformationCommandTests {
         new OptimiseZeroDelayTransformationCommand().execute(we);
 
         optZeroDelays.removeAll(getZeroDelayGates(circuit));
-        Assert.assertEquals(new HashSet<>(Arrays.asList(bubble25)), optZeroDelays);
+        Assertions.assertEquals(new HashSet<>(Arrays.asList(bubble25)), optZeroDelays);
 
         circuit.selectAll();
 
@@ -64,46 +64,46 @@ public class TransformationCommandTests {
             }
         }
 
-        Assert.assertEquals(12, dstMappedGateCount);
-        Assert.assertEquals(9, dstUnmappedGateCount);
+        Assertions.assertEquals(12, dstMappedGateCount);
+        Assertions.assertEquals(9, dstUnmappedGateCount);
 
-        Assert.assertEquals(true, new CombinedVerificationCommand().execute(we));
+        Assertions.assertEquals(true, new CombinedVerificationCommand().execute(we));
 
         // Note that U31.C2 was renamed to U31.C2N after inversion propagation command
         VisualContact contact = circuit.getVisualComponentByMathReference("U31.C2N", VisualContact.class);
-        Assert.assertNotNull(contact);
+        Assertions.assertNotNull(contact);
 
         Set<VisualConnection> connections = circuit.getConnections(contact);
-        Assert.assertEquals(1, connections.size());
+        Assertions.assertEquals(1, connections.size());
 
         circuit.select(connections);
         new InsertBufferTransformationCommand().execute(we);
         Set<VisualFunctionComponent> buffers = getBuffers(circuit);
-        Assert.assertEquals(connections.size(), buffers.size());
-        Assert.assertEquals(false, new CombinedVerificationCommand().execute(we));
+        Assertions.assertEquals(connections.size(), buffers.size());
+        Assertions.assertEquals(false, new CombinedVerificationCommand().execute(we));
 
         circuit.select(buffers);
         Set<VisualFunctionComponent> zeroDelaysBefore = getZeroDelayGates(circuit);
         new ToggleZeroDelayTransformationCommand().execute(we);
         Set<VisualFunctionComponent> zeroDelaysAfter = getZeroDelayGates(circuit);
-        Assert.assertEquals(zeroDelaysBefore.size() + buffers.size(), zeroDelaysAfter.size());
-        Assert.assertEquals(true, new CombinedVerificationCommand().execute(we));
+        Assertions.assertEquals(zeroDelaysBefore.size() + buffers.size(), zeroDelaysAfter.size());
+        Assertions.assertEquals(true, new CombinedVerificationCommand().execute(we));
 
         ToggleBubbleTransformationCommand toggleBubbleCommand = new ToggleBubbleTransformationCommand();
         circuit.select(buffers);
         Set<VisualFunctionComponent> invertersBefore = getInverters(circuit);
         toggleBubbleCommand.execute(we);
         Set<VisualFunctionComponent> invertersAfter = getInverters(circuit);
-        Assert.assertEquals(invertersBefore.size() + buffers.size(), invertersAfter.size());
-        Assert.assertEquals(false, new CombinedVerificationCommand().execute(we));
+        Assertions.assertEquals(invertersBefore.size() + buffers.size(), invertersAfter.size());
+        Assertions.assertEquals(false, new CombinedVerificationCommand().execute(we));
 
         ContractComponentTransformationCommand contractCommand = new ContractComponentTransformationCommand();
         circuit.select(buffers);
         Set<VisualFunctionComponent> trivialsBefore = getTrivialGates(circuit);
         contractCommand.execute(we);
         Set<VisualFunctionComponent> trivialsAfter = getTrivialGates(circuit);
-        Assert.assertEquals(trivialsBefore.size() - buffers.size(), trivialsAfter.size());
-        Assert.assertEquals(true, new CombinedVerificationCommand().execute(we));
+        Assertions.assertEquals(trivialsBefore.size() - buffers.size(), trivialsAfter.size());
+        Assertions.assertEquals(true, new CombinedVerificationCommand().execute(we));
 
         framework.closeWork(we);
     }

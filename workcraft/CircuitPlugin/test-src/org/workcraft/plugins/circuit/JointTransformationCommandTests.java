@@ -3,9 +3,9 @@ package org.workcraft.plugins.circuit;
 import java.net.URL;
 import java.util.Collection;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.commands.ContractJointTransformationCommand;
@@ -18,7 +18,7 @@ import org.workcraft.utils.WorkspaceUtils;
 
 public class JointTransformationCommandTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -45,12 +45,12 @@ public class JointTransformationCommandTests {
         DissolveJointTransformationCommand command = new DissolveJointTransformationCommand();
         command.execute(we);
 
-        Assert.assertEquals(0, circuit.getJoints().size());
+        Assertions.assertEquals(0, circuit.getJoints().size());
 
         DetachJointTransformationCommand detachCommand = new DetachJointTransformationCommand();
         detachCommand.execute(we);
 
-        Assert.assertEquals(srcForkCount, circuit.getJoints().size());
+        Assertions.assertEquals(srcForkCount, circuit.getJoints().size());
 
         VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
         for (String portRef: portRefs) {
@@ -65,7 +65,7 @@ public class JointTransformationCommandTests {
         ContractJointTransformationCommand contractCommand = new ContractJointTransformationCommand();
         contractCommand.execute(we);
 
-        Assert.assertEquals(srcForkCount, circuit.getJoints().size() + redundantJointCount);
+        Assertions.assertEquals(srcForkCount, circuit.getJoints().size() + redundantJointCount);
 
         framework.closeWork(we);
     }

@@ -4,9 +4,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.workcraft.dom.Connection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.petri.Petri;
-import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.petri.Transition;
 
 public class DOMTests {
 

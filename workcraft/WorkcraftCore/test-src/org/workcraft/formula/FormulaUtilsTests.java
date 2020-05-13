@@ -1,7 +1,7 @@
 package org.workcraft.formula;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.formula.workers.DumbBooleanWorker;
 
@@ -42,7 +42,7 @@ public class FormulaUtilsTests {
         String actualString = StringGenerator.toString(resultFormula);
         String expectedString = StringGenerator.toString(expectedFormula);
         System.out.println("[" + variable.getLabel() + "=" + replacementString + "]: " + formulaString + " -> " + actualString);
-        Assert.assertEquals(expectedString, actualString);
+        Assertions.assertEquals(expectedString, actualString);
     }
 
     @Test
@@ -63,7 +63,7 @@ public class FormulaUtilsTests {
         String actualString = StringGenerator.toString(resultFormula);
         String expectedString = StringGenerator.toString(expectedFormula);
         System.out.println("[pos(" + variable.getLabel() + ")=" + replacement.getLabel() + "]: " + formulaString + " -> " + actualString);
-        Assert.assertEquals(expectedString, actualString);
+        Assertions.assertEquals(expectedString, actualString);
     }
 
     @Test
@@ -73,9 +73,9 @@ public class FormulaUtilsTests {
         BooleanVariable sVar = new FreeVariable("s");
 
         BooleanFormula muxFormula = buildMuxFormula(aVar, bVar, sVar);
-        Assert.assertEquals(4, FormulaUtils.countLiterals(muxFormula));
-        Assert.assertEquals(Arrays.asList(aVar, sVar, bVar), FormulaUtils.extractOrderedVariables(muxFormula));
-        Assert.assertEquals(new HashSet(Arrays.asList(sVar)), FormulaUtils.extractNegatedVariables(muxFormula));
+        Assertions.assertEquals(4, FormulaUtils.countLiterals(muxFormula));
+        Assertions.assertEquals(Arrays.asList(aVar, sVar, bVar), FormulaUtils.extractOrderedVariables(muxFormula));
+        Assertions.assertEquals(new HashSet(Arrays.asList(sVar)), FormulaUtils.extractNegatedVariables(muxFormula));
     }
 
     @Test
@@ -97,7 +97,7 @@ public class FormulaUtilsTests {
         String actualString = StringGenerator.toString(resultFormula);
         String expectedString = StringGenerator.toString(expectedFormula);
         System.out.println("invert: " + formulaString + " -> " + actualString);
-        Assert.assertEquals(expectedString, actualString);
+        Assertions.assertEquals(expectedString, actualString);
     }
 
     @Test
@@ -118,7 +118,7 @@ public class FormulaUtilsTests {
         String actualString = StringGenerator.toString(resultFormula);
         String expectedString = StringGenerator.toString(expectedFormula);
         System.out.println("derive [" + variable.getLabel() + "]: " + formulaString + " -> " + actualString);
-        Assert.assertEquals(expectedString, actualString);
+        Assertions.assertEquals(expectedString, actualString);
     }
 
 }

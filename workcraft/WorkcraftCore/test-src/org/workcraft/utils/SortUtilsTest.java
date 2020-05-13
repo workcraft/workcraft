@@ -1,7 +1,7 @@
 package org.workcraft.utils;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,18 +12,18 @@ public class SortUtilsTest {
 
     @Test
     public void compareNaturalTest() {
-        Assert.assertEquals(0, SortUtils.compareNatural(null, null));
-        Assert.assertEquals(-1, SortUtils.compareNatural(null, "a1"));
-        Assert.assertEquals(1, SortUtils.compareNatural("a1", null));
-        Assert.assertEquals(-1, SortUtils.compareNatural("a1", "a2"));
-        Assert.assertEquals(-1, SortUtils.compareNatural("a1", "a12"));
-        Assert.assertEquals(1, SortUtils.compareNatural("a10", "a2"));
-        Assert.assertEquals(1, SortUtils.compareNatural("a12", "a2"));
-        Assert.assertEquals(0, SortUtils.compareNatural("a1b", "a1b"));
-        Assert.assertEquals(1, SortUtils.compareNatural("123", "23"));
-        Assert.assertEquals(0, SortUtils.compareNatural("123", "123"));
-        Assert.assertEquals(-48, SortUtils.compareNatural("1", "a1"));
-        Assert.assertEquals(-1, SortUtils.compareNatural("a", "a1"));
+        Assertions.assertEquals(0, SortUtils.compareNatural(null, null));
+        Assertions.assertEquals(-1, SortUtils.compareNatural(null, "a1"));
+        Assertions.assertEquals(1, SortUtils.compareNatural("a1", null));
+        Assertions.assertEquals(-1, SortUtils.compareNatural("a1", "a2"));
+        Assertions.assertEquals(-1, SortUtils.compareNatural("a1", "a12"));
+        Assertions.assertEquals(1, SortUtils.compareNatural("a10", "a2"));
+        Assertions.assertEquals(1, SortUtils.compareNatural("a12", "a2"));
+        Assertions.assertEquals(0, SortUtils.compareNatural("a1b", "a1b"));
+        Assertions.assertEquals(1, SortUtils.compareNatural("123", "23"));
+        Assertions.assertEquals(0, SortUtils.compareNatural("123", "123"));
+        Assertions.assertEquals(-48, SortUtils.compareNatural("1", "a1"));
+        Assertions.assertEquals(-1, SortUtils.compareNatural("a", "a1"));
     }
 
     @Test
@@ -37,7 +37,7 @@ public class SortUtilsTest {
         List<String> list = new ArrayList<>(sortedList);
         Collections.shuffle(list);
         SortUtils.sortNatural(list);
-        Assert.assertEquals(sortedList, list);
+        Assertions.assertEquals(sortedList, list);
     }
 
 }

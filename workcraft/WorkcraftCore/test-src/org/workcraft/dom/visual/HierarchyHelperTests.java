@@ -2,8 +2,8 @@ package org.workcraft.dom.visual;
 
 import java.util.Collection;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.workcraft.dom.Node;
 import org.workcraft.utils.Hierarchy;
 
@@ -35,10 +35,10 @@ public class HierarchyHelperTests {
         MockHierarchyNode node3 = new MockHierarchyNode(node2);
         MockHierarchyNode node3b = new MockHierarchyNode(node2);
 
-        Assert.assertArrayEquals(new Node[]{node1}, Hierarchy.getPath(node1));
-        Assert.assertArrayEquals(new Node[]{node1, node2}, Hierarchy.getPath(node2));
-        Assert.assertArrayEquals(new Node[]{node1, node2, node3}, Hierarchy.getPath(node3));
-        Assert.assertArrayEquals(new Node[]{node1, node2, node3b}, Hierarchy.getPath(node3b));
+        Assertions.assertArrayEquals(new Node[]{node1}, Hierarchy.getPath(node1));
+        Assertions.assertArrayEquals(new Node[]{node1, node2}, Hierarchy.getPath(node2));
+        Assertions.assertArrayEquals(new Node[]{node1, node2, node3}, Hierarchy.getPath(node3));
+        Assertions.assertArrayEquals(new Node[]{node1, node2, node3b}, Hierarchy.getPath(node3b));
     }
 
 }

@@ -1,8 +1,8 @@
 package org.workcraft.plugins.circuit;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
@@ -23,7 +23,7 @@ import java.util.Set;
 
 public class GenlibUtilsTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -41,7 +41,7 @@ public class GenlibUtilsTests {
                 "LOGIC1", "LOGIC0",
                 "C2", "NC2"));
 
-        Assert.assertEquals(gateNames, LibraryManager.getLibrary().getNames());
+        Assertions.assertEquals(gateNames, LibraryManager.getLibrary().getNames());
     }
 
     @Test
@@ -66,15 +66,15 @@ public class GenlibUtilsTests {
     private void checkMapping(BooleanFormula func, Library gateLibrary, Gate expGate) {
         Pair<Gate, Map<BooleanVariable, String>> mapping = GenlibUtils.findMapping(func, gateLibrary);
         if (expGate == null) {
-            Assert.assertNull(mapping);
+            Assertions.assertNull(mapping);
         } else {
-            Assert.assertNotNull(mapping);
+            Assertions.assertNotNull(mapping);
         }
         if (mapping == null) {
             System.out.println(StringGenerator.toString(func) + " == ?");
         } else {
             Gate gate = mapping.getFirst();
-            Assert.assertEquals(expGate.name + "!=" + gate.name, expGate, gate);
+            Assertions.assertEquals(expGate, gate, expGate.name + "!=" + gate.name);
             System.out.print(StringGenerator.toString(func) + " == " + gate.function.formula + " [");
             Map<BooleanVariable, String> assignments = mapping.getSecond();
             for (Map.Entry<BooleanVariable, String> entry : assignments.entrySet()) {

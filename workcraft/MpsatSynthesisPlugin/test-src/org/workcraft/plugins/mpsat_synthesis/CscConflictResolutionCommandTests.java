@@ -1,8 +1,8 @@
 package org.workcraft.plugins.mpsat_synthesis;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.mpsat_synthesis.commands.CscConflictResolutionCommand;
@@ -22,7 +22,7 @@ import java.util.Set;
 
 public class CscConflictResolutionCommandTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -74,10 +74,10 @@ public class CscConflictResolutionCommandTests {
             }
         }
 
-        Assert.assertEquals(srcInputs, dstInputs);
-        Assert.assertEquals(expInternals, dstInternals);
-        Assert.assertEquals(srcOutputs, dstOutputs);
-        Assert.assertEquals(srcMutexes, dstMutexes);
+        Assertions.assertEquals(srcInputs, dstInputs);
+        Assertions.assertEquals(expInternals, dstInternals);
+        Assertions.assertEquals(srcOutputs, dstOutputs);
+        Assertions.assertEquals(srcMutexes, dstMutexes);
     }
 
 }

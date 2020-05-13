@@ -1,8 +1,8 @@
 package org.workcraft.plugins.circuit;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.builtin.commands.BasicStatisticsCommand;
@@ -15,7 +15,7 @@ import java.net.URL;
 
 public class StatisticsCommandTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -94,11 +94,11 @@ public class StatisticsCommandTests {
 
         BasicStatisticsCommand basicStatisticsCommand = new BasicStatisticsCommand();
         String basicStatistics = basicStatisticsCommand.execute(we);
-        Assert.assertEquals(expectedBasicStatistics, basicStatistics);
+        Assertions.assertEquals(expectedBasicStatistics, basicStatistics);
 
         StatisticsCommand advancedStatisticsCommand = new StatisticsCommand();
         String advancedStatistics = advancedStatisticsCommand.execute(we);
-        Assert.assertEquals(expectedAdvancedStatistics, advancedStatistics);
+        Assertions.assertEquals(expectedAdvancedStatistics, advancedStatistics);
 
         framework.closeWork(we);
     }

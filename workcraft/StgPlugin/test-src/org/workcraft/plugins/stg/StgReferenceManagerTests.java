@@ -2,8 +2,8 @@ package org.workcraft.plugins.stg;
 
 import java.util.Arrays;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.observation.NodesAddedEvent;
@@ -18,7 +18,7 @@ public class StgReferenceManagerTests {
         root.add(transition);
         StgReferenceManager mgr = new StgReferenceManager(null);
         mgr.handleEvent(new NodesAddedEvent(null, Arrays.asList(new Node[]{transition})));
-        Assert.assertEquals("sig", transition.getSignalName());
+        Assertions.assertEquals("sig", transition.getSignalName());
     }
 
     @Test
@@ -29,7 +29,7 @@ public class StgReferenceManagerTests {
         transition.setSignalName(null);
         StgReferenceManager mgr = new StgReferenceManager(null);
         mgr.handleEvent(new NodesAddedEvent(null, Arrays.asList(new Node[]{transition})));
-        Assert.assertEquals("sig", transition.getSignalName());
+        Assertions.assertEquals("sig", transition.getSignalName());
     }
 
     @Test
@@ -40,7 +40,7 @@ public class StgReferenceManagerTests {
         transition.setSignalName("");
         StgReferenceManager mgr = new StgReferenceManager(null);
         mgr.handleEvent(new NodesAddedEvent(null, Arrays.asList(new Node[]{transition})));
-        Assert.assertEquals("sig", transition.getSignalName());
+        Assertions.assertEquals("sig", transition.getSignalName());
     }
 
     @Test
@@ -53,8 +53,8 @@ public class StgReferenceManagerTests {
         StgReferenceManager mgr = new StgReferenceManager(null);
         mgr.handleEvent(new NodesAddedEvent(null, Arrays.asList(new Node[]{transition1})));
         mgr.handleEvent(new NodesAddedEvent(null, Arrays.asList(new Node[]{transition2})));
-        Assert.assertEquals("sig", transition1.getSignalName());
-        Assert.assertEquals("sig", transition2.getSignalName());
+        Assertions.assertEquals("sig", transition1.getSignalName());
+        Assertions.assertEquals("sig", transition2.getSignalName());
     }
 
 }

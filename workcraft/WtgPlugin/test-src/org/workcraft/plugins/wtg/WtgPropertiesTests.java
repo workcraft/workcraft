@@ -1,8 +1,8 @@
 package org.workcraft.plugins.wtg;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -16,7 +16,7 @@ import org.workcraft.plugins.dtd.VisualTransitionEvent;
 
 public class WtgPropertiesTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -63,7 +63,7 @@ public class WtgPropertiesTests {
     }
 
     private void check(ModelProperties properties, int expectedCount) {
-        Assert.assertEquals(expectedCount, properties.getDescriptors().size());
+        Assertions.assertEquals(expectedCount, properties.getDescriptors().size());
     }
 
 }

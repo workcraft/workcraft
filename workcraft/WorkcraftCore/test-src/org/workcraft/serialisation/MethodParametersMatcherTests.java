@@ -1,7 +1,7 @@
 package org.workcraft.serialisation;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.workcraft.serialisation.reflection.AmbiguousMethodException;
 import org.workcraft.serialisation.reflection.MethodParametersMatcher;
 import org.workcraft.serialisation.reflection.MethodParametersMatcher.MethodInfo;
@@ -47,8 +47,8 @@ public class MethodParametersMatcherTests {
 
     @Test
     public void testSimple() throws InvocationTargetException, IllegalAccessException {
-        Assert.assertEquals(1, match(Simple.class));
-        Assert.assertEquals(-1, match(Simple.class, Object.class));
+        Assertions.assertEquals(1, match(Simple.class));
+        Assertions.assertEquals(-1, match(Simple.class, Object.class));
     }
 
     static class Advanced {
@@ -71,12 +71,12 @@ public class MethodParametersMatcherTests {
 
     @Test
     public void testMostSpecific() throws InvocationTargetException, IllegalAccessException {
-        Assert.assertEquals(1, match(Advanced.class));
-        Assert.assertEquals(2, match(Advanced.class, A.class));
-        Assert.assertEquals(3, match(Advanced.class, ABq.class));
-        Assert.assertEquals(4, match(Advanced.class, ABp.class));
-        Assert.assertEquals(4, match(Advanced.class, AB.class));
-        Assert.assertEquals(5, match(Advanced.class, AC.class));
+        Assertions.assertEquals(1, match(Advanced.class));
+        Assertions.assertEquals(2, match(Advanced.class, A.class));
+        Assertions.assertEquals(3, match(Advanced.class, ABq.class));
+        Assertions.assertEquals(4, match(Advanced.class, ABp.class));
+        Assertions.assertEquals(4, match(Advanced.class, AB.class));
+        Assertions.assertEquals(5, match(Advanced.class, AC.class));
     }
 
     static class Ambiguous {
@@ -90,11 +90,11 @@ public class MethodParametersMatcherTests {
 
     @Test
     public void testAmbiguous() throws InvocationTargetException, IllegalAccessException {
-        Assert.assertEquals(1, match(Ambiguous.class, A.class, AC.class));
-        Assert.assertEquals(-1, match(Ambiguous.class, AB.class, A.class));
-        Assert.assertEquals(2, match(Ambiguous.class, ABq.class, A.class));
-        Assert.assertEquals(1, match(Ambiguous.class, AB.class, AC.class));
-        Assert.assertEquals(-2, match(Ambiguous.class, ABq.class, AC.class));
+        Assertions.assertEquals(1, match(Ambiguous.class, A.class, AC.class));
+        Assertions.assertEquals(-1, match(Ambiguous.class, AB.class, A.class));
+        Assertions.assertEquals(2, match(Ambiguous.class, ABq.class, A.class));
+        Assertions.assertEquals(1, match(Ambiguous.class, AB.class, AC.class));
+        Assertions.assertEquals(-2, match(Ambiguous.class, ABq.class, AC.class));
     }
 
     class TestMethodInfo implements MethodInfo {

@@ -1,8 +1,8 @@
 package org.workcraft.plugins.circuit;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.commands.CircuitToStgConversionCommand;
@@ -22,7 +22,7 @@ import java.util.Set;
 
 public class ConversionCommandTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -86,9 +86,9 @@ public class ConversionCommandTests {
         Set<String> dstStgInputs = dstStg.getSignalReferences(Signal.Type.INPUT);
         Set<String> dstStgOutputs = dstStg.getSignalReferences(Signal.Type.OUTPUT);
 
-        Assert.assertEquals(2 * srcCircuitSignalCount + extraPlaceCount, dstStgPlaceCount);
-        Assert.assertEquals(srcCircuitInputs, dstStgInputs);
-        Assert.assertEquals(srcCircuitOutputs, dstStgOutputs);
+        Assertions.assertEquals(2 * srcCircuitSignalCount + extraPlaceCount, dstStgPlaceCount);
+        Assertions.assertEquals(srcCircuitInputs, dstStgInputs);
+        Assertions.assertEquals(srcCircuitOutputs, dstStgOutputs);
 
         framework.closeWork(srcWe);
         framework.closeWork(dstWe);

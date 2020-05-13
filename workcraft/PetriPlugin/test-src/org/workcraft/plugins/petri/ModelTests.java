@@ -1,7 +1,7 @@
 package org.workcraft.plugins.petri;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ModelTests {
 
@@ -10,16 +10,16 @@ public class ModelTests {
         Petri petriNet = new Petri();
 
         Transition tr = new Transition();
-        Assert.assertEquals(0, petriNet.getTransitions().size());
+        Assertions.assertEquals(0, petriNet.getTransitions().size());
         petriNet.add(tr);
-        Assert.assertEquals(1, petriNet.getTransitions().size());
-        Assert.assertTrue(petriNet.getTransitions().contains(tr));
+        Assertions.assertEquals(1, petriNet.getTransitions().size());
+        Assertions.assertTrue(petriNet.getTransitions().contains(tr));
 
         Place pl = new Place();
-        Assert.assertEquals(0, petriNet.getPlaces().size());
+        Assertions.assertEquals(0, petriNet.getPlaces().size());
         petriNet.add(pl);
-        Assert.assertEquals(1, petriNet.getPlaces().size());
-        Assert.assertTrue(petriNet.getPlaces().contains(pl));
+        Assertions.assertEquals(1, petriNet.getPlaces().size());
+        Assertions.assertTrue(petriNet.getPlaces().contains(pl));
     }
 
 }

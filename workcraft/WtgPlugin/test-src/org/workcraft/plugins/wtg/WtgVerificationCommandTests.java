@@ -1,8 +1,8 @@
 package org.workcraft.plugins.wtg;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.wtg.commands.InputPropernessVerificationCommand;
@@ -16,7 +16,7 @@ import java.net.URL;
 
 public class WtgVerificationCommandTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -50,16 +50,16 @@ public class WtgVerificationCommandTests {
         WorkspaceEntry we = framework.loadWork(url.getFile());
 
         InputPropernessVerificationCommand inputPropernessCommand = new InputPropernessVerificationCommand();
-        Assert.assertEquals(inputProperness, inputPropernessCommand.execute(we));
+        Assertions.assertEquals(inputProperness, inputPropernessCommand.execute(we));
 
         ReachabilityVerificationCommand reachabilityCommand = new ReachabilityVerificationCommand();
-        Assert.assertEquals(reachability, reachabilityCommand.execute(we));
+        Assertions.assertEquals(reachability, reachabilityCommand.execute(we));
 
         SoundnessVerificationCommand soundnessCommand = new SoundnessVerificationCommand();
-        Assert.assertEquals(soundness, soundnessCommand.execute(we));
+        Assertions.assertEquals(soundness, soundnessCommand.execute(we));
 
         SynthesisGuidelinesVerificationCommand guidelinesCommand = new SynthesisGuidelinesVerificationCommand();
-        Assert.assertEquals(guidelines, guidelinesCommand.execute(we));
+        Assertions.assertEquals(guidelines, guidelinesCommand.execute(we));
 
         framework.closeWork(we);
     }

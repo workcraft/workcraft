@@ -1,8 +1,8 @@
 package org.workcraft.plugins.circuit;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
@@ -18,7 +18,7 @@ import java.io.IOException;
 
 public class SubstitutionRulesTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -51,17 +51,17 @@ public class SubstitutionRulesTests {
         CircuitSettings.setExportSubstitutionLibrary("");
         File vWorkcraftWorkcraftFile = new File(tmpDirectory, "vme-tm.workcraft-workcraft.v");
         framework.exportWork(vWorkcraftWe, vWorkcraftWorkcraftFile, VerilogFormat.getInstance());
-        Assert.assertEquals(FileUtils.readAllText(vWorkcraftFile), FileUtils.readAllText(vWorkcraftWorkcraftFile));
+        Assertions.assertEquals(FileUtils.readAllText(vWorkcraftFile), FileUtils.readAllText(vWorkcraftWorkcraftFile));
 
         CircuitSettings.setExportSubstitutionLibrary(BackendUtils.getTemplateLibraryPath("workcraft-tsmc_ghp.cnv"));
         File vWorkcraftTsmcghpFile = new File(tmpDirectory, "vme-tm.workcraft-tsmc_ghp.v");
         framework.exportWork(vWorkcraftWe, vWorkcraftTsmcghpFile, VerilogFormat.getInstance());
-        Assert.assertEquals(FileUtils.readAllText(vTsmcghpFile), FileUtils.readAllText(vWorkcraftTsmcghpFile));
+        Assertions.assertEquals(FileUtils.readAllText(vTsmcghpFile), FileUtils.readAllText(vWorkcraftTsmcghpFile));
 
         CircuitSettings.setExportSubstitutionLibrary(BackendUtils.getTemplateLibraryPath("workcraft-tsmc_bcd.cnv"));
         File vWorkcraftTsmcbcdFile = new File(tmpDirectory, "vme-tm.workcraft-tsmc_bcd.v");
         framework.exportWork(vWorkcraftWe, vWorkcraftTsmcbcdFile, VerilogFormat.getInstance());
-        Assert.assertEquals(FileUtils.readAllText(vTsmcbcdFile), FileUtils.readAllText(vWorkcraftTsmcbcdFile));
+        Assertions.assertEquals(FileUtils.readAllText(vTsmcbcdFile), FileUtils.readAllText(vWorkcraftTsmcbcdFile));
 
         framework.closeWork(vWorkcraftWe);
 
@@ -72,17 +72,17 @@ public class SubstitutionRulesTests {
         CircuitSettings.setExportSubstitutionLibrary("");
         File vTsmcghpWorkcraftFile = new File(tmpDirectory, "vme-tm.tsmc_ghp-workcraft.v");
         framework.exportWork(vTsmcghpWe, vTsmcghpWorkcraftFile, VerilogFormat.getInstance());
-        Assert.assertEquals(FileUtils.readAllText(vWorkcraftFile), FileUtils.readAllText(vTsmcghpWorkcraftFile));
+        Assertions.assertEquals(FileUtils.readAllText(vWorkcraftFile), FileUtils.readAllText(vTsmcghpWorkcraftFile));
 
         CircuitSettings.setExportSubstitutionLibrary(BackendUtils.getTemplateLibraryPath("workcraft-tsmc_ghp.cnv"));
         File vTsmcghpTsmcghpFile = new File(tmpDirectory, "vme-tm.tsmc_ghp-tsmc_ghp.v");
         framework.exportWork(vTsmcghpWe, vTsmcghpTsmcghpFile, VerilogFormat.getInstance());
-        Assert.assertEquals(FileUtils.readAllText(vTsmcghpFile), FileUtils.readAllText(vTsmcghpTsmcghpFile));
+        Assertions.assertEquals(FileUtils.readAllText(vTsmcghpFile), FileUtils.readAllText(vTsmcghpTsmcghpFile));
 
         CircuitSettings.setExportSubstitutionLibrary(BackendUtils.getTemplateLibraryPath("workcraft-tsmc_bcd.cnv"));
         File vTsmcghpTsmcbcdFile = new File(tmpDirectory, "vme-tm.tsmc_ghp-tsmc_bcd.v");
         framework.exportWork(vTsmcghpWe, vTsmcghpTsmcbcdFile, VerilogFormat.getInstance());
-        Assert.assertEquals(FileUtils.readAllText(vTsmcbcdFile), FileUtils.readAllText(vTsmcghpTsmcbcdFile));
+        Assertions.assertEquals(FileUtils.readAllText(vTsmcbcdFile), FileUtils.readAllText(vTsmcghpTsmcbcdFile));
 
         framework.closeWork(vTsmcghpWe);
 
@@ -93,17 +93,17 @@ public class SubstitutionRulesTests {
         CircuitSettings.setExportSubstitutionLibrary("");
         File vTsmcbcdWorkcraftFile = new File(tmpDirectory, "vme-tm.tsmc_bcd-workcraft.v");
         framework.exportWork(vTsmcbcdWe, vTsmcbcdWorkcraftFile, VerilogFormat.getInstance());
-        Assert.assertEquals(FileUtils.readAllText(vWorkcraftFile), FileUtils.readAllText(vTsmcbcdWorkcraftFile));
+        Assertions.assertEquals(FileUtils.readAllText(vWorkcraftFile), FileUtils.readAllText(vTsmcbcdWorkcraftFile));
 
         CircuitSettings.setExportSubstitutionLibrary(BackendUtils.getTemplateLibraryPath("workcraft-tsmc_ghp.cnv"));
         File vTsmcbcdTsmcghpFile = new File(tmpDirectory, "vme-tm.tsmc_bcd-tsmc_ghp.v");
         framework.exportWork(vTsmcbcdWe, vTsmcbcdTsmcghpFile, VerilogFormat.getInstance());
-        Assert.assertEquals(FileUtils.readAllText(vTsmcghpFile), FileUtils.readAllText(vTsmcbcdTsmcghpFile));
+        Assertions.assertEquals(FileUtils.readAllText(vTsmcghpFile), FileUtils.readAllText(vTsmcbcdTsmcghpFile));
 
         CircuitSettings.setExportSubstitutionLibrary(BackendUtils.getTemplateLibraryPath("workcraft-tsmc_bcd.cnv"));
         File vTsmcbcdTsmcbcdFile = new File(tmpDirectory, "vme-tm.tsmc_bcd-tsmc_bcd.v");
         framework.exportWork(vTsmcbcdWe, vTsmcbcdTsmcbcdFile, VerilogFormat.getInstance());
-        Assert.assertEquals(FileUtils.readAllText(vTsmcbcdFile), FileUtils.readAllText(vTsmcbcdTsmcbcdFile));
+        Assertions.assertEquals(FileUtils.readAllText(vTsmcbcdFile), FileUtils.readAllText(vTsmcbcdTsmcbcdFile));
 
         framework.closeWork(vTsmcbcdWe);
         FileUtils.deleteOnExitRecursively(tmpDirectory);

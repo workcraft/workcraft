@@ -1,14 +1,14 @@
 package org.workcraft.plugins.stg;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Config;
 import org.workcraft.Framework;
 
 public class StgSettingsTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -20,25 +20,25 @@ public class StgSettingsTests {
         final Framework framework = Framework.getInstance();
         String prefix = "StgSettings";
 
-        Assert.assertEquals(Config.toString(StgSettings.getDensityMapLevelLimit()),
+        Assertions.assertEquals(Config.toString(StgSettings.getDensityMapLevelLimit()),
                 framework.getConfigVar(prefix + ".densityMapLevelLimit", false));
 
-        Assert.assertEquals(Config.toString(StgSettings.getLowLevelSuffix()),
+        Assertions.assertEquals(Config.toString(StgSettings.getLowLevelSuffix()),
                 framework.getConfigVar(prefix + ".lowLevelSuffix", false));
 
-        Assert.assertEquals(Config.toString(StgSettings.getHighLevelSuffix()),
+        Assertions.assertEquals(Config.toString(StgSettings.getHighLevelSuffix()),
                 framework.getConfigVar(prefix + ".highLevelSuffix", false));
 
-        Assert.assertEquals(Config.toString(StgSettings.getGroupSignalConversion()),
+        Assertions.assertEquals(Config.toString(StgSettings.getGroupSignalConversion()),
                 framework.getConfigVar(prefix + ".groupSignalConversion", false));
 
-        Assert.assertEquals(Config.toString(StgSettings.getShowTransitionInstance()),
+        Assertions.assertEquals(Config.toString(StgSettings.getShowTransitionInstance()),
                 framework.getConfigVar(prefix + ".showTransitionInstance", false));
 
-        Assert.assertEquals(Config.toString(StgSettings.getMutexProtocol()),
+        Assertions.assertEquals(Config.toString(StgSettings.getMutexProtocol()),
                 framework.getConfigVar(prefix + ".mutexProtocol", false));
 
-        Assert.assertEquals(Config.toString(StgSettings.getTransitionFontSize()),
+        Assertions.assertEquals(Config.toString(StgSettings.getTransitionFontSize()),
                 framework.getConfigVar(prefix + ".transitionFontSize", false));
     }
 

@@ -3,9 +3,9 @@ package org.workcraft.plugins.stg;
 import java.io.IOException;
 import java.net.URL;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.petri.VisualPetri;
@@ -17,7 +17,7 @@ import org.workcraft.utils.WorkspaceUtils;
 
 public class ConversionCommandTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -59,8 +59,8 @@ public class ConversionCommandTests {
         int midPlaces = midPetri.getVisualPlaces().size();
         int midTransitions = midPetri.getVisualTransitions().size();
 
-        Assert.assertEquals(srcPlaces + srcImplicitPlaceArcs, midPlaces);
-        Assert.assertEquals(srcSignalTransitions + srcDummyTransitions, midTransitions);
+        Assertions.assertEquals(srcPlaces + srcImplicitPlaceArcs, midPlaces);
+        Assertions.assertEquals(srcSignalTransitions + srcDummyTransitions, midTransitions);
 
         PetriToStgConversionCommand command2 = new PetriToStgConversionCommand();
         WorkspaceEntry dstWe = command2.execute(midWe);
@@ -70,9 +70,9 @@ public class ConversionCommandTests {
         int dstSignalTransitions = dstStg.getVisualSignalTransitions().size();
         int dstDummyTransitions = dstStg.getVisualDummyTransitions().size();
 
-        Assert.assertEquals(midPlaces, dstPlaces + dstImplicitPlaceArcs);
-        Assert.assertEquals(midTransitions, dstDummyTransitions);
-        Assert.assertEquals(0, dstSignalTransitions);
+        Assertions.assertEquals(midPlaces, dstPlaces + dstImplicitPlaceArcs);
+        Assertions.assertEquals(midTransitions, dstDummyTransitions);
+        Assertions.assertEquals(0, dstSignalTransitions);
 
         framework.closeWork(srcWe);
         framework.closeWork(midWe);

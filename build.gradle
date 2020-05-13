@@ -106,6 +106,7 @@ subprojects {
     task cleanAll(dependsOn: ['clean', 'cleanEclipse', 'cleanIdea', 'cleanJavacc'])
 
     test {
+        useJUnitPlatform()
         workingDir = rootDir
         testLogging {
             events "failed"

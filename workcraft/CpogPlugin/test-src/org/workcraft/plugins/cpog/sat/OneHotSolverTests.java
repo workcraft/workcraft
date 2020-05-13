@@ -1,13 +1,13 @@
 package org.workcraft.plugins.cpog.sat;
 
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.plugins.cpog.CpogSettings;
 import org.workcraft.plugins.cpog.encoding.onehot.OneHotNumberProvider;
 
 public class OneHotSolverTests extends SolverTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void setSatSolver() {
         CpogSettings.setSatSolver(CpogSettings.SatSolver.CLASP);
     }

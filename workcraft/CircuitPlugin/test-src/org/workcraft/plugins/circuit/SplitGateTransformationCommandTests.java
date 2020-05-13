@@ -2,9 +2,9 @@ package org.workcraft.plugins.circuit;
 
 import java.net.URL;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.commands.SplitGateTransformationCommand;
@@ -14,7 +14,7 @@ import org.workcraft.utils.WorkspaceUtils;
 
 public class SplitGateTransformationCommandTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -51,8 +51,8 @@ public class SplitGateTransformationCommandTests {
             }
         }
 
-        Assert.assertEquals(expMappedGateCount, dstMappedGateCount);
-        Assert.assertEquals(expUnmappedGateCount, dstUnmappedGateCount);
+        Assertions.assertEquals(expMappedGateCount, dstMappedGateCount);
+        Assertions.assertEquals(expUnmappedGateCount, dstUnmappedGateCount);
 
         framework.closeWork(we);
     }

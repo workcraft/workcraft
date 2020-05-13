@@ -1,7 +1,7 @@
 package org.workcraft.dom.visual;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
@@ -68,11 +68,11 @@ public class VisualModelTests {
         model.getCurrentLevel().add(new VisualGroup());
 
         VisualNode[] old = model.getCurrentLevel().getChildren().toArray(new VisualNode[0]);
-        Assert.assertEquals(1, old.length);
+        Assertions.assertEquals(1, old.length);
         model.groupSelection();
         VisualNode[] newNode = model.getCurrentLevel().getChildren().toArray(new VisualNode[0]);
-        Assert.assertEquals(1, newNode.length);
-        Assert.assertEquals(old[0], newNode[0]);
+        Assertions.assertEquals(1, newNode.length);
+        Assertions.assertEquals(old[0], newNode[0]);
     }
 
     private VisualNode[] findMissing(VisualNode[] oldNodes, VisualNode[] newNodes) {
@@ -114,9 +114,9 @@ public class VisualModelTests {
             missingList.add(node);
         }
 
-        Assert.assertEquals(toGroup.length, missingList.size());
+        Assertions.assertEquals(toGroup.length, missingList.size());
         for (VisualNode node : toGroup) {
-            Assert.assertTrue(missingList.contains(node));
+            Assertions.assertTrue(missingList.contains(node));
         }
 
         ArrayList<VisualNode> oldList = new ArrayList<>();
@@ -125,17 +125,17 @@ public class VisualModelTests {
         }
 
         VisualGroup newGroup = (VisualGroup) newNode[newNode.length - 1];
-        Assert.assertFalse(oldList.contains(newGroup));
-        Assert.assertTrue(newGroup instanceof VisualGroup);
+        Assertions.assertFalse(oldList.contains(newGroup));
+        Assertions.assertTrue(newGroup instanceof VisualGroup);
 
         ArrayList<Node> newNodeList = new ArrayList<>();
         for (Node node : newGroup.getChildren()) {
             newNodeList.add(node);
         }
 
-        Assert.assertEquals(toGroup.length, newNodeList.size());
+        Assertions.assertEquals(toGroup.length, newNodeList.size());
         for (VisualNode node : toGroup) {
-            Assert.assertTrue(newNodeList.contains(node));
+            Assertions.assertTrue(newNodeList.contains(node));
         }
     }
 
@@ -159,10 +159,10 @@ public class VisualModelTests {
 
         model.addToSelection(node1);
         model.groupSelection();
-        Assert.assertEquals(1, root.getChildren().toArray(new VisualNode[0]).length);
+        Assertions.assertEquals(1, root.getChildren().toArray(new VisualNode[0]).length);
         VisualNode group = root.getChildren().toArray(new VisualNode[0])[0];
-        Assert.assertEquals(node1, group.getChildren().toArray(new VisualNode[0])[0]);
-        Assert.assertEquals(0, node1.getChildren().toArray(new VisualNode[0]).length);
+        Assertions.assertEquals(node1, group.getChildren().toArray(new VisualNode[0])[0]);
+        Assertions.assertEquals(0, node1.getChildren().toArray(new VisualNode[0]).length);
     }
 
     @Test
@@ -216,14 +216,14 @@ public class VisualModelTests {
 
         VisualNode[] newList = root.getChildren().toArray(new VisualNode[0]);
 
-        Assert.assertEquals(3, newList.length);
-        Assert.assertSame(node5, newList[0]);
-        Assert.assertSame(node2, newList[1]);
-        Assert.assertSame(node4, newList[2]);
+        Assertions.assertEquals(3, newList.length);
+        Assertions.assertSame(node5, newList[0]);
+        Assertions.assertSame(node2, newList[1]);
+        Assertions.assertSame(node4, newList[2]);
 
         VisualNode[] n2Children = node2.getChildren().toArray(new VisualNode[0]);
-        Assert.assertEquals(1, n2Children.length);
-        Assert.assertSame(node3, n2Children[0]);
+        Assertions.assertEquals(1, n2Children.length);
+        Assertions.assertSame(node3, n2Children[0]);
     }
 
     @Test
@@ -251,14 +251,14 @@ public class VisualModelTests {
 
         VisualNode[] newList = root.getChildren().toArray(new VisualNode[0]);
 
-        Assert.assertEquals(2, newList.length);
-        Assert.assertSame(node1, newList[0]);
-        Assert.assertSame(node5, newList[1]);
+        Assertions.assertEquals(2, newList.length);
+        Assertions.assertSame(node1, newList[0]);
+        Assertions.assertSame(node5, newList[1]);
 
         VisualNode[] n1Children = node1.getChildren().toArray(new VisualNode[0]);
-        Assert.assertEquals(2, n1Children.length);
-        Assert.assertSame(node4, n1Children[0]);
-        Assert.assertSame(node3, n1Children[1]);
+        Assertions.assertEquals(2, n1Children.length);
+        Assertions.assertSame(node4, n1Children[0]);
+        Assertions.assertSame(node3, n1Children[1]);
     }
 
     @Test
@@ -278,10 +278,10 @@ public class VisualModelTests {
 
         VisualNode[] newList = root.getChildren().toArray(new VisualNode[0]);
 
-        Assert.assertEquals(1, newList.length);
-        Assert.assertSame(node1, newList[0]);
+        Assertions.assertEquals(1, newList.length);
+        Assertions.assertSame(node1, newList[0]);
 
-        Assert.assertEquals(0, node1.getChildren().toArray(new VisualNode[0]).length);
+        Assertions.assertEquals(0, node1.getChildren().toArray(new VisualNode[0]).length);
     }
 
     @Test
@@ -318,17 +318,17 @@ public class VisualModelTests {
 
         Collection<Node> newList = root.getChildren();
 
-        Assert.assertEquals(4, newList.size());
+        Assertions.assertEquals(4, newList.size());
 
-        Assert.assertEquals(0, node1.getChildren().size());
-        Assert.assertEquals(0, node2.getChildren().size());
-        Assert.assertEquals(0, node3.getChildren().size());
-        Assert.assertEquals(0, node4.getChildren().size());
+        Assertions.assertEquals(0, node1.getChildren().size());
+        Assertions.assertEquals(0, node2.getChildren().size());
+        Assertions.assertEquals(0, node3.getChildren().size());
+        Assertions.assertEquals(0, node4.getChildren().size());
 
-        Assert.assertTrue(newList.contains(node1c));
-        Assert.assertTrue(newList.contains(node2c));
-        Assert.assertTrue(newList.contains(node3c));
-        Assert.assertTrue(newList.contains(node4c));
+        Assertions.assertTrue(newList.contains(node1c));
+        Assertions.assertTrue(newList.contains(node2c));
+        Assertions.assertTrue(newList.contains(node3c));
+        Assertions.assertTrue(newList.contains(node4c));
     }
 
     @Test
@@ -344,13 +344,13 @@ public class VisualModelTests {
         model.addToSelection(c2);
         VisualGroup g = model.groupSelection();
 
-        Assert.assertEquals(1, root.getChildren().size());
-        Assert.assertTrue(root.getChildren().contains(g));
+        Assertions.assertEquals(1, root.getChildren().size());
+        Assertions.assertTrue(root.getChildren().contains(g));
 
-        Assert.assertEquals(3, g.getChildren().size());
-        Assert.assertTrue(g.getChildren().contains(c1));
-        Assert.assertTrue(g.getChildren().contains(c2));
-        Assert.assertTrue(g.getChildren().contains(con));
+        Assertions.assertEquals(3, g.getChildren().size());
+        Assertions.assertTrue(g.getChildren().contains(c1));
+        Assertions.assertTrue(g.getChildren().contains(c2));
+        Assertions.assertTrue(g.getChildren().contains(con));
     }
 
     @Test
@@ -367,13 +367,13 @@ public class VisualModelTests {
         model.addToSelection(c2);
         VisualGroup g = model.groupSelection();
 
-        Assert.assertEquals(1, root.getChildren().size());
-        Assert.assertTrue(root.getChildren().contains(g));
+        Assertions.assertEquals(1, root.getChildren().size());
+        Assertions.assertTrue(root.getChildren().contains(g));
 
-        Assert.assertEquals(3, g.getChildren().size());
-        Assert.assertTrue(g.getChildren().contains(c1));
-        Assert.assertTrue(g.getChildren().contains(c2));
-        Assert.assertTrue(g.getChildren().contains(con));
+        Assertions.assertEquals(3, g.getChildren().size());
+        Assertions.assertTrue(g.getChildren().contains(c1));
+        Assertions.assertTrue(g.getChildren().contains(c2));
+        Assertions.assertTrue(g.getChildren().contains(con));
     }
     @Test
     public void testGroupingAutoGroupTwoConnections() {
@@ -391,14 +391,14 @@ public class VisualModelTests {
         model.addToSelection(con2);
         VisualGroup g = model.groupSelection();
 
-        Assert.assertEquals(1, root.getChildren().size());
-        Assert.assertTrue(root.getChildren().contains(g));
+        Assertions.assertEquals(1, root.getChildren().size());
+        Assertions.assertTrue(root.getChildren().contains(g));
 
-        Assert.assertEquals(4, g.getChildren().size());
-        Assert.assertTrue(g.getChildren().contains(c1));
-        Assert.assertTrue(g.getChildren().contains(c2));
-        Assert.assertTrue(g.getChildren().contains(con1));
-        Assert.assertTrue(g.getChildren().contains(con2));
+        Assertions.assertEquals(4, g.getChildren().size());
+        Assertions.assertTrue(g.getChildren().contains(c1));
+        Assertions.assertTrue(g.getChildren().contains(c2));
+        Assertions.assertTrue(g.getChildren().contains(con1));
+        Assertions.assertTrue(g.getChildren().contains(con2));
     }
 
     @Test
@@ -415,13 +415,13 @@ public class VisualModelTests {
         model.addToSelection(c2);
         VisualGroup g = model.groupSelection();
 
-        Assert.assertEquals(1, root.getChildren().size());
-        Assert.assertTrue(root.getChildren().contains(g));
+        Assertions.assertEquals(1, root.getChildren().size());
+        Assertions.assertTrue(root.getChildren().contains(g));
 
-        Assert.assertEquals(3, g.getChildren().size());
-        Assert.assertTrue(g.getChildren().contains(node1));
-        Assert.assertTrue(g.getChildren().contains(c2));
-        Assert.assertTrue(g.getChildren().contains(con));
+        Assertions.assertEquals(3, g.getChildren().size());
+        Assertions.assertTrue(g.getChildren().contains(node1));
+        Assertions.assertTrue(g.getChildren().contains(c2));
+        Assertions.assertTrue(g.getChildren().contains(con));
     }
 
     @Test
@@ -439,7 +439,7 @@ public class VisualModelTests {
         model.addToSelection(con2);
         model.groupSelection();
 
-        Assert.assertArrayEquals(new VisualNode[] {c1, c2, c3, con1, con2 },
+        Assertions.assertArrayEquals(new VisualNode[] {c1, c2, c3, con1, con2 },
                 root.getChildren().toArray(new VisualNode[0]));
     }
 
@@ -458,14 +458,14 @@ public class VisualModelTests {
         model.addToSelection(c3);
         VisualGroup g = model.groupSelection();
 
-        Assert.assertEquals(3, root.getChildren().size());
-        Assert.assertTrue(root.getChildren().contains(g));
-        Assert.assertTrue(root.getChildren().contains(c1));
-        Assert.assertTrue(root.getChildren().contains(con1));
+        Assertions.assertEquals(3, root.getChildren().size());
+        Assertions.assertTrue(root.getChildren().contains(g));
+        Assertions.assertTrue(root.getChildren().contains(c1));
+        Assertions.assertTrue(root.getChildren().contains(con1));
 
-        Assert.assertEquals(2, g.getChildren().size());
-        Assert.assertTrue(g.getChildren().contains(c2));
-        Assert.assertTrue(g.getChildren().contains(c3));
+        Assertions.assertEquals(2, g.getChildren().size());
+        Assertions.assertTrue(g.getChildren().contains(c2));
+        Assertions.assertTrue(g.getChildren().contains(c3));
     }
 
     @Test
@@ -481,11 +481,11 @@ public class VisualModelTests {
         model.addToSelection(con);
         VisualGroup g = model.groupSelection();
 
-        Assert.assertEquals(3, root.getChildren().size());
-        Assert.assertFalse(root.getChildren().contains(c1));
-        Assert.assertTrue(root.getChildren().contains(g));
-        Assert.assertTrue(root.getChildren().contains(c2));
-        Assert.assertTrue(root.getChildren().contains(con));
+        Assertions.assertEquals(3, root.getChildren().size());
+        Assertions.assertFalse(root.getChildren().contains(c1));
+        Assertions.assertTrue(root.getChildren().contains(g));
+        Assertions.assertTrue(root.getChildren().contains(c2));
+        Assertions.assertTrue(root.getChildren().contains(con));
     }
 
     private VisualModel createModel() {
@@ -502,11 +502,11 @@ public class VisualModelTests {
         SquareNode sq = new SquareNode(new Rectangle2D.Double(0, 0, 1, 1));
         group1.add(sq);
 
-        Assert.assertNull(HitMan.hitFirstInCurrentLevel(new Point2D.Double(0.5, 0.5), model));
-        Assert.assertEquals(group1, HitMan.hitFirstInCurrentLevel(new Point2D.Double(101.5, 0.5), model));
+        Assertions.assertNull(HitMan.hitFirstInCurrentLevel(new Point2D.Double(0.5, 0.5), model));
+        Assertions.assertEquals(group1, HitMan.hitFirstInCurrentLevel(new Point2D.Double(101.5, 0.5), model));
         model.setCurrentLevel(group1);
-        Assert.assertNull(HitMan.hitFirstInCurrentLevel(new Point2D.Double(0.5, 0.5), model));
-        Assert.assertEquals(sq, HitMan.hitFirstInCurrentLevel(new Point2D.Double(101.5, 0.5), model));
+        Assertions.assertNull(HitMan.hitFirstInCurrentLevel(new Point2D.Double(0.5, 0.5), model));
+        Assertions.assertEquals(sq, HitMan.hitFirstInCurrentLevel(new Point2D.Double(101.5, 0.5), model));
     }
 
     @Test
@@ -523,16 +523,16 @@ public class VisualModelTests {
         SquareNode sq2 = new SquareNode(new Rectangle2D.Double(0, 5, 1, 1));
         root.add(sq2);
 
-        Assert.assertEquals(0, boxHitTest(model, new Rectangle2D.Double(-0.01, -0.01, 1.02, 1.02)).size());
-        Assert.assertEquals(1, boxHitTest(model, new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).size());
-        Assert.assertEquals(group1, boxHitTest(model, new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).iterator().next());
-        Assert.assertEquals(1, boxHitTest(model, new Rectangle2D.Double(-0.01, 4.99, 1.02, 1.02)).size());
-        Assert.assertEquals(sq2, boxHitTest(model, new Rectangle2D.Double(-0.01, 4.99, 1.02, 1.02)).iterator().next());
+        Assertions.assertEquals(0, boxHitTest(model, new Rectangle2D.Double(-0.01, -0.01, 1.02, 1.02)).size());
+        Assertions.assertEquals(1, boxHitTest(model, new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).size());
+        Assertions.assertEquals(group1, boxHitTest(model, new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).iterator().next());
+        Assertions.assertEquals(1, boxHitTest(model, new Rectangle2D.Double(-0.01, 4.99, 1.02, 1.02)).size());
+        Assertions.assertEquals(sq2, boxHitTest(model, new Rectangle2D.Double(-0.01, 4.99, 1.02, 1.02)).iterator().next());
         model.setCurrentLevel(group1);
-        Assert.assertEquals(0, boxHitTest(model, new Rectangle2D.Double(-0.01, -0.01, 1.02, 1.02)).size());
-        Assert.assertEquals(1, boxHitTest(model, new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).size());
-        Assert.assertEquals(sq, boxHitTest(model, new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).iterator().next());
-        Assert.assertEquals(0, boxHitTest(model, new Rectangle2D.Double(-0.01, 4.99, 1.02, 1.02)).size());
+        Assertions.assertEquals(0, boxHitTest(model, new Rectangle2D.Double(-0.01, -0.01, 1.02, 1.02)).size());
+        Assertions.assertEquals(1, boxHitTest(model, new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).size());
+        Assertions.assertEquals(sq, boxHitTest(model, new Rectangle2D.Double(100.99, -0.01, 1.02, 1.02)).iterator().next());
+        Assertions.assertEquals(0, boxHitTest(model, new Rectangle2D.Double(-0.01, 4.99, 1.02, 1.02)).size());
     }
 
     private Collection<VisualNode> boxHitTest(VisualModel model, Rectangle2D.Double rect) {

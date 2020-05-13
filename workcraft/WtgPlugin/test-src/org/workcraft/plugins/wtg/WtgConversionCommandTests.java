@@ -1,8 +1,8 @@
 package org.workcraft.plugins.wtg;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.dtd.Signal;
@@ -18,7 +18,7 @@ import java.util.Set;
 
 public class WtgConversionCommandTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -74,9 +74,9 @@ public class WtgConversionCommandTests {
         Set<String> stgInternal = stg.getSignalReferences(org.workcraft.plugins.stg.Signal.Type.INTERNAL);
         Set<String> stgOutputs = stg.getSignalReferences(org.workcraft.plugins.stg.Signal.Type.OUTPUT);
 
-        Assert.assertEquals(wtgInputs, stgInputs);
-        Assert.assertEquals(wtgInternal, stgInternal);
-        Assert.assertEquals(wtgOutputs, stgOutputs);
+        Assertions.assertEquals(wtgInputs, stgInputs);
+        Assertions.assertEquals(wtgInternal, stgInternal);
+        Assertions.assertEquals(wtgOutputs, stgOutputs);
 
         framework.closeWork(wtgWe);
         framework.closeWork(stgWe);

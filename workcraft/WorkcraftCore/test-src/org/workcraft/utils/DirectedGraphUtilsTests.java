@@ -1,7 +1,7 @@
 package org.workcraft.utils;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
@@ -36,7 +36,7 @@ public class DirectedGraphUtilsTests {
         reversedGraph.put(8, new HashSet<>(Arrays.asList(1, 8, 9)));
         reversedGraph.put(9, new HashSet<>(Arrays.asList(2, 8)));
         reversedGraph.put(0, new HashSet<>(Arrays.asList(0)));
-        Assert.assertEquals(reversedGraph, DirectedGraphUtils.reverse(graph));
+        Assertions.assertEquals(reversedGraph, DirectedGraphUtils.reverse(graph));
     }
 
     @Test
@@ -47,7 +47,7 @@ public class DirectedGraphUtilsTests {
         oddSubgraph.put(5, new HashSet<>(Arrays.asList()));
         oddSubgraph.put(7, new HashSet<>(Arrays.asList()));
         oddSubgraph.put(9, new HashSet<>(Arrays.asList()));
-        Assert.assertEquals(oddSubgraph, DirectedGraphUtils.project(graph, new HashSet<>(Arrays.asList(1, 3, 5, 7, 9))));
+        Assertions.assertEquals(oddSubgraph, DirectedGraphUtils.project(graph, new HashSet<>(Arrays.asList(1, 3, 5, 7, 9))));
     }
 
     @Test
@@ -58,7 +58,7 @@ public class DirectedGraphUtilsTests {
         evenSubgraph.put(6, new HashSet<>(Arrays.asList(4)));
         evenSubgraph.put(8, new HashSet<>(Arrays.asList(8)));
         evenSubgraph.put(0, new HashSet<>(Arrays.asList(0)));
-        Assert.assertEquals(evenSubgraph, DirectedGraphUtils.project(graph, new HashSet<>(Arrays.asList(2, 4, 6, 8, 0))));
+        Assertions.assertEquals(evenSubgraph, DirectedGraphUtils.project(graph, new HashSet<>(Arrays.asList(2, 4, 6, 8, 0))));
     }
 
     @Test
@@ -68,25 +68,25 @@ public class DirectedGraphUtilsTests {
         components.add(new HashSet<>(Arrays.asList(7)));
         components.add(new HashSet<>(Arrays.asList(8, 9)));
         components.add(new HashSet<>(Arrays.asList(0)));
-        Assert.assertEquals(components, DirectedGraphUtils.findStronglyConnectedComponents(graph));
+        Assertions.assertEquals(components, DirectedGraphUtils.findStronglyConnectedComponents(graph));
     }
 
     @Test
     public void findSelfloopVerticesTest() {
         Set<Integer> selfloopVertices = new HashSet<>(Arrays.asList(0, 8));
-        Assert.assertEquals(selfloopVertices, DirectedGraphUtils.findSelfloopVertices(graph));
+        Assertions.assertEquals(selfloopVertices, DirectedGraphUtils.findSelfloopVertices(graph));
     }
 
     @Test
     public void findFeedbackVerticesTest() {
         Set<Integer> feedbackVertices = new HashSet<>(Arrays.asList(0, 3, 8));
-        Assert.assertEquals(feedbackVertices, DirectedGraphUtils.findFeedbackVertices(graph));
+        Assertions.assertEquals(feedbackVertices, DirectedGraphUtils.findFeedbackVertices(graph));
     }
 
     @Test
     public void findLoopedVerticesTest() {
         Set<Integer> loopedVertices = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 8, 9));
-        Assert.assertEquals(loopedVertices, DirectedGraphUtils.findLoopedVertices(graph));
+        Assertions.assertEquals(loopedVertices, DirectedGraphUtils.findLoopedVertices(graph));
     }
 
     @Test
@@ -100,30 +100,30 @@ public class DirectedGraphUtilsTests {
         cycles.add(Arrays.asList(8));
         cycles.add(Arrays.asList(8, 9));
         cycles.add(Arrays.asList(0));
-        Assert.assertEquals(cycles, DirectedGraphUtils.findSimpleCycles(graph));
+        Assertions.assertEquals(cycles, DirectedGraphUtils.findSimpleCycles(graph));
     }
 
     @Test
     public void emptyDirectedGraphTest() {
         Map<Integer, Set<Integer>> emptyGraph = new HashMap<>();
-        Assert.assertEquals(new HashMap<>(), DirectedGraphUtils.reverse(emptyGraph));
-        Assert.assertEquals(new HashMap<>(), DirectedGraphUtils.project(emptyGraph, new HashSet<>()));
-        Assert.assertEquals(new HashSet<>(), DirectedGraphUtils.findStronglyConnectedComponents(emptyGraph));
-        Assert.assertEquals(new HashSet<>(), DirectedGraphUtils.findSelfloopVertices(emptyGraph));
-        Assert.assertEquals(new HashSet<>(), DirectedGraphUtils.findFeedbackVertices(emptyGraph));
-        Assert.assertEquals(new HashSet<>(), DirectedGraphUtils.findLoopedVertices(emptyGraph));
-        Assert.assertEquals(new HashSet<>(), DirectedGraphUtils.findSimpleCycles(emptyGraph));
+        Assertions.assertEquals(new HashMap<>(), DirectedGraphUtils.reverse(emptyGraph));
+        Assertions.assertEquals(new HashMap<>(), DirectedGraphUtils.project(emptyGraph, new HashSet<>()));
+        Assertions.assertEquals(new HashSet<>(), DirectedGraphUtils.findStronglyConnectedComponents(emptyGraph));
+        Assertions.assertEquals(new HashSet<>(), DirectedGraphUtils.findSelfloopVertices(emptyGraph));
+        Assertions.assertEquals(new HashSet<>(), DirectedGraphUtils.findFeedbackVertices(emptyGraph));
+        Assertions.assertEquals(new HashSet<>(), DirectedGraphUtils.findLoopedVertices(emptyGraph));
+        Assertions.assertEquals(new HashSet<>(), DirectedGraphUtils.findSimpleCycles(emptyGraph));
     }
 
     @Test
     public void nullDirectedGraphTest() {
-        Assert.assertEquals(null, DirectedGraphUtils.reverse(null));
-        Assert.assertEquals(null, DirectedGraphUtils.project(null, null));
-        Assert.assertEquals(null, DirectedGraphUtils.findStronglyConnectedComponents(null));
-        Assert.assertEquals(null, DirectedGraphUtils.findSelfloopVertices(null));
-        Assert.assertEquals(null, DirectedGraphUtils.findFeedbackVertices(null));
-        Assert.assertEquals(null, DirectedGraphUtils.findLoopedVertices(null));
-        Assert.assertEquals(null, DirectedGraphUtils.findSimpleCycles(null));
+        Assertions.assertEquals(null, DirectedGraphUtils.reverse(null));
+        Assertions.assertEquals(null, DirectedGraphUtils.project(null, null));
+        Assertions.assertEquals(null, DirectedGraphUtils.findStronglyConnectedComponents(null));
+        Assertions.assertEquals(null, DirectedGraphUtils.findSelfloopVertices(null));
+        Assertions.assertEquals(null, DirectedGraphUtils.findFeedbackVertices(null));
+        Assertions.assertEquals(null, DirectedGraphUtils.findLoopedVertices(null));
+        Assertions.assertEquals(null, DirectedGraphUtils.findSimpleCycles(null));
     }
 
 }

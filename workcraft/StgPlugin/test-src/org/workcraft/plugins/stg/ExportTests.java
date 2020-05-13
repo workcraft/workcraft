@@ -1,8 +1,8 @@
 package org.workcraft.plugins.stg;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.Info;
 import org.workcraft.exceptions.DeserialisationException;
@@ -21,7 +21,7 @@ import java.net.URL;
 
 public class ExportTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -47,7 +47,7 @@ public class ExportTests {
 
         File gFile = new File(directory, "export.g");
         framework.exportModel(me, gFile, StgFormat.getInstance());
-        Assert.assertEquals(gHeader, FileUtils.readHeaderUtf8(gFile, gHeader.length()));
+        Assertions.assertEquals(gHeader, FileUtils.readHeaderUtf8(gFile, gHeader.length()));
 
         // .lpn
         String lpnHeader = Info.getGeneratedByText("# LPN file ", "\n") +
@@ -59,7 +59,7 @@ public class ExportTests {
 
         File lpnFile = new File(directory, "export.lpn");
         framework.exportModel(me, lpnFile, LpnFormat.getInstance());
-        Assert.assertEquals(lpnHeader, FileUtils.readHeaderUtf8(lpnFile, lpnHeader.length()));
+        Assertions.assertEquals(lpnHeader, FileUtils.readHeaderUtf8(lpnFile, lpnHeader.length()));
 
         // .svg
         String svgHeader = String.format(
@@ -69,31 +69,31 @@ public class ExportTests {
 
         File svgFile = new File(directory, "export.svg");
         framework.exportModel(me, svgFile, SvgFormat.getInstance());
-        Assert.assertEquals(svgHeader, FileUtils.readHeaderUtf8(svgFile, svgHeader.length()));
+        Assertions.assertEquals(svgHeader, FileUtils.readHeaderUtf8(svgFile, svgHeader.length()));
 
         // .png
         String pngHeader =  (char) 0xFFFD + "PNG";
         File pngFile = new File(directory, "export.png");
         framework.exportModel(me, pngFile, PngFormat.getInstance());
-        Assert.assertEquals(pngHeader, FileUtils.readHeaderUtf8(pngFile, pngHeader.length()));
+        Assertions.assertEquals(pngHeader, FileUtils.readHeaderUtf8(pngFile, pngHeader.length()));
 
         // .pdf
         String pdfHeader = "%PDF-1.4";
         File pdfFile = new File(directory, "export.pdf");
         framework.exportModel(me, pdfFile, PdfFormat.getInstance());
-        Assert.assertEquals(pdfHeader, FileUtils.readHeaderUtf8(pdfFile, pdfHeader.length()));
+        Assertions.assertEquals(pdfHeader, FileUtils.readHeaderUtf8(pdfFile, pdfHeader.length()));
 
         // .eps
         String epsHeader = "%!PS-Adobe-3.0 EPSF-3.0";
         File epsFile = new File(directory, "export.eps");
         framework.exportModel(me, epsFile, EpsFormat.getInstance());
-        Assert.assertEquals(epsHeader, FileUtils.readHeaderUtf8(epsFile, epsHeader.length()));
+        Assertions.assertEquals(epsHeader, FileUtils.readHeaderUtf8(epsFile, epsHeader.length()));
 
         // .ps
         String psHeader = "%!PS-Adobe-3.0";
         File psFile = new File(directory, "export.ps");
         framework.exportModel(me, psFile, PsFormat.getInstance());
-        Assert.assertEquals(psHeader, FileUtils.readHeaderUtf8(psFile, psHeader.length()));
+        Assertions.assertEquals(psHeader, FileUtils.readHeaderUtf8(psFile, psHeader.length()));
 
         // .dot
         String dotHeader = String.format(
@@ -103,7 +103,7 @@ public class ExportTests {
 
         File dotFile = new File(directory, "export.dot");
         framework.exportModel(me, dotFile, DotFormat.getInstance());
-        Assert.assertEquals(dotHeader, FileUtils.readHeaderUtf8(dotFile, dotHeader.length()));
+        Assertions.assertEquals(dotHeader, FileUtils.readHeaderUtf8(dotFile, dotHeader.length()));
 
         framework.closeWork(we);
         FileUtils.deleteOnExitRecursively(directory);

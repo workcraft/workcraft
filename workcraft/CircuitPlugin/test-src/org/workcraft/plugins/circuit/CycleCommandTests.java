@@ -1,8 +1,8 @@
 package org.workcraft.plugins.circuit;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.DeserialisationException;
@@ -18,7 +18,7 @@ import java.net.URL;
 
 public class CycleCommandTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -45,15 +45,15 @@ public class CycleCommandTests {
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
 
         new PathBreakerClearAllTagCommand().execute(we);
-        Assert.assertEquals(0, countPathBreaker(circuit));
+        Assertions.assertEquals(0, countPathBreaker(circuit));
 
         new PathBreakerAutoAppendTagCommand().execute(we);
         int count = countPathBreaker(circuit);
-        Assert.assertEquals(breakCount, count);
+        Assertions.assertEquals(breakCount, count);
 
         if (count > 0) {
             new TestableGateInsertionCommand().execute(we);
-            Assert.assertEquals(breakCount, countPathBreaker(circuit));
+            Assertions.assertEquals(breakCount, countPathBreaker(circuit));
 
             new ScanInsertionCommand().execute(we);
 
@@ -63,31 +63,31 @@ public class CycleCommandTests {
             Pair<String, String> scanoutPortPin = CircuitSettings.parseScanckPortPin();
 
             MathNode scanckPort = circuit.getNodeByReference(scanckPortPin.getFirst());
-            Assert.assertTrue(scanckPort instanceof FunctionContact);
+            Assertions.assertTrue(scanckPort instanceof FunctionContact);
 
             MathNode scanenPort = circuit.getNodeByReference(scanenPortPin.getFirst());
-            Assert.assertTrue(scanenPort instanceof FunctionContact);
+            Assertions.assertTrue(scanenPort instanceof FunctionContact);
 
             MathNode scaninPort = circuit.getNodeByReference(scaninPortPin.getFirst());
-            Assert.assertTrue(scaninPort instanceof FunctionContact);
+            Assertions.assertTrue(scaninPort instanceof FunctionContact);
 
             MathNode scanoutPort = circuit.getNodeByReference(scanoutPortPin.getFirst());
-            Assert.assertTrue(scanoutPort instanceof FunctionContact);
+            Assertions.assertTrue(scanoutPort instanceof FunctionContact);
 
             for (FunctionComponent component : circuit.getFunctionComponents()) {
                 if (ScanUtils.hasPathBreakerOutput(component)) {
                     MathNode scanckPin = circuit.getNodeByReference(component, scanckPortPin.getSecond());
-                    Assert.assertTrue(scanckPin instanceof FunctionContact);
-                    Assert.assertEquals(scanckPort, CircuitUtils.findDriver(circuit, scanckPin, false));
+                    Assertions.assertTrue(scanckPin instanceof FunctionContact);
+                    Assertions.assertEquals(scanckPort, CircuitUtils.findDriver(circuit, scanckPin, false));
 
                     MathNode scanenPin = circuit.getNodeByReference(component, scanenPortPin.getSecond());
-                    Assert.assertTrue(scanenPin instanceof FunctionContact);
-                    Assert.assertEquals(scanenPort, CircuitUtils.findDriver(circuit, scanenPin, false));
+                    Assertions.assertTrue(scanenPin instanceof FunctionContact);
+                    Assertions.assertEquals(scanenPort, CircuitUtils.findDriver(circuit, scanenPin, false));
                 }
             }
         }
 
-        Assert.assertEquals(pass, new CycleFreenessVerificationCommand().execute(we));
+        Assertions.assertEquals(pass, new CycleFreenessVerificationCommand().execute(we));
 
         framework.closeWork(we);
     }

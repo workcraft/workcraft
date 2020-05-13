@@ -1,7 +1,7 @@
 package org.workcraft.dom.visual;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -38,14 +38,14 @@ public class TouchableTransformerTests {
         Dummy dummy = new Dummy() {
             @Override
             public boolean hitTest(Point2D p) {
-                Assert.assertEquals(point, p);
+                Assertions.assertEquals(point, p);
                 return result;
             }
         };
 
         TouchableTransformer transformer = new TouchableTransformer(dummy, new AffineTransform());
 
-        Assert.assertEquals(result, transformer.hitTest(point));
+        Assertions.assertEquals(result, transformer.hitTest(point));
     }
 
     @Test
@@ -67,7 +67,7 @@ public class TouchableTransformerTests {
             }
         };
 
-        Assert.assertEquals(bb,
+        Assertions.assertEquals(bb,
                 new TouchableTransformer(dummy, new AffineTransform()).getBoundingBox());
     }
 
@@ -88,10 +88,10 @@ public class TouchableTransformerTests {
         double sqrt2 = Math.sqrt(2.0);
         double sqrt2by2 = sqrt2 / 2.0;
 
-        Assert.assertEquals(sqrt2, result.getMaxY(), 1e-5);
-        Assert.assertEquals(0, result.getMinY(), 1e-5);
-        Assert.assertEquals(sqrt2by2, result.getMaxX(), 1e-5);
-        Assert.assertEquals(-sqrt2by2, result.getMinX(), 1e-5);
+        Assertions.assertEquals(sqrt2, result.getMaxY(), 1e-5);
+        Assertions.assertEquals(0, result.getMinY(), 1e-5);
+        Assertions.assertEquals(sqrt2by2, result.getMaxX(), 1e-5);
+        Assertions.assertEquals(-sqrt2by2, result.getMinX(), 1e-5);
     }
 
     @Test
@@ -104,15 +104,15 @@ public class TouchableTransformerTests {
                     }
                 }, AffineTransform.getTranslateInstance(10, 1));
 
-        Assert.assertTrue(toucher.hitTest(new Point2D.Double(10, 1)));
-        Assert.assertTrue(toucher.hitTest(new Point2D.Double(10.9, 1)));
-        Assert.assertTrue(toucher.hitTest(new Point2D.Double(9.1, 1)));
-        Assert.assertFalse(toucher.hitTest(new Point2D.Double(11.1, 1)));
-        Assert.assertFalse(toucher.hitTest(new Point2D.Double(8.9, 1)));
-        Assert.assertTrue(toucher.hitTest(new Point2D.Double(10.6, 1.6)));
-        Assert.assertFalse(toucher.hitTest(new Point2D.Double(10.8, 1.8)));
-        Assert.assertTrue(toucher.hitTest(new Point2D.Double(9.4, 0.4)));
-        Assert.assertFalse(toucher.hitTest(new Point2D.Double(9.2, 0.2)));
+        Assertions.assertTrue(toucher.hitTest(new Point2D.Double(10, 1)));
+        Assertions.assertTrue(toucher.hitTest(new Point2D.Double(10.9, 1)));
+        Assertions.assertTrue(toucher.hitTest(new Point2D.Double(9.1, 1)));
+        Assertions.assertFalse(toucher.hitTest(new Point2D.Double(11.1, 1)));
+        Assertions.assertFalse(toucher.hitTest(new Point2D.Double(8.9, 1)));
+        Assertions.assertTrue(toucher.hitTest(new Point2D.Double(10.6, 1.6)));
+        Assertions.assertFalse(toucher.hitTest(new Point2D.Double(10.8, 1.8)));
+        Assertions.assertTrue(toucher.hitTest(new Point2D.Double(9.4, 0.4)));
+        Assertions.assertFalse(toucher.hitTest(new Point2D.Double(9.2, 0.2)));
     }
 
 }

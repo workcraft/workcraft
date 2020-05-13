@@ -1,7 +1,7 @@
 package org.workcraft.plugins.cpog.sat;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.FreeVariable;
@@ -27,7 +27,7 @@ public class CleverCnfGeneratorTests {
         BooleanFormula f = WORKER.or(WORKER.or(WORKER.and(a, b), WORKER.and(b, a)), WORKER.and(a, b));
         Cnf cnf = generator.generate(f);
         Set<Set<String>> expected = SetUtils.convertArraysToSets(new String[][]{{"a"}, {"b"}});
-        Assert.assertEquals(expected, ClauseUtils.getLiteralSets(cnf));
+        Assertions.assertEquals(expected, ClauseUtils.getLiteralSets(cnf));
 
     }
 

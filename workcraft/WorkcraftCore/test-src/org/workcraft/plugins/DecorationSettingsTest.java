@@ -1,8 +1,8 @@
 package org.workcraft.plugins;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Config;
 import org.workcraft.Framework;
 import org.workcraft.plugins.builtin.settings.AnalysisDecorationSettings;
@@ -11,7 +11,7 @@ import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
 
 public class DecorationSettingsTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -23,13 +23,13 @@ public class DecorationSettingsTest {
         final Framework framework = Framework.getInstance();
         String prefix = "SelectionDecorationSettings";
 
-        Assert.assertEquals(Config.toString(SelectionDecorationSettings.getHighlightingColor()),
+        Assertions.assertEquals(Config.toString(SelectionDecorationSettings.getHighlightingColor()),
                 framework.getConfigVar(prefix + ".highlightingColor", false));
 
-        Assert.assertEquals(Config.toString(SelectionDecorationSettings.getSelectionColor()),
+        Assertions.assertEquals(Config.toString(SelectionDecorationSettings.getSelectionColor()),
                 framework.getConfigVar(prefix + ".selectionColor", false));
 
-        Assert.assertEquals(Config.toString(SelectionDecorationSettings.getShadingColor()),
+        Assertions.assertEquals(Config.toString(SelectionDecorationSettings.getShadingColor()),
                 framework.getConfigVar(prefix + ".shadingColor", false));
     }
 
@@ -38,10 +38,10 @@ public class DecorationSettingsTest {
         final Framework framework = Framework.getInstance();
         String prefix = "SimulationDecorationSettings";
 
-        Assert.assertEquals(Config.toString(SimulationDecorationSettings.getExcitedComponentColor()),
+        Assertions.assertEquals(Config.toString(SimulationDecorationSettings.getExcitedComponentColor()),
                 framework.getConfigVar(prefix + ".excitedComponentColor", false));
 
-        Assert.assertEquals(Config.toString(SimulationDecorationSettings.getSuggestedComponentColor()),
+        Assertions.assertEquals(Config.toString(SimulationDecorationSettings.getSuggestedComponentColor()),
                 framework.getConfigVar(prefix + ".suggestedComponentColor", false));
     }
 
@@ -50,16 +50,16 @@ public class DecorationSettingsTest {
         final Framework framework = Framework.getInstance();
         String prefix = "AnalysisDecorationSettings";
 
-        Assert.assertEquals(Config.toString(AnalysisDecorationSettings.getDontTouchColor()),
+        Assertions.assertEquals(Config.toString(AnalysisDecorationSettings.getDontTouchColor()),
                 framework.getConfigVar(prefix + ".dontTouchColor", false));
 
-        Assert.assertEquals(Config.toString(AnalysisDecorationSettings.getProblemColor()),
+        Assertions.assertEquals(Config.toString(AnalysisDecorationSettings.getProblemColor()),
                 framework.getConfigVar(prefix + ".problematicColor", false));
 
-        Assert.assertEquals(Config.toString(AnalysisDecorationSettings.getFixerColor()),
+        Assertions.assertEquals(Config.toString(AnalysisDecorationSettings.getFixerColor()),
                 framework.getConfigVar(prefix + ".problemFixerColor", false));
 
-        Assert.assertEquals(Config.toString(AnalysisDecorationSettings.getClearColor()),
+        Assertions.assertEquals(Config.toString(AnalysisDecorationSettings.getClearColor()),
                 framework.getConfigVar(prefix + ".problemFreeColor", false));
     }
 

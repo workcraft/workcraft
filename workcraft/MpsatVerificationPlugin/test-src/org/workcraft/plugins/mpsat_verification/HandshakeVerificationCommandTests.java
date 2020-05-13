@@ -1,8 +1,8 @@
 package org.workcraft.plugins.mpsat_verification;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.mpsat_verification.commands.HandshakeVerificationCommand;
@@ -15,7 +15,7 @@ import java.net.URL;
 
 public class HandshakeVerificationCommandTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -34,31 +34,31 @@ public class HandshakeVerificationCommandTests {
 
         HandshakeVerificationCommand command = new HandshakeVerificationCommand();
 
-        Assert.assertNull(command.execute(we, command.deserialiseData("incorrect - expression")));
-        Assert.assertNull(command.execute(we, command.deserialiseData("{incorrect}{signals}")));
+        Assertions.assertNull(command.execute(we, command.deserialiseData("incorrect - expression")));
+        Assertions.assertNull(command.execute(we, command.deserialiseData("{incorrect}{signals}")));
 
-        Assert.assertTrue(command.execute(we, command.deserialiseData("{r}{a}")));
-        Assert.assertTrue(command.execute(we, command.deserialiseData("  {  r  }  {  a  }  ")));
-        Assert.assertFalse(command.execute(we, command.deserialiseData("{a} {r}")));
-        Assert.assertTrue(command.execute(we, command.deserialiseData("{r1 r2} {a12}")));
-        Assert.assertFalse(command.execute(we, command.deserialiseData("{a12} {r1 r2}")));
+        Assertions.assertTrue(command.execute(we, command.deserialiseData("{r}{a}")));
+        Assertions.assertTrue(command.execute(we, command.deserialiseData("  {  r  }  {  a  }  ")));
+        Assertions.assertFalse(command.execute(we, command.deserialiseData("{a} {r}")));
+        Assertions.assertTrue(command.execute(we, command.deserialiseData("{r1 r2} {a12}")));
+        Assertions.assertFalse(command.execute(we, command.deserialiseData("{a12} {r1 r2}")));
 
-        Assert.assertFalse(command.execute(we, command.deserialiseData(
+        Assertions.assertFalse(command.execute(we, command.deserialiseData(
                 "<settings type=\"PASSIVE\"><req name=\"a\"/><ack name=\"r\"/></settings>")));
 
-        Assert.assertTrue(command.execute(we, command.deserialiseData(
+        Assertions.assertTrue(command.execute(we, command.deserialiseData(
                 "<settings type=\"ACTIVE\"><req name=\"r\"/><ack name=\"a\"/></settings>")));
 
-        Assert.assertTrue(command.execute(we, command.deserialiseData(
+        Assertions.assertTrue(command.execute(we, command.deserialiseData(
                 "<settings><req name=\"r1\"/><req name=\"r2\"/><ack name=\"a12\"/></settings>")));
 
-        Assert.assertFalse(command.execute(we, command.deserialiseData(
+        Assertions.assertFalse(command.execute(we, command.deserialiseData(
                 "<settings><req name=\"a12\"/><ack name=\"r1\"/><ack name=\"r2\"/></settings>")));
 
-        Assert.assertNull(command.execute(we, command.deserialiseData(
+        Assertions.assertNull(command.execute(we, command.deserialiseData(
                 "<settings state=\"REQ1ACK0\" allow-inversion=\"false\"><req name=\"a12\"/><ack name=\"r1\"/><ack name=\"r2\"/></settings>")));
 
-        Assert.assertTrue(command.execute(we, command.deserialiseData(
+        Assertions.assertTrue(command.execute(we, command.deserialiseData(
                 "<settings state=\"REQ1ACK0\" allow-inversion=\"true\"><req name=\"a12\"/><ack name=\"r1\"/><ack name=\"r2\"/></settings>")));
     }
 
