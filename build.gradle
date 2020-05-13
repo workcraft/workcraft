@@ -16,8 +16,8 @@ subprojects {
     }
 
     apply plugin: 'java'
-    sourceCompatibility = gradle.ext.javaVersion
-    targetCompatibility = gradle.ext.javaVersion
+    sourceCompatibility = gradle.javaVersion
+    targetCompatibility = gradle.javaVersion
 
     sourceSets {
         main.java.srcDirs = ['src', 'src-gen']
@@ -39,7 +39,7 @@ subprojects {
     }
 
     compileKotlin {
-        kotlinOptions.jvmTarget = gradle.ext.javaVersion
+        kotlinOptions.jvmTarget = gradle.javaVersion
     }
 
     apply plugin: 'ca.coglinc.javacc'
@@ -60,10 +60,10 @@ subprojects {
     }
 
     dependencies {
-        lib fileTree(dir: gradle.ext.libDir, include: ['**/*.jar'])
+        lib fileTree(dir: gradle.libDir, include: ['**/*.jar'])
         configurations.compile.extendsFrom(configurations.lib)
-        testImplementation gradle.ext.junit
-        javacc gradle.ext.javacc
+        testImplementation gradle.junit
+        javacc gradle.javacc
     }
 
     apply plugin: 'eclipse'
@@ -116,45 +116,45 @@ subprojects {
     apply plugin: 'checkstyle'
 
     checkstyle {
-        toolVersion = gradle.ext.checkstyleVersion
+        toolVersion = gradle.checkstyleVersion
         configFile = file("${project.rootDir}/config/checkstyle/checkstyle.xml")
     }
 
-    checkstyleMain.exclude gradle.ext.javaccExclude
+    checkstyleMain.exclude gradle.javaccExclude
 
     task checkstyle(dependsOn: tasks.withType(Checkstyle)*.name)
 
     apply plugin: 'pmd'
 
     pmd {
-        toolVersion = gradle.ext.pmdVersion
+        toolVersion = gradle.pmdVersion
         consoleOutput = true
         incrementalAnalysis = true
         ruleSetFiles = files("${project.rootDir}/config/pmd/rules.xml")
         ruleSets = []
     }
 
-    pmdMain.exclude gradle.ext.javaccExclude
+    pmdMain.exclude gradle.javaccExclude
 
     task pmd(dependsOn: tasks.withType(Pmd)*.name)
 
     apply plugin: 'de.aaschmid.cpd'
 
     cpd {
-        toolVersion = gradle.ext.pmdVersion
+        toolVersion = gradle.pmdVersion
         minimumTokenCount = 250
     }
 
     cpdCheck {
         source = sourceSets.main.allJava
-        exclude gradle.ext.javaccExclude
+        exclude gradle.javaccExclude
     }
 
 
     apply plugin: 'jacoco'
 
     jacoco {
-        toolVersion = gradle.ext.jacocoVersion
+        toolVersion = gradle.jacocoVersion
     }
 
     jacocoTestReport {
@@ -167,7 +167,7 @@ subprojects {
     afterEvaluate {project ->
         task copyLibs(type: Copy) {
             from configurations.lib
-            into "$buildDir/$gradle.ext.libDir"
+            into "$buildDir/$gradle.libDir"
             include '*.jar'
         }
 
@@ -176,7 +176,7 @@ subprojects {
             destinationDirectory = file("$buildDir/bin")
             manifest {
                 attributes 'Class-Path': configurations.lib.collect {
-                    "../$gradle.ext.libDir/" + it.name
+                    "../$gradle.libDir/" + it.name
                 }.join(' ')
             }
         }
@@ -201,18 +201,18 @@ check.dependsOn checkLicense
 
 cpdCheck {
     source = sourceSets.main.allJava
-    exclude gradle.ext.javaccExclude
+    exclude gradle.javaccExclude
 }
 
 
 apply plugin: 'jacoco'
 
 jacoco {
-    toolVersion = gradle.ext.jacocoVersion
+    toolVersion = gradle.jacocoVersion
 }
 
 def coverageProjects = subprojects.findAll {
-    it.name ==~ ~(gradle.ext.coverageProjects.join('|'))
+    it.name ==~ ~(gradle.coverageProjects.join('|'))
 }
 
 task jacocoRootReport(type: JacocoReport) {
@@ -230,17 +230,19 @@ task jacocoRootReport(type: JacocoReport) {
     }
 
     afterEvaluate {
-        def excludeFromCoverage = [gradle.ext.javaccExclude]
+        ext.jacocoExclude = [gradle.javaccExclude]
         subprojects {
             if (it.hasProperty('excludeFromCoverage')) {
-                excludeFromCoverage += it.excludeFromCoverage
+                jacocoExclude += it.excludeFromCoverage
             }
         }
-        println 'Excluding from coverage:'
-        excludeFromCoverage.each { println "  - " + it }
         classDirectories.from = classDirectories.files.collect {
-            fileTree(dir: it, exclude: excludeFromCoverage)
+            fileTree(dir: it, exclude: jacocoExclude)
         }
+    }
+    doLast {
+        println 'Excluding from coverage:'
+        jacocoExclude.each { println "  - " + it }
     }
 }
 
