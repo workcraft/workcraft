@@ -25,6 +25,7 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     private static final String keyDebugReach = prefix + ".debugReach";
     private static final String keyDebugCores = prefix + ".debugCores";
     private static final String keyConformationReportStyle = prefix + ".conformationReportStyle";
+    private static final String keyVerboseSyntaxCheck = prefix + ".verboseSyntaxCheck";
 
     private static final String defaultCommand = BackendUtils.getToolPath("UnfoldingTools", "mpsat");
     private static final SolutionMode defaultSolutionMode = SolutionMode.MINIMUM_COST;
@@ -35,6 +36,7 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     private static final Boolean defaultDebugReach = false;
     private static final Boolean defaultDebugCores = false;
     private static final ConformationReportStyle defaultConformationReportStyle = ConformationReportStyle.TABLE;
+    private static final Boolean defaultVerboseSyntaxCheck = false;
 
     private static String command = defaultCommand;
     private static SolutionMode solutionMode = defaultSolutionMode;
@@ -45,6 +47,7 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     private static Boolean debugReach = defaultDebugReach;
     private static Boolean debugCores = defaultDebugCores;
     private static ConformationReportStyle conformationReportStyle = defaultConformationReportStyle;
+    private static Boolean verboseSyntaxCheck = defaultVerboseSyntaxCheck;
 
     static {
         properties.add(new PropertyDeclaration<>(String.class,
@@ -91,6 +94,11 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
                 "Report style for conformation violation",
                 MpsatVerificationSettings::setConformationReportStyle,
                 MpsatVerificationSettings::getConformationReportStyle));
+
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Verbose syntax check",
+                MpsatVerificationSettings::setVerboseSyntaxCheck,
+                MpsatVerificationSettings::getVerboseSyntaxCheck));
     }
 
     @Override
@@ -109,6 +117,7 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
         setDebugReach(config.getBoolean(keyDebugReach, defaultDebugReach));
         setDebugCores(config.getBoolean(keyDebugCores, defaultDebugCores));
         setConformationReportStyle(config.getEnum(keyConformationReportStyle, ConformationReportStyle.class, defaultConformationReportStyle));
+        setVerboseSyntaxCheck(config.getBoolean(keyVerboseSyntaxCheck, defaultVerboseSyntaxCheck));
     }
 
     @Override
@@ -122,6 +131,7 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
         config.setBoolean(keyDebugReach, getDebugReach());
         config.setBoolean(keyDebugCores, getDebugCores());
         config.setEnum(keyConformationReportStyle, getConformationReportStyle());
+        config.setBoolean(keyVerboseSyntaxCheck, getVerboseSyntaxCheck());
     }
 
     @Override
@@ -203,6 +213,14 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
 
     public static ConformationReportStyle getConformationReportStyle() {
         return conformationReportStyle;
+    }
+
+    public static Boolean getVerboseSyntaxCheck() {
+        return verboseSyntaxCheck;
+    }
+
+    public static void setVerboseSyntaxCheck(Boolean value) {
+        verboseSyntaxCheck = value;
     }
 
 }

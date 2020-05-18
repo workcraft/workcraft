@@ -3,24 +3,21 @@ package org.workcraft.plugins.mpsat_verification.gui;
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.controls.FlatTextArea;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.presets.MpsatPresetManager;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters.SolutionMode;
+import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.presets.DataMapper;
 import org.workcraft.presets.PresetDialog;
 import org.workcraft.presets.PresetManagerPanel;
 import org.workcraft.shared.IntDocument;
 import org.workcraft.utils.GuiUtils;
-import org.workcraft.utils.TextUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.io.File;
 
 public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
@@ -30,7 +27,7 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
     private PresetManagerPanel<VerificationParameters> presetPanel;
     private JComboBox<VerificationMode> modeCombo;
     private JTextField solutionLimitText;
-    private FlatTextArea propertyText;
+    private FlatTextArea textArea;
     private JRadioButton allSolutionsRadioButton;
     private JRadioButton firstSolutionRadioButton;
     private JRadioButton cheapestSolutionRadioButton;
@@ -40,9 +37,10 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
     public ReachAssertionDialog(Window owner, MpsatPresetManager presetManager) {
         super(owner, "REACH assertion", presetManager);
         presetPanel.selectFirst();
-        propertyText.setCaretPosition(0);
-        propertyText.requestFocus();
+        textArea.setCaretPosition(0);
+        textArea.requestFocus();
         addHelpButton(new File("help/reach.html"));
+        addCheckAction(event -> MpsatUtils.checkSyntax(presetManager.getWorkspaceEntry(), textArea, getPresetData()));
     }
 
     @Override
@@ -122,10 +120,10 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
                     satisfiableRadioButton.setSelected(true);
                 }
 
-                propertyText.setText(data.getExpression());
-                propertyText.setCaretPosition(0);
-                propertyText.requestFocus();
-                propertyText.discardEditHistory();
+                textArea.setText(data.getExpression());
+                textArea.setCaretPosition(0);
+                textArea.requestFocus();
+                textArea.discardEditHistory();
             }
 
             @Override
@@ -197,19 +195,8 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
         String title = "REACH predicate (use '" + NamespaceHelper.getHierarchySeparator() + "' as hierarchy separator)";
         resutl.setBorder(GuiUtils.getTitledBorder(title));
 
-        propertyText = new FlatTextArea();
-        propertyText.setMargin(SizeHelper.getTextMargin());
-        propertyText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
-        propertyText.setText(TextUtils.repeat("\n", 6));
-        propertyText.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                if (e.getKeyChar() > 127) {
-                    e.consume();  // ignore non-ASCII characters
-                }
-            }
-        });
-        JScrollPane propertyScrollPane = new JScrollPane(propertyText);
+        textArea = new FlatTextArea(6);
+        JScrollPane propertyScrollPane = new JScrollPane(textArea);
 
         satisfiableRadioButton = new JRadioButton("satisfiable");
         unsatisfiableRadioButton = new JRadioButton("unsatisfiable");
@@ -252,7 +239,7 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
         }
 
         return new VerificationParameters(null, (VerificationMode) modeCombo.getSelectedItem(),
-                0, solutionMode, solutionLimin, propertyText.getText(), unsatisfiableRadioButton.isSelected());
+                0, solutionMode, solutionLimin, textArea.getText(), unsatisfiableRadioButton.isSelected());
     }
 
 }

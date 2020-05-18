@@ -46,6 +46,9 @@ public class MpsatVerificationSettingsTests {
 
         Assertions.assertEquals(Config.toString(MpsatVerificationSettings.getConformationReportStyle()),
                 framework.getConfigVar(prefix + ".conformationReportStyle", false));
+
+        Assertions.assertEquals(Config.toString(MpsatVerificationSettings.getVerboseSyntaxCheck()),
+                framework.getConfigVar(prefix + ".verboseSyntaxCheck", false));
     }
 
 }

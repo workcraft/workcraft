@@ -57,7 +57,7 @@ public class MpsatTask implements Task<MpsatOutput> {
 
         // Name of the executable
         String toolPrefix = MpsatSynthesisSettings.getCommand();
-        String toolSuffix = unfoldingFile.getName().endsWith(PunfTask.MCI_FILE_EXTENSION) ? PunfTask.LEGACY_TOOL_SUFFIX : "";
+        String toolSuffix = PunfTask.getToolSuffix(unfoldingFile);
         String toolName = ExecutableUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
         command.add(toolName);
 

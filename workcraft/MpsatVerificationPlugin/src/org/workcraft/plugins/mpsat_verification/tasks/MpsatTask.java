@@ -27,6 +27,7 @@ public class MpsatTask implements Task<MpsatOutput> {
     private final File netFile;
     private final VerificationParameters verificationParameters;
     private final File directory;
+    private boolean quiet = false;
 
     public MpsatTask(File unfoldingFile, File netFile, VerificationParameters verificationParameters, File directory) {
         this.unfoldingFile = unfoldingFile;
@@ -39,13 +40,17 @@ public class MpsatTask implements Task<MpsatOutput> {
         this.directory = directory;
     }
 
+    public void setQuiet(boolean value) {
+        quiet = value;
+    }
+
     @Override
     public Result<? extends MpsatOutput> run(ProgressMonitor<? super MpsatOutput> monitor) {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
         String toolPrefix = MpsatVerificationSettings.getCommand();
-        String toolSuffix = unfoldingFile.getName().endsWith(PunfTask.MCI_FILE_EXTENSION) ? PunfTask.LEGACY_TOOL_SUFFIX : "";
+        String toolSuffix = PunfTask.getToolSuffix(unfoldingFile);
         String toolName = ExecutableUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
         command.add(toolName);
 
@@ -74,8 +79,8 @@ public class MpsatTask implements Task<MpsatOutput> {
         File outputFile = new File(directory, OUTPUT_FILE_NAME);
         command.add(outputFile.getAbsolutePath());
 
-        boolean printStdout = MpsatVerificationSettings.getPrintStdout();
-        boolean printStderr = MpsatVerificationSettings.getPrintStderr();
+        boolean printStdout = MpsatVerificationSettings.getPrintStdout() && !quiet;
+        boolean printStderr = MpsatVerificationSettings.getPrintStderr() && !quiet;
         ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
         SubtaskMonitor<? super ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
