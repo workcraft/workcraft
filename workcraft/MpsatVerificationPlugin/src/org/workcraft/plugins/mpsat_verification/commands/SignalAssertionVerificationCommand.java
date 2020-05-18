@@ -52,6 +52,9 @@ public class SignalAssertionVerificationCommand extends org.workcraft.commands.A
 
         TextPresetDialog dialog = new TextPresetDialog(mainWindow, "Signal assertion", presetManager);
         dialog.addHelpButton(new File("help/assertion.html"));
+        dialog.addCheckAction(event -> MpsatUtils.checkSyntax(we, dialog.getTextArea(),
+                convertDataToVerificationParameters(dialog.getTextArea().getText())));
+
         if (dialog.reveal()) {
             preservedData = dialog.getPresetData();
             VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
@@ -62,15 +65,19 @@ public class SignalAssertionVerificationCommand extends org.workcraft.commands.A
     @Override
     public void run(WorkspaceEntry we, String data, ProgressMonitor monitor) {
         TaskManager manager = Framework.getInstance().getTaskManager();
-        VerificationParameters verificationParameters = new VerificationParameters(null,
-                VerificationMode.ASSERTION, 0,
-                MpsatVerificationSettings.getSolutionMode(),
-                MpsatVerificationSettings.getSolutionCount(),
-                data, true);
+        VerificationParameters verificationParameters = convertDataToVerificationParameters(data);
 
         VerificationChainTask task = new VerificationChainTask(we, verificationParameters);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         manager.queue(task, description, monitor);
+    }
+
+    private VerificationParameters convertDataToVerificationParameters(String data) {
+        return new VerificationParameters(null,
+                VerificationMode.ASSERTION, 0,
+                MpsatVerificationSettings.getSolutionMode(),
+                MpsatVerificationSettings.getSolutionCount(),
+                data, true);
     }
 
     @Override
