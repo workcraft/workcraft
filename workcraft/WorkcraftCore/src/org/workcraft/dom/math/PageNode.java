@@ -6,7 +6,7 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.visual.VisualPage;
 
 @DisplayName("Page")
-@IdentifierPrefix("pg")
+@IdentifierPrefix(value = "pg", isNamespace = true)
 @VisualClass(VisualPage.class)
 public class PageNode extends MathGroup {
 

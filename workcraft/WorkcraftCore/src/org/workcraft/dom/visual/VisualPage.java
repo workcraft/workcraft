@@ -200,7 +200,9 @@ public class VisualPage extends VisualComponent implements Collapsible, Containe
                 g.fill(bb);
             }
             float[] pattern = {0.1f, 0.1f};
-            g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
+            g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_BUTT,
+                    BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
+
             g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
             g.draw(bb);
         }

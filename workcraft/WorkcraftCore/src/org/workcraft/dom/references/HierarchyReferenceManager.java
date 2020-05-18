@@ -135,7 +135,7 @@ public class HierarchyReferenceManager extends HierarchySupervisor implements Re
         String tail = NamespaceHelper.getReferenceTail(reference);
         NameManager man = getNameManager(provider);
         Node node = man.getNode(head);
-        if ((node != null) && (node instanceof NamespaceProvider)) {
+        if (node instanceof NamespaceProvider) {
             return getNodeByReference((NamespaceProvider) node, tail);
         }
         return node;

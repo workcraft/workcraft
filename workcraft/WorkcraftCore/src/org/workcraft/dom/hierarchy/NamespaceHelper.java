@@ -1,21 +1,21 @@
 package org.workcraft.dom.hierarchy;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.PageNode;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.utils.Hierarchy;
-import org.workcraft.dom.references.Identifier;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class NamespaceHelper {
     // Use negative lookahead (?![0-9]) to make sure that hierarchy separator is not followed by a number.
@@ -51,7 +51,7 @@ public class NamespaceHelper {
         return reference.replaceAll(Pattern.quote(HIERARCHY_SEPARATOR), FLATNAME_SEPARATOR);
     }
 
-    public static LinkedList<String> splitReference(String reference) {
+    private static LinkedList<String> splitReference(String reference) {
         LinkedList<String> result = new LinkedList<>();
         if ((reference != null) && !reference.isEmpty()) {
             Matcher matcher = HEAD_TAIL_PATTERN.matcher(reference);
@@ -78,14 +78,6 @@ public class NamespaceHelper {
                     result += getHierarchySeparator();
                 }
             }
-        }
-        return result;
-    }
-
-    public static String getReferencePath(String reference) {
-        String result = getParentReference(reference);
-        if (result.length() > 0) {
-            result += getHierarchySeparator();
         }
         return result;
     }
@@ -122,11 +114,11 @@ public class NamespaceHelper {
         return getReferenceName(tail);
     }
 
-    public static String getReference(String path, String name) {
+    public static String getReference(String parentReference, String name) {
         String result = "";
         boolean needsSeparator = false;
-        if ((path != null) && !path.isEmpty()) {
-            result += path;
+        if ((parentReference != null) && !parentReference.isEmpty()) {
+            result += parentReference;
             needsSeparator = true;
         }
         if ((name != null) && !name.isEmpty()) {

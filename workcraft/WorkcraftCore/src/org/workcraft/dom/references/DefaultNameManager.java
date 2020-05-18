@@ -57,7 +57,7 @@ public class DefaultNameManager implements NameManager {
             if (!isUnusedName(name)) {
                 throw new ArgumentException("The name '" + name + "' is unavailable.");
             }
-            if (!Identifier.isName(name) && !Identifier.isInternal(name)) {
+            if (!Identifier.isName(name) && !Identifier.isInternal(name) && !Identifier.isNamespace(name)) {
                 throw new ArgumentException("The name '" + name + "' is invalid identifier.");
             }
             nodes.removeValue(node);
@@ -98,7 +98,7 @@ public class DefaultNameManager implements NameManager {
         Integer count = getPrefixCount(prefix);
         String name;
         do {
-            name = prefix + count++;
+            name = Identifier.createName(prefix, count++);
         } while (!isUnusedName(name));
         setPrefixCount(prefix, count);
         setName(node, name);

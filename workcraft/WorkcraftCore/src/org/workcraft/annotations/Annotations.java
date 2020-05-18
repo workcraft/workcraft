@@ -62,7 +62,14 @@ public class Annotations {
         if (annotation == null) {
             return null;
         }
-        return annotation.isInternal() ? Identifier.createInternal(annotation.value()) : annotation.value();
+        String value = annotation.value();
+        if (annotation.isInternal()) {
+            value = Identifier.createInternal(value);
+        }
+        if (annotation.isNamespace()) {
+            value = Identifier.createNamespace(value);
+        }
+        return value;
     }
 
 }

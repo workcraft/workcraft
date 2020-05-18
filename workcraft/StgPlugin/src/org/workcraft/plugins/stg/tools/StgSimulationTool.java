@@ -517,8 +517,8 @@ public class StgSimulationTool extends PetriSimulationTool {
             final String name = NamespaceHelper.getReferenceName(ref);
             final String nameWithoutInstance = LabelParser.getTransitionName(name);
             if (nameWithoutInstance != null) {
-                final String path = NamespaceHelper.getReferencePath(ref);
-                result = path + nameWithoutInstance;
+                String parentRef = NamespaceHelper.getParentReference(ref);
+                result = NamespaceHelper.getReference(parentRef, nameWithoutInstance);
             }
         }
         return result;
