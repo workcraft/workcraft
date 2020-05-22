@@ -52,8 +52,8 @@ public class SignalAssertionVerificationCommand extends org.workcraft.commands.A
 
         TextPresetDialog dialog = new TextPresetDialog(mainWindow, "Signal assertion", presetManager);
         dialog.addHelpButton(new File("help/assertion.html"));
-        dialog.addCheckAction(event -> MpsatUtils.checkSyntax(we, dialog.getTextArea(),
-                convertDataToVerificationParameters(dialog.getTextArea().getText())));
+        dialog.addCheckerButton(event -> MpsatUtils.checkSyntax(we, dialog.getCodePanel(),
+                convertDataToVerificationParameters(dialog.getCodePanel().getText())));
 
         if (dialog.reveal()) {
             preservedData = dialog.getPresetData();

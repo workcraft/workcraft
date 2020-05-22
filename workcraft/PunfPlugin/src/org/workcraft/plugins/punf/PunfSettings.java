@@ -21,7 +21,6 @@ public class PunfSettings extends AbstractToolSettings {
     private static final String keyUseMciCsc = prefix + ".useMciCsc";
     private static final String keyLtl2tgbaCommand = prefix + ".ltl2tgbaCommand";
     private static final String keyShowSpotInMenu = prefix + ".showSpotInMenu";
-    private static final String keyVerboseSyntaxCheck = prefix + ".verboseSyntaxCheck";
 
     private static final String defaultCommand = BackendUtils.getToolPath("UnfoldingTools", "punf");
     private static final String defaultArgs = "-r";
@@ -30,7 +29,6 @@ public class PunfSettings extends AbstractToolSettings {
     private static final Boolean defaultUseMciCsc = true;
     private static final String defaultLtl2tgbaCommand = BackendUtils.getToolPath("Spot", "ltl2tgba");
     private static final Boolean defaultShowSpotInMenu = false;
-    private static final Boolean defaultVerboseSyntaxCheck = false;
 
     private static String command = defaultCommand;
     private static String args = defaultArgs;
@@ -39,7 +37,6 @@ public class PunfSettings extends AbstractToolSettings {
     private static Boolean useMciCsc = defaultUseMciCsc;
     private static String ltl2tgbaCommand = defaultLtl2tgbaCommand;
     private static Boolean showSpotInMenu = defaultShowSpotInMenu;
-    private static Boolean verboseSyntaxCheck = defaultVerboseSyntaxCheck;
 
     static {
         properties.add(new PropertyDeclaration<>(String.class,
@@ -76,11 +73,6 @@ public class PunfSettings extends AbstractToolSettings {
                 "Enable SPOT input (experimental)",
                 PunfSettings::setShowSpotInMenu,
                 PunfSettings::getShowSpotInMenu));
-
-        properties.add(new PropertyDeclaration<>(Boolean.class,
-                "Verbose syntax check",
-                PunfSettings::setVerboseSyntaxCheck,
-                PunfSettings::getVerboseSyntaxCheck));
     }
 
     @Override
@@ -97,7 +89,6 @@ public class PunfSettings extends AbstractToolSettings {
         setUseMciCsc(config.getBoolean(keyUseMciCsc, defaultUseMciCsc));
         setLtl2tgbaCommand(config.getString(keyLtl2tgbaCommand, defaultLtl2tgbaCommand));
         setShowSpotInMenu(config.getBoolean(keyShowSpotInMenu, defaultShowSpotInMenu));
-        setVerboseSyntaxCheck(config.getBoolean(keyVerboseSyntaxCheck, defaultVerboseSyntaxCheck));
     }
 
     @Override
@@ -109,7 +100,6 @@ public class PunfSettings extends AbstractToolSettings {
         config.setBoolean(keyUseMciCsc, getUseMciCsc());
         config.set(keyLtl2tgbaCommand, getLtl2tgbaCommand());
         config.setBoolean(keyShowSpotInMenu, getShowSpotInMenu());
-        config.setBoolean(keyVerboseSyntaxCheck, getVerboseSyntaxCheck());
     }
 
     @Override
@@ -171,14 +161,6 @@ public class PunfSettings extends AbstractToolSettings {
 
     public static void setShowSpotInMenu(boolean value) {
         showSpotInMenu = value;
-    }
-
-    public static Boolean getVerboseSyntaxCheck() {
-        return verboseSyntaxCheck;
-    }
-
-    public static void setVerboseSyntaxCheck(Boolean value) {
-        verboseSyntaxCheck = value;
     }
 
 }

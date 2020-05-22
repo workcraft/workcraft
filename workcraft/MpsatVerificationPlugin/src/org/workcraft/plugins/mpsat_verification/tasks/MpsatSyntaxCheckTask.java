@@ -41,9 +41,8 @@ public class MpsatSyntaxCheckTask implements Task<ExternalProcessOutput> {
         // Option for exit early, after checking the predicate syntax
         command.add("-q");
 
-        boolean verboseSyntaxCheck = MpsatVerificationSettings.getVerboseSyntaxCheck();
-        boolean printStdout = MpsatVerificationSettings.getPrintStdout() && verboseSyntaxCheck;
-        boolean printStderr = MpsatVerificationSettings.getPrintStderr() && verboseSyntaxCheck;
+        boolean printStdout = MpsatVerificationSettings.getPrintStdout();
+        boolean printStderr = MpsatVerificationSettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
         SubtaskMonitor<? super ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);

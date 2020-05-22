@@ -225,4 +225,21 @@ public class TextUtils {
         return text.replaceAll(NEWLINE_REGEX, replacement);
     }
 
+    public static int getTextPosition(String text, int row, int col) {
+        int curRow = 1;
+        int curCol = 1;
+        for (int i = 0; i < text.length(); i++) {
+            if (curRow == row) {
+                if (curCol == col) {
+                    return i;
+                }
+                curCol++;
+            } else if (text.charAt(i) == '\n') {
+                curRow++;
+                curCol = 1;
+            }
+        }
+        return text.length();
+    }
+
 }

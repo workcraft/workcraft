@@ -40,9 +40,6 @@ public class PunfSettingsTest {
 
         Assertions.assertEquals(Config.toString(PunfSettings.getShowSpotInMenu()),
                 framework.getConfigVar(prefix + ".showSpotInMenu", false));
-
-        Assertions.assertEquals(Config.toString(PunfSettings.getVerboseSyntaxCheck()),
-                framework.getConfigVar(prefix + ".verboseSyntaxCheck", false));
     }
 
 }

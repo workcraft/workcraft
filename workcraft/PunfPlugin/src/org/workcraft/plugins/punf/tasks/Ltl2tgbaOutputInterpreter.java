@@ -30,9 +30,9 @@ public class Ltl2tgbaOutputInterpreter extends AbstractOutputInterpreter<Ltl2tgb
                     + "\n" + PropertyHelper.BULLET_PREFIX + "Rejected word: " + example.getSecond();
 
             if (isInteractive()) {
-                DialogUtils.showWarning(message);
+                DialogUtils.showError(message);
             } else {
-                LogUtils.logWarning(message);
+                LogUtils.logError(message);
             }
         }
     }

@@ -14,13 +14,14 @@ public abstract class PresetDialog<T> extends ModalDialog<PresetManager<T>> {
         super(owner, title, presetManager);
     }
 
-    public JButton addCheckAction(ActionListener action) {
-        return addAction("Check", action);
+    public JButton addCheckerButton(ActionListener action) {
+        return addButton("Check syntax", action, false);
     }
 
     public JButton addHelpButton(File helpFile) {
-        return addButton("Help", event -> DesktopApi.open(helpFile));
+        return addButton("Help", event -> DesktopApi.open(helpFile), true);
     }
 
     public abstract T getPresetData();
+
 }

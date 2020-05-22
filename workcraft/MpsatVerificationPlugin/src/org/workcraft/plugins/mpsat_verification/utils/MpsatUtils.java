@@ -3,6 +3,7 @@ package org.workcraft.plugins.mpsat_verification.utils;
 import org.w3c.dom.Document;
 import org.workcraft.Framework;
 import org.workcraft.dom.references.ReferenceHelper;
+import org.workcraft.gui.controls.CodePanel;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.presets.MpsatDataSerialiser;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
@@ -16,32 +17,14 @@ import org.workcraft.presets.PresetManager;
 import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.FileUtils;
-import org.workcraft.utils.GuiUtils;
-import org.workcraft.utils.TextUtils;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class MpsatUtils {
-
-    private static final Pattern SYNTAX_ERROR_PATTERN = Pattern.compile(
-            "Error: incorrect syntax of the expression: (.+) \\(located at (\\d+).(\\d+)(-(\\d+))?\\)\\R",
-            Pattern.UNIX_LINES);
-
-    private static final int MESSAGE_GROUP = 1;
-    private static final int LINE_GROUP = 2;
-    private static final int START_GROUP = 3;
-    private static final int END_GROUP = 5;
-
-    private static final Pattern UNEXPECTED_MESSAGE_PATTERN = Pattern.compile("^syntax error, unexpected '(.+)'$");
-    private static final Pattern UNDECLARED_MESSAGE_PATTERN = Pattern.compile("^Undeclared identifier: (.+)$");
 
     public static  String getToolchainDescription(String title) {
         String result = "MPSat tool chain";
@@ -88,7 +71,7 @@ public class MpsatUtils {
                 data, true);
     }
 
-    public static void checkSyntax(WorkspaceEntry we, JTextArea textArea, VerificationParameters verificationParameters) {
+    public static void checkSyntax(WorkspaceEntry we, CodePanel codePanel, VerificationParameters verificationParameters) {
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
 
@@ -97,67 +80,15 @@ public class MpsatUtils {
         Result<? extends ExternalProcessOutput> result = manager.execute(task, "Checking REACH assertion syntax");
 
         if (result.isSuccess()) {
-            DialogUtils.showInfo("Property is syntactically correct.");
+            String message = "Property is syntactically correct";
+            codePanel.showInfoStatus(message);
+            LogUtils.logInfo(message);
         }
 
         if (result.isFailure()) {
-            String message = "Syntax error in REACH expression";
-            Matcher matcher = SYNTAX_ERROR_PATTERN.matcher(result.getPayload().getStderrString());
-            if (matcher.find()) {
-                String detail = processDetail(matcher.group(MESSAGE_GROUP));
-                String lineStr = matcher.group(LINE_GROUP);
-                String fromStr = matcher.group(START_GROUP);
-                String toStr = matcher.group(END_GROUP);
-                int line = Integer.valueOf(lineStr);
-                int pos = Integer.valueOf(fromStr);
-                int len = toStr == null ? 1 : Integer.valueOf(toStr) - pos;
-                message += ":\n" + detail + "\n\nHighlight the problem in editor?";
-
-                if (DialogUtils.showConfirmError(message)) {
-                    int fromPos = getTextAreaPosition(textArea, line, pos);
-                    int toPos = fromPos + len;
-                    GuiUtils.highlightText(textArea, fromPos, toPos);
-                    textArea.setCaretPosition(fromPos);
-                }
-                textArea.requestFocus();
-            } else {
-                Throwable cause = result.getCause();
-                if (cause != null) {
-                    message += ".\n\n" + cause.toString();
-                }
-                DialogUtils.showError(message);
-            }
+            SyntaxUtils.processBisonSyntaxError("Error: incorrect syntax of the expression: ",
+                    result.getPayload(), codePanel);
         }
-    }
-
-    private static String processDetail(String detail) {
-        Matcher unexpectedMessageMatcher = UNEXPECTED_MESSAGE_PATTERN.matcher(detail);
-        if (unexpectedMessageMatcher.find()) {
-            return "unexpected '" + unexpectedMessageMatcher.group(1) + "'";
-        }
-        Matcher undeclaredMessageMatcher = UNDECLARED_MESSAGE_PATTERN.matcher(detail);
-        if (undeclaredMessageMatcher.find()) {
-            return "undeclared identifier '" + undeclaredMessageMatcher.group(1) + "'";
-        }
-        return detail;
-    }
-
-    private static int getTextAreaPosition(JTextArea textArea, int row, int col) {
-        String text = textArea.getText();
-        int curRow = 1;
-        int curCol = 1;
-        for (int i = 0; i < text.length(); i++) {
-            if (curRow == row) {
-                if (curCol == col) {
-                    return i;
-                }
-                curCol++;
-            } else if (text.charAt(i) == '\n') {
-                curRow++;
-                curCol = 1;
-            }
-        }
-        return text.length();
     }
 
 }

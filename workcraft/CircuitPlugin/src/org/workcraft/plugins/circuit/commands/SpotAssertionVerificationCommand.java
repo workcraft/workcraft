@@ -57,7 +57,7 @@ public class SpotAssertionVerificationCommand extends AbstractVerificationComman
 
         TextPresetDialog dialog = new TextPresetDialog(mainWindow, "SPOT assertion", presetManager);
         dialog.addHelpButton(new File("https://spot.lrde.epita.fr/tl.pdf"));
-        dialog.addCheckAction(event -> SpotUtils.checkSyntax(we, dialog.getTextArea()));
+        dialog.addCheckerButton(event -> SpotUtils.checkSyntax(we, dialog.getCodePanel()));
 
         if (dialog.reveal()) {
             preservedData = dialog.getPresetData();

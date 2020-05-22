@@ -36,7 +36,6 @@ public class PresetManagerPanel<T> extends JPanel {
 
     public PresetManagerPanel(PresetManager<T> presetManager, DataMapper<T> guiMapper) {
         super();
-
         this.guiMapper = guiMapper;
         this.presetManager = presetManager;
         initialise();

@@ -11,17 +11,30 @@ import java.awt.event.KeyEvent;
 public class ModalDialog<T> extends JDialog {
 
     private final T userData;
-    private JButton okButton;
+    private final JButton okButton;
+    private final JPanel leftButtonsPanel;
+    private final JPanel rightButtonsPanel;
     private boolean modalResult;
-    private final JPanel actionPanel;
-    private final JPanel buttonsPanel;
-
 
     public ModalDialog(Window owner, String title, T userData) {
         super(owner, title, ModalityType.DOCUMENT_MODAL);
         this.userData = userData;
-        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 
+        leftButtonsPanel = GuiUtils.createDialogButtonsPanel();
+        rightButtonsPanel = GuiUtils.createDialogButtonsPanel();
+        okButton = addButton("OK", event -> okAction(), true);
+        addButton("Cancel", event -> cancelAction(), true);
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel.add(leftButtonsPanel, BorderLayout.WEST);
+        bottomPanel.add(rightButtonsPanel, BorderLayout.EAST);
+
+        JPanel panel = new JPanel(new BorderLayout(SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
+        panel.setBorder(GuiUtils.getEmptyBorder());
+        panel.add(createContentPanel(), BorderLayout.CENTER);
+        panel.add(bottomPanel, BorderLayout.SOUTH);
+        setContentPane(panel);
+
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         getRootPane().setDefaultButton(okButton);
         getRootPane().registerKeyboardAction(event -> okAction(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
@@ -31,21 +44,9 @@ public class ModalDialog<T> extends JDialog {
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-        buttonsPanel = createButtonsPanel();
-        actionPanel = createActionPanel();
-        JPanel bottomPanel = new JPanel(new BorderLayout());
-        bottomPanel.add(actionPanel, BorderLayout.WEST);
-        bottomPanel.add(buttonsPanel, BorderLayout.EAST);
-
-        JPanel panel = new JPanel(new BorderLayout(SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
-        panel.setBorder(GuiUtils.getEmptyBorder());
-        panel.add(createContentPanel(), BorderLayout.CENTER);
-        panel.add(bottomPanel, BorderLayout.SOUTH);
-        setContentPane(panel);
-
         pack();
         Dimension dimension = getSize();
-        setMinimumSize(SizeHelper.getFitScreenDimension(dimension, 0.3f, 0.3f));
+        setMinimumSize(SizeHelper.getFitScreenDimension(dimension, 0.3f, 0.4f));
         setSize(SizeHelper.getFitScreenDimension(dimension, 0.5f, 0.5f));
         setLocationRelativeTo(owner);
     }
@@ -56,42 +57,14 @@ public class ModalDialog<T> extends JDialog {
         return panel;
     }
 
-    public JPanel createActionPanel() {
-        return GuiUtils.createDialogActionPanel();
-    }
-
-    public JPanel getActionPanel() {
-        return actionPanel;
-    }
-
-    public JButton addAction(String text, ActionListener action) {
+    public JButton addButton(String text, ActionListener action, boolean rightAlignment) {
         JButton button = GuiUtils.createDialogButton(text);
         button.addActionListener(action);
-        getActionPanel().add(button);
-        return button;
-    }
-
-    public JPanel createButtonsPanel() {
-        JPanel buttonsPanel = GuiUtils.createDialogButtonsPanel();
-        okButton = GuiUtils.createDialogButton("OK");
-        okButton.addActionListener(event -> okAction());
-
-        JButton cancelButton = GuiUtils.createDialogButton("Cancel");
-        cancelButton.addActionListener(event -> cancelAction());
-
-        buttonsPanel.add(okButton);
-        buttonsPanel.add(cancelButton);
-        return buttonsPanel;
-    }
-
-    public JPanel getButtonsPanel() {
-        return buttonsPanel;
-    }
-
-    public JButton addButton(String text, ActionListener action) {
-        JButton button = GuiUtils.createDialogButton(text);
-        button.addActionListener(action);
-        getButtonsPanel().add(button);
+        if (rightAlignment) {
+            rightButtonsPanel.add(button);
+        } else {
+            leftButtonsPanel.add(button);
+        }
         return button;
     }
 

@@ -20,6 +20,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.font.LineMetrics;
 import java.awt.image.BufferedImage;
@@ -308,21 +309,19 @@ public class GuiUtils {
         highlightText(textArea, fromPos, toPos, color, false);
     }
 
-    public static void highlightText(JTextArea textArea, int fromPos, int toPos) {
-        highlightText(textArea, fromPos, toPos, Color.PINK);
+    public static void highlightText(JTextComponent textComponent, int fromPos, int toPos, Color color) {
+        highlightText(textComponent, fromPos, toPos, color, true);
     }
 
-    public static void highlightText(JTextArea textArea, int fromPos, int toPos, Color color) {
-        highlightText(textArea, fromPos, toPos, color, true);
-    }
+    private static void highlightText(JTextComponent textComponent, int fromPos, int toPos, Color color,
+            boolean drawsLayeredHighlights) {
 
-    private static void highlightText(JTextArea textArea, int fromPos, int toPos, Color color, boolean drawsLayeredHighlights) {
-        if ((color != null) && (textArea != null) && (toPos > fromPos)) {
-            DefaultHighlighter highlighter = (DefaultHighlighter) textArea.getHighlighter();
+        if ((color != null) && (textComponent != null) && (toPos > fromPos)) {
+            DefaultHighlighter highlighter = (DefaultHighlighter) textComponent.getHighlighter();
             highlighter.setDrawsLayeredHighlights(drawsLayeredHighlights);
             Highlighter.HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(color);
             try {
-                highlighter.addHighlight(Math.max(fromPos, 0), Math.min(toPos, textArea.getText().length()), painter);
+                highlighter.addHighlight(Math.max(fromPos, 0), Math.min(toPos, textComponent.getText().length()), painter);
             } catch (BadLocationException e) {
             }
         }

@@ -1,6 +1,6 @@
 package org.workcraft.presets;
 
-import org.workcraft.gui.controls.FlatTextArea;
+import org.workcraft.gui.controls.CodePanel;
 import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
@@ -9,13 +9,11 @@ import java.awt.*;
 public class TextPresetDialog extends PresetDialog<String> {
 
     private PresetManagerPanel<String> presetPanel;
-    private FlatTextArea textArea;
+    private CodePanel codePanel;
 
     public TextPresetDialog(Window owner, String title, PresetManager<String> presetManager) {
         super(owner, title, presetManager);
         presetPanel.selectFirst();
-        textArea.setCaretPosition(0);
-        textArea.requestFocus();
     }
 
     @Override
@@ -33,15 +31,12 @@ public class TextPresetDialog extends PresetDialog<String> {
         DataMapper<String> guiMapper = new DataMapper<String>() {
             @Override
             public void applyDataToControls(String data) {
-                textArea.setText(data);
-                textArea.setCaretPosition(0);
-                textArea.requestFocus();
-                textArea.discardEditHistory();
+                codePanel.setText(data);
             }
 
             @Override
             public String getDataFromControls() {
-                return textArea.getText();
+                return codePanel.getText();
             }
         };
 
@@ -49,20 +44,19 @@ public class TextPresetDialog extends PresetDialog<String> {
     }
 
     private JPanel createTextPanel() {
-        textArea = new FlatTextArea(4);
-        JScrollPane scrollPane = new JScrollPane(textArea);
+        codePanel = new CodePanel(4);
         JPanel panel = new JPanel(GuiUtils.createBorderLayout());
-        panel.add(scrollPane, BorderLayout.CENTER);
+        panel.add(codePanel, BorderLayout.CENTER);
         return panel;
     }
 
     @Override
     public String getPresetData() {
-        return textArea.getText();
+        return codePanel.getText();
     }
 
-    public JTextArea getTextArea() {
-        return textArea;
+    public CodePanel getCodePanel() {
+        return codePanel;
     }
 
 }
