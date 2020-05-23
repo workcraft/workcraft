@@ -15,17 +15,15 @@ matrix:
       env: TARGET=test
       services: xvfb
     - os: osx
-      osx_image: xcode9.2
+      osx_image: xcode11
       env: TARGET=test
 
-before_install:
-  - if [ $TARGET = test ]; then
-        if [ $TRAVIS_OS_NAME = osx ]; then
-            brew update; brew install clasp;
-        else
-            sudo apt-get -qq update; sudo apt-get install -y clasp;
-        fi
-    fi
+addons:
+  apt:
+    packages: clasp
+  homebrew:
+    packages: clasp
+
 install:
   - ./gradlew assemble
 
