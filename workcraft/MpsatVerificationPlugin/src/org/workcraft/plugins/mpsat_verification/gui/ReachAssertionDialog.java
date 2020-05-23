@@ -64,16 +64,6 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
     private PresetManagerPanel<VerificationParameters> createPresetPanel() {
         MpsatPresetManager presetManager = getUserData();
         if (presetManager.isAllowStgPresets()) {
-            addExample(presetManager, "Deadlock freeness",
-                    VerificationMode.REACHABILITY,
-                    "// All transitions are not enabled\n" +
-                            "forall t in TRANSITIONS { ~@t }");
-
-            addExample(presetManager, "Mutual exclusion of places",
-                    VerificationMode.REACHABILITY,
-                    "// Places p and q are mutually exclusive\n"
-                            + "$P\"p\" & $P\"q\"");
-        } else {
             addExample(presetManager, "Mutual exclusion of arbiter grants",
                     VerificationMode.STG_REACHABILITY,
                     "// Arbiter grants are mutually exclusive\n"
@@ -86,6 +76,16 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
                     VerificationMode.STG_REACHABILITY,
                     "// Signals u and v are mutually exclusive\n"
                             + "$S\"u\" & $S\"v\"");
+        } else {
+            addExample(presetManager, "Deadlock freeness",
+                    VerificationMode.REACHABILITY,
+                    "// All transitions are not enabled\n" +
+                            "forall t in TRANSITIONS { ~@t }");
+
+            addExample(presetManager, "Mutual exclusion of places",
+                    VerificationMode.REACHABILITY,
+                    "// Places p and q are mutually exclusive\n"
+                            + "$P\"p\" & $P\"q\"");
         }
 
         DataMapper<VerificationParameters> guiMapper = new DataMapper<VerificationParameters>() {
