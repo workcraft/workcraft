@@ -1,7 +1,7 @@
 package org.workcraft.dom.visual;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.TransformChangedEvent;
@@ -31,9 +31,9 @@ public class VisualNodeTests {
                 }
             }
         });
-        Assert.assertFalse("already hit o_O", hit[0]);
+        Assertions.assertFalse(hit[0], "already hit o_O");
         node.setX(8);
-        Assert.assertTrue("not hit", hit[0]);
+        Assertions.assertTrue(hit[0], "not hit");
     }
 
     @Test
@@ -88,11 +88,11 @@ public class VisualNodeTests {
     @Test
     public void testGetPath() {
         VisualGroup root = createGroup(null);
-        Assert.assertEquals(1, Hierarchy.getPath(root).length);
+        Assertions.assertEquals(1, Hierarchy.getPath(root).length);
         VisualGroup node1 = createGroup(root);
-        Assert.assertArrayEquals(new VisualGroup[]{root, node1}, Hierarchy.getPath(node1));
+        Assertions.assertArrayEquals(new VisualGroup[]{root, node1}, Hierarchy.getPath(node1));
         VisualGroup node2 = createGroup(node1);
-        Assert.assertArrayEquals(new VisualGroup[]{root, node1, node2}, Hierarchy.getPath(node2));
+        Assertions.assertArrayEquals(new VisualGroup[]{root, node1, node2}, Hierarchy.getPath(node2));
     }
 
     @Test
@@ -105,25 +105,25 @@ public class VisualNodeTests {
         VisualGroup node21 = createGroup(node2);
         VisualGroup node22 = createGroup(node2);
 
-        Assert.assertEquals(root, Hierarchy.getCommonParent(node1, node2));
-        Assert.assertEquals(root, Hierarchy.getCommonParent(node1, node21));
-        Assert.assertEquals(root, Hierarchy.getCommonParent(node1, node22));
+        Assertions.assertEquals(root, Hierarchy.getCommonParent(node1, node2));
+        Assertions.assertEquals(root, Hierarchy.getCommonParent(node1, node21));
+        Assertions.assertEquals(root, Hierarchy.getCommonParent(node1, node22));
 
-        Assert.assertEquals(root, Hierarchy.getCommonParent(node11, node2));
-        Assert.assertEquals(root, Hierarchy.getCommonParent(node11, node21));
-        Assert.assertEquals(root, Hierarchy.getCommonParent(node11, node22));
+        Assertions.assertEquals(root, Hierarchy.getCommonParent(node11, node2));
+        Assertions.assertEquals(root, Hierarchy.getCommonParent(node11, node21));
+        Assertions.assertEquals(root, Hierarchy.getCommonParent(node11, node22));
 
-        Assert.assertEquals(root, Hierarchy.getCommonParent(node12, node2));
-        Assert.assertEquals(root, Hierarchy.getCommonParent(node12, node21));
-        Assert.assertEquals(root, Hierarchy.getCommonParent(node12, node22));
+        Assertions.assertEquals(root, Hierarchy.getCommonParent(node12, node2));
+        Assertions.assertEquals(root, Hierarchy.getCommonParent(node12, node21));
+        Assertions.assertEquals(root, Hierarchy.getCommonParent(node12, node22));
 
-        Assert.assertEquals(node1, Hierarchy.getCommonParent(node11, node1));
+        Assertions.assertEquals(node1, Hierarchy.getCommonParent(node11, node1));
 
-        Assert.assertEquals(node1, Hierarchy.getCommonParent(node11, node12));
-        Assert.assertEquals(node11, Hierarchy.getCommonParent(node11, node11));
+        Assertions.assertEquals(node1, Hierarchy.getCommonParent(node11, node12));
+        Assertions.assertEquals(node11, Hierarchy.getCommonParent(node11, node11));
 
-        Assert.assertEquals(node1, Hierarchy.getCommonParent(node12, node11));
-        Assert.assertEquals(node12, Hierarchy.getCommonParent(node12, node12));
+        Assertions.assertEquals(node1, Hierarchy.getCommonParent(node12, node11));
+        Assertions.assertEquals(node12, Hierarchy.getCommonParent(node12, node12));
     }
 
     private void ensureShiftX(VisualGroup node, VisualGroup ancestor, double i) {
@@ -138,7 +138,7 @@ public class VisualNodeTests {
     }
 
     private void asserArrayEquals(double[] expected, double[] actual) {
-        Assert.assertEquals(expected.length, actual.length);
+        Assertions.assertEquals(expected.length, actual.length);
         for (int i = 0; i < expected.length; i++) {
             assertClose(expected[i], actual[i]);
         }
@@ -146,7 +146,7 @@ public class VisualNodeTests {
 
     private void assertClose(double expected, double actual) {
         double eps = 1e-6;
-        Assert.assertTrue("Expected: " + expected + ", actual: " + actual, expected - eps <= actual && expected + eps >= actual);
+        Assertions.assertTrue(expected - eps <= actual && expected + eps >= actual, "Expected: " + expected + ", actual: " + actual);
     }
 
 }

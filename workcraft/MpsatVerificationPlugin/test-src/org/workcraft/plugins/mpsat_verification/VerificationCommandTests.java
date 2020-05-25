@@ -1,8 +1,8 @@
 package org.workcraft.plugins.mpsat_verification;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.mpsat_verification.commands.*;
@@ -18,7 +18,7 @@ import java.net.URL;
 
 public class VerificationCommandTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -163,46 +163,46 @@ public class VerificationCommandTests {
         WorkspaceEntry we = framework.loadWork(url.getFile());
 
         CombinedVerificationCommand combinedCommand = new CombinedVerificationCommand();
-        Assert.assertEquals(combined, combinedCommand.execute(we));
+        Assertions.assertEquals(combined, combinedCommand.execute(we));
 
         ConsistencyVerificationCommand consistencyCommand = new ConsistencyVerificationCommand();
-        Assert.assertEquals(consistency, consistencyCommand.execute(we));
+        Assertions.assertEquals(consistency, consistencyCommand.execute(we));
 
         DeadlockFreenessVerificationCommand deadlockCommand = new DeadlockFreenessVerificationCommand();
-        Assert.assertEquals(deadlockFreeness, deadlockCommand.execute(we));
+        Assertions.assertEquals(deadlockFreeness, deadlockCommand.execute(we));
 
         InputPropernessVerificationCommand inputPropernessCommand = new InputPropernessVerificationCommand();
-        Assert.assertEquals(inputProperness, inputPropernessCommand.execute(we));
+        Assertions.assertEquals(inputProperness, inputPropernessCommand.execute(we));
 
         OutputPersistencyVerificationCommand persistencyCommand = new OutputPersistencyVerificationCommand();
-        Assert.assertEquals(outputPersistency, persistencyCommand.execute(we));
+        Assertions.assertEquals(outputPersistency, persistencyCommand.execute(we));
 
         OutputDeterminacyVerificationCommand determinacyCommand = new OutputDeterminacyVerificationCommand();
-        Assert.assertEquals(outputDeterminacy, determinacyCommand.execute(we));
+        Assertions.assertEquals(outputDeterminacy, determinacyCommand.execute(we));
 
         CscVerificationCommand cscCommand = new CscVerificationCommand();
-        Assert.assertEquals(csc, cscCommand.execute(we));
+        Assertions.assertEquals(csc, cscCommand.execute(we));
 
         UscVerificationCommand uscCommand = new UscVerificationCommand();
-        Assert.assertEquals(usc, uscCommand.execute(we));
+        Assertions.assertEquals(usc, uscCommand.execute(we));
 
         DiInterfaceVerificationCommand diInterfaceCommand = new DiInterfaceVerificationCommand();
-        Assert.assertEquals(diInterface, diInterfaceCommand.execute(we));
+        Assertions.assertEquals(diInterface, diInterfaceCommand.execute(we));
 
         NormalcyVerificationCommand normalcyCommand = new NormalcyVerificationCommand();
-        Assert.assertEquals(normalcy, normalcyCommand.execute(we));
+        Assertions.assertEquals(normalcy, normalcyCommand.execute(we));
 
         MutexImplementabilityVerificationCommand mutexImplementabilityCommand = new MutexImplementabilityVerificationCommand();
         StgSettings.setMutexProtocol(Mutex.Protocol.RELAXED);
-        Assert.assertEquals(mutexImplementabilityRelaxed, mutexImplementabilityCommand.execute(we));
+        Assertions.assertEquals(mutexImplementabilityRelaxed, mutexImplementabilityCommand.execute(we));
 
         StgSettings.setMutexProtocol(Mutex.Protocol.STRICT);
-        Assert.assertEquals(mutexImplementabilityStrict, mutexImplementabilityCommand.execute(we));
+        Assertions.assertEquals(mutexImplementabilityStrict, mutexImplementabilityCommand.execute(we));
 
         ConformationVerificationCommand conformationCommand = new ConformationVerificationCommand();
         if (envToConform != null) {
             URL envUrl = classLoader.getResource(envToConform);
-            Assert.assertEquals(conformation, conformationCommand.execute(we, conformationCommand.deserialiseData(envUrl.getFile())));
+            Assertions.assertEquals(conformation, conformationCommand.execute(we, conformationCommand.deserialiseData(envUrl.getFile())));
         }
     }
 

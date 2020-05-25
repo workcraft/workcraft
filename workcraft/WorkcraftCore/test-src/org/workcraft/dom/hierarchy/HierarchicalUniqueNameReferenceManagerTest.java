@@ -1,7 +1,7 @@
 package org.workcraft.dom.hierarchy;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.workcraft.types.Pair;
 
 import java.util.HashMap;
@@ -26,7 +26,7 @@ public class HierarchicalUniqueNameReferenceManagerTest {
             String reference = en.getKey();
             String head = en.getValue().getFirst();
             String answer = NamespaceHelper.getReferenceHead(reference);
-            Assert.assertEquals(head, answer);
+            Assertions.assertEquals(head, answer);
         }
     }
 
@@ -36,7 +36,7 @@ public class HierarchicalUniqueNameReferenceManagerTest {
             String reference = en.getKey();
             String tail = en.getValue().getSecond();
             String answer = NamespaceHelper.getReferenceTail(reference);
-            Assert.assertEquals(tail, answer);
+            Assertions.assertEquals(tail, answer);
         }
     }
 
@@ -58,7 +58,7 @@ public class HierarchicalUniqueNameReferenceManagerTest {
             String reference = en.getKey();
             String path = en.getValue();
             String answer = NamespaceHelper.getReferencePath(reference);
-            Assert.assertEquals(path, answer);
+            Assertions.assertEquals(path, answer);
         }
     }
 

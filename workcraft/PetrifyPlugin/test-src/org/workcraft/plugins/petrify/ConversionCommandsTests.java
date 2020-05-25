@@ -1,8 +1,8 @@
 package org.workcraft.plugins.petrify;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.petrify.commands.CscConflictResolutionCommand;
@@ -20,7 +20,7 @@ import java.util.Set;
 
 public class ConversionCommandsTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -64,10 +64,10 @@ public class ConversionCommandsTests {
             }
         }
 
-        Assert.assertEquals(srcInputs, dstInputs);
-        Assert.assertEquals(srcOutputs, dstOutputs);
-        Assert.assertEquals(srcInternals, dstInternals);
-        Assert.assertEquals(dstToggleCount, 0);
+        Assertions.assertEquals(srcInputs, dstInputs);
+        Assertions.assertEquals(srcOutputs, dstOutputs);
+        Assertions.assertEquals(srcInternals, dstInternals);
+        Assertions.assertEquals(dstToggleCount, 0);
     }
 
     @Test
@@ -100,9 +100,9 @@ public class ConversionCommandsTests {
         Set<String> dstOutputs = dstStg.getSignalReferences(Signal.Type.OUTPUT);
         Set<String> dstInternals = dstStg.getSignalReferences(Signal.Type.INTERNAL);
 
-        Assert.assertEquals(srcInputs, dstInputs);
-        Assert.assertEquals(srcOutputs, dstOutputs);
-        Assert.assertEquals(srcInternals, dstInternals);
+        Assertions.assertEquals(srcInputs, dstInputs);
+        Assertions.assertEquals(srcOutputs, dstOutputs);
+        Assertions.assertEquals(srcInternals, dstInternals);
     }
 
 }

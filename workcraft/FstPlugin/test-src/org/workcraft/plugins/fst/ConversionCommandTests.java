@@ -1,8 +1,8 @@
 package org.workcraft.plugins.fst;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.fsm.Fsm;
@@ -18,7 +18,7 @@ import java.net.URL;
 
 public class ConversionCommandTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -43,27 +43,27 @@ public class ConversionCommandTests {
         WorkspaceEntry stgWe = fstToStgConversionCommand.execute(srcWe);
         Stg stg = WorkspaceUtils.getAs(stgWe, Stg.class);
 
-        Assert.assertEquals(src.getStates().size(), stg.getPlaces().size());
+        Assertions.assertEquals(src.getStates().size(), stg.getPlaces().size());
         for (Signal signal : src.getSignals()) {
             String signalRef = src.getNodeReference(signal);
-            Assert.assertEquals(src.getSignalEvents(signal).size(), stg.getSignalTransitions(signalRef).size());
+            Assertions.assertEquals(src.getSignalEvents(signal).size(), stg.getSignalTransitions(signalRef).size());
         }
 
         FstToFsmConversionCommand fstToFsmConversionCommand = new FstToFsmConversionCommand();
         WorkspaceEntry fsmWe = fstToFsmConversionCommand.execute(srcWe);
         Fsm fsm = WorkspaceUtils.getAs(fsmWe, Fsm.class);
 
-        Assert.assertEquals(src.getStates().size(), fsm.getStates().size());
-        Assert.assertEquals(src.getEvents().size(), fsm.getEvents().size());
+        Assertions.assertEquals(src.getStates().size(), fsm.getStates().size());
+        Assertions.assertEquals(src.getEvents().size(), fsm.getEvents().size());
 
         FsmToFstConversionCommand fsmToFstConversionCommand = new FsmToFstConversionCommand();
         WorkspaceEntry fstWe = fsmToFstConversionCommand.execute(srcWe);
         Fst fst = WorkspaceUtils.getAs(fstWe, Fst.class);
 
-        Assert.assertEquals(src.getStates().size(), fst.getStates().size());
-        Assert.assertEquals(src.getEvents().size(), fst.getEvents().size());
-        Assert.assertEquals(0, getSignalCount(fst));
-        Assert.assertEquals(getSignalCount(src), fst.getSignals(Signal.Type.DUMMY).size());
+        Assertions.assertEquals(src.getStates().size(), fst.getStates().size());
+        Assertions.assertEquals(src.getEvents().size(), fst.getEvents().size());
+        Assertions.assertEquals(0, getSignalCount(fst));
+        Assertions.assertEquals(getSignalCount(src), fst.getSignals(Signal.Type.DUMMY).size());
 
         framework.closeWork(srcWe);
         framework.closeWork(stgWe);

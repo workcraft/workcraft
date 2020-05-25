@@ -2,14 +2,12 @@ package org.workcraft.gui;
 
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.builtin.settings.LogCommonSettings;
+import org.workcraft.utils.GuiUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.PopupUtils;
 
 import javax.swing.*;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
-import javax.swing.text.DefaultHighlighter;
-import javax.swing.text.Highlighter;
 import java.awt.*;
 import java.io.*;
 
@@ -90,28 +88,28 @@ public class OutputWindow extends JPanel {
         }
 
         private void print(String text) {
-            Highlighter.HighlightPainter painter = null;
+            Color highlightColor = null;
             LogType type = oldType;
             if (LogUtils.isInfoText(text)) {
                 type = LogType.INFO;
-                painter = new DefaultHighlighter.DefaultHighlightPainter(LogCommonSettings.getInfoBackground());
+                highlightColor = LogCommonSettings.getInfoBackground();
             } else if (LogUtils.isWarningText(text)) {
                 type = LogType.WARNING;
-                painter = new DefaultHighlighter.DefaultHighlightPainter(LogCommonSettings.getWarningBackground());
+                highlightColor = LogCommonSettings.getWarningBackground();
             } else if (LogUtils.isErrorText(text)) {
                 type = LogType.ERROR;
-                painter = new DefaultHighlighter.DefaultHighlightPainter(LogCommonSettings.getErrorBackground());
+                highlightColor = LogCommonSettings.getErrorBackground();
             } else if (LogUtils.isStdoutText(text)) {
                 type = LogType.STDOUT;
                 text = LogUtils.getTextWithoutPrefix(text);
-                painter = new DefaultHighlighter.DefaultHighlightPainter(LogCommonSettings.getStdoutBackground());
+                highlightColor = LogCommonSettings.getStdoutBackground();
             } else if (LogUtils.isStderrText(text)) {
                 type = LogType.STDERR;
                 text = LogUtils.getTextWithoutPrefix(text);
-                painter = new DefaultHighlighter.DefaultHighlightPainter(LogCommonSettings.getStderrBackground());
+                highlightColor = LogCommonSettings.getStderrBackground();
             } else if (!"\n".equals(text)) {
                 type = null;
-                painter = new DefaultHighlighter.DefaultHighlightPainter(target.getBackground());
+                highlightColor = target.getBackground();
             }
 
             if ((oldType != null) && (oldType != type) && needsNewLine) {
@@ -129,14 +127,7 @@ public class OutputWindow extends JPanel {
             target.setForeground(textColor);
             target.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
 
-            if ((painter != null) && (toPos > fromPos)) {
-                try {
-                    DefaultHighlighter highlighter = (DefaultHighlighter) target.getHighlighter();
-                    highlighter.setDrawsLayeredHighlights(false);
-                    highlighter.addHighlight(fromPos, toPos, painter);
-                } catch (BadLocationException e) {
-                }
-            }
+            GuiUtils.highlightLines(target, fromPos, toPos, highlightColor);
         }
     }
 

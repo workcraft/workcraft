@@ -1,16 +1,16 @@
 package org.workcraft.plugins.cpog.sat;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.plugins.cpog.CpogSettings;
 import org.workcraft.plugins.cpog.encoding.Encoding;
 import org.workcraft.plugins.cpog.encoding.onehot.OneHotNumberProvider;
 
-@Ignore // This only works with MINISAT solver which is not supported in Travis OSX
+@Disabled // This only works with MINISAT solver which is not supported in Travis OSX
 public class ForcedVarsSolverTests {
 
     private static final boolean DEBUG = false;
@@ -30,9 +30,9 @@ public class ForcedVarsSolverTests {
         Encoding solution = createSolver().solve(scenarios, free, derived);
         printSolution(solution);
         if (solutionExists) {
-            Assert.assertNotNull(solution);
+            Assertions.assertNotNull(solution);
         } else {
-            Assert.assertNull(solution);
+            Assertions.assertNull(solution);
         }
     }
 
@@ -57,7 +57,7 @@ public class ForcedVarsSolverTests {
         }
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setSatSolver() {
         CpogSettings.setSatSolver(CpogSettings.SatSolver.MINISAT);
     }

@@ -1,8 +1,8 @@
 package org.workcraft.plugins.fst;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.Info;
 import org.workcraft.exceptions.DeserialisationException;
@@ -19,7 +19,7 @@ import java.net.URL;
 
 public class ExportTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -45,7 +45,7 @@ public class ExportTests {
 
         File sgFile = new File(directory, "export.sg");
         framework.exportModel(me, sgFile, SgFormat.getInstance());
-        Assert.assertEquals(sgHeader, FileUtils.readHeaderUtf8(sgFile, sgHeader.length()));
+        Assertions.assertEquals(sgHeader, FileUtils.readHeaderUtf8(sgFile, sgHeader.length()));
 
         framework.closeWork(we);
         FileUtils.deleteOnExitRecursively(directory);

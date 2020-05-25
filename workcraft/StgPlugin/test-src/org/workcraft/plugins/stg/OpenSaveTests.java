@@ -2,9 +2,9 @@ package org.workcraft.plugins.stg;
 
 import java.net.URL;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.utils.PackageUtils;
@@ -12,7 +12,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class OpenSaveTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -30,7 +30,7 @@ public class OpenSaveTests {
         URL srcUrl = classLoader.getResource(workName);
 
         WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
-        Assert.assertFalse(srcWe.isChanged());
+        Assertions.assertFalse(srcWe.isChanged());
         framework.closeWork(srcWe);
     }
 

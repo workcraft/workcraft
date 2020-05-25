@@ -1,8 +1,8 @@
 package org.workcraft.plugins.mpsat_verification;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.mpsat_verification.commands.PlaceRedundancyVerificationCommand;
@@ -16,7 +16,7 @@ import java.net.URL;
 
 public class PlaceRedundancyVerificationCommandTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -50,7 +50,7 @@ public class PlaceRedundancyVerificationCommandTest {
 
         PlaceRedundancyVerificationCommand command = new PlaceRedundancyVerificationCommand();
 
-        Assert.assertEquals(redundant, command.execute(we, command.deserialiseData(refs)));
+        Assertions.assertEquals(redundant, command.execute(we, command.deserialiseData(refs)));
     }
 
 }

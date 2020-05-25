@@ -1,8 +1,8 @@
 package org.workcraft.plugins.circuit;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
@@ -20,7 +20,7 @@ import java.util.Set;
 
 public class ImportExportTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -103,9 +103,9 @@ public class ImportExportTests {
         } catch (IOException | SerialisationException e) {
         }
 
-        Assert.assertEquals(wInputs, vInputs);
-        Assert.assertEquals(wOutputs, vOutputs);
-        Assert.assertEquals(wGates, vGates);
+        Assertions.assertEquals(wInputs, vInputs);
+        Assertions.assertEquals(wOutputs, vOutputs);
+        Assertions.assertEquals(wGates, vGates);
 
         if (verilogName != null) {
             URL sUrl = classLoader.getResource(verilogName);
@@ -116,9 +116,9 @@ public class ImportExportTests {
             Set<String> sGates = new HashSet<>();
             countNodes(sWe, sInputs, sOutputs, sGates);
 
-            Assert.assertEquals(wInputs, sInputs);
-            Assert.assertEquals(wOutputs, sOutputs);
-            Assert.assertEquals(wGates, sGates);
+            Assertions.assertEquals(wInputs, sInputs);
+            Assertions.assertEquals(wOutputs, sOutputs);
+            Assertions.assertEquals(wGates, sGates);
 
             framework.closeWork(sWe);
         }

@@ -1,7 +1,7 @@
 package org.workcraft.plugins.cpog.encoding;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.FreeVariable;
 import org.workcraft.formula.visitors.StringGenerator;
@@ -14,14 +14,14 @@ public class BinaryNumberProviderTests {
         p.generate("x", 25);
         BooleanFormula formula = p.getConstraints();
         String str = StringGenerator.toString(formula);
-        Assert.assertEquals("(xb4 * xb3 * (xb2' * xb1' * xb0')')'", str);
+        Assertions.assertEquals("(xb4 * xb3 * (xb2' * xb1' * xb0')')'", str);
     }
 
     @Test
     public void testValuesCount() {
         BinaryNumberProvider p = new BinaryNumberProvider();
         BinaryIntBooleanFormula num = p.generate("", 9);
-        Assert.assertEquals(9, num.getValuesCount());
+        Assertions.assertEquals(9, num.getValuesCount());
     }
 
     @Test
@@ -40,7 +40,7 @@ public class BinaryNumberProviderTests {
         f[8] = new FreeVariable("i");
         BooleanFormula formula = p.select(f, num);
         String str = formula.accept(new StringGenerator());
-        Assert.assertEquals("((b3 * b2' * b1' * b0' * i)' * (b3' * ((b2 * ((b1 * ((b0 * h)' * (b0' * g)')')' * (b1' * ((b0 * f)' * (b0' * e)')')')')' * (b2' * ((b1 * ((b0 * d)' * (b0' * c)')')' * (b1' * ((b0 * b)' * (b0' * a)')')')')')')')'", str);
+        Assertions.assertEquals("((b3 * b2' * b1' * b0' * i)' * (b3' * ((b2 * ((b1 * ((b0 * h)' * (b0' * g)')')' * (b1' * ((b0 * f)' * (b0' * e)')')')')' * (b2' * ((b1 * ((b0 * d)' * (b0' * c)')')' * (b1' * ((b0 * b)' * (b0' * a)')')')')')')')'", str);
     }
 
     @Test
@@ -49,14 +49,14 @@ public class BinaryNumberProviderTests {
         p.generate("x", 2);
         BooleanFormula formula = p.getConstraints();
         String str = formula.accept(new StringGenerator());
-        Assert.assertEquals("1", str);
+        Assertions.assertEquals("1", str);
     }
 
     @Test
     public void testZeroBitEmptyConstraint() {
         BinaryNumberProvider p = new BinaryNumberProvider();
         p.generate("", 1);
-        Assert.assertEquals("1", p.getConstraints().accept(new StringGenerator()));
+        Assertions.assertEquals("1", p.getConstraints().accept(new StringGenerator()));
     }
 
     @Test
@@ -66,7 +66,7 @@ public class BinaryNumberProviderTests {
         BooleanFormula[] f = new BooleanFormula[1];
         f[0] = new FreeVariable("x");
         BooleanFormula result = p.select(f, num);
-        Assert.assertEquals("x", result.accept(new StringGenerator()));
+        Assertions.assertEquals("x", result.accept(new StringGenerator()));
     }
 
     @Test
@@ -78,7 +78,7 @@ public class BinaryNumberProviderTests {
         f[1] = new FreeVariable("y");
         BooleanFormula result = p.select(f, num);
         String str = result.accept(new StringGenerator());
-        Assert.assertEquals("((b0 * y)' * (b0' * x)')'", str);
+        Assertions.assertEquals("((b0 * y)' * (b0' * x)')'", str);
     }
 
     @Test
@@ -91,7 +91,7 @@ public class BinaryNumberProviderTests {
         f[2] = new FreeVariable("z");
         BooleanFormula result = p.select(f, num);
         String str = result.accept(new StringGenerator());
-        Assert.assertEquals("((b1 * b0' * z)' * (b1' * ((b0 * y)' * (b0' * x)')')')'", str);
+        Assertions.assertEquals("((b1 * b0' * z)' * (b1' * ((b0 * y)' * (b0' * x)')')')'", str);
     }
 
 }

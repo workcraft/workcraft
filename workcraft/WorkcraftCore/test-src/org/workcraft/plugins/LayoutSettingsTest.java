@@ -1,8 +1,8 @@
 package org.workcraft.plugins;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Config;
 import org.workcraft.Framework;
 import org.workcraft.plugins.builtin.settings.DotLayoutSettings;
@@ -10,7 +10,7 @@ import org.workcraft.plugins.builtin.settings.RandomLayoutSettings;
 
 public class LayoutSettingsTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -22,19 +22,19 @@ public class LayoutSettingsTest {
         final Framework framework = Framework.getInstance();
         String prefix = "DotLayoutSettings";
 
-        Assert.assertEquals(Config.toString(DotLayoutSettings.getCommand()),
+        Assertions.assertEquals(Config.toString(DotLayoutSettings.getCommand()),
                 framework.getConfigVar(prefix + ".command", false));
 
-        Assert.assertEquals(Config.toString(DotLayoutSettings.getRankdir()),
+        Assertions.assertEquals(Config.toString(DotLayoutSettings.getRankdir()),
                 framework.getConfigVar(prefix + ".rankdir", false));
 
-        Assert.assertEquals(Config.toString(DotLayoutSettings.getNodesep()),
+        Assertions.assertEquals(Config.toString(DotLayoutSettings.getNodesep()),
                 framework.getConfigVar(prefix + ".sepNodesep", false));
 
-        Assert.assertEquals(Config.toString(DotLayoutSettings.getRanksep()),
+        Assertions.assertEquals(Config.toString(DotLayoutSettings.getRanksep()),
                 framework.getConfigVar(prefix + ".sepRanksep", false));
 
-        Assert.assertEquals(Config.toString(DotLayoutSettings.getImportConnectionsShape()),
+        Assertions.assertEquals(Config.toString(DotLayoutSettings.getImportConnectionsShape()),
                 framework.getConfigVar(prefix + ".importConnectionsShape", false));
     }
 
@@ -43,16 +43,16 @@ public class LayoutSettingsTest {
         final Framework framework = Framework.getInstance();
         String prefix = "RandomLayoutSettings";
 
-        Assert.assertEquals(Config.toString(RandomLayoutSettings.getStartX()),
+        Assertions.assertEquals(Config.toString(RandomLayoutSettings.getStartX()),
                 framework.getConfigVar(prefix + ".startX", false));
 
-        Assert.assertEquals(Config.toString(RandomLayoutSettings.getStartY()),
+        Assertions.assertEquals(Config.toString(RandomLayoutSettings.getStartY()),
                 framework.getConfigVar(prefix + ".startY", false));
 
-        Assert.assertEquals(Config.toString(RandomLayoutSettings.getRangeX()),
+        Assertions.assertEquals(Config.toString(RandomLayoutSettings.getRangeX()),
                 framework.getConfigVar(prefix + ".rangeX", false));
 
-        Assert.assertEquals(Config.toString(RandomLayoutSettings.getRangeY()),
+        Assertions.assertEquals(Config.toString(RandomLayoutSettings.getRangeY()),
                 framework.getConfigVar(prefix + ".rangeY", false));
     }
 

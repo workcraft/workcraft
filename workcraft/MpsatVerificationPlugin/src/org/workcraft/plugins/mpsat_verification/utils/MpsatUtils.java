@@ -1,19 +1,26 @@
 package org.workcraft.plugins.mpsat_verification.utils;
 
 import org.w3c.dom.Document;
+import org.workcraft.Framework;
 import org.workcraft.dom.references.ReferenceHelper;
+import org.workcraft.gui.controls.CodePanel;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.presets.MpsatDataSerialiser;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.tasks.MpsatSyntaxCheckTask;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.presets.PresetManager;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.TextUtils;
+import org.workcraft.tasks.ExternalProcessOutput;
+import org.workcraft.tasks.Result;
+import org.workcraft.tasks.TaskManager;
+import org.workcraft.utils.*;
+import org.workcraft.workspace.WorkspaceEntry;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -62,6 +69,26 @@ public class MpsatUtils {
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount(),
                 data, true);
+    }
+
+    public static void checkSyntax(WorkspaceEntry we, CodePanel codePanel, VerificationParameters verificationParameters) {
+        String prefix = FileUtils.getTempPrefix(we.getTitle());
+        File directory = FileUtils.createTempDirectory(prefix);
+
+        MpsatSyntaxCheckTask task = new MpsatSyntaxCheckTask(verificationParameters, directory);
+        TaskManager manager = Framework.getInstance().getTaskManager();
+        Result<? extends ExternalProcessOutput> result = manager.execute(task, "Checking REACH assertion syntax");
+
+        if (result.isSuccess()) {
+            String message = "Property is syntactically correct";
+            codePanel.showInfoStatus(message);
+            LogUtils.logInfo(message);
+        }
+
+        if (result.isFailure()) {
+            SyntaxUtils.processBisonSyntaxError("Error: incorrect syntax of the expression: ",
+                    result.getPayload(), codePanel);
+        }
     }
 
 }

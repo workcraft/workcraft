@@ -268,14 +268,7 @@ public class MainWindowActions {
             });
 
     public static final Action HELP_EMAIL_ACTION = new Action("Contact developers by e-mail",
-            () -> {
-                try {
-                    URI uri = new URI("mailto", Info.getEmail(), null);
-                    DesktopApi.browse(uri);
-                } catch (URISyntaxException e) {
-                    LogUtils.logError(e.getMessage());
-                }
-            });
+            () -> DesktopApi.mail(Info.getEmail(), "", ""));
 
     public static final Action HELP_ABOUT_ACTION = new Action("About Workcraft",
             () -> new AboutDialog(Framework.getInstance().getMainWindow()).reveal());

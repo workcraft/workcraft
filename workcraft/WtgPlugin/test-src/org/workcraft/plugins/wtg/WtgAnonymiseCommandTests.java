@@ -1,8 +1,8 @@
 package org.workcraft.plugins.wtg;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.builtin.commands.AnonymiseTransformationCommand;
@@ -17,7 +17,7 @@ import java.util.HashSet;
 
 public class WtgAnonymiseCommandTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -47,18 +47,18 @@ public class WtgAnonymiseCommandTests {
         for (State state : wtg.getStates()) {
             actualStateRefs.add(wtg.getNodeReference(state));
         }
-        Assert.assertEquals(expectedStateRefs, actualStateRefs);
+        Assertions.assertEquals(expectedStateRefs, actualStateRefs);
 
         HashSet<String> expectedWaveformRefs = new HashSet<>(Arrays.asList(waveformRefs));
         HashSet<String> actualWaveformRefs = new HashSet<>();
         for (Waveform waveform : wtg.getWaveforms()) {
             actualWaveformRefs.add(wtg.getNodeReference(waveform));
         }
-        Assert.assertEquals(expectedWaveformRefs, actualWaveformRefs);
+        Assertions.assertEquals(expectedWaveformRefs, actualWaveformRefs);
 
         HashSet<String> expectedSignalRefs = new HashSet<>(Arrays.asList(signalRefs));
         Collection<String> actualSignalRefs = wtg.getSignalNames();
-        Assert.assertEquals(expectedSignalRefs, actualSignalRefs);
+        Assertions.assertEquals(expectedSignalRefs, actualSignalRefs);
 
         framework.closeWork(we);
     }

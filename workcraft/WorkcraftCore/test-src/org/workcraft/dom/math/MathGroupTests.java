@@ -1,7 +1,7 @@
 package org.workcraft.dom.math;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.NodesAddedEvent;
@@ -44,18 +44,18 @@ public class MathGroupTests {
         });
 
         group.add(n1);
-        Assert.assertTrue(receivedAddNotification1);
+        Assertions.assertTrue(receivedAddNotification1);
         group.add(n2);
-        Assert.assertTrue(receivedAddNotification2);
+        Assertions.assertTrue(receivedAddNotification2);
 
-        Assert.assertEquals(group.getChildren().size(), 2);
+        Assertions.assertEquals(group.getChildren().size(), 2);
 
         group.remove(n2);
-        Assert.assertTrue(receivedRemoveNotification2);
+        Assertions.assertTrue(receivedRemoveNotification2);
         group.remove(n1);
-        Assert.assertTrue(receivedRemoveNotification1);
+        Assertions.assertTrue(receivedRemoveNotification1);
 
-        Assert.assertEquals(group.getChildren().size(), 0);
+        Assertions.assertEquals(group.getChildren().size(), 0);
 
         receivedAddNotification1 = false;
         receivedAddNotification2 = false;

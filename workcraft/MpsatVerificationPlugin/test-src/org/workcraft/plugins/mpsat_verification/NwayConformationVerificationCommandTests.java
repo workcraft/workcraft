@@ -1,8 +1,8 @@
 package org.workcraft.plugins.mpsat_verification;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.mpsat_verification.commands.NwayConformationVerificationCommand;
@@ -17,7 +17,7 @@ import java.util.List;
 
 public class NwayConformationVerificationCommandTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -76,7 +76,7 @@ public class NwayConformationVerificationCommandTests {
     private void testConformationNwayVerificationCommand(Boolean result, String... workNames) {
         String data = String.join(" ", getPaths(workNames));
         NwayConformationVerificationCommand command = new NwayConformationVerificationCommand();
-        Assert.assertEquals(result, command.execute(null, command.deserialiseData(data)));
+        Assertions.assertEquals(result, command.execute(null, command.deserialiseData(data)));
     }
 
 }

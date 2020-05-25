@@ -1,8 +1,8 @@
 package org.workcraft.plugins.circuit;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class ImportHierarchyTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -53,7 +53,7 @@ public class ImportHierarchyTests {
 
         String expectedVerilog = FileUtils.readAllText(vFile);
         String actualVerilog = FileUtils.readAllText(vOutFile);
-        Assert.assertEquals(getModuleData(expectedVerilog), getModuleData(actualVerilog));
+        Assertions.assertEquals(getModuleData(expectedVerilog), getModuleData(actualVerilog));
 
         framework.closeWork(we);
         FileUtils.deleteOnExitRecursively(tmpDirectory);

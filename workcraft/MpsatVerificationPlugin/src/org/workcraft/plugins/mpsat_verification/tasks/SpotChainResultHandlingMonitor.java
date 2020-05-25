@@ -68,9 +68,9 @@ public class SpotChainResultHandlingMonitor extends AbstractResultHandlingMonito
             Result<? extends PunfOutput> punfResult = (chainOutput == null) ? null : chainOutput.getPunfResult();
             if ((ltl2tgbaResult != null) && (ltl2tgbaResult.isFailure())) {
                 message += "\n\nCould not derive B\u00FCchi automaton.";
-                Throwable exportCause = ltl2tgbaResult.getCause();
-                if (exportCause != null) {
-                    message += ERROR_CAUSE_PREFIX + exportCause.toString();
+                Throwable ltl2tgbaCause = ltl2tgbaResult.getCause();
+                if (ltl2tgbaCause != null) {
+                    message += ERROR_CAUSE_PREFIX + ltl2tgbaCause.toString();
                 }
             } else  if ((exportResult != null) && (exportResult.isFailure())) {
                 message += "\n\nCould not export the model as a .g file.";

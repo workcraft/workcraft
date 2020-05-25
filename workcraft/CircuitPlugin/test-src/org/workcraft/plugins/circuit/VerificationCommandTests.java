@@ -1,8 +1,8 @@
 package org.workcraft.plugins.circuit;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.commands.*;
@@ -17,7 +17,7 @@ import java.net.URL;
 
 public class VerificationCommandTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -133,19 +133,19 @@ public class VerificationCommandTests {
         WorkspaceEntry we = framework.loadWork(url.getFile());
 
         ConformationVerificationCommand conformationCommand = new ConformationVerificationCommand();
-        Assert.assertEquals(conformation, conformationCommand.execute(we));
+        Assertions.assertEquals(conformation, conformationCommand.execute(we));
 
         DeadlockFreenessVerificationCommand deadlockFreenessCommand = new DeadlockFreenessVerificationCommand();
-        Assert.assertEquals(deadlockFreeness, deadlockFreenessCommand.execute(we));
+        Assertions.assertEquals(deadlockFreeness, deadlockFreenessCommand.execute(we));
 
         OutputPersistencyVerificationCommand outputPersistencyCommand = new OutputPersistencyVerificationCommand();
-        Assert.assertEquals(outputPersistency, outputPersistencyCommand.execute(we));
+        Assertions.assertEquals(outputPersistency, outputPersistencyCommand.execute(we));
 
         StrictImplementationVerificationCommand strictImplementationCommand = new StrictImplementationVerificationCommand();
-        Assert.assertEquals(strictImplementation, strictImplementationCommand.execute(we));
+        Assertions.assertEquals(strictImplementation, strictImplementationCommand.execute(we));
 
         BinateImplementationVerificationCommand binateImplementationCommand = new BinateImplementationVerificationCommand();
-        Assert.assertEquals(binateImplementation, binateImplementationCommand.execute(we));
+        Assertions.assertEquals(binateImplementation, binateImplementationCommand.execute(we));
 
         framework.closeWork(we);
     }

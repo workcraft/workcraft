@@ -1,8 +1,8 @@
 package org.workcraft.plugins.petrify;
 
-import org.junit.Assume;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.CircuitSettings;
@@ -17,7 +17,7 @@ import org.workcraft.utils.PackageUtils;
 
 public class SynthesisCommandsTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -128,7 +128,7 @@ public class SynthesisCommandsTests {
     @Test
     public void duplicatorCscHierStandardCelementSynthesis() {
         // FIXME: Skip this test on Windows as petrify.exe produces significantly different circuit
-        Assume.assumeFalse(DesktopApi.getOs().isWindows());
+        Assumptions.assumeFalse(DesktopApi.getOs().isWindows());
         String workName = PackageUtils.getPackagePath(getClass(), "duplicator-hier-csc.stg.work");
         testStandardCelementSynthesisCommand(workName, 8, 9);
     }

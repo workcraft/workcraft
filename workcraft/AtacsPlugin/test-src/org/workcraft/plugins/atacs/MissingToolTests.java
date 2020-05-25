@@ -1,8 +1,8 @@
 package org.workcraft.plugins.atacs;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.atacs.commands.ComplexGateSynthesisCommand;
@@ -14,7 +14,7 @@ import java.net.URL;
 
 public class MissingToolTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -33,7 +33,7 @@ public class MissingToolTests {
         URL url = classLoader.getResource(workName);
         WorkspaceEntry we = framework.loadWork(url.getFile());
         ComplexGateSynthesisCommand command = new ComplexGateSynthesisCommand();
-        Assert.assertNull(command.execute(we));
+        Assertions.assertNull(command.execute(we));
     }
 
 }

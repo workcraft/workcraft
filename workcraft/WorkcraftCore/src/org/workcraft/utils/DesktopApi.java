@@ -11,15 +11,38 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 public class DesktopApi {
 
-    public static boolean browse(URI uri) {
+    public static boolean mail(String email, String subject, String body) {
+        try {
+            String ssp = email + "?subject=" + replaceMailto(subject) + "&body=" + replaceMailto(body);
+            URI uri = new URI("mailto", ssp, null);
+            return mail(uri);
+        } catch (URISyntaxException e) {
+            LogUtils.logError(e.getMessage());
+        }
+        return false;
+    }
+
+    private static String replaceMailto(String s) {
+        return s == null ? "" : s.replace("?", "%3F").replace("&", "%26");
+    }
+
+    public static boolean mail(URI uri) {
+        if (mailDesktop(uri)) return true;
         if (openSystemSpecific(uri.toString())) return true;
+        LogUtils.logError("Cannot open a mailer for '" + uri.toString() + "'");
+        return false;
+    }
+
+    public static boolean browse(URI uri) {
         if (browseDesktop(uri)) return true;
+        if (openSystemSpecific(uri.toString())) return true;
         LogUtils.logError("Cannot open a browser for '" + uri.toString() + "'");
         return false;
     }
@@ -36,6 +59,18 @@ public class DesktopApi {
         if (openSystemSpecific(file.getPath())) return true;
         LogUtils.logError("Cannot open an editor for '" + file.getPath() + "'");
         return false;
+    }
+
+    private static boolean mailDesktop(URI uri) {
+        try {
+            if (!Desktop.isDesktopSupported() || !Desktop.getDesktop().isSupported(Desktop.Action.MAIL)) {
+                return false;
+            }
+            Desktop.getDesktop().mail(uri);
+            return true;
+        } catch (Throwable t) {
+            return false;
+        }
     }
 
     private static boolean browseDesktop(URI uri) {

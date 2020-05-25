@@ -1,8 +1,8 @@
 package org.workcraft.plugins.wtg;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.builtin.commands.BasicStatisticsCommand;
@@ -14,7 +14,7 @@ import java.net.URL;
 
 public class WtgTransformationCommandTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -52,7 +52,7 @@ public class WtgTransformationCommandTests {
         command.execute(we);
 
         String afterStats = statCommand.getStatistics(we);
-        Assert.assertEquals(beforeStats, afterStats);
+        Assertions.assertEquals(beforeStats, afterStats);
 
         framework.closeWork(we);
     }

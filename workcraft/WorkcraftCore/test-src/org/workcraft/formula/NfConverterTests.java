@@ -1,7 +1,7 @@
 package org.workcraft.formula;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.workcraft.formula.cnf.CnfGenerator;
 import org.workcraft.formula.dnf.DnfGenerator;
 import org.workcraft.formula.workers.DumbBooleanWorker;
@@ -32,7 +32,7 @@ public class NfConverterTests {
     }
 
     private void testDnfConverter(String[][] s, BooleanFormula f) {
-        Assert.assertEquals(SetUtils.convertArraysToSets(s), ClauseUtils.getLiteralSets(DnfGenerator.generate(f)));
+        Assertions.assertEquals(SetUtils.convertArraysToSets(s), ClauseUtils.getLiteralSets(DnfGenerator.generate(f)));
     }
 
     @Test
@@ -44,7 +44,7 @@ public class NfConverterTests {
     }
 
     private void testCnfConverter(String[][] s, BooleanFormula f) {
-        Assert.assertEquals(SetUtils.convertArraysToSets(s), ClauseUtils.getLiteralSets(CnfGenerator.generate(f)));
+        Assertions.assertEquals(SetUtils.convertArraysToSets(s), ClauseUtils.getLiteralSets(CnfGenerator.generate(f)));
     }
 
 }

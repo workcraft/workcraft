@@ -1,7 +1,7 @@
 package org.workcraft.dom.visual;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.workcraft.dom.Node;
 
 import java.awt.geom.Point2D;
@@ -70,7 +70,7 @@ public class HitmanTests {
                         new DummyNode(),
                 }
         );
-        Assert.assertSame(toHit, HitMan.hitDeepest(new Point2D.Double(0.5, 0.5), node, HitableNode.class));
+        Assertions.assertSame(toHit, HitMan.hitDeepest(new Point2D.Double(0.5, 0.5), node, HitableNode.class));
     }
 
 }

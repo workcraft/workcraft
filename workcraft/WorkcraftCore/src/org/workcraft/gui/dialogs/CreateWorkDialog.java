@@ -78,6 +78,7 @@ public class CreateWorkDialog extends ModalDialog<Void> {
                     KeyStroke.getKeyStroke(keyCode, 0),
                     JComponent.WHEN_IN_FOCUSED_WINDOW);
         }
+        setOkEnableness(false);
     }
 
     private int getKeyCode(int index) {
@@ -178,13 +179,6 @@ public class CreateWorkDialog extends ModalDialog<Void> {
         boolean filterFavoritesState = FavoriteCommonSettings.getFilterFavorites();
         FavoriteCommonSettings.setFilterFavorites(!filterFavoritesState);
         fillModelList();
-    }
-
-    @Override
-    public JPanel createButtonsPanel() {
-        JPanel result = super.createButtonsPanel();
-        setOkEnableness(false);
-        return result;
     }
 
     private void okAction(int index) {

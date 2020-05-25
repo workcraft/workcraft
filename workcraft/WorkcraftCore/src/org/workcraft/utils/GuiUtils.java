@@ -17,6 +17,10 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.font.LineMetrics;
 import java.awt.image.BufferedImage;
@@ -37,6 +41,10 @@ public class GuiUtils {
         result.add(new JLabel(labelText), labelPosition);
         result.add(component, BorderLayout.CENTER);
         return result;
+    }
+
+    public static JPanel createDialogActionPanel() {
+        return new JPanel(new FlowLayout(FlowLayout.LEFT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
     }
 
     public static JPanel createDialogButtonsPanel() {
@@ -295,6 +303,28 @@ public class GuiUtils {
 
     public static Border getTableHeaderBorder() {
         return UIManager.getBorder("TableHeader.cellBorder");
+    }
+
+    public static void highlightLines(JTextArea textArea, int fromPos, int toPos, Color color) {
+        highlightText(textArea, fromPos, toPos, color, false);
+    }
+
+    public static void highlightText(JTextComponent textComponent, int fromPos, int toPos, Color color) {
+        highlightText(textComponent, fromPos, toPos, color, true);
+    }
+
+    private static void highlightText(JTextComponent textComponent, int fromPos, int toPos, Color color,
+            boolean drawsLayeredHighlights) {
+
+        if ((color != null) && (textComponent != null) && (toPos > fromPos)) {
+            DefaultHighlighter highlighter = (DefaultHighlighter) textComponent.getHighlighter();
+            highlighter.setDrawsLayeredHighlights(drawsLayeredHighlights);
+            Highlighter.HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(color);
+            try {
+                highlighter.addHighlight(Math.max(fromPos, 0), Math.min(toPos, textComponent.getText().length()), painter);
+            } catch (BadLocationException e) {
+            }
+        }
     }
 
 }

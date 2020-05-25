@@ -1,7 +1,7 @@
 package org.workcraft.plugins.stg.dom;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.workcraft.dom.DefaultNodeImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.ArgumentException;
@@ -41,7 +41,7 @@ public class InstanceManagerTests {
     public void testGetReferenceUnknown() {
         Map<Node, String> expectedRequests = new HashMap<>();
         final InstanceManager mgr = make(expectedRequests);
-        Assert.assertNull(mgr.getInstance(new DefaultNodeImpl(null)));
+        Assertions.assertNull(mgr.getInstance(new DefaultNodeImpl(null)));
     }
 
     @Test
@@ -57,9 +57,9 @@ public class InstanceManagerTests {
         mgr.assign(o1);
         mgr.assign(o2);
         mgr.assign(o3);
-        Assert.assertEquals(Pair.of("abc", 1), mgr.getInstance(o2));
-        Assert.assertEquals(Pair.of("qwe", 0), mgr.getInstance(o3));
-        Assert.assertEquals(Pair.of("abc", 0), mgr.getInstance(o1));
+        Assertions.assertEquals(Pair.of("abc", 1), mgr.getInstance(o2));
+        Assertions.assertEquals(Pair.of("qwe", 0), mgr.getInstance(o3));
+        Assertions.assertEquals(Pair.of("abc", 0), mgr.getInstance(o1));
     }
 
     @Test
@@ -77,15 +77,15 @@ public class InstanceManagerTests {
         mgr.assign(o1);
         mgr.assign(o2);
         mgr.assign(o3);
-        Assert.assertEquals(Pair.of("abc", 1), mgr.getInstance(o2));
-        Assert.assertEquals(Pair.of("qwe", 0), mgr.getInstance(o3));
-        Assert.assertEquals(Pair.of("abc", 0), mgr.getInstance(o1));
+        Assertions.assertEquals(Pair.of("abc", 1), mgr.getInstance(o2));
+        Assertions.assertEquals(Pair.of("qwe", 0), mgr.getInstance(o3));
+        Assertions.assertEquals(Pair.of("abc", 0), mgr.getInstance(o1));
 
         mgr.assign(o2, 1);
         mgr.assign(o2, 2);
         mgr.assign(o4);
 
-        Assert.assertEquals(Pair.of("abc", 1), mgr.getInstance(o4));
+        Assertions.assertEquals(Pair.of("abc", 1), mgr.getInstance(o4));
     }
 
     @Test
@@ -99,18 +99,18 @@ public class InstanceManagerTests {
         mgr.assign(o1);
         mgr.remove(o1);
         mgr.assign(o2);
-        Assert.assertEquals(Pair.of("abc", 0), mgr.getInstance(o2));
-        Assert.assertNull(mgr.getInstance(o1));
+        Assertions.assertEquals(Pair.of("abc", 0), mgr.getInstance(o2));
+        Assertions.assertNull(mgr.getInstance(o1));
     }
 
-    @Test(expected = ArgumentException.class)
+    @Test
     public void testDoubleAssign() {
         Map<Node, String> expectedRequests = new HashMap<>();
         Node o1 = new DefaultNodeImpl(null);
         expectedRequests.put(o1, "abc");
         final InstanceManager mgr = make(expectedRequests);
         mgr.assign(o1);
-        mgr.assign(o1);
+        Assertions.assertThrows(ArgumentException.class, () -> mgr.assign(o1));
     }
 
     @Test
@@ -120,10 +120,10 @@ public class InstanceManagerTests {
         expectedRequests.put(o1, "abc");
         final InstanceManager mgr = make(expectedRequests);
         mgr.assign(o1, 8);
-        Assert.assertEquals(Pair.of("abc", 8), mgr.getInstance(o1));
+        Assertions.assertEquals(Pair.of("abc", 8), mgr.getInstance(o1));
     }
 
-    @Test(expected = DuplicateIDException.class)
+    @Test
     public void testAssignForcedExistingId() {
         Map<Node, String> expectedRequests = new HashMap<>();
         Node o1 = new DefaultNodeImpl(null);
@@ -132,7 +132,7 @@ public class InstanceManagerTests {
         expectedRequests.put(o2, "abc");
         final InstanceManager mgr = make(expectedRequests);
         mgr.assign(o1, 8);
-        mgr.assign(o2, 8);
+        Assertions.assertThrows(DuplicateIDException.class, () -> mgr.assign(o2, 8));
     }
 
     @Test
@@ -144,7 +144,7 @@ public class InstanceManagerTests {
             }
         };
 
-        Assert.assertNull(mgr.getObject(Pair.of("o_O", 8)));
+        Assertions.assertNull(mgr.getObject(Pair.of("o_O", 8)));
     }
 
 }

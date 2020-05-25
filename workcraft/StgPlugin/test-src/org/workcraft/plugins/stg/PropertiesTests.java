@@ -1,8 +1,8 @@
 package org.workcraft.plugins.stg;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -13,7 +13,7 @@ import org.workcraft.gui.properties.ModelPropertyUtils;
 
 public class PropertiesTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -33,9 +33,9 @@ public class PropertiesTests {
         model.connect(inputTransition, dummyTransition);
 
         Node implicitPlace = model.getNodeByReference("<in1~,dum1>");
-        Assert.assertTrue(implicitPlace instanceof StgPlace);
+        Assertions.assertTrue(implicitPlace instanceof StgPlace);
         StgPlace stgPlace = (StgPlace) implicitPlace;
-        Assert.assertTrue(stgPlace.isImplicit());
+        Assertions.assertTrue(stgPlace.isImplicit());
 
         VisualStg visualModel = modelDescriptor.getVisualModelDescriptor().create(model);
 
@@ -69,7 +69,7 @@ public class PropertiesTests {
     }
 
     private void check(ModelProperties properties, int expectedCount) {
-        Assert.assertEquals(expectedCount, properties.getDescriptors().size());
+        Assertions.assertEquals(expectedCount, properties.getDescriptors().size());
     }
 
 }

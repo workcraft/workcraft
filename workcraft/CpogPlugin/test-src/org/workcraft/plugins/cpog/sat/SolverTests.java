@@ -1,6 +1,6 @@
 package org.workcraft.plugins.cpog.sat;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.workcraft.plugins.cpog.CpogSettings;
 import org.workcraft.plugins.cpog.encoding.Encoding;
 import org.workcraft.utils.DesktopApi;
@@ -16,12 +16,12 @@ public abstract class SolverTests {
         return null;
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void skipOnWindows() {
-        Assume.assumeFalse(DesktopApi.getOs().isWindows());
+        Assumptions.assumeFalse(DesktopApi.getOs().isWindows());
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setSatSolver() {
         CpogSettings.setSatSolver(CpogSettings.SatSolver.MINISAT);
     }
@@ -29,43 +29,44 @@ public abstract class SolverTests {
     @Test
     public void testSmall10() {
         Encoding solution = createSolver().solve(smallScenarios, 1, 0);
-        Assert.assertNull(solution);
+        Assertions.assertNull(solution);
     }
 
-    @Ignore @Test
+    @Disabled
+    @Test
     public void testSmall20() {
         Encoding solution = createSolver().solve(smallScenarios, 2, 0);
-        Assert.assertNull(solution);
+        Assertions.assertNull(solution);
     }
 
     @Test
     public void testSmall21() {
         Encoding solution = createSolver().solve(smallScenarios, 2, 1);
-        Assert.assertNotNull(solution);
+        Assertions.assertNotNull(solution);
     }
 
     @Test
     public void testSmall22() {
         Encoding solution = createSolver().solve(smallScenarios, 2, 2);
-        Assert.assertNotNull(solution);
+        Assertions.assertNotNull(solution);
     }
 
     @Test
     public void testSmall23() {
         Encoding solution = createSolver().solve(smallScenarios, 2, 3);
-        Assert.assertNotNull(solution);
+        Assertions.assertNotNull(solution);
     }
 
     @Test
     public void testSmall30() {
         Encoding solution = createSolver().solve(smallScenarios, 3, 0);
-        Assert.assertNotNull(solution);
+        Assertions.assertNotNull(solution);
     }
 
     @Test
     public void testXor() {
         Encoding solution = createSolver().solve(xorScenarios, 2, 1);
-        Assert.assertNull(solution);
+        Assertions.assertNull(solution);
     }
 
 }

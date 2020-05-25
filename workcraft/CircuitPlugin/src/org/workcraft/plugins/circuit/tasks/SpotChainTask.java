@@ -10,7 +10,7 @@ import org.workcraft.plugins.punf.tasks.Ltl2tgbaOutput;
 import org.workcraft.plugins.punf.tasks.Ltl2tgbaTask;
 import org.workcraft.plugins.punf.tasks.PunfLtlxTask;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
-import org.workcraft.plugins.punf.utils.Ltl2tgbaUtils;
+import org.workcraft.plugins.punf.utils.SpotUtils;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
@@ -18,6 +18,7 @@ import org.workcraft.plugins.stg.serialisation.SerialiserUtils;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
 import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.TextUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -49,7 +50,7 @@ public class SpotChainTask implements Task<SpotChainOutput> {
             File spotFile = new File(directory, "assertion.spot");
             spotFile.deleteOnExit();
             try {
-                FileUtils.dumpString(spotFile, data);
+                FileUtils.dumpString(spotFile, TextUtils.removeLinebreaks(data));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -65,7 +66,7 @@ public class SpotChainTask implements Task<SpotChainOutput> {
                 return Result.failure(new SpotChainOutput(ltl2tgbaResult, null, null, null));
             }
             // Failure if assertion is stutter-sensitive
-            if (Ltl2tgbaUtils.extraxtStutterExample(ltl2tgbaResult.getPayload()) != null) {
+            if (SpotUtils.extractStutterExample(ltl2tgbaResult.getPayload()) != null) {
                 return Result.failure(new SpotChainOutput(ltl2tgbaResult, null));
             }
             monitor.progressUpdate(0.1);

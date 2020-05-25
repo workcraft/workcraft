@@ -1,7 +1,7 @@
 package org.workcraft.utils;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
 import org.workcraft.types.Pair;
@@ -13,16 +13,16 @@ public class TraceUtilsTest {
 
     @Test
     public void hasTraceTest() {
-        Assert.assertFalse(new Solution(null, null).hasTrace());
-        Assert.assertTrue(new Solution(new Trace()).hasTrace());
-        Assert.assertTrue(new Solution(new Trace(), new Trace()).hasTrace());
-        Assert.assertTrue(new Solution(null, new Trace()).hasTrace());
+        Assertions.assertFalse(new Solution(null, null).hasTrace());
+        Assertions.assertTrue(new Solution(new Trace()).hasTrace());
+        Assertions.assertTrue(new Solution(new Trace(), new Trace()).hasTrace());
+        Assertions.assertTrue(new Solution(null, new Trace()).hasTrace());
     }
 
     @Test
     public void serialiseSolutionTest() {
-        Assert.assertNull(new Solution(null).toString());
-        Assert.assertEquals("[empty]", new Solution(new Trace()).toString());
+        Assertions.assertNull(new Solution(null).toString());
+        Assertions.assertEquals("[empty]", new Solution(new Trace()).toString());
         serialiseSolutionCheck(null, -1, null, -1, -1, null);
         serialiseSolutionCheck(Arrays.asList(""), 0, null, -1, -1, "");
         serialiseSolutionCheck(Arrays.asList("a", "b", "c"), 0, null, -1, -1, "a, b, c");
@@ -49,7 +49,7 @@ public class TraceUtilsTest {
         }
         Solution solution = new Solution(mainTrace, branchTrace);
         solution.setLoopPosition(loopPosition);
-        Assert.assertEquals(str, TraceUtils.serialiseSolution(solution));
+        Assertions.assertEquals(str, TraceUtils.serialiseSolution(solution));
     }
 
     @Test
@@ -66,53 +66,53 @@ public class TraceUtilsTest {
             List<String> branchTraceList, int branchPosition, int loopPosition) {
 
         Solution solution = TraceUtils.deserialiseSolution(str);
-        Assert.assertEquals(mainTraceList, solution.getMainTrace());
+        Assertions.assertEquals(mainTraceList, solution.getMainTrace());
         if (mainTraceList != null) {
-            Assert.assertEquals(mainPosition, solution.getMainTrace().getPosition());
+            Assertions.assertEquals(mainPosition, solution.getMainTrace().getPosition());
         }
-        Assert.assertEquals(branchTraceList, solution.getBranchTrace());
+        Assertions.assertEquals(branchTraceList, solution.getBranchTrace());
         if (branchTraceList != null) {
-            Assert.assertEquals(branchPosition, solution.getBranchTrace().getPosition());
+            Assertions.assertEquals(branchPosition, solution.getBranchTrace().getPosition());
         }
-        Assert.assertEquals(loopPosition, solution.getLoopPosition());
+        Assertions.assertEquals(loopPosition, solution.getLoopPosition());
     }
 
     @Test
     public void navigateTraceTest() {
         Trace trace = TraceUtils.deserialiseTrace("1: a, b, c");
-        Assert.assertTrue(trace.canProgress());
-        Assert.assertEquals("b", trace.getCurrent());
+        Assertions.assertTrue(trace.canProgress());
+        Assertions.assertEquals("b", trace.getCurrent());
 
         trace.incPosition();
-        Assert.assertTrue(trace.canProgress());
-        Assert.assertEquals("c", trace.getCurrent());
+        Assertions.assertTrue(trace.canProgress());
+        Assertions.assertEquals("c", trace.getCurrent());
 
         trace.incPosition();
-        Assert.assertFalse(trace.canProgress());
-        Assert.assertNull(trace.getCurrent());
+        Assertions.assertFalse(trace.canProgress());
+        Assertions.assertNull(trace.getCurrent());
 
         trace.decPosition();
-        Assert.assertEquals(2, trace.getPosition());
-        Assert.assertEquals("c", trace.getCurrent());
+        Assertions.assertEquals(2, trace.getPosition());
+        Assertions.assertEquals("c", trace.getCurrent());
 
         trace.remove(1);
-        Assert.assertTrue(trace.canProgress());
-        Assert.assertEquals(1, trace.getPosition());
-        Assert.assertEquals("c", trace.getCurrent());
+        Assertions.assertTrue(trace.canProgress());
+        Assertions.assertEquals(1, trace.getPosition());
+        Assertions.assertEquals("c", trace.getCurrent());
 
         trace.removeCurrent();
-        Assert.assertFalse(trace.canProgress());
-        Assert.assertEquals(1, trace.getPosition());
-        Assert.assertNull(trace.getCurrent());
+        Assertions.assertFalse(trace.canProgress());
+        Assertions.assertEquals(1, trace.getPosition());
+        Assertions.assertNull(trace.getCurrent());
 
         trace.setPosition(0);
-        Assert.assertEquals("a", trace.getCurrent());
+        Assertions.assertEquals("a", trace.getCurrent());
 
         trace.clear();
-        Assert.assertEquals(0, trace.getPosition());
-        Assert.assertFalse(trace.canProgress());
+        Assertions.assertEquals(0, trace.getPosition());
+        Assertions.assertFalse(trace.canProgress());
 
-        Assert.assertEquals("[empty]", trace.toString());
+        Assertions.assertEquals("[empty]", trace.toString());
     }
 
     @Test
@@ -127,17 +127,17 @@ public class TraceUtilsTest {
     private void processLoopEventCheck(String ref, boolean isFirst, boolean isLast) {
         String str = TraceUtils.addLoopDecoration(ref, isFirst, isLast);
         if (ref == null) {
-            Assert.assertNull(str);
+            Assertions.assertNull(str);
         } else {
-            Assert.assertNotEquals(ref, str);
+            Assertions.assertNotEquals(ref, str);
         }
 
         Pair<String, String> pair = TraceUtils.splitLoopDecoration(str);
-        Assert.assertEquals(ref, pair.getSecond());
+        Assertions.assertEquals(ref, pair.getSecond());
         if (ref == null) {
-            Assert.assertEquals("", pair.getFirst());
+            Assertions.assertEquals("", pair.getFirst());
         } else {
-            Assert.assertEquals(str, pair.getFirst() + pair.getSecond());
+            Assertions.assertEquals(str, pair.getFirst() + pair.getSecond());
         }
     }
 

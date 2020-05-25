@@ -1,7 +1,7 @@
 package org.workcraft.plugins.stg;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.workcraft.dom.Connection;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
@@ -46,9 +46,9 @@ public class ImportTests {
         ModelEntry importedEntry = ImportUtils.importFromFile(new StgImporter(), tempFile);
         Stg imported = (Stg) importedEntry.getModel();
 
-        Assert.assertEquals(6, Hierarchy.getChildrenOfType(imported.getRoot(), Transition.class).size());
-        Assert.assertEquals(2, Hierarchy.getChildrenOfType(imported.getRoot(), Place.class).size());
-        Assert.assertEquals(12, Hierarchy.getChildrenOfType(imported.getRoot(), Connection.class).size());
+        Assertions.assertEquals(6, Hierarchy.getChildrenOfType(imported.getRoot(), Transition.class).size());
+        Assertions.assertEquals(2, Hierarchy.getChildrenOfType(imported.getRoot(), Place.class).size());
+        Assertions.assertEquals(12, Hierarchy.getChildrenOfType(imported.getRoot(), Connection.class).size());
     }
 
     @Test
@@ -72,19 +72,19 @@ public class ImportTests {
         final InputStream stream = classLoader.getResourceAsStream(resourceName);
         StgModel stg = new StgImporter().importStg(stream);
 
-        Assert.assertEquals(transitionCount, stg.getTransitions().size());
-        Assert.assertEquals(dummyCount, stg.getDummyTransitions().size());
-        Assert.assertEquals(placeCount, stg.getPlaces().size());
+        Assertions.assertEquals(transitionCount, stg.getTransitions().size());
+        Assertions.assertEquals(dummyCount, stg.getDummyTransitions().size());
+        Assertions.assertEquals(placeCount, stg.getPlaces().size());
 
         int count = 0;
         for (Place place : stg.getPlaces()) {
             if (!((StgPlace) place).isImplicit()) count++;
         }
-        Assert.assertEquals(explicitPlaceCount, count);
+        Assertions.assertEquals(explicitPlaceCount, count);
 
         for (Transition t : stg.getTransitions()) {
-            Assert.assertTrue(stg.getPreset(t).size() > 0);
-            Assert.assertTrue(stg.getPostset(t).size() > 0);
+            Assertions.assertTrue(stg.getPreset(t).size() > 0);
+            Assertions.assertTrue(stg.getPostset(t).size() > 0);
         }
     }
 

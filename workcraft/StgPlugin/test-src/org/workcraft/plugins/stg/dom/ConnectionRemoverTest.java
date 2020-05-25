@@ -1,6 +1,6 @@
 package org.workcraft.plugins.stg.dom;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Dependent;
 import org.workcraft.dom.visual.VisualNode;

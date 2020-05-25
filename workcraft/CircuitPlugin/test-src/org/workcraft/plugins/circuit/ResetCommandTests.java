@@ -1,8 +1,8 @@
 package org.workcraft.plugins.circuit;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.commands.*;
@@ -14,7 +14,7 @@ import java.net.URL;
 
 public class ResetCommandTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -41,30 +41,30 @@ public class ResetCommandTests {
         WorkspaceEntry we = framework.loadWork(url.getFile());
 
         if (initNum >= 0) {
-            Assert.assertEquals(initNum, getForceInitCount(we));
+            Assertions.assertEquals(initNum, getForceInitCount(we));
         }
 
         new ForceInitClearAllTagCommand().execute(we);
-        Assert.assertEquals(0, getForceInitCount(we));
+        Assertions.assertEquals(0, getForceInitCount(we));
 
         if (inputNum >= 0) {
             new ForceInitInputPortsTagCommand().execute(we);
-            Assert.assertEquals(inputNum, getForceInitCount(we));
+            Assertions.assertEquals(inputNum, getForceInitCount(we));
         }
 
         if (problematicNum >= 0) {
             new ForceInitProblematicPinsTagCommand().execute(we);
-            Assert.assertEquals(problematicNum, getForceInitCount(we));
+            Assertions.assertEquals(problematicNum, getForceInitCount(we));
         }
 
         if (autoDiscardNum >= 0) {
             new ForceInitAutoDiscardTagCommand().execute(we);
-            Assert.assertEquals(autoDiscardNum, getForceInitCount(we));
+            Assertions.assertEquals(autoDiscardNum, getForceInitCount(we));
         }
 
         if (autoAppendNum >= 0) {
             new ForceInitAutoAppendTagCommand().execute(we);
-            Assert.assertEquals(autoAppendNum, getForceInitCount(we));
+            Assertions.assertEquals(autoAppendNum, getForceInitCount(we));
         }
 
         if (finalNum >= 0) {
@@ -73,10 +73,10 @@ public class ResetCommandTests {
             } else {
                 new ResetActiveHighInsertionCommand().execute(we);
             }
-            Assert.assertEquals(finalNum, getForceInitCount(we));
+            Assertions.assertEquals(finalNum, getForceInitCount(we));
         }
 
-        Assert.assertEquals(pass, new ResetVerificationCommand().execute(we));
+        Assertions.assertEquals(pass, new ResetVerificationCommand().execute(we));
 
         framework.closeWork(we);
     }

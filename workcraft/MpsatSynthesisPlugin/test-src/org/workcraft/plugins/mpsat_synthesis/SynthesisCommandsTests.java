@@ -1,7 +1,7 @@
 package org.workcraft.plugins.mpsat_synthesis;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.CircuitSettings;
@@ -16,7 +16,7 @@ import org.workcraft.utils.PackageUtils;
 
 public class SynthesisCommandsTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();

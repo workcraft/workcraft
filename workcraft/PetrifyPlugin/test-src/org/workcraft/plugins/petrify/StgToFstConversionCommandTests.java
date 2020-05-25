@@ -1,8 +1,8 @@
 package org.workcraft.plugins.petrify;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.fsm.VisualState;
@@ -24,7 +24,7 @@ import java.util.Set;
 
 public class StgToFstConversionCommandTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -74,9 +74,9 @@ public class StgToFstConversionCommandTests {
             }
         }
 
-        Assert.assertEquals(srcInputs, dstInputs);
-        Assert.assertEquals(srcInternals, dstInternals);
-        Assert.assertEquals(srcOutputs, dstOutputs);
+        Assertions.assertEquals(srcInputs, dstInputs);
+        Assertions.assertEquals(srcInternals, dstInternals);
+        Assertions.assertEquals(srcOutputs, dstOutputs);
 
         // Check the color of conflicting states
         HashMap<String, Color> conflictColorMap = new HashMap<>();
@@ -87,10 +87,10 @@ public class StgToFstConversionCommandTests {
                 if (!stateName.endsWith(conflictStateSuffix)) continue;
                 Color conflictColor = conflictColorMap.get(conflictStateSuffix);
                 if (conflictColor != null) {
-                    Assert.assertEquals(conflictColor, state.getFillColor());
+                    Assertions.assertEquals(conflictColor, state.getFillColor());
                 } else {
                     conflictColor = state.getFillColor();
-                    Assert.assertNotEquals(Color.WHITE, conflictColor);
+                    Assertions.assertNotEquals(Color.WHITE, conflictColor);
                     conflictColorMap.put(conflictStateSuffix, conflictColor);
                 }
             }

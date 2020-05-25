@@ -1,8 +1,8 @@
 package org.workcraft.dom.visual;
 
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnectionProperties;
@@ -58,12 +58,13 @@ public class VisualComponentGroupTests {
         root.add(sq1);
         node1.add(sq2);
 
-        Assert.assertEquals(sq1, HitMan.hitDeepest(new Point2D.Double(1.5, 1.5), root, VisualComponent.class));
-        Assert.assertEquals(sq2, HitMan.hitDeepest(new Point2D.Double(7.5, 2.5), root, VisualComponent.class));
-        Assert.assertEquals(null, HitMan.hitDeepest(new Point2D.Double(2.5, 2.5), root, VisualComponent.class));
+        Assertions.assertEquals(sq1, HitMan.hitDeepest(new Point2D.Double(1.5, 1.5), root, VisualComponent.class));
+        Assertions.assertEquals(sq2, HitMan.hitDeepest(new Point2D.Double(7.5, 2.5), root, VisualComponent.class));
+        Assertions.assertEquals(null, HitMan.hitDeepest(new Point2D.Double(2.5, 2.5), root, VisualComponent.class));
     }
 
-    @Ignore @Test
+    @Disabled
+    @Test
     public void testHitConnection() {
         VisualGroup root = createGroup(null);
         VisualGroup group = createGroup(root);
@@ -81,8 +82,8 @@ public class VisualComponentGroupTests {
         group.add(sqg2);
         Tools.createConnection(sqg1, sqg2, group);
 
-        Assert.assertEquals(connectionR, HitMan.hitFirstChild(new Point2D.Double(2.5, 1.5), root));
-        Assert.assertEquals(group, HitMan.hitFirstChild(new Point2D.Double(7.5, 1.5), root));
+        Assertions.assertEquals(connectionR, HitMan.hitFirstChild(new Point2D.Double(2.5, 1.5), root));
+        Assertions.assertEquals(group, HitMan.hitFirstChild(new Point2D.Double(7.5, 1.5), root));
     }
 
     @Test
@@ -107,24 +108,24 @@ public class VisualComponentGroupTests {
         VisualNode node2 = new SquareNode(r2, r2b);
         VisualNode node3 = new SquareNode(r3, r3b);
 
-    //    Assert.assertNull(group.getBoundingBoxInLocalSpace());
+    //    Assertions.assertNull(group.getBoundingBoxInLocalSpace());
 
         group.add(node1);
         group.add(node2);
         group.add(node3);
-        Assert.assertNull(HitMan.hitFirstChild(new Point2D.Double(-1, -1), group));
-        Assert.assertNull(HitMan.hitFirstChild(new Point2D.Double(10, 10), group));
-        Assert.assertNull(HitMan.hitFirstChild(new Point2D.Double(0.05, 0.05), group));
-        Assert.assertEquals(node1, HitMan.hitFirstChild(new Point2D.Double(0.15, 0.5), group));
-        Assert.assertEquals(node1, HitMan.hitFirstChild(new Point2D.Double(0.55, 0.55), group));
-        Assert.assertEquals(node2, HitMan.hitFirstChild(new Point2D.Double(0.65, 0.65), group));
-        Assert.assertEquals(node2, HitMan.hitFirstChild(new Point2D.Double(1.05, 1.05), group));
-        Assert.assertEquals(node3, HitMan.hitFirstChild(new Point2D.Double(1.15, 1.15), group));
-        Assert.assertEquals(node3, HitMan.hitFirstChild(new Point2D.Double(1.95, 1.95), group));
-        Assert.assertEquals(node3, HitMan.hitFirstChild(new Point2D.Double(2.35, 1.35), group));
-        Assert.assertEquals(node3, HitMan.hitFirstChild(new Point2D.Double(2.45, 1.45), group));
-        Assert.assertEquals(node3, HitMan.hitFirstChild(new Point2D.Double(2.85, 2.85), group));
-        Assert.assertNull(HitMan.hitFirstChild(new Point2D.Double(2.95, 2.95), group));
+        Assertions.assertNull(HitMan.hitFirstChild(new Point2D.Double(-1, -1), group));
+        Assertions.assertNull(HitMan.hitFirstChild(new Point2D.Double(10, 10), group));
+        Assertions.assertNull(HitMan.hitFirstChild(new Point2D.Double(0.05, 0.05), group));
+        Assertions.assertEquals(node1, HitMan.hitFirstChild(new Point2D.Double(0.15, 0.5), group));
+        Assertions.assertEquals(node1, HitMan.hitFirstChild(new Point2D.Double(0.55, 0.55), group));
+        Assertions.assertEquals(node2, HitMan.hitFirstChild(new Point2D.Double(0.65, 0.65), group));
+        Assertions.assertEquals(node2, HitMan.hitFirstChild(new Point2D.Double(1.05, 1.05), group));
+        Assertions.assertEquals(node3, HitMan.hitFirstChild(new Point2D.Double(1.15, 1.15), group));
+        Assertions.assertEquals(node3, HitMan.hitFirstChild(new Point2D.Double(1.95, 1.95), group));
+        Assertions.assertEquals(node3, HitMan.hitFirstChild(new Point2D.Double(2.35, 1.35), group));
+        Assertions.assertEquals(node3, HitMan.hitFirstChild(new Point2D.Double(2.45, 1.45), group));
+        Assertions.assertEquals(node3, HitMan.hitFirstChild(new Point2D.Double(2.85, 2.85), group));
+        Assertions.assertNull(HitMan.hitFirstChild(new Point2D.Double(2.95, 2.95), group));
     }
 
     @Test
@@ -137,8 +138,8 @@ public class VisualComponentGroupTests {
         root.add(node2);
         node1.add(new SquareNode(new Rectangle2D.Double(0, 0, 1, 1)));
         node2.add(new SquareNode(new Rectangle2D.Double(1, 1, 1, 1)));
-        Assert.assertEquals(node2, HitMan.hitFirstChild(new Point2D.Double(1.5, 1.5), root));
-        Assert.assertEquals(node1, HitMan.hitFirstChild(new Point2D.Double(0.5, 0.5), root));
+        Assertions.assertEquals(node2, HitMan.hitFirstChild(new Point2D.Double(1.5, 1.5), root));
+        Assertions.assertEquals(node1, HitMan.hitFirstChild(new Point2D.Double(0.5, 0.5), root));
     }
 
     @Test
@@ -161,12 +162,12 @@ public class VisualComponentGroupTests {
         SquareNode sq3 = new SquareNode(new Rectangle2D.Double(2, 2, 1, 1));
         node1.add(sq3);
 
-        Assert.assertEquals(sq1, HitMan.hitFirstChild(new Point2D.Double(10.5, 15.5), node1));
-        Assert.assertEquals(sq2, HitMan.hitFirstChild(new Point2D.Double(11.5, 16.5), node1));
+        Assertions.assertEquals(sq1, HitMan.hitFirstChild(new Point2D.Double(10.5, 15.5), node1));
+        Assertions.assertEquals(sq2, HitMan.hitFirstChild(new Point2D.Double(11.5, 16.5), node1));
 
-        Assert.assertEquals(node1, HitMan.hitFirstChild(new Point2D.Double(10.5, 15.5), root));
-        Assert.assertEquals(node1, HitMan.hitFirstChild(new Point2D.Double(11.5, 16.5), root));
-        Assert.assertEquals(null, HitMan.hitFirstChild(new Point2D.Double(13.5, 15.5), root));
+        Assertions.assertEquals(node1, HitMan.hitFirstChild(new Point2D.Double(10.5, 15.5), root));
+        Assertions.assertEquals(node1, HitMan.hitFirstChild(new Point2D.Double(11.5, 16.5), root));
+        Assertions.assertEquals(null, HitMan.hitFirstChild(new Point2D.Double(13.5, 15.5), root));
 
         Iterable<VisualNode> unGroup = node1.unGroup();
         ArrayList<Node> list = new ArrayList<>();
@@ -174,17 +175,17 @@ public class VisualComponentGroupTests {
             list.add(node);
         }
 
-        Assert.assertEquals(4, list.size());
-        Assert.assertTrue(list.contains(sq1));
-        Assert.assertTrue(list.contains(sq2));
-        Assert.assertTrue(list.contains(sq3));
-        Assert.assertTrue(list.contains(node2));
+        Assertions.assertEquals(4, list.size());
+        Assertions.assertTrue(list.contains(sq1));
+        Assertions.assertTrue(list.contains(sq2));
+        Assertions.assertTrue(list.contains(sq3));
+        Assertions.assertTrue(list.contains(node2));
 
-        Assert.assertTrue(list.indexOf(sq2) > list.indexOf(sq1));
-        Assert.assertTrue(list.indexOf(sq3) > list.indexOf(sq2));
+        Assertions.assertTrue(list.indexOf(sq2) > list.indexOf(sq1));
+        Assertions.assertTrue(list.indexOf(sq3) > list.indexOf(sq2));
 
-        Assert.assertNull(HitMan.hitFirstChild(new Point2D.Double(0.5, 0.5), node1));
-        Assert.assertNull(HitMan.hitFirstChild(new Point2D.Double(1.5, 1.5), node1));
+        Assertions.assertNull(HitMan.hitFirstChild(new Point2D.Double(0.5, 0.5), node1));
+        Assertions.assertNull(HitMan.hitFirstChild(new Point2D.Double(1.5, 1.5), node1));
     }
 
     private VisualGroup createGroup(VisualGroup parent) {
@@ -202,9 +203,9 @@ public class VisualComponentGroupTests {
 
         p.attach(root);
 
-        Assert.assertFalse("already hit o_O", node1.notified);
+        Assertions.assertFalse(node1.notified, "already hit o_O");
         root.setX(8);
-        Assert.assertTrue("not hit", node1.notified);
+        Assertions.assertTrue(node1.notified, "not hit");
     }
 
     class DummyNode extends VisualComponent {

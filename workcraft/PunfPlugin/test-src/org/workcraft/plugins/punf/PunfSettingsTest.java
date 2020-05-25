@@ -1,14 +1,14 @@
 package org.workcraft.plugins.punf;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Config;
 import org.workcraft.Framework;
 
 public class PunfSettingsTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -20,25 +20,25 @@ public class PunfSettingsTest {
         final Framework framework = Framework.getInstance();
         String prefix = "Tools.punf";
 
-        Assert.assertEquals(Config.toString(PunfSettings.getCommand()),
+        Assertions.assertEquals(Config.toString(PunfSettings.getCommand()),
                 framework.getConfigVar(prefix + ".command", false));
 
-        Assert.assertEquals(Config.toString(PunfSettings.getArgs()),
+        Assertions.assertEquals(Config.toString(PunfSettings.getArgs()),
                 framework.getConfigVar(prefix + ".args", false));
 
-        Assert.assertEquals(Config.toString(PunfSettings.getPrintStdout()),
+        Assertions.assertEquals(Config.toString(PunfSettings.getPrintStdout()),
                 framework.getConfigVar(prefix + ".printStdout", false));
 
-        Assert.assertEquals(Config.toString(PunfSettings.getPrintStderr()),
+        Assertions.assertEquals(Config.toString(PunfSettings.getPrintStderr()),
                 framework.getConfigVar(prefix + ".printStderr", false));
 
-        Assert.assertEquals(Config.toString(PunfSettings.getUseMciCsc()),
+        Assertions.assertEquals(Config.toString(PunfSettings.getUseMciCsc()),
                 framework.getConfigVar(prefix + ".useMciCsc", false));
 
-        Assert.assertEquals(Config.toString(PunfSettings.getLtl2tgbaCommand()),
+        Assertions.assertEquals(Config.toString(PunfSettings.getLtl2tgbaCommand()),
                 framework.getConfigVar(prefix + ".ltl2tgbaCommand", false));
 
-        Assert.assertEquals(Config.toString(PunfSettings.getShowSpotInMenu()),
+        Assertions.assertEquals(Config.toString(PunfSettings.getShowSpotInMenu()),
                 framework.getConfigVar(prefix + ".showSpotInMenu", false));
     }
 

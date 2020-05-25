@@ -1,8 +1,8 @@
 package org.workcraft.plugins.circuit;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.commands.SpotAssertionVerificationCommand;
@@ -16,7 +16,7 @@ import java.net.URL;
 
 public class SpotAssertionVerificationCommandTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -35,9 +35,9 @@ public class SpotAssertionVerificationCommandTests {
         WorkspaceEntry we = framework.loadWork(url.getFile());
 
         SpotAssertionVerificationCommand command = new SpotAssertionVerificationCommand();
-        Assert.assertNull(command.execute(we, command.deserialiseData("incorrect - expression")));
-        Assert.assertFalse(command.execute(we, command.deserialiseData("G((\"dsr\") & (\"dsw\"))")));
-        Assert.assertTrue(command.execute(we, command.deserialiseData("G((!\"dsr\") | (!\"dsw\"))")));
+        Assertions.assertNull(command.execute(we, command.deserialiseData("incorrect - expression")));
+        Assertions.assertFalse(command.execute(we, command.deserialiseData("G((\"dsr\") & (\"dsw\"))")));
+        Assertions.assertTrue(command.execute(we, command.deserialiseData("G((!\"dsr\") | (!\"dsw\"))")));
     }
 
 }

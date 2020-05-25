@@ -1,7 +1,7 @@
 package org.workcraft.plugins.stg.serialisation;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
@@ -47,7 +47,7 @@ public class MathModelSerialisation {
     }
 
     private static void compareMathModels(Model model1, Model model2) {
-        Assert.assertTrue(model1.getTitle().equals(model2.getTitle()));
+        Assertions.assertTrue(model1.getTitle().equals(model2.getTitle()));
         SerialisationTestingUtils.compareNodes(model1.getRoot(), model2.getRoot());
     }
 

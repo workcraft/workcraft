@@ -1,8 +1,8 @@
 package org.workcraft.plugins.circuit;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
@@ -17,7 +17,7 @@ import java.util.Set;
 
 public class CircuitLayoutCommandTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -61,9 +61,9 @@ public class CircuitLayoutCommandTests {
         Set<String> dstGates = new HashSet<>();
         countNodes(we, dstInputs, dstOutputs, dstGates);
 
-        Assert.assertEquals(srcInputs, dstInputs);
-        Assert.assertEquals(srcOutputs, dstOutputs);
-        Assert.assertEquals(srcGates, dstGates);
+        Assertions.assertEquals(srcInputs, dstInputs);
+        Assertions.assertEquals(srcOutputs, dstOutputs);
+        Assertions.assertEquals(srcGates, dstGates);
 
         framework.closeWork(we);
     }

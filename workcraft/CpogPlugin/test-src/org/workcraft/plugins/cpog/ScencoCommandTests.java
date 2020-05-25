@@ -1,8 +1,8 @@
 package org.workcraft.plugins.cpog;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.cpog.tasks.ScencoExternalToolTask;
@@ -19,7 +19,7 @@ import java.util.Collection;
 
 public class ScencoCommandTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -46,10 +46,10 @@ public class ScencoCommandTests {
         we.getModelEntry().getVisualModel().selectAll();
         taskManager.execute(task, "Sequential encoding", monitor);
 
-        Assert.assertEquals(2, cpog.getVariables().size());
+        Assertions.assertEquals(2, cpog.getVariables().size());
 
         Collection<VisualScenarioPage> scenarioPages = cpog.getScenarioPages();
-        Assert.assertEquals(3, scenarioPages.size());
+        Assertions.assertEquals(3, scenarioPages.size());
 
         int nodeCount = 0;
         int arcCount = 0;
@@ -57,8 +57,8 @@ public class ScencoCommandTests {
             nodeCount += cpog.getVertices(scenario).size();
             arcCount += cpog.getArcs(scenario).size();
         }
-        Assert.assertEquals(10, nodeCount);
-        Assert.assertEquals(4, arcCount);
+        Assertions.assertEquals(10, nodeCount);
+        Assertions.assertEquals(4, arcCount);
     }
 
 }

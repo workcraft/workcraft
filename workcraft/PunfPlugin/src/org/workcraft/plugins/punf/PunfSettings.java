@@ -30,7 +30,6 @@ public class PunfSettings extends AbstractToolSettings {
     private static final String defaultLtl2tgbaCommand = BackendUtils.getToolPath("Spot", "ltl2tgba");
     private static final Boolean defaultShowSpotInMenu = false;
 
-
     private static String command = defaultCommand;
     private static String args = defaultArgs;
     private static Boolean printStdout = defaultPrintStdout;

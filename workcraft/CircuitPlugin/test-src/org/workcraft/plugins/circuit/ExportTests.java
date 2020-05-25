@@ -1,8 +1,8 @@
 package org.workcraft.plugins.circuit;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
@@ -20,7 +20,7 @@ import java.net.URL;
 
 public class ExportTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -65,27 +65,27 @@ public class ExportTests {
 
         File vFile = new File(directory, "export.v");
         framework.exportModel(me, vFile, VerilogFormat.getInstance());
-        Assert.assertEquals(vHeader, FileUtils.readHeaderUtf8(vFile, vHeader.length()));
+        Assertions.assertEquals(vHeader, FileUtils.readHeaderUtf8(vFile, vHeader.length()));
 
         File svgFile = new File(directory, "export.svg");
         framework.exportModel(me, svgFile, SvgFormat.getInstance());
-        Assert.assertEquals(svgHeader, FileUtils.readHeaderUtf8(svgFile, svgHeader.length()));
+        Assertions.assertEquals(svgHeader, FileUtils.readHeaderUtf8(svgFile, svgHeader.length()));
 
         File pngFile = new File(directory, "export.png");
         framework.exportModel(me, pngFile, PngFormat.getInstance());
-        Assert.assertEquals(pngHeader, FileUtils.readHeaderUtf8(pngFile, pngHeader.length()));
+        Assertions.assertEquals(pngHeader, FileUtils.readHeaderUtf8(pngFile, pngHeader.length()));
 
         File pdfFile = new File(directory, "export.pdf");
         framework.exportModel(me, pdfFile, PdfFormat.getInstance());
-        Assert.assertEquals(pdfHeader, FileUtils.readHeaderUtf8(pdfFile, pdfHeader.length()));
+        Assertions.assertEquals(pdfHeader, FileUtils.readHeaderUtf8(pdfFile, pdfHeader.length()));
 
         File epsFile = new File(directory, "export.eps");
         framework.exportModel(me, epsFile, EpsFormat.getInstance());
-        Assert.assertEquals(epsHeader, FileUtils.readHeaderUtf8(epsFile, epsHeader.length()));
+        Assertions.assertEquals(epsHeader, FileUtils.readHeaderUtf8(epsFile, epsHeader.length()));
 
         File psFile = new File(directory, "export.ps");
         framework.exportModel(me, psFile, PsFormat.getInstance());
-        Assert.assertEquals(psHeader, FileUtils.readHeaderUtf8(psFile, psHeader.length()));
+        Assertions.assertEquals(psHeader, FileUtils.readHeaderUtf8(psFile, psHeader.length()));
 
         framework.closeWork(we);
         FileUtils.deleteOnExitRecursively(directory);

@@ -12,7 +12,8 @@ public class PunfTask implements Task<PunfOutput> {
 
     public static final String PNML_FILE_EXTENSION = ".pnml";
     public static final String MCI_FILE_EXTENSION = ".mci";
-    public static final String LEGACY_TOOL_SUFFIX = "-mci";
+
+    private static final String LEGACY_TOOL_SUFFIX = "-mci";
 
     private final File inputFile;
     private final File outputFile;
@@ -30,7 +31,7 @@ public class PunfTask implements Task<PunfOutput> {
 
         // Name of the executable
         String toolPrefix = PunfSettings.getCommand();
-        String toolSuffix = outputFile.getName().endsWith(MCI_FILE_EXTENSION) ? LEGACY_TOOL_SUFFIX : "";
+        String toolSuffix = getToolSuffix(outputFile);
         String toolName = ExecutableUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
         command.add(toolName);
 
@@ -62,6 +63,10 @@ public class PunfTask implements Task<PunfOutput> {
         }
 
         return Result.exception(result.getCause());
+    }
+
+    public static String getToolSuffix(File file) {
+        return (file != null) && file.getName().endsWith(MCI_FILE_EXTENSION) ? LEGACY_TOOL_SUFFIX : "";
     }
 
 }

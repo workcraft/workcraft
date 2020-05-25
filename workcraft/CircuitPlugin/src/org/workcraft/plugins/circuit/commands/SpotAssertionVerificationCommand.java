@@ -8,6 +8,7 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.tasks.SpotChainTask;
 import org.workcraft.plugins.mpsat_verification.tasks.SpotChainResultHandlingMonitor;
 import org.workcraft.plugins.punf.PunfSettings;
+import org.workcraft.plugins.punf.utils.SpotUtils;
 import org.workcraft.presets.PresetManager;
 import org.workcraft.presets.TextDataSerialiser;
 import org.workcraft.presets.TextPresetDialog;
@@ -15,6 +16,8 @@ import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import java.io.File;
 
 public class SpotAssertionVerificationCommand extends AbstractVerificationCommand
         implements ScriptableDataCommand<Boolean, String> {
@@ -53,6 +56,9 @@ public class SpotAssertionVerificationCommand extends AbstractVerificationComman
         presetManager.addExample("Mutual exclusion of signals", "G((!\"u\") | (!\"v\"))");
 
         TextPresetDialog dialog = new TextPresetDialog(mainWindow, "SPOT assertion", presetManager);
+        dialog.addHelpButton(new File("https://spot.lrde.epita.fr/tl.pdf"));
+        dialog.addCheckerButton(event -> SpotUtils.checkSyntax(we, dialog.getCodePanel()));
+
         if (dialog.reveal()) {
             preservedData = dialog.getPresetData();
             SpotChainResultHandlingMonitor monitor = new SpotChainResultHandlingMonitor(we, true);

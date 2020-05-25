@@ -1,8 +1,8 @@
 package org.workcraft.plugins.circuit;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.builtin.commands.AnonymiseTransformationCommand;
@@ -16,7 +16,7 @@ import java.util.HashSet;
 
 public class AnonymiseCommandTests {
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
@@ -46,9 +46,9 @@ public class AnonymiseCommandTests {
         for (Contact contact : circuit.getFunctionContacts()) {
             actualContactRefs.add(circuit.getNodeReference(contact));
         }
-        Assert.assertEquals(expectedContactRefs, actualContactRefs);
+        Assertions.assertEquals(expectedContactRefs, actualContactRefs);
 
-        Assert.assertEquals("", circuit.getTitle());
+        Assertions.assertEquals("", circuit.getTitle());
 
         framework.closeWork(we);
     }
