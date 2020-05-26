@@ -1,6 +1,6 @@
 # ![Workcraft logo](workcraft/WorkcraftCore/res/images/logo.png)
 
-[![Build status](https://travis-ci.org/workcraft/workcraft.svg)](https://travis-ci.org/workcraft/workcraft)
+[![Build status](https://travis-ci.com/workcraft/workcraft.svg)](https://travis-ci.com/workcraft/workcraft)
 [![Code maintainability](https://codeclimate.com/github/workcraft/workcraft/badges/gpa.svg)](https://codeclimate.com/github/workcraft/workcraft)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/3775/badge)](https://bestpractices.coreinfrastructure.org/projects/3775)
 [![Coverage](https://img.shields.io/coveralls/github/workcraft/workcraft.svg)](https://coveralls.io/github/workcraft/workcraft)
