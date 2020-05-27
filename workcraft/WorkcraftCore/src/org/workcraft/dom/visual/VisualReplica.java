@@ -6,7 +6,7 @@ import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -149,7 +149,7 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
             cacheNameRenderedText(r);
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
-            g.setColor(Coloriser.colorise(getNameColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getNameColor(), d.getColorisation()));
             nameRenderedText.draw(g);
         }
     }

@@ -11,7 +11,7 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualReplica;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.gui.tools.Decoration;
 
 @DisplayName("Proxy place")
@@ -36,7 +36,7 @@ public class VisualReplicaPlace extends VisualReplica {
         Decoration d = r.getDecoration();
         cacheRenderedText(r);  // needed to better estimate the bounding box
         Color colorisation = d.getColorisation();
-        g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+        g.setColor(ColorUtils.colorise(getForegroundColor(), colorisation));
         drawNameInLocalSpace(r);
     }
 

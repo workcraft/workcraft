@@ -47,12 +47,11 @@ copy_jars() {
 # Defaults
 platforms=""
 plugins="$PLUGINS_DIR"
-tag="$(git describe --tags)"
+tag="$(git describe --tags --always)"
 force=false
 
 # Process parameters
 while [ "$#" -gt 0 ]; do
-echo "$@ : param=$1"
     case "$1" in
         -h | --help)
             usage

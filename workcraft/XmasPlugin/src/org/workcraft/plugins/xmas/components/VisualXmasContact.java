@@ -9,7 +9,7 @@ import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.XmasContact.IOType;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
@@ -64,7 +64,7 @@ public class VisualXmasContact extends VisualComponent implements StateObserver 
             g.fill(shape);
 
             Color colorisation = d.getColorisation();
-            g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+            g.setColor(ColorUtils.colorise(getForegroundColor(), colorisation));
             g.draw(shape);
         }
     }

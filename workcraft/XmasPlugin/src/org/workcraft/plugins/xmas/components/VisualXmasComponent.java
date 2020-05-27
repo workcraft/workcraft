@@ -10,7 +10,7 @@ import org.workcraft.observation.*;
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.XmasContact.IOType;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -256,7 +256,7 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
 
-        g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+        g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
         g.setStroke(new BasicStroke((float) XmasSettings.getBorderWidth()));
         g.draw(transformShape(getShape()));
 

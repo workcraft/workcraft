@@ -4,7 +4,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.CustomTouchable;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -30,7 +30,7 @@ public abstract class VisualEvent extends VisualComponent implements CustomTouch
     public void draw(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         Color colorisation = r.getDecoration().getColorisation();
-        g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+        g.setColor(ColorUtils.colorise(getForegroundColor(), colorisation));
         g.setStroke(getStroke());
         g.draw(getShape());
     }

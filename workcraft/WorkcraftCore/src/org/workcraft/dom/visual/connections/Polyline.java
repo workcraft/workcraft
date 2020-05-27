@@ -6,7 +6,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.observation.*;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.Geometry;
 import org.workcraft.utils.Hierarchy;
 
@@ -69,7 +69,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
         }
         connectionPath.lineTo(endPt.getX(), endPt.getY());
 
-        Color color = Coloriser.colorise(connectionInfo.getDrawColor(), r.getDecoration().getColorisation());
+        Color color = ColorUtils.colorise(connectionInfo.getDrawColor(), r.getDecoration().getColorisation());
         g.setColor(color);
         g.setStroke(connectionInfo.getStroke());
         g.draw(connectionPath);

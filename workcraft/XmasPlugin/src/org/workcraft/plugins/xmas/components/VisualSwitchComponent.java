@@ -9,7 +9,7 @@ import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.SwitchComponent.Type;
 import org.workcraft.plugins.xmas.components.SwitchComponent.Val;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.geom.Path2D;
@@ -74,7 +74,7 @@ public class VisualSwitchComponent extends VisualXmasComponent {
         Decoration d = r.getDecoration();
         if (d instanceof StateDecoration) {
             g.setStroke(new BasicStroke((float) XmasSettings.getBorderWidth()));
-            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
             if (((StateDecoration) d).getState()) {
                 Shape shape = transformShape(getUpPointerShape());
                 g.fill(shape);

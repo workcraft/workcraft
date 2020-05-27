@@ -9,7 +9,7 @@ import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -45,9 +45,9 @@ public class VisualStgPlace extends VisualPlace {
             double size = VisualCommonSettings.getNodeSize() + VisualCommonSettings.getStrokeWidth();
             double pos = -0.5 * size;
             Shape shape = new Ellipse2D.Double(pos, pos, size, size);
-            g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+            g.setColor(ColorUtils.colorise(getFillColor(), d.getBackground()));
             g.fill(shape);
-            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
             g.setStroke(new BasicStroke((float) VisualCommonSettings.getStrokeWidth() / 2.0f));
             g.draw(shape);
         }

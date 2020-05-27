@@ -5,14 +5,12 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.builtin.settings.DotLayoutSettings;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.geom.Rectangle2D;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Collection;
@@ -22,7 +20,7 @@ public class DotExporter implements Exporter {
     private static final String INDENT = "  ";
 
     @Override
-    public void export(Model model, OutputStream outStream) throws IOException, ModelValidationException, SerialisationException {
+    public void export(Model model, OutputStream outStream) throws SerialisationException {
         if (!(model instanceof VisualModel)) {
             throw new SerialisationException("Non-visual model cannot be exported to Graphviz DOT file.");
         }

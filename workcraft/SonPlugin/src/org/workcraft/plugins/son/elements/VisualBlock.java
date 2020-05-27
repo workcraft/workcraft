@@ -8,7 +8,7 @@ import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.util.Interval;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
@@ -47,25 +47,25 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode {
             Decoration d = r.getDecoration();
 
             if (getIsCollapsed() && !isCurrentLevelInside()) {
-                g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+                g.setColor(ColorUtils.colorise(getFillColor(), d.getBackground()));
                 g.fill(bb);
-                g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+                g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
                 g.setStroke(new BasicStroke(strokeWidth));
                 g.draw(bb);
 
                 double s = 2.3 * VisualCommonSettings.getNodeSize() / 3.0;
                 Shape shape = new Rectangle2D.Double(-s / 2, -s / 2, s, s);
                 g.setStroke(new BasicStroke(strokeWidth / 2));
-                g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+                g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
                 g.draw(shape);
 
                 drawFault(r);
             } else {
-                g.setColor(Coloriser.colorise(Color.WHITE, d.getBackground()));
+                g.setColor(ColorUtils.colorise(Color.WHITE, d.getBackground()));
                 g.fill(bb);
                 float[] pattern = {0.2f, 0.2f};
                 g.setStroke(new BasicStroke(0.02f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
-                g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+                g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
                 g.draw(bb);
             }
 
@@ -113,7 +113,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode {
             cahceDurationRenderedText();
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
-            g.setColor(Coloriser.colorise(getDurationColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getDurationColor(), d.getColorisation()));
             durationRenderedText.draw(g);
         }
     }

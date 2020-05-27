@@ -1,8 +1,8 @@
 package org.workcraft.plugins.builtin.interop;
 
-import java.util.UUID;
-
 import org.workcraft.interop.Format;
+
+import java.util.UUID;
 
 public final class PsFormat implements Format {
 

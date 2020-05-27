@@ -4,7 +4,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.gui.tools.Decoration;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
@@ -28,10 +28,10 @@ public class VisualChannelPlace extends VisualPlaceNode {
 
         double s = size - strokeWidth;
         Shape shape = new Ellipse2D.Double(-s / 2, -s / 2, s, s);
-        g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+        g.setColor(ColorUtils.colorise(getFillColor(), d.getBackground()));
         g.fill(shape);
         g.setStroke(new BasicStroke(strokeWidth));
-        g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+        g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
         g.draw(shape);
 
         drawToken(r);

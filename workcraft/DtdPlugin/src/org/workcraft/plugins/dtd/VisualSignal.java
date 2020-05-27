@@ -13,7 +13,7 @@ import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.dtd.utils.DtdUtils;
 import org.workcraft.serialisation.NoAutoSerialisation;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
@@ -103,7 +103,7 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
     public void draw(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         Color colorisation = r.getDecoration().getColorisation();
-        g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+        g.setColor(ColorUtils.colorise(getForegroundColor(), colorisation));
         drawNameInLocalSpace(r);
     }
 

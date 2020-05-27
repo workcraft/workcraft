@@ -9,6 +9,7 @@ dependencies {
 
 ext.excludeFromCoverage = [
     'org/workcraft/gui/',
+    'org/workcraft/presets/',
     'org/workcraft/tools/'
 ]
 

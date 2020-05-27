@@ -9,7 +9,7 @@ import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.serialisation.NoAutoSerialisation;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.Geometry;
 
 import java.awt.*;
@@ -149,7 +149,7 @@ public class VisualSONConnection extends VisualConnection {
             AffineTransform oldTransform = g.getTransform();
             AffineTransform transform = getLabelTransform();
             g.transform(transform);
-            g.setColor(Coloriser.colorise(getTimeLabelColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getTimeLabelColor(), d.getColorisation()));
             timeRenderedText.draw(g);
             g.setTransform(oldTransform);
         }

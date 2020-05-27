@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class SortUtilsTest {
+public class SortUtilsTests {
 
     @Test
     public void compareNaturalTest() {

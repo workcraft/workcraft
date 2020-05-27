@@ -10,7 +10,7 @@ import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -189,7 +189,7 @@ public class VisualQueueComponent extends VisualXmasComponent {
                 }
             }
             // Excited elements
-            g.setColor(Coloriser.colorise(getForegroundColor(), SimulationDecorationSettings.getExcitedComponentColor()));
+            g.setColor(ColorUtils.colorise(getForegroundColor(), SimulationDecorationSettings.getExcitedComponentColor()));
             for (int i = 0; i < capacity; i++) {
                 SlotState slot = ((QueueDecoration) d).getSlotState(i);
                 if (slot.isMemExcited) {

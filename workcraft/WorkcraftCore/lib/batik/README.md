@@ -2,27 +2,21 @@
 
 This cut down version of Batik is the minimal set of JARs necessary
 for building a functioning Workcraft. This effort was made in order
-to reduce the distribution size of Workcraft by ~40MB.
+to reduce the distribution size of Workcraft by ~10MB and to overcome
+a broken dependency on JAR Core package.
 
-The JARs of Batik v1.11 were collected from:
-https://repo1.maven.org/maven2/org/apache/xmlgraphics/
+The JARs of Batik were collected from binary distribution at:
+https://xmlgraphics.apache.org/batik/download.html
 
-Note that fop-transcoder-allinone was built from source to further
-reduce the size (1.7MB vs 4.3MB of the prebuilt fop v2.3) as follows:
+The JAR for FOP Transcoder was downloaded from:
+https://mvnrepository.com/artifact/org.apache.xmlgraphics/fop-transcoder
 
-  1. Download fop-2.3-src.tar.gz from
-     https://xmlgraphics.apache.org/fop/download.html
-  2. Build FOP: tar xzf fop-2.3-src.tar.gz; cd fop-2.3/fop; ant
-  3. Copy build/fop-transcoder-allinone.jar into
-     WorkcraftrCore/libs/batik/fop-transcoder-allinone-v2.3.jar
+If extra ~10MB and several unnecessary dependencies are not a problem,
+and when the broken dependency on JAR Core is fixed, then Batik and FOP
+can be included via Gradle in WorkcraftCore\build.gradle:
 
-If extra 40Mb is not a problem then Batik and FOP can be downloaded
-via Gradle. For this add the following libs category dependencies
-to the WorkcraftCore\build.gradle:
-
-    libs 'org.apache.xmlgraphics:batik-codec:1.11'
-    libs 'org.apache.xmlgraphics:batik-transcoder:1.11'
-    libs 'org.apache.xmlgraphics:fop:2.3'
+    lib 'org.apache.xmlgraphics:batik-transcoder:1.13'
+    lib 'org.apache.xmlgraphics:fop-transcoder:2.5'
 
 
 ## Dependency analysis
@@ -62,7 +56,10 @@ functionality of Workcraft.
   * batik-transcoder -- needed for exporting in PDF, PS, EPS formats
     (Transcoder, TranscoderInput, TranscoderOutput, TranscoderException)
 
-  * fop-transcoder-allinone -- needed for exporting in PDF, PS, EPS formats
+  * batik-util -- needed for loading SVG files
+    (XMLResourceDescriptort)
+
+  * fop-transcoder -- needed for exporting in PDF, PS, EPS formats
     (PDFTranscoder, PSTranscoder, EPSTranscoder, PNGTranscoder)
 
 ### Run time dependency
@@ -82,11 +79,11 @@ functionality of Workcraft.
   * batik-script -- needed for loading SVG files
     (java.lang.NoClassDefFoundError: Could not initialize class org.apache.batik.bridge.BridgeContext)
 
-  * batik-util -- needed for loading SVG files
-    (java.lang.NoClassDefFoundError: Could not initialize class org.apache.batik.bridge.BridgeContext)
-
   * batik-xml -- needed for loading SVG files
     (java.lang.NoClassDefFoundError: org/apache/batik/dom/util/DOMUtilities)
+
+  * commons-logging -- needed for logging in PDF Transcoder
+    (java.lang.NoClassDefFoundError: org/apache/commons/logging/Log)
 
   * xml-apis-ext -- needed for loading SVG files
     (java.lang.NoClassDefFoundError: org/apache/batik/anim/dom/SVGOMDocument)

@@ -8,7 +8,7 @@ import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.dfs.decorations.LogicDecoration;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -75,12 +75,12 @@ public class VisualLogic extends VisualDelayComponent {
             computed = ((LogicDecoration) d).isComputed();
         }
         if (computed) {
-            g.setColor(Coloriser.colorise(DfsSettings.getComputedLogicColor(), d.getBackground()));
+            g.setColor(ColorUtils.colorise(DfsSettings.getComputedLogicColor(), d.getBackground()));
         } else {
-            g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+            g.setColor(ColorUtils.colorise(getFillColor(), d.getBackground()));
         }
         g.fill(shape);
-        g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+        g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
         if (getReferencedComponent().isEarlyEvaluation()) {
             g.setStroke(new BasicStroke(strokeWidth4));
             g.draw(eeShape);

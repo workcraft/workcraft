@@ -9,7 +9,7 @@ import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.circuit.tools.StateDecoration;
 import org.workcraft.serialisation.NoAutoSerialisation;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -258,10 +258,10 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
             g.setStroke(new BasicStroke(width));
             g.setColor(fillColor);
             g.fill(shape);
-            g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+            g.setColor(ColorUtils.colorise(getForegroundColor(), colorisation));
             g.draw(shape);
         } else if (r.getModel().getConnections(this).size() > 1) {
-            g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+            g.setColor(ColorUtils.colorise(getForegroundColor(), colorisation));
             g.fill(VisualJoint.shape);
         }
 

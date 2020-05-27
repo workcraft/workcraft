@@ -7,7 +7,7 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -50,7 +50,7 @@ public class VisualBundledTransition extends VisualTransition {
 
         Collection<VisualBundle> bundles = model.getBundlesOfTransition(this);
         if (bundles.isEmpty()) {
-            g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+            g.setColor(ColorUtils.colorise(getFillColor(), d.getBackground()));
             g.fill(shape);
         } else {
             h = (h - strokeWidth) / bundles.size();
@@ -58,12 +58,12 @@ public class VisualBundledTransition extends VisualTransition {
             double y = -size / 2 + strokeWidth + h2;
             for (VisualBundle b: bundles) {
                 Shape bundleShape = new Rectangle2D.Double(-w2, y - h2, w, h);
-                g.setColor(Coloriser.colorise(b.getColor(), d.getBackground()));
+                g.setColor(ColorUtils.colorise(b.getColor(), d.getBackground()));
                 g.fill(bundleShape);
                 y += h;
             }
         }
-        g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+        g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
         g.setStroke(new BasicStroke((float) strokeWidth));
         g.draw(shape);
         drawLabelInLocalSpace(r);

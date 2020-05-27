@@ -11,7 +11,7 @@ import org.workcraft.observation.*;
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
 import org.workcraft.serialisation.NoAutoSerialisation;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
@@ -451,7 +451,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
                 Decoration d = r.getDecoration();
                 Color colorisation = d.getColorisation();
                 g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
-                g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+                g.setColor(ColorUtils.colorise(getForegroundColor(), colorisation));
                 Line2D line = new Line2D.Double(p1, p2);
                 g.draw(line);
             }
@@ -483,7 +483,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         Decoration d = r.getDecoration();
         Color colorisation = d.getColorisation();
         Color color = vc.isInput() ? VisualContact.inputColor : VisualContact.outputColor;
-        g.setColor(Coloriser.colorise(color, colorisation));
+        g.setColor(ColorUtils.colorise(color, colorisation));
 
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
         GlyphVector gv = getContactNameGlyphs(r, vc);
@@ -576,9 +576,9 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         Graphics2D g = r.getGraphics();
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
         if (bb != null) {
-            g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+            g.setColor(ColorUtils.colorise(getFillColor(), d.getBackground()));
             g.fill(bb);
-            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
             setStroke(g);
             g.draw(bb);
         }

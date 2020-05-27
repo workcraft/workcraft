@@ -12,7 +12,7 @@ import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.serialisation.NoAutoSerialisation;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -74,10 +74,10 @@ public class VisualVariable extends VisualComponent {
         Decoration d = r.getDecoration();
 
         Shape shape = getShape();
-        g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+        g.setColor(ColorUtils.colorise(getFillColor(), d.getBackground()));
         g.fill(shape);
         g.setStroke(new BasicStroke((float) VisualCommonSettings.getStrokeWidth()));
-        g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+        g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
         g.draw(shape);
 
         switch (getState()) {
@@ -108,7 +108,7 @@ public class VisualVariable extends VisualComponent {
             Decoration d = r.getDecoration();
             cacheVariableRenderedFormula(r);
             if ((variableRenderedFormula != null) && !variableRenderedFormula.isEmpty()) {
-                g.setColor(Coloriser.colorise(getLabelColor(), d.getColorisation()));
+                g.setColor(ColorUtils.colorise(getLabelColor(), d.getColorisation()));
                 variableRenderedFormula.draw(g);
             }
         }

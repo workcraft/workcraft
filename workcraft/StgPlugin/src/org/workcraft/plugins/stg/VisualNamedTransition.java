@@ -10,7 +10,7 @@ import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.tools.CoreDecoration;
 import org.workcraft.serialisation.NoAutoSerialisation;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -86,7 +86,7 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
         } else {
             Color background = d.getBackground();
             if (background != null) {
-                g.setColor(Coloriser.colorise(EditorCommonSettings.getBackgroundColor(), background));
+                g.setColor(ColorUtils.colorise(EditorCommonSettings.getBackgroundColor(), background));
                 Rectangle2D expandedShape = BoundingBoxHelper.expand(getBoundingBoxInLocalSpace(), 0.5, 0.5);
                 g.fill(expandedShape);
             }

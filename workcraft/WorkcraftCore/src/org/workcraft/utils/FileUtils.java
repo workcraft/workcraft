@@ -202,24 +202,6 @@ public class FileUtils {
         from.delete();
     }
 
-    public static byte[] readAllBytes(File in) throws IOException {
-        ByteArrayOutputStream mem = new ByteArrayOutputStream();
-        copyFileToStream(in, mem);
-        return mem.toByteArray();
-    }
-
-    public static void writeAllBytes(byte[] bytes, File out) throws IOException {
-        OutputStream stream = new FileOutputStream(out);
-        stream.write(bytes);
-        stream.close();
-    }
-
-    public static void appendAllText(File file, String text) throws IOException {
-        FileWriter writer = new FileWriter(file, true);
-        writer.write(text);
-        writer.close();
-    }
-
     public static String readAllTextFromSystemResource(String path) throws IOException {
         InputStream stream = ClassLoader.getSystemResourceAsStream(path);
         try {

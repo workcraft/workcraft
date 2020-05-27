@@ -7,7 +7,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
@@ -73,9 +73,9 @@ public class VisualSuperGroup extends VisualGroup {
         Rectangle2D bb = getContentsBoundingBox();
 
         if (bb != null && getParent() != null) {
-            g.setColor(Coloriser.colorise(Color.WHITE, colorisation));
+            g.setColor(ColorUtils.colorise(Color.WHITE, colorisation));
             g.fill(bb);
-            g.setColor(Coloriser.colorise(Color.BLACK, colorisation));
+            g.setColor(ColorUtils.colorise(Color.BLACK, colorisation));
             g.setStroke(new BasicStroke((float) (strokeWidth * 0.5)));
             g.draw(bb);
 

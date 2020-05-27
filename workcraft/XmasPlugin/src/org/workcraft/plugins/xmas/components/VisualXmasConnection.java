@@ -4,7 +4,7 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.utils.Geometry;
@@ -39,7 +39,7 @@ public class VisualXmasConnection extends VisualConnection {
         Decoration d = r.getDecoration();
         boolean inSimulationMode = (d.getColorisation() != null) || (d.getBackground() != null);
         Color colorisation = d.getColorisation();
-        g.setColor(Coloriser.colorise(getColor(), colorisation));
+        g.setColor(ColorUtils.colorise(getColor(), colorisation));
         g.setStroke(new BasicStroke((float) XmasSettings.getWireWidth()));
 
         if (!inSimulationMode && !XmasSettings.getShowContacts()) {

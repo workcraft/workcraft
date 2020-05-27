@@ -5,7 +5,7 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.gui.tools.Decoration;
 
 import java.awt.*;
@@ -35,7 +35,7 @@ public class VisualJoint extends VisualComponent {
     public void draw(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
-        g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+        g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
         g.fill(shape);
     }
 
