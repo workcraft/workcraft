@@ -9,7 +9,7 @@ import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.geom.Path2D;
@@ -266,7 +266,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
             cacheLabelRenderedText(r);
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
-            g.setColor(Coloriser.colorise(getLabelColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getLabelColor(), d.getColorisation()));
             labelRenderedText.draw(g, getLabelAlignment());
         }
     }
@@ -277,7 +277,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
         if (bb != null) {
             g.setStroke(new BasicStroke((float) VisualCommonSettings.getStrokeWidth()));
-            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
             g.draw(bb);
         }
     }
@@ -331,7 +331,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
             cacheNameRenderedText(r);
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
-            g.setColor(Coloriser.colorise(getNameColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getNameColor(), d.getColorisation()));
             nameRenderedText.draw(g);
         }
     }
@@ -355,10 +355,10 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         Decoration d = r.getDecoration();
 
         Shape shape = getShape();
-        g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+        g.setColor(ColorUtils.colorise(getFillColor(), d.getBackground()));
         g.fill(shape);
 
-        g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+        g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
         g.setStroke(new BasicStroke((float) VisualCommonSettings.getStrokeWidth()));
         g.draw(shape);
 
@@ -468,10 +468,10 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
                 }
             }
         }
-        setForegroundColor(Coloriser.mix(foregroundColors));
-        setFillColor(Coloriser.mix(fillColors));
-        setNameColor(Coloriser.mix(nameColors));
-        setLabelColor(Coloriser.mix(labelColors));
+        setForegroundColor(ColorUtils.mix(foregroundColors));
+        setFillColor(ColorUtils.mix(fillColors));
+        setNameColor(ColorUtils.mix(nameColors));
+        setLabelColor(ColorUtils.mix(labelColors));
         setNamePositioning(MixUtils.vote(namePositioning, Positioning.CENTER));
         setLabelPositioning(MixUtils.vote(labelPositioning, Positioning.CENTER));
         //setLabel(label);

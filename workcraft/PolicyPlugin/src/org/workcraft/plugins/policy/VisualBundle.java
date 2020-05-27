@@ -18,7 +18,6 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.utils.Coloriser;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
@@ -75,7 +74,7 @@ public class VisualBundle extends VisualNode implements Drawable, Dependent {
             shape.moveTo(l.getX1(), l.getY1());
             shape.lineTo(l.getX2(), l.getY2());
         }
-        g.setColor(Coloriser.colorise(color, d.getColorisation()));
+        g.setColor(ColorUtils.colorise(color, d.getColorisation()));
         g.setStroke(new BasicStroke(w, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, new float[]{10 * w, 10 * w}, 0.0f));
         g.draw(shape);
     }

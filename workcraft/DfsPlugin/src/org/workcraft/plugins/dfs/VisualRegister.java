@@ -8,7 +8,7 @@ import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.dfs.decorations.RegisterDecoration;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -55,8 +55,8 @@ public class VisualRegister extends VisualAbstractRegister {
         Shape innerShape = new Rectangle2D.Double(-w2 + dx, -h2 + dy, w - dx - dx, h - dy - dy);
         Shape tokenShape = new Ellipse2D.Double(-dt, -dt, 2 * dt, 2 * dt);
 
-        Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
-        Color tokenColor = Coloriser.colorise(getTokenColor(), d.getColorisation());
+        Color defaultColor = ColorUtils.colorise(getForegroundColor(), d.getColorisation());
+        Color tokenColor = ColorUtils.colorise(getTokenColor(), d.getColorisation());
         boolean marked = getReferencedComponent().isMarked();
         boolean excited = false;
         if (d instanceof RegisterDecoration) {
@@ -66,10 +66,10 @@ public class VisualRegister extends VisualAbstractRegister {
             excited = ((RegisterDecoration) d).isExcited();
         }
 
-        g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+        g.setColor(ColorUtils.colorise(getFillColor(), d.getBackground()));
         g.fill(shape);
         if (excited) {
-            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
         } else {
             g.setColor(defaultColor);
         }

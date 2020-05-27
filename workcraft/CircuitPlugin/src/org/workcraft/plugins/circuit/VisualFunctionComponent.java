@@ -21,7 +21,7 @@ import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.circuit.renderers.GateRenderer;
 import org.workcraft.serialisation.NoAutoSerialisation;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
@@ -435,8 +435,8 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
             // Draw the component in its coordinates
             g.transform(at);
-            GateRenderer.foreground = Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation());
-            GateRenderer.background = Coloriser.colorise(getFillColor(), r.getDecoration().getBackground());
+            GateRenderer.foreground = ColorUtils.colorise(getForegroundColor(), r.getDecoration().getColorisation());
+            GateRenderer.background = ColorUtils.colorise(getFillColor(), r.getDecoration().getBackground());
             setStroke(g);
             rr.draw(g);
             AffineTransform bt = getMainContactRotateTransform(true);

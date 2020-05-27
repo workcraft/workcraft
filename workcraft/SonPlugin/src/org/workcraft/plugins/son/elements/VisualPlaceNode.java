@@ -8,7 +8,7 @@ import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.tools.PlaceNodeDecoration;
 import org.workcraft.plugins.son.util.Interval;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
@@ -66,9 +66,9 @@ public class VisualPlaceNode extends VisualComponent {
                 getSize() - getStrokeWidth(),
                 getSize() - getStrokeWidth());
 
-        g.setColor(Coloriser.colorise(getFillColor(), r.getDecoration().getBackground()));
+        g.setColor(ColorUtils.colorise(getFillColor(), r.getDecoration().getBackground()));
         g.fill(shape);
-        g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
+        g.setColor(ColorUtils.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
         g.setStroke(new BasicStroke((float) getStrokeWidth()));
         g.draw(shape);
 
@@ -89,11 +89,11 @@ public class VisualPlaceNode extends VisualComponent {
 
         if (token) {
             Graphics2D g = r.getGraphics();
-            Color tokenColor = Coloriser.colorise(getTokenColor(), r.getDecoration().getColorisation());
+            Color tokenColor = ColorUtils.colorise(getTokenColor(), r.getDecoration().getColorisation());
 
             double s = getSingleTokenSize();
             Shape shape = new Ellipse2D.Double(-s / 2, -s / 2, s, s);
-            g.setColor(Coloriser.colorise(tokenColor, d.getColorisation()));
+            g.setColor(ColorUtils.colorise(tokenColor, d.getColorisation()));
             g.fill(shape);
         }
     }
@@ -118,7 +118,7 @@ public class VisualPlaceNode extends VisualComponent {
             cahceErrorRenderedText();
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
-            g.setColor(Coloriser.colorise(errLabelColor, d.getColorisation()));
+            g.setColor(ColorUtils.colorise(errLabelColor, d.getColorisation()));
             errorRenderedText.draw(g);
         }
     }
@@ -143,7 +143,7 @@ public class VisualPlaceNode extends VisualComponent {
             cahceDurationRenderedText();
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
-            g.setColor(Coloriser.colorise(getDurationColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getDurationColor(), d.getColorisation()));
             durationRenderedText.draw(g);
         }
     }

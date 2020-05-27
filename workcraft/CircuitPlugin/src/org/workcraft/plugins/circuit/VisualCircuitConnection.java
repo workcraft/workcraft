@@ -9,7 +9,7 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.circuit.tools.StateDecoration;
 import org.workcraft.utils.Geometry;
@@ -40,7 +40,7 @@ public class VisualCircuitConnection extends VisualConnection {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
         Color colorisation = d.getColorisation();
-        g.setColor(Coloriser.colorise(getColor(), colorisation));
+        g.setColor(ColorUtils.colorise(getColor(), colorisation));
         g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
 
         boolean showContact = CircuitSettings.getShowContacts() || (d instanceof StateDecoration);

@@ -14,7 +14,7 @@ import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.cpog.formula.CpogBooleanReplacer;
 import org.workcraft.plugins.cpog.formula.CpogFormulaVariable;
 import org.workcraft.plugins.cpog.formula.CpogVisitor;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -104,9 +104,9 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
         Color background = r.getDecoration().getBackground();
         Shape shape = getShape();
         BooleanFormula value = evaluate();
-        g.setColor(Coloriser.colorise(getFillColor(), background));
+        g.setColor(ColorUtils.colorise(getFillColor(), background));
         g.fill(shape);
-        g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+        g.setColor(ColorUtils.colorise(getForegroundColor(), colorisation));
         double strokeWidth = VisualCommonSettings.getStrokeWidth();
         if (value == Zero.getInstance()) {
             g.setStroke(new BasicStroke((float) strokeWidth, BasicStroke.CAP_BUTT,
@@ -137,7 +137,7 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
             Decoration d = r.getDecoration();
             cacheConditionRenderedFormula(r);
             if ((conditionRenderedFormula != null) && !conditionRenderedFormula.isEmpty()) {
-                g.setColor(Coloriser.colorise(getLabelColor(), d.getColorisation()));
+                g.setColor(ColorUtils.colorise(getLabelColor(), d.getColorisation()));
                 conditionRenderedFormula.draw(g);
             }
         }

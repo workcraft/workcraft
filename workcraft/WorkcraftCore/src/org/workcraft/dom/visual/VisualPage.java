@@ -12,7 +12,7 @@ import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
@@ -196,12 +196,12 @@ public class VisualPage extends VisualComponent implements Collapsible, Containe
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
         if (bb != null) {
             if (getIsCollapsed() && !isCurrentLevelInside()) {
-                g.setColor(Coloriser.colorise(getFillColor(), d.getColorisation()));
+                g.setColor(ColorUtils.colorise(getFillColor(), d.getColorisation()));
                 g.fill(bb);
             }
             float[] pattern = {0.1f, 0.1f};
             g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
-            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
             g.draw(bb);
         }
     }

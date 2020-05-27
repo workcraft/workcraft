@@ -16,7 +16,7 @@ import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.plugins.xmas.VisualXmas;
 import org.workcraft.plugins.xmas.components.*;
 import org.workcraft.plugins.xmas.stg.*;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
@@ -173,7 +173,7 @@ public class XmasSimulationTool extends StgSimulationTool {
             public Color getBackground() {
                 Color  colorisation = isSuggested ? SimulationDecorationSettings.getExcitedComponentColor() : null;
                 Color contactColor = isReady ? (isInput ? COLOR_CONTACT_TRDY : COLOR_CONTACT_IRDY) : COLOR_CONTACT_NOT_READY;
-                return Coloriser.colorise(contactColor, colorisation);
+                return ColorUtils.colorise(contactColor, colorisation);
             }
         };
     }

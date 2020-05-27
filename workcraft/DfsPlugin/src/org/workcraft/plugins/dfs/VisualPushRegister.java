@@ -13,7 +13,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.dfs.decorations.BinaryRegisterDecoration;
 
@@ -63,8 +63,8 @@ public class VisualPushRegister extends VisualBinaryRegister {
 
         Shape tokenShape = new Ellipse2D.Double(-dt, -dt, 2 * dt, 2 * dt);
 
-        Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
-        Color tokenColor = Coloriser.colorise(getTokenColor(), d.getColorisation());
+        Color defaultColor = ColorUtils.colorise(getForegroundColor(), d.getColorisation());
+        Color tokenColor = ColorUtils.colorise(getTokenColor(), d.getColorisation());
         boolean trueMarked = getReferencedComponent().isTrueMarked();
         boolean trueExcited = false;
         boolean falseMarked = getReferencedComponent().isFalseMarked();
@@ -78,25 +78,25 @@ public class VisualPushRegister extends VisualBinaryRegister {
             falseExcited = ((BinaryRegisterDecoration) d).isFalseExcited();
         }
 
-        g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+        g.setColor(ColorUtils.colorise(getFillColor(), d.getBackground()));
         g.fill(shape);
 
         g.setStroke(new BasicStroke(strokeWidth2));
         if (falseExcited) {
-            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
         } else {
             g.setColor(defaultColor);
         }
         g.draw(falseInnerShape);
         if (trueExcited) {
-            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
         } else {
             g.setColor(defaultColor);
         }
         g.draw(trueInnerShape);
 
         if (trueExcited || falseExcited) {
-            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
         } else {
             g.setColor(defaultColor);
         }

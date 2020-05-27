@@ -11,7 +11,7 @@ import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.util.Interval;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -51,9 +51,9 @@ public class VisualEvent extends VisualComponent implements VisualTransitionNode
         double xy = -size / 2 + strokeWidth / 2;
         double wh = size - strokeWidth;
         Shape shape = new Rectangle2D.Double(xy, xy, wh, wh);
-        g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+        g.setColor(ColorUtils.colorise(getFillColor(), d.getBackground()));
         g.fill(shape);
-        g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+        g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
         g.setStroke(new BasicStroke((float) strokeWidth));
         g.draw(shape);
         drawLabelInLocalSpace(r);

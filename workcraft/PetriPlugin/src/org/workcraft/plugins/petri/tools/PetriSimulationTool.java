@@ -12,7 +12,7 @@ import org.workcraft.gui.tools.SimulationTool;
 import org.workcraft.plugins.petri.*;
 import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.shared.ColorGenerator;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.TextUtils;
 
@@ -194,7 +194,7 @@ public class PetriSimulationTool extends SimulationTool {
                     VisualConnection vc = (VisualConnection) c;
                     if (vc.isTokenColorPropagator() && (vc.getFirst() instanceof VisualPlace)) {
                         VisualPlace vp = (VisualPlace) vc.getFirst();
-                        tokenColor = Coloriser.colorise(tokenColor, vp.getTokenColor());
+                        tokenColor = ColorUtils.colorise(tokenColor, vp.getTokenColor());
                     }
                 }
             }

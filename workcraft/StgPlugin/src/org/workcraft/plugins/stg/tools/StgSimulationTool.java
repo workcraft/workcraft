@@ -581,10 +581,10 @@ public class StgSimulationTool extends PetriSimulationTool {
                     if (vc.isTokenColorPropagator()) {
                         if (vc.getFirst() instanceof VisualPlace) {
                             final VisualPlace vp = (VisualPlace) c.getFirst();
-                            tokenColor = Coloriser.colorise(tokenColor, vp.getTokenColor());
+                            tokenColor = ColorUtils.colorise(tokenColor, vp.getTokenColor());
                         } else if (vc instanceof VisualImplicitPlaceArc) {
                             final VisualImplicitPlaceArc vipa = (VisualImplicitPlaceArc) vc;
-                            tokenColor = Coloriser.colorise(tokenColor, vipa.getTokenColor());
+                            tokenColor = ColorUtils.colorise(tokenColor, vipa.getTokenColor());
                         }
                     }
                 }

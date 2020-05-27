@@ -14,7 +14,7 @@ import org.workcraft.plugins.cpog.formula.MemoryConservingBooleanWorker;
 import org.workcraft.plugins.cpog.formula.PrettifyBooleanWorker;
 import org.workcraft.plugins.cpog.formula.CpogBooleanReplacer;
 import org.workcraft.serialisation.NoAutoSerialisation;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.Geometry;
 
 import java.awt.*;
@@ -123,7 +123,7 @@ public class VisualArc extends VisualConnection {
         transform.concatenate(AffineTransform.getRotateInstance(d.getX(), d.getY(), labelPosition.getX(), labelPosition.getY()));
 
         g.transform(transform);
-        g.setColor(Coloriser.colorise(Color.BLACK, r.getDecoration().getColorisation()));
+        g.setColor(ColorUtils.colorise(Color.BLACK, r.getDecoration().getColorisation()));
         result.draw(g);
         g.setTransform(oldTransform);
 

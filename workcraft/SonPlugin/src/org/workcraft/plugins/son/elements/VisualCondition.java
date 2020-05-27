@@ -10,7 +10,7 @@ import org.workcraft.dom.visual.RenderedText;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.son.SONSettings;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -65,7 +65,7 @@ public class VisualCondition extends VisualPlaceNode {
             shape.lineTo(-size / 2, 0.0);
             shape.lineTo(-size / 2 - s, s / 2);
             g.setStroke(new BasicStroke(strokeWidth));
-            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
             g.draw(shape);
         }
 
@@ -73,7 +73,7 @@ public class VisualCondition extends VisualPlaceNode {
             double s = 2 * size / 3;
             Shape shape = new Ellipse2D.Double(-s / 2, -s / 2, s, s);
             g.setStroke(new BasicStroke(strokeWidth / 2));
-            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
             g.draw(shape);
         }
 
@@ -102,7 +102,7 @@ public class VisualCondition extends VisualPlaceNode {
             cahceStartTimeRenderedText();
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
-            g.setColor(Coloriser.colorise(getStartTimeColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getStartTimeColor(), d.getColorisation()));
             startTimeRenderedText.draw(g);
         }
     }
@@ -123,7 +123,7 @@ public class VisualCondition extends VisualPlaceNode {
             cahceEndTimeRenderedText();
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
-            g.setColor(Coloriser.colorise(getEndTimeColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getEndTimeColor(), d.getColorisation()));
             endTimeRenderedText.draw(g);
         }
     }

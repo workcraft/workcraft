@@ -5,7 +5,7 @@ import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.plugins.son.elements.VisualCondition;
 import org.workcraft.plugins.son.elements.VisualEvent;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
@@ -58,18 +58,18 @@ public class VisualONGroup extends VisualPage {
             if (!getLabel().isEmpty() && getLabelVisibility()) {
                 Rectangle2D labelBB = getLabelBoundingBox();
                 if (labelBB != null) {
-                    g.setColor(Coloriser.colorise(Color.WHITE, colorisation));
+                    g.setColor(ColorUtils.colorise(Color.WHITE, colorisation));
                     g.fill(labelBB);
                     g.setStroke(new BasicStroke(strokeWidth - 0.005f, BasicStroke.CAP_BUTT,
                             BasicStroke.JOIN_ROUND, 3.0f, new float[]{0.1f, 0.05f}, 0f));
 
-                    g.setColor(Coloriser.colorise(getLabelColor(), colorisation));
+                    g.setColor(ColorUtils.colorise(getLabelColor(), colorisation));
                     g.draw(labelBB);
                     drawLabelInLocalSpace(r);
                 }
             }
             // Draw group
-            g.setColor(Coloriser.colorise(this.getForegroundColor(), colorisation));
+            g.setColor(ColorUtils.colorise(this.getForegroundColor(), colorisation));
             g.setStroke(new BasicStroke(strokeWidth));
             groupBB = BoundingBoxHelper.expand(groupBB, getExpansion().getX(), getExpansion().getY());
             g.draw(groupBB);

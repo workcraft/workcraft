@@ -9,7 +9,7 @@ import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.*;
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.serialisation.NoAutoSerialisation;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -522,7 +522,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
             }
         }
         setConnectionType(MixUtils.vote(connectionTypes, ConnectionType.POLYLINE));
-        setColor(Coloriser.mix(colors));
+        setColor(ColorUtils.mix(colors));
         setLineWidth(MixUtils.average(lineWidths));
         setArrow(dstHasArrow);
         setArrowLength(MixUtils.average(arrowLengths));

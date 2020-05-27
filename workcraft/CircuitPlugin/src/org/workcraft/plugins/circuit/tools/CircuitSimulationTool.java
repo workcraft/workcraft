@@ -19,7 +19,7 @@ import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.converters.SignalStg;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.types.Pair;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -232,10 +232,10 @@ public class CircuitSimulationTool extends StgSimulationTool {
             public Color getBackground() {
                 Color  colorisation = isSuggested ? SimulationDecorationSettings.getSuggestedComponentColor() : null;
                 if (isOne && !isZero) {
-                    return Coloriser.colorise(CircuitSettings.getActiveWireColor(), colorisation);
+                    return ColorUtils.colorise(CircuitSettings.getActiveWireColor(), colorisation);
                 }
                 if (!isOne && isZero) {
-                    return Coloriser.colorise(CircuitSettings.getInactiveWireColor(), colorisation);
+                    return ColorUtils.colorise(CircuitSettings.getInactiveWireColor(), colorisation);
                 }
                 return colorisation;
             }

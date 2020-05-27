@@ -11,7 +11,7 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualTransformableNode;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 public class ControlPoint extends VisualTransformableNode implements Drawable, Touchable {
 
@@ -32,7 +32,7 @@ public class ControlPoint extends VisualTransformableNode implements Drawable, T
     public void draw(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         Color colorisation = r.getDecoration().getColorisation();
-        g.setColor(Coloriser.colorise(fillColor, colorisation));
+        g.setColor(ColorUtils.colorise(fillColor, colorisation));
         g.fill(shape);
     }
 

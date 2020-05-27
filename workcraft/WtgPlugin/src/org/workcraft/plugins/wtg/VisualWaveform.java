@@ -9,7 +9,7 @@ import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.wtg.decorations.WaveformDecoration;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
@@ -76,7 +76,7 @@ public class VisualWaveform extends VisualPage {
         if (bb != null) {
             Decoration d = r.getDecoration();
             if (getIsCollapsed() && !isCurrentLevelInside()) {
-                g.setColor(Coloriser.colorise(getFillColor(), d.getColorisation()));
+                g.setColor(ColorUtils.colorise(getFillColor(), d.getColorisation()));
                 g.fill(bb);
                 g.setStroke(new BasicStroke((float) VisualCommonSettings.getStrokeWidth()));
             } else {
@@ -90,7 +90,7 @@ public class VisualWaveform extends VisualPage {
                 }
                 g.setStroke(stroke);
             }
-            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
             g.draw(bb);
         }
     }

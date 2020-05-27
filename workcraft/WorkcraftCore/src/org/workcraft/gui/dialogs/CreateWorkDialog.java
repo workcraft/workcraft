@@ -7,7 +7,7 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.builtin.settings.FavoriteCommonSettings;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.utils.PluginUtils;
 
@@ -32,7 +32,7 @@ public class CreateWorkDialog extends ModalDialog<Void> {
             super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
             if (!isSelected && (index % 2 != 0)) {
                 Color color = getBackground();
-                setBackground(Coloriser.colorise(color, Color.LIGHT_GRAY));
+                setBackground(ColorUtils.colorise(color, Color.LIGHT_GRAY));
                 setOpaque(true);
             }
             String shortcut = KeyEvent.getKeyText(getKeyCode(index));

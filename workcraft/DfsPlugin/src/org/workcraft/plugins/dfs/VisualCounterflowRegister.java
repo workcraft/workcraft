@@ -8,7 +8,7 @@ import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.dfs.decorations.CounterflowRegisterDecoration;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -74,7 +74,7 @@ public class VisualCounterflowRegister extends VisualAbstractRegister {
         orTokenShape.lineTo(-dt, -dt);
         orTokenShape.closePath();
 
-        Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
+        Color defaultColor = ColorUtils.colorise(getForegroundColor(), d.getColorisation());
         Color tokenColor = getTokenColor();
         boolean forwardExcited = false;
         boolean backwardExcited = false;
@@ -93,7 +93,7 @@ public class VisualCounterflowRegister extends VisualAbstractRegister {
             andMarkedExcited = ((CounterflowRegisterDecoration) d).isAndExcited();
         }
 
-        g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+        g.setColor(ColorUtils.colorise(getFillColor(), d.getBackground()));
         g.fill(shape);
 
         g.setStroke(new BasicStroke(strokeWidth2));
@@ -104,7 +104,7 @@ public class VisualCounterflowRegister extends VisualAbstractRegister {
         if (!backwardExcited) {
             g.draw(backwardShape);
         }
-        g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+        g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
         if (forwardExcited) {
             g.draw(forwardShape);
         }
@@ -113,7 +113,7 @@ public class VisualCounterflowRegister extends VisualAbstractRegister {
         }
 
         if (forwardExcited || backwardExcited || orMarkedExcited || andMarkedExcited) {
-            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
         } else {
             g.setColor(defaultColor);
         }

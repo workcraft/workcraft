@@ -8,7 +8,7 @@ import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.dfs.ControlRegister.SynchronisationType;
 import org.workcraft.plugins.dfs.decorations.BinaryRegisterDecoration;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -95,8 +95,8 @@ public class VisualControlRegister extends VisualBinaryRegister {
         Shape falseTokenShape = new Ellipse2D.Double(-tr, +w4 - tr - strokeWidth4, 2 * tr, 2 * tr);
         Shape separatorShape = new Line2D.Double(-w2 + dx, 0, w2 - dx, 0);
 
-        Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
-        Color tokenColor = Coloriser.colorise(getTokenColor(), d.getColorisation());
+        Color defaultColor = ColorUtils.colorise(getForegroundColor(), d.getColorisation());
+        Color tokenColor = ColorUtils.colorise(getTokenColor(), d.getColorisation());
         boolean trueMarked = getReferencedComponent().isTrueMarked();
         boolean trueExcited = false;
         boolean falseMarked = getReferencedComponent().isFalseMarked();
@@ -110,10 +110,10 @@ public class VisualControlRegister extends VisualBinaryRegister {
             falseExcited = ((BinaryRegisterDecoration) d).isFalseExcited();
         }
 
-        g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+        g.setColor(ColorUtils.colorise(getFillColor(), d.getBackground()));
         g.fill(shape);
 
-        g.setColor(Coloriser.colorise(DfsSettings.getSynchronisationRegisterColor(), d.getBackground()));
+        g.setColor(ColorUtils.colorise(DfsSettings.getSynchronisationRegisterColor(), d.getBackground()));
         if (getReferencedComponent().getSynchronisationType() == SynchronisationType.AND) {
             g.fill(falseInnerShape);
         }
@@ -135,7 +135,7 @@ public class VisualControlRegister extends VisualBinaryRegister {
             g.draw(falseMarkerShape);
         }
 
-        g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+        g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
         if (trueExcited) {
             g.setStroke(new BasicStroke(strokeWidth2));
             g.draw(trueInnerShape);
@@ -150,7 +150,7 @@ public class VisualControlRegister extends VisualBinaryRegister {
         }
 
         if (trueExcited || falseExcited) {
-            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
         } else {
             g.setColor(defaultColor);
         }

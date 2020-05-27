@@ -10,7 +10,7 @@ import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
 import org.workcraft.formula.visitors.FormulaRenderingResult;
 import org.workcraft.formula.visitors.FormulaToGraphics;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.plugins.cpog.formula.CpogBooleanReplacer;
 
 import java.awt.*;
@@ -63,14 +63,14 @@ public class VisualRhoClause extends VisualComponent {
 
         g.setStroke(new BasicStroke(strokeWidth));
 
-        g.setColor(Coloriser.colorise(getFillColor(), background));
+        g.setColor(ColorUtils.colorise(getFillColor(), background));
         g.fill(boudingBox);
-        g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+        g.setColor(ColorUtils.colorise(getForegroundColor(), colorisation));
         g.draw(boudingBox);
 
         AffineTransform transform = g.getTransform();
         g.translate(textX, textY);
-        g.setColor(Coloriser.colorise(getColor(), colorisation));
+        g.setColor(ColorUtils.colorise(getColor(), colorisation));
         result.draw(g);
 
         g.setTransform(transform);

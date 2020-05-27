@@ -7,7 +7,7 @@ import org.workcraft.dom.visual.*;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -62,15 +62,15 @@ public class VisualState extends VisualComponent {
 
         double s = size - strokeWidth;
         Shape shape = new Ellipse2D.Double(-s / 2, -s / 2, s, s);
-        g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+        g.setColor(ColorUtils.colorise(getFillColor(), d.getBackground()));
         g.fill(shape);
         g.setStroke(new BasicStroke(strokeWidth));
-        g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+        g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
         g.draw(shape);
 
         if (getReferencedComponent().isInitial()) {
             g.setStroke(new BasicStroke(strokeWidth));
-            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
             AffineTransform savedTransform = g.getTransform();
             AffineTransform rotateTransform = getInitialMarkerPositioning().getTransform();
             g.transform(rotateTransform);
@@ -84,7 +84,7 @@ public class VisualState extends VisualComponent {
 
         if (getReferencedComponent().isFinal()) {
             g.setStroke(new BasicStroke(strokeWidth / 2));
-            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
             g.draw(getFinalMarkerShape());
         }
 

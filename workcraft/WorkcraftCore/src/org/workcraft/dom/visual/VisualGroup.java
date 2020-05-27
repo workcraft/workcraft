@@ -11,7 +11,7 @@ import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
@@ -100,7 +100,7 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
         Graphics2D g = r.getGraphics();
         Rectangle2D bb = getBoundingBoxInLocalSpace();
         if (bb != null) {
-            g.setColor(Coloriser.colorise(Color.GRAY, d.getColorisation()));
+            g.setColor(ColorUtils.colorise(Color.GRAY, d.getColorisation()));
             float[] pattern = {0.2f, 0.2f};
             g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
             g.draw(bb);

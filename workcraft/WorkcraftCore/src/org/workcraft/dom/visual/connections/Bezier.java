@@ -6,7 +6,7 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.observation.SelectionChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.Geometry;
 import org.workcraft.utils.Geometry.CurveSplitResult;
 
@@ -78,7 +78,7 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
         PartialCurveInfo curveInfo = getCurveInfo();
         CubicCurve2D visibleCurve = getVisibleCurve();
 
-        Color color = Coloriser.colorise(connectionInfo.getDrawColor(), r.getDecoration().getColorisation());
+        Color color = ColorUtils.colorise(connectionInfo.getDrawColor(), r.getDecoration().getColorisation());
         g.setColor(color);
         g.setStroke(connectionInfo.getStroke());
         g.draw(visibleCurve);

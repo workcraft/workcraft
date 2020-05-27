@@ -5,7 +5,7 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.xmas.XmasSettings;
 
@@ -62,7 +62,7 @@ public class VisualSinkComponent extends VisualXmasComponent {
         if (d instanceof StateDecoration) {
             if (((StateDecoration) d).getState()) {
                 g.setStroke(new BasicStroke((float) XmasSettings.getBorderWidth()));
-                g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+                g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
                 Shape shape = transformShape(getTokenShape());
                 g.draw(shape);
             }

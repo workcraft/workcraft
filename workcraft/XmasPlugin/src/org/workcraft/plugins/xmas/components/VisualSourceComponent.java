@@ -9,7 +9,7 @@ import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.xmas.XmasSettings;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -73,7 +73,7 @@ public class VisualSourceComponent extends VisualXmasComponent {
         if (d instanceof StateDecoration) {
             if (((StateDecoration) d).getState()) {
                 g.setStroke(new BasicStroke((float) XmasSettings.getBorderWidth()));
-                g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+                g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
                 Shape shape = transformShape(getTokenShape());
                 g.fill(shape);
                 g.draw(shape);

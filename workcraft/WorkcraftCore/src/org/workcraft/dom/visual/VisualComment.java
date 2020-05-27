@@ -7,7 +7,7 @@ import org.workcraft.dom.math.CommentNode;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.builtin.settings.CommentCommonSettings;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -89,9 +89,9 @@ public class VisualComment extends VisualComponent {
         Rectangle2D shape = getBoundingBoxInLocalSpace();
         //shape.setRect(shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight());
         shape.setRect(shape.getX() - 0.1, shape.getY() - 0.1, shape.getWidth() + 0.2, shape.getHeight() + 0.2);
-        g.setColor(Coloriser.colorise(getFillColor(), r.getDecoration().getBackground()));
+        g.setColor(ColorUtils.colorise(getFillColor(), r.getDecoration().getBackground()));
         g.fill(shape);
-        g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
+        g.setColor(ColorUtils.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
         float w = (float) strokeWidth;
         float[] pattern = {10.0f * w, 10.0f * w};
         g.setStroke(new BasicStroke(w, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));

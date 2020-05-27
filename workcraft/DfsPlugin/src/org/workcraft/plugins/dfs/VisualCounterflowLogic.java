@@ -8,7 +8,7 @@ import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.dfs.decorations.CounterflowLogicDecoration;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -107,7 +107,7 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
 
         Shape separatorShape = new Line2D.Double(-w2, 0, w2, 0);
 
-        Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
+        Color defaultColor = ColorUtils.colorise(getForegroundColor(), d.getColorisation());
         boolean forwardComputed = getReferencedComponent().isForwardComputed();
         boolean forwardComputedExcited = false;
         boolean backwardComputed = getReferencedComponent().isBackwardComputed();
@@ -121,16 +121,16 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
         }
 
         if (forwardComputed) {
-            g.setColor(Coloriser.colorise(DfsSettings.getComputedLogicColor(), d.getBackground()));
+            g.setColor(ColorUtils.colorise(DfsSettings.getComputedLogicColor(), d.getBackground()));
         } else {
-            g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+            g.setColor(ColorUtils.colorise(getFillColor(), d.getBackground()));
         }
         g.fill(forwardShape);
 
         if (backwardComputed) {
-            g.setColor(Coloriser.colorise(DfsSettings.getComputedLogicColor(), d.getBackground()));
+            g.setColor(ColorUtils.colorise(DfsSettings.getComputedLogicColor(), d.getBackground()));
         } else {
-            g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+            g.setColor(ColorUtils.colorise(getFillColor(), d.getBackground()));
         }
         g.fill(backwardShape);
 
@@ -152,7 +152,7 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
             }
         }
 
-        g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+        g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
         if (forwardComputedExcited) {
             g.setStroke(new BasicStroke(strokeWidth1));
             g.draw(forwardShape);
@@ -171,7 +171,7 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
         }
 
         if (forwardComputedExcited || backwardComputedExcited) {
-            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
         } else {
             g.setColor(defaultColor);
         }

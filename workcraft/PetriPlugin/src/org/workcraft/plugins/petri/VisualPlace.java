@@ -11,7 +11,7 @@ import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.petri.tools.PlaceDecoration;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -106,7 +106,7 @@ public class VisualPlace extends VisualComponent {
         Shape shape;
         if (count == 1) {
             shape = new Ellipse2D.Double(-size / 2, -size / 2, size, size);
-            g.setColor(Coloriser.colorise(color, d.getColorisation()));
+            g.setColor(ColorUtils.colorise(color, d.getColorisation()));
             g.fill(shape);
         } else {
             if (count > 1 && count < 8) {
@@ -124,7 +124,7 @@ public class VisualPlace extends VisualComponent {
                                 -step * Math.cos(i * alpha * 2) - radius,
                                 radius * 2, radius * 2);
                     }
-                    g.setColor(Coloriser.colorise(color, d.getColorisation()));
+                    g.setColor(ColorUtils.colorise(color, d.getColorisation()));
                     g.fill(shape);
                 }
             } else if (count > 7) {
@@ -132,7 +132,7 @@ public class VisualPlace extends VisualComponent {
                 Font superFont = g.getFont().deriveFont((float) VisualCommonSettings.getNodeSize() / 2);
                 Rectangle2D rect = superFont.getStringBounds(tokenString, g.getFontRenderContext());
                 g.setFont(superFont);
-                g.setColor(Coloriser.colorise(color, d.getColorisation()));
+                g.setColor(ColorUtils.colorise(color, d.getColorisation()));
                 g.drawString(tokenString, (float) (-rect.getCenterX()), (float) (-rect.getCenterY()));
             }
         }
@@ -171,7 +171,7 @@ public class VisualPlace extends VisualComponent {
         }
         getReferencedComponent().setTokens(tokens);
         getReferencedComponent().setCapacity(capacity);
-        setTokenColor(Coloriser.mix(tokenColors));
+        setTokenColor(ColorUtils.mix(tokenColors));
     }
 
 }

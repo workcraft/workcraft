@@ -8,7 +8,7 @@ import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
-import org.workcraft.utils.Coloriser;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.Geometry;
 
 import java.awt.*;
@@ -111,11 +111,11 @@ public class VisualEvent extends VisualConnection {
             g.transform(transform);
             Color background = d.getBackground();
             if (background != null) {
-                g.setColor(Coloriser.colorise(EditorCommonSettings.getBackgroundColor(), background));
+                g.setColor(ColorUtils.colorise(EditorCommonSettings.getBackgroundColor(), background));
                 Rectangle2D box = BoundingBoxHelper.expand(labelRenderedText.getBoundingBox(), 0.2, 0.0);
                 g.fill(box);
             }
-            g.setColor(Coloriser.colorise(getLabelColor(), d.getColorisation()));
+            g.setColor(ColorUtils.colorise(getLabelColor(), d.getColorisation()));
             labelRenderedText.draw(g);
             g.setTransform(oldTransform);
         }
