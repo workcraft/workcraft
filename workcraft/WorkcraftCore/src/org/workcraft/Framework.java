@@ -562,7 +562,7 @@ public final class Framework {
     }
 
     private WorkspaceEntry createWork(ModelEntry me, Path<String> path, boolean open, boolean changed) {
-        WorkspaceEntry we = new WorkspaceEntry(getWorkspace());
+        WorkspaceEntry we = new WorkspaceEntry();
         we.setChanged(changed);
         we.setModelEntry(createVisual(me));
         getWorkspace().addWork(path, we);

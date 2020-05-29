@@ -64,7 +64,7 @@ public class Workspace {
     }
 
     public File getFile(WorkspaceEntry we) {
-        return getFile(we.getWorkspacePath());
+        return getFile(getPath(we));
     }
 
     public Path<String> getPath(File file) {
@@ -358,7 +358,7 @@ public class Workspace {
     public void moveEntry(Path<String> from, Path<String> to) throws IOException {
         final WorkspaceEntry openFileTo = openFiles.getValue(to);
         if (openFileTo != null) {
-            final File toDelete = openFileTo.getFile();
+            final File toDelete = getFile(openFileTo);
             if (toDelete.exists() && !toDelete.delete()) {
                 throw new IOException("Unable to delete '" + toDelete.getAbsolutePath() + "'");
             }

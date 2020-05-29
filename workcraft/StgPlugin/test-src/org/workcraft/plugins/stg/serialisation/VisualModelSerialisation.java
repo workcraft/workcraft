@@ -25,7 +25,7 @@ public class VisualModelSerialisation {
         VisualStg visualstg = new VisualStg(stg);
 
         RandomLayoutCommand layout = new RandomLayoutCommand();
-        WorkspaceEntry we = new WorkspaceEntry(null);
+        WorkspaceEntry we = new WorkspaceEntry();
 
         we.setModelEntry(new ModelEntry(new StgDescriptor(), visualstg));
 

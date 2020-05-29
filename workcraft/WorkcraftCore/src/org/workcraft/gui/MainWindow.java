@@ -48,6 +48,7 @@ import org.workcraft.types.ListMap;
 import org.workcraft.utils.*;
 import org.workcraft.workspace.FileFilters;
 import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
@@ -209,8 +210,7 @@ public class MainWindow extends JFrame {
             editorWindow = createDockableWindow(editor, title, firstEditorWindow, options,
                     DockingConstants.CENTER_REGION, PREFIX_DOCUMENT + we.getWorkspacePath());
         }
-        EditorWindowTabListener tabListener = new EditorWindowTabListener(editor);
-        editorWindow.addTabListener(tabListener);
+        editorWindow.addTabListener(new EditorWindowTabListener(editor));
         editorWindows.put(we, editorWindow);
         requestFocus(editor);
         setWorkActionsEnableness(true);
@@ -366,7 +366,7 @@ public class MainWindow extends JFrame {
         }
     }
 
-    private void closeDockableEditorWindow(DockableWindow dockableWindow, GraphEditorPanel editor)
+    private void closeDockableEditorWindow(DockableWindow editorWindow, GraphEditorPanel editor)
             throws OperationCancelledException {
 
         WorkspaceEntry we = editor.getWorkspaceEntry();
@@ -388,8 +388,18 @@ public class MainWindow extends JFrame {
             }
         }
 
-        if (DockingManager.isMaximized(dockableWindow)) {
-            toggleDockableWindowMaximized(dockableWindow.getID());
+        if (DockingManager.isMaximized(editorWindow)) {
+            toggleDockableWindowMaximized(editorWindow.getID());
+        }
+
+        for (DockableWindow dockableWindow : editorWindows.get(we)) {
+            if (dockableWindow == editorWindow) {
+                dockableWindow.clearTabListeners();
+            }
+        }
+        editorWindows.remove(we, editorWindow);
+        if (editorWindows.get(we).isEmpty()) {
+            Framework.getInstance().closeWork(we);
         }
 
         if (editorInFocus == editor) {
@@ -398,15 +408,9 @@ public class MainWindow extends JFrame {
             setPropertyEditorTitle(TITLE_PROPERTY_EDITOR);
         }
 
-        editorWindows.remove(we, dockableWindow);
-        if (editorWindows.get(we).isEmpty()) {
-            final Framework framework = Framework.getInstance();
-            framework.closeWork(we);
-        }
-
         if (editorWindows.isEmpty()) {
             DockingManager.registerDockable(documentPlaceholder);
-            DockingManager.dock(documentPlaceholder, dockableWindow, DockingConstants.CENTER_REGION);
+            DockingManager.dock(documentPlaceholder, editorWindow, DockingConstants.CENTER_REGION);
             utilityWindows.add(documentPlaceholder);
             setWorkActionsEnableness(false);
             modelToolbar.removeAll();
@@ -418,9 +422,9 @@ public class MainWindow extends JFrame {
             setPropertyEditorTitle(TITLE_PROPERTY_EDITOR);
         }
 
-        DockingManager.close(dockableWindow);
-        DockingManager.unregisterDockable(dockableWindow);
-        dockableWindow.setClosed(true);
+        DockingManager.close(editorWindow);
+        DockingManager.unregisterDockable(editorWindow);
+        editorWindow.setClosed(true);
     }
 
     private void setToolbarVisibility(JToolBar toolbar, boolean visibility) {
@@ -873,16 +877,18 @@ public class MainWindow extends JFrame {
     }
 
     public void saveWork(WorkspaceEntry we) throws OperationCancelledException {
-        if (!we.getFile().exists()) {
+        Workspace workspace = Framework.getInstance().getWorkspace();
+        File file = workspace.getFile(we);
+        if ((file == null) || !file.exists()) {
             saveWorkAs(we);
         } else {
-            String path = we.getFile().getPath();
-            saveWork(we, path);
+            saveWork(we, file.getPath());
         }
     }
 
     public void saveWorkAs(WorkspaceEntry we) throws OperationCancelledException {
-        File file = we.getFile();
+        Workspace workspace = Framework.getInstance().getWorkspace();
+        File file = workspace.getFile(we);
         if (file == null) {
             file = new File(getFileNameForCurrentWork());
         }
@@ -902,8 +908,9 @@ public class MainWindow extends JFrame {
         } catch (SerialisationException e) {
             DialogUtils.showError(e.getMessage());
         }
-        framework.setLastDirectory(we.getFile());
-        framework.pushRecentFilePath(we.getFile());
+        File file = framework.getWorkspace().getFile(we);
+        framework.setLastDirectory(file);
+        framework.pushRecentFilePath(file);
         mainMenu.updateRecentMenu();
     }
 

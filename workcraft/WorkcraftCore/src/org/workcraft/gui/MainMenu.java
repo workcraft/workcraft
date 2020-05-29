@@ -409,6 +409,9 @@ public class MainMenu extends JMenuBar {
 
     private void createCommandsMenu(final WorkspaceEntry we) {
         removeCommandsMenu();
+        if (we == null) {
+            return;
+        }
 
         List<Command> applicableVisibleCommands = CommandUtils.getApplicableVisibleCommands(we);
         List<String> sections = CommandUtils.getSections(applicableVisibleCommands);
@@ -430,29 +433,32 @@ public class MainMenu extends JMenuBar {
                 }
             }
             List<Command> sectionCommands = CommandUtils.getSectionCommands(section, applicableVisibleCommands);
-            List<List<Command>> sectionCommandsPartitions = new LinkedList<>();
-            sectionCommandsPartitions.add(CommandUtils.getUnpositionedCommands(sectionCommands));
-            for (Position position: Position.values()) {
-                sectionCommandsPartitions.add(CommandUtils.getPositionedCommands(sectionCommands, position));
-            }
-            boolean needSeparator = false;
-            for (List<Command> sectionCommandsPartition : sectionCommandsPartitions) {
-                boolean isFirstItem = true;
-                for (Command command : sectionCommandsPartition) {
-                    if (needSeparator && isFirstItem) {
-                        mnSection.addSeparator();
-                    }
-                    needSeparator = true;
-                    isFirstItem = false;
-                    Action action = new Action(command.getDisplayName().trim(), () -> CommandUtils.run(mainWindow, command));
-                    ActionMenuItem miCommand = new ActionMenuItem(action);
-                    miCommand.addScriptedActionListener(mainWindow.getDefaultActionListener());
-                    mnSection.add(miCommand);
-                }
-            }
+            addCommandMenuSection(mnSection, sectionCommands);
         }
         addCommandsMenu();
-        we.updateActionState();
+    }
+
+    private void addCommandMenuSection(JMenu mnSection, List<Command> sectionCommands) {
+        List<List<Command>> sectionCommandsPartitions = new LinkedList<>();
+        sectionCommandsPartitions.add(CommandUtils.getUnpositionedCommands(sectionCommands));
+        for (Position position: Position.values()) {
+            sectionCommandsPartitions.add(CommandUtils.getPositionedCommands(sectionCommands, position));
+        }
+        boolean needSeparator = false;
+        for (List<Command> sectionCommandsPartition : sectionCommandsPartitions) {
+            boolean isFirstItem = true;
+            for (Command command : sectionCommandsPartition) {
+                if (needSeparator && isFirstItem) {
+                    mnSection.addSeparator();
+                }
+                needSeparator = true;
+                isFirstItem = false;
+                Action action = new Action(command.getDisplayName().trim(), () -> CommandUtils.run(mainWindow, command));
+                ActionMenuItem miCommand = new ActionMenuItem(action);
+                miCommand.addScriptedActionListener(mainWindow.getDefaultActionListener());
+                mnSection.add(miCommand);
+            }
+        }
     }
 
     public static boolean isPromotedSection(String section) {
@@ -495,9 +501,9 @@ public class MainMenu extends JMenuBar {
 
     public void setMenuForWorkspaceEntry(final WorkspaceEntry we) {
         if (we != null) {
-            we.updateActionState();
             createCommandsMenu(we);
             setExportMenu(we);
+            we.updateActionState();
         }
     }
 

@@ -1,23 +1,20 @@
 package org.workcraft.gui.tabs;
 
-import java.awt.Component;
-import java.awt.Container;
+import org.flexdock.docking.DockingPort;
+import org.flexdock.docking.defaults.AbstractDockable;
+import org.flexdock.docking.event.DockingEvent;
+import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.actions.ScriptedActionListener;
+
+import javax.swing.*;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-
-import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-import org.flexdock.docking.DockingPort;
-import org.flexdock.docking.defaults.AbstractDockable;
-import org.flexdock.docking.event.DockingEvent;
-import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.actions.ScriptedActionListener;
 
 public class DockableWindow extends AbstractDockable {
 
@@ -29,20 +26,17 @@ public class DockableWindow extends AbstractDockable {
 
     private final ArrayList<DockableWindowTabListener> tabListeners = new ArrayList<>();
 
-    private final ChangeListener tabChangeListener = new ChangeListener() {
-        @Override
-        public void stateChanged(ChangeEvent e) {
-            if (e.getSource() instanceof JTabbedPane) {
-                JTabbedPane tabbedPane = (JTabbedPane) e.getSource();
-                int myTabIndex = getTabIndex(tabbedPane, DockableWindow.this);
-                if (tabbedPane.getSelectedIndex() == myTabIndex) {
-                    for (DockableWindowTabListener l: tabListeners) {
-                        l.tabSelected(tabbedPane, myTabIndex);
-                    }
-                } else {
-                    for (DockableWindowTabListener l: tabListeners) {
-                        l.tabDeselected(tabbedPane, myTabIndex);
-                    }
+    private final ChangeListener tabChangeListener = e -> {
+        if (e.getSource() instanceof JTabbedPane) {
+            JTabbedPane tabbedPane = (JTabbedPane) e.getSource();
+            int myTabIndex = getTabIndex(tabbedPane, this);
+            if (tabbedPane.getSelectedIndex() == myTabIndex) {
+                for (DockableWindowTabListener l: tabListeners) {
+                    l.tabSelected(tabbedPane, myTabIndex);
+                }
+            } else {
+                for (DockableWindowTabListener l: tabListeners) {
+                    l.tabDeselected(tabbedPane, myTabIndex);
                 }
             }
         }
@@ -73,8 +67,8 @@ public class DockableWindow extends AbstractDockable {
         tabListeners.add(listener);
     }
 
-    public void removeTabChangeListener(DockableWindowTabListener listener) {
-        tabListeners.remove(listener);
+    public void clearTabListeners() {
+        tabListeners.clear();
     }
 
     public boolean isMaximized() {
