@@ -332,7 +332,6 @@ public class SelectionTool extends AbstractGraphEditorTool {
                 String text = (command instanceof NodeTransformer) ? ((NodeTransformer) command).getPopupName() : command.getDisplayName();
                 Action action = new Action(text.trim(), () -> CommandUtils.run(mainWindow, command));
                 ActionMenuItem miCommand = new ActionMenuItem(action);
-                miCommand.addScriptedActionListener(mainWindow.getDefaultActionListener());
                 miCommand.setEnabled(enabledCommands.contains(command));
                 popup.add(miCommand);
             }

@@ -6,7 +6,6 @@ import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.MainWindowActions;
 import org.workcraft.gui.actions.ActionMenuItem;
-import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.trees.TreeWindow;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.GuiUtils;
@@ -87,26 +86,18 @@ public class WorkspaceWindow extends JPanel {
     public JMenu createMenu() {
         JMenu menu = new JMenu("Workspace");
 
-        final Framework framework = Framework.getInstance();
-        final MainWindow mainWindow = framework.getMainWindow();
-        final ScriptedActionListener listener = mainWindow.getDefaultActionListener();
-
         ActionMenuItem miNewModel = new ActionMenuItem(MainWindowActions.CREATE_WORK_ACTION);
-        miNewModel.addScriptedActionListener(listener);
         menu.add(miNewModel);
 
         menu.addSeparator();
 
         ActionMenuItem miAdd = new ActionMenuItem(WorkspaceWindowActions.ADD_FILES_TO_WORKSPACE_ACTION);
-        miAdd.addScriptedActionListener(listener);
         menu.add(miAdd);
 
         ActionMenuItem miSave = new ActionMenuItem(WorkspaceWindowActions.SAVE_WORKSPACE_ACTION);
-        miSave.addScriptedActionListener(listener);
         menu.add(miSave);
 
         ActionMenuItem miSaveAs = new ActionMenuItem(WorkspaceWindowActions.SAVE_WORKSPACE_AS_ACTION);
-        miSaveAs.addScriptedActionListener(listener);
         menu.add(miSaveAs);
 
         return menu;

@@ -32,7 +32,7 @@ public class MainMenu extends JMenuBar {
     private final JMenu mnToolbars = new JMenu("Toolbars");
     private final JMenu mnWindows = new JMenu("Windows");
     private final HashMap<JToolBar, ActionCheckBoxMenuItem> toolbarItems = new HashMap<>();
-    private final HashMap<Integer, ActionCheckBoxMenuItem> windowItems = new HashMap<>();
+    private final HashMap<DockableWindow, ActionCheckBoxMenuItem> windowItems = new HashMap<>();
     private final LinkedList<JMenu> mnCommandsList = new LinkedList<>();
     private final JMenu mnHelp = new JMenu("Help");
 
@@ -52,43 +52,35 @@ public class MainMenu extends JMenuBar {
 
         ActionMenuItem miNewModel = new ActionMenuItem(MainWindowActions.CREATE_WORK_ACTION);
         miNewModel.setMnemonic(KeyEvent.VK_N);
-        miNewModel.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnFile.add(miNewModel);
 
         ActionMenuItem miOpenModel = new ActionMenuItem(MainWindowActions.OPEN_WORK_ACTION);
         miOpenModel.setMnemonic(KeyEvent.VK_O);
-        miOpenModel.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnFile.add(miOpenModel);
         mnFile.add(mnRecent);
 
         ActionMenuItem miMergeModel = new ActionMenuItem(MainWindowActions.MERGE_WORK_ACTION);
         miMergeModel.setMnemonic(KeyEvent.VK_M);
-        miMergeModel.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnFile.add(miMergeModel);
 
         mnFile.addSeparator();
 
         ActionMenuItem miSaveWork = new ActionMenuItem(MainWindowActions.SAVE_WORK_ACTION);
         miSaveWork.setMnemonic(KeyEvent.VK_S);
-        miSaveWork.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnFile.add(miSaveWork);
 
         ActionMenuItem miSaveWorkAs = new ActionMenuItem(MainWindowActions.SAVE_WORK_AS_ACTION);
-        miSaveWorkAs.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnFile.add(miSaveWorkAs);
 
         ActionMenuItem miCloseActive = new ActionMenuItem(MainWindowActions.CLOSE_ACTIVE_EDITOR_ACTION);
-        miCloseActive.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnFile.add(miCloseActive);
 
         ActionMenuItem miCloseAll = new ActionMenuItem(MainWindowActions.CLOSE_ALL_EDITORS_ACTION);
-        miCloseAll.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnFile.add(miCloseAll);
 
         mnFile.addSeparator();
 
         ActionMenuItem miImport = new ActionMenuItem(MainWindowActions.IMPORT_ACTION);
-        miImport.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnFile.add(miImport);
         mnFile.add(mnExport);
 
@@ -97,34 +89,27 @@ public class MainMenu extends JMenuBar {
         // FIXME: Workspace functionality is not working yet.
 /*
         ActionMenuItem miNewWorkspace = new ActionMenuItem(WorkspaceWindowActions.NEW_WORKSPACE_AS_ACTION);
-        miNewWorkspace.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnFile.add(miNewWorkspace);
 
         ActionMenuItem miOpenWorkspace = new ActionMenuItem(WorkspaceWindowActions.OPEN_WORKSPACE_ACTION);
-        miOpenWorkspace.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnFile.add(miOpenWorkspace);
 
         ActionMenuItem miAddFiles = new ActionMenuItem(WorkspaceWindowActions.ADD_FILES_TO_WORKSPACE_ACTION);
-        miAddFiles.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnFile.add(miAddFiles);
 
         ActionMenuItem miSaveWorkspace = new ActionMenuItem(WorkspaceWindowActions.SAVE_WORKSPACE_ACTION);
-        miSaveWorkspace.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnFile.add(miSaveWorkspace);
 
         ActionMenuItem miSaveWorkspaceAs = new ActionMenuItem(WorkspaceWindowActions.SAVE_WORKSPACE_AS_ACTION);
-        miSaveWorkspaceAs.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnFile.add(miSaveWorkspaceAs);
 
         mnFile.addSeparator();
 */
         ActionMenuItem miShutdownGUI = new ActionMenuItem(MainWindowActions.SHUTDOWN_GUI_ACTION);
-        miShutdownGUI.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnFile.add(miShutdownGUI);
         mnFile.addSeparator();
 
         ActionMenuItem miExit = new ActionMenuItem(MainWindowActions.EXIT_ACTION);
-        miExit.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnFile.add(miExit);
     }
 
@@ -143,7 +128,6 @@ public class MainMenu extends JMenuBar {
             }
         });
         ActionMenuItem miExport = new ActionMenuItem(action);
-        miExport.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnExport.add(miExport);
         mnExport.setEnabled(true);
     }
@@ -155,29 +139,24 @@ public class MainMenu extends JMenuBar {
 
         ActionMenuItem miUndo = new ActionMenuItem(MainWindowActions.EDIT_UNDO_ACTION);
         miUndo.setMnemonic(KeyEvent.VK_U);
-        miUndo.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnEdit.add(miUndo);
 
         ActionMenuItem miRedo = new ActionMenuItem(MainWindowActions.EDIT_REDO_ACTION);
         miRedo.setMnemonic(KeyEvent.VK_R);
-        miRedo.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnEdit.add(miRedo);
 
         mnEdit.addSeparator();
 
         ActionMenuItem miCut = new ActionMenuItem(MainWindowActions.EDIT_CUT_ACTION);
         miCut.setMnemonic(KeyEvent.VK_T);
-        miCut.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnEdit.add(miCut);
 
         ActionMenuItem miCopy = new ActionMenuItem(MainWindowActions.EDIT_COPY_ACTION);
         miCopy.setMnemonic(KeyEvent.VK_C);
-        miCopy.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnEdit.add(miCopy);
 
         ActionMenuItem miPaste = new ActionMenuItem(MainWindowActions.EDIT_PASTE_ACTION);
         miPaste.setMnemonic(KeyEvent.VK_P);
-        miPaste.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnEdit.add(miPaste);
 
         ActionMenuItem miDelete = new ActionMenuItem(MainWindowActions.EDIT_DELETE_ACTION);
@@ -192,30 +171,25 @@ public class MainMenu extends JMenuBar {
                 MainWindowActions.EDIT_DELETE_ACTION.run();
             }
         });
-        miDelete.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnEdit.add(miDelete);
 
         mnEdit.addSeparator();
 
         ActionMenuItem miSelectAll = new ActionMenuItem(MainWindowActions.EDIT_SELECT_ALL_ACTION);
         miSelectAll.setMnemonic(KeyEvent.VK_A);
-        miSelectAll.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnEdit.add(miSelectAll);
 
         ActionMenuItem miSelectInverse = new ActionMenuItem(MainWindowActions.EDIT_SELECT_INVERSE_ACTION);
         miSelectInverse.setMnemonic(KeyEvent.VK_V);
-        miSelectInverse.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnEdit.add(miSelectInverse);
 
         ActionMenuItem miSelectNone = new ActionMenuItem(MainWindowActions.EDIT_SELECT_NONE_ACTION);
         miSelectNone.setMnemonic(KeyEvent.VK_E);
-        miSelectNone.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnEdit.add(miSelectNone);
 
         mnEdit.addSeparator();
 
         ActionMenuItem miProperties = new ActionMenuItem(MainWindowActions.EDIT_SETTINGS_ACTION);
-        miProperties.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnEdit.add(miProperties);
     }
 
@@ -225,41 +199,32 @@ public class MainMenu extends JMenuBar {
         add(mnView);
 
         ActionMenuItem miZoomIn = new ActionMenuItem(MainWindowActions.VIEW_ZOOM_IN);
-        miZoomIn.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnView.add(miZoomIn);
 
         ActionMenuItem miZoomOut = new ActionMenuItem(MainWindowActions.VIEW_ZOOM_OUT);
-        miZoomOut.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnView.add(miZoomOut);
 
         ActionMenuItem miZoomDefault = new ActionMenuItem(MainWindowActions.VIEW_ZOOM_DEFAULT);
-        miZoomDefault.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnView.add(miZoomDefault);
 
         ActionMenuItem miZoomFit = new ActionMenuItem(MainWindowActions.VIEW_ZOOM_FIT);
-        miZoomFit.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnView.add(miZoomFit);
 
         mnView.addSeparator();
 
         ActionMenuItem miPanCenter = new ActionMenuItem(MainWindowActions.VIEW_PAN_CENTER);
-        miPanCenter.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnView.add(miPanCenter);
 
         ActionMenuItem miPanLeft = new ActionMenuItem(MainWindowActions.VIEW_PAN_LEFT);
-        miPanLeft.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnView.add(miPanLeft);
 
         ActionMenuItem miPanUp = new ActionMenuItem(MainWindowActions.VIEW_PAN_UP);
-        miPanUp.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnView.add(miPanUp);
 
         ActionMenuItem miPanRight = new ActionMenuItem(MainWindowActions.VIEW_PAN_RIGHT);
-        miPanRight.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnView.add(miPanRight);
 
         ActionMenuItem miPanDown = new ActionMenuItem(MainWindowActions.VIEW_PAN_DOWN);
-        miPanDown.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnView.add(miPanDown);
 
         mnView.addSeparator();
@@ -268,7 +233,6 @@ public class MainMenu extends JMenuBar {
         mnView.add(mnWindows);
 
         ActionMenuItem miResetLayout = new ActionMenuItem(MainWindowActions.RESET_GUI_ACTION);
-        miResetLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnView.add(miResetLayout);
     }
 
@@ -278,31 +242,25 @@ public class MainMenu extends JMenuBar {
         add(mnHelp);
 
         ActionMenuItem miOverview = new ActionMenuItem(MainWindowActions.HELP_OVERVIEW_ACTION);
-        miOverview.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnHelp.add(miOverview);
 
         ActionMenuItem miContents = new ActionMenuItem(MainWindowActions.HELP_CONTENTS_ACTION);
-        miContents.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnHelp.add(miContents);
 
         ActionMenuItem miTutorials = new ActionMenuItem(MainWindowActions.HELP_TUTORIALS_ACTION);
-        miTutorials.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnHelp.add(miTutorials);
 
         mnHelp.addSeparator();
 
         ActionMenuItem miBugreport = new ActionMenuItem(MainWindowActions.HELP_BUGREPORT_ACTION);
-        miBugreport.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnHelp.add(miBugreport);
 
         ActionMenuItem miQuestion = new ActionMenuItem(MainWindowActions.HELP_EMAIL_ACTION);
-        miQuestion.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnHelp.add(miQuestion);
 
         mnHelp.addSeparator();
 
         ActionMenuItem miAbout = new ActionMenuItem(MainWindowActions.HELP_ABOUT_ACTION);
-        miAbout.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnHelp.add(miAbout);
     }
 
@@ -348,18 +306,17 @@ public class MainMenu extends JMenuBar {
     public final void registerToolbar(JToolBar toolbar) {
         Action action = new Action(toolbar.getName(), () -> toolbar.setVisible(!toolbar.isVisible()));
         ActionCheckBoxMenuItem miToolbarItem = new ActionCheckBoxMenuItem(action);
-        miToolbarItem.addScriptedActionListener(mainWindow.getDefaultActionListener());
         miToolbarItem.setSelected(toolbar.isVisible());
         toolbarItems.put(toolbar, miToolbarItem);
         mnToolbars.add(miToolbarItem);
     }
 
-    public final void registerUtilityWindow(DockableWindow window) {
-        Action action = new Action(window.getTitle(), () -> Framework.getInstance().getMainWindow().toggleDockableWindow(window));
+    public final void registerUtilityWindow(DockableWindow dockableWindow) {
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        Action action = new Action(dockableWindow.getTitle(), () -> mainWindow.toggleDockableWindow(dockableWindow));
         ActionCheckBoxMenuItem miWindowItem = new ActionCheckBoxMenuItem(action);
-        miWindowItem.addScriptedActionListener(mainWindow.getDefaultActionListener());
-        miWindowItem.setSelected(!window.isClosed());
-        windowItems.put(window.getID(), miWindowItem);
+        miWindowItem.setSelected(!dockableWindow.isClosed());
+        windowItems.put(dockableWindow, miWindowItem);
         mnWindows.add(miWindowItem);
     }
 
@@ -400,8 +357,8 @@ public class MainMenu extends JMenuBar {
         }
     }
 
-    public final void setWindowVisibility(int id, boolean selected) {
-        ActionCheckBoxMenuItem mi = windowItems.get(id);
+    public final void setWindowVisibility(DockableWindow window, boolean selected) {
+        ActionCheckBoxMenuItem mi = windowItems.get(window);
         if (mi != null) {
             mi.setSelected(selected);
         }
@@ -455,7 +412,6 @@ public class MainMenu extends JMenuBar {
                 isFirstItem = false;
                 Action action = new Action(command.getDisplayName().trim(), () -> CommandUtils.run(mainWindow, command));
                 ActionMenuItem miCommand = new ActionMenuItem(action);
-                miCommand.addScriptedActionListener(mainWindow.getDefaultActionListener());
                 mnSection.add(miCommand);
             }
         }

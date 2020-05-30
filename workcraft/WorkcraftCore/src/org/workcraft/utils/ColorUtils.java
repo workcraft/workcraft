@@ -14,6 +14,17 @@ public class ColorUtils {
     private static final float[] COMP_2 = new float[4];
     private static final float[] COMP_3 = new float[4];
 
+    public static Color getRandomColor() {
+        return new Color(RANDOM.nextInt(256), RANDOM.nextInt(256), RANDOM.nextInt(256));
+    }
+
+    public static Color fade(Color color, double factor) {
+        int r = (int) (color.getRed() * factor);
+        int g = (int) (color.getGreen() * factor);
+        int b = (int) (color.getBlue() * factor);
+        return new Color(r, g, b);
+    }
+
     private static float blend(float col, float orig) {
         return col + (1.0f - col) * orig * 0.8f;
     }
@@ -101,10 +112,6 @@ public class ColorUtils {
 
     public static String getHexARGB(Color color) {
         return String.format("#%08x", color.getRGB());
-    }
-
-    public static Color getRandomColor() {
-        return new Color(RANDOM.nextInt(256), RANDOM.nextInt(256), RANDOM.nextInt(256));
     }
 
 }

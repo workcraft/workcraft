@@ -3,8 +3,6 @@ package org.workcraft.gui.tabs;
 import org.flexdock.docking.DockingPort;
 import org.flexdock.docking.defaults.AbstractDockable;
 import org.flexdock.docking.event.DockingEvent;
-import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.actions.ScriptedActionListener;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
@@ -20,7 +18,6 @@ public class DockableWindow extends AbstractDockable {
 
     private final DockableWindowContentPanel panel;
     private final LinkedList<Component> dragSources = new LinkedList<>();
-    private final MainWindow mainWindow;
     private boolean inTab = false;
     private boolean closed = false;
 
@@ -42,20 +39,20 @@ public class DockableWindow extends AbstractDockable {
         }
     };
 
-    public DockableWindow(MainWindow mainWindow, DockableWindowContentPanel panel, String persistentID) {
+    public DockableWindow(DockableWindowContentPanel panel, String persistentID) {
         super(persistentID);
         this.panel = panel;
-        this.mainWindow = mainWindow;
+        panel.setDockableWindow(this);
         setTabText(panel.getTitle());
 
+        Component header = panel.getHeader();
         dragSources.add(panel);
-        dragSources.add(panel.header);
-
-        panel.header.addMouseListener(new MouseAdapter() {
+        dragSources.add(header);
+        header.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                    for (DockableWindowTabListener l: tabListeners) {
+                    for (DockableWindowTabListener l : tabListeners) {
                         l.headerClicked();
                     }
                 }
@@ -77,7 +74,7 @@ public class DockableWindow extends AbstractDockable {
 
     public void setMaximized(boolean maximized) {
         panel.setMaximized(maximized);
-        updateHeaders(this.getDockingPort(), mainWindow.getDefaultActionListener());
+        updateHeaders(this.getDockingPort());
         if (maximized) {
             for (DockableWindowTabListener l: tabListeners) {
                 l.windowMaximised();
@@ -117,7 +114,7 @@ public class DockableWindow extends AbstractDockable {
         return myTabIndex;
     }
 
-    public static void updateHeaders(DockingPort port, ScriptedActionListener actionListener) {
+    public static void updateHeaders(DockingPort port) {
         for (Object d: port.getDockables()) {
             DockableWindow dockable = (DockableWindow) d;
             boolean inTab = dockable.getComponent().getParent() instanceof JTabbedPane;
@@ -129,7 +126,7 @@ public class DockableWindow extends AbstractDockable {
                 JTabbedPane tabbedPane = (JTabbedPane) dockable.getComponent().getParent();
                 for (int i = 0; i < tabbedPane.getTabCount(); i++) {
                     if (dockable.getComponent() == tabbedPane.getComponentAt(i)) {
-                        DockableTab dockableTab = new DockableTab(dockable, actionListener);
+                        DockableTab dockableTab = new DockableTab(dockable);
                         tabbedPane.setTabComponentAt(i, dockableTab);
                         break;
                     }
@@ -147,10 +144,6 @@ public class DockableWindow extends AbstractDockable {
 
     public String getTitle() {
         return getContentPanel().getTitle();
-    }
-
-    public int getID() {
-        return getContentPanel().getID();
     }
 
     private static void processTabEvents(DockingPort port) {
@@ -185,14 +178,14 @@ public class DockableWindow extends AbstractDockable {
     @Override
     public void dockingComplete(DockingEvent evt) {
         processTabEvents(evt.getNewDockingPort());
-        updateHeaders(evt.getNewDockingPort(), mainWindow.getDefaultActionListener());
+        updateHeaders(evt.getNewDockingPort());
         super.dockingComplete(evt);
     }
 
     @Override
     public void undockingComplete(DockingEvent evt) {
         processTabEvents(evt.getOldDockingPort());
-        updateHeaders(evt.getOldDockingPort(), mainWindow.getDefaultActionListener());
+        updateHeaders(evt.getOldDockingPort());
         super.undockingComplete(evt);
     }
 

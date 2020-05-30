@@ -8,6 +8,13 @@ import java.awt.*;
 public class ColorUtilsTests {
 
     @Test
+    public void fadeTest() {
+        Color color = ColorUtils.getRandomColor();
+        Assertions.assertEquals(Color.BLACK, ColorUtils.fade(color, 0.0));
+        Assertions.assertEquals(color, ColorUtils.fade(color, 1.0));
+    }
+
+    @Test
     public void coloriseTest() {
         Color color = ColorUtils.getRandomColor();
         Assertions.assertEquals(color, ColorUtils.colorise(color, null));

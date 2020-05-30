@@ -1,16 +1,11 @@
 package org.workcraft.gui.tabs;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
+import org.workcraft.Framework;
+import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.actions.Action;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
-import org.workcraft.gui.tabs.DockableWindowContentPanel.ViewAction;
-import org.workcraft.gui.actions.ScriptedActionListener;
+import javax.swing.*;
+import java.awt.*;
 
 @SuppressWarnings("serial")
 public class DockableTab extends JPanel {
@@ -19,7 +14,7 @@ public class DockableTab extends JPanel {
 
     private JLabel label;
 
-    public DockableTab(DockableWindow dockableWindow, ScriptedActionListener actionListener) {
+    public DockableTab(DockableWindow dockableWindow) {
         super();
         setOpaque(false);
         setLayout(new BorderLayout());
@@ -44,17 +39,21 @@ public class DockableTab extends JPanel {
         label.setFocusable(false);
         label.setOpaque(false);
 
-        TabButton closeButton = null;
+        final MainWindow mainWindow = Framework.getInstance().getMainWindow();
+
         if ((dockableWindow.getOptions() & DockableWindowContentPanel.MAXIMIZE_BUTTON) != 0) {
-            ViewAction action = new ViewAction(dockableWindow.getID(), ViewAction.MAXIMIZE_ACTION);
-            TabButton maxButton = new TabButton("\u2191", "Maximize window", action, actionListener);
+            TabButton maxButton = new TabButton("Maximize window",
+                    new Action("\u2191", () -> mainWindow.toggleDockableWindowMaximized(dockableWindow)));
+
             buttonsPanel.add(maxButton);
             buttonsPanel.add(Box.createRigidArea(new Dimension(2, 0)));
         }
 
+        TabButton closeButton = null;
         if ((dockableWindow.getOptions() & DockableWindowContentPanel.CLOSE_BUTTON) != 0) {
-            ViewAction action = new ViewAction(dockableWindow.getID(), ViewAction.CLOSE_ACTION);
-            closeButton = new TabButton("\u00d7", "Close window", action, actionListener);
+            closeButton = new TabButton("Close window",
+                    new Action("\u00d7", () -> mainWindow.closeDockableWindow(dockableWindow)));
+
             buttonsPanel.add(closeButton);
         }
 
