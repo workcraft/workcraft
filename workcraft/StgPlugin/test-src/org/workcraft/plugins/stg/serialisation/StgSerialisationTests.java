@@ -23,7 +23,7 @@ public class StgSerialisationTests {
         VisualStg stg = XMLSerialisationTestingUtils.createTestSTG3();
 
         RandomLayoutCommand layout = new RandomLayoutCommand();
-        WorkspaceEntry we = new WorkspaceEntry(null);
+        WorkspaceEntry we = new WorkspaceEntry();
         we.setModelEntry(new ModelEntry(new StgDescriptor(), stg));
         layout.run(we);
 

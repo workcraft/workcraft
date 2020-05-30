@@ -1,36 +1,32 @@
 package org.workcraft.gui.tabs;
 
-import java.awt.Color;
-import java.awt.Font;
+import org.workcraft.gui.actions.Action;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import javax.swing.JLabel;
-
-import org.workcraft.gui.actions.Action;
-import org.workcraft.gui.actions.ScriptedActionListener;
-
 public class TabButton extends JLabel implements MouseListener {
-    private static final long serialVersionUID = 1L;
-    private final ScriptedActionListener actionListener;
+
     private final Action action;
 
-    public TabButton(String label, String toolTipText, Action action, ScriptedActionListener actionListener) {
-        super(label);
+    public TabButton(String toolTipText, Action action) {
+        super(action.getTitle());
         setVerticalAlignment(JLabel.CENTER);
         setFont(getFont().deriveFont(Font.PLAIN));
         setOpaque(false);
         setForeground(Color.GRAY);
         addMouseListener(this);
         setToolTipText(toolTipText);
-
         this.action = action;
-        this.actionListener = actionListener;
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        actionListener.actionPerformed(action);
+        if ((action != null) && action.isEnabled()) {
+            action.run();
+        }
     }
 
     @Override

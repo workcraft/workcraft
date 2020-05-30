@@ -12,7 +12,7 @@ framework.addJavaScriptHelp("getWorkFile", "work",
     "return a file object for the model 'work'");
 
 function getWorkFile(work) {
-    return work.getFile();
+    return framework.getWorkspace().getFile(work);
 }
 
 

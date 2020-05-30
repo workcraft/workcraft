@@ -18,7 +18,6 @@ import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.WorkUtils;
 
 import java.awt.geom.Point2D;
-import java.io.File;
 import java.util.*;
 
 public class WorkspaceEntry implements ObservableState {
@@ -28,7 +27,6 @@ public class WorkspaceEntry implements ObservableState {
     private final Map<String, Resource> resources = new HashMap<>();
     private ModelEntry modelEntry = null;
     private boolean changed = true;
-    private final Workspace workspace;
 
     private boolean canSelect = true;
     private boolean canModify = true;
@@ -43,21 +41,16 @@ public class WorkspaceEntry implements ObservableState {
 
     private Point2D pastePosition = null;
 
-    public WorkspaceEntry(Workspace workspace) {
-        this.workspace = workspace;
-    }
-
     public void setChanged(boolean changed) {
         if (this.changed != changed) {
             this.changed = changed;
             if (!changed) {
                 savedMemento = null;
             }
-            if (workspace != null) {
-                workspace.fireEntryChanged(this);
-            }
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
+            Framework framework = Framework.getInstance();
+            Workspace workspace = framework.getWorkspace();
+            workspace.fireEntryChanged(this);
+            MainWindow mainWindow = framework.getMainWindow();
             if (mainWindow != null) {
                 mainWindow.refreshWorkspaceEntryTitle(this, true);
             }
@@ -181,11 +174,7 @@ public class WorkspaceEntry implements ObservableState {
     }
 
     public Path<String> getWorkspacePath() {
-        return workspace == null ? null : workspace.getPath(this);
-    }
-
-    public File getFile() {
-        return workspace == null ? null : workspace.getFile(this);
+        return Framework.getInstance().getWorkspace().getPath(this);
     }
 
     private final ObservableStateImpl observableState = new ObservableStateImpl();
@@ -216,8 +205,7 @@ public class WorkspaceEntry implements ObservableState {
         MainWindowActions.EDIT_SELECT_ALL_ACTION.setEnabled(canModify && canSelect);
         MainWindowActions.EDIT_SELECT_INVERSE_ACTION.setEnabled(canModify && canSelect);
         MainWindowActions.EDIT_SELECT_NONE_ACTION.setEnabled(canModify && canSelect);
-        final Framework framework = Framework.getInstance();
-        final MainWindow mainWindow = framework.getMainWindow();
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
         if (mainWindow != null) {
             mainWindow.updateMainMenuState(canModify);
         }

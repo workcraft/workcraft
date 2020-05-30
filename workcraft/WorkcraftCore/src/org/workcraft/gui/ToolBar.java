@@ -11,16 +11,13 @@ import javax.swing.*;
 @SuppressWarnings("serial")
 public class ToolBar extends JToolBar {
 
-    private final MainWindow mainWindow;
-
     private ActionToggle gridToggle;
     private ActionToggle rulerToggle;
     private ActionToggle nameToggle;
     private ActionToggle labelToggle;
 
-    public ToolBar(final MainWindow mainWindow) {
+    public ToolBar() {
         super("Global");
-        this.mainWindow = mainWindow;
         addFileButtons();
         addSeparator();
         addEditButtons();
@@ -33,85 +30,63 @@ public class ToolBar extends JToolBar {
     }
 
     private void addFileButtons() {
-        ActionButton createButton = new ActionButton(MainWindowActions.CREATE_WORK_ACTION,
-                GuiUtils.createIconFromSVG("images/toolbar-file-create.svg"));
-        createButton.addScriptedActionListener(mainWindow.getDefaultActionListener());
-        add(createButton);
+        add(new ActionButton(GuiUtils.createIconFromSVG("images/toolbar-file-create.svg"),
+                MainWindowActions.CREATE_WORK_ACTION));
 
-        ActionButton openButton = new ActionButton(MainWindowActions.OPEN_WORK_ACTION,
-                GuiUtils.createIconFromSVG("images/toolbar-file-open.svg"));
-        openButton.addScriptedActionListener(mainWindow.getDefaultActionListener());
-        add(openButton);
+        add(new ActionButton(GuiUtils.createIconFromSVG("images/toolbar-file-open.svg"),
+                MainWindowActions.OPEN_WORK_ACTION));
 
-        ActionButton saveButton = new ActionButton(MainWindowActions.SAVE_WORK_ACTION,
-                GuiUtils.createIconFromSVG("images/toolbar-file-save.svg"));
-        saveButton.addScriptedActionListener(mainWindow.getDefaultActionListener());
-        add(saveButton);
+        add(new ActionButton(GuiUtils.createIconFromSVG("images/toolbar-file-save.svg"),
+                MainWindowActions.SAVE_WORK_ACTION));
     }
 
     private void addEditButtons() {
-        ActionButton undoButton = new ActionButton(MainWindowActions.EDIT_UNDO_ACTION,
-                GuiUtils.createIconFromSVG("images/toolbar-edit-undo.svg"));
-        undoButton.addScriptedActionListener(mainWindow.getDefaultActionListener());
-        add(undoButton);
+        add(new ActionButton(GuiUtils.createIconFromSVG("images/toolbar-edit-undo.svg"),
+                MainWindowActions.EDIT_UNDO_ACTION));
 
-        ActionButton redoButton = new ActionButton(MainWindowActions.EDIT_REDO_ACTION,
-                GuiUtils.createIconFromSVG("images/toolbar-edit-redo.svg"));
-        redoButton.addScriptedActionListener(mainWindow.getDefaultActionListener());
-        add(redoButton);
+        add(new ActionButton(GuiUtils.createIconFromSVG("images/toolbar-edit-redo.svg"),
+                MainWindowActions.EDIT_REDO_ACTION));
 
-        ActionButton copyButton = new ActionButton(MainWindowActions.EDIT_COPY_ACTION,
-                GuiUtils.createIconFromSVG("images/toolbar-edit-copy.svg"));
-        copyButton.addScriptedActionListener(mainWindow.getDefaultActionListener());
-        add(copyButton);
+        add(new ActionButton(GuiUtils.createIconFromSVG("images/toolbar-edit-copy.svg"),
+                MainWindowActions.EDIT_COPY_ACTION));
 
-        ActionButton pasteButton = new ActionButton(MainWindowActions.EDIT_PASTE_ACTION,
-                GuiUtils.createIconFromSVG("images/toolbar-edit-paste.svg"));
-        pasteButton.addScriptedActionListener(mainWindow.getDefaultActionListener());
-        add(pasteButton);
+        add(new ActionButton(GuiUtils.createIconFromSVG("images/toolbar-edit-paste.svg"),
+                MainWindowActions.EDIT_PASTE_ACTION));
     }
 
     private void addViewButtons() {
-        ActionButton zoomInButton = new ActionButton(MainWindowActions.VIEW_ZOOM_IN,
-                GuiUtils.createIconFromSVG("images/toolbar-view-zoom_in.svg"));
-        zoomInButton.addScriptedActionListener(mainWindow.getDefaultActionListener());
-        add(zoomInButton);
+        add(new ActionButton(GuiUtils.createIconFromSVG("images/toolbar-view-zoom_in.svg"),
+                MainWindowActions.VIEW_ZOOM_IN));
 
-        ActionButton zoomOutButton = new ActionButton(MainWindowActions.VIEW_ZOOM_OUT,
-                GuiUtils.createIconFromSVG("images/toolbar-view-zoom_out.svg"));
-        zoomOutButton.addScriptedActionListener(mainWindow.getDefaultActionListener());
-        add(zoomOutButton);
+        add(new ActionButton(GuiUtils.createIconFromSVG("images/toolbar-view-zoom_out.svg"),
+                MainWindowActions.VIEW_ZOOM_OUT));
 
-        ActionButton zoomDefaultButton = new ActionButton(MainWindowActions.VIEW_ZOOM_DEFAULT,
-                GuiUtils.createIconFromSVG("images/toolbar-view-zoom_default.svg"));
-        zoomDefaultButton.addScriptedActionListener(mainWindow.getDefaultActionListener());
-        add(zoomDefaultButton);
+        add(new ActionButton(GuiUtils.createIconFromSVG("images/toolbar-view-zoom_default.svg"),
+                MainWindowActions.VIEW_ZOOM_DEFAULT));
 
-        ActionButton zoomFitButton = new ActionButton(MainWindowActions.VIEW_ZOOM_FIT,
-                GuiUtils.createIconFromSVG("images/toolbar-view-zoom_fit.svg"));
-        zoomFitButton.addScriptedActionListener(mainWindow.getDefaultActionListener());
-        add(zoomFitButton);
+        add(new ActionButton(GuiUtils.createIconFromSVG("images/toolbar-view-zoom_fit.svg"),
+                MainWindowActions.VIEW_ZOOM_FIT));
     }
 
     private void addShowToggles() {
-        gridToggle = new ActionToggle(MainWindowActions.TOGGLE_GRID,
-                GuiUtils.createIconFromSVG("images/toolbar-toggle-grid.svg"));
-        gridToggle.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        gridToggle = new ActionToggle(GuiUtils.createIconFromSVG("images/toolbar-toggle-grid.svg"),
+                MainWindowActions.TOGGLE_GRID);
+
         add(gridToggle);
 
-        rulerToggle = new ActionToggle(MainWindowActions.TOGGLE_RULER,
-                GuiUtils.createIconFromSVG("images/toolbar-toggle-ruler.svg"));
-        rulerToggle.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        rulerToggle = new ActionToggle(GuiUtils.createIconFromSVG("images/toolbar-toggle-ruler.svg"),
+                MainWindowActions.TOGGLE_RULER);
+
         add(rulerToggle);
 
-        nameToggle = new ActionToggle(MainWindowActions.TOGGLE_NAME,
-                GuiUtils.createIconFromSVG("images/toolbar-toggle-name.svg"));
-        nameToggle.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        nameToggle = new ActionToggle(GuiUtils.createIconFromSVG("images/toolbar-toggle-name.svg"),
+                MainWindowActions.TOGGLE_NAME);
+
         add(nameToggle);
 
-        labelToggle = new ActionToggle(MainWindowActions.TOGGLE_LABEL,
-                GuiUtils.createIconFromSVG("images/toolbar-toggle-label.svg"));
-        labelToggle.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        labelToggle = new ActionToggle(GuiUtils.createIconFromSVG("images/toolbar-toggle-label.svg"),
+                MainWindowActions.TOGGLE_LABEL);
+
         add(labelToggle);
     }
 

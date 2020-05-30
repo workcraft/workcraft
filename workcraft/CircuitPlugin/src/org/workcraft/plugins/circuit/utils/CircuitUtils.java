@@ -1,5 +1,6 @@
 package org.workcraft.plugins.circuit.utils;
 
+import org.workcraft.Framework;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -22,8 +23,10 @@ import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.*;
+import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
+import java.io.File;
 import java.util.*;
 
 public class CircuitUtils {
@@ -591,10 +594,12 @@ public class CircuitUtils {
 
     public static void setTitleAndEnvironment(VisualCircuit visualCircuit, WorkspaceEntry stgWe) {
         visualCircuit.setTitle(stgWe.getModelTitle());
-        if (!stgWe.getFile().exists()) {
+        Workspace workspace = Framework.getInstance().getWorkspace();
+        File stgFile = workspace.getFile(stgWe);
+        if ((stgFile == null) || !stgFile.exists()) {
             DialogUtils.showError("Unsaved STG cannot be set as the circuit environment.");
         } else {
-            visualCircuit.getMathModel().setEnvironmentFile(stgWe.getFile());
+            visualCircuit.getMathModel().setEnvironmentFile(stgFile);
             if (stgWe.isChanged()) {
                 DialogUtils.showWarning("The STG with unsaved changes is set as the circuit environment.");
             }
