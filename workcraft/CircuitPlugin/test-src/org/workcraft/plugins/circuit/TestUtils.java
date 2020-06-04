@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractSynthesisCommand;
 import org.workcraft.dom.math.PageNode;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
@@ -89,7 +90,8 @@ public class TestUtils {
         Mutex mutex = CircuitSettings.parseMutexData();
         for (FunctionComponent component: circuit.getFunctionComponents()) {
             if (mutex.name.equals(component.getModule())) {
-                result.add(circuit.getNodeReference(component));
+                String ref = circuit.getNodeReference(component);
+                result.add(Identifier.truncateNamespaceSeparator(ref));
             }
         }
         return result;

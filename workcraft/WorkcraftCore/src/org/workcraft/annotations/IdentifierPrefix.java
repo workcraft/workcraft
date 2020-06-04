@@ -10,5 +10,4 @@ import java.lang.annotation.Target;
 public @interface IdentifierPrefix {
     String value();
     boolean isInternal() default false;
-    boolean isNamespace() default false;
 }

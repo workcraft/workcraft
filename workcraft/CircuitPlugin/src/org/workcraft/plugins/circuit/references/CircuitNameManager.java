@@ -39,7 +39,7 @@ public class CircuitNameManager extends DefaultNameManager {
             result = ((CircuitComponent) node).getName();
         }
         if ((result != null) && !result.isEmpty()) {
-            result = getPrefix(node) + name;
+            result = Identifier.compose(getPrefix(node), name);
         }
         return result;
     }

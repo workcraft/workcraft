@@ -167,7 +167,7 @@ public class StgParser {
             // Create place with all the hierarchy and a temporary (internal) name
             String parentRef = NamespaceHelper.getParentReference(ref);
             String name = NamespaceHelper.getReferenceName(ref);
-            String tmpName = Identifier.createInternal(name);
+            String tmpName = Identifier.makeInternal(name);
             String tmpRef = NamespaceHelper.getReference(parentRef, tmpName);
             node = stg.createPlace(tmpRef, null);
             places.put(fullRef, node);

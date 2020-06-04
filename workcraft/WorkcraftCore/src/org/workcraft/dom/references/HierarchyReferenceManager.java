@@ -154,9 +154,6 @@ public class HierarchyReferenceManager extends HierarchySupervisor implements Re
         do {
             component = getNamespaceProvider(node);
             if (component != null) {
-                if (!result.isEmpty()) {
-                    result = NamespaceHelper.getHierarchySeparator() + result;
-                }
                 String name = getNameManager(component).getName(node);
                 // The unnamed component just returns null.
                 if (name == null) return null;

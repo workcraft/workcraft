@@ -5,7 +5,6 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.math.PageNode;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.plugins.petri.PetriModel;
@@ -14,7 +13,6 @@ import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.utils.ExportUtils;
-import org.workcraft.utils.Hierarchy;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -84,7 +82,7 @@ public class SerialiserUtils {
     private static void writeInitialStateLpn(PrintWriter writer, StgModel stg, HashMap<String, Boolean> initialState) {
         writer.write("#@.init_state [");
         for (final Signal.Type type : Signal.Type.values()) {
-            for (String signal : getSortedSignals(stg, type)) {
+            for (String signal : sort(stg.getSignalReferences(type))) {
                 Boolean signalState = initialState.get(signal);
                 if ((signalState == null) || !signalState) {
                     writer.write("0");
@@ -99,7 +97,7 @@ public class SerialiserUtils {
     private static void writeInitialStateStg(PrintWriter writer, StgModel stg, HashMap<String, Boolean> initialState) {
         writer.write(".initial state");
         for (final Signal.Type type : Signal.Type.values()) {
-            for (String signal : getSortedSignals(stg, type)) {
+            for (String signal : sort(stg.getSignalReferences(type))) {
                 Boolean signalState = initialState.get(signal);
                 writer.write(" ");
                 if ((signalState == null) || !signalState) {
@@ -183,16 +181,10 @@ public class SerialiserUtils {
 
 
     private static void writeSignalDeclarations(PrintWriter out, StgModel stg) {
-        writeSignalDeclaration(out, getSortedSignals(stg, Signal.Type.INPUT), KEYWORD_INPUTS);
-        writeSignalDeclaration(out, getSortedSignals(stg, Signal.Type.OUTPUT), KEYWORD_OUTPUTS);
-        writeSignalDeclaration(out, getSortedSignals(stg, Signal.Type.INTERNAL), KEYWORD_INTERNAL);
-        Set<String> pageRefs = getPageReferences(stg);
-        if (!pageRefs.isEmpty()) {
-            out.write("# Pages added as dummies: " + String.join(", ", pageRefs) + "\n");
-        }
-        List<String> dummyRefs = new ArrayList(stg.getDummyReferences());
-        dummyRefs.addAll(pageRefs);
-        writeSignalDeclaration(out, dummyRefs, KEYWORD_DUMMY);
+        writeSignalDeclaration(out, sort(stg.getSignalReferences(Signal.Type.INPUT)), KEYWORD_INPUTS);
+        writeSignalDeclaration(out, sort(stg.getSignalReferences(Signal.Type.OUTPUT)), KEYWORD_OUTPUTS);
+        writeSignalDeclaration(out, sort(stg.getSignalReferences(Signal.Type.INTERNAL)), KEYWORD_INTERNAL);
+        writeSignalDeclaration(out, sort(stg.getDummyReferences()), KEYWORD_DUMMY);
     }
 
     private static void writeStg(PrintWriter out, StgModel stg, boolean needInstanceNumbers) {
@@ -209,17 +201,9 @@ public class SerialiserUtils {
         writeMarking(out, stg, stg.getPlaces(), needInstanceNumbers);
     }
 
-    private static List<String> getSortedSignals(StgModel stg, Signal.Type type) {
-        List<String> result = new ArrayList<>(stg.getSignalReferences(type));
+    private static List<String> sort(Collection<String> refs) {
+        List<String> result = new ArrayList<>(refs);
         Collections.sort(result);
-        return result;
-    }
-
-    private static Set<String> getPageReferences(StgModel stg) {
-        Set<String> result = new HashSet<>();
-        for (PageNode page: Hierarchy.getDescendantsOfType(stg.getRoot(), PageNode.class)) {
-            result.add(stg.getNodeReference(page));
-        }
         return result;
     }
 

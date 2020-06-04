@@ -27,10 +27,10 @@ public class NamespaceHelper {
     private static final String FLATNAME_SEPARATOR = "_";
 
     private static final Pattern HEAD_TAIL_PATTERN = Pattern.compile(
-            "([^" + HIERARCHY_SEPARATOR + "]+)" + "(" + Pattern.quote(HIERARCHY_SEPARATOR) + "(.+))?");
+            "((.+?" + Pattern.quote(HIERARCHY_SEPARATOR) + ")|(.+?$))" + "(.*)");
 
     private static final int HEAD_GROUP = 1;
-    private static final int TAIL_GROUP = 3;
+    private static final int TAIL_GROUP = 4;
 
     public static String convertLegacyHierarchySeparators(String ref) {
         return ref.replaceAll(LEGACY_HIERARCHY_SEPARATOR_REGEXP, HIERARCHY_SEPARATOR);
@@ -74,9 +74,6 @@ public class NamespaceHelper {
             LinkedList<String> path = splitReference(reference);
             for (int i = 0; i < path.size() - 1; i++) {
                 result += path.get(i);
-                if (i < path.size() - 2) {
-                    result += getHierarchySeparator();
-                }
             }
         }
         return result;
@@ -108,26 +105,15 @@ public class NamespaceHelper {
     public static String getReferenceName(String reference) {
         String head = getReferenceHead(reference);
         String tail = getReferenceTail(reference);
-        if (tail.isEmpty()) {
-            return head;
-        }
-        return getReferenceName(tail);
+        return tail.isEmpty() ? head : getReferenceName(tail);
     }
 
     public static String getReference(String parentReference, String name) {
-        String result = "";
-        boolean needsSeparator = false;
-        if ((parentReference != null) && !parentReference.isEmpty()) {
-            result += parentReference;
-            needsSeparator = true;
-        }
-        if ((name != null) && !name.isEmpty()) {
-            if (needsSeparator) {
-                result += getHierarchySeparator();
-            }
-            result += name;
-        }
-        return result;
+        return (isRoot(parentReference) ? "" : parentReference) + name;
+    }
+
+    private static boolean isRoot(String parentReference) {
+        return (parentReference == null) || parentReference.equals(getHierarchySeparator());
     }
 
     public static Container getMathContainer(VisualModel visualModel, Container visualContainer) {

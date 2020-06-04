@@ -4,6 +4,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.HierarchyReferenceManager;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
@@ -111,7 +112,7 @@ public class CircuitSignalInfo {
     }
 
     public String getComponentReference(FunctionComponent component) {
-        return circuit.getNodeReference(component);
+        return Identifier.truncateNamespaceSeparator(circuit.getNodeReference(component));
     }
 
     public String getComponentFlattenReference(FunctionComponent component) {

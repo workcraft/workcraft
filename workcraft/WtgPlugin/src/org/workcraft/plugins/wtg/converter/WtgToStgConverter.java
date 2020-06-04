@@ -1,6 +1,7 @@
 package org.workcraft.plugins.wtg.converter;
 
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.dtd.Signal;
@@ -120,7 +121,7 @@ public class WtgToStgConverter {
             String waveformName = srcModel.getName(waveform);
             throw new FormatException("Incorrect preset and/or postset of waveform '" + waveformName + "'");
         }
-        String waveformName = srcModel.getName(waveform);
+        String waveformName = Identifier.truncateNamespaceSeparator(srcModel.getName(waveform));
         // Waveform entry
         DummyTransition entryTransition = null;
         MathNode entryNode = preset.iterator().next();

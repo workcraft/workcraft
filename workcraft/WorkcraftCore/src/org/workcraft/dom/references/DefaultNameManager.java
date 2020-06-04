@@ -4,7 +4,7 @@ import org.workcraft.annotations.Annotations;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.exceptions.ArgumentException;
+import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.types.TwoWayMap;
 import org.workcraft.utils.DialogUtils;
 
@@ -19,12 +19,19 @@ public class DefaultNameManager implements NameManager {
     @Override
     public String getPrefix(Node node) {
         String result = Annotations.getIdentifierPrefix(node.getClass());
-        if (result != null) {
-            return result;
+        if (result == null) {
+            if (node instanceof Connection) {
+                result = Identifier.makeInternal("c");
+            } else if (node instanceof Container) {
+                result = Identifier.makeInternal("group");
+            } else {
+                result = "node";
+            }
         }
-        if (node instanceof Connection) return Identifier.createInternal("c");
-        if (node instanceof Container) return Identifier.createInternal("group");
-        return "node";
+        if (node instanceof NamespaceProvider) {
+            result = Identifier.appendNamespaceSeparator(result);
+        }
+        return result;
     }
 
     @Override
@@ -43,25 +50,24 @@ public class DefaultNameManager implements NameManager {
 
     @Override
     public void setName(Node node, String name) {
+        if (node instanceof NamespaceProvider) {
+            name = Identifier.appendNamespaceSeparator(name);
+        }
         Node occupant = getNode(name);
         if (node != occupant) {
-            if (!isUnusedName(name)) {
+            if (isUnusedName(name)) {
+                nodes.removeValue(node);
+                nodes.put(name, node);
+            } else {
                 String derivedName = getDerivedName(occupant, name);
                 String msg = "The name '" + name + "' is already taken by another node.\n" +
                         "Rename that node to '" + derivedName + "' and continue?";
-                if (!DialogUtils.showConfirmWarning(msg)) {
-                    return;
+
+                if (DialogUtils.showConfirmWarning(msg)) {
+                    setName(occupant, derivedName);
+                    setName(node, name);
                 }
-                setName(occupant, derivedName);
             }
-            if (!isUnusedName(name)) {
-                throw new ArgumentException("The name '" + name + "' is unavailable.");
-            }
-            if (!Identifier.isName(name) && !Identifier.isInternal(name) && !Identifier.isNamespace(name)) {
-                throw new ArgumentException("The name '" + name + "' is invalid identifier.");
-            }
-            nodes.removeValue(node);
-            nodes.put(name, node);
         }
     }
 
@@ -98,7 +104,7 @@ public class DefaultNameManager implements NameManager {
         Integer count = getPrefixCount(prefix);
         String name;
         do {
-            name = Identifier.createName(prefix, count++);
+            name = Identifier.compose(prefix, (count++).toString());
         } while (!isUnusedName(name));
         setPrefixCount(prefix, count);
         setName(node, name);
@@ -116,7 +122,7 @@ public class DefaultNameManager implements NameManager {
         String result = candidate;
         int code = 0;
         while (!isUnusedName(result)) {
-            result = candidate + codeToString(code);
+            result = Identifier.compose(candidate, codeToString(code));
             code++;
         }
         return result;

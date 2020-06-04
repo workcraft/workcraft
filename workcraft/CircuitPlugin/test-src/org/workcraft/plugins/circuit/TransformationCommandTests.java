@@ -42,8 +42,8 @@ public class TransformationCommandTests {
         VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
 
         Set<VisualFunctionComponent> optZeroDelays = getZeroDelayGates(circuit);
-        VisualFunctionComponent bubble25 = circuit.getVisualComponentByMathReference("IN_BUBBLE25",
-                VisualFunctionComponent.class);
+        VisualFunctionComponent bubble25 = circuit.getVisualComponentByMathReference(
+                "IN_BUBBLE25.", VisualFunctionComponent.class);
 
         new OptimiseZeroDelayTransformationCommand().execute(we);
 
