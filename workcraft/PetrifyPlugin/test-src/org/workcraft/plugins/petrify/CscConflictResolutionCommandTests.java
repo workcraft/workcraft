@@ -39,6 +39,12 @@ public class CscConflictResolutionCommandTests {
         testCscConflictResolutionCommand(workName, new String[] {});
     }
 
+    @Test
+    public void togglePageCsc0ConflictResolution() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "toggle-page_csc0.stg.work");
+        testCscConflictResolutionCommand(workName, new String[] {"csc0"});
+    }
+
     private void testCscConflictResolutionCommand(String workName, String[] cscSignals)
             throws DeserialisationException {
 

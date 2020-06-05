@@ -39,9 +39,12 @@ function process(name) {
         s += "  - Conflict resolution: ";
         cscStgWork = resolveCscConflictMpsat(stgWork);
         if (cscStgWork == null) {
-            s += "FAILED\n";
-            write(s, log);
-            return false;
+            cscStgWork = resolveCscConflictPetrify(stgWork);
+            if (cscStgWork == null) {
+                s += "FAILED\n";
+                write(s, log);
+                return false;
+            }
         }
         s += "OK\n";
         save(cscStgWork, name + "-csc.stg.work");
