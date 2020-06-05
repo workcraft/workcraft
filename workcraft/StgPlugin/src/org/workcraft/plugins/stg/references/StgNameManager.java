@@ -53,7 +53,7 @@ public class StgNameManager extends DefaultNameManager {
         String signalName = st.getSignalName();
         SignalTransition.Direction direction = st.getDirection();
         Integer instance = 0;
-        if (Identifier.isName(name)) {
+        if (Identifier.isValid(name)) {
             signalName = name;
         } else {
             final Triple<String, SignalTransition.Direction, Integer> r = LabelParser.parseSignalTransition(name);

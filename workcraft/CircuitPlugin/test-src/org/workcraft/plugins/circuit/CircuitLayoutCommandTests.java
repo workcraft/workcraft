@@ -8,7 +8,6 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.PackageUtils;
-import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
@@ -51,7 +50,7 @@ public class CircuitLayoutCommandTests {
         Set<String> srcInputs = new HashSet<>();
         Set<String> srcOutputs = new HashSet<>();
         Set<String> srcGates = new HashSet<>();
-        countNodes(we, srcInputs, srcOutputs, srcGates);
+        TestUtils.collectNodes(we, srcInputs, srcOutputs, srcGates);
 
         CircuitLayoutCommand command = new CircuitLayoutCommand();
         command.execute(we);
@@ -59,28 +58,13 @@ public class CircuitLayoutCommandTests {
         Set<String> dstInputs = new HashSet<>();
         Set<String> dstOutputs = new HashSet<>();
         Set<String> dstGates = new HashSet<>();
-        countNodes(we, dstInputs, dstOutputs, dstGates);
+        TestUtils.collectNodes(we, dstInputs, dstOutputs, dstGates);
 
         Assertions.assertEquals(srcInputs, dstInputs);
         Assertions.assertEquals(srcOutputs, dstOutputs);
         Assertions.assertEquals(srcGates, dstGates);
 
         framework.closeWork(we);
-    }
-
-    private void countNodes(WorkspaceEntry we, Set<String> inputs, Set<String> outputs, Set<String> gates) {
-        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-        for (Contact port: circuit.getPorts()) {
-            if (port.isInput()) {
-                inputs.add(port.getName());
-            }
-            if (port.isOutput()) {
-                outputs.add(port.getName());
-            }
-        }
-        for (FunctionComponent component: circuit.getFunctionComponents()) {
-            gates.add(component.getModule() + " " + component.getName());
-        }
     }
 
 }

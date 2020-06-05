@@ -97,4 +97,20 @@ public class TestUtils {
         return result;
     }
 
+    public static void collectNodes(WorkspaceEntry we, Set<String> inputs, Set<String> outputs, Set<String> gates) {
+        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
+        for (Contact port: circuit.getPorts()) {
+            if (port.isInput()) {
+                inputs.add(circuit.getNodeReference(port));
+            }
+            if (port.isOutput()) {
+                outputs.add(circuit.getNodeReference(port));
+            }
+        }
+        for (FunctionComponent component: circuit.getFunctionComponents()) {
+            String ref = circuit.getNodeReference(component);
+            gates.add(component.getModule() + " " + Identifier.truncateNamespaceSeparator(ref));
+        }
+    }
+
 }

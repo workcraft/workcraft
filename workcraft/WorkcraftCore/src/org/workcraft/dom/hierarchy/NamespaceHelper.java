@@ -4,7 +4,6 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.PageNode;
-import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
@@ -69,37 +68,25 @@ public class NamespaceHelper {
 
     public static String getParentReference(String reference) {
         String result = "";
-        // legacy reference support
-        if (!Identifier.isNumber(reference)) {
-            LinkedList<String> path = splitReference(reference);
-            for (int i = 0; i < path.size() - 1; i++) {
-                result += path.get(i);
-            }
+        LinkedList<String> path = splitReference(reference);
+        for (int i = 0; i < path.size() - 1; i++) {
+            result += path.get(i);
         }
         return result;
     }
 
     public static String getReferenceHead(String reference) {
-        // legacy reference support
-        if (!Identifier.isNumber(reference)) {
-            Matcher matcher = HEAD_TAIL_PATTERN.matcher(reference);
-            if (matcher.find()) {
-                return matcher.group(HEAD_GROUP);
-            }
-        }
-        return reference;
+        Matcher matcher = HEAD_TAIL_PATTERN.matcher(reference);
+        return matcher.find() ? matcher.group(HEAD_GROUP) : reference;
     }
 
     public static String getReferenceTail(String reference) {
-        // legacy reference support
-        if (!Identifier.isNumber(reference)) {
-            Matcher matcher = HEAD_TAIL_PATTERN.matcher(reference);
-            if (matcher.find()) {
-                String result = matcher.group(TAIL_GROUP);
-                return (result == null) ? "" : result;
-            }
+        String result = null;
+        Matcher matcher = HEAD_TAIL_PATTERN.matcher(reference);
+        if (matcher.find()) {
+            result = matcher.group(TAIL_GROUP);
         }
-        return "";
+        return (result == null) ? "" : result;
     }
 
     public static String getReferenceName(String reference) {

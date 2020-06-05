@@ -111,12 +111,6 @@ public class HierarchyReferenceManager extends HierarchySupervisor implements Re
 
     protected void setExistingReference(Node node) {
         String reference = refs.getReference(node);
-        if (Identifier.isNumber(reference)) {
-            String name = getName(node);
-            if (name != null) {
-                reference = name;
-            }
-        }
         if (reference != null) {
             String name = NamespaceHelper.getReferenceName(reference);
             setName(node, name);
