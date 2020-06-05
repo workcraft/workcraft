@@ -119,6 +119,9 @@ public class DefaultNameManager implements NameManager {
 
     @Override
     public String getDerivedName(Node node, String candidate) {
+        if (node instanceof NamespaceProvider) {
+            candidate = Identifier.appendNamespaceSeparator(candidate);
+        }
         String result = candidate;
         int code = 0;
         while (!isUnusedName(result)) {
