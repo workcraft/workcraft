@@ -17,10 +17,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class NamespaceHelper {
-    // Use negative lookahead (?![0-9]) to make sure that hierarchy separator is not followed by a number.
-    // This is because "/[0-9]" is used in in STG for transition instances.
-    private static final String LEGACY_HIERARCHY_SEPARATOR_REGEXP = "/(?![0-9])";
-    private static final String LEGACY_FLATNAME_SEPARATOR_REGEXP = "__";
 
     private static final String HIERARCHY_SEPARATOR = ".";
     private static final String FLATNAME_SEPARATOR = "_";
@@ -30,17 +26,6 @@ public class NamespaceHelper {
 
     private static final int HEAD_GROUP = 1;
     private static final int TAIL_GROUP = 4;
-
-    public static String convertLegacyHierarchySeparators(String ref) {
-        return ref.replaceAll(LEGACY_HIERARCHY_SEPARATOR_REGEXP, HIERARCHY_SEPARATOR);
-    }
-
-    public static String convertLegacyFlatnameSeparators(String ref) {
-        if (ref.contains(getHierarchySeparator())) {
-            return ref;
-        }
-        return ref.replaceAll(LEGACY_FLATNAME_SEPARATOR_REGEXP, getHierarchySeparator());
-    }
 
     public static String getHierarchySeparator() {
         return HIERARCHY_SEPARATOR;
