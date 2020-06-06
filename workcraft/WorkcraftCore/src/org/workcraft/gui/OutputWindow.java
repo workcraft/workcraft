@@ -1,65 +1,17 @@
 package org.workcraft.gui;
 
 import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.gui.controls.LogPanel;
 import org.workcraft.plugins.builtin.settings.LogCommonSettings;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.utils.LogUtils;
-import org.workcraft.utils.PopupUtils;
 
 import javax.swing.*;
-import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.io.*;
 
 @SuppressWarnings("serial")
-public class OutputWindow extends JPanel {
-    protected PrintStream systemOut;
-    protected boolean streamCaptured = false;
-    private final JTextArea txtStdOut;
-
-    enum LogType {
-        INFO,
-        WARNING,
-        ERROR,
-        STDOUT,
-        STDERR,
-    }
-
-    public OutputWindow() {
-        txtStdOut = new JTextArea();
-        txtStdOut.setMargin(SizeHelper.getTextMargin());
-        txtStdOut.setLineWrap(true);
-        txtStdOut.setEditable(false);
-        txtStdOut.setWrapStyleWord(true);
-        PopupUtils.setTextAreaPopup(txtStdOut);
-
-        DefaultCaret caret = (DefaultCaret) txtStdOut.getCaret();
-        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-
-        JScrollPane scrollStdOut = new JScrollPane();
-        scrollStdOut.setViewportView(txtStdOut);
-
-        setLayout(new BorderLayout());
-        add(scrollStdOut, BorderLayout.CENTER);
-    }
-
-    public void captureStream() {
-        if (!streamCaptured) {
-            OutputStreamView outView = new OutputStreamView(new ByteArrayOutputStream(), txtStdOut);
-            PrintStream outStream = new PrintStream(outView);
-            systemOut = System.out;
-            System.setOut(outStream);
-            streamCaptured = true;
-        }
-    }
-
-    public void releaseStream() {
-        if (streamCaptured) {
-            System.setOut(systemOut);
-            systemOut = null;
-            streamCaptured = false;
-        }
-    }
+public class OutputWindow extends LogPanel {
 
     class OutputStreamView extends FilterOutputStream {
         private final JTextArea target;
@@ -80,7 +32,7 @@ public class OutputWindow extends JPanel {
         }
 
         @Override
-        public void write(byte[] b, int off, int len) throws IOException {
+        public void write(byte[] b, int off, int len) {
             if (systemOut != null) {
                 systemOut.write(b, off, len);
             }
@@ -128,6 +80,35 @@ public class OutputWindow extends JPanel {
             target.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
 
             GuiUtils.highlightLines(target, fromPos, toPos, highlightColor);
+        }
+    }
+
+    private PrintStream systemOut;
+    private boolean streamCaptured = false;
+
+    enum LogType {
+        INFO,
+        WARNING,
+        ERROR,
+        STDOUT,
+        STDERR,
+    }
+
+    public void captureStream() {
+        if (!streamCaptured) {
+            OutputStreamView outView = new OutputStreamView(new ByteArrayOutputStream(), getTextArea());
+            PrintStream outStream = new PrintStream(outView);
+            systemOut = System.out;
+            System.setOut(outStream);
+            streamCaptured = true;
+        }
+    }
+
+    public void releaseStream() {
+        if (streamCaptured) {
+            System.setOut(systemOut);
+            systemOut = null;
+            streamCaptured = false;
         }
     }
 
