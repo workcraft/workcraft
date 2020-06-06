@@ -242,4 +242,18 @@ public class TextUtils {
         return text.length();
     }
 
+    public static String abbreviate(String s) {
+        String result = "";
+        int len = s == null ? 0 : s.length();
+        boolean b = true;
+        for (int i = 0; i < len; i++) {
+            char c = s.charAt(i);
+            if (b && !Character.isSpaceChar(c) || Character.isUpperCase(c)) {
+                result += c;
+            }
+            b = Character.isSpaceChar(c);
+        }
+        return result;
+    }
+
 }

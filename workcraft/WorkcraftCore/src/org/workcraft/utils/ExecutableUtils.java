@@ -6,23 +6,6 @@ public class ExecutableUtils {
 
     private static final String EXE_EXTENSION = ".exe";
 
-    public static String getAbsoluteBasePath() {
-        return System.getProperty("user.dir");
-    }
-
-    public static String getBaseRelativePath(File file) {
-        if (file == null) {
-            return "";
-        } else {
-            String basePath = getAbsoluteBasePath();
-            return FileUtils.stripBase(file.getPath(), basePath);
-        }
-    }
-
-    public static File getBaseRelativeFile(String path) {
-        return (path == null) || path.isEmpty() ? null : new File(path);
-    }
-
     public static String getAbsoluteCommandPath(String toolName) {
         return getAbsoluteCommandPath(new File(toolName));
     }

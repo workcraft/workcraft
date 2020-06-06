@@ -1,15 +1,15 @@
 package org.workcraft.utils;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.workcraft.utils.Geometry.CurveSplitResult;
+
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 import java.util.HashSet;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.workcraft.utils.Geometry.CurveSplitResult;
 
 public class GeometryTests {
 
@@ -139,6 +139,56 @@ public class GeometryTests {
                 new Point2D.Double(0.5, 1.0),
                 new Point2D.Double(-0.5, -1.0))),
                 Geometry.getSegmentFrameIntersections(segmentIntersect, frame));
+    }
+
+    @Test
+    public void derivativeTest() {
+        CubicCurve2D curve = getSimpleCurve();
+
+        Assertions.assertEquals(new Point2D.Double(0.0, 3.0),
+                Geometry.getDerivativeOfCubicCurve(curve, 0.0));
+
+        Assertions.assertEquals(new Point2D.Double(0.0, -3.0),
+                Geometry.getDerivativeOfCubicCurve(curve, 1.0));
+
+        Assertions.assertEquals(new Point2D.Double(1.5, 0.0),
+                Geometry.getDerivativeOfCubicCurve(curve, 0.5));
+
+        Assertions.assertEquals(new Point2D.Double(9.0, -9.0),
+                Geometry.getSecondDerivativeOfCubicCurve(curve, 0.0));
+
+        Assertions.assertEquals(new Point2D.Double(-9.0, -9.0),
+                Geometry.getSecondDerivativeOfCubicCurve(curve, 1.0));
+
+        Assertions.assertEquals(new Point2D.Double(0.0, -9.0),
+                Geometry.getSecondDerivativeOfCubicCurve(curve, 0.5));
+    }
+
+    @Test
+    public void changeBaseTest() {
+        Assertions.assertThrows(RuntimeException.class,
+                () -> Geometry.changeBasis(new Point2D.Double(0.0, 0.0),
+                        new Point2D.Double(0.0, 0.0), new Point2D.Double(0.0, 0.0)));
+
+        Assertions.assertThrows(RuntimeException.class,
+                () -> Geometry.changeBasis(new Point2D.Double(0.0, 0.0),
+                        new Point2D.Double(1.0, 0.0), new Point2D.Double(1.0, 1.0)));
+
+        Assertions.assertEquals(new Point2D.Double(0.0, 0.0),
+                Geometry.changeBasis(new Point2D.Double(0.0, 0.0),
+                        new Point2D.Double(1.0, 0.0), new Point2D.Double(0.0, 1.0)));
+    }
+
+    @Test
+    public void crossProductTest() {
+        Assertions.assertEquals(0.0, Geometry.crossProduct(
+                new Point2D.Double(0.0, 0.0), new Point2D.Double(0.0, 0.0)));
+
+        Assertions.assertEquals(0.0, Geometry.crossProduct(
+                new Point2D.Double(0.0, 0.0), new Point2D.Double(123.0, 456.0)));
+
+        Assertions.assertEquals(1.0, Geometry.crossProduct(
+                new Point2D.Double(1.0, 0.0), new Point2D.Double(0.0, 1.0)));
     }
 
     @Test

@@ -1,6 +1,7 @@
 package org.workcraft.annotations;
 
 import org.workcraft.dom.references.Identifier;
+import org.workcraft.utils.TextUtils;
 
 public class Annotations {
 
@@ -11,21 +12,7 @@ public class Annotations {
 
     public static String getShortName(Class<?> cls) {
         ShortName annotation = cls.getAnnotation(ShortName.class);
-        return annotation == null ? getShortNameFromDisplayName(cls) : annotation.value();
-    }
-
-    private static String getShortNameFromDisplayName(Class<?> cls) {
-        String result = "";
-        String s = getDisplayName(cls);
-        boolean b = true;
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            if (b && !Character.isSpaceChar(c) || Character.isUpperCase(c)) {
-                result += c;
-            }
-            b = Character.isSpaceChar(c);
-        }
-        return result;
+        return annotation == null ? TextUtils.abbreviate(getDisplayName(cls)) : annotation.value();
     }
 
     public static String getSVGIconPath(Class<?> cls) {

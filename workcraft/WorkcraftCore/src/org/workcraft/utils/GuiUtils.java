@@ -43,10 +43,6 @@ public class GuiUtils {
         return result;
     }
 
-    public static JPanel createDialogActionPanel() {
-        return new JPanel(new FlowLayout(FlowLayout.LEFT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
-    }
-
     public static JPanel createDialogButtonsPanel() {
         return new JPanel(new FlowLayout(FlowLayout.RIGHT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
     }

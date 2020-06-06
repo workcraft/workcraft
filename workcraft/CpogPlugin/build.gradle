@@ -10,6 +10,7 @@ dependencies {
 
 ext.excludeFromCoverage = [
     'org/workcraft/plugins/cpog/gui/',
+    'org/workcraft/plugins/cpog/properties/',
     'org/workcraft/plugins/cpog/scenco/*Dialog.class',
     'org/workcraft/plugins/cpog/scenco/*Dialog$*.class',
     'org/workcraft/plugins/cpog/tools/'
