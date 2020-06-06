@@ -56,20 +56,18 @@ public class PluginFinder {
                         result.addAll(processPathEntry(path, requiredPrefix));
                     }
                 }
-            } else if (currentFile.isFile()) {
-                if (currentFile.getPath().endsWith(".jar")) {
-                    try {
-                        JarFile jf = new JarFile(currentFile);
-                        Enumeration<JarEntry> entries = jf.entries();
+            } else if (currentFile.isFile() && currentFile.getPath().endsWith(".jar")) {
+                try {
+                    JarFile jf = new JarFile(currentFile);
+                    Enumeration<JarEntry> entries = jf.entries();
 
-                        while (entries.hasMoreElements()) {
-                            JarEntry entry = entries.nextElement();
-                            result.addAll(processPathEntry(entry.getName(), requiredPrefix));
-                        }
-
-                    } catch (IOException e) {
-                        throw new PluginInstantiationException(e);
+                    while (entries.hasMoreElements()) {
+                        JarEntry entry = entries.nextElement();
+                        result.addAll(processPathEntry(entry.getName(), requiredPrefix));
                     }
+
+                } catch (IOException e) {
+                    throw new PluginInstantiationException(e);
                 }
             }
         }
