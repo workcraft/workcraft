@@ -57,15 +57,14 @@ public class WriteSgConversionTask implements Task<WriteSgConversionOutput> {
 
     @Override
     public Result<? extends WriteSgConversionOutput> run(ProgressMonitor<? super WriteSgConversionOutput> monitor) {
-        final Framework framework = Framework.getInstance();
-        final TaskManager taskManager = framework.getTaskManager();
+        final TaskManager taskManager = Framework.getInstance().getTaskManager();
         final SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
         try {
             // Common variables
             monitor.progressUpdate(0.05);
             PetriModel petri = WorkspaceUtils.getAs(we, PetriModel.class);
             StgFormat format = StgFormat.getInstance();
-            Exporter petriExporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), petri, format);
+            Exporter petriExporter = ExportUtils.chooseBestExporter(petri, format);
             if (petriExporter == null) {
                 throw new NoExporterException(petri, format);
             }

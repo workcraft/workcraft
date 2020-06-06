@@ -8,7 +8,6 @@ import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.tools.GraphEditorKeyListener;
 import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.gui.tools.ToolProvider;
-import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -73,8 +72,7 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
             isDefault = false;
         }
         // Tools registered via PluginManager
-        for (PluginInfo<? extends GraphEditorTool> info: pm.getGraphEditorToolPlugins()) {
-            GraphEditorTool tool = info.newInstance();
+        for (GraphEditorTool tool : pm.getGraphEditorTools()) {
             if (tool.isApplicableTo(we)) {
                 addTool(tool, isDefault);
             }

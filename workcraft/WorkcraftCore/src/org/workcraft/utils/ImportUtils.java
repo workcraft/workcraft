@@ -1,11 +1,11 @@
 package org.workcraft.utils;
 
+import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.interop.Format;
 import org.workcraft.interop.FormatFileFilter;
 import org.workcraft.interop.Importer;
-import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.workspace.ModelEntry;
 
@@ -16,9 +16,9 @@ import java.io.IOException;
 
 public class ImportUtils {
 
-    public static Importer chooseBestImporter(PluginManager pm, File file) {
-        for (PluginInfo<? extends Importer> info: pm.getImporterPlugins()) {
-            Importer importer = info.getSingleton();
+    public static Importer chooseBestImporter(File file) {
+        final PluginManager pm = Framework.getInstance().getPluginManager();
+        for (Importer importer : pm.getSortedImporters()) {
             Format format = importer.getFormat();
             if (FormatFileFilter.checkFileFormat(file, format)) {
                 return importer;

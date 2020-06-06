@@ -152,14 +152,14 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
             throw new RuntimeException("This tool is not applicable to " + model.getDisplayName() + " model.");
         }
 
-        final Framework framework = Framework.getInstance();
-        Exporter exporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), model, format);
+        Exporter exporter = ExportUtils.chooseBestExporter(model, format);
         if (exporter == null) {
             throw new NoExporterException(model, format);
         }
+        TaskManager taskManager = Framework.getInstance().getTaskManager();
         File file = new File(directory, StgUtils.SPEC_FILE_PREFIX + extension);
         ExportTask exportTask = new ExportTask(exporter, model, file);
-        Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(exportTask, "Exporting model");
+        Result<? extends ExportOutput> exportResult = taskManager.execute(exportTask, "Exporting model");
         if (!exportResult.isSuccess()) {
             throw new RuntimeException("Unable to export the model.");
         }
@@ -168,7 +168,7 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
             MutexUtils.factoroutMutexs(stg, mutexes);
             file = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + extension);
             exportTask = new ExportTask(exporter, stg, file);
-            exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
+            exportResult = taskManager.execute(exportTask, "Exporting .g");
             if (!exportResult.isSuccess()) {
                 throw new RuntimeException("Unable to export the model after factoring out the mutexes.");
             }

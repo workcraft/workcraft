@@ -32,7 +32,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
 
     @Override
     public Result<? extends VerificationChainOutput> run(ProgressMonitor<? super VerificationChainOutput> monitor) {
-        final Framework framework = Framework.getInstance();
+        TaskManager taskManager = Framework.getInstance().getTaskManager();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         VerificationParameters preparationParameters = ReachUtils.getToolchainPreparationParameters();
@@ -41,7 +41,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
             DfsToStgConverter converter = new DfsToStgConverter(dfs);
             StgModel model = converter.getStgModel().getMathModel();
             StgFormat format = StgFormat.getInstance();
-            Exporter exporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), model, format);
+            Exporter exporter = ExportUtils.chooseBestExporter(model, format);
             if (exporter == null) {
                 throw new NoExporterException(model, StgFormat.getInstance());
             }
@@ -50,7 +50,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
             File netFile = new File(directory, "net" + format.getExtension());
             ExportTask exportTask = new ExportTask(exporter, model, netFile);
             SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
-            Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(
+            Result<? extends ExportOutput> exportResult = taskManager.execute(
                     exportTask, "Exporting .g", mon);
 
             if (!exportResult.isSuccess()) {
@@ -64,7 +64,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
 
             File unfoldingFile = new File(directory, "unfolding" + PunfTask.PNML_FILE_EXTENSION);
             PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory);
-            Result<? extends PunfOutput> punfResult = framework.getTaskManager().execute(
+            Result<? extends PunfOutput> punfResult = taskManager.execute(
                     punfTask, "Unfolding .g", mon);
 
             if (!punfResult.isSuccess()) {
@@ -78,7 +78,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
 
             VerificationParameters deadlockParameters = ReachUtils.getDeadlockParameters();
             MpsatTask deadlockMpsatTask = new MpsatTask(unfoldingFile, netFile, deadlockParameters, directory);
-            Result<? extends MpsatOutput> deadlockMpsatResult = framework.getTaskManager().execute(
+            Result<? extends MpsatOutput> deadlockMpsatResult = taskManager.execute(
                     deadlockMpsatTask, "Running deadlock checking [MPSat]", mon);
 
             if (!deadlockMpsatResult.isSuccess()) {
@@ -99,7 +99,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
 
             VerificationParameters persistencyParameters = ReachUtils.getOutputPersistencyParameters();
             MpsatTask persistencyMpsatTask = new MpsatTask(unfoldingFile, netFile, persistencyParameters, directory);
-            Result<? extends MpsatOutput> persistencyMpsatResult = framework.getTaskManager().execute(persistencyMpsatTask,
+            Result<? extends MpsatOutput> persistencyMpsatResult = taskManager.execute(persistencyMpsatTask,
                     "Running semimodularity checking [MPSat]", mon);
             if (!persistencyMpsatResult.isSuccess()) {
                 if (persistencyMpsatResult.isCancel()) {

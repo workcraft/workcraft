@@ -11,7 +11,6 @@ import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Format;
-import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.workspace.FileFilters;
 
@@ -23,13 +22,13 @@ import java.util.UUID;
 
 public class ExportUtils {
 
-    public static Exporter chooseBestExporter(PluginManager pm, Model model, Format format) {
-        return chooseBestExporter(pm, model, format.getName(), format.getUuid());
+    public static Exporter chooseBestExporter(Model model, Format format) {
+        return chooseBestExporter(model, format.getName(), format.getUuid());
     }
 
-    public static Exporter chooseBestExporter(PluginManager pm, Model model, String formatName, UUID formatUuid) {
-        for (PluginInfo<? extends Exporter> info : pm.getExporterPlugins()) {
-            Exporter exporter = info.getSingleton();
+    public static Exporter chooseBestExporter(Model model, String formatName, UUID formatUuid) {
+        final PluginManager pm = Framework.getInstance().getPluginManager();
+        for (Exporter exporter : pm.getSortedExporters()) {
             if (exporter.isCompatible(model)) {
                 Format format = exporter.getFormat();
                 boolean formatMatchByName = (formatName != null) && formatName.equalsIgnoreCase(format.getName());
@@ -44,7 +43,8 @@ public class ExportUtils {
 
     public static void exportToFile(Model model, File file, Format format, PluginManager pm)
             throws IOException, ModelValidationException, SerialisationException {
-        Exporter exporter = chooseBestExporter(pm, model, format);
+
+        Exporter exporter = chooseBestExporter(model, format);
         if (exporter == null) {
             throw new NoExporterException(model.getDisplayName(), format.getName());
         }

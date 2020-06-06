@@ -3,7 +3,6 @@ package org.workcraft.gui.properties;
 import org.workcraft.Config;
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.GuiUtils;
@@ -17,9 +16,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 
 public class SettingsEditorDialog extends JDialog {
 
@@ -121,13 +117,10 @@ public class SettingsEditorDialog extends JDialog {
     }
 
     private void loadSections() {
-        final Framework framework = Framework.getInstance();
-        PluginManager pm = framework.getPluginManager();
-        ArrayList<Settings> settings = getSortedPluginSettings(pm.getSettingsPlugins());
-
         // Add settings to the tree
-        for (Settings s: settings) {
-            addItem(s.getSection(), s);
+        PluginManager pm = Framework.getInstance().getPluginManager();
+        for (Settings settings : pm.getSortedSettings()) {
+            addItem(settings.getSection(), settings);
         }
 
         sectionTree.setModel(new DefaultTreeModel(sectionRoot));
@@ -138,33 +131,6 @@ public class SettingsEditorDialog extends JDialog {
             sectionTree.expandPath(treePath);
         }
         setObject(null);
-    }
-
-    private ArrayList<Settings> getSortedPluginSettings(Collection<PluginInfo<? extends Settings>> plugins) {
-        ArrayList<Settings> settings = new ArrayList<>();
-        for (PluginInfo<? extends Settings> info : plugins) {
-            settings.add(info.getSingleton());
-        }
-
-        // Sort settings by (Sections + Name) strings
-        Collections.sort(settings, (o1, o2) -> {
-            if (o1 == o2) return 0;
-            if (o1 == null) return -1;
-            if (o2 == null) return 1;
-            String s1 = o1.getSection();
-            if (s1 == null) return -1;
-            String s2 = o2.getSection();
-            if (s2 == null) return 1;
-            if (s1.equals(s2)) {
-                String n1 = o1.getName();
-                if (n1 == null) return -1;
-                String n2 = o2.getName();
-                if (n2 == null) return 1;
-                return n1.compareTo(n2);
-            }
-            return s1.compareTo(s2);
-        });
-        return settings;
     }
 
     private void setObject(Settings page) {

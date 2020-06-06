@@ -93,17 +93,17 @@ public class AtacsTask implements Task<AtacsOutput>, ExternalProcessListener {
     }
 
     private File getInputFile(Stg stg, File directory) {
-        final Framework framework = Framework.getInstance();
         LpnFormat format = LpnFormat.getInstance();
-        Exporter exporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), stg, format);
+        Exporter exporter = ExportUtils.chooseBestExporter(stg, format);
         if (exporter == null) {
             throw new NoExporterException(stg, format);
         }
 
+        TaskManager taskManager = Framework.getInstance().getTaskManager();
         String extension = format.getExtension();
         File file = new File(directory, StgUtils.SPEC_FILE_PREFIX + extension);
         ExportTask exportTask = new ExportTask(exporter, stg, file);
-        Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .lpn");
+        Result<? extends ExportOutput> exportResult = taskManager.execute(exportTask, "Exporting .lpn");
         if (!exportResult.isSuccess()) {
             throw new RuntimeException("Unable to export the model.");
         }
@@ -112,7 +112,7 @@ public class AtacsTask implements Task<AtacsOutput>, ExternalProcessListener {
             MutexUtils.factoroutMutexs(stg, mutexes);
             file = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + extension);
             exportTask = new ExportTask(exporter, stg, file);
-            exportResult = framework.getTaskManager().execute(exportTask, "Exporting .lpn");
+            exportResult = taskManager.execute(exportTask, "Exporting .lpn");
             if (!exportResult.isSuccess()) {
                 throw new RuntimeException("Unable to export the model after factoring out the mutexes.");
             }

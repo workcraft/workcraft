@@ -32,7 +32,7 @@ public class DeadlockFreenessTask implements Task<VerificationChainOutput> {
 
     @Override
     public Result<? extends VerificationChainOutput> run(ProgressMonitor<? super VerificationChainOutput> monitor) {
-        final Framework framework = Framework.getInstance();
+        TaskManager taskManager = Framework.getInstance().getTaskManager();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         VerificationParameters verificationParameters = ReachUtils.getDeadlockParameters();
@@ -41,7 +41,7 @@ public class DeadlockFreenessTask implements Task<VerificationChainOutput> {
             PolicyToPetriConverter converter = new PolicyToPetriConverter(policy);
             Petri model = (Petri) converter.getPetriNet().getMathModel();
             StgFormat format = StgFormat.getInstance();
-            Exporter exporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), model, format);
+            Exporter exporter = ExportUtils.chooseBestExporter(model, format);
             if (exporter == null) {
                 throw new NoExporterException(model, format);
             }
@@ -50,7 +50,7 @@ public class DeadlockFreenessTask implements Task<VerificationChainOutput> {
             File netFile = new File(directory, "net" + format.getExtension());
             ExportTask exportTask = new ExportTask(exporter, model, netFile);
             SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
-            Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(
+            Result<? extends ExportOutput> exportResult = taskManager.execute(
                     exportTask, "Exporting .g", mon);
 
             if (!exportResult.isSuccess()) {
@@ -64,7 +64,7 @@ public class DeadlockFreenessTask implements Task<VerificationChainOutput> {
 
             File unfoldingFile = new File(directory, "unfolding" + PunfTask.PNML_FILE_EXTENSION);
             PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory);
-            Result<? extends PunfOutput> punfResult = framework.getTaskManager().execute(
+            Result<? extends PunfOutput> punfResult = taskManager.execute(
                     punfTask, "Unfolding .g", mon);
 
             if (!punfResult.isSuccess()) {
@@ -77,7 +77,7 @@ public class DeadlockFreenessTask implements Task<VerificationChainOutput> {
             monitor.progressUpdate(0.70);
 
             MpsatTask mpsatTask = new MpsatTask(unfoldingFile, netFile, verificationParameters, directory);
-            Result<? extends MpsatOutput> mpsatResult = framework.getTaskManager().execute(
+            Result<? extends MpsatOutput> mpsatResult = taskManager.execute(
                     mpsatTask, "Running deadlock checking [MPSat]", mon);
 
             if (!mpsatResult.isSuccess()) {

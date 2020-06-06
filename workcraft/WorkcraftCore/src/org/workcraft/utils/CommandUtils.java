@@ -9,7 +9,6 @@ import org.workcraft.commands.ScriptableDataCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -22,21 +21,10 @@ public class CommandUtils {
         return "!" + TextUtils.repeat(" ", 9 - order) + title;
     }
 
-    public static List<Command> getCommands() {
-        ArrayList<Command> result = new ArrayList<>();
-        final Framework framework = Framework.getInstance();
-        final PluginManager pm = framework.getPluginManager();
-        Collection<PluginInfo<? extends Command>> commandPlugins = pm.getCommandPlugins();
-        for (PluginInfo<? extends Command> info : commandPlugins) {
-            Command command = info.getSingleton();
-            result.add(command);
-        }
-        return result;
-    }
-
     public static List<Command> getCommands(Function<Command, Boolean> filter) {
         ArrayList<Command> result = new ArrayList<>();
-        for (Command command : getCommands()) {
+        final PluginManager pm = Framework.getInstance().getPluginManager();
+        for (Command command : pm.getCommands()) {
             if (filter.apply(command)) {
                 result.add(command);
             }
@@ -46,17 +34,14 @@ public class CommandUtils {
 
     public static <T extends Command> List<T> getCommands(Class<T> type) {
         ArrayList<T> result = new ArrayList<>();
-        for (Command command : getCommands()) {
+        final PluginManager pm = Framework.getInstance().getPluginManager();
+        for (Command command : pm.getCommands()) {
             try {
                 result.add(type.cast(command));
             } catch (ClassCastException e) {
             }
         }
         return result;
-    }
-
-    public static List<Command> getApplicableCommands(WorkspaceEntry we) {
-        return getCommands(command -> command.isApplicableTo(we));
     }
 
     public static List<Command> getApplicableVisibleCommands(WorkspaceEntry we) {

@@ -39,8 +39,6 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Format;
 import org.workcraft.interop.FormatFileFilter;
 import org.workcraft.interop.Importer;
-import org.workcraft.plugins.PluginInfo;
-import org.workcraft.plugins.PluginManager;
 import org.workcraft.tasks.ExportTask;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.types.ListMap;
@@ -232,7 +230,7 @@ public class MainWindow extends JFrame {
         setTitle(TITLE_WORKCRAFT);
 
         // Create main menu
-        mainMenu = new MainMenu(this);
+        mainMenu = new MainMenu();
         MenuBarUI menuUI = mainMenu.getUI();
         setJMenuBar(mainMenu);
         mainMenu.updateRecentMenu();
@@ -708,7 +706,7 @@ public class MainWindow extends JFrame {
         }
     }
 
-    public JFileChooser createOpenDialog(String title, boolean multiSelection, boolean allowWorkFiles, Format[] formats) {
+    public JFileChooser createOpenDialog(String title, boolean multiSelection, boolean allowWorkFiles, Format format) {
         JFileChooser fc = new JFileChooser();
         fc.setDialogType(JFileChooser.OPEN_DIALOG);
         fc.setDialogTitle(title);
@@ -717,11 +715,9 @@ public class MainWindow extends JFrame {
             fc.setFileFilter(FileFilters.DOCUMENT_FILES);
             allowAllFileFilter = false;
         }
-        if (formats != null) {
-            for (Format format : formats) {
-                fc.addChoosableFileFilter(new FormatFileFilter(format));
-                allowAllFileFilter = false;
-            }
+        if (format != null) {
+            fc.addChoosableFileFilter(new FormatFileFilter(format));
+            allowAllFileFilter = false;
         }
         GuiUtils.sizeFileChooserToScreen(fc, getDisplayMode());
         fc.setCurrentDirectory(Framework.getInstance().getLastDirectory());
@@ -887,66 +883,53 @@ public class MainWindow extends JFrame {
         mainMenu.updateRecentMenu();
     }
 
-    public void importFrom() {
-        final Framework framework = Framework.getInstance();
-        PluginManager pm = framework.getPluginManager();
-        Collection<PluginInfo<? extends Importer>> importerInfo = pm.getImporterPlugins();
-        Importer[] importers = new Importer[importerInfo.size()];
-        Format[] formats = new Format[importerInfo.size()];
-        int cnt = 0;
-        for (PluginInfo<? extends Importer> info: importerInfo) {
-            Importer importer = info.getSingleton();
-            importers[cnt] = importer;
-            formats[cnt] = importer.getFormat();
-            cnt++;
-        }
-
-        JFileChooser fc = createOpenDialog("Import model(s)", true, false, formats);
+    public void importFrom(Importer importer) {
+        Format format = importer.getFormat();
+        JFileChooser fc = createOpenDialog("Import model(s)", true, false, format);
         if (fc.showDialog(this, "Open") == JFileChooser.APPROVE_OPTION) {
-            for (File file: fc.getSelectedFiles()) {
-                importFrom(file, importers);
+            for (File file : fc.getSelectedFiles()) {
+                importFrom(importer, file);
             }
         }
     }
 
-    public void importFrom(File file, Importer[] importers) {
-        if (FileUtils.checkAvailability(file, null, true)) {
-            for (Importer importer: importers) {
-                Format format = importer.getFormat();
-                if (!FormatFileFilter.checkFileFormat(file, format)) continue;
-                try {
-                    ModelEntry me = ImportUtils.importFromFile(importer, file);
-                    String title = me.getMathModel().getTitle();
-                    if ((title == null) || title.isEmpty()) {
-                        title = FileUtils.getFileNameWithoutExtension(file);
-                        me.getMathModel().setTitle(title);
-                    }
-                    final Framework framework = Framework.getInstance();
-                    framework.createWork(me, Path.empty(), file.getName());
-                    framework.setLastDirectory(file);
-                    break;
-                } catch (IOException | DeserialisationException e) {
-                    DialogUtils.showError(e.getMessage());
-                } catch (OperationCancelledException e) {
+    private void importFrom(Importer importer, File file) {
+        if (FileUtils.checkAvailability(file, null, true)
+                && FormatFileFilter.checkFileFormat(file, importer.getFormat())) {
+
+            try {
+                ModelEntry me = ImportUtils.importFromFile(importer, file);
+                String title = me.getMathModel().getTitle();
+                if ((title == null) || title.isEmpty()) {
+                    title = FileUtils.getFileNameWithoutExtension(file);
+                    me.getMathModel().setTitle(title);
                 }
+                final Framework framework = Framework.getInstance();
+                framework.createWork(me, Path.empty(), file.getName());
+                framework.setLastDirectory(file);
+            } catch (IOException | DeserialisationException | OperationCancelledException e) {
+                DialogUtils.showError(e.getMessage());
             }
         }
     }
 
-    public void export(Exporter exporter) throws OperationCancelledException {
+    public void export(Exporter exporter) {
         Format format = exporter.getFormat();
         String title = "Export as " + format.getDescription();
         File file = new File(getFileNameForCurrentWork());
         JFileChooser fc = createSaveDialog(title, file, format);
-        String path = ExportUtils.getValidSavePath(fc, format);
-        VisualModel model = editorInFocus.getModel();
-        ExportTask exportTask = new ExportTask(exporter, model, new File(path));
-        final Framework framework = Framework.getInstance();
-        final TaskManager taskManager = framework.getTaskManager();
-        String description = "Exporting " + title;
-        final TaskFailureNotifier monitor = new TaskFailureNotifier(description);
-        taskManager.queue(exportTask, description, monitor);
-        framework.setLastDirectory(fc.getCurrentDirectory());
+        try {
+            String path = ExportUtils.getValidSavePath(fc, format);
+            VisualModel model = editorInFocus.getModel();
+            ExportTask exportTask = new ExportTask(exporter, model, new File(path));
+            final Framework framework = Framework.getInstance();
+            final TaskManager taskManager = framework.getTaskManager();
+            String description = "Exporting " + title;
+            final TaskFailureNotifier monitor = new TaskFailureNotifier(description);
+            taskManager.queue(exportTask, description, monitor);
+            framework.setLastDirectory(fc.getCurrentDirectory());
+        } catch (OperationCancelledException e) {
+        }
     }
 
     private String getFileNameForCurrentWork() {

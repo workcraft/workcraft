@@ -4,12 +4,10 @@ import org.workcraft.Framework;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.builtin.settings.FavoriteCommonSettings;
 import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.GuiUtils;
-import org.workcraft.utils.PluginUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,8 +15,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 public class CreateWorkDialog extends ModalDialog<Void> {
 
@@ -125,11 +122,10 @@ public class CreateWorkDialog extends ModalDialog<Void> {
 
     private void fillModelList() {
         PluginManager pm = Framework.getInstance().getPluginManager();
-        Collection<PluginInfo<? extends ModelDescriptor>> plugins = pm.getModelDescriptorPlugins();
-
-        ArrayList<ListElement> elements = getModelList(plugins, true);
+        List<ModelDescriptor> descriptors = pm.getSortedModelDescriptors();
+        ArrayList<ListElement> elements = getModelList(descriptors, true);
         if (!FavoriteCommonSettings.getFilterFavorites()) {
-            ArrayList<ListElement> otherElements = getModelList(plugins, false);
+            ArrayList<ListElement> otherElements = getModelList(descriptors, false);
             elements.addAll(otherElements);
         }
 
@@ -140,27 +136,27 @@ public class CreateWorkDialog extends ModalDialog<Void> {
         }
     }
 
-    private ArrayList<ListElement> getModelList(Collection<PluginInfo<? extends ModelDescriptor>> plugins, boolean favorite) {
+    private ArrayList<ListElement> getModelList(List<ModelDescriptor> descriptors, boolean favorite) {
         ArrayList<ListElement> result = new ArrayList<>();
-        for (PluginInfo<? extends ModelDescriptor> plugin : plugins) {
-            ModelDescriptor modelDescriptor = plugin.newInstance();
-            String displayName = modelDescriptor.getDisplayName();
+        for (ModelDescriptor descriptor : descriptors) {
+            String displayName = descriptor.getDisplayName();
             if (FavoriteCommonSettings.getIsFavorite(displayName) == favorite) {
-                result.add(new ListElement(modelDescriptor));
+                result.add(new ListElement(descriptor));
             }
         }
-        Collections.sort(result);
         return result;
     }
 
     private JScrollPane getModelScroll() {
         int displayNameLength = 10;
-        Collection<String> sortedDisplayNames = PluginUtils.getSortedModelDisplayNames();
-        for (String displayName: sortedDisplayNames) {
+        PluginManager pm = Framework.getInstance().getPluginManager();
+        List<ModelDescriptor> descriptors = pm.getSortedModelDescriptors();
+        for (ModelDescriptor descriptor : descriptors) {
+            String displayName = descriptor.getDisplayName();
             displayNameLength = Math.max(displayNameLength, displayName.length());
         }
         int width = SizeHelper.getBaseFontSize() * displayNameLength;
-        int height = SizeHelper.getListRowSize() * sortedDisplayNames.size();
+        int height = SizeHelper.getListRowSize() * descriptors.size();
 
         JScrollPane result = new JScrollPane();
         result.setPreferredSize(new Dimension(width, height));
@@ -169,9 +165,13 @@ public class CreateWorkDialog extends ModalDialog<Void> {
     }
 
     private String getFavoriteModelsCheckboxText() {
-        Collection<String> names = PluginUtils.getSortedModelDisplayNames();
-        long allCount = names.size();
-        long favoriteCount = names.stream().filter(name -> FavoriteCommonSettings.getIsFavorite(name)).count();
+        PluginManager pm = Framework.getInstance().getPluginManager();
+        List<ModelDescriptor> descriptors = pm.getSortedModelDescriptors();
+        long allCount = descriptors.size();
+        long favoriteCount = descriptors.stream()
+                .filter(o -> FavoriteCommonSettings.getIsFavorite(o.getDisplayName()))
+                .count();
+
         return "<html>Filter <b>favorite</b> model types (" + favoriteCount + " out of " + allCount + ")</html>";
     }
 

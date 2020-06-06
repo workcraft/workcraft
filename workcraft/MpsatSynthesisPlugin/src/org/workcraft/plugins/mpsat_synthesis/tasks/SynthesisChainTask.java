@@ -34,14 +34,14 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
 
     @Override
     public Result<? extends SynthesisChainOutput> run(ProgressMonitor<? super SynthesisChainOutput> monitor) {
-        Framework framework = Framework.getInstance();
+        TaskManager taskManager = Framework.getInstance().getTaskManager();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         StgFormat format = StgFormat.getInstance();
         String stgFileExtension = format.getExtension();
         try {
             Stg model = WorkspaceUtils.getAs(we, Stg.class);
-            Exporter exporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), model, format);
+            Exporter exporter = ExportUtils.chooseBestExporter(model, format);
             if (exporter == null) {
                 throw new NoExporterException(model, format);
             }
@@ -51,7 +51,7 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
             String filePrefix = StgUtils.SPEC_FILE_PREFIX;
             File netFile = new File(directory, filePrefix + stgFileExtension);
             ExportTask exportTask = new ExportTask(exporter, model, netFile);
-            Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(
+            Result<? extends ExportOutput> exportResult = taskManager.execute(
                     exportTask, "Exporting .g", subtaskMonitor);
 
             if (!exportResult.isSuccess()) {
@@ -66,7 +66,7 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
                 filePrefix += StgUtils.MUTEX_FILE_SUFFIX;
                 netFile = new File(directory, filePrefix + stgFileExtension);
                 exportTask = new ExportTask(exporter, model, netFile);
-                exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
+                exportResult = taskManager.execute(exportTask, "Exporting .g");
 
                 if (!exportResult.isSuccess()) {
                     if (exportResult.isCancel()) {
@@ -82,7 +82,7 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
             String unfoldingExtension = useLegacyMci ? PunfTask.MCI_FILE_EXTENSION : PunfTask.PNML_FILE_EXTENSION;
             File unfoldingFile = new File(directory, filePrefix + unfoldingExtension);
             PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory);
-            Result<? extends PunfOutput> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", subtaskMonitor);
+            Result<? extends PunfOutput> punfResult = taskManager.execute(punfTask, "Unfolding .g", subtaskMonitor);
 
             if (!punfResult.isSuccess()) {
                 if (punfResult.isCancel()) {
@@ -95,7 +95,7 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
 
             // Run MPSat on the generated unfolding
             MpsatTask mpsatTask = new MpsatTask(unfoldingFile, synthesisMode, directory);
-            Result<? extends MpsatOutput> mpsatResult = framework.getTaskManager().execute(
+            Result<? extends MpsatOutput> mpsatResult = taskManager.execute(
                     mpsatTask, "Running synthesis [MPSat]", subtaskMonitor);
 
             if (!mpsatResult.isSuccess()) {

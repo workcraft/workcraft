@@ -107,15 +107,15 @@ public class ConversionTask implements Task<ConversionOutput>, ExternalProcessLi
     }
 
     private File getInputFile(PetriModel model, File directory) {
-        final Framework framework = Framework.getInstance();
         StgFormat format = StgFormat.getInstance();
-        Exporter exporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), model, format);
+        Exporter exporter = ExportUtils.chooseBestExporter(model, format);
         if (exporter == null) {
             throw new NoExporterException(model, format);
         }
         File file = new File(directory, fileName);
         ExportTask exportTask = new ExportTask(exporter, model, file);
-        Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
+        TaskManager taskManager = Framework.getInstance().getTaskManager();
+        Result<? extends ExportOutput> exportResult = taskManager.execute(exportTask, "Exporting .g");
         if (!exportResult.isSuccess()) {
             throw new RuntimeException("Unable to export the model.");
         }

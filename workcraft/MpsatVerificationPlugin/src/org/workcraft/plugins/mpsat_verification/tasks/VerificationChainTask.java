@@ -41,14 +41,13 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
 
     @Override
     public Result<? extends VerificationChainOutput> run(ProgressMonitor<? super VerificationChainOutput> monitor) {
-        Framework framework = Framework.getInstance();
+        TaskManager taskManager = Framework.getInstance().getTaskManager();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
-        TaskManager manager = framework.getTaskManager();
         try {
             PetriModel model = WorkspaceUtils.getAs(we, PetriModel.class);
             StgFormat format = StgFormat.getInstance();
-            Exporter exporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), model, format);
+            Exporter exporter = ExportUtils.chooseBestExporter(model, format);
             if (exporter == null) {
                 throw new NoExporterException(model, StgFormat.getInstance());
             }
@@ -57,7 +56,7 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
             // Generate .g for the model
             File netFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + format.getExtension());
             ExportTask exportTask = new ExportTask(exporter, model, netFile);
-            Result<? extends ExportOutput> exportResult = manager.execute(
+            Result<? extends ExportOutput> exportResult = taskManager.execute(
                     exportTask, "Exporting .g", subtaskMonitor);
 
             if (!exportResult.isSuccess()) {
@@ -72,7 +71,7 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
                 MutexUtils.factoroutMutexs(stg, mutexes);
                 netFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + format.getExtension());
                 exportTask = new ExportTask(exporter, model, netFile);
-                exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
+                exportResult = taskManager.execute(exportTask, "Exporting .g");
 
                 if (!exportResult.isSuccess()) {
                     if (exportResult.isCancel()) {
@@ -87,7 +86,7 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
             // Generate unfolding
             File unfoldingFile = new File(directory, "unfolding" + PunfTask.PNML_FILE_EXTENSION);
             PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory);
-            Result<? extends PunfOutput> punfResult = manager.execute(punfTask, "Unfolding .g", subtaskMonitor);
+            Result<? extends PunfOutput> punfResult = taskManager.execute(punfTask, "Unfolding .g", subtaskMonitor);
 
             if (!punfResult.isSuccess()) {
                 if (punfResult.isCancel()) {
@@ -100,7 +99,7 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
 
             // Run MPSat on the generated unfolding
             MpsatTask mpsatTask = new MpsatTask(unfoldingFile, netFile, verificationParameters, directory);
-            Result<? extends MpsatOutput> mpsatResult = manager.execute(
+            Result<? extends MpsatOutput> mpsatResult = taskManager.execute(
                     mpsatTask, "Running verification [MPSat]", subtaskMonitor);
 
             if (!mpsatResult.isSuccess()) {

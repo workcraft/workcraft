@@ -20,7 +20,6 @@ import org.workcraft.interop.Format;
 import org.workcraft.observation.ModelModifiedEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.CompatibilityManager;
-import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.builtin.commands.DotLayoutCommand;
 import org.workcraft.plugins.builtin.commands.RandomLayoutCommand;
@@ -203,14 +202,14 @@ public final class Framework {
     }
 
     private void loadPluginsSettings() {
-        for (PluginInfo<? extends Settings> info : pluginManager.getSettingsPlugins()) {
-            info.getSingleton().load(config);
+        for (Settings settings : pluginManager.getSortedSettings()) {
+            settings.load(config);
         }
     }
 
     private void savePluginsSettings() {
-        for (PluginInfo<? extends Settings> info : pluginManager.getSettingsPlugins()) {
-            info.getSingleton().save(config);
+        for (Settings settings : pluginManager.getSortedSettings()) {
+            settings.save(config);
         }
     }
 
@@ -745,10 +744,10 @@ public final class Framework {
     private void exportModel(ModelEntry me, File file, String formatName, UUID formatUuid) throws SerialisationException {
         if (me == null) return;
         // Try to find exporter for visual model first.
-        Exporter exporter = ExportUtils.chooseBestExporter(getPluginManager(), me.getVisualModel(), formatName, formatUuid);
+        Exporter exporter = ExportUtils.chooseBestExporter(me.getVisualModel(), formatName, formatUuid);
         if (exporter == null) {
             // If no exporter found for visual model, then try to find exporter for math model.
-            exporter = ExportUtils.chooseBestExporter(getPluginManager(), me.getMathModel(), formatName, formatUuid);
+            exporter = ExportUtils.chooseBestExporter(me.getMathModel(), formatName, formatUuid);
         }
         if (exporter == null) {
             String modelName = me.getMathModel().getDisplayName();

@@ -32,7 +32,7 @@ public class OutputPersistencyCheckTask implements Task<VerificationChainOutput>
 
     @Override
     public Result<? extends VerificationChainOutput> run(ProgressMonitor<? super VerificationChainOutput> monitor) {
-        final Framework framework = Framework.getInstance();
+        TaskManager taskManager = Framework.getInstance().getTaskManager();
         VerificationParameters verificationParameters = ReachUtils.getOutputPersistencyParameters();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
@@ -42,7 +42,7 @@ public class OutputPersistencyCheckTask implements Task<VerificationChainOutput>
             VisualDfs dfs = WorkspaceUtils.getAs(we, VisualDfs.class);
             DfsToStgConverter converter = new DfsToStgConverter(dfs);
             StgModel model = (StgModel) converter.getStgModel().getMathModel();
-            Exporter exporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), model, format);
+            Exporter exporter = ExportUtils.chooseBestExporter(model, format);
             if (exporter == null) {
                 throw new NoExporterException(model, format);
             }
@@ -51,7 +51,7 @@ public class OutputPersistencyCheckTask implements Task<VerificationChainOutput>
             File netFile = new File(directory, "net" + stgFileExtension);
             ExportTask exportTask = new ExportTask(exporter, model, netFile);
             SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
-            Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(
+            Result<? extends ExportOutput> exportResult = taskManager.execute(
                     exportTask, "Exporting .g", mon);
 
             if (!exportResult.isSuccess()) {
@@ -65,7 +65,7 @@ public class OutputPersistencyCheckTask implements Task<VerificationChainOutput>
 
             File unfoldingFile = new File(directory, "unfolding" + PunfTask.PNML_FILE_EXTENSION);
             PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory);
-            Result<? extends PunfOutput> punfResult = framework.getTaskManager().execute(
+            Result<? extends PunfOutput> punfResult = taskManager.execute(
                     punfTask, "Unfolding .g", mon);
 
             if (!punfResult.isSuccess()) {
@@ -78,7 +78,7 @@ public class OutputPersistencyCheckTask implements Task<VerificationChainOutput>
             monitor.progressUpdate(0.40);
 
             MpsatTask mpsatTask = new MpsatTask(unfoldingFile, netFile, verificationParameters, directory);
-            Result<? extends MpsatOutput> mpsatResult = framework.getTaskManager().execute(
+            Result<? extends MpsatOutput> mpsatResult = taskManager.execute(
                     mpsatTask, "Running semimodularity checking [MPSat]", mon);
 
             if (!mpsatResult.isSuccess()) {

@@ -1,11 +1,12 @@
 package org.workcraft.plugins.builtin.settings;
 
 import org.workcraft.Config;
+import org.workcraft.Framework;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.PropertyHelper;
-import org.workcraft.utils.PluginUtils;
+import org.workcraft.plugins.PluginManager;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -33,11 +34,13 @@ public class FavoriteCommonSettings extends AbstractCommonSettings {
                     FavoriteCommonSettings::setFilterFavorites,
                     FavoriteCommonSettings::getFilterFavorites));
 
-            for (String name : PluginUtils.getSortedModelDisplayNames()) {
+            PluginManager pm = Framework.getInstance().getPluginManager();
+            for (ModelDescriptor descriptor : pm.getSortedModelDescriptors()) {
+                String displayName = descriptor.getDisplayName();
                 properties.add(new PropertyDeclaration<>(Boolean.class,
-                        PropertyHelper.BULLET_PREFIX + name,
-                        value -> setIsFavorite(name, value),
-                        () -> getIsFavorite(name)));
+                        PropertyHelper.BULLET_PREFIX + displayName,
+                        value -> setIsFavorite(displayName, value),
+                        () -> getIsFavorite(displayName)));
             }
         }
     }
@@ -50,20 +53,23 @@ public class FavoriteCommonSettings extends AbstractCommonSettings {
     @Override
     public void load(Config config) {
         setFilterFavorites(config.getBoolean(keyShowAll, defaultShowAll));
-        for (ModelDescriptor descriptor: PluginUtils.getModelDescriptors()) {
-            String name = descriptor.getDisplayName();
-            String key = getKey(name);
+        PluginManager pm = Framework.getInstance().getPluginManager();
+        for (ModelDescriptor descriptor : pm.getSortedModelDescriptors()) {
+            String displayName = descriptor.getDisplayName();
+            String key = getKey(displayName);
             boolean isFavoriteDefault = descriptor.getRating().compareTo(ModelDescriptor.Rating.NORMAL) >= 0;
-            setIsFavorite(name, config.getBoolean(key, isFavoriteDefault));
+            setIsFavorite(displayName, config.getBoolean(key, isFavoriteDefault));
         }
     }
 
     @Override
     public void save(Config config) {
         config.setBoolean(keyShowAll, getFilterFavorites());
-        for (String name: PluginUtils.getSortedModelDisplayNames()) {
-            String key = getKey(name);
-            config.setBoolean(key, getIsFavorite(name));
+        PluginManager pm = Framework.getInstance().getPluginManager();
+        for (ModelDescriptor descriptor : pm.getSortedModelDescriptors()) {
+            String displayName = descriptor.getDisplayName();
+            String key = getKey(displayName);
+            config.setBoolean(key, getIsFavorite(displayName));
         }
     }
 
