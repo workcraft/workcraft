@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractSynthesisCommand;
 import org.workcraft.dom.math.PageNode;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
@@ -89,10 +90,27 @@ public class TestUtils {
         Mutex mutex = CircuitSettings.parseMutexData();
         for (FunctionComponent component: circuit.getFunctionComponents()) {
             if (mutex.name.equals(component.getModule())) {
-                result.add(circuit.getNodeReference(component));
+                String ref = circuit.getNodeReference(component);
+                result.add(Identifier.truncateNamespaceSeparator(ref));
             }
         }
         return result;
+    }
+
+    public static void collectNodes(WorkspaceEntry we, Set<String> inputs, Set<String> outputs, Set<String> gates) {
+        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
+        for (Contact port: circuit.getPorts()) {
+            if (port.isInput()) {
+                inputs.add(circuit.getNodeReference(port));
+            }
+            if (port.isOutput()) {
+                outputs.add(circuit.getNodeReference(port));
+            }
+        }
+        for (FunctionComponent component: circuit.getFunctionComponents()) {
+            String ref = circuit.getNodeReference(component);
+            gates.add(component.getModule() + " " + Identifier.truncateNamespaceSeparator(ref));
+        }
     }
 
 }

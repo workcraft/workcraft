@@ -1,17 +1,11 @@
 package org.workcraft.utils;
 
 import org.workcraft.Framework;
-import org.workcraft.commands.Command;
 import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.commands.ScriptableDataCommand;
 import org.workcraft.plugins.PluginManager;
 
 public class ScriptableCommandUtils {
-
-    public static void showErrorRequiresGui(Class<? extends Command> commandClass) {
-        String commandName = commandClass.getSimpleName();
-        DialogUtils.showError("Command '" + commandName + "' requires GUI and cannot be scripted.");
-    }
 
     public static void registerCommand(Class<? extends ScriptableCommand> commandClass, String jsName, String jsHelp) {
         final Framework framework = Framework.getInstance();

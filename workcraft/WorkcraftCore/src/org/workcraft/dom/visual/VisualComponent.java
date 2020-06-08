@@ -3,6 +3,7 @@ package org.workcraft.dom.visual;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.ObservableState;
@@ -321,6 +322,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
     }
 
     protected void cacheNameRenderedText(String text, Font font, Positioning positioning, Point2D offset) {
+        text = Identifier.truncateNamespaceSeparator(text);
         if (nameRenderedText.isDifferent(text, font, positioning, offset)) {
             nameRenderedText = new RenderedText(text, font, positioning, offset);
         }

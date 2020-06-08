@@ -199,9 +199,9 @@ public class Stg extends AbstractMathModel implements StgModel {
     }
 
     public String getDummyReference(DummyTransition t) {
-        String reference = getReferenceManager().getNodeReference(null, t);
-        String path = NamespaceHelper.getReferencePath(reference);
-        return path + t.getName();
+        String ref = getReferenceManager().getNodeReference(null, t);
+        String parentRef = NamespaceHelper.getParentReference(ref);
+        return NamespaceHelper.getReference(parentRef, t.getName());
     }
 
     @Override
@@ -224,9 +224,9 @@ public class Stg extends AbstractMathModel implements StgModel {
 
     @Override
     public String getSignalReference(SignalTransition st) {
-        String reference = getReferenceManager().getNodeReference(null, st);
-        String path = NamespaceHelper.getReferencePath(reference);
-        return path + st.getSignalName();
+        String ref = getReferenceManager().getNodeReference(null, st);
+        String parentRef = NamespaceHelper.getParentReference(ref);
+        return NamespaceHelper.getReference(parentRef, st.getSignalName());
     }
 
     @Override
@@ -346,7 +346,7 @@ public class Stg extends AbstractMathModel implements StgModel {
 
     @Override
     public MathNode getNodeByReference(NamespaceProvider provider, String reference) {
-        Pair<String, String> implicitPlaceTransitions = LabelParser.parseImplicitPlaceReference(reference);
+        Pair<String, String> implicitPlaceTransitions = LabelParser.parseImplicitPlace(reference);
         if (implicitPlaceTransitions != null) {
             Node predNode = getReferenceManager().getNodeByReference(provider, implicitPlaceTransitions.getFirst());
             Node succNode = getReferenceManager().getNodeByReference(provider, implicitPlaceTransitions.getSecond());

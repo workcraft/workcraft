@@ -1,43 +1,18 @@
 package org.workcraft.gui;
 
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.utils.PopupUtils;
+import org.workcraft.gui.controls.LogPanel;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.io.*;
 
 @SuppressWarnings("serial")
-public class ErrorWindow extends JPanel implements ComponentListener {
-    protected PrintStream systemErr;
-    protected boolean streamCaptured = false;
-    private final JTextArea txtStdErr;
-    private Color colorBack = null;
-
-    public ErrorWindow() {
-        txtStdErr = new JTextArea();
-        txtStdErr.setMargin(SizeHelper.getTextMargin());
-        txtStdErr.setLineWrap(true);
-        txtStdErr.setEditable(false);
-        txtStdErr.setWrapStyleWord(true);
-        txtStdErr.setForeground(Color.RED);
-        PopupUtils.setTextAreaPopup(txtStdErr);
-
-        DefaultCaret caret = (DefaultCaret) txtStdErr.getCaret();
-        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-
-        JScrollPane scrollStdErr = new JScrollPane();
-        scrollStdErr.setViewportView(txtStdErr);
-
-        setLayout(new BorderLayout());
-        add(scrollStdErr, BorderLayout.CENTER);
-        addComponentListener(this);
-    }
+public class ErrorWindow extends LogPanel implements ComponentListener {
 
     class ErrorStreamView extends FilterOutputStream implements ChangeListener {
         private final JTextArea target;
@@ -82,7 +57,7 @@ public class ErrorWindow extends JPanel implements ComponentListener {
         }
 
         @Override
-        public void write(byte[] b, int off, int len) throws IOException {
+        public void write(byte[] b, int off, int len) {
             if (systemErr != null) {
                 systemErr.write(b, off, len);
             }
@@ -110,9 +85,18 @@ public class ErrorWindow extends JPanel implements ComponentListener {
         }
     }
 
+    private PrintStream systemErr;
+    private boolean streamCaptured = false;
+    private Color colorBack = null;
+
+    public ErrorWindow() {
+        getTextArea().setForeground(Color.RED);
+        addComponentListener(this);
+    }
+
     public void captureStream() {
         if (!streamCaptured) {
-            ErrorStreamView streamView = new ErrorStreamView(new ByteArrayOutputStream(), txtStdErr);
+            ErrorStreamView streamView = new ErrorStreamView(new ByteArrayOutputStream(), getTextArea());
             PrintStream errPrintStream = new PrintStream(streamView);
             systemErr = System.err;
             System.setErr(errPrintStream);

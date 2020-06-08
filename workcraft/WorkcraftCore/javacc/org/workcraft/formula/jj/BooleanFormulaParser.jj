@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.io.Reader;
 import java.io.StringReader;
 
-import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.FreeVariable;
@@ -71,12 +70,16 @@ public class BooleanFormulaParser {
         return WORKER.not(a);
     }
 
-    public static BooleanFormula parse(String text, Func<String, ? extends BooleanFormula> vars) throws ParseException {
-        StringReader reader = new StringReader(NamespaceHelper.convertLegacyFlatnameSeparators(text));
+    public static BooleanFormula parse(String text, Func<String, ? extends BooleanFormula> vars)
+            throws ParseException {
+
+        StringReader reader = new StringReader(text);
         return new BooleanFormulaParser(reader, vars).formula();
     }
 
-    public static BooleanFormula parse(String text, Collection<? extends BooleanVariable> variables) throws ParseException {
+    public static BooleanFormula parse(String text, Collection<? extends BooleanVariable> variables)
+            throws ParseException {
+
         final HashMap<String, BooleanVariable> map = new HashMap<String, BooleanVariable>();
         for(BooleanVariable var : variables) {
             map.put(var.getLabel(), var);

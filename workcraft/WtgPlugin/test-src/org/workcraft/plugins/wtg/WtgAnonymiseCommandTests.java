@@ -26,7 +26,7 @@ public class WtgAnonymiseCommandTests {
     @Test
     public void testDlatchWtgAnonymiseCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "dlatch.wtg.work");
-        testWtgAnonymiseCommands(workName, new String[]{"s1"}, new String[]{"w1"}, new String[]{"x0", "x1", "x2"});
+        testWtgAnonymiseCommands(workName, new String[]{"s1"}, new String[]{"w1."}, new String[]{"x0", "x1", "x2"});
     }
 
     private void testWtgAnonymiseCommands(String workName, String[] stateRefs, String[] waveformRefs, String[] signalRefs)

@@ -5,7 +5,6 @@ import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.controls.FlatHeaderRenderer;
-import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.GuiUtils;
@@ -41,11 +40,9 @@ public class PropertyEditorTable extends JTable {
         propertyClasses.put(TextAction.class, new TextActionProperty());
         propertyClasses.put(ActionList.class, new ActionListProperty());
 
-        final Framework framework = Framework.getInstance();
-        PluginManager pm = framework.getPluginManager();
-        for (PluginInfo<? extends PropertyClassProvider> plugin : pm.getPropertyPlugins()) {
-            PropertyClassProvider instance = plugin.newInstance();
-            propertyClasses.put(instance.getPropertyType(), instance.getPropertyGui());
+        PluginManager pm = Framework.getInstance().getPluginManager();
+        for (PropertyClassProvider p : pm.getPropertieProviders()) {
+            propertyClasses.put(p.getPropertyType(), p.getPropertyGui());
         }
     }
 

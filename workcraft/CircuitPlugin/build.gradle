@@ -12,5 +12,5 @@ dependencies {
 }
 
 ext.excludeFromCoverage = [
-    'org/workcraft/plugins/circuit/tools/'
+    'org/workcraft/plugins/circuit/tools/',
 ]

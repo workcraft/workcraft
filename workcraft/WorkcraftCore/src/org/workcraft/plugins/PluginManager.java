@@ -18,9 +18,8 @@ import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.FileHandler;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class PluginManager implements PluginProvider {
 
@@ -99,81 +98,118 @@ public class PluginManager implements PluginProvider {
         return classes;
     }
 
-    public Collection<PluginInfo<? extends ModelDescriptor>> getModelDescriptorPlugins() {
-        return getPlugins(ModelDescriptor.class);
-    }
-
-    public Collection<PluginInfo<? extends Settings>> getSettingsPlugins() {
-        return getPlugins(Settings.class);
-    }
-
-    public Collection<PluginInfo<? extends Importer>> getImporterPlugins() {
-        return getPlugins(Importer.class);
-    }
-
-    public Collection<PluginInfo<? extends Exporter>> getExporterPlugins() {
-        return getPlugins(Exporter.class);
-    }
-
-    public Collection<PluginInfo<? extends FileHandler>> getFileHandlerPlugins() {
-        return getPlugins(FileHandler.class);
-    }
-
-    public Collection<PluginInfo<? extends PropertyClassProvider>> getPropertyPlugins() {
-        return getPlugins(PropertyClassProvider.class);
-    }
-
-    public Collection<PluginInfo<? extends Command>> getCommandPlugins() {
-        return getPlugins(Command.class);
-    }
-
-    public Collection<PluginInfo<? extends GraphEditorTool>> getGraphEditorToolPlugins() {
-        return getPlugins(GraphEditorTool.class);
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public <T> Collection<PluginInfo<? extends T>> getPlugins(Class<T> interf) {
         return (Collection<PluginInfo<? extends T>>) (Collection<?>) Collections.unmodifiableCollection(plugins.get(interf));
     }
 
-    public void registerModelDescriptor(final Class<? extends ModelDescriptor> cls) {
+    public List<ModelDescriptor> getSortedModelDescriptors() {
+        return getPlugins(ModelDescriptor.class).stream()
+                .map(plugin -> plugin.getSingleton())
+                .sorted(Comparator.comparing(o -> o.getDisplayName()))
+                .collect(Collectors.toList());
+    }
+
+    public List<Settings> getSortedSettings() {
+        return getPlugins(Settings.class).stream()
+                .map(plugin -> plugin.getSingleton())
+                .sorted((o1, o2) -> {
+                    if (o1 == o2) return 0;
+                    if (o1 == null) return -1;
+                    if (o2 == null) return 1;
+                    String s1 = o1.getSection();
+                    if (s1 == null) return -1;
+                    String s2 = o2.getSection();
+                    if (s2 == null) return 1;
+                    if (s1.equals(s2)) {
+                        String n1 = o1.getName();
+                        if (n1 == null) return -1;
+                        String n2 = o2.getName();
+                        if (n2 == null) return 1;
+                        return n1.compareTo(n2);
+                    }
+                    return s1.compareTo(s2);
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<Importer> getSortedImporters() {
+        return getPlugins(Importer.class).stream()
+                .map(plugin -> plugin.getSingleton())
+                .sorted(Comparator.comparing(o -> o.getFormat().getDescription()))
+                .collect(Collectors.toList());
+    }
+
+    public List<Exporter> getSortedExporters() {
+        return getPlugins(Exporter.class).stream()
+                .map(plugin -> plugin.getSingleton())
+                .sorted(Comparator.comparing(o -> o.getFormat().getDescription()))
+                .collect(Collectors.toList());
+    }
+
+    public List<FileHandler> getSortedFileHandlers() {
+        return getPlugins(FileHandler.class).stream()
+                .map(plugin -> plugin.getSingleton())
+                .sorted(Comparator.comparing(o -> o.getDisplayName()))
+                .collect(Collectors.toList());
+    }
+
+    public List<PropertyClassProvider> getPropertieProviders() {
+        return getPlugins(PropertyClassProvider.class).stream()
+                .map(plugin -> plugin.getSingleton())
+                .collect(Collectors.toList());
+    }
+
+    public List<Command> getCommands() {
+        return getPlugins(Command.class).stream()
+                .map(plugin -> plugin.getSingleton())
+                .collect(Collectors.toList());
+    }
+
+    public List<GraphEditorTool> getGraphEditorTools() {
+        return getPlugins(GraphEditorTool.class).stream()
+                .map(plugin -> plugin.getSingleton())
+                .collect(Collectors.toList());
+    }
+
+    public void registerModelDescriptor(Class<? extends ModelDescriptor> cls) {
         registerClass(ModelDescriptor.class, cls);
     }
 
-    public void registerSettings(final Class<? extends Settings> cls) {
+    public void registerSettings(Class<? extends Settings> cls) {
         registerClass(Settings.class, cls);
     }
 
-    public void registerXmlSerialiser(final Class<? extends XMLSerialiser> cls) {
+    public void registerXmlSerialiser(Class<? extends XMLSerialiser> cls) {
         registerClass(XMLSerialiser.class, cls);
     }
 
-    public void registerXmlDeserialiser(final Class<? extends XMLDeserialiser> cls) {
+    public void registerXmlDeserialiser(Class<? extends XMLDeserialiser> cls) {
         registerClass(XMLDeserialiser.class, cls);
     }
 
-    public void registerImporter(final Class<? extends Importer> cls) {
+    public void registerImporter(Class<? extends Importer> cls) {
         registerClass(Importer.class, cls);
     }
 
-    public void registerExporter(final Class<? extends Exporter> cls) {
+    public void registerExporter(Class<? extends Exporter> cls) {
         registerClass(Exporter.class, cls);
     }
 
-    public void registerFileHandler(final Class<? extends FileHandler> cls) {
+    public void registerFileHandler(Class<? extends FileHandler> cls) {
         registerClass(FileHandler.class, cls);
     }
 
-    public void registerProperty(final Class<? extends PropertyClassProvider> cls) {
+    public void registerProperty(Class<? extends PropertyClassProvider> cls) {
         registerClass(PropertyClassProvider.class, cls);
     }
 
-    public void registerCommand(final Class<? extends Command> cls) {
+    public void registerCommand(Class<? extends Command> cls) {
         registerClass(Command.class, cls);
     }
 
-    public void registerGlobalTool(final Class<? extends GraphEditorTool> cls) {
+    public void registerGlobalTool(Class<? extends GraphEditorTool> cls) {
         registerClass(GraphEditorTool.class, cls);
     }
 

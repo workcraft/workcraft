@@ -3,5 +3,5 @@ dependencies {
 }
 
 ext.excludeFromCoverage = [
-    'org/workcraft/plugins/petri/tools/'
+    'org/workcraft/plugins/petri/tools/',
 ]

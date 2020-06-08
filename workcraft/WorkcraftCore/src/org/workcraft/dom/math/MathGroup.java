@@ -4,13 +4,9 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
-import org.workcraft.dom.references.HierarchyReferenceManager;
-import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
-import org.workcraft.utils.Hierarchy;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 public class MathGroup extends MathNode implements NamespaceProvider, ObservableHierarchy {
@@ -74,20 +70,6 @@ public class MathGroup extends MathNode implements NamespaceProvider, Observable
     @Override
     public void reparent(Collection<? extends Node> nodes) {
         groupImpl.reparent(nodes);
-    }
-
-    public ArrayList<Node> unGroup(ReferenceManager manager) {
-        ArrayList<Node> nodesToReparent = new ArrayList<>(groupImpl.getChildren());
-        Container newParent = Hierarchy.getNearestAncestor(getParent(), Container.class);
-        if (manager != null) {
-            if (manager instanceof HierarchyReferenceManager) {
-                HierarchyReferenceManager hierManager = (HierarchyReferenceManager) manager;
-                NamespaceProvider provider = hierManager.getNamespaceProvider(newParent);
-                hierManager.setNamespaceProvider(nodesToReparent, provider);
-            }
-        }
-        groupImpl.reparent(nodesToReparent, newParent);
-        return nodesToReparent;
     }
 
 }

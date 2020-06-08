@@ -1,6 +1,5 @@
 package org.workcraft.utils;
 
-import net.sf.jga.fn.UnaryFunctor;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
@@ -17,16 +16,6 @@ public class Hierarchy {
 
     public static <T> Func<Node, Boolean> getTypeFilter(final Class<T> type) {
         return node -> type.isInstance(node);
-    }
-
-    public static  Collection<Node> fillterNodes(Collection<Node> nodes, UnaryFunctor<Node, Boolean> filter) {
-        LinkedList<Node> result = new LinkedList<>();
-        for (Node node : nodes) {
-            if (filter.fn(node)) {
-                result.add(node);
-            }
-        }
-        return result;
     }
 
     public static <T extends Node> Collection<T> filterNodesByType(Collection<Node> nodes, final Class<T> type) {
@@ -89,10 +78,6 @@ public class Hierarchy {
             }
         }
         return result;
-    }
-
-    public static Node getCommonParent(Collection<Node> nodes) {
-        return getCommonParent(nodes.toArray(new Node[nodes.size()]));
     }
 
     public static Node getRoot(Node node) {
@@ -166,15 +151,6 @@ public class Hierarchy {
             result.addAll(getDescendantsOfType(n, type, filter));
         }
         result.addAll(getChildrenOfType(node, type, filter));
-        return result;
-    }
-
-    public static Collection<Node> getDescendants(Node node) {
-        ArrayList<Node> result = new ArrayList<>();
-        for (Node n : node.getChildren()) {
-            result.addAll(getDescendants(n));
-        }
-        result.addAll(node.getChildren());
         return result;
     }
 

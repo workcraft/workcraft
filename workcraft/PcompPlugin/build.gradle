@@ -3,3 +3,7 @@ dependencies {
     implementation project(':PetriPlugin')
     implementation project(':StgPlugin')
 }
+
+ext.excludeFromCoverage = [
+    'org/workcraft/plugins/pcomp/gui/',
+]

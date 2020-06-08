@@ -119,8 +119,7 @@ public final class WorkUtils {
                 }
             } else {
                 try {
-                    final PluginManager pm = Framework.getInstance().getPluginManager();
-                    final Importer importer = ImportUtils.chooseBestImporter(pm, file);
+                    final Importer importer = ImportUtils.chooseBestImporter(file);
                     me = ImportUtils.importFromFile(importer, file);
                 } catch (IOException e) {
                     throw new DeserialisationException(e);

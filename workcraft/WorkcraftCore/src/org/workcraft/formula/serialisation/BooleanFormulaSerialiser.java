@@ -7,10 +7,9 @@ import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.formula.visitors.StringGenerator.PrinterSuite;
 import org.workcraft.formula.visitors.StringGenerator.Void;
-import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.serialisation.CustomXMLSerialiser;
 import org.workcraft.serialisation.NodeSerialiser;
-import org.workcraft.dom.references.Identifier;
+import org.workcraft.serialisation.ReferenceProducer;
 
 public abstract class BooleanFormulaSerialiser<T> implements CustomXMLSerialiser<T> {
 
@@ -36,15 +35,7 @@ public abstract class BooleanFormulaSerialiser<T> implements CustomXMLSerialiser
         printers.vars = new StringGenerator.VariablePrinter() {
             @Override
             public Void visit(BooleanVariable node) {
-
-                String ref = internalReferences.getReference(node);
-                // old style naming, if number is used as an ID for a contact
-                if (Identifier.isNumber(ref)) {
-                    append("var_" + ref);
-                } else {
-                    append(ref);
-                }
-
+                append(internalReferences.getReference(node));
                 return null;
             }
         };

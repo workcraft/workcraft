@@ -6,11 +6,6 @@ dependencies {
     implementation project(':PunfPlugin')
 }
 
-cpdCheck {
-    exclude 'org/workcraft/plugins/mpsat/tasks/CombinedChainResultHandlingMonitor.java'
-    exclude 'org/workcraft/plugins/mpsat/tasks/VerificationChainResultHandlingMonitor.java'
-}
-
 ext.excludeFromCoverage = [
-    'org/workcraft/plugins/mpsat/gui/'
+    'org/workcraft/plugins/mpsat_verification/gui/',
 ]

@@ -13,7 +13,6 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Exporter;
-import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
@@ -234,10 +233,8 @@ public class StgUtils {
     }
 
     public static Result<? extends ExportOutput> exportStg(Stg stg, File file, ProgressMonitor<?> monitor) {
-        Framework framework = Framework.getInstance();
-        PluginManager pluginManager = framework.getPluginManager();
         StgFormat format = StgFormat.getInstance();
-        Exporter exporter = ExportUtils.chooseBestExporter(pluginManager, stg, format);
+        Exporter exporter = ExportUtils.chooseBestExporter(stg, format);
         if (exporter == null) {
             throw new NoExporterException(stg, format);
         }
@@ -248,7 +245,7 @@ public class StgUtils {
         if (monitor != null) {
             subtaskMonitor = new SubtaskMonitor<>(monitor);
         }
-        TaskManager taskManager = framework.getTaskManager();
+        TaskManager taskManager = Framework.getInstance().getTaskManager();
         return taskManager.execute(exportTask, description, subtaskMonitor);
     }
 

@@ -7,6 +7,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -241,7 +242,7 @@ public class CircuitUtils {
             } else {
                 // If the component has a single output, use the component name. Otherwise append the contact.
                 if (component.getOutputs().size() == 1) {
-                    result = circuit.getNodeReference(component);
+                    result = Identifier.truncateNamespaceSeparator(circuit.getNodeReference(component));
                 } else {
                     result = circuit.getNodeReference(contact);
                 }

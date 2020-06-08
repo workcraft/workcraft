@@ -13,10 +13,10 @@ public class HierarchicalUniqueNameReferenceManagerTest {
         private static final long serialVersionUID = -2931077011392124649L;
         {
             put("abc", Pair.of("abc", ""));
-            put("abc.def", Pair.of("abc", "def"));
-            put("abc.def.ghi", Pair.of("abc", "def.ghi"));
-            put("abc/123.def.ghi", Pair.of("abc/123", "def.ghi"));
-            put("a.b.c+/123", Pair.of("a", "b.c+/123"));
+            put("abc.def", Pair.of("abc.", "def"));
+            put("abc.def.ghi", Pair.of("abc.", "def.ghi"));
+            put("abc/123.def.ghi", Pair.of("abc/123.", "def.ghi"));
+            put("a.b.c+/123", Pair.of("a.", "b.c+/123"));
         }
     };
 
@@ -57,7 +57,7 @@ public class HierarchicalUniqueNameReferenceManagerTest {
         for (Entry<String, String> en: referencePaths.entrySet()) {
             String reference = en.getKey();
             String path = en.getValue();
-            String answer = NamespaceHelper.getReferencePath(reference);
+            String answer = NamespaceHelper.getParentReference(reference);
             Assertions.assertEquals(path, answer);
         }
     }

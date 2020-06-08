@@ -109,7 +109,7 @@ public class VerilogImporter implements Importer {
     }
 
     public Circuit createCircuit(VerilogModule verilogModule, Collection<Mutex> mutexes) {
-        return createCircuit(verilogModule, Arrays.asList(verilogModule), mutexes);
+        return createCircuit(verilogModule, Collections.singletonList(verilogModule), mutexes);
     }
 
     private Circuit createCircuitHierarchy(Collection<VerilogModule> verilogModules)
@@ -719,20 +719,15 @@ public class VerilogImporter implements Importer {
                 container = circuit.createNodeWithHierarchy(containerRef, circuit.getRoot(), PageNode.class);
             }
             if (container != component.getParent()) {
-                circuit.reparent(container, circuit, circuit.getRoot(), Arrays.asList(component));
+                circuit.reparent(container, circuit, circuit.getRoot(), Collections.singletonList(component));
             }
         }
+        HierarchyReferenceManager refManager = circuit.getReferenceManager();
+        NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(component);
+        NameManager nameManager = refManager.getNameManager(namespaceProvider);
         String name = NamespaceHelper.getReferenceName(ref);
-        try {
-            HierarchyReferenceManager refManager = circuit.getReferenceManager();
-            NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(component);
-            NameManager nameManager = refManager.getNameManager(namespaceProvider);
-            String derivedName = nameManager.getDerivedName(component, name);
-            circuit.setName(component, derivedName);
-        } catch (ArgumentException e) {
-            String componentRef = circuit.getNodeReference(component);
-            LogUtils.logWarning("Cannot set name '" + ref + "' for component '" + componentRef + "'.");
-        }
+        String derivedName = nameManager.getDerivedName(component, name);
+        circuit.setName(component, derivedName);
     }
 
     private FunctionComponent createMutex(Circuit circuit, Mutex instance, Mutex module, HashMap<String, Wire> wires) {

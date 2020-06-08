@@ -56,8 +56,7 @@ public class DotLayoutCommand extends AbstractLayoutCommand {
             args.add(original.getAbsolutePath());
 
             Task<ExternalProcessOutput> task = new ExternalProcessTask(args, directory);
-            final Framework framework = Framework.getInstance();
-            final TaskManager taskManager = framework.getTaskManager();
+            TaskManager taskManager = Framework.getInstance().getTaskManager();
             Result<? extends ExternalProcessOutput> res = taskManager.execute(task, "Laying out the graph...");
 
             if (res.isCancel()) {
@@ -79,10 +78,11 @@ public class DotLayoutCommand extends AbstractLayoutCommand {
         }
     }
 
-    private void saveGraph(VisualModel model, File file) throws IOException, ModelValidationException, SerialisationException {
-        final Framework framework = Framework.getInstance();
+    private void saveGraph(VisualModel model, File file)
+            throws IOException, ModelValidationException, SerialisationException {
+
         DotFormat format = DotFormat.getInstance();
-        Exporter exporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), model, format);
+        Exporter exporter = ExportUtils.chooseBestExporter(model, format);
         if (exporter == null) {
             throw new NoExporterException(model, format);
         }

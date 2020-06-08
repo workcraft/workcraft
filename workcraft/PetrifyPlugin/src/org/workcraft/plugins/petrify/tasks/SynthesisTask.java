@@ -177,17 +177,17 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
     }
 
     private File getInputFile(Stg stg, File directory) {
-        final Framework framework = Framework.getInstance();
         StgFormat format = StgFormat.getInstance();
-        Exporter stgExporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), stg, format);
+        Exporter stgExporter = ExportUtils.chooseBestExporter(stg, format);
         if (stgExporter == null) {
             throw new NoExporterException(stg, format);
         }
 
+        TaskManager taskManager = Framework.getInstance().getTaskManager();
         String gExtension = format.getExtension();
         File stgFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + gExtension);
         ExportTask exportTask = new ExportTask(stgExporter, stg, stgFile);
-        Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
+        Result<? extends ExportOutput> exportResult = taskManager.execute(exportTask, "Exporting .g");
         if (!exportResult.isSuccess()) {
             throw new RuntimeException("Unable to export the model.");
         }
@@ -196,7 +196,7 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
             MutexUtils.factoroutMutexs(stg, mutexes);
             stgFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + gExtension);
             exportTask = new ExportTask(stgExporter, stg, stgFile);
-            exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
+            exportResult = taskManager.execute(exportTask, "Exporting .g");
             if (!exportResult.isSuccess()) {
                 throw new RuntimeException("Unable to export the model after factoring out the mutexes.");
             }

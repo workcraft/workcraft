@@ -13,8 +13,7 @@ public class WorkcraftOpen implements FileHandler {
 
     @Override
     public boolean accept(File f) {
-        final Framework framework = Framework.getInstance();
-        if (ImportUtils.chooseBestImporter(framework.getPluginManager(), f) != null) {
+        if (ImportUtils.chooseBestImporter(f) != null) {
             return true;
         } else {
             return false;

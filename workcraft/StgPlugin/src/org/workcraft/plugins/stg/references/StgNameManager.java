@@ -53,7 +53,7 @@ public class StgNameManager extends DefaultNameManager {
         String signalName = st.getSignalName();
         SignalTransition.Direction direction = st.getDirection();
         Integer instance = 0;
-        if (Identifier.isName(name)) {
+        if (Identifier.isValid(name)) {
             signalName = name;
         } else {
             final Triple<String, SignalTransition.Direction, Integer> r = LabelParser.parseSignalTransition(name);
@@ -232,7 +232,7 @@ public class StgNameManager extends DefaultNameManager {
             Integer count = getPrefixCount(prefix);
             String name = prefix;
             if (count > 0) {
-                name = prefix + count;
+                name = Identifier.compose(prefix, count.toString());
             }
             while (!isGoodSignalName(name, st.getSignalType())) {
                 name = prefix + (++count);
@@ -252,7 +252,7 @@ public class StgNameManager extends DefaultNameManager {
             Integer count = getPrefixCount(prefix);
             String name;
             do {
-                name = prefix + (count++);
+                name = Identifier.compose(prefix, (count++).toString());
             } while (!isGoodDummyName(name));
             dt.setName(name);
             dummyTransitions.put(name, dt);

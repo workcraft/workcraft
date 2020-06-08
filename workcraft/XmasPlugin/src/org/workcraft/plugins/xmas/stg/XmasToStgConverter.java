@@ -1,6 +1,7 @@
 package org.workcraft.plugins.xmas.stg;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.VisualPlace;
@@ -368,7 +369,7 @@ public class XmasToStgConverter extends AbstractToStgConverter {
     }
 
     private SourceStg generateSourceStg(VisualSourceComponent component) throws InvalidConnectionException {
-        String name = getXmasModel().getMathName(component);
+        String name = getComponentName(component);
         Point2D pos = getComponentPosition(component);
         SignalStg oracle = generateSignalStg(XmasStgType.IORACLE, name + _ORACLE, pos.getX() - 10.0, pos.getY());
         ContactStg o = null;
@@ -391,6 +392,10 @@ public class XmasToStgConverter extends AbstractToStgConverter {
             createReadArc(o.rdy.one, o.dn.riseList.get(1));
         }
         return new SourceStg(o, oracle);
+    }
+
+    private String getComponentName(VisualXmasComponent component) {
+        return Identifier.truncateNamespaceSeparator(getXmasModel().getMathName(component));
     }
 
     private void connectSourceStg(VisualSourceComponent component) throws InvalidConnectionException {
@@ -428,7 +433,7 @@ public class XmasToStgConverter extends AbstractToStgConverter {
     }
 
     private SinkStg generateSinkStg(VisualSinkComponent component) throws InvalidConnectionException {
-        String name = getXmasModel().getMathName(component);
+        String name = getComponentName(component);
         Point2D pos = getComponentPosition(component);
         SignalStg oracle = generateSignalStg(XmasStgType.TORACLE, name + _ORACLE, pos.getX() + 10.0, pos.getY());
         ContactStg i = null;
@@ -488,7 +493,7 @@ public class XmasToStgConverter extends AbstractToStgConverter {
     }
 
     private FunctionStg generateFunctionStg(VisualFunctionComponent component) throws InvalidConnectionException {
-        String name = getXmasModel().getMathName(component);
+        String name = getComponentName(component);
         Point2D pos = getComponentPosition(component);
         ContactStg i = null;
         ContactStg o = null;
@@ -568,7 +573,7 @@ public class XmasToStgConverter extends AbstractToStgConverter {
     }
 
     private ForkStg generateForkStg(VisualForkComponent component) throws InvalidConnectionException {
-        String name = getXmasModel().getMathName(component);
+        String name = getComponentName(component);
         Point2D pos = getComponentPosition(component);
         ContactStg i = null;
         ContactStg a = null;
@@ -690,7 +695,7 @@ public class XmasToStgConverter extends AbstractToStgConverter {
     }
 
     private JoinStg generateJoinStg(VisualJoinComponent component) throws InvalidConnectionException {
-        String name = getXmasModel().getMathName(component);
+        String name = getComponentName(component);
         Point2D pos = getComponentPosition(component);
         ContactStg a = null;
         ContactStg b = null;
@@ -804,7 +809,7 @@ public class XmasToStgConverter extends AbstractToStgConverter {
     }
 
     private SwitchStg generateSwitchStg(VisualSwitchComponent component) throws InvalidConnectionException {
-        String name = getXmasModel().getMathName(component);
+        String name = getComponentName(component);
         Point2D pos = getComponentPosition(component);
         ContactStg i = null;
         ContactStg a = null;
@@ -932,7 +937,7 @@ public class XmasToStgConverter extends AbstractToStgConverter {
     }
 
     private MergeStg generateMergeStg(VisualMergeComponent component) throws InvalidConnectionException {
-        String name = getXmasModel().getMathName(component);
+        String name = getComponentName(component);
         Point2D pos = getComponentPosition(component);
         ContactStg a = null;
         ContactStg b = null;
@@ -1048,7 +1053,7 @@ public class XmasToStgConverter extends AbstractToStgConverter {
     }
 
     private QueueStg generateQueueStg(VisualQueueComponent component) throws InvalidConnectionException {
-        String name = getXmasModel().getMathName(component);
+        String name = getComponentName(component);
         Point2D pos = getComponentPosition(component);
         int capacity = component.getReferencedComponent().getCapacity();
         ContactStg i = null;

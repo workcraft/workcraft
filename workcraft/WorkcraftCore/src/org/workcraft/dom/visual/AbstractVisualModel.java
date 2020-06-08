@@ -4,6 +4,7 @@ import org.workcraft.commands.AbstractLayoutCommand;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.*;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
@@ -736,7 +737,13 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
     private PropertyDescriptor getNameProperty(VisualNode node) {
         return new PropertyDeclaration<>(String.class, PROPERTY_NAME,
                 value -> {
-                    if (Identifier.isName(value)) {
+                    if (Identifier.isValid(value)) {
+                        if (node instanceof VisualComponent) {
+                            VisualComponent component = (VisualComponent) node;
+                            if (component.getReferencedComponent() instanceof NamespaceProvider) {
+                                value = Identifier.appendNamespaceSeparator(value);
+                            }
+                        }
                         if (!value.equals(getMathName(node))) {
                             setMathName(node, value);
                             node.sendNotification(new PropertyChangedEvent(node, PROPERTY_NAME));
@@ -746,7 +753,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
                                 + "The first character must be alphabetic or '_' and the following -- alphanumeric or '_'.");
                     }
                 },
-                () -> getMathName(node));
+                () -> Identifier.truncateNamespaceSeparator(getMathName(node)));
     }
 
 }

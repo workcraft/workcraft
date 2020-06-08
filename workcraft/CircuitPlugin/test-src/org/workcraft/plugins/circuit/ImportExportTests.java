@@ -9,7 +9,6 @@ import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.circuit.interop.VerilogFormat;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.PackageUtils;
-import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
@@ -88,7 +87,7 @@ public class ImportExportTests {
         Set<String> wInputs = new HashSet<>();
         Set<String> wOutputs = new HashSet<>();
         Set<String> wGates = new HashSet<>();
-        countNodes(wWe, wInputs, wOutputs, wGates);
+        TestUtils.collectNodes(wWe, wInputs, wOutputs, wGates);
 
         WorkspaceEntry vWe = null;
         Set<String> vInputs = new HashSet<>();
@@ -99,7 +98,7 @@ public class ImportExportTests {
             vFile.deleteOnExit();
             framework.exportWork(wWe, vFile, VerilogFormat.getInstance());
             vWe = framework.loadWork(vFile);
-            countNodes(vWe, vInputs, vOutputs, vGates);
+            TestUtils.collectNodes(vWe, vInputs, vOutputs, vGates);
         } catch (IOException | SerialisationException e) {
         }
 
@@ -114,7 +113,7 @@ public class ImportExportTests {
             Set<String> sInputs = new HashSet<>();
             Set<String> sOutputs = new HashSet<>();
             Set<String> sGates = new HashSet<>();
-            countNodes(sWe, sInputs, sOutputs, sGates);
+            TestUtils.collectNodes(sWe, sInputs, sOutputs, sGates);
 
             Assertions.assertEquals(wInputs, sInputs);
             Assertions.assertEquals(wOutputs, sOutputs);
@@ -125,21 +124,6 @@ public class ImportExportTests {
 
         framework.closeWork(wWe);
         framework.closeWork(vWe);
-    }
-
-    private void countNodes(WorkspaceEntry we, Set<String> inputs, Set<String> outputs, Set<String> gates) {
-        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-        for (Contact port: circuit.getPorts()) {
-            if (port.isInput()) {
-                inputs.add(port.getName());
-            }
-            if (port.isOutput()) {
-                outputs.add(port.getName());
-            }
-        }
-        for (FunctionComponent component: circuit.getFunctionComponents()) {
-            gates.add(component.getModule() + " " + component.getName());
-        }
     }
 
 }

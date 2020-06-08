@@ -4,14 +4,13 @@ import org.workcraft.Framework;
 import org.workcraft.commands.Command;
 import org.workcraft.commands.MenuOrdering.Position;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ActionCheckBoxMenuItem;
 import org.workcraft.gui.actions.ActionMenuItem;
 import org.workcraft.gui.tabs.DockableWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Format;
-import org.workcraft.plugins.PluginInfo;
+import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.utils.CommandUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -20,13 +19,17 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 @SuppressWarnings("serial")
 public class MainMenu extends JMenuBar {
+
     private static final String MENU_SECTION_PROMOTED_PREFIX = "!";
 
-    private final MainWindow mainWindow;
+    private final JMenu mnImport = new JMenu("Import");
     private final JMenu mnExport = new JMenu("Export");
     private final JMenu mnRecent = new JMenu("Open recent");
     private final JMenu mnToolbars = new JMenu("Toolbars");
@@ -36,9 +39,8 @@ public class MainMenu extends JMenuBar {
     private final LinkedList<JMenu> mnCommandsList = new LinkedList<>();
     private final JMenu mnHelp = new JMenu("Help");
 
-    MainMenu(final MainWindow mainWindow) {
+    MainMenu() {
         super();
-        this.mainWindow = mainWindow;
         addFileMenu();
         addEditMenu();
         addViewMenu();
@@ -80,8 +82,9 @@ public class MainMenu extends JMenuBar {
 
         mnFile.addSeparator();
 
-        ActionMenuItem miImport = new ActionMenuItem(MainWindowActions.IMPORT_ACTION);
-        mnFile.add(miImport);
+        mnFile.add(mnImport);
+        setImportMenu();
+
         mnFile.add(mnExport);
 
         mnFile.addSeparator();
@@ -111,25 +114,6 @@ public class MainMenu extends JMenuBar {
 
         ActionMenuItem miExit = new ActionMenuItem(MainWindowActions.EXIT_ACTION);
         mnFile.add(miExit);
-    }
-
-    private void addExportSeparator(String text) {
-        mnExport.add(new JLabel(text));
-        mnExport.addSeparator();
-    }
-
-    private void addExporter(Exporter exporter) {
-        Format format = exporter.getFormat();
-        String text = format.getDescription() + " (*" + format.getExtension() + ")";
-        Action action = new Action(text, () -> {
-            try {
-                Framework.getInstance().getMainWindow().export(exporter);
-            } catch (OperationCancelledException e) {
-            }
-        });
-        ActionMenuItem miExport = new ActionMenuItem(action);
-        mnExport.add(miExport);
-        mnExport.setEnabled(true);
     }
 
     private void addEditMenu() {
@@ -264,18 +248,34 @@ public class MainMenu extends JMenuBar {
         mnHelp.add(miAbout);
     }
 
+    private void setImportMenu() {
+        mnImport.removeAll();
+        mnImport.setEnabled(false);
+
+        Framework framework = Framework.getInstance();
+        MainWindow mainWindow = framework.getMainWindow();
+        PluginManager pluginManager = framework.getPluginManager();
+        for (Importer importer : pluginManager.getSortedImporters()) {
+            Format format = importer.getFormat();
+            String text = format.getDescription() + " (*" + format.getExtension() + ")";
+            Action action = new Action(text, () -> mainWindow.importFrom(importer));
+            ActionMenuItem miImport = new ActionMenuItem(action);
+            mnImport.add(miImport);
+            mnImport.setEnabled(true);
+        }
+        revalidate();
+    }
+
     private void setExportMenu(final WorkspaceEntry we) {
         mnExport.removeAll();
         mnExport.setEnabled(false);
 
         VisualModel model = we.getModelEntry().getVisualModel();
-        final Framework framework = Framework.getInstance();
-        PluginManager pluginManager = framework.getPluginManager();
-        Collection<PluginInfo<? extends Exporter>> plugins = pluginManager.getExporterPlugins();
+        PluginManager pm = Framework.getInstance().getPluginManager();
+        List<Exporter> exporters = pm.getSortedExporters();
 
         boolean hasVisualModelExporter = false;
-        for (PluginInfo<? extends Exporter> info : plugins) {
-            Exporter exporter = info.getSingleton();
+        for (Exporter exporter : exporters) {
             if (exporter.isCompatible(model)) {
                 if (!hasVisualModelExporter) {
                     addExportSeparator("Visual model");
@@ -286,8 +286,7 @@ public class MainMenu extends JMenuBar {
         }
 
         boolean hasMathModelExporter = false;
-        for (PluginInfo<? extends Exporter> info : plugins) {
-            Exporter exporter = info.getSingleton();
+        for (Exporter exporter : exporters) {
             if (exporter.isCompatible(model.getMathModel())) {
                 if (!hasMathModelExporter) {
                     addExportSeparator("Math model");
@@ -297,6 +296,20 @@ public class MainMenu extends JMenuBar {
             }
         }
         revalidate();
+    }
+
+    private void addExportSeparator(String text) {
+        mnExport.add(new JLabel(text));
+        mnExport.addSeparator();
+    }
+
+    private void addExporter(Exporter exporter) {
+        Format format = exporter.getFormat();
+        String text = format.getDescription() + " (*" + format.getExtension() + ")";
+        Action action = new Action(text, () -> Framework.getInstance().getMainWindow().export(exporter));
+        ActionMenuItem miExport = new ActionMenuItem(action);
+        mnExport.add(miExport);
+        mnExport.setEnabled(true);
     }
 
     public void setExportMenuState(boolean enable) {
@@ -325,6 +338,7 @@ public class MainMenu extends JMenuBar {
         mnRecent.removeAll();
         mnRecent.setEnabled(false);
         int index = 0;
+        final MainWindow mainWindow = Framework.getInstance().getMainWindow();
         for (final String entry : entries) {
             if (entry != null) {
                 JMenuItem miFile = new JMenuItem();
@@ -402,6 +416,7 @@ public class MainMenu extends JMenuBar {
             sectionCommandsPartitions.add(CommandUtils.getPositionedCommands(sectionCommands, position));
         }
         boolean needSeparator = false;
+        final MainWindow mainWindow = Framework.getInstance().getMainWindow();
         for (List<Command> sectionCommandsPartition : sectionCommandsPartitions) {
             boolean isFirstItem = true;
             for (Command command : sectionCommandsPartition) {

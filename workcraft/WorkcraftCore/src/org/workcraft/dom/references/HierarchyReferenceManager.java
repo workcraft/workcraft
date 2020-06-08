@@ -111,12 +111,6 @@ public class HierarchyReferenceManager extends HierarchySupervisor implements Re
 
     protected void setExistingReference(Node node) {
         String reference = refs.getReference(node);
-        if (Identifier.isNumber(reference)) {
-            String name = getName(node);
-            if (name != null) {
-                reference = name;
-            }
-        }
         if (reference != null) {
             String name = NamespaceHelper.getReferenceName(reference);
             setName(node, name);
@@ -135,7 +129,7 @@ public class HierarchyReferenceManager extends HierarchySupervisor implements Re
         String tail = NamespaceHelper.getReferenceTail(reference);
         NameManager man = getNameManager(provider);
         Node node = man.getNode(head);
-        if ((node != null) && (node instanceof NamespaceProvider)) {
+        if (node instanceof NamespaceProvider) {
             return getNodeByReference((NamespaceProvider) node, tail);
         }
         return node;
@@ -154,9 +148,6 @@ public class HierarchyReferenceManager extends HierarchySupervisor implements Re
         do {
             component = getNamespaceProvider(node);
             if (component != null) {
-                if (!result.isEmpty()) {
-                    result = NamespaceHelper.getHierarchySeparator() + result;
-                }
                 String name = getNameManager(component).getName(node);
                 // The unnamed component just returns null.
                 if (name == null) return null;

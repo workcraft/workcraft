@@ -8,7 +8,6 @@ import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.MainMenu;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.trees.TreePopupProvider;
-import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.utils.CommandUtils;
 import org.workcraft.utils.DialogUtils;
@@ -90,17 +89,14 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                         popup.add(miOpen);
                     }
 
-                    final PluginManager pluginManager = framework.getPluginManager();
-                    for (PluginInfo<? extends FileHandler> info : pluginManager.getFileHandlerPlugins()) {
-                        FileHandler handler = info.getSingleton();
-
-                        if (!handler.accept(file)) {
-                            continue;
+                    final PluginManager pm = framework.getPluginManager();
+                    for (FileHandler fileHandler : pm.getSortedFileHandlers()) {
+                        if (fileHandler.accept(file)) {
+                            JMenuItem mi = new JMenuItem(fileHandler.getDisplayName());
+                            handlers.put(mi, fileHandler);
+                            mi.addActionListener(event -> handlers.get(event.getSource()).execute(file));
+                            popup.add(mi);
                         }
-                        JMenuItem mi = new JMenuItem(handler.getDisplayName());
-                        handlers.put(mi, handler);
-                        mi.addActionListener(event -> handlers.get(event.getSource()).execute(file));
-                        popup.add(mi);
                     }
                 }
             } else {

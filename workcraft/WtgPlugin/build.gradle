@@ -6,5 +6,5 @@ dependencies {
 }
 
 ext.excludeFromCoverage = [
-    'org/workcraft/plugins/wtg/tools/'
+    'org/workcraft/plugins/wtg/tools/',
 ]

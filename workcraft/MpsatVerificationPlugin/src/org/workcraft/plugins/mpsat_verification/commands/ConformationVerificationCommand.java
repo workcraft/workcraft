@@ -50,8 +50,8 @@ public class ConformationVerificationCommand extends org.workcraft.commands.Abst
         Framework framework = Framework.getInstance();
 
         MainWindow mainWindow = framework.getMainWindow();
-        Format[] formats = {StgFormat.getInstance()};
-        JFileChooser fc = mainWindow.createOpenDialog("Open environment file", false, true, formats);
+        Format format = StgFormat.getInstance();
+        JFileChooser fc = mainWindow.createOpenDialog("Open environment file", false, true, format);
         if (fc.showDialog(mainWindow, "Open") == JFileChooser.APPROVE_OPTION) {
             File data = fc.getSelectedFile();
             VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);

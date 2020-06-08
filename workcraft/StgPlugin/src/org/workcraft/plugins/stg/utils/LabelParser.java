@@ -9,31 +9,36 @@ import java.util.regex.Pattern;
 
 public class LabelParser {
 
-    private static final Pattern signalTransitionPattern =
-            Pattern.compile("^([_A-Za-z][_A-Za-z0-9]*)([\\+\\-\\~])?(\\/([0-9]+))?");
+    private static final int SIGNAL_TRANSITION_NAME_GROUP = 1;
+    private static final int SIGNAL_TRANSITION_SIGN_GROUP = 2;
+    private static final int SIGNAL_TRANSITION_INSTANCE_GROUP = 4;
+    private static final Pattern SIGNAL_TRANSITION_PATTERN =
+            Pattern.compile("^([_A-Za-z][_A-Za-z0-9.]*)([+\\-~])?(/([0-9]+))?");
 
-    private static final Pattern dummyTransitionPattern =
-            Pattern.compile("^([_A-Za-z][_A-Za-z0-9]*)(\\/([0-9]+))?");
+    private static final int DUMMY_TRANSITION_NAME_GROUP = 1;
+    private static final int DUMMY_TRANSITION_INSTANCE_GROUP = 3;
+    private static final Pattern DUMMY_TRANSITION_PATTERN =
+            Pattern.compile("^([_A-Za-z][_A-Za-z0-9.]*)(/([0-9]+))?");
 
-    private static final Pattern instancedTransitionPattern =
-            Pattern.compile("^([_A-Za-z][_A-Za-z0-9]*[\\+\\-\\~]?)(\\/([0-9]+))?");
+    private static final int INSTANCED_TRANSITION_NAME_GROUP = 1;
+    private static final int INSTANCED_TRANSITION_INSTANCE_GROUP = 3;
+    private static final Pattern INSTANCED_TRANSITION_PATTERN =
+            Pattern.compile("^([_A-Za-z][_A-Za-z0-9.]*[+\\-~]?)(/([0-9]+))?");
 
-    public static Pair<String, String> parseImplicitPlaceReference(String ref) {
+    public static Pair<String, String> parseImplicitPlace(String ref) {
         String[] parts = ref.replace(" ", "").split(",");
-        if (parts.length < 2 || !parts[0].startsWith("<") || !parts[1].endsWith(">")) {
-            return null;
-        }
-        return Pair.of(parts[0].substring(1), parts[1].substring(0, parts[1].length() - 1));
+        return parts.length < 2 || !parts[0].startsWith("<") || !parts[1].endsWith(">") ? null
+                : Pair.of(parts[0].substring(1), parts[1].substring(0, parts[1].length() - 1));
     }
 
-    public static Triple<String, SignalTransition.Direction, Integer> parseSignalTransition(String s) {
+    public static Triple<String, SignalTransition.Direction, Integer> parseSignalTransition(String ref) {
         Triple<String, SignalTransition.Direction, Integer> result = null;
-        final Matcher matcher = signalTransitionPattern.matcher(s);
-        if (matcher.find() && (matcher.end() == s.length())) {
-            final String signalName = matcher.group(1);
+        final Matcher matcher = SIGNAL_TRANSITION_PATTERN.matcher(ref);
+        if (matcher.find() && (matcher.end() == ref.length())) {
+            final String signalName = matcher.group(SIGNAL_TRANSITION_NAME_GROUP);
 
             final SignalTransition.Direction direction;
-            String directionGroup = matcher.group(2);
+            String directionGroup = matcher.group(SIGNAL_TRANSITION_SIGN_GROUP);
             if (directionGroup == null) {
                 direction = SignalTransition.Direction.TOGGLE;
             } else {
@@ -47,7 +52,7 @@ public class LabelParser {
             }
 
             final Integer instance;
-            String instanceGroup = matcher.group(4);
+            String instanceGroup = matcher.group(SIGNAL_TRANSITION_INSTANCE_GROUP);
             if (instanceGroup == null) {
                 instance = null;
             } else {
@@ -58,14 +63,14 @@ public class LabelParser {
         return result;
     }
 
-    public static Pair<String, Integer> parseDummyTransition(String s) {
+    public static Pair<String, Integer> parseDummyTransition(String ref) {
         Pair<String, Integer> result = null;
-        final Matcher matcher = dummyTransitionPattern.matcher(s);
-        if (matcher.find() && (matcher.end() == s.length())) {
-            final String name = matcher.group(1);
+        final Matcher matcher = DUMMY_TRANSITION_PATTERN.matcher(ref);
+        if (matcher.find() && (matcher.end() == ref.length())) {
+            final String name = matcher.group(DUMMY_TRANSITION_NAME_GROUP);
 
             final Integer instance;
-            String instanceGroup = matcher.group(3);
+            String instanceGroup = matcher.group(DUMMY_TRANSITION_INSTANCE_GROUP);
             if (instanceGroup == null) {
                 instance = null;
             } else {
@@ -76,37 +81,19 @@ public class LabelParser {
         return result;
     }
 
-    public static Pair<String, Integer> parseInstancedTransition(String s) {
+    public static Pair<String, Integer> parseInstancedTransition(String ref) {
         Pair<String, Integer> result = null;
-        final Matcher matcher = instancedTransitionPattern.matcher(s);
-        if (matcher.find() && (matcher.end() == s.length())) {
-            final String name = matcher.group(1);
+        final Matcher matcher = INSTANCED_TRANSITION_PATTERN.matcher(ref);
+        if (matcher.find() && (matcher.end() == ref.length())) {
+            final String name = matcher.group(INSTANCED_TRANSITION_NAME_GROUP);
             final Integer instance;
-            String instanceGroup = matcher.group(3);
+            String instanceGroup = matcher.group(INSTANCED_TRANSITION_INSTANCE_GROUP);
             if (instanceGroup == null) {
                 instance = null;
             } else {
                 instance = Integer.parseInt(instanceGroup);
             }
             result = Pair.of(name, instance);
-        }
-        return result;
-    }
-
-    public static String getTransitionName(String s) {
-        String result = null;
-        Pair<String, Integer> instancedTransition = LabelParser.parseInstancedTransition(s);
-        if (instancedTransition != null) {
-            result = instancedTransition.getFirst();
-        }
-        return result;
-    }
-
-    public static Integer getTransitionInstance(String s) {
-        Integer result = null;
-        Pair<String, Integer> instancedTransition = LabelParser.parseInstancedTransition(s);
-        if (instancedTransition != null) {
-            result = instancedTransition.getSecond();
         }
         return result;
     }

@@ -3,7 +3,6 @@ package org.workcraft.serialisation;
 import org.w3c.dom.Element;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.types.GeneralTwoWayMap;
 import org.workcraft.types.ListMap;
 import org.workcraft.types.TwoWayMap;
@@ -47,15 +46,13 @@ class XMLDeserialiserState implements References {
     }
 
     public void setObject(String reference, Object obj) {
-        String processedReference = NamespaceHelper.convertLegacyHierarchySeparators(reference);
-        internalReferenceMap.put(processedReference, obj);
+        internalReferenceMap.put(reference, obj);
     }
 
     @Override
     public Object getObject(String reference) {
         if (reference.isEmpty()) return null;
-        String processedReference = NamespaceHelper.convertLegacyHierarchySeparators(reference);
-        return internalReferenceMap.getValue(processedReference);
+        return internalReferenceMap.getValue(reference);
     }
 
     @Override

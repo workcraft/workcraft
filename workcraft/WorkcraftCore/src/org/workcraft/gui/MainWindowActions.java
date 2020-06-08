@@ -102,9 +102,6 @@ public class MainWindowActions {
             () -> Framework.getInstance().shutdown(),
             KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
 
-    public static final Action IMPORT_ACTION = new Action("Import...",
-            () -> Framework.getInstance().getMainWindow().importFrom());
-
     public static final Action EDIT_UNDO_ACTION = new Action("Undo",
             () -> Framework.getInstance().getMainWindow().undo(),
             DesktopApi.getUndoKeyStroke());

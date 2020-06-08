@@ -3,7 +3,6 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
-import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
@@ -39,9 +38,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
 
     @Override
     public Result<? extends VerificationChainOutput> run(ProgressMonitor<? super VerificationChainOutput> monitor) {
-        Framework framework = Framework.getInstance();
-        PluginManager pluginManager = framework.getPluginManager();
-        TaskManager taskManager = framework.getTaskManager();
+        TaskManager taskManager = Framework.getInstance().getTaskManager();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         StgFormat format = StgFormat.getInstance();
@@ -49,7 +46,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
         VerificationParameters preparationParameters = ReachUtils.getToolchainPreparationParameters();
         try {
             Stg devStg = WorkspaceUtils.getAs(we, Stg.class);
-            Exporter devStgExporter = ExportUtils.chooseBestExporter(pluginManager, devStg, format);
+            Exporter devStgExporter = ExportUtils.chooseBestExporter(devStg, format);
             if (devStgExporter == null) {
                 return Result.exception(new NoExporterException(devStg, format));
             }
@@ -81,7 +78,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             Set<String> inputSignals = devStg.getSignalReferences(Signal.Type.INPUT);
             Set<String> outputSignals = devStg.getSignalReferences(Signal.Type.OUTPUT);
             StgUtils.restoreInterfaceSignals(envStg, inputSignals, outputSignals);
-            Exporter envStgExporter = ExportUtils.chooseBestExporter(pluginManager, envStg, format);
+            Exporter envStgExporter = ExportUtils.chooseBestExporter(envStg, format);
             File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + stgFileExtension);
             ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile);
             Result<? extends ExportOutput> envExportResult = taskManager.execute(

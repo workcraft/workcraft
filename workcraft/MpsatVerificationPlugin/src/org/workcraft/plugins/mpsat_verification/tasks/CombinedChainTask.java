@@ -3,7 +3,6 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
-import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -64,16 +63,14 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
     }
 
     private Result<? extends CombinedChainOutput> processSettingList(ProgressMonitor<? super CombinedChainOutput> monitor) {
-        Framework framework = Framework.getInstance();
-        PluginManager pluginManager = framework.getPluginManager();
-        TaskManager taskManager = framework.getTaskManager();
+        TaskManager taskManager = Framework.getInstance().getTaskManager();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         ArrayList<Result<? extends MpsatOutput>> mpsatResultList = new ArrayList<>(verificationParametersList.size());
         try {
             PetriModel model = WorkspaceUtils.getAs(we, PetriModel.class);
             StgFormat format = StgFormat.getInstance();
-            Exporter exporter = ExportUtils.chooseBestExporter(pluginManager, model, format);
+            Exporter exporter = ExportUtils.chooseBestExporter(model, format);
             if (exporter == null) {
                 throw new NoExporterException(model, format);
             }

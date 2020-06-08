@@ -141,4 +141,12 @@ public class TextUtilsTests {
                 TextUtils.removeLinebreaks("aaa\nbbb\r\nccc"));
     }
 
+    @Test
+    public void abbreviateTest() {
+        Assertions.assertEquals("", TextUtils.abbreviate(null));
+        Assertions.assertEquals("abc", TextUtils.abbreviate("aaa bbb ccc"));
+        Assertions.assertEquals("ABC", TextUtils.abbreviate("Aaa Bbb Ccc"));
+        Assertions.assertEquals("ABC", TextUtils.abbreviate("AaaBbbCcc111"));
+    }
+
 }
