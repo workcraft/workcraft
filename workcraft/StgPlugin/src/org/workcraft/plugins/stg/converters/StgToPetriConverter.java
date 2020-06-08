@@ -1,8 +1,7 @@
 package org.workcraft.plugins.stg.converters;
 
-import java.util.Map;
-
 import org.workcraft.dom.Container;
+import org.workcraft.dom.converters.DefaultModelConverter;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.HierarchyReferenceManager;
@@ -11,18 +10,12 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualReplica;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.dom.converters.DefaultModelConverter;
-import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.petri.VisualPetri;
-import org.workcraft.plugins.petri.VisualReadArc;
-import org.workcraft.plugins.petri.VisualReplicaPlace;
-import org.workcraft.plugins.stg.DummyTransition;
+import org.workcraft.plugins.petri.*;
+import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.utils.LabelParser;
-import org.workcraft.plugins.stg.StgPlace;
-import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
-import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.types.Pair;
+
+import java.util.Map;
 
 public class StgToPetriConverter extends DefaultModelConverter<VisualStg, VisualPetri> {
 
@@ -48,7 +41,8 @@ public class StgToPetriConverter extends DefaultModelConverter<VisualStg, Visual
 
     @Override
     public String convertNodeName(String srcName, Container container) {
-        String dstCandidate = LabelParser.getTransitionName(srcName)
+        Pair<String, Integer> instancedTransition = LabelParser.parseInstancedTransition(srcName);
+        String dstCandidate = instancedTransition.getFirst()
                 .replace("+", "_PLUS")
                 .replace("-", "_MINUS")
                 .replace("~", "_TOGGLE");

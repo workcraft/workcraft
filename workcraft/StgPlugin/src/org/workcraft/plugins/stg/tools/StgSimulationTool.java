@@ -7,7 +7,10 @@ import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.controls.FlatHeaderRenderer;
-import org.workcraft.gui.properties.*;
+import org.workcraft.gui.properties.BooleanCellEditor;
+import org.workcraft.gui.properties.BooleanCellRenderer;
+import org.workcraft.gui.properties.ColorCellEditor;
+import org.workcraft.gui.properties.ColorCellRenderer;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
@@ -24,7 +27,10 @@ import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.shared.ColorGenerator;
 import org.workcraft.traces.Trace;
 import org.workcraft.types.Pair;
-import org.workcraft.utils.*;
+import org.workcraft.utils.ColorUtils;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.TraceUtils;
 import org.workcraft.workspace.ModelEntry;
 
 import javax.activation.ActivationDataFlavor;
@@ -515,10 +521,10 @@ public class StgSimulationTool extends PetriSimulationTool {
         String result = ref;
         if (ref != null) {
             final String name = NamespaceHelper.getReferenceName(ref);
-            final String nameWithoutInstance = LabelParser.getTransitionName(name);
-            if (nameWithoutInstance != null) {
+            Pair<String, Integer> instancedTransition = LabelParser.parseInstancedTransition(name);
+            if (instancedTransition != null) {
                 String parentRef = NamespaceHelper.getParentReference(ref);
-                result = NamespaceHelper.getReference(parentRef, nameWithoutInstance);
+                result = NamespaceHelper.getReference(parentRef, instancedTransition.getFirst());
             }
         }
         return result;
