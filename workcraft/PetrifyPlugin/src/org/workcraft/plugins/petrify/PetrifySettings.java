@@ -18,7 +18,6 @@ public class PetrifySettings extends AbstractToolSettings {
     private static final String keyArgs = prefix + ".args";
     private static final String keyAdvancedMode = prefix + ".advancedMode";
     private static final String keyWriteLog = prefix + ".writeLog";
-    private static final String keyWriteStg = prefix + ".writeStg";
     private static final String keyWriteEqn = prefix + ".writeEqn";
     private static final String keyPrintStdout = prefix + ".printStdout";
     private static final String keyPrintStderr = prefix + ".printStderr";
@@ -28,7 +27,6 @@ public class PetrifySettings extends AbstractToolSettings {
     private static final String defaultArgs = "";
     private static final boolean defaultAdvancedMode = false;
     private static final boolean defaultWriteLog = true;
-    private static final boolean defaultWriteStg = false;
     private static final boolean defaultWriteEqn = false;
     private static final boolean defaultPrintStdout = true;
     private static final boolean defaultPrintStderr = true;
@@ -38,7 +36,6 @@ public class PetrifySettings extends AbstractToolSettings {
     private static String args = defaultArgs;
     private static boolean advancedMode = defaultAdvancedMode;
     private static boolean writeLog = defaultWriteLog;
-    private static boolean writeStg = defaultWriteStg;
     private static boolean writeEqn = defaultWriteEqn;
     private static boolean printStdout = defaultPrintStdout;
     private static boolean printStderr = defaultPrintStderr;
@@ -61,17 +58,12 @@ public class PetrifySettings extends AbstractToolSettings {
                 PetrifySettings::getAdvancedMode));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                "Write log file (" + PetrifyUtils.LOG_FILE_NAME + ")",
+                "Output detailed log (for circuit synthesis)",
                 PetrifySettings::setWriteLog,
                 PetrifySettings::getWriteLog));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                "Write STG file (" + PetrifyUtils.STG_FILE_NAME + ")",
-                PetrifySettings::setWriteStg,
-                PetrifySettings::getWriteStg));
-
-        properties.add(new PropertyDeclaration<>(Boolean.class,
-                "Write EQN file (" + PetrifyUtils.EQN_FILE_NAME + ")",
+                "Output signal equations (for circuit synthesis)",
                 PetrifySettings::setWriteEqn,
                 PetrifySettings::getWriteEqn));
 
@@ -102,7 +94,6 @@ public class PetrifySettings extends AbstractToolSettings {
         setArgs(config.getString(keyArgs, defaultArgs));
         setAdvancedMode(config.getBoolean(keyAdvancedMode, defaultAdvancedMode));
         setWriteLog(config.getBoolean(keyWriteLog, defaultWriteLog));
-        setWriteStg(config.getBoolean(keyWriteStg, defaultWriteStg));
         setWriteEqn(config.getBoolean(keyWriteEqn, defaultWriteEqn));
         setPrintStdout(config.getBoolean(keyPrintStdout, defaultPrintStdout));
         setPrintStderr(config.getBoolean(keyPrintStderr, defaultPrintStderr));
@@ -115,7 +106,6 @@ public class PetrifySettings extends AbstractToolSettings {
         config.set(keyArgs, getArgs());
         config.setBoolean(keyAdvancedMode, getAdvancedMode());
         config.setBoolean(keyWriteLog, getWriteLog());
-        config.setBoolean(keyWriteStg, getWriteStg());
         config.setBoolean(keyWriteEqn, getWriteEqn());
         config.setBoolean(keyPrintStdout, getPrintStdout());
         config.setBoolean(keyPrintStderr, getPrintStderr());
@@ -157,14 +147,6 @@ public class PetrifySettings extends AbstractToolSettings {
 
     public static void setWriteLog(Boolean value) {
         writeLog = value;
-    }
-
-    public static Boolean getWriteStg() {
-        return writeStg;
-    }
-
-    public static void setWriteStg(Boolean value) {
-        writeStg = value;
     }
 
     public static Boolean getWriteEqn() {

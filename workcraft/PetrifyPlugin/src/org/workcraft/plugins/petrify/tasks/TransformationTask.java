@@ -14,7 +14,6 @@ import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.plugins.petrify.PetrifySettings;
-import org.workcraft.plugins.petrify.PetrifyUtils;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
@@ -31,6 +30,8 @@ import java.util.HashSet;
 import java.util.List;
 
 public class TransformationTask implements Task<TransformationOutput>, ExternalProcessListener {
+
+    private static final String STG_FILE_NAME = "petrify.g";
 
     private final WorkspaceEntry we;
     private final List<String> args;
@@ -56,6 +57,7 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
 
         // Built-in arguments
         command.addAll(args);
+        command.add("-nolog");
 
         // Extra arguments (should go before the file parameters)
         String extraArgs = PetrifySettings.getArgs();
@@ -71,16 +73,7 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         try {
-            File logFile = null;
-            if (!PetrifySettings.getWriteLog()) {
-                command.add("-nolog");
-            } else {
-                logFile = new File(directory, PetrifyUtils.LOG_FILE_NAME);
-                command.add("-log");
-                command.add(logFile.getAbsolutePath());
-            }
-
-            File stgFile = new File(directory, PetrifyUtils.STG_FILE_NAME);
+            File stgFile = new File(directory, STG_FILE_NAME);
             command.add("-o");
             command.add(stgFile.getAbsolutePath());
 
@@ -140,13 +133,10 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
 
     private File getInputFile(Model model, File directory) {
         Format format = null;
-        String extension = null;
         if (model instanceof PetriModel) {
             format = StgFormat.getInstance();
-            extension = ".g";
         } else if (model instanceof Fsm) {
             format = SgFormat.getInstance();
-            extension = ".sg";
         }
         if (format == null) {
             throw new RuntimeException("This tool is not applicable to " + model.getDisplayName() + " model.");
@@ -157,7 +147,7 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
             throw new NoExporterException(model, format);
         }
         TaskManager taskManager = Framework.getInstance().getTaskManager();
-        File file = new File(directory, StgUtils.SPEC_FILE_PREFIX + extension);
+        File file = new File(directory, StgUtils.SPEC_FILE_PREFIX + format.getExtension());
         ExportTask exportTask = new ExportTask(exporter, model, file);
         Result<? extends ExportOutput> exportResult = taskManager.execute(exportTask, "Exporting model");
         if (!exportResult.isSuccess()) {
@@ -166,7 +156,7 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
         if ((mutexes != null) && !mutexes.isEmpty()) {
             Stg stg = StgUtils.loadStg(file);
             MutexUtils.factoroutMutexs(stg, mutexes);
-            file = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + extension);
+            file = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + format.getExtension());
             exportTask = new ExportTask(exporter, stg, file);
             exportResult = taskManager.execute(exportTask, "Exporting .g");
             if (!exportResult.isSuccess()) {

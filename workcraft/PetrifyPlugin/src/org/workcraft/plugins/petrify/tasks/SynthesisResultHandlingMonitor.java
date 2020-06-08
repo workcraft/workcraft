@@ -76,7 +76,7 @@ public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonito
 
         String equations = synthOutput.getEquation();
         if ((equations != null) && !equations.isEmpty()) {
-            LogUtils.logInfo("Petrify synthesis result in EQN format:");
+            LogUtils.logInfo("Petrify signal equations:");
             System.out.println(equations);
         }
 

@@ -32,9 +32,6 @@ public class PetrifySettingsTest {
         Assertions.assertEquals(Config.toString(PetrifySettings.getWriteLog()),
                 framework.getConfigVar(prefix + ".writeLog", false));
 
-        Assertions.assertEquals(Config.toString(PetrifySettings.getWriteStg()),
-                framework.getConfigVar(prefix + ".writeStg", false));
-
         Assertions.assertEquals(Config.toString(PetrifySettings.getWriteEqn()),
                 framework.getConfigVar(prefix + ".writeEqn", false));
 

@@ -71,7 +71,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionOutput> {
             monitor.progressUpdate(0.10);
 
             // Generating .g file for Petri Net
-            File petriFile = FileUtils.createTempFile("stg-", ".g");
+            File petriFile = FileUtils.createTempFile("stg-", format.getExtension());
             petriFile.deleteOnExit();
             ExportTask petriExportTask = new ExportTask(petriExporter, petri, petriFile);
             Result<? extends ExportOutput> petriExportResult = taskManager.execute(
