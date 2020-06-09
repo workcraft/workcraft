@@ -12,7 +12,6 @@ import org.workcraft.plugins.circuit.verilog.VerilogModule;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.plugins.petrify.PetrifySettings;
-import org.workcraft.plugins.petrify.PetrifyUtils;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
@@ -30,6 +29,11 @@ import java.util.HashSet;
 import java.util.List;
 
 public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessListener {
+
+    private static final String STG_FILE_NAME = "petrify.g";
+    private static final String LOG_FILE_NAME = "petrify.log";
+    private static final String EQN_FILE_NAME = "petrify.eqn";
+    private static final String VERILOG_FILE_NAME = "petrify.v";
 
     private final WorkspaceEntry we;
     private final List<String> args;
@@ -88,31 +92,31 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
         File directory = FileUtils.createTempDirectory(prefix);
 
         File outFile = null;
-        if (!PetrifySettings.getWriteStg() && !PetrifySettings.getOpenSynthesisStg()) {
-            command.add("-no");
-        } else {
-            outFile = new File(directory, PetrifyUtils.STG_FILE_NAME);
+        if (PetrifySettings.getOpenSynthesisStg()) {
+            outFile = new File(directory, STG_FILE_NAME);
             command.add("-o");
             command.add(outFile.getAbsolutePath());
+        } else {
+            command.add("-no");
         }
 
         File logFile = null;
-        if (!PetrifySettings.getWriteLog()) {
-            command.add("-nolog");
-        } else {
-            logFile = new File(directory, PetrifyUtils.LOG_FILE_NAME);
+        if (PetrifySettings.getWriteLog()) {
+            logFile = new File(directory, LOG_FILE_NAME);
             command.add("-log");
             command.add(logFile.getAbsolutePath());
+        } else {
+            command.add("-nolog");
         }
 
         File eqnFile = null;
         if (PetrifySettings.getWriteEqn()) {
-            eqnFile = new File(directory, PetrifyUtils.EQN_FILE_NAME);
+            eqnFile = new File(directory, EQN_FILE_NAME);
             command.add("-eqn");
             command.add(eqnFile.getAbsolutePath());
         }
 
-        File verilogFile = new File(directory, PetrifyUtils.VERILOG_FILE_NAME);
+        File verilogFile = new File(directory, VERILOG_FILE_NAME);
         command.add("-vl");
         command.add(verilogFile.getAbsolutePath());
 

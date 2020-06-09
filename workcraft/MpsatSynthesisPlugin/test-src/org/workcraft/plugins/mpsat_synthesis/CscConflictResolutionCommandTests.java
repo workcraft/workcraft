@@ -11,7 +11,6 @@ import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.utils.BackendUtils;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -33,8 +32,7 @@ public class CscConflictResolutionCommandTests {
     @Test
     public void testVmeCscConflictResolution() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
-        String[] cscSignals = DesktopApi.getOs().isMac() ? new String[]{"csc1", "csc"} : new String[]{"csc1", "csc2"};
-        testCscConflictResolutionCommand(workName, cscSignals);
+        testCscConflictResolutionCommand(workName, new String[]{"csc1", "csc"});
     }
 
     @Test

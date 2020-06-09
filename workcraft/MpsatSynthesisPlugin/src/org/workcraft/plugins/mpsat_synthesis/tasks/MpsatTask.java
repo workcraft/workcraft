@@ -5,7 +5,6 @@ import org.workcraft.plugins.circuit.utils.VerilogUtils;
 import org.workcraft.plugins.circuit.verilog.VerilogModule;
 import org.workcraft.plugins.mpsat_synthesis.MpsatSynthesisSettings;
 import org.workcraft.plugins.mpsat_synthesis.SynthesisMode;
-import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
@@ -56,9 +55,7 @@ public class MpsatTask implements Task<MpsatOutput> {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
-        String toolPrefix = MpsatSynthesisSettings.getCommand();
-        String toolSuffix = PunfTask.getToolSuffix(unfoldingFile);
-        String toolName = ExecutableUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
+        String toolName = ExecutableUtils.getAbsoluteCommandPath(MpsatSynthesisSettings.getCommand());
         command.add(toolName);
 
         // Built-in arguments

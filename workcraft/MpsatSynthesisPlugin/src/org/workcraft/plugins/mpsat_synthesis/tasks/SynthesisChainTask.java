@@ -4,7 +4,6 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat_synthesis.SynthesisMode;
-import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.Mutex;
@@ -78,9 +77,7 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
             monitor.progressUpdate(0.33);
 
             // Generate unfolding
-            boolean useLegacyMci = PunfSettings.getUseMciCsc() && (synthesisMode == SynthesisMode.RESOLVE_ENCODING_CONFLICTS);
-            String unfoldingExtension = useLegacyMci ? PunfTask.MCI_FILE_EXTENSION : PunfTask.PNML_FILE_EXTENSION;
-            File unfoldingFile = new File(directory, filePrefix + unfoldingExtension);
+            File unfoldingFile = new File(directory, filePrefix + PunfTask.PNML_FILE_EXTENSION);
             PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory);
             Result<? extends PunfOutput> punfResult = taskManager.execute(punfTask, "Unfolding .g", subtaskMonitor);
 

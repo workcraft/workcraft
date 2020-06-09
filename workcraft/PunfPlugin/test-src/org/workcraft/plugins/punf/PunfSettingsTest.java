@@ -32,9 +32,6 @@ public class PunfSettingsTest {
         Assertions.assertEquals(Config.toString(PunfSettings.getPrintStderr()),
                 framework.getConfigVar(prefix + ".printStderr", false));
 
-        Assertions.assertEquals(Config.toString(PunfSettings.getUseMciCsc()),
-                framework.getConfigVar(prefix + ".useMciCsc", false));
-
         Assertions.assertEquals(Config.toString(PunfSettings.getLtl2tgbaCommand()),
                 framework.getConfigVar(prefix + ".ltl2tgbaCommand", false));
 
