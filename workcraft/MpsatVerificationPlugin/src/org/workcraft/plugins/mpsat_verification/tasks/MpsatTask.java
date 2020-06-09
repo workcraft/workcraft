@@ -2,7 +2,6 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
-import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
@@ -27,7 +26,6 @@ public class MpsatTask implements Task<MpsatOutput> {
     private final File netFile;
     private final VerificationParameters verificationParameters;
     private final File directory;
-    private boolean quiet = false;
 
     public MpsatTask(File unfoldingFile, File netFile, VerificationParameters verificationParameters, File directory) {
         this.unfoldingFile = unfoldingFile;
@@ -40,18 +38,12 @@ public class MpsatTask implements Task<MpsatOutput> {
         this.directory = directory;
     }
 
-    public void setQuiet(boolean value) {
-        quiet = value;
-    }
-
     @Override
     public Result<? extends MpsatOutput> run(ProgressMonitor<? super MpsatOutput> monitor) {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
-        String toolPrefix = MpsatVerificationSettings.getCommand();
-        String toolSuffix = PunfTask.getToolSuffix(unfoldingFile);
-        String toolName = ExecutableUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
+        String toolName = ExecutableUtils.getAbsoluteCommandPath(MpsatVerificationSettings.getCommand());
         command.add(toolName);
 
         // Built-in arguments
@@ -79,8 +71,8 @@ public class MpsatTask implements Task<MpsatOutput> {
         File outputFile = new File(directory, OUTPUT_FILE_NAME);
         command.add(outputFile.getAbsolutePath());
 
-        boolean printStdout = MpsatVerificationSettings.getPrintStdout() && !quiet;
-        boolean printStderr = MpsatVerificationSettings.getPrintStderr() && !quiet;
+        boolean printStdout = MpsatVerificationSettings.getPrintStdout();
+        boolean printStderr = MpsatVerificationSettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
         SubtaskMonitor<? super ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
