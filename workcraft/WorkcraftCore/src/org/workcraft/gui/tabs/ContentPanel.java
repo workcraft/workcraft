@@ -13,7 +13,7 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 
 @SuppressWarnings("serial")
-public class DockableWindowContentPanel extends JPanel {
+public class ContentPanel extends JPanel {
 
     class DockableViewHeader extends JPanel {
         private ActionButton btnMax;
@@ -61,7 +61,7 @@ public class DockableWindowContentPanel extends JPanel {
             Icon closeIcon = UIManager.getIcon("InternalFrame.closeIcon");
             if ((options & CLOSE_BUTTON) != 0) {
                 btnClose = createHeaderButton(closeIcon,
-                        new Action(null, () -> Framework.getInstance().getMainWindow().closeDockableWindow(getDockableWindow()),
+                        new Action(null, () -> mainWindow.closeDockableWindow(dockableWindow),
                                 "Close window"));
 
                 buttonPanel.add(btnClose);
@@ -126,7 +126,7 @@ public class DockableWindowContentPanel extends JPanel {
     private final int options;
     private DockableWindow dockableWindow;
 
-    public DockableWindowContentPanel(String title, JComponent content, int options) {
+    public ContentPanel(String title, JComponent content, int options) {
 
         super();
         setLayout(new BorderLayout(0, 0));
@@ -161,14 +161,14 @@ public class DockableWindowContentPanel extends JPanel {
         }
     }
 
-    public void setMaximized(boolean maximized) {
+    public void setMaximized(boolean value) {
         if (header != null) {
-            header.setMaximized(maximized);
+            header.setMaximized(value);
         }
     }
 
-    public void setHeaderVisible(boolean headerVisible) {
-        if (headerVisible && ((options & HEADER) > 0)) {
+    public void setHeaderVisible(boolean value) {
+        if (value && ((options & HEADER) > 0)) {
             if (header.getParent() != contentPane) {
                 contentPane.add(header, BorderLayout.NORTH);
             }
@@ -182,9 +182,9 @@ public class DockableWindowContentPanel extends JPanel {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-        header.setTitle(title);
+    public void setTitle(String value) {
+        title = value;
+        header.setTitle(value);
     }
 
     public Component getHeader() {

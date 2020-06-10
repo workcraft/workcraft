@@ -1,6 +1,7 @@
 package org.workcraft.types;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ListMap<K, V> {
 
@@ -42,8 +43,10 @@ public class ListMap<K, V> {
         return map.isEmpty();
     }
 
-    public Collection<LinkedList<V>> values() {
-        return map.values();
+    public Collection<V> values() {
+        return map.values().stream()
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 
     public void clear() {
