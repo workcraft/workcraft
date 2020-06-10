@@ -258,4 +258,20 @@ public class DesktopApi {
         return KeyStroke.getKeyStroke(KeyEvent.VK_Z, getMenuKeyMask() | ActionEvent.SHIFT_MASK);
     }
 
+    public static KeyStroke getIncreaseKeyStroke() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, getMenuKeyMask());
+    }
+
+    public static KeyStroke getDecreaseKeyStroke() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, getMenuKeyMask());
+    }
+
+    public static KeyStroke getRestoreKeyStroke() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_0, getMenuKeyMask());
+    }
+
+    public static KeyStroke getSelectAllKeyStroke() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_A, getMenuKeyMask());
+    }
+
 }

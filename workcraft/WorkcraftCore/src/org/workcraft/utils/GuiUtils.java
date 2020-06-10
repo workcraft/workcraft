@@ -301,15 +301,15 @@ public class GuiUtils {
         return UIManager.getBorder("TableHeader.cellBorder");
     }
 
-    public static void highlightLines(JTextArea textArea, int fromPos, int toPos, Color color) {
-        highlightText(textArea, fromPos, toPos, color, false);
+    public static Object highlightLines(JTextArea textArea, int fromPos, int toPos, Color color) {
+        return highlightText(textArea, fromPos, toPos, color, false);
     }
 
-    public static void highlightText(JTextComponent textComponent, int fromPos, int toPos, Color color) {
-        highlightText(textComponent, fromPos, toPos, color, true);
+    public static Object highlightText(JTextComponent textComponent, int fromPos, int toPos, Color color) {
+        return highlightText(textComponent, fromPos, toPos, color, true);
     }
 
-    private static void highlightText(JTextComponent textComponent, int fromPos, int toPos, Color color,
+    private static Object highlightText(JTextComponent textComponent, int fromPos, int toPos, Color color,
             boolean drawsLayeredHighlights) {
 
         if ((color != null) && (textComponent != null) && (toPos > fromPos)) {
@@ -317,10 +317,14 @@ public class GuiUtils {
             highlighter.setDrawsLayeredHighlights(drawsLayeredHighlights);
             Highlighter.HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(color);
             try {
-                highlighter.addHighlight(Math.max(fromPos, 0), Math.min(toPos, textComponent.getText().length()), painter);
+                return highlighter.addHighlight(
+                        Math.max(fromPos, 0),
+                        Math.min(toPos, textComponent.getText().length()),
+                        painter);
             } catch (BadLocationException e) {
             }
         }
+        return null;
     }
 
 }
