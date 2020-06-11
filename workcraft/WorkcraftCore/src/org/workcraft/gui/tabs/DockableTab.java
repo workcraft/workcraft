@@ -10,9 +10,7 @@ import java.awt.*;
 @SuppressWarnings("serial")
 public class DockableTab extends JPanel {
 
-    public static final int MAX_TITLE_LENGTH = 64;
-
-    private JLabel label;
+    public static final int MAX_TITLE_LENGTH = 50;
 
     public DockableTab(DockableWindow dockableWindow) {
         super();
@@ -35,13 +33,13 @@ public class DockableTab extends JPanel {
             trimmedTitle = title;
         }
 
-        label = new JLabel(trimmedTitle);
+        JLabel label = new JLabel(trimmedTitle);
         label.setFocusable(false);
         label.setOpaque(false);
 
-        final MainWindow mainWindow = Framework.getInstance().getMainWindow();
-
-        if ((dockableWindow.getOptions() & DockableWindowContentPanel.MAXIMIZE_BUTTON) != 0) {
+        ContentPanel contentPanel = dockableWindow.getComponent();
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        if ((contentPanel.getOptions() & ContentPanel.MAXIMIZE_BUTTON) != 0) {
             TabButton maxButton = new TabButton("Maximize window",
                     new Action("\u2191", () -> mainWindow.toggleDockableWindowMaximized(dockableWindow)));
 
@@ -50,7 +48,7 @@ public class DockableTab extends JPanel {
         }
 
         TabButton closeButton = null;
-        if ((dockableWindow.getOptions() & DockableWindowContentPanel.CLOSE_BUTTON) != 0) {
+        if ((contentPanel.getOptions() & ContentPanel.CLOSE_BUTTON) != 0) {
             closeButton = new TabButton("Close window",
                     new Action("\u00d7", () -> mainWindow.closeDockableWindow(dockableWindow)));
 
@@ -60,27 +58,10 @@ public class DockableTab extends JPanel {
         Dimension x = label.getPreferredSize();
         Dimension y = (closeButton != null) ? closeButton.getPreferredSize() : x;
 
-        this.add(label, BorderLayout.CENTER);
-        this.add(buttonsPanel, BorderLayout.EAST);
+        add(label, BorderLayout.CENTER);
+        add(buttonsPanel, BorderLayout.EAST);
 
         setPreferredSize(new Dimension(x.width + y.width + 30, Math.max(y.height, x.height) + 4));
-    }
-
-    private JLabel getLabel() {
-        if (label == null) {
-            label = new JLabel();
-        }
-        return label;
-    }
-
-    @Override
-    public void setForeground(Color fg) {
-        getLabel().setForeground(fg);
-    }
-
-    @Override
-    public Color getForeground() {
-        return getLabel().getForeground();
     }
 
 }

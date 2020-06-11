@@ -2,15 +2,15 @@ package org.workcraft.gui;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.editor.GraphEditorPanel;
-import org.workcraft.gui.tabs.DockableWindowTabListener;
+import org.workcraft.gui.tabs.DockableListener;
 
 import javax.swing.*;
 
-public class EditorWindowTabListener implements DockableWindowTabListener {
+public class EditorWindowDockableListener implements DockableListener {
 
     private final GraphEditorPanel editor;
 
-    public EditorWindowTabListener(GraphEditorPanel editor) {
+    public EditorWindowDockableListener(GraphEditorPanel editor) {
         this.editor = editor;
     }
 
@@ -36,7 +36,7 @@ public class EditorWindowTabListener implements DockableWindowTabListener {
     }
 
     @Override
-    public void headerClicked() {
+    public void headerClicked(int button) {
         requestEditorFocus();
     }
 
@@ -56,9 +56,7 @@ public class EditorWindowTabListener implements DockableWindowTabListener {
     }
 
     private void requestEditorFocus() {
-        final Framework framework = Framework.getInstance();
-        MainWindow mainWindow = framework.getMainWindow();
-        mainWindow.requestFocus(editor);
+        Framework.getInstance().getMainWindow().requestFocus(editor);
     }
 
 }

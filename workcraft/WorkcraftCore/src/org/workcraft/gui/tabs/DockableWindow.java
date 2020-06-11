@@ -3,84 +3,104 @@ package org.workcraft.gui.tabs;
 import org.flexdock.docking.DockingPort;
 import org.flexdock.docking.defaults.AbstractDockable;
 import org.flexdock.docking.event.DockingEvent;
+import org.workcraft.Framework;
+import org.workcraft.gui.MainWindow;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.TabbedPaneUI;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
+import java.awt.event.MouseListener;
 import java.util.List;
+import java.util.*;
 
 public class DockableWindow extends AbstractDockable {
 
-    private final DockableWindowContentPanel panel;
-    private final LinkedList<Component> dragSources = new LinkedList<>();
-    private boolean inTab = false;
-    private boolean closed = false;
+    private static final MouseAdapter TAB_MOUSE_LISTENER = new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if ((e.getButton() == MouseEvent.BUTTON2) && (e.getSource() instanceof  JTabbedPane)) {
+                JTabbedPane tabbedPane = (JTabbedPane) e.getSource();
+                TabbedPaneUI ui = tabbedPane.getUI();
+                int tabIndex = ui.tabForCoordinate(tabbedPane, e.getX(), e.getY());
+                DockingUtils.closeTab(tabbedPane, tabIndex);
+            }
+        }
+    };
 
-    private final ArrayList<DockableWindowTabListener> tabListeners = new ArrayList<>();
+    private final ContentPanel contentPanel;
+    private final List<DockableListener> dockableListeners = new ArrayList<>();
+    private final List<Component> dragSources = new ArrayList<>();
 
     private final ChangeListener tabChangeListener = e -> {
         if (e.getSource() instanceof JTabbedPane) {
             JTabbedPane tabbedPane = (JTabbedPane) e.getSource();
-            int myTabIndex = getTabIndex(tabbedPane, this);
-            if (tabbedPane.getSelectedIndex() == myTabIndex) {
-                for (DockableWindowTabListener l: tabListeners) {
-                    l.tabSelected(tabbedPane, myTabIndex);
-                }
-            } else {
-                for (DockableWindowTabListener l: tabListeners) {
-                    l.tabDeselected(tabbedPane, myTabIndex);
+            int tabIndex = DockingUtils.getTabIndex(tabbedPane, getComponent());
+            for (DockableListener l : dockableListeners) {
+                if (tabbedPane.getSelectedIndex() == tabIndex) {
+                    l.tabSelected(tabbedPane, tabIndex);
+                } else {
+                    l.tabDeselected(tabbedPane, tabIndex);
                 }
             }
         }
     };
 
-    public DockableWindow(DockableWindowContentPanel panel, String persistentID) {
-        super(persistentID);
-        this.panel = panel;
-        panel.setDockableWindow(this);
-        setTabText(panel.getTitle());
-
-        Component header = panel.getHeader();
-        dragSources.add(panel);
-        dragSources.add(header);
-        header.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getButton() == MouseEvent.BUTTON1) {
-                    for (DockableWindowTabListener l : tabListeners) {
-                        l.headerClicked();
-                    }
+    private final MouseListener headerMouseListener = new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (e.getButton() == MouseEvent.BUTTON2) {
+                MainWindow mainWindow = Framework.getInstance().getMainWindow();
+                mainWindow.closeDockableWindow(DockableWindow.this);
+            } else {
+                for (DockableListener l : dockableListeners) {
+                    l.headerClicked(e.getButton());
                 }
             }
-        });
+        }
+    };
+
+    private boolean inTab = false;
+    private boolean closed = false;
+
+    public DockableWindow(ContentPanel contentPanel, String persistentID) {
+        super(persistentID);
+        this.contentPanel = contentPanel;
+        contentPanel.setDockableWindow(this);
+        setTabText(contentPanel.getTitle());
+
+        Component header = contentPanel.getHeader();
+        dragSources.add(contentPanel);
+        dragSources.add(header);
+        header.addMouseListener(headerMouseListener);
     }
 
-    public void addTabListener(DockableWindowTabListener listener) {
-        tabListeners.add(listener);
+    @Override
+    public ContentPanel getComponent() {
+        return contentPanel;
+    }
+
+    public void addTabListener(DockableListener listener) {
+        dockableListeners.add(listener);
     }
 
     public void clearTabListeners() {
-        tabListeners.clear();
+        dockableListeners.clear();
     }
 
     public boolean isMaximized() {
-        return panel.isMaximized();
+        return contentPanel.isMaximized();
     }
 
     public void setMaximized(boolean maximized) {
-        panel.setMaximized(maximized);
-        updateHeaders(this.getDockingPort());
-        if (maximized) {
-            for (DockableWindowTabListener l: tabListeners) {
+        contentPanel.setMaximized(maximized);
+        DockingUtils.updateHeaders(getDockingPort());
+        for (DockableListener l : dockableListeners) {
+            if (maximized) {
                 l.windowMaximised();
-            }
-        } else {
-            for (DockableWindowTabListener l: tabListeners) {
+            } else {
                 l.windowRestored();
             }
         }
@@ -94,108 +114,75 @@ public class DockableWindow extends AbstractDockable {
         this.closed = closed;
     }
 
-    @Override
-    public Component getComponent() {
-        return panel;
-    }
-
-    public DockableWindowContentPanel getContentPanel() {
-        return panel;
-    }
-
-    public static int getTabIndex(JTabbedPane tabbedPane, DockableWindow window) {
-        int myTabIndex = -1;
-        for (int i = 0; i < tabbedPane.getTabCount(); i++) {
-            if (tabbedPane.getComponentAt(i) == window.getComponent()) {
-                myTabIndex = i;
-                break;
-            }
-        }
-        return myTabIndex;
-    }
-
-    public static void updateHeaders(DockingPort port) {
-        for (Object d: port.getDockables()) {
-            DockableWindow dockable = (DockableWindow) d;
-            boolean inTab = dockable.getComponent().getParent() instanceof JTabbedPane;
-            DockableWindowContentPanel contentPanel = dockable.getContentPanel();
-            if (!inTab || dockable.isMaximized()) {
-                contentPanel.setHeaderVisible(true);
-            } else {
-                contentPanel.setHeaderVisible(false);
-                JTabbedPane tabbedPane = (JTabbedPane) dockable.getComponent().getParent();
-                for (int i = 0; i < tabbedPane.getTabCount(); i++) {
-                    if (dockable.getComponent() == tabbedPane.getComponentAt(i)) {
-                        DockableTab dockableTab = new DockableTab(dockable);
-                        tabbedPane.setTabComponentAt(i, dockableTab);
-                        break;
-                    }
-                }
-            }
-        }
+    public void setHeaderVisible(boolean value) {
+        contentPanel.setHeaderVisible(value);
     }
 
     public void setTitle(String title) {
         if (!getTitle().equals(title)) {
-            getContentPanel().setTitle(title);
+            contentPanel.setTitle(title);
             setTabText(title);
         }
     }
 
     public String getTitle() {
-        return getContentPanel().getTitle();
-    }
-
-    private static void processTabEvents(DockingPort port) {
-        for (Object d: port.getDockables()) {
-            DockableWindow dockable = (DockableWindow) d;
-            dockable.processTabEvents();
-        }
+        return contentPanel.getTitle();
     }
 
     public void processTabEvents() {
-        Container parent = getComponent().getParent();
+        Container parent = contentPanel.getParent();
         if (parent instanceof JTabbedPane) {
             JTabbedPane tabbedPane = (JTabbedPane) parent;
             if (!inTab) {
                 inTab = true;
-                for (DockableWindowTabListener l: tabListeners) {
-                    l.dockedInTab(tabbedPane, getTabIndex(tabbedPane, this));
+                int tabIndex = DockingUtils.getTabIndex(tabbedPane, contentPanel);
+                for (DockableListener l : dockableListeners) {
+                    l.dockedInTab(tabbedPane, tabIndex);
                 }
             }
-            List<ChangeListener> tabbedPaneListeners = Arrays.asList(tabbedPane.getChangeListeners());
-            if (!tabbedPaneListeners.contains(tabChangeListener)) {
-                tabbedPane.addChangeListener(tabChangeListener);
-            }
+            setTabMouseListener(tabbedPane);
+            setTabChangeListener(tabbedPane);
         } else if (inTab) {
             inTab = false;
-            for (DockableWindowTabListener l: tabListeners) {
+            for (DockableListener l : dockableListeners) {
                 l.dockedStandalone();
             }
         }
     }
 
-    @Override
-    public void dockingComplete(DockingEvent evt) {
-        processTabEvents(evt.getNewDockingPort());
-        updateHeaders(evt.getNewDockingPort());
-        super.dockingComplete(evt);
+    private void setTabMouseListener(JTabbedPane tabbedPane) {
+        Set<MouseListener> listeners = new HashSet<>(Arrays.asList(tabbedPane.getMouseListeners()));
+        if (!listeners.contains(TAB_MOUSE_LISTENER)) {
+            tabbedPane.addMouseListener(TAB_MOUSE_LISTENER);
+        }
+    }
+
+    private void setTabChangeListener(JTabbedPane tabbedPane) {
+        Set<ChangeListener> listeners = new HashSet<>(Arrays.asList(tabbedPane.getChangeListeners()));
+        if (!listeners.contains(tabChangeListener)) {
+            tabbedPane.addChangeListener(tabChangeListener);
+        }
     }
 
     @Override
-    public void undockingComplete(DockingEvent evt) {
-        processTabEvents(evt.getOldDockingPort());
-        updateHeaders(evt.getOldDockingPort());
-        super.undockingComplete(evt);
+    public void dockingComplete(DockingEvent event) {
+        DockingPort dockingPort = event.getNewDockingPort();
+        DockingUtils.processTabEvents(dockingPort);
+        DockingUtils.updateHeaders(dockingPort);
+        super.dockingComplete(event);
+    }
+
+    @Override
+    public void undockingComplete(DockingEvent event) {
+        DockingPort dockingPort = event.getOldDockingPort();
+        DockingUtils.processTabEvents(dockingPort);
+        DockingUtils.updateHeaders(dockingPort);
+        super.undockingComplete(event);
     }
 
     @Override
     public List<Component> getDragSources() {
         return dragSources;
-    }
-
-    public int getOptions() {
-        return panel.getOptions();
     }
 
 }

@@ -133,7 +133,7 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
 
         int hotKeyCode = tool.getHotKeyCode();
         if (hotKeyCode != -1) {
-            button.setToolTipText(tool.getLabel() + " (" + Character.toString((char) hotKeyCode) + ")");
+            button.setToolTipText(tool.getLabel() + " (" + (char) hotKeyCode + ")");
         } else {
             button.setToolTipText(tool.getLabel());
         }

@@ -1,6 +1,5 @@
 package org.workcraft.gui;
 
-import org.flexdock.docking.Dockable;
 import org.flexdock.docking.DockingConstants;
 import org.flexdock.docking.DockingManager;
 import org.flexdock.docking.defaults.DefaultDockingPort;
@@ -28,8 +27,9 @@ import org.workcraft.gui.dialogs.CreateWorkDialog;
 import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.gui.layouts.MultiBorderLayout;
 import org.workcraft.gui.properties.SettingsEditorDialog;
+import org.workcraft.gui.tabs.ContentPanel;
 import org.workcraft.gui.tabs.DockableWindow;
-import org.workcraft.gui.tabs.DockableWindowContentPanel;
+import org.workcraft.gui.tabs.DockingUtils;
 import org.workcraft.gui.tasks.TaskFailureNotifier;
 import org.workcraft.gui.tasks.TaskManagerWindow;
 import org.workcraft.gui.tools.GraphEditor;
@@ -94,7 +94,7 @@ public class MainWindow extends JFrame {
     private MultiBorderLayout layout;
     private JPanel content;
 
-    private DefaultDockingPort rootDockingPort;
+    private DefaultDockingPort defaultDockingPort;
     private DockableWindow outputDockable;
     private DockableWindow propertyEditorDockable;
     private DockableWindow toolControlsDockable;
@@ -107,7 +107,7 @@ public class MainWindow extends JFrame {
     private ToolControlsWindow toolControlsWindow;
     private WorkspaceWindow workspaceWindow;
 
-    private final ListMap<WorkspaceEntry, DockableWindow> editorWindows = new ListMap<>();
+    private final ListMap<WorkspaceEntry, DockableWindow> weWindowsMap = new ListMap<>();
     private final LinkedList<DockableWindow> utilityWindows = new LinkedList<>();
 
     private GraphEditorPanel editorInFocus;
@@ -144,80 +144,35 @@ public class MainWindow extends JFrame {
         setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
     }
 
-    private DockableWindow createDockableWindow(JComponent component, String title, Dockable neighbour, int options) {
-        return createDockableWindow(component, title, neighbour, options, DockingConstants.CENTER_REGION, title);
-    }
-
-    private DockableWindow createDockableWindow(JComponent component, String name, int options, String relativeRegion,
-            float split) {
-        return createDockableWindow(component, name, null, options, relativeRegion, split, name);
-    }
-
-    private DockableWindow createDockableWindow(JComponent component, String name, Dockable neighbour, int options,
-            String relativeRegion, float split) {
-        return createDockableWindow(component, name, neighbour, options, relativeRegion, split, name);
-    }
-
-    private DockableWindow createDockableWindow(JComponent component, String title, Dockable neighbour,
-            int options, String region, String persistentID) {
-
-        DockableWindowContentPanel panel = new DockableWindowContentPanel(title, component, options);
-        DockableWindow dockable = new DockableWindow(panel, persistentID);
-        DockingManager.registerDockable(dockable);
-        if (neighbour != null) {
-            DockingManager.dock(dockable, neighbour, region);
-        } else {
-            DockingManager.dock(dockable, rootDockingPort, region);
-        }
-        return dockable;
-    }
-
-    private DockableWindow createDockableWindow(JComponent component, String title, Dockable neighbour,
-            int options, String region, float split, String persistentID) {
-
-        DockableWindow dockable = createDockableWindow(component, title, neighbour, options, region, persistentID);
-        DockingManager.setSplitProportion(dockable, split);
-        return dockable;
-    }
-
     public GraphEditorPanel createEditorWindow(final WorkspaceEntry we) {
         final GraphEditorPanel editor = new GraphEditorPanel(we);
         String title = we.getTitleAndModel();
         final DockableWindow editorWindow;
-        int options = DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON;
-        if (editorWindows.isEmpty()) {
-            editorWindow = createDockableWindow(editor, title, documentPlaceholder, options,
-                    DockingConstants.CENTER_REGION, PREFIX_DOCUMENT + we.getWorkspacePath());
+        String persistentID = PREFIX_DOCUMENT + we.getWorkspacePath();
+        if (weWindowsMap.isEmpty()) {
+            editorWindow = DockingUtils.createEditorDockable(editor, title,
+                    documentPlaceholder, persistentID);
+
             DockingManager.close(documentPlaceholder);
             DockingManager.unregisterDockable(documentPlaceholder);
             utilityWindows.remove(documentPlaceholder);
         } else {
-            unmaximiseAllDockableWindows();
-            DockableWindow firstEditorWindow = editorWindows.values().iterator().next().iterator().next();
-            editorWindow = createDockableWindow(editor, title, firstEditorWindow, options,
-                    DockingConstants.CENTER_REGION, PREFIX_DOCUMENT + we.getWorkspacePath());
+            Collection<DockableWindow> editorWindows = weWindowsMap.values();
+            DockingUtils.unmaximise(editorWindows);
+            DockableWindow firstEditorWindow = editorWindows.iterator().next();
+            editorWindow = DockingUtils.createEditorDockable(editor, title,
+                    firstEditorWindow, persistentID);
         }
-        editorWindow.addTabListener(new EditorWindowTabListener(editor));
-        editorWindows.put(we, editorWindow);
+        editorWindow.addTabListener(new EditorWindowDockableListener(editor));
+        weWindowsMap.put(we, editorWindow);
         requestFocus(editor);
         setWorkActionsEnableness(true);
         editor.zoomFit();
         return editor;
     }
 
-    private void unmaximiseAllDockableWindows() {
-        for (LinkedList<DockableWindow> dockableWindows: editorWindows.values()) {
-            for (DockableWindow dockableWindow: dockableWindows) {
-                if (dockableWindow.isMaximized()) {
-                    DockingManager.toggleMaximized(dockableWindow);
-                    dockableWindow.setMaximized(false);
-                }
-            }
-        }
-    }
-
     private void registerUtilityWindow(DockableWindow dockableWindow) {
-        if (!rootDockingPort.getDockables().contains(dockableWindow)) {
+        if (!defaultDockingPort.getDockables().contains(dockableWindow)) {
             dockableWindow.setClosed(true);
             DockingManager.close(dockableWindow);
         }
@@ -249,10 +204,10 @@ public class MainWindow extends JFrame {
         layout = new MultiBorderLayout();
         content = new JPanel(layout);
         setContentPane(content);
-        rootDockingPort = new DefaultDockingPort(FLEXDOCK_DOCKING_PORT);
-        content.add(rootDockingPort, BorderLayout.CENTER);
+        defaultDockingPort = new DefaultDockingPort(FLEXDOCK_DOCKING_PORT);
+        content.add(defaultDockingPort, BorderLayout.CENTER);
         StandardBorderManager borderManager = new StandardBorderManager(new ShadowBorder());
-        rootDockingPort.setBorderManager(borderManager);
+        defaultDockingPort.setBorderManager(borderManager);
 
         // Create toolbars
         globalToolbar = new ToolBar();
@@ -270,7 +225,7 @@ public class MainWindow extends JFrame {
 
         // Display window in its default state
         setVisible(true);
-        DockableWindow.updateHeaders(rootDockingPort);
+        DockingUtils.updateHeaders(defaultDockingPort);
         DockingManager.display(outputDockable);
         utilityWindows.add(documentPlaceholder);
         setWorkActionsEnableness(false);
@@ -338,7 +293,6 @@ public class MainWindow extends JFrame {
     }
 
     private void closeDockableEditorWindow(DockableWindow editorWindow, GraphEditorPanel editor) {
-
         WorkspaceEntry we = editor.getWorkspaceEntry();
         try {
             saveWorkBeforeClose(we);
@@ -347,14 +301,14 @@ public class MainWindow extends JFrame {
                 toggleDockableWindowMaximized(editorWindow);
             }
             // Remove the window tab listeners
-            for (DockableWindow dockableWindow : editorWindows.get(we)) {
+            for (DockableWindow dockableWindow : weWindowsMap.get(we)) {
                 if (dockableWindow == editorWindow) {
                     dockableWindow.clearTabListeners();
                 }
             }
             // Remove the window and close its workspace entry
-            editorWindows.remove(we, editorWindow);
-            if (editorWindows.get(we).isEmpty()) {
+            weWindowsMap.remove(we, editorWindow);
+            if (weWindowsMap.get(we).isEmpty()) {
                 Framework.getInstance().closeWork(we);
             }
             // Remove commands menu and update property window
@@ -364,7 +318,7 @@ public class MainWindow extends JFrame {
                 setPropertyEditorTitle(TITLE_PROPERTY_EDITOR);
             }
             // If no more editor windows left, then activate the document placeholder
-            if (editorWindows.isEmpty()) {
+            if (weWindowsMap.isEmpty()) {
                 DockingManager.registerDockable(documentPlaceholder);
                 DockingManager.dock(documentPlaceholder, editorWindow, DockingConstants.CENTER_REGION);
                 utilityWindows.add(documentPlaceholder);
@@ -435,8 +389,17 @@ public class MainWindow extends JFrame {
     }
 
     private GraphEditorPanel getGraphEditorPanel(DockableWindow dockableWindow) {
-        JComponent content = dockableWindow.getContentPanel().getContent();
+        JComponent content = dockableWindow.getComponent().getContent();
         return (content instanceof GraphEditorPanel) ? (GraphEditorPanel) content : null;
+    }
+
+    public DockableWindow getEditorWindow(GraphEditorPanel editor) {
+        for (DockableWindow dockableWindow : weWindowsMap.values()) {
+            if (editor == getGraphEditorPanel(dockableWindow)) {
+                return dockableWindow;
+            }
+        }
+        return null;
     }
 
     private void createDockingLayout() {
@@ -466,32 +429,29 @@ public class MainWindow extends JFrame {
         float xSplit = 0.87f;
         float ySplit = 0.8f;
 
-        outputDockable = createDockableWindow(outputWindow, TITLE_OUTPUT, DockableWindowContentPanel.CLOSE_BUTTON,
-                DockingManager.SOUTH_REGION, ySplit);
+        documentPlaceholder = DockingUtils.createPlaceholderDockable(new DocumentPlaceholder(),
+                TITLE_PLACEHOLDER, defaultDockingPort);
 
-        DockableWindow errorDockable = createDockableWindow(errorWindow, TITLE_PROBLEMS, outputDockable,
-                DockableWindowContentPanel.CLOSE_BUTTON);
+        DockableWindow workspaceDockable = DockingUtils.createUtilityDockable(workspaceWindow,
+                TITLE_WORKSPACE, documentPlaceholder, DockingManager.EAST_REGION, xSplit);
 
-        DockableWindow javaScriptDockable = createDockableWindow(javaScriptWindow, TITLE_JAVASCRIPT, outputDockable,
-                DockableWindowContentPanel.CLOSE_BUTTON);
+        propertyEditorDockable = DockingUtils.createUtilityDockable(propertyEditorWindow,
+                TITLE_PROPERTY_EDITOR, workspaceDockable, DockingManager.NORTH_REGION, ySplit);
 
-        DockableWindow tasksDockable = createDockableWindow(new TaskManagerWindow(), TITLE_TASKS, outputDockable,
-                DockableWindowContentPanel.CLOSE_BUTTON);
+        toolControlsDockable = DockingUtils.createUtilityDockable(toolControlsWindow,
+                TITLE_TOOL_CONTROLS, propertyEditorDockable, DockingManager.SOUTH_REGION, 0.5f);
 
-        DockableWindow workspaceDockable = createDockableWindow(workspaceWindow, TITLE_WORKSPACE,
-                DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
-                DockingManager.EAST_REGION, xSplit);
+        outputDockable = DockingUtils.createUtilityDockable(outputWindow,
+                TITLE_OUTPUT, documentPlaceholder, DockingManager.SOUTH_REGION, ySplit);
 
-        propertyEditorDockable = createDockableWindow(propertyEditorWindow, TITLE_PROPERTY_EDITOR,
-                workspaceDockable, DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
-                DockingManager.NORTH_REGION, ySplit);
+        DockableWindow errorDockable = DockingUtils.createUtilityDockable(errorWindow,
+                TITLE_PROBLEMS, outputDockable);
 
-        toolControlsDockable = createDockableWindow(toolControlsWindow, TITLE_TOOL_CONTROLS,
-                propertyEditorDockable, DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
-                DockingManager.SOUTH_REGION, 0.4f);
+        DockableWindow javaScriptDockable = DockingUtils.createUtilityDockable(javaScriptWindow,
+                TITLE_JAVASCRIPT, outputDockable);
 
-        documentPlaceholder = createDockableWindow(new DocumentPlaceholder(), TITLE_PLACEHOLDER, outputDockable,
-                0, DockingManager.NORTH_REGION, ySplit, "DocumentPlaceholder");
+        DockableWindow tasksDockable = DockingUtils.createUtilityDockable(new TaskManagerWindow(),
+                TITLE_TASKS, outputDockable);
 
         registerUtilityWindow(outputDockable);
         registerUtilityWindow(errorDockable);
@@ -532,7 +492,7 @@ public class MainWindow extends JFrame {
         saveWindowGeometryToConfig();
         saveToolbarParametersToConfig();
 
-        content.remove(rootDockingPort);
+        content.remove(defaultDockingPort);
 
         outputWindow.releaseStream();
         errorWindow.releaseStream();
@@ -667,7 +627,7 @@ public class MainWindow extends JFrame {
     }
 
     public void requestFocus(final WorkspaceEntry we) {
-        for (DockableWindow window: editorWindows.get(we)) {
+        for (DockableWindow window: weWindowsMap.get(we)) {
             Container parent = window.getComponent().getParent();
             if (parent instanceof JTabbedPane) {
                 JTabbedPane tabbedPane = (JTabbedPane) parent;
@@ -769,7 +729,7 @@ public class MainWindow extends JFrame {
             // in case tabs appeared and changed the viewport size.
             SwingUtilities.invokeLater(() -> {
                 for (WorkspaceEntry we: newWorkspaceEntries) {
-                    for (DockableWindow window: editorWindows.get(we)) {
+                    for (DockableWindow window: weWindowsMap.get(we)) {
                         GraphEditor editor = getGraphEditorPanel(window);
                         if (editor != null) {
                             editor.zoomFit();
@@ -792,7 +752,8 @@ public class MainWindow extends JFrame {
                 framework.pushRecentFilePath(file);
                 mainMenu.updateRecentMenu();
             } catch (DeserialisationException e) {
-                DialogUtils.showError("A problem was encountered while trying to load '" + file.getPath() + "'.\n" + e.getMessage());
+                DialogUtils.showError("A problem was encountered while trying to load '"
+                        + file.getPath() + "'.\n" + e.getMessage());
             }
         }
         return we;
@@ -943,23 +904,23 @@ public class MainWindow extends JFrame {
     }
 
     public void refreshWorkspaceEntryTitle(WorkspaceEntry we, boolean updateHeaders) {
-        for (DockableWindow window: editorWindows.get(we)) {
+        for (DockableWindow window: weWindowsMap.get(we)) {
             String title = we.getTitleAndModel();
             window.setTitle(title);
         }
         if (updateHeaders) {
-            DockableWindow.updateHeaders(rootDockingPort);
+            DockingUtils.updateHeaders(defaultDockingPort);
         }
     }
 
     public void setPropertyEditorTitle(String title) {
         propertyEditorDockable.setTitle(title);
-        DockableWindow.updateHeaders(rootDockingPort);
+        DockingUtils.updateHeaders(defaultDockingPort);
     }
 
     public List<GraphEditorPanel> getEditors(WorkspaceEntry we) {
         ArrayList<GraphEditorPanel> result = new ArrayList<>();
-        for (DockableWindow window: editorWindows.get(we)) {
+        for (DockableWindow window: weWindowsMap.get(we)) {
             result.add(getGraphEditorPanel(window));
         }
         return result;
@@ -993,10 +954,10 @@ public class MainWindow extends JFrame {
         return (editor == null) ? null : editor.getToolBox();
     }
 
-    public void closeActiveEditor() throws OperationCancelledException {
-        for (WorkspaceEntry we: editorWindows.keySet()) {
-            for (DockableWindow window: editorWindows.get(we)) {
-                DockableWindowContentPanel contentPanel = window.getContentPanel();
+    public void closeActiveEditor() {
+        for (WorkspaceEntry we: weWindowsMap.keySet()) {
+            for (DockableWindow window: weWindowsMap.get(we)) {
+                ContentPanel contentPanel = window.getComponent();
                 if ((contentPanel != null) && (contentPanel.getContent() == editorInFocus)) {
                     closeDockableWindow(window);
                     return;
@@ -1005,10 +966,10 @@ public class MainWindow extends JFrame {
         }
     }
 
-    public void closeEditorWindows() throws OperationCancelledException {
+    public void closeEditorWindows() {
         LinkedHashSet<DockableWindow> windowsToClose = new LinkedHashSet<>();
-        for (WorkspaceEntry we: editorWindows.keySet()) {
-            for (DockableWindow window: editorWindows.get(we)) {
+        for (WorkspaceEntry we: weWindowsMap.keySet()) {
+            for (DockableWindow window: weWindowsMap.get(we)) {
                 windowsToClose.add(window);
             }
         }
@@ -1022,8 +983,8 @@ public class MainWindow extends JFrame {
         }
     }
 
-    public void closeEditors(WorkspaceEntry openFile) throws OperationCancelledException {
-        for (DockableWindow window: new ArrayList<>(editorWindows.get(openFile))) {
+    public void closeEditors(WorkspaceEntry we) {
+        for (DockableWindow window: new ArrayList<>(weWindowsMap.get(we))) {
             closeDockableWindow(window);
         }
     }
@@ -1104,10 +1065,10 @@ public class MainWindow extends JFrame {
         SettingsEditorDialog dialog = new SettingsEditorDialog(this);
         if (dialog.reveal()) {
             mainMenu.setMenuForWorkspaceEntry(editorInFocus.getWorkspaceEntry());
-            for (WorkspaceEntry we: editorWindows.keySet()) {
+            for (WorkspaceEntry we: weWindowsMap.keySet()) {
                 refreshWorkspaceEntryTitle(we, false);
             }
-            DockableWindow.updateHeaders(rootDockingPort);
+            DockingUtils.updateHeaders(defaultDockingPort);
             globalToolbar.refreshToggles();
         }
     }

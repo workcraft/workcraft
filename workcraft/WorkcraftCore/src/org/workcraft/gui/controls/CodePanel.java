@@ -7,19 +7,17 @@ import org.workcraft.utils.GuiUtils;
 import org.workcraft.utils.TextUtils;
 
 import javax.swing.*;
-import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 
 public class CodePanel extends JPanel {
 
-    private static final String UNDO_KEY = "Undo";
-    private static final String REDO_KEY = "Redo";
-
-    private final UndoManager history = new UndoManager();
-    private final JTextArea textArea = new JTextArea();
+    private final Font font = new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize());
+    private final TextEditor textArea = new TextEditor(font);
     private final JLabel statusLabel = new JLabel();
+
+    private Object highlight = null;
 
     public CodePanel(int initialLineCount) {
         super(new BorderLayout());
@@ -30,45 +28,20 @@ public class CodePanel extends JPanel {
     }
 
     private void initTextArea(int initialLineCount) {
-        textArea.setMargin(SizeHelper.getTextMargin());
-        textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
         textArea.setText(TextUtils.repeat("\n", initialLineCount));
+        textArea.addPopupMenu();
+        textArea.addUndoManager();
         textArea.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
                 // Reset highlighters on key press
-                clearHighlights();
+                clearHighlight();
                 // Ignore non-ASCII characters
                 if (e.getKeyChar() > 127) {
                     e.consume();
                 }
             }
         });
-
-        // Add undo to te action map and bind it to the input map
-        textArea.getActionMap().put(UNDO_KEY, new AbstractAction(UNDO_KEY) {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                if (history.canUndo()) {
-                    history.undo();
-                }
-            }
-        });
-        textArea.getInputMap().put(DesktopApi.getUndoKeyStroke(), UNDO_KEY);
-
-        // Add redo to te action map and bind it to the input map
-        textArea.getActionMap().put(REDO_KEY, new AbstractAction(REDO_KEY) {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                if (history.canRedo()) {
-                    history.redo();
-                }
-            }
-        });
-        textArea.getInputMap().put(DesktopApi.getRedoKeyStroke(), REDO_KEY);
-
-        // Listen to the undo/redo events
-        textArea.getDocument().addUndoableEditListener(event -> history.addEdit(event.getEdit()));
     }
 
     private void initStatusLabel() {
@@ -81,23 +54,26 @@ public class CodePanel extends JPanel {
     }
 
     public void setText(String text) {
-        history.discardAllEdits();
-        clearHighlights();
+        clearHighlight();
         textArea.setText(text);
         textArea.setCaretPosition(0);
         textArea.requestFocus();
     }
 
     public void highlightError(int fromPos, int toPos, String detail) {
+        clearHighlight();
         showErrorStatus(detail);
-        GuiUtils.highlightText(textArea, fromPos, toPos, LogCommonSettings.getErrorBackground());
+        highlight = GuiUtils.highlightText(textArea, fromPos, toPos, LogCommonSettings.getErrorBackground());
         textArea.setCaretPosition(fromPos);
         textArea.moveCaretPosition(fromPos);
         textArea.requestFocus();
     }
 
-    private void clearHighlights() {
-        textArea.getHighlighter().removeAllHighlights();
+    private void clearHighlight() {
+        if (highlight != null) {
+            textArea.getHighlighter().removeHighlight(highlight);
+            highlight = null;
+        }
         clearStatus();
     }
 

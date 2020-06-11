@@ -76,20 +76,11 @@ public class MainWindowActions {
             });
 
     public static final Action CLOSE_ACTIVE_EDITOR_ACTION = new Action("Close active work",
-            () -> {
-                try {
-                    Framework.getInstance().getMainWindow().closeActiveEditor();
-                } catch (OperationCancelledException e) {
-                }
-            }, KeyStroke.getKeyStroke(KeyEvent.VK_F4, DesktopApi.getMenuKeyMask()));
+            () -> Framework.getInstance().getMainWindow().closeActiveEditor(),
+            KeyStroke.getKeyStroke(KeyEvent.VK_F4, DesktopApi.getMenuKeyMask()));
 
     public static final Action CLOSE_ALL_EDITORS_ACTION = new Action("Close all works",
-            () -> {
-                try {
-                    Framework.getInstance().getMainWindow().closeEditorWindows();
-                } catch (OperationCancelledException e) {
-                }
-            });
+            () -> Framework.getInstance().getMainWindow().closeEditorWindows());
 
     public static final Action SHUTDOWN_GUI_ACTION = new Action("Switch to console mode",
             () -> {
