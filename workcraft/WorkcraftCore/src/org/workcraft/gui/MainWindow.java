@@ -293,7 +293,6 @@ public class MainWindow extends JFrame {
     }
 
     private void closeDockableEditorWindow(DockableWindow editorWindow, GraphEditorPanel editor) {
-
         WorkspaceEntry we = editor.getWorkspaceEntry();
         try {
             saveWorkBeforeClose(we);
@@ -392,6 +391,15 @@ public class MainWindow extends JFrame {
     private GraphEditorPanel getGraphEditorPanel(DockableWindow dockableWindow) {
         JComponent content = dockableWindow.getComponent().getContent();
         return (content instanceof GraphEditorPanel) ? (GraphEditorPanel) content : null;
+    }
+
+    public DockableWindow getEditorWindow(GraphEditorPanel editor) {
+        for (DockableWindow dockableWindow : weWindowsMap.values()) {
+            if (editor == getGraphEditorPanel(dockableWindow)) {
+                return dockableWindow;
+            }
+        }
+        return null;
     }
 
     private void createDockingLayout() {

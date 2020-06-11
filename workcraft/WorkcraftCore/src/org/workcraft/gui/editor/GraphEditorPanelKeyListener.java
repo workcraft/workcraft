@@ -1,11 +1,15 @@
 package org.workcraft.gui.editor;
 
+import org.workcraft.Framework;
+import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.events.GraphEditorKeyEvent;
+import org.workcraft.gui.tabs.DockableWindow;
+import org.workcraft.gui.tabs.DockingUtils;
+import org.workcraft.gui.tools.GraphEditorKeyListener;
+import org.workcraft.utils.DesktopApi;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-
-import org.workcraft.utils.DesktopApi;
-import org.workcraft.gui.events.GraphEditorKeyEvent;
-import org.workcraft.gui.tools.GraphEditorKeyListener;
 
 class GraphEditorPanelKeyListener implements KeyListener {
     private final GraphEditorPanel editor;
@@ -31,6 +35,11 @@ class GraphEditorPanelKeyListener implements KeyListener {
                 break;
             case KeyEvent.VK_DOWN:
                 editor.panDown();
+                break;
+            case KeyEvent.VK_TAB:
+                MainWindow mainWindow = Framework.getInstance().getMainWindow();
+                DockableWindow editorWindow = mainWindow.getEditorWindow(editor);
+                DockingUtils.activateNextTab(editorWindow, e.isShiftDown() ? -1 : 1);
                 break;
             }
         } else {

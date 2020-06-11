@@ -117,4 +117,18 @@ public class DockingUtils {
         return -1;
     }
 
+    public static void activateNextTab(DockableWindow dockableWindow, int step) {
+        if (dockableWindow != null) {
+            Container parent = dockableWindow.getComponent().getParent();
+            if (parent instanceof JTabbedPane) {
+                JTabbedPane tabbedPane = (JTabbedPane) parent;
+                int index = tabbedPane.getSelectedIndex();
+                if (index >= 0) {
+                    int nextIndex = Math.floorMod(index + step, tabbedPane.getTabCount());
+                    tabbedPane.setSelectedIndex(nextIndex);
+                }
+            }
+        }
+    }
+
 }
