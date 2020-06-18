@@ -72,10 +72,6 @@ public class Result<T> {
         return new Result<>(Outcome.CANCEL);
     }
 
-    public static <T> Result<T> failure() {
-        return new Result<>(Outcome.FAILURE);
-    }
-
     public static <T> Result<T> failure(T payload) {
         return new Result<>(Outcome.FAILURE, payload);
     }

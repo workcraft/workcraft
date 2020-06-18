@@ -59,7 +59,7 @@ public class SpotChainResultHandlingMonitor extends AbstractResultHandlingMonito
         Throwable genericCause = chainResult.getCause();
         if (genericCause != null) {
             // Exception was thrown somewhere in the chain task run() method (not in any of the subtasks)
-            message += ERROR_CAUSE_PREFIX + genericCause.toString();
+            message += ERROR_CAUSE_PREFIX + genericCause.getMessage();
         } else {
             SpotChainOutput chainOutput = chainResult.getPayload();
             Result<? extends Ltl2tgbaOutput> ltl2tgbaResult = (chainOutput == null) ? null : chainOutput.getLtl2tgbaResult();
@@ -70,19 +70,19 @@ public class SpotChainResultHandlingMonitor extends AbstractResultHandlingMonito
                 message += "\n\nCould not derive B\u00FCchi automaton.";
                 Throwable ltl2tgbaCause = ltl2tgbaResult.getCause();
                 if (ltl2tgbaCause != null) {
-                    message += ERROR_CAUSE_PREFIX + ltl2tgbaCause.toString();
+                    message += ERROR_CAUSE_PREFIX + ltl2tgbaCause.getMessage();
                 }
             } else  if ((exportResult != null) && (exportResult.isFailure())) {
                 message += "\n\nCould not export the model as a .g file.";
                 Throwable exportCause = exportResult.getCause();
                 if (exportCause != null) {
-                    message += ERROR_CAUSE_PREFIX + exportCause.toString();
+                    message += ERROR_CAUSE_PREFIX + exportCause.getMessage();
                 }
             } else if ((pcompResult != null) && (pcompResult.isFailure())) {
                 message += "\n\nPcomp could not compose models.";
                 Throwable pcompCause = pcompResult.getCause();
                 if (pcompCause != null) {
-                    message += ERROR_CAUSE_PREFIX + pcompCause.toString();
+                    message += ERROR_CAUSE_PREFIX + pcompCause.getMessage();
                 } else {
                     PcompOutput pcompOutput = pcompResult.getPayload();
                     if (pcompOutput != null) {
@@ -94,7 +94,7 @@ public class SpotChainResultHandlingMonitor extends AbstractResultHandlingMonito
                 message += "\n\nPunf could not verify LTL-X property.";
                 Throwable punfCause = punfResult.getCause();
                 if (punfCause != null) {
-                    message += ERROR_CAUSE_PREFIX + punfCause.toString();
+                    message += ERROR_CAUSE_PREFIX + punfCause.getMessage();
                 }
             } else {
                 message += "\n\nSPOT chain task returned failure status without further explanation.";

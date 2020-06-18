@@ -51,7 +51,7 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand
 
     private void queueVerification(WorkspaceEntry we, VerificationChainResultHandlingMonitor monitor) {
         if (!checkPrerequisites(we)) {
-            monitor.isFinished(Result.failure());
+            monitor.isFinished(Result.cancel());
             return;
         }
         // Adjust the set of checked properties depending on availability of environment STG
@@ -68,19 +68,21 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand
                 String msg = "Output persistency can currently be checked only for environment STGs without dummies.";
                 if (!checkConformation && !checkDeadlock) {
                     DialogUtils.showError(msg);
-                    monitor.isFinished(Result.failure());
+                    monitor.isFinished(Result.cancel());
                     return;
                 } else {
                     msg += "\n\nProceed with verification of other properties?";
                     if (!DialogUtils.showConfirmWarning(msg)) {
-                        monitor.isFinished(Result.failure());
+                        monitor.isFinished(Result.cancel());
                         return;
                     }
                     checkPersistency = false;
                 }
             }
         } else {
-            String msg = envFile == null ? "" : "Cannot read an STG model from the file:\n" + envFile.getAbsolutePath() + "\n\n";
+            String msg = envFile == null ? ""
+                    : "Cannot read an STG model from the file:\n" + envFile.getAbsolutePath() + "\n\n";
+
             if (checkConformation) {
                 msg += "The circuit conformation cannot be checked without environment STG.\n";
                 if (!checkDeadlock && !checkPersistency) {

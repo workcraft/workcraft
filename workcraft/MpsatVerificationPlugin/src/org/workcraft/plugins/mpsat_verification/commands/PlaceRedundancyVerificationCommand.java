@@ -106,7 +106,7 @@ public class PlaceRedundancyVerificationCommand extends org.workcraft.commands.A
     public void run(WorkspaceEntry we, Collection<String> data, ProgressMonitor monitor) {
         if (data.isEmpty()) {
             DialogUtils.showWarning("No places specified for redundancy check.");
-            monitor.isFinished(Result.failure());
+            monitor.isFinished(Result.cancel());
             return;
         }
 

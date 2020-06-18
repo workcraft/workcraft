@@ -60,7 +60,7 @@ public class CombinedVerificationCommand extends org.workcraft.commands.Abstract
 
     private void queueVerification(WorkspaceEntry we, CombinedChainResultHandlingMonitor monitor) {
         if (!checkPrerequisites(we)) {
-            monitor.isFinished(Result.failure());
+            monitor.isFinished(Result.cancel());
             return;
         }
 
@@ -72,13 +72,13 @@ public class CombinedVerificationCommand extends org.workcraft.commands.Abstract
                     "can currently be checked only for STGs without dummies.\n\n" +
                     "Proceed with verification of other properties?";
             if (!DialogUtils.showConfirmWarning(msg)) {
-                monitor.isFinished(Result.failure());
+                monitor.isFinished(Result.cancel());
                 return;
             }
         }
 
         if (!MpsatUtils.mutexStructuralCheck(stg, true)) {
-            monitor.isFinished(Result.failure());
+            monitor.isFinished(Result.cancel());
             return;
         }
 

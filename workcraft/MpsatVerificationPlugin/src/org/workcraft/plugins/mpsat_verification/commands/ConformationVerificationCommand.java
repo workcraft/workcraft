@@ -62,13 +62,13 @@ public class ConformationVerificationCommand extends org.workcraft.commands.Abst
     @Override
     public void run(WorkspaceEntry we, File data, ProgressMonitor monitor) {
         if (!isApplicableTo(we)) {
-            monitor.isFinished(Result.failure());
+            monitor.isFinished(Result.cancel());
             return;
         }
 
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         if (!check(stg)) {
-            monitor.isFinished(Result.failure());
+            monitor.isFinished(Result.cancel());
             return;
         }
         if (data == null) {
