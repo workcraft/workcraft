@@ -38,7 +38,7 @@ public class DockableWindow extends AbstractDockable {
         if (e.getSource() instanceof JTabbedPane) {
             JTabbedPane tabbedPane = (JTabbedPane) e.getSource();
             int tabIndex = DockingUtils.getTabIndex(tabbedPane, getComponent());
-            for (DockableListener l : dockableListeners) {
+            for (DockableListener l : new ArrayList<>(dockableListeners)) {
                 if (tabbedPane.getSelectedIndex() == tabIndex) {
                     l.tabSelected(tabbedPane, tabIndex);
                 } else {
@@ -55,7 +55,7 @@ public class DockableWindow extends AbstractDockable {
                 MainWindow mainWindow = Framework.getInstance().getMainWindow();
                 mainWindow.closeDockableWindow(DockableWindow.this);
             } else {
-                for (DockableListener l : dockableListeners) {
+                for (DockableListener l : new ArrayList<>(dockableListeners)) {
                     l.headerClicked(e.getButton());
                 }
             }
@@ -97,7 +97,7 @@ public class DockableWindow extends AbstractDockable {
     public void setMaximized(boolean maximized) {
         contentPanel.setMaximized(maximized);
         DockingUtils.updateHeaders(getDockingPort());
-        for (DockableListener l : dockableListeners) {
+        for (DockableListener l : new ArrayList<>(dockableListeners)) {
             if (maximized) {
                 l.windowMaximised();
             } else {
@@ -136,7 +136,7 @@ public class DockableWindow extends AbstractDockable {
             if (!inTab) {
                 inTab = true;
                 int tabIndex = DockingUtils.getTabIndex(tabbedPane, contentPanel);
-                for (DockableListener l : dockableListeners) {
+                for (DockableListener l : new ArrayList<>(dockableListeners)) {
                     l.dockedInTab(tabbedPane, tabIndex);
                 }
             }
@@ -144,7 +144,7 @@ public class DockableWindow extends AbstractDockable {
             setTabChangeListener(tabbedPane);
         } else if (inTab) {
             inTab = false;
-            for (DockableListener l : dockableListeners) {
+            for (DockableListener l : new ArrayList<>(dockableListeners)) {
                 l.dockedStandalone();
             }
         }

@@ -574,14 +574,14 @@ public class StgSimulationTool extends PetriSimulationTool {
         final VisualStg visualStg = (VisualStg) getUnderlyingModel();
         final VisualTransition vt = visualStg.getVisualTransition(t);
         if (vt == null) return;
-        Color tokenColor = Color.black;
+        Color tokenColor = Color.BLACK;
         final ColorGenerator tokenColorGenerator = vt.getTokenColorGenerator();
         if (tokenColorGenerator != null) {
             // generate token colour
             tokenColor = tokenColorGenerator.updateColor();
         } else {
             // combine preset token colours
-            for (final Connection c: visualStg.getConnections(vt)) {
+            for (final Connection c : visualStg.getConnections(vt)) {
                 if ((c.getSecond() == vt) && (c instanceof VisualConnection)) {
                     final VisualConnection vc = (VisualConnection) c;
                     if (vc.isTokenColorPropagator()) {
@@ -597,7 +597,7 @@ public class StgSimulationTool extends PetriSimulationTool {
             }
         }
         // propagate the colour to postset tokens
-        for (final Connection c: visualStg.getConnections(vt)) {
+        for (final Connection c : visualStg.getConnections(vt)) {
             if ((c.getFirst() == vt) && (c instanceof VisualConnection)) {
                 final VisualConnection vc = (VisualConnection) c;
                 if (vc.isTokenColorPropagator()) {

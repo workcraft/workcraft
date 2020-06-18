@@ -82,7 +82,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 
     private boolean withArrow = true;
     private boolean withBubble = false;
-    private boolean tokenColorPropagator = false;
+    private boolean tokenColorPropagator = true;
     private Point2D splitPoint = null;
 
     private final LinkedHashSet<Node> children = new LinkedHashSet<>();
