@@ -71,7 +71,7 @@ public class CombinedVerificationCommand extends org.workcraft.commands.Abstract
             String msg = "Input properness and Output persistency\n" +
                     "can currently be checked only for STGs without dummies.\n\n" +
                     "Proceed with verification of other properties?";
-            if (!DialogUtils.showConfirmWarning(msg, "Verification", true)) {
+            if (!DialogUtils.showConfirmWarning(msg)) {
                 monitor.isFinished(Result.failure());
                 return;
             }
